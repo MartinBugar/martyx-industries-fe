@@ -19,7 +19,9 @@ function App() {
             alt="A 3D model of an axis coordinate system"
             cameraControls={true}
             autoRotate={false}
-            shadowIntensity="1"
+            shadowIntensity="1.8"
+            exposure="2.2"
+            toneMapping="filmic"
             height="500px"
           />
         </div>
