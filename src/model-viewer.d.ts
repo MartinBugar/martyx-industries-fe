@@ -1,7 +1,11 @@
 import React from 'react';
 
+// This declaration file is for the @google/model-viewer package
 // ESLint disable for necessary namespace usage in type declarations
 /* eslint-disable @typescript-eslint/no-namespace */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
+// Declare the model-viewer element
 declare global {
   namespace JSX {
     interface IntrinsicElements {
