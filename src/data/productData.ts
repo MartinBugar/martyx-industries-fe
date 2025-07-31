@@ -45,7 +45,7 @@ export const defaultModelViewerSettings = {
   environmentImage: "legacy",
   shadowSoftness: "1",
   toneMapping: "neutral",
-  metallicFactor: 0.28,
-  roughnessFactor: 0.36,
+  metallicFactor: "0.28",
+  roughnessFactor: "0.36",
   height: "500px"
 };
