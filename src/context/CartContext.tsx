@@ -1,34 +1,6 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { useState, type ReactNode } from 'react';
 import type { Product } from '../data/productData';
-
-// Define the structure of a cart item
-export interface CartItem {
-  product: Product;
-  quantity: number;
-}
-
-// Define the shape of the cart context
-interface CartContextType {
-  items: CartItem[];
-  addToCart: (product: Product) => void;
-  removeFromCart: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
-  clearCart: () => void;
-  getTotalItems: () => number;
-  getTotalPrice: () => number;
-}
-
-// Create the context with a default value
-const CartContext = createContext<CartContextType | undefined>(undefined);
-
-// Custom hook to use the cart context
-export const useCart = () => {
-  const context = useContext(CartContext);
-  if (context === undefined) {
-    throw new Error('useCart must be used within a CartProvider');
-  }
-  return context;
-};
+import { CartContext, type CartItem } from './cartContextTypes';
 
 // Props for the CartProvider component
 interface CartProviderProps {

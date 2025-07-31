@@ -1,6 +1,6 @@
 import React from 'react';
 import { type Product } from '../../data/productData';
-import { useCart } from '../../context/CartContext';
+import { useCart } from '../../context/useCart';
 import './ProductDetails.css';
 
 interface ProductDetailsProps {
