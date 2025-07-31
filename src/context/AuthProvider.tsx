@@ -2,6 +2,7 @@ import React, { useState, type ReactNode, useEffect } from 'react';
 import type { User } from './authTypes';
 import type { Order } from './authTypes';
 import { AuthContext } from './AuthContext';
+import { authApi, setAuthToken, removeAuthToken } from '../services/api';
 
 // Props for the AuthProvider component
 interface AuthProviderProps {
@@ -14,69 +15,126 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // and validate against a backend server
   const [user, setUser] = useState<User | null>(null);
   
-  // Check if user is stored in localStorage on initial load
+  // Check if user and token are stored in localStorage on initial load
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
+    const token = localStorage.getItem('token');
+    
+    // If token exists, set it for API requests
+    if (token) {
+      setAuthToken(token);
+    }
+    
+    // If user exists, set it in state
     if (storedUser) {
       try {
         setUser(JSON.parse(storedUser));
       } catch (error) {
         console.error('Failed to parse stored user:', error);
         localStorage.removeItem('user');
+        localStorage.removeItem('token');
+        removeAuthToken();
       }
     }
   }, []);
 
-  // Login function - in a real app, this would make an API call
+  // Login function - makes an API call to the backend
   const login = async (email: string, password: string): Promise<boolean> => {
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    // For demo purposes, accept any non-empty email and password
-    // In a real app, this would validate credentials against a backend
-    if (email && password) {
+    try {
+      // Call the login API endpoint
+      const response = await authApi.login(email, password);
+      
+      // Extract user data and token from response
+      const { user: userData, token } = response;
+      
+      // Create user object from response data
       const newUser: User = {
-        id: Math.random().toString(36).substr(2, 9), // Generate a random ID
-        name: email.split('@')[0], // Use part of email as name for demo
-        email,
-        orders: [] // Initialize empty orders array
+        id: userData.id,
+        name: userData.name,
+        email: userData.email,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        phone: userData.phone,
+        address: userData.address,
+        orders: userData.orders || [] // Initialize empty orders array if not provided
       };
       
+      // Store user data in state and localStorage
       setUser(newUser);
       localStorage.setItem('user', JSON.stringify(newUser));
+      
+      // Store token in localStorage
+      localStorage.setItem('token', token);
+      
+      // Set auth token for future API requests
+      setAuthToken(token);
+      
       return true;
+    } catch (error) {
+      console.error('Login error:', error);
+      return false;
     }
-    
-    return false;
   };
 
-  // Register function - in a real app, this would make an API call
+  // Register function - makes an API call to the backend
   const register = async (name: string, email: string, password: string): Promise<boolean> => {
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    // For demo purposes, accept any non-empty values
-    // In a real app, this would send registration data to a backend
-    if (name && email && password) {
+    try {
+      // Call the register API endpoint
+      const response = await authApi.register(name, email, password);
+      
+      // Extract user data and token from response
+      const { user: userData, token } = response;
+      
+      // Create user object from response data
       const newUser: User = {
-        id: Math.random().toString(36).substr(2, 9), // Generate a random ID
-        name,
-        email,
-        orders: [] // Initialize empty orders array
+        id: userData.id,
+        name: userData.name,
+        email: userData.email,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        phone: userData.phone,
+        address: userData.address,
+        orders: userData.orders || [] // Initialize empty orders array if not provided
       };
       
+      // Store user data in state and localStorage
       setUser(newUser);
       localStorage.setItem('user', JSON.stringify(newUser));
+      
+      // Store token in localStorage
+      localStorage.setItem('token', token);
+      
+      // Set auth token for future API requests
+      setAuthToken(token);
+      
       return true;
+    } catch (error) {
+      console.error('Registration error:', error);
+      return false;
     }
-    
-    return false;
   };
 
-  // Logout function
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('user');
+  // Logout function - makes an API call to the backend if a token exists
+  const logout = async () => {
+    try {
+      // Get token from localStorage
+      const token = localStorage.getItem('token');
+      
+      // If token exists, call the logout API endpoint
+      if (token) {
+        await authApi.logout(token);
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      // Clear user data and token regardless of API call success
+      setUser(null);
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
+      
+      // Remove auth token from future API requests
+      removeAuthToken();
+    }
   };
 
   // Update user profile

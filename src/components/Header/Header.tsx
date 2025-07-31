@@ -11,8 +11,14 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ cartItems, onCartClick }) => {
   const { user, isAuthenticated, logout } = useAuth();
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    try {
+      await logout();
+      // You could add additional actions after successful logout if needed
+    } catch (error) {
+      console.error('Error during logout:', error);
+      // You could show an error message to the user if needed
+    }
   };
 
   return (

@@ -8,7 +8,7 @@ export interface AuthContextType {
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<boolean>;
   register: (name: string, email: string, password: string) => Promise<boolean>;
-  logout: () => void;
+  logout: () => Promise<void>;
   // User profile management
   updateProfile: (profileData: Partial<User>) => void;
   // Order history management
