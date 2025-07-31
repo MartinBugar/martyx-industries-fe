@@ -1,68 +1,78 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+/* Global styles for the e-shop application */
+
+:root {
+  --primary-color: #213547;
+  --secondary-color: #4caf50;
+  --text-color: #213547;
+  --background-color: #ffffff;
+  --light-gray: #f9f9f9;
+  --border-radius: 8px;
+  --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  color: #213547;
-  background-color: #ffffff;
+  color: var(--text-color);
+  background-color: var(--background-color);
 }
 
-header {
-  margin-bottom: 2rem;
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
+.main-content {
+  flex: 1;
+  padding: 2rem;
+  max-width: 1280px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Typography */
 h1 {
   font-size: 2.5rem;
   line-height: 1.1;
   margin-bottom: 1rem;
-  color: #213547;
+  color: var(--text-color);
 }
 
 h2 {
-  font-size: 1.5rem;
-  margin-top: 1.5rem;
+  font-size: 1.8rem;
+  margin-top: 0;
   margin-bottom: 1rem;
+  color: var(--text-color);
 }
 
-main {
+h3 {
+  font-size: 1.2rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-color);
+}
+
+/* Product Container */
+.product-container {
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-.model-container {
-  width: 100%;
-  max-width: 800px;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
-}
-
-.controls {
-  width: 100%;
-  max-width: 800px;
-  text-align: left;
-  padding: 1.5rem;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-ul {
-  padding-left: 1.5rem;
-  margin-top: 0.5rem;
-}
-
-li {
-  margin-bottom: 0.5rem;
-}
-
+/* Responsive Design */
 @media (min-width: 768px) {
-  main {
-    flex-direction: column;
+  .product-container {
+    flex-direction: row;
+    align-items: flex-start;
   }
 }
