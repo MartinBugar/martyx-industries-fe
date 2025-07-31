@@ -1,15 +1,24 @@
 import './App.css'
 import ModelViewer from './components/ModelViewer'
 import axisModel from './assets/axis.glb'
+import { useState } from 'react'
 
 function App() {
   const modelPath = axisModel
+  const [isFullscreen, setIsFullscreen] = useState(true)
+
+  // This function is just to demonstrate how you could control fullscreen from outside the component
+  const toggleFullscreen = () => {
+    setIsFullscreen(!isFullscreen)
+  }
 
   return (
     <>
-      <header>
-        <h1>3D Model Viewer</h1>
-      </header>
+      {!isFullscreen && (
+        <header>
+          <h1>3D Model Viewer</h1>
+        </header>
+      )}
       <main>
         <div className="model-container">
           <ModelViewer 
@@ -23,20 +32,39 @@ function App() {
             exposure="2.2"
             toneMapping="filmic"
             height="500px"
+            fullscreen={isFullscreen}
           />
         </div>
-        <div className="controls">
-          <h2>Model Controls</h2>
-          <p>
-            This is a simple 3D model viewer using Google's &lt;model-viewer&gt; web component.
-            You can interact with the model by:
-          </p>
-          <ul>
-            <li>Click and drag to rotate the model</li>
-            <li>Scroll to zoom in and out</li>
-            <li>Right-click and drag to pan</li>
-          </ul>
-        </div>
+        {!isFullscreen && (
+          <div className="controls">
+            <h2>Model Controls</h2>
+            <p>
+              This is a simple 3D model viewer using Google's &lt;model-viewer&gt; web component.
+              You can interact with the model by:
+            </p>
+            <ul>
+              <li>Click and drag to rotate the model</li>
+              <li>Scroll to zoom in and out</li>
+              <li>Right-click and drag to pan</li>
+              <li>Use the Fullscreen button to view the model in fullscreen mode</li>
+              <li>Press ESC to exit fullscreen mode</li>
+            </ul>
+            <button 
+              onClick={toggleFullscreen}
+              style={{
+                padding: '8px 16px',
+                backgroundColor: '#213547',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                marginTop: '10px'
+              }}
+            >
+              Toggle Fullscreen
+            </button>
+          </div>
+        )}
       </main>
     </>
   )
