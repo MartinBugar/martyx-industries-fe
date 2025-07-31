@@ -39,6 +39,8 @@ declare global {
           'scale'?: string;
           'skybox-image'?: string;
           'tone-mapping'?: 'auto' | 'commerce' | 'filmic' | 'neutral' | 'legacy';
+          'metallic-factor'?: string | number;
+          'roughness-factor'?: string | number;
           'variant-name'?: string;
           'with-credentials'?: boolean;
         },
@@ -47,3 +49,6 @@ declare global {
     }
   }
 }
+
+// This is needed to make the file a module
+export {};

@@ -34,7 +34,7 @@ export const product: Product = {
 // Default model viewer settings
 export const defaultModelViewerSettings = {
   poster: "poster.webp",
-  cameraOrbit: "225deg 55deg 4m",
+  cameraOrbit: "3.953671009374416rad 1.3734740705980852red 55deg 4m",
   touchAction: "pan-y",
   alt: "A 3D model of an axis coordinate system",
   cameraControls: true,
