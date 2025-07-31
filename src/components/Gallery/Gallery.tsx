@@ -66,7 +66,6 @@ const Gallery: React.FC<GalleryProps> = ({ productName }) => {
 
   return (
     <div className="product-gallery">
-      <h3 className="gallery-title">{productName} Gallery</h3>
       <div className="gallery-thumbnails">
         {galleryImages.map((image, index) => (
           <div 

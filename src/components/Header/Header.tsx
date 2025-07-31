@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/useAuth';
 import './Header.css';
 
 interface HeaderProps {
@@ -52,6 +52,9 @@ const Header: React.FC<HeaderProps> = ({ cartItems, onCartClick }) => {
         {isAuthenticated ? (
           <div className="user-menu">
             <span className="user-greeting">Hello, {user?.name}</span>
+            <NavLink to="/account" className={({ isActive }) => isActive ? 'active' : ''}>
+              My Account
+            </NavLink>
             <button className="logout-btn" onClick={handleLogout}>Logout</button>
           </div>
         ) : (

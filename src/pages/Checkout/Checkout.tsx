@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/useCart';
+import { useAuth } from '../../context/useAuth';
 import './Checkout.css';
 
 interface CheckoutFormData {
@@ -14,12 +15,13 @@ interface CheckoutFormData {
 
 const Checkout: React.FC = () => {
   const { items, getTotalPrice, clearCart } = useCart();
+  const { user, addOrder, updateProfile, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false);
   const [formData, setFormData] = useState<CheckoutFormData>({
-    firstName: '',
-    lastName: '',
-    email: '',
+    firstName: user?.firstName || '',
+    lastName: user?.lastName || '',
+    email: user?.email || '',
     cardNumber: '',
     cardExpiry: '',
     cardCvc: ''
@@ -61,6 +63,33 @@ const Checkout: React.FC = () => {
       
       // Store email in session storage for order confirmation
       sessionStorage.setItem('customerEmail', formData.email);
+      
+      // If user is authenticated, save order to their history
+      if (isAuthenticated && user) {
+        // Save order to user's order history
+        addOrder({
+          items: items.map(item => ({
+            productId: item.product.id,
+            productName: item.product.name,
+            quantity: item.quantity,
+            price: item.product.price
+          })),
+          totalAmount: getTotalPrice(),
+          status: 'completed'
+        });
+        
+        // Update user profile with checkout information if not already set
+        if (!user.firstName || !user.lastName) {
+          const { firstName, lastName } = formData;
+          const profileUpdate = {
+            firstName,
+            lastName
+          };
+          
+          // Update the user's profile with the checkout information
+          updateProfile(profileUpdate);
+        }
+      }
       
       // Clear cart and navigate to order confirmation
       clearCart();

@@ -2,7 +2,7 @@ import './App.css'
 import { useState } from 'react'
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'
 import { CartProvider } from './context/CartContext'
-import { AuthProvider } from './context/AuthContext'
+import { AuthProvider } from './context/AuthProvider'
 import { useCart } from './context/useCart'
 import Header from './components/Header/Header'
 import Cart from './components/Cart/Cart'
@@ -15,6 +15,7 @@ import Registration from './pages/Registration'
 import Checkout from './pages/Checkout/Checkout'
 import OrderConfirmation from './pages/OrderConfirmation/OrderConfirmation'
 import CartPage from './pages/CartPage/CartPage'
+import UserAccount from './pages/UserAccount/UserAccount'
 
 // App wrapper to provide CartContext and AuthContext
 function AppWrapper() {
@@ -66,6 +67,7 @@ function MainContent() {
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/order-confirmation" element={<OrderConfirmation />} />
+          <Route path="/account" element={<UserAccount />} />
         </Routes>
       </main>
       
