@@ -23,11 +23,12 @@ function App() {
         <div className="model-container">
           <ModelViewer 
             modelPath={modelPath}
-            camera-orbit="45deg 55deg 4m"
+            camera-orbit="225deg 55deg 4m"
             touch-action="pan-y"
             alt="A 3D model of an axis coordinate system"
             cameraControls={true}
             autoRotate={false}
+            interaction-prompt="none"
             shadowIntensity="1.8"
             exposure="2.2"
             toneMapping="filmic"
