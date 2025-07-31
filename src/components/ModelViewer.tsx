@@ -71,6 +71,7 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
     const [isFullscreen, setIsFullscreen] = useState(fullscreen);
     const [metalness, setMetalness] = useState(typeof metallicFactor === 'string' ? parseFloat(metallicFactor) : metallicFactor);
     const [roughness, setRoughness] = useState(typeof roughnessFactor === 'string' ? parseFloat(roughnessFactor) : roughnessFactor);
+    const [exposureValue, setExposureValue] = useState(typeof exposure === 'string' ? parseFloat(exposure) : exposure);
     
     // Function to update both metalness and roughness directly on the model materials
     const updateMaterialProps = (m: number, r: number) => {
@@ -97,6 +98,12 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
         const v = parseFloat(e.target.value);
         setRoughness(v);
         updateMaterialProps(metalness, v);
+    };
+    
+    // Handle exposure slider change
+    const handleExposureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const v = parseFloat(e.target.value);
+        setExposureValue(v);
     };
 
     // Effect for model event listeners
@@ -147,7 +154,7 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
             }
             document.removeEventListener('keydown', handleEscKey);
         };
-    }, [isFullscreen, metalness, roughness]);
+    }, [isFullscreen, metalness, roughness, exposureValue]);
     
     // Effect to update metalness when the metallicFactor prop changes
     useEffect(() => {
@@ -160,6 +167,12 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
         const newValue = typeof roughnessFactor === 'string' ? parseFloat(roughnessFactor) : roughnessFactor;
         setRoughness(newValue);
     }, [roughnessFactor]);
+    
+    // Effect to update exposure when the exposure prop changes
+    useEffect(() => {
+        const newValue = typeof exposure === 'string' ? parseFloat(exposure) : exposure;
+        setExposureValue(newValue);
+    }, [exposure]);
 
     // Update isFullscreen when fullscreen prop changes
     useEffect(() => {
@@ -194,7 +207,7 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
                 auto-rotate={autoRotate}
                 ar={ar}
                 environment-image={environmentImage}
-                exposure={exposure}
+                exposure={exposureValue}
                 shadow-intensity={shadowIntensity}
                 shadow-softness={shadowSoftness}
                 field-of-view={fieldOfView}
@@ -259,6 +272,27 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
                             step="0.01"
                             value={roughness}
                             onChange={handleRoughChange}
+                            style={{
+                                width: '150px',
+                                display: 'block',
+                                marginTop: '5px'
+                            }}
+                        />
+                    </label>
+                </div>
+                
+                {/* Exposure slider */}
+                <div style={{ marginBottom: '0px' }}>
+                    <label htmlFor="exposure-slider">
+                        Exposure: {exposureValue.toFixed(2)}
+                        <input
+                            id="exposure-slider"
+                            type="range"
+                            min="0"
+                            max="2"
+                            step="0.01"
+                            value={exposureValue}
+                            onChange={handleExposureChange}
                             style={{
                                 width: '150px',
                                 display: 'block',
