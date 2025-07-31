@@ -3,6 +3,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import '@google/model-viewer';
 // Import component styles
 import './ModelViewer.css';
+// Import modern slider styles
+import './Sliders.css';
 
 // Extend the HTMLElement interface to include model-viewer specific properties
 interface ModelViewerElement extends HTMLElement {
