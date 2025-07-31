@@ -36,6 +36,7 @@ interface ModelViewerProps {
     metallicFactor?: string | number;
     roughnessFactor?: string | number;
     fullscreen?: boolean;
+    onFullscreenChange?: (isFullscreen: boolean) => void;
     // Additional props that might be passed directly to model-viewer
     'camera-orbit'?: string;
     'touch-action'?: string;
@@ -65,6 +66,7 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
                                                      metallicFactor = '0.28',
                                                      roughnessFactor = '0.36',
                                                      fullscreen = false,
+                                                     onFullscreenChange,
                                                      ...otherProps
                                                  }) => {
     const modelViewerRef = useRef<ModelViewerElement>(null);
@@ -131,6 +133,9 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
         const handleEscKey = (event: KeyboardEvent) => {
             if (event.key === 'Escape' && isFullscreen) {
                 setIsFullscreen(false);
+                if (onFullscreenChange) {
+                    onFullscreenChange(false);
+                }
             }
         };
         
@@ -180,7 +185,11 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
     }, [fullscreen]);
 
     const toggleFullscreen = () => {
-        setIsFullscreen(!isFullscreen);
+        const newFullscreenState = !isFullscreen;
+        setIsFullscreen(newFullscreenState);
+        if (onFullscreenChange) {
+            onFullscreenChange(newFullscreenState);
+        }
     };
 
     const containerStyle = isFullscreen ? {
@@ -252,7 +261,7 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
                             value={metalness}
                             onChange={handleMetalChange}
                             style={{
-                                width: '150px',
+                                width: '100px',
                                 display: 'block',
                                 marginTop: '5px'
                             }}
@@ -273,7 +282,7 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
                             value={roughness}
                             onChange={handleRoughChange}
                             style={{
-                                width: '150px',
+                                width: '100px',
                                 display: 'block',
                                 marginTop: '5px'
                             }}
@@ -294,7 +303,7 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
                             value={exposureValue}
                             onChange={handleExposureChange}
                             style={{
-                                width: '150px',
+                                width: '100px',
                                 display: 'block',
                                 marginTop: '5px'
                             }}
@@ -303,23 +312,25 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
                 </div>
             </div>
             
-            <button 
-                onClick={toggleFullscreen}
-                style={{
-                    position: 'absolute',
-                    bottom: '10px',
-                    right: '10px',
-                    zIndex: 1001,
-                    padding: '8px 12px',
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                }}
-            >
-                {isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
-            </button>
+            {isFullscreen && (
+                <button 
+                    onClick={toggleFullscreen}
+                    style={{
+                        position: 'absolute',
+                        bottom: '10px',
+                        right: '10px',
+                        zIndex: 1001,
+                        padding: '8px 12px',
+                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                    }}
+                >
+                    Exit Fullscreen
+                </button>
+            )}
         </div>
     );
 };

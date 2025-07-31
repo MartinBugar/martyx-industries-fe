@@ -34,6 +34,7 @@ const ProductView: React.FC<ProductViewProps> = ({ product }) => {
         roughnessFactor={defaultModelViewerSettings.roughnessFactor}
         height={defaultModelViewerSettings.height}
         fullscreen={isFullscreen}
+        onFullscreenChange={setIsFullscreen}
       />
       <button 
         className="fullscreen-btn"
