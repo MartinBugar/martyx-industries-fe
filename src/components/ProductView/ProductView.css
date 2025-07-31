@@ -1,5 +1,12 @@
 /* ProductView Component Styles */
 
+.product-view-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
 .model-container {
   width: 100%;
   position: relative;
@@ -30,7 +37,17 @@
 
 /* Responsive styles */
 @media (max-width: 768px) {
+  .product-view-container {
+    gap: 15px;
+  }
+  
   .model-container {
     height: 400px;
+  }
+}
+
+@media (max-width: 480px) {
+  .product-view-container {
+    gap: 10px;
   }
 }

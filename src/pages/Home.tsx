@@ -11,10 +11,10 @@ interface HomeProps {
 const Home: React.FC<HomeProps> = ({ onAddToCart }) => {
   return (
     <div className="page-container home-page">
-      <div className="hero-section">
-        <h1>Welcome to Martyx Industries</h1>
-        <p>Explore our premium 3D products</p>
-      </div>
+      {/*<div className="hero-section">*/}
+      {/*  <h1>Welcome to Martyx Industries</h1>*/}
+      {/*  <p>Explore our premium 3D products</p>*/}
+      {/*</div>*/}
       
       <div className="product-container">
         <ProductView product={product} />
