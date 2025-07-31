@@ -1,11 +1,13 @@
 import './App.css'
 import { useState } from 'react'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { product } from './data/productData'
-import Header from './components/Header'
-import Cart from './components/Cart'
-import ProductView from './components/ProductView'
-import ProductDetails from './components/ProductDetails'
-import Footer from './components/Footer'
+import Header from './components/Header/Header'
+import Cart from './components/Cart/Cart'
+import Footer from './components/Footer/Footer'
+import Home from './pages/Home'
+import Products from './pages/Products'
+import About from './pages/About'
 
 function App() {
   const [cartItems, setCartItems] = useState(0)
@@ -26,32 +28,32 @@ function App() {
   }
 
   return (
-    <div className="app-container">
-      <Header 
-        cartItems={cartItems} 
-        onCartClick={toggleCart} 
-      />
-      
-      <Cart 
-        isOpen={showCart} 
-        onClose={toggleCart} 
-        onCheckout={checkout} 
-        cartItems={cartItems} 
-        product={product} 
-      />
+    <BrowserRouter>
+      <div className="app-container">
+        <Header 
+          cartItems={cartItems} 
+          onCartClick={toggleCart} 
+        />
+        
+        <Cart 
+          isOpen={showCart} 
+          onClose={toggleCart} 
+          onCheckout={checkout} 
+          cartItems={cartItems} 
+          product={product} 
+        />
 
-      <main className="main-content">
-        <div className="product-container">
-          <ProductView product={product} />
-          <ProductDetails 
-            product={product} 
-            onAddToCart={addToCart} 
-          />
-        </div>
-      </main>
-      
-      <Footer />
-    </div>
+        <main className="main-content">
+          <Routes>
+            <Route path="/" element={<Home onAddToCart={addToCart} />} />
+            <Route path="/products" element={<Products onAddToCart={addToCart} />} />
+            <Route path="/about" element={<About />} />
+          </Routes>
+        </main>
+        
+        <Footer />
+      </div>
+    </BrowserRouter>
   )
 }
 
