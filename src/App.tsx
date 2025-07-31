@@ -35,7 +35,8 @@ function App() {
             environment-image="legacy"
             shadow-softness="1"
             toneMapping="neutral"
-            metallicFactor={3}
+            metallicFactor={0.28}
+            roughnessFactor={0.36}
             height="500px"
             fullscreen={isFullscreen}
           />

@@ -46,6 +46,7 @@ declare global {
           'skybox-image'?: string;
           'tone-mapping'?: 'auto' | 'commerce' | 'filmic' | 'neutral' | 'legacy';
           'metallic-factor'?: string;
+          'roughness-factor'?: string;
           'variant-name'?: string;
           'with-credentials'?: boolean;
         },

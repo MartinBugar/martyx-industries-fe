@@ -2,6 +2,19 @@ import React, {useEffect, useRef, useState} from 'react';
 // Import the model-viewer web component
 import '@google/model-viewer';
 
+// Extend the HTMLElement interface to include model-viewer specific properties
+interface ModelViewerElement extends HTMLElement {
+    model?: {
+        materials: Array<{
+            pbrMetallicRoughness: {
+                setMetallicFactor: (value: number) => void;
+                setRoughnessFactor: (value: number) => void;
+            }
+        }>;
+    };
+    getCameraOrbit?: () => string;
+}
+
 // Type declarations for model-viewer are in src/model-viewer.d.ts
 
 interface ModelViewerProps {
@@ -21,6 +34,7 @@ interface ModelViewerProps {
     backgroundColor?: string;
     toneMapping?: 'auto' | 'commerce' | 'filmic' | 'neutral' | 'legacy';
     metallicFactor?: string | number;
+    roughnessFactor?: string | number;
     fullscreen?: boolean;
     // Additional props that might be passed directly to model-viewer
     'camera-orbit'?: string;
@@ -48,17 +62,50 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
                                                      height = '400px',
                                                      backgroundColor = 'white',
                                                      toneMapping = 'neutral',
-                                                     metallicFactor = '0.5',
+                                                     metallicFactor = '0.28',
+                                                     roughnessFactor = '0.36',
                                                      fullscreen = false,
                                                      ...otherProps
                                                  }) => {
-    const modelViewerRef = useRef<HTMLElement>(null);
+    const modelViewerRef = useRef<ModelViewerElement>(null);
     const [isFullscreen, setIsFullscreen] = useState(fullscreen);
+    const [metalness, setMetalness] = useState(typeof metallicFactor === 'string' ? parseFloat(metallicFactor) : metallicFactor);
+    const [roughness, setRoughness] = useState(typeof roughnessFactor === 'string' ? parseFloat(roughnessFactor) : roughnessFactor);
+    
+    // Function to update both metalness and roughness directly on the model materials
+    const updateMaterialProps = (m: number, r: number) => {
+        const el = modelViewerRef.current;
+        if (el && el.model) {
+            el.model.materials.forEach((mat) => {
+                // Set metalness
+                mat.pbrMetallicRoughness.setMetallicFactor(m);
+                // Set roughness
+                mat.pbrMetallicRoughness.setRoughnessFactor(r);
+            });
+        }
+    };
+    
+    // Handle metalness slider change
+    const handleMetalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const v = parseFloat(e.target.value);
+        setMetalness(v);
+        updateMaterialProps(v, roughness);
+    };
+    
+    // Handle roughness slider change
+    const handleRoughChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const v = parseFloat(e.target.value);
+        setRoughness(v);
+        updateMaterialProps(metalness, v);
+    };
 
+    // Effect for model event listeners
     useEffect(() => {
         // Define event handlers outside to ensure the same reference is used for cleanup
         const handleModelLoad = () => {
             console.log('Model loaded successfully');
+            // Apply metalness and roughness when model is loaded
+            updateMaterialProps(metalness, roughness);
         };
         
         // Handler for camera-change to log rotation position
@@ -100,7 +147,19 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
             }
             document.removeEventListener('keydown', handleEscKey);
         };
-    }, [isFullscreen]);
+    }, [isFullscreen, metalness, roughness]);
+    
+    // Effect to update metalness when the metallicFactor prop changes
+    useEffect(() => {
+        const newValue = typeof metallicFactor === 'string' ? parseFloat(metallicFactor) : metallicFactor;
+        setMetalness(newValue);
+    }, [metallicFactor]);
+    
+    // Effect to update roughness when the roughnessFactor prop changes
+    useEffect(() => {
+        const newValue = typeof roughnessFactor === 'string' ? parseFloat(roughnessFactor) : roughnessFactor;
+        setRoughness(newValue);
+    }, [roughnessFactor]);
 
     // Update isFullscreen when fullscreen prop changes
     useEffect(() => {
@@ -140,7 +199,8 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
                 shadow-softness={shadowSoftness}
                 field-of-view={fieldOfView}
                 tone-mapping={toneMapping}
-                metallic-factor={metallicFactor}
+                metallic-factor={metalness}
+                roughness-factor={roughness}
                 {...otherProps}
                 style={{
                     width: '100%',
@@ -148,6 +208,67 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
                     backgroundColor,
                 }}
             ></model-viewer>
+            
+            {/* Material controls */}
+            <div
+                style={{
+                    position: 'absolute',
+                    bottom: '50px',
+                    left: '10px',
+                    zIndex: 1001,
+                    padding: '10px',
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    color: 'white',
+                    borderRadius: '4px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'flex-start',
+                    gap: '12px',
+                }}
+            >
+                {/* Metalness slider */}
+                <div style={{ marginBottom: '0px' }}>
+                    <label htmlFor="metalness-slider">
+                        Metalness: {metalness.toFixed(2)}
+                        <input
+                            id="metalness-slider"
+                            type="range"
+                            min="0"
+                            max="1"
+                            step="0.01"
+                            value={metalness}
+                            onChange={handleMetalChange}
+                            style={{
+                                width: '150px',
+                                display: 'block',
+                                marginTop: '5px'
+                            }}
+                        />
+                    </label>
+                </div>
+                
+                {/* Roughness slider */}
+                <div style={{ marginBottom: '0px' }}>
+                    <label htmlFor="roughness-slider">
+                        Roughness: {roughness.toFixed(2)}
+                        <input
+                            id="roughness-slider"
+                            type="range"
+                            min="0"
+                            max="1"
+                            step="0.01"
+                            value={roughness}
+                            onChange={handleRoughChange}
+                            style={{
+                                width: '150px',
+                                display: 'block',
+                                marginTop: '5px'
+                            }}
+                        />
+                    </label>
+                </div>
+            </div>
+            
             <button 
                 onClick={toggleFullscreen}
                 style={{
