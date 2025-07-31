@@ -133,9 +133,30 @@
   font-size: 1.1rem;
 }
 
+.cart-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.view-cart-btn {
+  flex: 1;
+  padding: 0.8rem;
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.view-cart-btn:hover {
+  background-color: #0b7dda;
+}
+
 .checkout-btn {
-  display: block;
-  width: 100%;
+  flex: 1;
   padding: 0.8rem;
   background-color: #4caf50;
   color: white;

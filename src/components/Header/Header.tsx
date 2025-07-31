@@ -33,6 +33,11 @@ const Header: React.FC<HeaderProps> = ({ cartItems, onCartClick }) => {
               About
             </NavLink>
           </li>
+          <li>
+            <NavLink to="/cart" className={({ isActive }) => isActive ? 'active' : ''}>
+              Cart
+            </NavLink>
+          </li>
         </ul>
       </nav>
       

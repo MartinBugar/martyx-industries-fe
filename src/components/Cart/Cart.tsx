@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import './Cart.css';
 
@@ -14,6 +15,12 @@ const Cart: React.FC<CartProps> = ({
   onCheckout
 }) => {
   const { items, removeFromCart, updateQuantity, getTotalItems, getTotalPrice } = useCart();
+  const navigate = useNavigate();
+  
+  const handleViewFullCart = () => {
+    onClose(); // Close the modal
+    navigate('/cart'); // Navigate to the full cart page
+  };
   
   if (!isOpen) return null;
 
@@ -70,9 +77,14 @@ const Cart: React.FC<CartProps> = ({
                 <strong>Total: ${getTotalPrice().toFixed(2)}</strong>
               </div>
               
-              <button className="checkout-btn" onClick={onCheckout}>
-                Proceed to Checkout
-              </button>
+              <div className="cart-buttons">
+                <button className="view-cart-btn" onClick={handleViewFullCart}>
+                  View Full Cart
+                </button>
+                <button className="checkout-btn" onClick={onCheckout}>
+                  Proceed to Checkout
+                </button>
+              </div>
             </div>
           </>
         )}

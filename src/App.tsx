@@ -11,6 +11,7 @@ import Products from './pages/Products'
 import About from './pages/About'
 import Checkout from './pages/Checkout/Checkout'
 import OrderConfirmation from './pages/OrderConfirmation/OrderConfirmation'
+import CartPage from './pages/CartPage/CartPage'
 
 // App wrapper to provide CartContext
 function AppWrapper() {
@@ -55,6 +56,7 @@ function MainContent() {
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<Products />} />
           <Route path="/about" element={<About />} />
+          <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/order-confirmation" element={<OrderConfirmation />} />
         </Routes>
