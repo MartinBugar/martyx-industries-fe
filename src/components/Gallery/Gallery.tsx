@@ -1,17 +1,14 @@
 import React, { useState } from 'react';
 import './Gallery.css';
 
-// Note: We're using placeholder images instead of the actual files in endavourGallery
-// since those are just placeholder files
-
-// For this implementation, we'll use placeholder images from placeholder.com
-// In a real implementation, you would use actual product images
-const placeholderImages = [
-  'https://via.placeholder.com/800x600/3498db/ffffff?text=Product+Image+1',
-  'https://via.placeholder.com/800x600/e74c3c/ffffff?text=Product+Image+2',
-  'https://via.placeholder.com/800x600/2ecc71/ffffff?text=Product+Image+3',
-  'https://via.placeholder.com/800x600/f39c12/ffffff?text=Product+Image+4',
-  'https://via.placeholder.com/800x600/9b59b6/ffffff?text=Product+Image+5',
+// Using actual images from the endavourGallery folder
+const galleryImages = [
+  '/endavourGallery/1.png',
+  '/endavourGallery/2.png',
+  '/endavourGallery/3.png',
+  '/endavourGallery/4.png',
+  '/endavourGallery/5.png',
+  '/endavourGallery/6.png',
 ];
 
 interface GalleryProps {
@@ -38,11 +35,11 @@ const Gallery: React.FC<GalleryProps> = ({ productName }) => {
   const navigateGallery = (direction: 'prev' | 'next') => {
     if (direction === 'prev') {
       setCurrentImageIndex((prevIndex) => 
-        prevIndex === 0 ? placeholderImages.length - 1 : prevIndex - 1
+        prevIndex === 0 ? galleryImages.length - 1 : prevIndex - 1
       );
     } else {
       setCurrentImageIndex((prevIndex) => 
-        prevIndex === placeholderImages.length - 1 ? 0 : prevIndex + 1
+        prevIndex === galleryImages.length - 1 ? 0 : prevIndex + 1
       );
     }
   };
@@ -71,7 +68,7 @@ const Gallery: React.FC<GalleryProps> = ({ productName }) => {
     <div className="product-gallery">
       <h3 className="gallery-title">{productName} Gallery</h3>
       <div className="gallery-thumbnails">
-        {placeholderImages.map((image, index) => (
+        {galleryImages.map((image, index) => (
           <div 
             key={index} 
             className="gallery-thumbnail"
@@ -106,12 +103,12 @@ const Gallery: React.FC<GalleryProps> = ({ productName }) => {
             </button>
             <div className="fullscreen-image-container">
               <img 
-                src={placeholderImages[currentImageIndex]} 
+                src={galleryImages[currentImageIndex]} 
                 alt={`${productName} - Image ${currentImageIndex + 1}`} 
                 className="fullscreen-image"
               />
               <div className="image-counter">
-                {currentImageIndex + 1} / {placeholderImages.length}
+                {currentImageIndex + 1} / {galleryImages.length}
               </div>
             </div>
             <button 
