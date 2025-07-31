@@ -1,6 +1,10 @@
 import React, {useEffect, useRef, useState} from 'react';
 // Import the model-viewer web component
 import '@google/model-viewer';
+// Import the Slider component
+import Slider from './Slider/Slider';
+// Import CSS
+import './ModelViewer.css';
 
 // Extend the HTMLElement interface to include model-viewer specific properties
 interface ModelViewerElement extends HTMLElement {
@@ -206,7 +210,7 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
     };
 
     return (
-        <div style={containerStyle}>
+        <div className="model-viewer-container" style={containerStyle}>
             <model-viewer
                 ref={modelViewerRef}
                 src={modelPath}
@@ -224,109 +228,50 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
                 metallic-factor={metalness}
                 roughness-factor={roughness}
                 {...otherProps}
-                style={{
-                    width: '100%',
-                    height: '100%',
-                    backgroundColor,
-                }}
+                className="model-viewer"
+                style={{ backgroundColor }}
             ></model-viewer>
             
             {/* Material controls */}
-            <div
-                style={{
-                    position: 'absolute',
-                    bottom: '50px',
-                    left: '10px',
-                    zIndex: 1001,
-                    padding: '10px',
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                    color: 'white',
-                    borderRadius: '4px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'flex-start',
-                    gap: '12px',
-                }}
-            >
+            <div className="controls-container">
                 {/* Metalness slider */}
-                <div style={{ marginBottom: '0px' }}>
-                    <label htmlFor="metalness-slider">
-                        Metalness: {metalness.toFixed(2)}
-                        <input
-                            id="metalness-slider"
-                            type="range"
-                            min="0"
-                            max="1"
-                            step="0.01"
-                            value={metalness}
-                            onChange={handleMetalChange}
-                            style={{
-                                width: '100px',
-                                display: 'block',
-                                marginTop: '5px'
-                            }}
-                        />
-                    </label>
-                </div>
+                <Slider
+                    id="metalness-slider"
+                    label="Metalness"
+                    value={metalness}
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    onChange={handleMetalChange}
+                />
                 
                 {/* Roughness slider */}
-                <div style={{ marginBottom: '0px' }}>
-                    <label htmlFor="roughness-slider">
-                        Roughness: {roughness.toFixed(2)}
-                        <input
-                            id="roughness-slider"
-                            type="range"
-                            min="0"
-                            max="1"
-                            step="0.01"
-                            value={roughness}
-                            onChange={handleRoughChange}
-                            style={{
-                                width: '100px',
-                                display: 'block',
-                                marginTop: '5px'
-                            }}
-                        />
-                    </label>
-                </div>
+                <Slider
+                    id="roughness-slider"
+                    label="Roughness"
+                    value={roughness}
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    onChange={handleRoughChange}
+                />
                 
                 {/* Exposure slider */}
-                <div style={{ marginBottom: '0px' }}>
-                    <label htmlFor="exposure-slider">
-                        Exposure: {exposureValue.toFixed(2)}
-                        <input
-                            id="exposure-slider"
-                            type="range"
-                            min="0"
-                            max="2"
-                            step="0.01"
-                            value={exposureValue}
-                            onChange={handleExposureChange}
-                            style={{
-                                width: '100px',
-                                display: 'block',
-                                marginTop: '5px'
-                            }}
-                        />
-                    </label>
-                </div>
+                <Slider
+                    id="exposure-slider"
+                    label="Exposure"
+                    value={exposureValue}
+                    min="0"
+                    max="2"
+                    step="0.01"
+                    onChange={handleExposureChange}
+                />
             </div>
             
             {isFullscreen && (
                 <button 
                     onClick={toggleFullscreen}
-                    style={{
-                        position: 'absolute',
-                        bottom: '10px',
-                        right: '10px',
-                        zIndex: 1001,
-                        padding: '8px 12px',
-                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                    }}
+                    className="fullscreen-button"
                 >
                     Exit Fullscreen
                 </button>
