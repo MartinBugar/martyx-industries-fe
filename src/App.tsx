@@ -2,6 +2,7 @@ import './App.css'
 import { useState } from 'react'
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'
 import { CartProvider } from './context/CartContext'
+import { AuthProvider } from './context/AuthContext'
 import { useCart } from './context/CartContext'
 import Header from './components/Header/Header'
 import Cart from './components/Cart/Cart'
@@ -9,16 +10,20 @@ import Footer from './components/Footer/Footer'
 import Home from './pages/Home'
 import Products from './pages/Products'
 import About from './pages/About'
+import Login from './pages/Login'
+import Registration from './pages/Registration'
 import Checkout from './pages/Checkout/Checkout'
 import OrderConfirmation from './pages/OrderConfirmation/OrderConfirmation'
 import CartPage from './pages/CartPage/CartPage'
 
-// App wrapper to provide CartContext
+// App wrapper to provide CartContext and AuthContext
 function AppWrapper() {
   return (
-    <CartProvider>
-      <AppContent />
-    </CartProvider>
+    <AuthProvider>
+      <CartProvider>
+        <AppContent />
+      </CartProvider>
+    </AuthProvider>
   );
 }
 
@@ -56,6 +61,8 @@ function MainContent() {
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<Products />} />
           <Route path="/about" element={<About />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Registration />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/order-confirmation" element={<OrderConfirmation />} />

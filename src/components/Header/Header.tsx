@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, NavLink } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import './Header.css';
 
 interface HeaderProps {
@@ -8,6 +9,12 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ cartItems, onCartClick }) => {
+  const { user, isAuthenticated, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+  };
+
   return (
     <header className="shop-header">
       <div className="logo">
@@ -41,8 +48,26 @@ const Header: React.FC<HeaderProps> = ({ cartItems, onCartClick }) => {
         </ul>
       </nav>
       
-      <div className="cart-icon" onClick={onCartClick}>
-        {cartItems > 0 && <span className="cart-count">{cartItems}</span>}
+      <div className="header-actions">
+        {isAuthenticated ? (
+          <div className="user-menu">
+            <span className="user-greeting">Hello, {user?.name}</span>
+            <button className="logout-btn" onClick={handleLogout}>Logout</button>
+          </div>
+        ) : (
+          <div className="auth-links">
+            <NavLink to="/login" className={({ isActive }) => isActive ? 'active' : ''}>
+              Login
+            </NavLink>
+            <NavLink to="/register" className={({ isActive }) => isActive ? 'active' : ''}>
+              Register
+            </NavLink>
+          </div>
+        )}
+        
+        <div className="cart-icon" onClick={onCartClick}>
+          {cartItems > 0 && <span className="cart-count">{cartItems}</span>}
+        </div>
       </div>
     </header>
   );
