@@ -1,13 +1,19 @@
 import React from 'react';
 import { type Product } from '../../data/productData';
+import { useCart } from '../../context/CartContext';
 import './ProductDetails.css';
 
 interface ProductDetailsProps {
   product: Product;
-  onAddToCart: () => void;
 }
 
-const ProductDetails: React.FC<ProductDetailsProps> = ({ product, onAddToCart }) => {
+const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
+  const { addToCart } = useCart();
+  
+  const handleAddToCart = () => {
+    addToCart(product);
+  };
+  
   return (
     <div className="product-details">
       <h2>{product.name}</h2>
@@ -32,7 +38,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product, onAddToCart })
       
       <button 
         className="add-to-cart-btn"
-        onClick={onAddToCart}
+        onClick={handleAddToCart}
       >
         Add to Cart
       </button>

@@ -1,0 +1,215 @@
+/* Order Confirmation Page Styles */
+
+.order-confirmation-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.order-confirmation-content {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* Success Message Section */
+.order-success {
+  background-color: #4caf50;
+  color: white;
+  padding: 2rem;
+  text-align: center;
+}
+
+.success-icon {
+  font-size: 3rem;
+  height: 80px;
+  width: 80px;
+  line-height: 80px;
+  background-color: white;
+  color: #4caf50;
+  border-radius: 50%;
+  margin: 0 auto 1.5rem;
+}
+
+.order-success h1 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.8rem;
+}
+
+.order-success p {
+  margin-bottom: 0;
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+/* Order Details Section */
+.order-details {
+  padding: 2rem;
+  border-bottom: 1px solid #eee;
+}
+
+.order-details h2 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.order-info {
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  padding: 1.5rem;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-row span:first-child {
+  font-weight: 600;
+  color: #555;
+}
+
+.info-row span:last-child {
+  color: #333;
+}
+
+/* Digital Delivery Section */
+.digital-delivery {
+  padding: 2rem;
+  border-bottom: 1px solid #eee;
+}
+
+.digital-delivery h2 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.email-status {
+  background-color: #f0f7ff;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.email-sent, .email-sending {
+  display: flex;
+  align-items: center;
+  margin: 0;
+}
+
+.status-icon {
+  display: inline-block;
+  margin-right: 0.8rem;
+  font-size: 1.2rem;
+}
+
+.email-sent .status-icon {
+  color: #4caf50;
+}
+
+.email-sending .status-icon {
+  color: #0066cc;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.download-section {
+  margin-top: 1.5rem;
+}
+
+.download-btn {
+  display: block;
+  width: 100%;
+  padding: 1rem;
+  background-color: #0066cc;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin: 1rem 0;
+}
+
+.download-btn:hover {
+  background-color: #0055aa;
+}
+
+.download-info {
+  background-color: #fff8e1;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.download-info p {
+  margin: 0.5rem 0;
+  color: #856404;
+  font-size: 0.9rem;
+}
+
+/* Next Steps Section */
+.next-steps {
+  padding: 2rem;
+  text-align: center;
+}
+
+.continue-shopping-btn {
+  padding: 0.8rem 1.5rem;
+  background-color: #f5f5f5;
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.continue-shopping-btn:hover {
+  background-color: #e0e0e0;
+}
+
+/* Loading State */
+.loading {
+  text-align: center;
+  padding: 3rem;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .order-confirmation-container {
+    padding: 1rem;
+  }
+  
+  .order-success, .order-details, .digital-delivery, .next-steps {
+    padding: 1.5rem;
+  }
+  
+  .success-icon {
+    height: 60px;
+    width: 60px;
+    line-height: 60px;
+    font-size: 2rem;
+  }
+  
+  .order-success h1 {
+    font-size: 1.5rem;
+  }
+}

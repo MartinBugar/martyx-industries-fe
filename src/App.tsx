@@ -1,60 +1,69 @@
 import './App.css'
 import { useState } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { product } from './data/productData'
+import { CartProvider } from './context/CartContext'
+import { useCart } from './context/CartContext'
 import Header from './components/Header/Header'
 import Cart from './components/Cart/Cart'
 import Footer from './components/Footer/Footer'
 import Home from './pages/Home'
 import Products from './pages/Products'
 import About from './pages/About'
+import Checkout from './pages/Checkout/Checkout'
+import OrderConfirmation from './pages/OrderConfirmation/OrderConfirmation'
 
-function App() {
-  const [cartItems, setCartItems] = useState(0)
-  const [showCart, setShowCart] = useState(false)
+// App wrapper to provide CartContext
+function AppWrapper() {
+  return (
+    <CartProvider>
+      <AppContent />
+    </CartProvider>
+  );
+}
 
-  const addToCart = () => {
-    setCartItems(cartItems + 1)
-  }
+// Main app content
+function AppContent() {
+  const { getTotalItems } = useCart();
+  const [showCart, setShowCart] = useState(false);
 
   const toggleCart = () => {
-    setShowCart(!showCart)
-  }
+    setShowCart(!showCart);
+  };
 
-  const checkout = () => {
-    alert(`Thank you for your purchase of ${cartItems} item(s)!`)
-    setCartItems(0)
-    setShowCart(false)
-  }
+  const handleCheckout = () => {
+    // Close the cart and navigate to checkout page
+    setShowCart(false);
+    window.location.href = '/checkout';
+  };
 
   return (
     <BrowserRouter>
       <div className="app-container">
         <Header 
-          cartItems={cartItems} 
+          cartItems={getTotalItems()} 
           onCartClick={toggleCart} 
         />
         
         <Cart 
           isOpen={showCart} 
           onClose={toggleCart} 
-          onCheckout={checkout} 
-          cartItems={cartItems} 
-          product={product} 
+          onCheckout={handleCheckout} 
         />
 
         <main className="main-content">
           <Routes>
-            <Route path="/" element={<Home onAddToCart={addToCart} />} />
-            <Route path="/products" element={<Products onAddToCart={addToCart} />} />
+            <Route path="/" element={<Home />} />
+            <Route path="/products" element={<Products />} />
             <Route path="/about" element={<About />} />
+            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/order-confirmation" element={<OrderConfirmation />} />
           </Routes>
         </main>
         
         <Footer />
       </div>
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default AppWrapper;

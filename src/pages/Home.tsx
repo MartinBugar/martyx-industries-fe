@@ -4,11 +4,7 @@ import ProductView from '../components/ProductView/ProductView';
 import ProductDetails from '../components/ProductDetails/ProductDetails';
 import './Pages.css';
 
-interface HomeProps {
-  onAddToCart: () => void;
-}
-
-const Home: React.FC<HomeProps> = ({ onAddToCart }) => {
+const Home: React.FC = () => {
   return (
     <div className="page-container home-page">
       {/*<div className="hero-section">*/}
@@ -18,10 +14,7 @@ const Home: React.FC<HomeProps> = ({ onAddToCart }) => {
       
       <div className="product-container">
         <ProductView product={product} />
-        <ProductDetails 
-          product={product} 
-          onAddToCart={onAddToCart} 
-        />
+        <ProductDetails product={product} />
       </div>
     </div>
   );
