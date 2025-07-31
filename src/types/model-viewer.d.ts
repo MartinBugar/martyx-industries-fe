@@ -16,7 +16,7 @@ declare global {
           'ar-modes'?: string;
           'ar-scale'?: 'auto' | 'fixed';
           'environment-image'?: string;
-          exposure?: string;
+          exposure?: string | number;
           'shadow-intensity'?: string;
           'shadow-softness'?: string;
           'animation-name'?: string;

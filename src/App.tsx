@@ -31,10 +31,11 @@ function App() {
             autoRotate={false}
             interaction-prompt="none"
             shadowIntensity="1.38"
-            exposure="0.2"
+            exposure={0.42}
             environment-image="legacy"
             shadow-softness="1"
             toneMapping="neutral"
+            metallicFactor={3}
             height="500px"
             fullscreen={isFullscreen}
           />

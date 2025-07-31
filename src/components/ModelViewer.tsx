@@ -12,7 +12,7 @@ interface ModelViewerProps {
     autoRotate?: boolean;
     ar?: boolean;
     environmentImage?: string;
-    exposure?: string;
+    exposure?: string | number;
     shadowIntensity?: string;
     shadowSoftness?: string;
     fieldOfView?: string;
@@ -20,6 +20,7 @@ interface ModelViewerProps {
     height?: string;
     backgroundColor?: string;
     toneMapping?: 'auto' | 'commerce' | 'filmic' | 'neutral' | 'legacy';
+    metallicFactor?: string | number;
     fullscreen?: boolean;
     // Additional props that might be passed directly to model-viewer
     'camera-orbit'?: string;
@@ -39,7 +40,7 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
                                                      autoRotate = false,
                                                      ar = false,
                                                      environmentImage = 'legacy',
-                                                     exposure = '0.8',
+                                                     exposure = '0.1',
                                                      shadowIntensity = '1.8',
                                                      shadowSoftness = '0.8',
                                                      fieldOfView = 'auto',
@@ -47,6 +48,7 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
                                                      height = '400px',
                                                      backgroundColor = 'white',
                                                      toneMapping = 'neutral',
+                                                     metallicFactor = '0.5',
                                                      fullscreen = false,
                                                      ...otherProps
                                                  }) => {
@@ -54,14 +56,23 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
     const [isFullscreen, setIsFullscreen] = useState(fullscreen);
 
     useEffect(() => {
-        // You can add any initialization logic here if needed
-        if (modelViewerRef.current) {
-            // Example: Add event listeners or configure the model-viewer
-            modelViewerRef.current.addEventListener('load', () => {
-                console.log('Model loaded successfully');
-            });
-        }
-
+        // Define event handlers outside to ensure the same reference is used for cleanup
+        const handleModelLoad = () => {
+            console.log('Model loaded successfully');
+        };
+        
+        // Handler for camera-change to log rotation position
+        const handleCameraChange = () => {
+            if (modelViewerRef.current) {
+                // Get the current camera orbit (rotation position)
+                const cameraOrbit = modelViewerRef.current.getCameraOrbit 
+                    ? modelViewerRef.current.getCameraOrbit() 
+                    : modelViewerRef.current.getAttribute('camera-orbit');
+                
+                console.log('Current rotation position:', cameraOrbit);
+            }
+        };
+        
         // Add event listener for ESC key to exit fullscreen
         const handleEscKey = (event: KeyboardEvent) => {
             if (event.key === 'Escape' && isFullscreen) {
@@ -69,14 +80,23 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
             }
         };
         
+        // Add event listeners
+        if (modelViewerRef.current) {
+            modelViewerRef.current.addEventListener('load', handleModelLoad);
+            modelViewerRef.current.addEventListener('camera-change', handleCameraChange);
+            
+            // Log initial camera position
+            const initialCameraOrbit = modelViewerRef.current.getAttribute('camera-orbit');
+            console.log('Initial camera position:', initialCameraOrbit);
+        }
+        
         document.addEventListener('keydown', handleEscKey);
 
         return () => {
-            // Cleanup if needed
+            // Cleanup event listeners using the same function references
             if (modelViewerRef.current) {
-                modelViewerRef.current.removeEventListener('load', () => {
-                    console.log('Model loaded successfully');
-                });
+                modelViewerRef.current.removeEventListener('load', handleModelLoad);
+                modelViewerRef.current.removeEventListener('camera-change', handleCameraChange);
             }
             document.removeEventListener('keydown', handleEscKey);
         };
@@ -120,6 +140,7 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
                 shadow-softness={shadowSoftness}
                 field-of-view={fieldOfView}
                 tone-mapping={toneMapping}
+                metallic-factor={metallicFactor}
                 {...otherProps}
                 style={{
                     width: '100%',
