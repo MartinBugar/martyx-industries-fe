@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/useAuth';
 import './UserProfile.css';
 
@@ -14,8 +14,12 @@ interface UserProfileFormData {
 }
 
 const UserProfile: React.FC = () => {
-  const { user, updateProfile } = useAuth();
+  const { user, updateProfile, fetchProfile } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [formData, setFormData] = useState<UserProfileFormData>({
     firstName: user?.firstName || '',
     lastName: user?.lastName || '',
@@ -27,6 +31,46 @@ const UserProfile: React.FC = () => {
     country: user?.address?.country || ''
   });
 
+  // Fetch user profile data on component mount
+  useEffect(() => {
+    const getProfileData = async () => {
+      if (user) {
+        setIsFetching(true);
+        setError(null);
+        
+        try {
+          const success = await fetchProfile();
+          if (!success) {
+            setError('Failed to fetch profile data. Please try again later.');
+          }
+        } catch (err) {
+          setError('An error occurred while fetching profile data.');
+          console.error('Fetch profile error:', err);
+        } finally {
+          setIsFetching(false);
+        }
+      }
+    };
+    
+    getProfileData();
+  }, [fetchProfile, user]);
+
+  // Update form data when user data changes
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        phone: user.phone || '',
+        street: user.address?.street || '',
+        city: user.address?.city || '',
+        state: user.address?.state || '',
+        zipCode: user.address?.zipCode || '',
+        country: user.address?.country || ''
+      });
+    }
+  }, [user]);
+
   // Handle form input changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -34,35 +78,55 @@ const UserProfile: React.FC = () => {
       ...formData,
       [name]: value
     });
+    
+    // Clear error when user starts typing
+    if (error) setError(null);
   };
 
   // Handle form submission
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Update user profile
-    updateProfile({
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      phone: formData.phone,
-      address: {
-        street: formData.street,
-        city: formData.city,
-        state: formData.state,
-        zipCode: formData.zipCode,
-        country: formData.country
-      }
-    });
+    // Set loading state and clear messages
+    setIsLoading(true);
+    setError(null);
+    setSuccessMessage(null);
     
-    // Exit edit mode
-    setIsEditing(false);
+    try {
+      // Update user profile
+      const success = await updateProfile({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        phone: formData.phone,
+        address: {
+          street: formData.street,
+          city: formData.city,
+          state: formData.state,
+          zipCode: formData.zipCode,
+          country: formData.country
+        }
+      });
+      
+      if (success) {
+        setSuccessMessage('Profile updated successfully!');
+        // Exit edit mode
+        setIsEditing(false);
+      } else {
+        setError('Failed to update profile. Please try again.');
+      }
+    } catch (err) {
+      setError('An error occurred while updating your profile.');
+      console.error('Update profile error:', err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Toggle edit mode
   const toggleEditMode = () => {
     setIsEditing(!isEditing);
     
-    // Reset form data when entering edit mode
+    // Reset form data and clear messages when entering edit mode
     if (!isEditing) {
       setFormData({
         firstName: user?.firstName || '',
@@ -74,6 +138,8 @@ const UserProfile: React.FC = () => {
         zipCode: user?.address?.zipCode || '',
         country: user?.address?.country || ''
       });
+      setError(null);
+      setSuccessMessage(null);
     }
   };
 
@@ -87,6 +153,28 @@ const UserProfile: React.FC = () => {
 
   return (
     <div className="profile-container">
+      {/* Show loading indicator while fetching profile data */}
+      {isFetching && (
+        <div className="loading-overlay">
+          <div className="loading-spinner"></div>
+          <p>Loading profile data...</p>
+        </div>
+      )}
+      
+      {/* Show error message if there's an error */}
+      {error && (
+        <div className="error-message">
+          <p>{error}</p>
+        </div>
+      )}
+      
+      {/* Show success message if profile was updated successfully */}
+      {successMessage && (
+        <div className="success-message">
+          <p>{successMessage}</p>
+        </div>
+      )}
+      
       {!isEditing ? (
         <>
           <div className="profile-actions">
@@ -94,6 +182,7 @@ const UserProfile: React.FC = () => {
               className="edit-button"
               onClick={toggleEditMode}
               aria-label="Edit profile"
+              disabled={isFetching}
             >
               Edit
             </button>
@@ -162,18 +251,30 @@ const UserProfile: React.FC = () => {
           <div className="form-header">
             <h3>Edit Profile</h3>
             <div className="form-actions">
-              <button type="submit" className="save-button">
-                Save
+              <button 
+                type="submit" 
+                className="save-button"
+                disabled={isLoading}
+              >
+                {isLoading ? 'Saving...' : 'Save'}
               </button>
               <button 
                 type="button" 
                 className="cancel-button"
                 onClick={toggleEditMode}
+                disabled={isLoading}
               >
                 Cancel
               </button>
             </div>
           </div>
+
+          {/* Show error message in form if there's an error */}
+          {error && (
+            <div className="form-error-message">
+              <p>{error}</p>
+            </div>
+          )}
 
           <div className="form-sections">
             <div className="form-section">
@@ -189,6 +290,7 @@ const UserProfile: React.FC = () => {
                       value={formData.firstName}
                       onChange={handleInputChange}
                       placeholder="Enter first name"
+                      disabled={isLoading}
                     />
                   </div>
                   
@@ -201,6 +303,7 @@ const UserProfile: React.FC = () => {
                       value={formData.lastName}
                       onChange={handleInputChange}
                       placeholder="Enter last name"
+                      disabled={isLoading}
                     />
                   </div>
                 </div>
@@ -214,6 +317,7 @@ const UserProfile: React.FC = () => {
                     value={formData.phone}
                     onChange={handleInputChange}
                     placeholder="Enter phone number"
+                    disabled={isLoading}
                   />
                 </div>
               </div>
@@ -231,6 +335,7 @@ const UserProfile: React.FC = () => {
                     value={formData.street}
                     onChange={handleInputChange}
                     placeholder="Enter street address"
+                    disabled={isLoading}
                   />
                 </div>
                 
@@ -244,6 +349,7 @@ const UserProfile: React.FC = () => {
                       value={formData.city}
                       onChange={handleInputChange}
                       placeholder="Enter city"
+                      disabled={isLoading}
                     />
                   </div>
                   
@@ -256,6 +362,7 @@ const UserProfile: React.FC = () => {
                       value={formData.state}
                       onChange={handleInputChange}
                       placeholder="Enter state/province"
+                      disabled={isLoading}
                     />
                   </div>
                 </div>
@@ -270,6 +377,7 @@ const UserProfile: React.FC = () => {
                       value={formData.zipCode}
                       onChange={handleInputChange}
                       placeholder="Enter ZIP/postal code"
+                      disabled={isLoading}
                     />
                   </div>
                   
@@ -282,6 +390,7 @@ const UserProfile: React.FC = () => {
                       value={formData.country}
                       onChange={handleInputChange}
                       placeholder="Enter country"
+                      disabled={isLoading}
                     />
                   </div>
                 </div>

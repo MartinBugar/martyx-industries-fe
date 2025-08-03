@@ -23,7 +23,7 @@ const UserAccount: React.FC = () => {
           </div>
           <div className="user-details">
             <h3>{user?.firstName ? `${user.firstName} ${user.lastName || ''}` : user?.name}</h3>
-            <p className="user-email">{user?.email}</p>
+            <p className="user-email">{user?.email}{user?.id}</p>
           </div>
         </div>
         

@@ -35,6 +35,6 @@ export interface User {
 // Define the authentication response from the backend
 export interface AuthResponse {
   token: string;
-  userId: string;
+  id: string;
   email: string;
 }

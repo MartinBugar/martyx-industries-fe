@@ -3,6 +3,7 @@ import type { User } from './authTypes';
 import type { Order } from './authTypes';
 import { AuthContext } from './AuthContext';
 import { authApi, setAuthToken, removeAuthToken } from '../services/api';
+import { profileService } from '../services/profileService';
 
 // Props for the AuthProvider component
 interface AuthProviderProps {
@@ -43,17 +44,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       // Call the login API endpoint
       const response = await authApi.login(email, password);
-      
+
       // Extract data from response
-      const { token, userId, email: userEmail } = response;
-      
+      const { token, id, email: userEmail } = response;
+
       // Create user object from response data
       const newUser: User = {
-        id: userId,
+        id: id,
         email: userEmail,
         orders: [] // Initialize empty orders array
       };
-      
+
+
       // Store user data in state and localStorage
       setUser(newUser);
       localStorage.setItem('user', JSON.stringify(newUser));
@@ -94,23 +96,68 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  // Fetch user profile data from backend
+  const fetchProfile = async (): Promise<boolean> => {
+    if (!user) return false;
+
+    try {
+      // Fetch profile data from backend
+      console.log("USER ID " + user.id);
+      const profileData = await profileService.fetchProfile(user.id);
+      
+      // Create updated user object
+      const updatedUser = {
+        ...user,
+        ...profileData,
+        // Ensure we don't overwrite id, email, or orders
+        id: user.id,
+        email: user.email,
+        orders: profileData.orders || user.orders
+      };
+
+      // Update state and localStorage
+      setUser(updatedUser);
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      
+      return true;
+    } catch (error) {
+      console.error('Fetch profile error:', error);
+      return false;
+    }
+  };
+
   // Update user profile
-  const updateProfile = (profileData: Partial<User>) => {
-    if (!user) return;
+  const updateProfile = async (profileData: Partial<User>): Promise<boolean> => {
+    if (!user) return false;
 
-    // Create updated user object
-    const updatedUser = {
-      ...user,
-      ...profileData,
-      // Ensure we don't overwrite id, email, or orders
-      id: user.id,
-      email: user.email,
-      orders: profileData.orders || user.orders
-    };
+    try {
+      // Send profile update to backend
+      const updatedProfileData = await profileService.updateProfile(user.id, {
+        firstName: profileData.firstName,
+        lastName: profileData.lastName,
+        phone: profileData.phone,
+        address: profileData.address
+      });
+      
+      // Create updated user object
+      const updatedUser = {
+        ...user,
+        ...updatedProfileData,
+        // Ensure we don't overwrite id, email, or orders
+        id: user.id,
+        email: user.email,
+        orders: updatedProfileData.orders || user.orders
+      };
 
-    // Update state and localStorage
-    setUser(updatedUser);
-    localStorage.setItem('user', JSON.stringify(updatedUser));
+      // Update state and localStorage
+      setUser(updatedUser);
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      
+      return true;
+    } catch (error) {
+      console.error('Update profile error:', error);
+      return false;
+    }
   };
 
   // Add an order to user's order history
@@ -148,6 +195,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       login,
       logout,
       updateProfile,
+      fetchProfile,
       addOrder,
       getOrders
     }}>

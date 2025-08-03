@@ -9,7 +9,8 @@ export interface AuthContextType {
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
   // User profile management
-  updateProfile: (profileData: Partial<User>) => void;
+  updateProfile: (profileData: Partial<User>) => Promise<boolean>;
+  fetchProfile: () => Promise<boolean>;
   // Order history management
   addOrder: (order: Omit<Order, 'id' | 'date'>) => void;
   getOrders: () => Order[];
