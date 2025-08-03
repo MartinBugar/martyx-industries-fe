@@ -16,32 +16,47 @@ const UserAccount: React.FC = () => {
   
   return (
     <div className="user-account-container">
-      <div className="account-header">
-        <h1>My Account</h1>
-        <p>Welcome back, {user?.firstName || user?.name}!</p>
+      <div className="account-sidebar">
+        <div className="user-info">
+          <div className="user-avatar">
+            {user?.firstName?.charAt(0) || user?.name?.charAt(0) || 'U'}
+          </div>
+          <div className="user-details">
+            <h3>{user?.firstName ? `${user.firstName} ${user.lastName || ''}` : user?.name}</h3>
+            <p className="user-email">{user?.email}</p>
+          </div>
+        </div>
+        
+        <nav className="account-nav">
+          <button 
+            className={`nav-item ${activeTab === 'profile' ? 'active' : ''}`}
+            onClick={() => setActiveTab('profile')}
+          >
+            <span className="nav-icon">👤</span>
+            <span>My Profile</span>
+          </button>
+          <button 
+            className={`nav-item ${activeTab === 'orders' ? 'active' : ''}`}
+            onClick={() => setActiveTab('orders')}
+          >
+            <span className="nav-icon">📦</span>
+            <span>Order History</span>
+          </button>
+        </nav>
       </div>
       
-      <div className="account-tabs">
-        <button 
-          className={`tab-button ${activeTab === 'profile' ? 'active' : ''}`}
-          onClick={() => setActiveTab('profile')}
-        >
-          Profile
-        </button>
-        <button 
-          className={`tab-button ${activeTab === 'orders' ? 'active' : ''}`}
-          onClick={() => setActiveTab('orders')}
-        >
-          Order History
-        </button>
-      </div>
-      
-      <div className="account-content">
-        {activeTab === 'profile' ? (
-          <UserProfile />
-        ) : (
-          <OrderHistory />
-        )}
+      <div className="account-main">
+        <div className="account-header">
+          <h1>{activeTab === 'profile' ? 'My Profile' : 'Order History'}</h1>
+        </div>
+        
+        <div className="account-content">
+          {activeTab === 'profile' ? (
+            <UserProfile />
+          ) : (
+            <OrderHistory />
+          )}
+        </div>
       </div>
     </div>
   );

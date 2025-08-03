@@ -1,94 +1,123 @@
-.order-history-container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+/* Orders Container */
+.orders-container {
+  width: 100%;
 }
 
-.order-history-container h2 {
-  margin-top: 0;
-  margin-bottom: 20px;
-  color: #333;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 15px;
-}
-
-.no-orders-message {
+.orders-empty-state {
   text-align: center;
-  padding: 30px 0;
+  padding: 40px 0;
   color: #666;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  margin-bottom: 20px;
 }
 
-.order-list {
+.empty-icon {
+  font-size: 32px;
+  margin-bottom: 15px;
+}
+
+.orders-empty-state h3 {
+  margin: 0 0 10px;
+  color: #333;
+  font-size: 18px;
+}
+
+.orders-empty-state p {
+  margin: 5px 0;
+  font-size: 14px;
+}
+
+/* Orders List */
+.orders-list {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 16px;
 }
 
-.order-item {
-  border: 1px solid #eee;
-  border-radius: 6px;
+.order-card {
+  border-radius: 8px;
   overflow: hidden;
-  transition: all 0.3s ease;
-  cursor: pointer;
+  border: 1px solid #eaeaea;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
 }
 
-.order-item:hover {
-  border-color: #ddd;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-.order-item.expanded {
-  border-color: #ccc;
+.order-card.expanded {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.order-summary {
+/* Order Header */
+.order-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px;
-  background-color: #f9f9f9;
+  padding: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
-.order-info {
+.order-header:hover {
+  background-color: #f8f9fa;
+}
+
+.order-header-left {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 4px;
 }
 
-.order-number {
+.order-id {
   font-weight: 600;
+  font-size: 15px;
   color: #333;
 }
 
 .order-date {
-  font-size: 0.9rem;
+  font-size: 13px;
   color: #666;
 }
 
-.order-details-summary {
+.order-header-right {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 16px;
 }
 
-.order-items-count {
-  font-size: 0.9rem;
-  color: #666;
-}
-
-.order-total {
+.order-amount {
   font-weight: 600;
+  font-size: 15px;
   color: #333;
 }
 
+.toggle-details {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  padding: 0;
+  transition: all 0.2s ease;
+}
+
+.toggle-details:hover {
+  background-color: #f0f0f0;
+  border-color: #ccc;
+}
+
+/* Status Badge */
 .status-badge {
   padding: 4px 8px;
   border-radius: 4px;
-  font-size: 0.8rem;
+  font-size: 12px;
   font-weight: 500;
   text-transform: uppercase;
 }
@@ -103,82 +132,155 @@
   color: #1565c0;
 }
 
+.status-badge.shipped {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
 .status-badge.cancelled {
   background-color: #ffebee;
   color: #c62828;
 }
 
+/* Order Details */
 .order-details {
-  padding: 15px;
-  border-top: 1px solid #eee;
-  background-color: #fff;
+  padding: 0 16px 16px;
+  border-top: 1px solid #eaeaea;
 }
 
-.order-details h3 {
-  margin-top: 0;
-  margin-bottom: 15px;
-  font-size: 1rem;
-  color: #555;
+.order-items {
+  margin-top: 16px;
 }
 
-.order-items-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 15px;
+/* Items Table */
+.items-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
 }
 
-.order-item-detail {
-  display: flex;
-  justify-content: space-between;
+.items-table th {
+  text-align: left;
   padding: 10px;
-  background-color: #f9f9f9;
-  border-radius: 4px;
+  border-bottom: 1px solid #eaeaea;
+  color: #666;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.items-table td {
+  padding: 12px 10px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.items-table tbody tr:last-child td {
+  border-bottom: none;
 }
 
 .item-name {
-  font-weight: 500;
   color: #333;
+  font-weight: 500;
 }
 
-.item-details {
-  display: flex;
-  gap: 15px;
+.item-quantity {
   color: #666;
+  text-align: center;
 }
 
-.order-total-detail, .order-status-detail {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 0;
-  border-top: 1px solid #eee;
+.item-price {
+  color: #333;
+  font-weight: 500;
+  text-align: right;
 }
 
-.order-total-detail {
+.total-row td {
+  padding-top: 16px;
   font-weight: 600;
+  color: #333;
+  border-top: 1px solid #eaeaea;
+  border-bottom: none !important;
+}
+
+.total-row td:last-child {
+  text-align: right;
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  .order-summary {
+  .order-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 10px;
+    gap: 12px;
   }
   
-  .order-details-summary {
+  .order-header-right {
     width: 100%;
     justify-content: space-between;
   }
   
-  .order-item-detail {
-    flex-direction: column;
-    gap: 5px;
+  .items-table {
+    font-size: 13px;
   }
   
-  .item-details {
-    justify-content: space-between;
+  .items-table th {
+    padding: 8px;
+  }
+  
+  .items-table td {
+    padding: 10px 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .items-table thead {
+    display: none;
+  }
+  
+  .items-table, 
+  .items-table tbody, 
+  .items-table tr, 
+  .items-table td {
+    display: block;
     width: 100%;
+  }
+  
+  .items-table tr {
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #eaeaea;
+  }
+  
+  .items-table td {
+    text-align: right;
+    padding: 8px 0;
+    border: none;
+    position: relative;
+  }
+  
+  .items-table td:before {
+    content: attr(data-label);
+    float: left;
+    font-weight: 500;
+    color: #666;
+  }
+  
+  .item-name:before {
+    content: "Product: ";
+  }
+  
+  .item-quantity:before {
+    content: "Quantity: ";
+  }
+  
+  .item-price:before {
+    content: "Price: ";
+  }
+  
+  .total-row td:first-child {
+    display: none;
+  }
+  
+  .total-row td:last-child:before {
+    content: "Total: ";
   }
 }
