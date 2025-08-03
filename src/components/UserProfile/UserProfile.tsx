@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../context/useAuth';
 import './UserProfile.css';
 
@@ -20,6 +20,7 @@ const UserProfile: React.FC = () => {
   const [isFetching, setIsFetching] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const lastFetchedUserIdRef = useRef<string | null>(null);
   const [formData, setFormData] = useState<UserProfileFormData>({
     firstName: user?.firstName || '',
     lastName: user?.lastName || '',
@@ -31,16 +32,20 @@ const UserProfile: React.FC = () => {
     country: user?.address?.country || ''
   });
 
-  // Fetch user profile data on component mount
+  // Fetch user profile data only when user ID changes
   useEffect(() => {
     const getProfileData = async () => {
-      if (user) {
+      // Only fetch if user exists and we haven't fetched for this user ID yet
+      if (user && lastFetchedUserIdRef.current !== user.id) {
         setIsFetching(true);
         setError(null);
         
         try {
           const success = await fetchProfile();
-          if (!success) {
+          if (success) {
+            // Store the user ID we just fetched for
+            lastFetchedUserIdRef.current = user.id;
+          } else {
             setError('Failed to fetch profile data. Please try again later.');
           }
         } catch (err) {
@@ -53,7 +58,7 @@ const UserProfile: React.FC = () => {
     };
     
     getProfileData();
-  }, [fetchProfile, user]);
+  }, [user, fetchProfile]);
 
   // Update form data when user data changes
   useEffect(() => {
