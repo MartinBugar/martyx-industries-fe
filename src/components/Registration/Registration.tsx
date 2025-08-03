@@ -13,6 +13,7 @@ const Registration: React.FC = () => {
   const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [formData, setFormData] = useState<RegistrationFormData>({
     email: '',
     password: '',
@@ -67,8 +68,14 @@ const Registration: React.FC = () => {
       const success = await registrationService.register(formData.email, formData.password);
       
       if (success) {
-        // Redirect to home page after successful registration
-        navigate('/');
+        // Show success message instead of redirecting
+        setSuccessMessage('Registration successful! You can now proceed to the homepage.');
+        // Clear form data
+        setFormData({
+          email: '',
+          password: '',
+          confirmPassword: ''
+        });
       } else {
         setError('Registration failed. Please try again.');
       }
@@ -86,56 +93,69 @@ const Registration: React.FC = () => {
         <h2>Create an Account</h2>
         
         {error && <div className="error-message">{error}</div>}
+        {successMessage && (
+          <div className="success-message">
+            <p>{successMessage}</p>
+            <button 
+              className="go-to-home-btn" 
+              onClick={() => navigate('/')}
+            >
+              Go to Homepage
+            </button>
+          </div>
+        )}
         
-        <form className="registration-form" onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-          
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleInputChange}
-              required
-              minLength={6}
-            />
-          </div>
-          
-          <div className="form-group">
-            <label htmlFor="confirmPassword">Confirm Password</label>
-            <input
-              type="password"
-              id="confirmPassword"
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-          
-          <button 
-            type="submit" 
-            className="register-btn"
-            disabled={isProcessing}
-          >
-            {isProcessing ? 'Creating Account...' : 'Register'}
-          </button>
-        </form>
+        {!successMessage && (
+          <form className="registration-form" onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label htmlFor="email">Email</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="password">Password</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleInputChange}
+                required
+                minLength={6}
+              />
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="confirmPassword">Confirm Password</label>
+              <input
+                type="password"
+                id="confirmPassword"
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            
+            <button 
+              type="submit" 
+              className="register-btn"
+              disabled={isProcessing}
+            >
+              {isProcessing ? 'Creating Account...' : 'Register'}
+            </button>
+          </form>
+        )}
         
         <div className="registration-footer">
-          <p>Already have an account? <Link to="/login">Login here</Link></p>
+          {!successMessage && <p>Already have an account? <Link to="/login">Login here</Link></p>}
         </div>
       </div>
     </div>

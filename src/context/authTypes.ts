@@ -15,9 +15,11 @@ export interface Order {
 // Define the structure of a user
 export interface User {
   id: string;
-  name: string;
   email: string;
-  // Additional profile information
+  // Order history
+  orders: Order[];
+  // Optional fields for backward compatibility
+  name?: string;
   firstName?: string;
   lastName?: string;
   phone?: string;
@@ -28,6 +30,11 @@ export interface User {
     zipCode?: string;
     country?: string;
   };
-  // Order history
-  orders: Order[];
+}
+
+// Define the authentication response from the backend
+export interface AuthResponse {
+  token: string;
+  userId: string;
+  email: string;
 }

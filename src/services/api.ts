@@ -1,10 +1,11 @@
 // Import common API utilities
 import { API_BASE_URL, defaultHeaders, handleResponse } from './apiUtils';
+import type {AuthResponse} from '../context/authTypes';
 
 // Authentication API endpoints
 export const authApi = {
   // Login endpoint
-  login: async (email: string, password: string) => {
+  login: async (email: string, password: string): Promise<AuthResponse> => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
@@ -12,7 +13,7 @@ export const authApi = {
         body: JSON.stringify({ email, password }),
       });
       
-      return handleResponse(response);
+      return await handleResponse(response) as AuthResponse;
     } catch (error) {
       console.error('Login API error:', error);
       throw error;

@@ -44,19 +44,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Call the login API endpoint
       const response = await authApi.login(email, password);
       
-      // Extract user data and token from response
-      const { user: userData, token } = response;
+      // Extract data from response
+      const { token, userId, email: userEmail } = response;
       
       // Create user object from response data
       const newUser: User = {
-        id: userData.id,
-        name: userData.name,
-        email: userData.email,
-        firstName: userData.firstName,
-        lastName: userData.lastName,
-        phone: userData.phone,
-        address: userData.address,
-        orders: userData.orders || [] // Initialize empty orders array if not provided
+        id: userId,
+        email: userEmail,
+        orders: [] // Initialize empty orders array
       };
       
       // Store user data in state and localStorage
