@@ -76,44 +76,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  // Register function - makes an API call to the backend
-  const register = async (name: string, email: string, password: string): Promise<boolean> => {
-    try {
-      // Call the register API endpoint
-      const response = await authApi.register(name, email, password);
-      
-      // Extract user data and token from response
-      const { user: userData, token } = response;
-      
-      // Create user object from response data
-      const newUser: User = {
-        id: userData.id,
-        name: userData.name,
-        email: userData.email,
-        firstName: userData.firstName,
-        lastName: userData.lastName,
-        phone: userData.phone,
-        address: userData.address,
-        orders: userData.orders || [] // Initialize empty orders array if not provided
-      };
-      
-      // Store user data in state and localStorage
-      setUser(newUser);
-      localStorage.setItem('user', JSON.stringify(newUser));
-      
-      // Store token in localStorage
-      localStorage.setItem('token', token);
-      
-      // Set auth token for future API requests
-      setAuthToken(token);
-      
-      return true;
-    } catch (error) {
-      console.error('Registration error:', error);
-      return false;
-    }
-  };
-
   // Logout function - makes an API call to the backend if a token exists
   const logout = async () => {
     try {
@@ -189,7 +151,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       user,
       isAuthenticated: !!user,
       login,
-      register,
       logout,
       updateProfile,
       addOrder,

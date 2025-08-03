@@ -26,10 +26,10 @@ This function sends a POST request to the `/auth/login` endpoint with the user's
 ### Registration
 
 ```typescript
-authApi.register(name: string, email: string, password: string): Promise<{ user: User, token: string }>
+authApi.register(email: string, password: string): Promise<{ user: User, token: string }>
 ```
 
-This function sends a POST request to the `/auth/register` endpoint with the user's name, email, and password. It returns a Promise that resolves to an object containing the user data and an authentication token.
+This function sends a POST request to the `/auth/register` endpoint with the user's email and password. It returns a Promise that resolves to an object containing the user data and an authentication token.
 
 ### Logout
 
@@ -69,9 +69,9 @@ const MyComponent = () => {
     }
   };
 
-  const handleRegister = async (name: string, email: string, password: string) => {
+  const handleRegister = async (email: string, password: string) => {
     try {
-      const success = await register(name, email, password);
+      const success = await register(email, password);
       if (success) {
         // Registration successful
       } else {
@@ -114,5 +114,5 @@ const MyComponent = () => {
 The API base URL is configured in `api.ts`. Update the `API_BASE_URL` constant to point to your backend API:
 
 ```typescript
-const API_BASE_URL = 'https://api.example.com'; // Replace with your actual API base URL
+const API_BASE_URL = 'http://api.example.com'; // Replace with your actual API base URL
 ```

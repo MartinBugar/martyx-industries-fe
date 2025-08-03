@@ -1,22 +1,19 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../../context/useAuth';
+import { registrationService } from '../../services/registrationService';
 import './Registration.css';
 
 interface RegistrationFormData {
-  name: string;
   email: string;
   password: string;
   confirmPassword: string;
 }
 
 const Registration: React.FC = () => {
-  const { register } = useAuth();
   const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState<RegistrationFormData>({
-    name: '',
     email: '',
     password: '',
     confirmPassword: ''
@@ -38,7 +35,7 @@ const Registration: React.FC = () => {
     e.preventDefault();
     
     // Validate form
-    if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
+    if (!formData.email || !formData.password || !formData.confirmPassword) {
       setError('Please fill in all required fields');
       return;
     }
@@ -67,7 +64,7 @@ const Registration: React.FC = () => {
     setError(null);
     
     try {
-      const success = await register(formData.name, formData.email, formData.password);
+      const success = await registrationService.register(formData.email, formData.password);
       
       if (success) {
         // Redirect to home page after successful registration
@@ -91,18 +88,6 @@ const Registration: React.FC = () => {
         {error && <div className="error-message">{error}</div>}
         
         <form className="registration-form" onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="name">Full Name</label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-          
           <div className="form-group">
             <label htmlFor="email">Email</label>
             <input
