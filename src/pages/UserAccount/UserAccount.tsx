@@ -6,10 +6,22 @@ import OrderHistory from '../../components/OrderHistory/OrderHistory';
 import './UserAccount.css';
 
 const UserAccount: React.FC = () => {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
   const [activeTab, setActiveTab] = useState<'profile' | 'orders'>('profile');
   
-  // Redirect to login if not authenticated
+  // Show loading while authentication state is being restored
+  if (isLoading) {
+    return (
+      <div className="user-account-container">
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <p>Loading...</p>
+        </div>
+      </div>
+    );
+  }
+  
+  // Redirect to login if not authenticated (only after loading is complete)
   if (!isAuthenticated) {
     return <Navigate to="/login" />;
   }

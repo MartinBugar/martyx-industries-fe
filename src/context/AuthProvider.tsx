@@ -15,6 +15,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // In a real application, you would store this in a more secure way
   // and validate against a backend server
   const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   
   // Check if user and token are stored in localStorage on initial load
   useEffect(() => {
@@ -37,6 +38,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         removeAuthToken();
       }
     }
+    
+    // Set loading to false after attempting to restore authentication state
+    setIsLoading(false);
   }, []);
 
   // Login function - makes an API call to the backend
@@ -192,6 +196,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     <AuthContext.Provider value={{
       user,
       isAuthenticated: !!user,
+      isLoading,
       login,
       logout,
       updateProfile,
