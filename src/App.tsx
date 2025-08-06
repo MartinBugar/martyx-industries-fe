@@ -17,6 +17,7 @@ import Checkout from './pages/Checkout/Checkout'
 import OrderConfirmation from './pages/OrderConfirmation/OrderConfirmation'
 import CartPage from './pages/CartPage/CartPage'
 import UserAccount from './pages/UserAccount/UserAccount'
+import EmailConfirmation from './components/EmailConfirmation/EmailConfirmation'
 
 // App wrapper to provide CartContext and AuthContext
 function AppWrapper() {
@@ -65,6 +66,7 @@ function MainContent() {
           <Route path="/about" element={<About />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Registration />} />
+          <Route path="/confirm-email" element={<EmailConfirmation />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/order-confirmation" element={<OrderConfirmation />} />

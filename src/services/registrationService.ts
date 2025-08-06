@@ -19,4 +19,37 @@ export const registrationService = {
       throw error;
     }
   },
+
+  // Confirm email with token
+  confirmEmail: async (token: string): Promise<{ success: boolean; message: string }> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/confirm?token=${token}`, {
+        method: 'GET',
+        headers: defaultHeaders as HeadersInit,
+      });
+      
+      const data = await handleResponse(response);
+      return { success: true, message: data.message || 'Email confirmed successfully!' };
+    } catch (error) {
+      console.error('Email confirmation API error:', error);
+      return { success: false, message: 'Email confirmation failed. Please try again or contact support.' };
+    }
+  },
+
+  // Resend confirmation email
+  resendConfirmation: async (email: string): Promise<{ success: boolean; message: string }> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/resend-confirmation`, {
+        method: 'POST',
+        headers: defaultHeaders as HeadersInit,
+        body: JSON.stringify({ email }),
+      });
+      
+      const data = await handleResponse(response);
+      return { success: true, message: data.message || 'Confirmation email sent successfully!' };
+    } catch (error) {
+      console.error('Resend confirmation API error:', error);
+      return { success: false, message: 'Failed to resend confirmation email. Please try again.' };
+    }
+  },
 };

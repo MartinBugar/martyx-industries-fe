@@ -83,6 +83,41 @@
   font-size: 0.9rem;
 }
 
+.resend-confirmation {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 4px;
+  padding: 1rem;
+  margin: 1rem 0;
+  text-align: center;
+}
+
+.resend-confirmation p {
+  margin: 0 0 0.8rem 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.resend-btn {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.resend-btn:hover:not(:disabled) {
+  background-color: #5a6268;
+}
+
+.resend-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
 .login-footer {
   margin-top: 1.5rem;
   text-align: center;

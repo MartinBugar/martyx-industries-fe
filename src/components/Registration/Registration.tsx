@@ -68,8 +68,8 @@ const Registration: React.FC = () => {
       const success = await registrationService.register(formData.email, formData.password);
       
       if (success) {
-        // Show success message instead of redirecting
-        setSuccessMessage('Registration successful! You can now proceed to login.');
+        // Show email confirmation message instead of immediate success
+        setSuccessMessage(`Registration successful! We've sent a confirmation email to ${formData.email}. Please check your email and click the confirmation link to activate your account before logging in.`);
         // Clear form data
         setFormData({
           email: '',

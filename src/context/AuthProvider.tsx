@@ -72,13 +72,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   // Login function - makes an API call to the backend
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (email: string, password: string): Promise<boolean | { error: string; type: string }> => {
     try {
       // Call the login API endpoint
       const response = await authApi.login(email, password);
 
       // Extract data from response
-      const { token, id, email: userEmail } = response;
+      const { token, id, email: userEmail, emailConfirmed } = response;
+
+      // Check if email is confirmed
+      if (emailConfirmed === false) {
+        return { 
+          error: 'Please confirm your email address before logging in. Check your email for the confirmation link.', 
+          type: 'email_not_confirmed' 
+        };
+      }
 
       // Create user object from response data
       const newUser: User = {
@@ -101,6 +109,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       return true;
     } catch (error) {
       console.error('Login error:', error);
+      
+      // Check if the error message contains text about account not being activated
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      if (errorMessage.includes('Account not activated') || 
+          errorMessage.includes('not activated') || 
+          errorMessage.toLowerCase().includes('confirm your registration')) {
+        return {
+          error: 'Account not activated. Please check your email and confirm your registration.',
+          type: 'email_not_confirmed'
+        };
+      }
+      
       return false;
     }
   };

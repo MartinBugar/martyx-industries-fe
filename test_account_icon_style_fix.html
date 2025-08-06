@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Icon Style Fix Verification</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        /* Header Component Styles */
+        .shop-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: #ffffff;
+            color: #213547;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .logo h1 {
+            font-size: 1.6rem;
+            margin: 0;
+            color: #213547;
+            font-weight: 600;
+        }
+
+        /* Navigation styles */
+        .main-nav {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            gap: 2rem;
+        }
+
+        .nav-links li a {
+            color: #555;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 500;
+            padding: 0.5rem 0;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links li a:hover {
+            color: #213547;
+        }
+
+        .nav-links li a.active {
+            color: #213547;
+            font-weight: 600;
+        }
+
+        .nav-links li a.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #213547;
+        }
+
+        /* Header actions container */
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        /* Auth links styles */
+        .auth-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .auth-links a {
+            color: #555;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 500;
+            padding: 0.5rem 0;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .auth-links a:hover {
+            color: #213547;
+        }
+
+        .auth-links a.active {
+            color: #213547;
+            font-weight: 600;
+        }
+
+        .auth-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #213547;
+        }
+
+        /* User menu styles */
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logout-btn {
+            background-color: transparent;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 0.3rem 0.8rem;
+            color: #555;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background-color: #f5f5f5;
+            border-color: #ccc;
+            color: #213547;
+        }
+
+        /* Account icon styles - FIXED VERSION */
+        .account-icon {
+            position: relative;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #555;
+            text-decoration: none;
+            display: inline-block;
+            padding: 0.5rem 0;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .account-icon::after {
+            content: "👤";
+            font-size: 1.2rem;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .account-icon:hover {
+            color: #213547;
+        }
+
+        .account-icon.active {
+            color: #213547;
+            font-weight: 600;
+        }
+
+        .account-icon.active::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #213547;
+        }
+
+        /* OLD Account icon styles for comparison */
+        .account-icon-old {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: #213547;
+            text-decoration: none;
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            transition: color 0.3s ease;
+        }
+
+        .account-icon-old::after {
+            content: "👤";
+            font-size: 1.5rem;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .account-icon-old:hover {
+            color: #555;
+        }
+
+        .account-icon-old.active {
+            color: #213547;
+            font-weight: 600;
+        }
+
+        /* Cart icon styles */
+        .cart-icon {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: #213547;
+        }
+
+        .cart-icon::after {
+            content: "🛒";
+            font-size: 1.5rem;
+        }
+
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .comparison {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .comparison > div {
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .style-demo {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+
+        .checkmark {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .cross {
+            color: #dc3545;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Account Icon Style Fix Verification</h1>
+    
+    <div class="test-section">
+        <h2>🎯 Issue: Account Icon Style Inconsistency</h2>
+        <p><strong>Problem:</strong> The account icon design didn't match the style of the whole page navigation elements.</p>
+        <p><strong>Solution:</strong> Updated the account icon styling to follow the same design patterns as navigation and auth links.</p>
+    </div>
+
+    <div class="test-section">
+        <h2>✅ Fixed Header Design - Consistent Styling</h2>
+        <header class="shop-header">
+            <div class="logo">
+                <h1>Martyx Industries</h1>
+            </div>
+            
+            <nav class="main-nav">
+                <ul class="nav-links">
+                    <li><a href="#" class="active">Home</a></li>
+                    <li><a href="#">Products</a></li>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Cart</a></li>
+                </ul>
+            </nav>
+            
+            <div class="header-actions">
+                <div class="user-menu">
+                    <a href="#" class="account-icon active" title="My Account"></a>
+                    <button class="logout-btn">Logout</button>
+                </div>
+                
+                <div class="cart-icon"></div>
+            </div>
+        </header>
+        <p><em>Notice how the account icon now has consistent styling with the navigation links - same color pattern, padding, and active state underline.</em></p>
+    </div>
+
+    <div class="test-section">
+        <h2>🔍 Before vs After Comparison</h2>
+        <div class="comparison">
+            <div>
+                <h3>❌ OLD Style (Inconsistent)</h3>
+                <div class="style-demo">
+                    <a href="#" class="account-icon-old" title="My Account"></a>
+                    <p><small>Started with #213547 color<br>Hovered to #555<br>No padding<br>No active underline</small></p>
+                </div>
+            </div>
+            <div>
+                <h3>✅ NEW Style (Consistent)</h3>
+                <div class="style-demo">
+                    <a href="#" class="account-icon" title="My Account"></a>
+                    <p><small>Starts with #555 color<br>Hovers to #213547<br>Has proper padding<br>Active state underline</small></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>📊 Style Consistency Analysis</h2>
+        <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+            <thead>
+                <tr style="background-color: #f8f9fa;">
+                    <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Property</th>
+                    <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Nav Links</th>
+                    <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Auth Links</th>
+                    <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Account Icon (OLD)</th>
+                    <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Account Icon (NEW)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 8px;"><strong>Initial Color</strong></td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">#555</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">#555</td>
+                    <td style="border: 1px solid #ddd; padding: 8px; background-color: #ffebee;">#213547 <span class="cross">✗</span></td>
+                    <td style="border: 1px solid #ddd; padding: 8px; background-color: #e8f5e8;">#555 <span class="checkmark">✓</span></td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 8px;"><strong>Hover Color</strong></td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">#213547</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">#213547</td>
+                    <td style="border: 1px solid #ddd; padding: 8px; background-color: #ffebee;">#555 <span class="cross">✗</span></td>
+                    <td style="border: 1px solid #ddd; padding: 8px; background-color: #e8f5e8;">#213547 <span class="checkmark">✓</span></td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 8px;"><strong>Font Size</strong></td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">1rem</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">1rem</td>
+                    <td style="border: 1px solid #ddd; padding: 8px; background-color: #ffebee;">1.5rem <span class="cross">✗</span></td>
+                    <td style="border: 1px solid #ddd; padding: 8px; background-color: #e8f5e8;">1rem <span class="checkmark">✓</span></td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 8px;"><strong>Padding</strong></td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">0.5rem 0</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">0.5rem 0</td>
+                    <td style="border: 1px solid #ddd; padding: 8px; background-color: #ffebee;">None <span class="cross">✗</span></td>
+                    <td style="border: 1px solid #ddd; padding: 8px; background-color: #e8f5e8;">0.5rem 0 <span class="checkmark">✓</span></td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 8px;"><strong>Font Weight</strong></td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">500</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">500</td>
+                    <td style="border: 1px solid #ddd; padding: 8px; background-color: #ffebee;">Normal <span class="cross">✗</span></td>
+                    <td style="border: 1px solid #ddd; padding: 8px; background-color: #e8f5e8;">500 <span class="checkmark">✓</span></td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 8px;"><strong>Active Underline</strong></td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">Yes (::after)</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">Yes (::after)</td>
+                    <td style="border: 1px solid #ddd; padding: 8px; background-color: #ffebee;">No <span class="cross">✗</span></td>
+                    <td style="border: 1px solid #ddd; padding: 8px; background-color: #e8f5e8;">Yes (::before) <span class="checkmark">✓</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="test-section">
+        <h2>🎨 Interactive State Testing</h2>
+        <p>Hover over the elements below to test the consistency:</p>
+        <div class="comparison">
+            <div>
+                <h4>Navigation Link:</h4>
+                <a href="#" style="color: #555; text-decoration: none; font-size: 1rem; font-weight: 500; padding: 0.5rem 0; position: relative; transition: color 0.3s ease; display: inline-block;" onmouseover="this.style.color='#213547'" onmouseout="this.style.color='#555'">Products</a>
+            </div>
+            <div>
+                <h4>Auth Link:</h4>
+                <a href="#" style="color: #555; text-decoration: none; font-size: 1rem; font-weight: 500; padding: 0.5rem 0; position: relative; transition: color 0.3s ease; display: inline-block;" onmouseover="this.style.color='#213547'" onmouseout="this.style.color='#555'">Login</a>
+            </div>
+            <div>
+                <h4>Account Icon (Fixed):</h4>
+                <a href="#" class="account-icon" title="My Account"></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>✅ Summary of Changes</h2>
+        <ul>
+            <li><span class="checkmark">✓</span> <strong>Color Pattern Fixed:</strong> Now starts with #555 and hovers to #213547 (matches nav/auth links)</li>
+            <li><span class="checkmark">✓</span> <strong>Font Size Consistency:</strong> Reduced from 1.5rem to 1rem to match other links</li>
+            <li><span class="checkmark">✓</span> <strong>Padding Added:</strong> Added 0.5rem 0 padding to match other links</li>
+            <li><span class="checkmark">✓</span> <strong>Font Weight:</strong> Added font-weight: 500 to match other links</li>
+            <li><span class="checkmark">✓</span> <strong>Active State:</strong> Added underline using ::before pseudo-element (::after is used for icon)</li>
+            <li><span class="checkmark">✓</span> <strong>Icon Size Adjusted:</strong> Reduced icon size to 1.2rem for better proportion</li>
+            <li><span class="checkmark">✓</span> <strong>Functionality Preserved:</strong> All navigation and accessibility features maintained</li>
+        </ul>
+    </div>
+
+    <script>
+        // Add interactive demonstration
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Account Icon Style Fix Verification loaded');
+            
+            // Log hover events for demonstration
+            const accountIcons = document.querySelectorAll('.account-icon');
+            accountIcons.forEach(icon => {
+                icon.addEventListener('mouseenter', function() {
+                    console.log('Account icon hovered - color changes to #213547 (consistent with nav links)');
+                });
+                icon.addEventListener('mouseleave', function() {
+                    console.log('Account icon unhovered - color returns to #555 (consistent with nav links)');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
