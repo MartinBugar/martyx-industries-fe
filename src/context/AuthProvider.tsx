@@ -4,6 +4,7 @@ import type { Order } from './authTypes';
 import { AuthContext } from './AuthContext';
 import { authApi, setAuthToken, removeAuthToken } from '../services/api';
 import { profileService } from '../services/profileService';
+import { isTokenExpired } from '../services/apiUtils';
 
 // Props for the AuthProvider component
 interface AuthProviderProps {
@@ -22,25 +23,51 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const storedUser = localStorage.getItem('user');
     const token = localStorage.getItem('token');
     
-    // If token exists, set it for API requests
+    // Check if token exists and is valid
     if (token) {
-      setAuthToken(token);
-    }
-    
-    // If user exists, set it in state
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (error) {
-        console.error('Failed to parse stored user:', error);
+      // Check if token is expired
+      if (isTokenExpired(token)) {
+        console.log('Token has expired, logging out user');
+        // Clear expired token and user data
         localStorage.removeItem('user');
         localStorage.removeItem('token');
         removeAuthToken();
+        setUser(null);
+      } else {
+        // Token is valid, set it for API requests
+        setAuthToken(token);
+        
+        // If user exists, set it in state
+        if (storedUser) {
+          try {
+            setUser(JSON.parse(storedUser));
+          } catch (error) {
+            console.error('Failed to parse stored user:', error);
+            localStorage.removeItem('user');
+            localStorage.removeItem('token');
+            removeAuthToken();
+          }
+        }
       }
     }
     
     // Set loading to false after attempting to restore authentication state
     setIsLoading(false);
+  }, []);
+
+  // Listen for 401 logout events from API calls
+  useEffect(() => {
+    const handleAuthLogout = () => {
+      console.log('Received auth:logout event, updating authentication state');
+      setUser(null);
+    };
+
+    window.addEventListener('auth:logout', handleAuthLogout);
+
+    // Cleanup event listener on component unmount
+    return () => {
+      window.removeEventListener('auth:logout', handleAuthLogout);
+    };
   }, []);
 
   // Login function - makes an API call to the backend

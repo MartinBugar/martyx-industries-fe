@@ -7,6 +7,7 @@ import { useCart } from './context/useCart'
 import Header from './components/Header/Header'
 import Cart from './components/Cart/Cart'
 import Footer from './components/Footer/Footer'
+import SessionExpiredNotification from './components/SessionExpiredNotification/SessionExpiredNotification'
 import Home from './pages/Home'
 import Products from './pages/Products'
 import About from './pages/About'
@@ -72,6 +73,9 @@ function MainContent() {
       </main>
       
       <Footer />
+      
+      {/* Global session expiration notification */}
+      <SessionExpiredNotification />
     </div>
   );
 }

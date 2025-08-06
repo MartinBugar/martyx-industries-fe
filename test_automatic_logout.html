@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automatic Logout Test</title>
+</head>
+<body>
+    <h1>Automatic Logout Test</h1>
+    <div id="results"></div>
+    <button onclick="testExpiredToken()">Test with Expired Token</button>
+    <button onclick="testValidToken()">Test with Valid Token</button>
+    <button onclick="clearStorage()">Clear Storage</button>
+
+    <script>
+        // Copy the JWT utility functions for testing
+        const decodeJWT = (token) => {
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(
+                    atob(base64)
+                        .split('')
+                        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                        .join('')
+                );
+                return JSON.parse(jsonPayload);
+            } catch (error) {
+                console.error('Error decoding JWT token:', error);
+                return null;
+            }
+        };
+
+        const isTokenExpired = (token) => {
+            const payload = decodeJWT(token);
+            if (!payload || !payload.exp) {
+                return true; // Consider invalid tokens as expired
+            }
+            
+            const currentTime = Math.floor(Date.now() / 1000);
+            return payload.exp < currentTime;
+        };
+
+        // Listen for auth:logout events
+        let logoutEventReceived = false;
+        window.addEventListener('auth:logout', () => {
+            logoutEventReceived = true;
+            console.log('auth:logout event received!');
+            updateResults('✅ auth:logout event received - automatic logout triggered!');
+        });
+
+        function updateResults(message) {
+            const results = document.getElementById('results');
+            results.innerHTML += `<p>${new Date().toLocaleTimeString()}: ${message}</p>`;
+        }
+
+        function testExpiredToken() {
+            logoutEventReceived = false;
+            updateResults('🔄 Testing with expired token...');
+            
+            // Create a token that expired 1 hour ago
+            const expiredTime = Math.floor(Date.now() / 1000) - 3600; // 1 hour ago
+            const expiredPayload = { exp: expiredTime, userId: 'test123' };
+            const expiredToken = 'header.' + btoa(JSON.stringify(expiredPayload)) + '.signature';
+            
+            // Store the expired token
+            localStorage.setItem('token', expiredToken);
+            localStorage.setItem('user', JSON.stringify({ id: 'test123', email: 'test@example.com' }));
+            
+            updateResults(`📝 Stored expired token: ${expiredToken.substring(0, 50)}...`);
+            updateResults(`⏰ Token expired: ${isTokenExpired(expiredToken)}`);
+            
+            // Simulate the timer logic
+            setTimeout(() => {
+                const token = localStorage.getItem('token');
+                if (token && isTokenExpired(token)) {
+                    updateResults('🚨 Token is expired, dispatching auth:logout event...');
+                    window.dispatchEvent(new CustomEvent('auth:logout'));
+                }
+            }, 1000);
+        }
+
+        function testValidToken() {
+            logoutEventReceived = false;
+            updateResults('🔄 Testing with valid token...');
+            
+            // Create a token that expires in 1 hour
+            const validTime = Math.floor(Date.now() / 1000) + 3600; // 1 hour from now
+            const validPayload = { exp: validTime, userId: 'test123' };
+            const validToken = 'header.' + btoa(JSON.stringify(validPayload)) + '.signature';
+            
+            // Store the valid token
+            localStorage.setItem('token', validToken);
+            localStorage.setItem('user', JSON.stringify({ id: 'test123', email: 'test@example.com' }));
+            
+            updateResults(`📝 Stored valid token: ${validToken.substring(0, 50)}...`);
+            updateResults(`⏰ Token expired: ${isTokenExpired(validToken)}`);
+            updateResults('✅ Valid token should not trigger logout');
+        }
+
+        function clearStorage() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            updateResults('🧹 Cleared localStorage');
+        }
+
+        // Initial status
+        updateResults('🚀 Automatic logout test ready');
+        updateResults('📋 Instructions: Click "Test with Expired Token" to simulate automatic logout');
+    </script>
+</body>
+</html>

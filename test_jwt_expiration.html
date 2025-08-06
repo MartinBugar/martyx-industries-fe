@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JWT Expiration Test</title>
+</head>
+<body>
+    <h1>JWT Token Expiration Test</h1>
+    <div id="results"></div>
+
+    <script>
+        // Copy the JWT utility functions for testing
+        const decodeJWT = (token) => {
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(
+                    atob(base64)
+                        .split('')
+                        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                        .join('')
+                );
+                return JSON.parse(jsonPayload);
+            } catch (error) {
+                console.error('Error decoding JWT token:', error);
+                return null;
+            }
+        };
+
+        const isTokenExpired = (token) => {
+            const payload = decodeJWT(token);
+            if (!payload || !payload.exp) {
+                return true; // Consider invalid tokens as expired
+            }
+            
+            const currentTime = Math.floor(Date.now() / 1000);
+            return payload.exp < currentTime;
+        };
+
+        // Test function
+        function testJWTExpiration() {
+            const results = document.getElementById('results');
+            
+            // Create a test JWT token with expired timestamp (24 hours ago)
+            const expiredTime = Math.floor(Date.now() / 1000) - (24 * 60 * 60); // 24 hours ago
+            const validTime = Math.floor(Date.now() / 1000) + (24 * 60 * 60); // 24 hours from now
+            
+            // Create test payloads
+            const expiredPayload = { exp: expiredTime, userId: 'test123' };
+            const validPayload = { exp: validTime, userId: 'test123' };
+            
+            // Create mock JWT tokens (just base64 encoded payloads for testing)
+            const expiredToken = 'header.' + btoa(JSON.stringify(expiredPayload)) + '.signature';
+            const validToken = 'header.' + btoa(JSON.stringify(validPayload)) + '.signature';
+            
+            results.innerHTML = `
+                <h2>Test Results:</h2>
+                <p><strong>Expired Token Test:</strong></p>
+                <p>Token: ${expiredToken.substring(0, 50)}...</p>
+                <p>Is Expired: ${isTokenExpired(expiredToken)} (Expected: true)</p>
+                <p>Decoded Payload: ${JSON.stringify(decodeJWT(expiredToken))}</p>
+                
+                <p><strong>Valid Token Test:</strong></p>
+                <p>Token: ${validToken.substring(0, 50)}...</p>
+                <p>Is Expired: ${isTokenExpired(validToken)} (Expected: false)</p>
+                <p>Decoded Payload: ${JSON.stringify(decodeJWT(validToken))}</p>
+                
+                <p><strong>Invalid Token Test:</strong></p>
+                <p>Is Expired: ${isTokenExpired('invalid.token')} (Expected: true)</p>
+                
+                <p><strong>Current Time:</strong> ${Math.floor(Date.now() / 1000)}</p>
+                <p><strong>Test Status:</strong> ${
+                    isTokenExpired(expiredToken) && !isTokenExpired(validToken) && isTokenExpired('invalid.token')
+                    ? '<span style="color: green;">✓ All tests passed!</span>'
+                    : '<span style="color: red;">✗ Some tests failed!</span>'
+                }</p>
+            `;
+        }
+
+        // Run tests when page loads
+        window.onload = testJWTExpiration;
+    </script>
+</body>
+</html>

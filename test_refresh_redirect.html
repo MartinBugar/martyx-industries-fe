@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Refresh Redirect Issue</title>
+</head>
+<body>
+    <h1>Test Refresh Redirect Issue</h1>
+    <p>This test simulates the refresh redirect issue:</p>
+    
+    <ol>
+        <li>User logs in and navigates to /account page</li>
+        <li>User refreshes the page (F5 or Ctrl+R)</li>
+        <li>Expected: User stays on /account page</li>
+        <li>Actual: User gets redirected to /login page</li>
+    </ol>
+    
+    <h2>Root Cause:</h2>
+    <p>The UserAccount component checks authentication immediately on render, but the AuthProvider's useEffect that restores user state from localStorage runs asynchronously. This creates a race condition where isAuthenticated is false during the brief moment before user state is restored, causing an unwanted redirect.</p>
+    
+    <h2>Solution:</h2>
+    <p>Add a loading state to AuthProvider to prevent premature authentication checks during the restoration process.</p>
+    
+    <script>
+        console.log('[DEBUG_LOG] Test script loaded - simulating refresh redirect issue');
+        console.log('[DEBUG_LOG] Issue: UserAccount component redirects to login before AuthProvider restores user state');
+        console.log('[DEBUG_LOG] Solution: Add loading state to prevent premature redirects');
+    </script>
+</body>
+</html>

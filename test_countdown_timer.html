@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown Timer Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .timer-display {
+            padding: 16px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .timer-active {
+            background-color: #e8f5e8;
+            border-color: #4caf50;
+        }
+        .timer-warning {
+            background-color: #fff8e1;
+            border-color: #ffc107;
+            animation: pulse-warning 2s infinite;
+        }
+        .timer-expired {
+            background-color: #ffebee;
+            border-color: #f44336;
+        }
+        .timer-invalid {
+            background-color: #fff3e0;
+            border-color: #ff9800;
+        }
+        @keyframes pulse-warning {
+            0% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 193, 7, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0); }
+        }
+        .timer-icon {
+            font-size: 20px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .timer-content {
+            flex: 1;
+        }
+        .timer-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #666;
+        }
+        .timer-time {
+            font-size: 16px;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>JWT Token Countdown Timer Test</h1>
+    
+    <div class="test-section">
+        <h2>Test 1: Valid Token (24 hours remaining)</h2>
+        <div id="test1-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 2: Warning State (3 minutes remaining)</h2>
+        <div id="test2-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 3: Expired Token</h2>
+        <div id="test3-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 4: Invalid Token</h2>
+        <div id="test4-result"></div>
+    </div>
+
+    <script>
+        // Copy the JWT utility functions
+        const decodeJWT = (token) => {
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(
+                    atob(base64)
+                        .split('')
+                        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                        .join('')
+                );
+                return JSON.parse(jsonPayload);
+            } catch (error) {
+                console.error('Error decoding JWT token:', error);
+                return null;
+            }
+        };
+
+        // Timer logic simulation
+        const createTimerDisplay = (token, containerId) => {
+            const container = document.getElementById(containerId);
+            
+            const updateTimer = () => {
+                if (!token) {
+                    container.innerHTML = createTimerHTML('⚠️', 'Session Status', 'No token found', 'timer-invalid');
+                    return;
+                }
+
+                const payload = decodeJWT(token);
+                
+                if (!payload || !payload.exp) {
+                    container.innerHTML = createTimerHTML('⚠️', 'Session Status', 'Invalid token', 'timer-invalid');
+                    return;
+                }
+
+                const currentTime = Math.floor(Date.now() / 1000);
+                const expirationTime = payload.exp;
+                const remainingSeconds = expirationTime - currentTime;
+
+                if (remainingSeconds <= 0) {
+                    container.innerHTML = createTimerHTML('🔴', 'Session Expired', 'Token expired', 'timer-expired');
+                    return;
+                }
+
+                // Check if warning state (less than 5 minutes remaining)
+                const isWarning = remainingSeconds <= 300; // 5 minutes = 300 seconds
+
+                // Calculate hours, minutes, and seconds
+                const hours = Math.floor(remainingSeconds / 3600);
+                const minutes = Math.floor((remainingSeconds % 3600) / 60);
+                const seconds = remainingSeconds % 60;
+
+                // Format the time string
+                let timeString;
+                if (hours > 0) {
+                    timeString = `${hours}h ${minutes}m ${seconds}s`;
+                } else if (minutes > 0) {
+                    timeString = `${minutes}m ${seconds}s`;
+                } else {
+                    timeString = `${seconds}s`;
+                }
+
+                const icon = isWarning ? '⚠️' : '🕐';
+                const cssClass = isWarning ? 'timer-warning' : 'timer-active';
+                
+                container.innerHTML = createTimerHTML(icon, 'Session Expires In', timeString, cssClass);
+            };
+
+            // Update immediately and then every second
+            updateTimer();
+            return setInterval(updateTimer, 1000);
+        };
+
+        const createTimerHTML = (icon, label, time, cssClass) => {
+            return `
+                <div class="timer-display ${cssClass}">
+                    <div class="timer-icon">${icon}</div>
+                    <div class="timer-content">
+                        <div class="timer-label">${label}</div>
+                        <div class="timer-time">${time}</div>
+                    </div>
+                </div>
+            `;
+        };
+
+        // Create test tokens
+        const currentTime = Math.floor(Date.now() / 1000);
+        
+        // Test 1: Valid token (24 hours remaining)
+        const validPayload = { exp: currentTime + (24 * 60 * 60), userId: 'test123' };
+        const validToken = 'header.' + btoa(JSON.stringify(validPayload)) + '.signature';
+        
+        // Test 2: Warning token (3 minutes remaining)
+        const warningPayload = { exp: currentTime + (3 * 60), userId: 'test123' };
+        const warningToken = 'header.' + btoa(JSON.stringify(warningPayload)) + '.signature';
+        
+        // Test 3: Expired token (1 hour ago)
+        const expiredPayload = { exp: currentTime - (60 * 60), userId: 'test123' };
+        const expiredToken = 'header.' + btoa(JSON.stringify(expiredPayload)) + '.signature';
+        
+        // Test 4: Invalid token
+        const invalidToken = 'invalid.token.format';
+
+        // Start all timers
+        window.onload = () => {
+            createTimerDisplay(validToken, 'test1-result');
+            createTimerDisplay(warningToken, 'test2-result');
+            createTimerDisplay(expiredToken, 'test3-result');
+            createTimerDisplay(invalidToken, 'test4-result');
+        };
+    </script>
+</body>
+</html>

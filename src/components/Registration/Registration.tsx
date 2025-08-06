@@ -69,7 +69,7 @@ const Registration: React.FC = () => {
       
       if (success) {
         // Show success message instead of redirecting
-        setSuccessMessage('Registration successful! You can now proceed to the homepage.');
+        setSuccessMessage('Registration successful! You can now proceed to login.');
         // Clear form data
         setFormData({
           email: '',
@@ -97,10 +97,10 @@ const Registration: React.FC = () => {
           <div className="success-message">
             <p>{successMessage}</p>
             <button 
-              className="go-to-home-btn" 
-              onClick={() => navigate('/')}
+              className="go-to-login-btn" 
+              onClick={() => navigate('/login')}
             >
-              Go to Homepage
+              Go to Login
             </button>
           </div>
         )}

@@ -3,6 +3,7 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/useAuth';
 import UserProfile from '../../components/UserProfile/UserProfile';
 import OrderHistory from '../../components/OrderHistory/OrderHistory';
+import TokenExpirationTimer from '../../components/TokenExpirationTimer/TokenExpirationTimer';
 import './UserAccount.css';
 
 const UserAccount: React.FC = () => {
@@ -38,6 +39,8 @@ const UserAccount: React.FC = () => {
             <p className="user-email">{user?.email}{user?.id}</p>
           </div>
         </div>
+        
+        <TokenExpirationTimer />
         
         <nav className="account-nav">
           <button 

@@ -1,0 +1,133 @@
+.token-timer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  margin: 16px 0;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  background-color: #f8f9fa;
+  transition: all 0.3s ease;
+}
+
+.token-timer__icon {
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+}
+
+.token-timer__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.token-timer__label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #666;
+}
+
+.token-timer__time {
+  font-size: 16px;
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+  color: #333;
+}
+
+/* Active state - token is valid and not expired */
+.token-timer--active {
+  background-color: #e8f5e8;
+  border-color: #4caf50;
+}
+
+.token-timer--active .token-timer__label {
+  color: #2e7d32;
+}
+
+.token-timer--active .token-timer__time {
+  color: #1b5e20;
+}
+
+/* Expired state - token has expired */
+.token-timer--expired {
+  background-color: #ffebee;
+  border-color: #f44336;
+}
+
+.token-timer--expired .token-timer__label {
+  color: #c62828;
+}
+
+.token-timer--expired .token-timer__time {
+  color: #b71c1c;
+}
+
+/* Invalid state - token is invalid or missing */
+.token-timer--invalid {
+  background-color: #fff3e0;
+  border-color: #ff9800;
+}
+
+.token-timer--invalid .token-timer__label {
+  color: #ef6c00;
+}
+
+.token-timer--invalid .token-timer__time {
+  color: #e65100;
+}
+
+/* Warning state when time is running low (less than 5 minutes) */
+.token-timer--warning {
+  background-color: #fff8e1;
+  border-color: #ffc107;
+  animation: pulse-warning 2s infinite;
+}
+
+.token-timer--warning .token-timer__label {
+  color: #f57c00;
+}
+
+.token-timer--warning .token-timer__time {
+  color: #ef6c00;
+}
+
+@keyframes pulse-warning {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 193, 7, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .token-timer {
+    padding: 12px;
+    margin: 12px 0;
+  }
+  
+  .token-timer__icon {
+    font-size: 18px;
+    width: 28px;
+    height: 28px;
+  }
+  
+  .token-timer__label {
+    font-size: 11px;
+  }
+  
+  .token-timer__time {
+    font-size: 14px;
+  }
+}
