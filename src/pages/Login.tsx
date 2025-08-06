@@ -5,7 +5,6 @@ import './Pages.css';
 const Login: React.FC = () => {
   return (
     <div className="page-container login-page">
-      <h1>Login</h1>
       <LoginComponent />
     </div>
   );

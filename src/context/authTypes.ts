@@ -37,4 +37,11 @@ export interface AuthResponse {
   token: string;
   id: string;
   email: string;
+  emailConfirmed?: boolean;
+}
+
+// Define the login error response
+export interface LoginErrorResponse {
+  error: string;
+  type: string;
 }

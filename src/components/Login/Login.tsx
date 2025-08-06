@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/useAuth';
 import { registrationService } from '../../services/registrationService';
+import type { LoginErrorResponse } from '../../context/authTypes';
 import './Login.css';
 
 interface LoginFormData {
@@ -54,12 +55,12 @@ const Login: React.FC = () => {
     setError(null);
     
     try {
-      const result = await login(formData.email, formData.password);
+      const result: boolean | LoginErrorResponse = await login(formData.email, formData.password);
       
       if (result === true) {
         // Redirect to home page after successful login
         navigate('/');
-      } else if (typeof result === 'object' && result.type === 'email_not_confirmed') {
+      } else if (typeof result === 'object' && 'type' in result && result.type === 'email_not_confirmed') {
         // Handle email not confirmed error
         setError(result.error);
         setShowResendConfirmation(true);
@@ -99,21 +100,46 @@ const Login: React.FC = () => {
   return (
     <div className="login-container">
       <div className="login-form-container">
-        <h2>Login to Your Account</h2>
-        
-        {error && <div className="error-message">{error}</div>}
+        {error && (
+          <div className={`error-message ${error.includes('Account not activated') ? 'account-not-activated' : ''}`}>
+            {error.includes('Account not activated') ? (
+              <>
+                <div className="error-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                    <path fill="none" d="M0 0h24v24H0z"/>
+                    <path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm-1-5h2v2h-2v-2zm0-8h2v6h-2V7z" fill="currentColor"/>
+                  </svg>
+                </div>
+                <div className="error-content">
+                  <h3>Account Not Activated</h3>
+                  <p>Please check your email and confirm your registration to continue.</p>
+                </div>
+              </>
+            ) : (
+              error
+            )}
+          </div>
+        )}
         
         {showResendConfirmation && (
           <div className="resend-confirmation">
-            <p>Need a new confirmation email?</p>
-            <button 
-              type="button" 
-              onClick={handleResendConfirmation}
-              disabled={isResending}
-              className="resend-btn"
-            >
-              {isResending ? 'Sending...' : 'Resend Confirmation Email'}
-            </button>
+            <div className="resend-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
+                <path fill="none" d="M0 0h24v24H0z"/>
+                <path d="M3 13h6v-2H3V1.846a.5.5 0 0 1 .741-.438l18.462 10.154a.5.5 0 0 1 0 .876L3.741 22.592A.5.5 0 0 1 3 22.154V13z" fill="currentColor"/>
+              </svg>
+            </div>
+            <div className="resend-content">
+              <p>Need a new confirmation email?</p>
+              <button 
+                type="button" 
+                onClick={handleResendConfirmation}
+                disabled={isResending}
+                className="resend-btn"
+              >
+                {isResending ? 'Sending...' : 'Resend Confirmation Email'}
+              </button>
+            </div>
           </div>
         )}
         
