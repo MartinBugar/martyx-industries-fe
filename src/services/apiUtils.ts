@@ -49,8 +49,10 @@ export const handleResponse = async (response: Response) => {
       localStorage.removeItem('token');
       // Remove authorization header
       delete defaultHeaders['Authorization'];
-      // Optionally redirect to login page or dispatch logout event
-      window.dispatchEvent(new CustomEvent('auth:logout'));
+      // Dispatch logout event with api_error reason to distinguish from token expiration
+      window.dispatchEvent(new CustomEvent('auth:logout', { 
+        detail: { reason: 'api_error' } 
+      }));
     }
     
     // If the server response was not ok, throw an error with the response data

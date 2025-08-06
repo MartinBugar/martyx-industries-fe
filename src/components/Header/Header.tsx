@@ -9,7 +9,7 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ cartItems, onCartClick }) => {
-  const { user, isAuthenticated, logout } = useAuth();
+  const {isAuthenticated, logout } = useAuth();
 
   const handleLogout = async () => {
     try {
@@ -57,9 +57,7 @@ const Header: React.FC<HeaderProps> = ({ cartItems, onCartClick }) => {
       <div className="header-actions">
         {isAuthenticated ? (
           <div className="user-menu">
-            <span className="user-greeting">Hello, {user?.name}</span>
-            <NavLink to="/account" className={({ isActive }) => isActive ? 'active' : ''}>
-              My Account
+            <NavLink to="/account" className={({ isActive }) => `account-icon ${isActive ? 'active' : ''}`} title="My Account">
             </NavLink>
             <button className="logout-btn" onClick={handleLogout}>Logout</button>
           </div>

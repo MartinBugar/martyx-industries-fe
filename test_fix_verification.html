@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Fix Verification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .test-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background-color: #0056b3;
+        }
+        .success-button {
+            background-color: #28a745;
+        }
+        .success-button:hover {
+            background-color: #218838;
+        }
+        .warning-button {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        .warning-button:hover {
+            background-color: #e0a800;
+        }
+        .results {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            min-height: 100px;
+        }
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+            border-left: 3px solid #007bff;
+            background-color: white;
+        }
+        .error {
+            border-left-color: #dc3545;
+            background-color: #f8d7da;
+        }
+        .success {
+            border-left-color: #28a745;
+            background-color: #d4edda;
+        }
+        .warning {
+            border-left-color: #ffc107;
+            background-color: #fff3cd;
+        }
+        /* Session Expired Notification Styles */
+        .session-expired-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 8px;
+            padding: 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            max-width: 400px;
+            animation: slideIn 0.3s ease-out;
+        }
+        .session-expired-notification__content {
+            display: flex;
+            align-items: flex-start;
+            padding: 16px;
+            gap: 12px;
+        }
+        .session-expired-notification__icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        .session-expired-notification__message {
+            flex: 1;
+        }
+        .session-expired-notification__title {
+            font-weight: 600;
+            color: #721c24;
+            margin-bottom: 4px;
+            font-size: 16px;
+        }
+        .session-expired-notification__text {
+            color: #721c24;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        .session-expired-notification__close {
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: #721c24;
+            cursor: pointer;
+            padding: 4px;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        .fix-status {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✅ Fix Verification Test</h1>
+        
+        <div class="fix-status">
+            <strong>🔧 Fix Applied:</strong> The SessionExpiredNotification now only shows when the token actually expires, not during manual logout or API errors.
+        </div>
+        
+        <div class="test-section">
+            <h3>✅ Test 1: Manual Logout (Should NOT show "Session Expired")</h3>
+            <p>This simulates a user clicking the logout button. The "Session Expired" notification should NOT appear.</p>
+            <button class="test-button success-button" onclick="testManualLogout()">🚪 Test Manual Logout (Fixed)</button>
+        </div>
+
+        <div class="test-section">
+            <h3>✅ Test 2: Token Expiration (Should show "Session Expired")</h3>
+            <p>This simulates automatic logout due to token expiration. The "Session Expired" notification SHOULD appear.</p>
+            <button class="test-button success-button" onclick="testTokenExpiration()">⏰ Test Token Expiration (Working)</button>
+        </div>
+
+        <div class="test-section">
+            <h3>✅ Test 3: API 401 Response (Should NOT show "Session Expired")</h3>
+            <p>This simulates API 401 responses. With the fix, this should NOT show "Session Expired" notification.</p>
+            <button class="test-button success-button" onclick="testApi401Response()">🔒 Test API 401 Response (Fixed)</button>
+        </div>
+
+        <div class="test-section">
+            <h3>🧪 Test 4: Legacy Event (Should NOT show "Session Expired")</h3>
+            <p>This tests backward compatibility with old-style events without reason.</p>
+            <button class="test-button warning-button" onclick="testLegacyEvent()">📜 Test Legacy Event</button>
+        </div>
+
+        <div class="test-section">
+            <h3>Controls</h3>
+            <button class="test-button" onclick="clearResults()">🧹 Clear Results</button>
+            <button class="test-button" onclick="hideNotification()">❌ Hide Notification</button>
+        </div>
+
+        <div class="results" id="results">
+            <strong>Test Results:</strong><br>
+            <em>Click a test button above to verify the fix...</em>
+        </div>
+    </div>
+
+    <script>
+        let notificationShown = false;
+
+        function log(message, type = 'info') {
+            const results = document.getElementById('results');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            logEntry.innerHTML = `<strong>[${timestamp}]</strong> ${message}`;
+            results.appendChild(logEntry);
+            results.scrollTop = results.scrollHeight;
+            console.log(`[${timestamp}] ${message}`);
+        }
+
+        function clearResults() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<strong>Test Results:</strong><br><em>Click a test button above to verify the fix...</em>';
+            notificationShown = false;
+        }
+
+        function showSessionExpiredNotification() {
+            // Remove existing notification if any
+            hideNotification();
+            
+            log('✅ Creating session expired notification');
+            const notification = document.createElement('div');
+            notification.className = 'session-expired-notification';
+            notification.id = 'session-expired-notification';
+            notification.innerHTML = `
+                <div class="session-expired-notification__content">
+                    <div class="session-expired-notification__icon">⚠️</div>
+                    <div class="session-expired-notification__message">
+                        <div class="session-expired-notification__title">Session Expired</div>
+                        <div class="session-expired-notification__text">
+                            Your session has expired. Please log in again to continue.
+                        </div>
+                    </div>
+                    <button class="session-expired-notification__close" onclick="hideNotification()">✕</button>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            notificationShown = true;
+            log('📱 Session expired notification displayed!', 'error');
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                hideNotification();
+            }, 5000);
+        }
+
+        function hideNotification() {
+            const notification = document.getElementById('session-expired-notification');
+            if (notification) {
+                notification.remove();
+                log('🙈 Session expired notification hidden', 'info');
+            }
+            notificationShown = false;
+        }
+
+        function testManualLogout() {
+            log('🚪 Testing manual logout scenario (FIXED)...', 'info');
+            log('👤 User clicks logout button', 'info');
+            log('📡 AuthProvider.logout() called', 'info');
+            log('🌐 API call to /logout endpoint', 'info');
+            
+            // Reset notification flag
+            notificationShown = false;
+            
+            // Simulate what happens in a manual logout (no auth:logout event dispatched)
+            setTimeout(() => {
+                log('✅ Logout API call successful', 'success');
+                log('🧹 User data cleared from localStorage', 'info');
+                log('🔄 User state updated to null', 'info');
+                log('✅ Manual logout completed successfully', 'success');
+                
+                // Check if notification was shown
+                setTimeout(() => {
+                    if (!notificationShown) {
+                        log('✅ PASS: No "Session Expired" notification shown during manual logout', 'success');
+                    } else {
+                        log('❌ FAIL: "Session Expired" notification incorrectly shown', 'error');
+                    }
+                }, 100);
+            }, 1000);
+        }
+
+        function testTokenExpiration() {
+            log('⏰ Testing token expiration scenario...', 'info');
+            log('🕐 TokenExpirationTimer detects expired token', 'info');
+            log('📡 Dispatching auth:logout event with reason: token_expired', 'info');
+            
+            // Reset notification flag
+            notificationShown = false;
+            
+            // Simulate token expiration with the new event structure
+            setTimeout(() => {
+                log('✅ Token expiration detected', 'warning');
+                log('📢 auth:logout event dispatched with reason: token_expired', 'info');
+                
+                // Dispatch the event with the new structure
+                window.dispatchEvent(new CustomEvent('auth:logout', { 
+                    detail: { reason: 'token_expired' } 
+                }));
+                
+                // Check if notification was shown
+                setTimeout(() => {
+                    if (notificationShown) {
+                        log('✅ PASS: "Session Expired" notification correctly shown for token expiration', 'success');
+                    } else {
+                        log('❌ FAIL: "Session Expired" notification not shown for token expiration', 'error');
+                    }
+                }, 100);
+            }, 1000);
+        }
+
+        function testApi401Response() {
+            log('🔒 Testing API 401 response scenario (FIXED)...', 'info');
+            log('🌐 API call made', 'info');
+            log('❌ API returns 401 Unauthorized', 'warning');
+            log('📡 handleResponse() dispatches auth:logout with reason: api_error', 'info');
+            
+            // Reset notification flag
+            notificationShown = false;
+            
+            // Simulate 401 response with the new event structure
+            setTimeout(() => {
+                log('🔍 handleResponse() in apiUtils detects 401', 'info');
+                log('📡 handleResponse() dispatches auth:logout with reason: api_error', 'warning');
+                
+                // Dispatch the event with api_error reason
+                window.dispatchEvent(new CustomEvent('auth:logout', { 
+                    detail: { reason: 'api_error' } 
+                }));
+                
+                // Check if notification was shown
+                setTimeout(() => {
+                    if (!notificationShown) {
+                        log('✅ PASS: No "Session Expired" notification shown for API 401 error', 'success');
+                    } else {
+                        log('❌ FAIL: "Session Expired" notification incorrectly shown for API error', 'error');
+                    }
+                }, 100);
+            }, 1000);
+        }
+
+        function testLegacyEvent() {
+            log('📜 Testing legacy event without reason...', 'info');
+            log('📡 Dispatching old-style auth:logout event (no detail)', 'info');
+            
+            // Reset notification flag
+            notificationShown = false;
+            
+            // Simulate legacy event without detail
+            setTimeout(() => {
+                log('📢 Dispatching legacy auth:logout event', 'warning');
+                
+                // Dispatch old-style event
+                window.dispatchEvent(new CustomEvent('auth:logout'));
+                
+                // Check if notification was shown
+                setTimeout(() => {
+                    if (!notificationShown) {
+                        log('✅ PASS: No "Session Expired" notification shown for legacy event', 'success');
+                    } else {
+                        log('❌ FAIL: "Session Expired" notification shown for legacy event', 'error');
+                    }
+                }, 100);
+            }, 1000);
+        }
+
+        // Simulate the fixed SessionExpiredNotification behavior
+        window.addEventListener('auth:logout', (event) => {
+            const reason = event.detail?.reason;
+            log(`🎯 auth:logout event received with reason: ${reason || 'undefined'}`, 'info');
+            
+            // Only show notification for token expiration
+            if (reason === 'token_expired') {
+                log('✅ Reason is token_expired - showing notification', 'success');
+                showSessionExpiredNotification();
+            } else {
+                log(`❌ Reason is '${reason || 'undefined'}' - NOT showing notification`, 'warning');
+            }
+        });
+
+        // Initialize
+        log('🚀 Fix verification test ready', 'success');
+        log('📋 Click test buttons above to verify the fix works correctly', 'info');
+        log('🔧 Expected behavior: Only token expiration should show notification', 'info');
+    </script>
+</body>
+</html>

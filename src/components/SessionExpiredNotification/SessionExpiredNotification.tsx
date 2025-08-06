@@ -5,22 +5,30 @@ const SessionExpiredNotification: React.FC = () => {
   const [isVisible, setIsVisible] = useState<boolean>(false);
 
   useEffect(() => {
-    const handleAuthLogout = () => {
-      console.log('Session expired notification: Received auth:logout event');
-      setIsVisible(true);
+    const handleAuthLogout = (event: CustomEvent) => {
+      const reason = event.detail?.reason;
+      console.log('Session expired notification: Received auth:logout event with reason:', reason);
       
-      // Auto-hide the notification after 5 seconds
-      setTimeout(() => {
-        setIsVisible(false);
-      }, 5000);
+      // Only show notification for token expiration, not for manual logout or API errors
+      if (reason === 'token_expired') {
+        console.log('Token expired - showing session expired notification');
+        setIsVisible(true);
+        
+        // Auto-hide the notification after 5 seconds
+        setTimeout(() => {
+          setIsVisible(false);
+        }, 5000);
+      } else {
+        console.log('Logout reason is not token expiration - not showing notification');
+      }
     };
 
     // Listen for auth:logout events
-    window.addEventListener('auth:logout', handleAuthLogout);
+    window.addEventListener('auth:logout', handleAuthLogout as EventListener);
 
     // Cleanup event listener on component unmount
     return () => {
-      window.removeEventListener('auth:logout', handleAuthLogout);
+      window.removeEventListener('auth:logout', handleAuthLogout as EventListener);
     };
   }, []);
 

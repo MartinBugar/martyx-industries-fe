@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Icon Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        /* Header Component Styles */
+        .shop-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: #ffffff;
+            color: #213547;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .logo h1 {
+            font-size: 1.6rem;
+            margin: 0;
+            color: #213547;
+            font-weight: 600;
+        }
+
+        /* Header actions container */
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        /* User menu styles */
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logout-btn {
+            background-color: transparent;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 0.3rem 0.8rem;
+            color: #555;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background-color: #f5f5f5;
+            border-color: #ccc;
+            color: #213547;
+        }
+
+        /* Account icon styles */
+        .account-icon {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: #213547;
+            text-decoration: none;
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            transition: color 0.3s ease;
+        }
+
+        .account-icon::after {
+            content: "👤";
+            font-size: 1.5rem;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .account-icon:hover {
+            color: #555;
+        }
+
+        .account-icon.active {
+            color: #213547;
+            font-weight: 600;
+        }
+
+        /* Cart icon styles */
+        .cart-icon {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: #213547;
+        }
+
+        .cart-icon::after {
+            content: "🛒";
+            font-size: 1.5rem;
+        }
+
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .comparison {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .old-style {
+            color: #555;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 500;
+            padding: 0.5rem 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Account Icon Design Test</h1>
+    
+    <div class="test-section">
+        <h2>New Header Design with Account Icon</h2>
+        <header class="shop-header">
+            <div class="logo">
+                <h1>Martyx Industries</h1>
+            </div>
+            
+            <div class="header-actions">
+                <div class="user-menu">
+                    <a href="#" class="account-icon" title="My Account"></a>
+                    <button class="logout-btn">Logout</button>
+                </div>
+                
+                <div class="cart-icon"></div>
+            </div>
+        </header>
+    </div>
+
+    <div class="test-section">
+        <h2>Icon States Test</h2>
+        <div class="comparison">
+            <div>
+                <h3>Normal State:</h3>
+                <a href="#" class="account-icon" title="My Account"></a>
+            </div>
+            <div>
+                <h3>Active State:</h3>
+                <a href="#" class="account-icon active" title="My Account"></a>
+            </div>
+            <div>
+                <h3>Old Text Style:</h3>
+                <a href="#" class="old-style">My Account</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>Design Analysis</h2>
+        <p><strong>✅ Modern E-shop Design:</strong> The person icon (👤) is commonly used across major e-commerce sites like Amazon, eBay, and other online stores.</p>
+        <p><strong>✅ Consistent Styling:</strong> Matches the cart icon approach and maintains the same color scheme and hover effects.</p>
+        <p><strong>✅ Space Efficient:</strong> Takes up less horizontal space than text, allowing for better mobile responsiveness.</p>
+        <p><strong>✅ Accessibility:</strong> Includes title attribute for screen readers and maintains keyboard navigation.</p>
+        <p><strong>✅ Visual Hierarchy:</strong> Clear and recognizable icon that users expect for account access.</p>
+    </div>
+
+    <script>
+        // Add hover effect demonstration
+        document.addEventListener('DOMContentLoaded', function() {
+            const accountIcons = document.querySelectorAll('.account-icon');
+            accountIcons.forEach(icon => {
+                icon.addEventListener('mouseenter', function() {
+                    console.log('Account icon hovered - color should change to #555');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

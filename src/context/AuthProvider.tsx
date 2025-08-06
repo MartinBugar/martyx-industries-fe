@@ -57,16 +57,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Listen for 401 logout events from API calls
   useEffect(() => {
-    const handleAuthLogout = () => {
-      console.log('Received auth:logout event, updating authentication state');
+    const handleAuthLogout = (event: CustomEvent) => {
+      const reason = event.detail?.reason || 'unknown';
+      console.log('Received auth:logout event, updating authentication state. Reason:', reason);
       setUser(null);
     };
 
-    window.addEventListener('auth:logout', handleAuthLogout);
+    window.addEventListener('auth:logout', handleAuthLogout as EventListener);
 
     // Cleanup event listener on component unmount
     return () => {
-      window.removeEventListener('auth:logout', handleAuthLogout);
+      window.removeEventListener('auth:logout', handleAuthLogout as EventListener);
     };
   }, []);
 

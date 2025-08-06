@@ -44,7 +44,9 @@ const TokenExpirationTimer: React.FC<TokenExpirationTimerProps> = ({ className }
         if (!logoutTriggered) {
           console.log('Token has expired, triggering automatic logout');
           setLogoutTriggered(true);
-          window.dispatchEvent(new CustomEvent('auth:logout'));
+          window.dispatchEvent(new CustomEvent('auth:logout', { 
+            detail: { reason: 'token_expired' } 
+          }));
         }
         return;
       }
