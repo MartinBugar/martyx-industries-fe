@@ -37,12 +37,14 @@
 
 .profile-sections {
   display: flex;
-  flex-direction: column;
-  gap: 24px;
+  flex-direction: row;
+  gap: 20px;
+  align-items: flex-start;
 }
 
 .profile-section {
-  width: 100%;
+  flex: 1;
+  min-width: 0;
 }
 
 .section-title {
@@ -54,10 +56,16 @@
 
 .profile-card {
   background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  padding: 20px;
-  border: 1px solid #eaeaea;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  padding: 24px;
+  border: 1px solid #f0f0f0;
+  transition: all 0.2s ease;
+}
+
+.profile-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
 }
 
 .profile-field {
@@ -143,12 +151,14 @@
 
 .form-sections {
   display: flex;
-  flex-direction: column;
-  gap: 24px;
+  flex-direction: row;
+  gap: 20px;
+  align-items: flex-start;
 }
 
 .form-section {
-  width: 100%;
+  flex: 1;
+  min-width: 0;
 }
 
 .form-section .section-title {
@@ -158,10 +168,15 @@
 
 .form-card {
   background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  padding: 20px;
-  border: 1px solid #eaeaea;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  padding: 24px;
+  border: 1px solid #f0f0f0;
+  transition: all 0.2s ease;
+}
+
+.form-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .form-row {
@@ -283,13 +298,19 @@
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
+  .profile-sections,
+  .form-sections {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
   .form-row {
     flex-direction: column;
     gap: 0;
   }
   
   .profile-card, .form-card {
-    padding: 15px;
+    padding: 20px;
   }
   
   .profile-field {
