@@ -239,6 +239,40 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return user?.orders || [];
   };
 
+  // Request password reset (forgot password)
+  const forgotPassword = async (email: string): Promise<{ success: boolean; message: string }> => {
+    try {
+      const response = await authApi.forgotPassword(email);
+      return {
+        success: true,
+        message: response.message || 'Password reset email sent successfully. Please check your email.'
+      };
+    } catch (error) {
+      console.error('Forgot password error:', error);
+      return {
+        success: false,
+        message: 'Failed to send password reset email. Please try again.'
+      };
+    }
+  };
+
+  // Reset password with token
+  const resetPassword = async (token: string, password: string): Promise<{ success: boolean; message: string }> => {
+    try {
+      const response = await authApi.resetPassword(token, password);
+      return {
+        success: true,
+        message: response.message || 'Password reset successfully. You can now login with your new password.'
+      };
+    } catch (error) {
+      console.error('Reset password error:', error);
+      return {
+        success: false,
+        message: 'Failed to reset password. The token may be invalid or expired.'
+      };
+    }
+  };
+
   // Provide the auth context to children components
   return (
     <AuthContext.Provider value={{
@@ -250,7 +284,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       updateProfile,
       fetchProfile,
       addOrder,
-      getOrders
+      getOrders,
+      forgotPassword,
+      resetPassword
     }}>
       {children}
     </AuthContext.Provider>

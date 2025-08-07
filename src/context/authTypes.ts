@@ -45,3 +45,20 @@ export interface LoginErrorResponse {
   error: string;
   type: string;
 }
+
+// Define the reset password request
+export interface ResetPasswordRequest {
+  token: string;
+  password: string;
+}
+
+// Define the forgot password request
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+// Define the reset password response
+export interface ResetPasswordResponse {
+  success: boolean;
+  message: string;
+}

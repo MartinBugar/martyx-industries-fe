@@ -179,6 +179,7 @@ const Login: React.FC = () => {
         
         <div className="login-footer">
           <p>Don't have an account? <Link to="/register">Register here</Link></p>
+          <p>Forgot your password? <Link to="/forgot-password">Reset it here</Link></p>
         </div>
       </div>
     </div>

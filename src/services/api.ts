@@ -1,6 +1,9 @@
 // Import common API utilities
 import { API_BASE_URL, defaultHeaders, handleResponse } from './apiUtils';
-import type {AuthResponse} from '../context/authTypes';
+import type {
+  AuthResponse,
+  ResetPasswordResponse
+} from '../context/authTypes';
 
 // Authentication API endpoints
 export const authApi = {
@@ -34,6 +37,38 @@ export const authApi = {
       return handleResponse(response);
     } catch (error) {
       console.error('Logout API error:', error);
+      throw error;
+    }
+  },
+
+  // Request password reset (forgot password)
+  forgotPassword: async (email: string): Promise<ResetPasswordResponse> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/forgot-password`, {
+        method: 'POST',
+        headers: defaultHeaders as HeadersInit,
+        body: JSON.stringify({ email }),
+      });
+      
+      return await handleResponse(response) as ResetPasswordResponse;
+    } catch (error) {
+      console.error('Forgot password API error:', error);
+      throw error;
+    }
+  },
+  
+  // Reset password with token
+  resetPassword: async (token: string, password: string): Promise<ResetPasswordResponse> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/reset-password`, {
+        method: 'POST',
+        headers: defaultHeaders as HeadersInit,
+        body: JSON.stringify({ token, password }),
+      });
+      
+      return await handleResponse(response) as ResetPasswordResponse;
+    } catch (error) {
+      console.error('Reset password API error:', error);
       throw error;
     }
   },

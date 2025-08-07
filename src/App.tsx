@@ -15,6 +15,9 @@ import Products from './pages/Products'
 import About from './pages/About'
 import Login from './pages/Login'
 import Registration from './pages/Registration'
+import ForgotPassword from './pages/ForgotPassword'
+import ResetPassword from './pages/ResetPassword'
+import ResetPasswordRedirect from './pages/ResetPasswordRedirect'
 import Checkout from './pages/Checkout/Checkout'
 import OrderConfirmation from './pages/OrderConfirmation/OrderConfirmation'
 import CartPage from './pages/CartPage/CartPage'
@@ -72,6 +75,10 @@ function MainContent() {
           <Route path="/about" element={<About />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Registration />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          {/* Handle backend reset password URL pattern */}
+          <Route path="/api/auth/reset-password" element={<ResetPasswordRedirect />} />
           <Route path="/confirm-email" element={<EmailConfirmation />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout" element={<Checkout />} />
