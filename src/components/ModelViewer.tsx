@@ -19,8 +19,6 @@ interface ModelViewerElement extends HTMLElement {
     getCameraOrbit?: () => string;
 }
 
-// Type declarations for model-viewer are in src/model-viewer.d.ts
-
 interface ModelViewerProps {
     modelPath: string;
     alt?: string;
@@ -211,26 +209,26 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
 
     return (
         <div className="model-viewer-container" style={containerStyle}>
-            <model-viewer
-                ref={modelViewerRef}
-                src={modelPath}
-                alt={alt}
-                poster={poster}
-                camera-controls={cameraControls}
-                auto-rotate={autoRotate}
-                ar={ar}
-                environment-image={environmentImage}
-                exposure={exposureValue}
-                shadow-intensity={shadowIntensity}
-                shadow-softness={shadowSoftness}
-                field-of-view={fieldOfView}
-                tone-mapping={toneMapping}
-                metallic-factor={metalness}
-                roughness-factor={roughness}
-                {...otherProps}
-                className="model-viewer"
-                style={{ backgroundColor }}
-            ></model-viewer>
+            {React.createElement('model-viewer', {
+                ref: modelViewerRef,
+                src: modelPath,
+                alt: alt,
+                poster: poster,
+                'camera-controls': cameraControls,
+                'auto-rotate': autoRotate,
+                ar: ar,
+                'environment-image': environmentImage,
+                exposure: exposureValue,
+                'shadow-intensity': shadowIntensity,
+                'shadow-softness': shadowSoftness,
+                'field-of-view': fieldOfView,
+                'tone-mapping': toneMapping,
+                'metallic-factor': metalness,
+                'roughness-factor': roughness,
+                ...otherProps,
+                className: "model-viewer",
+                style: { backgroundColor }
+            })}
             
             {/* Material controls */}
             <div className="controls-container">
