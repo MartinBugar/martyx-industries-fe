@@ -4,6 +4,8 @@ import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'
 import { CartProvider } from './context/CartContext'
 import { AuthProvider } from './context/AuthProvider'
 import { useCart } from './context/useCart'
+import { DevPasswordGateProvider } from './context/DevPasswordGateProvider'
+import { DevPasswordGate } from './components/DevPasswordGate/DevPasswordGate'
 import Header from './components/Header/Header'
 import Cart from './components/Cart/Cart'
 import Footer from './components/Footer/Footer'
@@ -19,14 +21,18 @@ import CartPage from './pages/CartPage/CartPage'
 import UserAccount from './pages/UserAccount/UserAccount'
 import EmailConfirmation from './components/EmailConfirmation/EmailConfirmation'
 
-// App wrapper to provide CartContext and AuthContext
+// App wrapper to provide DevPasswordGate, AuthContext, and CartContext
 function AppWrapper() {
   return (
-    <AuthProvider>
-      <CartProvider>
-        <AppContent />
-      </CartProvider>
-    </AuthProvider>
+    <DevPasswordGateProvider>
+      <DevPasswordGate>
+        <AuthProvider>
+          <CartProvider>
+            <AppContent />
+          </CartProvider>
+        </AuthProvider>
+      </DevPasswordGate>
+    </DevPasswordGateProvider>
   );
 }
 
