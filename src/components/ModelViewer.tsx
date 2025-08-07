@@ -6,17 +6,19 @@ import Slider from './Slider/Slider';
 // Import CSS
 import './ModelViewer.css';
 
-// Extend the HTMLElement interface to include model-viewer specific properties
-interface ModelViewerElement extends HTMLElement {
-    model?: {
-        materials: Array<{
-            pbrMetallicRoughness: {
-                setMetallicFactor: (value: number) => void;
-                setRoughnessFactor: (value: number) => void;
-            }
-        }>;
-    };
-    getCameraOrbit?: () => string;
+// Use the ModelViewerElement interface from global.d.ts
+declare global {
+    interface ModelViewerElement extends HTMLElement {
+        model?: {
+            materials: Array<{
+                pbrMetallicRoughness: {
+                    setMetallicFactor: (value: number) => void;
+                    setRoughnessFactor: (value: number) => void;
+                }
+            }>;
+        };
+        getCameraOrbit?: () => string;
+    }
 }
 
 interface ModelViewerProps {
@@ -81,7 +83,12 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
     const updateMaterialProps = (m: number, r: number) => {
         const el = modelViewerRef.current;
         if (el && el.model) {
-            el.model.materials.forEach((mat) => {
+            el.model.materials.forEach((mat: {
+                pbrMetallicRoughness: {
+                    setMetallicFactor: (value: number) => void;
+                    setRoughnessFactor: (value: number) => void;
+                }
+            }) => {
                 // Set metalness
                 mat.pbrMetallicRoughness.setMetallicFactor(m);
                 // Set roughness
