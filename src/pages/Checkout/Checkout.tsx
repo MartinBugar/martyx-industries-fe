@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/useCart';
 import { useAuth } from '../../context/useAuth';
 import './Checkout.css';
+import { paymentService } from '../../services/paymentService';
 
 interface CheckoutFormData {
   firstName: string;
@@ -36,65 +37,59 @@ const Checkout: React.FC = () => {
     });
   };
   
-  // Handle form submission
-  const handleSubmit = (e: React.FormEvent) => {
+  // Handle PayPal payment creation and redirect
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validate form
-    if (!formData.firstName || !formData.lastName || !formData.email || 
-        !formData.cardNumber || !formData.cardExpiry || !formData.cardCvc) {
-      alert('Please fill in all required fields');
+    if (!formData.firstName || !formData.lastName || !formData.email) {
+      alert('Please fill in your name and email');
       return;
     }
-    
-    // Email validation
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
       alert('Please enter a valid email address');
       return;
     }
-    
-    // Process payment (mock)
-    setIsProcessing(true);
-    
-    // Simulate payment processing delay
-    setTimeout(() => {
-      setIsProcessing(false);
-      
-      // Store email in session storage for order confirmation
-      sessionStorage.setItem('customerEmail', formData.email);
-      
-      // If user is authenticated, save order to their history
-      if (isAuthenticated && user) {
-        // Save order to user's order history
-        addOrder({
-          items: items.map(item => ({
-            productId: item.product.id,
-            productName: item.product.name,
-            quantity: item.quantity,
-            price: item.product.price
-          })),
-          totalAmount: getTotalPrice(),
-          status: 'completed'
-        });
-        
-        // Update user profile with checkout information if not already set
-        if (!user.firstName || !user.lastName) {
-          const { firstName, lastName } = formData;
-          const profileUpdate = {
-            firstName,
-            lastName
-          };
-          
-          // Update the user's profile with the checkout information
-          updateProfile(profileUpdate);
-        }
+
+    try {
+      if (!isAuthenticated || !user) {
+        alert('Please log in to proceed to payment.');
+        navigate('/login');
+        return;
       }
-      
-      // Clear cart and navigate to order confirmation
-      clearCart();
-      navigate('/order-confirmation');
-    }, 2000);
+      setIsProcessing(true);
+
+      // Persist email for later use (success page and order confirmation)
+      sessionStorage.setItem('customerEmail', formData.email);
+
+      // Build order DTO expected by backend
+      const orderDto = {
+        orderItems: items.map((item) => ({
+          product: { id: item.product.id },
+          quantity: item.quantity,
+          price: item.product.price,
+        })),
+        totalAmount: getTotalPrice(),
+        user: { id: user.id, email: user.email },
+      };
+
+      // Create PayPal payment
+      const payment = await paymentService.createPayPalPayment(orderDto);
+
+      if (!payment.paymentUrl) {
+        throw new Error('No payment URL returned');
+      }
+
+      // Redirect to approval/success URL provided by backend
+      window.location.href = payment.paymentUrl;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to initiate payment';
+      alert(message);
+    } finally {
+      setIsProcessing(false);
+    }
   };
   
   // If cart is empty, redirect to products
@@ -190,55 +185,14 @@ const Checkout: React.FC = () => {
               />
             </div>
             
-            <h3>Payment Information</h3>
-            
-            <div className="form-group">
-              <label htmlFor="cardNumber">Card Number</label>
-              <input
-                type="text"
-                id="cardNumber"
-                name="cardNumber"
-                placeholder="1234 5678 9012 3456"
-                value={formData.cardNumber}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-            
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="cardExpiry">Expiry Date</label>
-                <input
-                  type="text"
-                  id="cardExpiry"
-                  name="cardExpiry"
-                  placeholder="MM/YY"
-                  value={formData.cardExpiry}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              
-              <div className="form-group">
-                <label htmlFor="cardCvc">CVC</label>
-                <input
-                  type="text"
-                  id="cardCvc"
-                  name="cardCvc"
-                  placeholder="123"
-                  value={formData.cardCvc}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-            </div>
-            
-            <button 
-              type="submit" 
+            <h3>Payment</h3>
+            <p>We use PayPal for secure checkout of digital products.</p>
+            <button
+              type="submit"
               className="place-order-btn"
               disabled={isProcessing}
             >
-              {isProcessing ? 'Processing...' : 'Place Order'}
+              {isProcessing ? 'Redirecting…' : 'Pay with PayPal'}
             </button>
           </form>
         </div>
