@@ -15,7 +15,11 @@ const PayPalSuccess: React.FC = () => {
   useEffect(() => {
     const run = async () => {
       const paymentId = searchParams.get('paymentId');
-      const payerEmail = searchParams.get('PayerEmail') || sessionStorage.getItem('customerEmail') || '';
+      const payerEmail =
+        searchParams.get('PayerEmail') ||
+        sessionStorage.getItem('customerEmail') ||
+        localStorage.getItem('customerEmail') ||
+        '';
       if (!paymentId) {
         setError('Missing paymentId');
         setIsProcessing(false);

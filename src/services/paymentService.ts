@@ -9,8 +9,8 @@ export interface PaymentOrderItemDTO {
 export interface PaymentOrderDTO {
   orderItems: PaymentOrderItemDTO[];
   totalAmount: number;
-  // Optionally include user reference if backend accepts it
-  user?: { id: string; email?: string };
+  // For guest checkout, only email is required
+  user?: { id?: string; email: string };
 }
 
 export interface PaymentDTO {

@@ -54,17 +54,13 @@ const Checkout: React.FC = () => {
     }
 
     try {
-      if (!isAuthenticated || !user) {
-        alert('Please log in to proceed to payment.');
-        navigate('/login');
-        return;
-      }
       setIsProcessing(true);
 
       // Persist email for later use (success page and order confirmation)
       sessionStorage.setItem('customerEmail', formData.email);
+      localStorage.setItem('customerEmail', formData.email);
 
-      // Build order DTO expected by backend
+      // Build order DTO expected by backend (guest checkout supported)
       const orderDto = {
         orderItems: items.map((item) => ({
           product: { id: item.product.id },
@@ -72,7 +68,7 @@ const Checkout: React.FC = () => {
           price: item.product.price,
         })),
         totalAmount: getTotalPrice(),
-        user: { id: user.id, email: user.email },
+        user: { email: formData.email },
       };
 
       // Create PayPal payment
