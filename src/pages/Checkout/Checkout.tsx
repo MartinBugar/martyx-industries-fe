@@ -15,8 +15,8 @@ interface CheckoutFormData {
 }
 
 const Checkout: React.FC = () => {
-  const { items, getTotalPrice, clearCart } = useCart();
-  const { user, addOrder, updateProfile, isAuthenticated } = useAuth();
+  const { items, getTotalPrice } = useCart();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false);
   const [formData, setFormData] = useState<CheckoutFormData>({
