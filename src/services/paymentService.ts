@@ -1,7 +1,7 @@
 import { API_BASE_URL, defaultHeaders, handleResponse } from './apiUtils';
 
 export interface PaymentOrderItemDTO {
-  product: { id: string };
+  product: { id: string; name: string };
   quantity: number;
   price?: number;
 }

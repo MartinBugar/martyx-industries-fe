@@ -5,6 +5,7 @@ export interface Product {
   id: string;
   name: string;
   price: number;
+  currency: string;
   description: string;
   features: string[];
   modelPath: string;
@@ -16,6 +17,7 @@ export const product: Product = {
   id: "1",
   name: "Endeavour - 3D printed RC APC",
   price: 99.99,
+  currency: "USD",
   description: "High-quality 3D model of an axis coordinate system. Perfect for educational purposes, visualization projects, or as a reference for 3D modeling and game development.",
   features: [
     "High-resolution textures",

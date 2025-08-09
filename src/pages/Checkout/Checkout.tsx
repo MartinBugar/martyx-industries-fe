@@ -63,7 +63,7 @@ const Checkout: React.FC = () => {
       // Build order DTO expected by backend (guest checkout supported)
       const orderDto = {
         orderItems: items.map((item) => ({
-          product: { id: item.product.id },
+          product: { id: item.product.id, name: item.product.name },
           quantity: item.quantity,
           price: item.product.price,
         })),
