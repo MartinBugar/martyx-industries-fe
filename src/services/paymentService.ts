@@ -4,11 +4,13 @@ export interface PaymentOrderItemDTO {
   product: { id: string; name: string };
   quantity: number;
   price?: number;
+  currency: string;
 }
 
 export interface PaymentOrderDTO {
   orderItems: PaymentOrderItemDTO[];
   totalAmount: number;
+  currency: string;
   // For guest checkout, only email is required
   user?: { id?: string; email: string };
 }

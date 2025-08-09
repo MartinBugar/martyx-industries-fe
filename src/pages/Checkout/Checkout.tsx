@@ -66,8 +66,10 @@ const Checkout: React.FC = () => {
           product: { id: item.product.id, name: item.product.name },
           quantity: item.quantity,
           price: item.product.price,
+          currency: item.product.currency ?? 'USD',
         })),
         totalAmount: getTotalPrice(),
+        currency: items[0]?.product.currency ?? 'USD',
         user: { email: formData.email },
       };
 
