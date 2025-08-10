@@ -213,6 +213,6 @@
 /* Desktop-specific adjustments */
 @media (min-width: 992px) {
   .order-summary {
-    min-width: 420px;
+    min-width: 520px;
   }
 }
