@@ -131,6 +131,11 @@
   align-items: stretch;
 }
 
+/* Make every order-section span full width of the order card */
+.order-info-grid > .order-section {
+  grid-column: 1 / -1;
+}
+
 .order-section {
   background: var(--oh-bg);
   border: 1px solid var(--oh-border);
