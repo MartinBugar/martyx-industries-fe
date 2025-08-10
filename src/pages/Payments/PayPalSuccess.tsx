@@ -37,7 +37,6 @@ const PayPalSuccess: React.FC = () => {
   });
   const [downloadingProduct, setDownloadingProduct] = useState<boolean>(false);
   const processedRef = useRef(false);
-  const emailSendRef = useRef(false);
 
   useEffect(() => {
     if (processedRef.current) return;
@@ -192,33 +191,6 @@ const PayPalSuccess: React.FC = () => {
     run();
   }, []);
 
-  // Auto-send order email when payment is completed (idempotent per session and order)
-  useEffect(() => {
-    if (!payment) return;
-    if (payment.status !== 'COMPLETED') return;
-    const orderId = payment.orderId;
-    if (orderId == null) return;
-
-    const storageKey = `orderEmailSent:${orderId}`;
-    if (sessionStorage.getItem(storageKey) === '1') return;
-    if (emailSendRef.current) return;
-
-    emailSendRef.current = true;
-    const payerEmail = payment.payerEmail || sessionStorage.getItem('customerEmail') || undefined;
-
-    // Fire and forget; do not block UI if email sending fails
-    ordersService
-      .sendOrderEmail(orderId as number, payerEmail)
-      .then(() => {
-        sessionStorage.setItem(storageKey, '1');
-        console.debug('[PayPalSuccess] Order email sent for orderId', orderId);
-      })
-      .catch((e) => {
-        console.warn('[PayPalSuccess] Failed to send order email:', e instanceof Error ? e.message : e);
-        // allow retry on next render/navigation by resetting the ref
-        emailSendRef.current = false;
-      });
-  }, [payment]);
 
   const handleDownloadInvoice = async () => {
     setDlError(null);

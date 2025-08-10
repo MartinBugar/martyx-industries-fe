@@ -79,10 +79,10 @@
 }
 
 .summary-item {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  column-gap: 12px;
+  display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   border-bottom: 1px dashed #eeeeee;
   padding: 10px 0;
 }
@@ -95,7 +95,8 @@
 .summary-item .value {
   font-weight: 600;
   color: var(--text-color, #213547);
-  justify-self: end;
+  margin-left: auto;
+  text-align: right;
 }
 
 .detail-grid {
