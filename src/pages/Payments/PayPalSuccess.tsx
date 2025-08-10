@@ -308,7 +308,6 @@ const PayPalSuccess: React.FC = () => {
                       {downloadingProduct ? 'Downloading…' : 'Download Product'}
                     </button>
                   )}
-                  <button onClick={() => navigate('/order-confirmation')}>Continue</button>
                 </>
               ) : (
                 <button onClick={() => navigate('/checkout')}>Back to Checkout</button>

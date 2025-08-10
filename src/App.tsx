@@ -19,7 +19,6 @@ import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
 import ResetPasswordRedirect from './pages/ResetPasswordRedirect'
 import Checkout from './pages/Checkout/Checkout'
-import OrderConfirmation from './pages/OrderConfirmation/OrderConfirmation'
 import PayPalSuccess from './pages/Payments/PayPalSuccess'
 import PayPalCancel from './pages/Payments/PayPalCancel'
 import CartPage from './pages/CartPage/CartPage'
@@ -86,7 +85,6 @@ function MainContent() {
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/payment/paypal/success" element={<PayPalSuccess />} />
           <Route path="/payment/paypal/cancel" element={<PayPalCancel />} />
-          <Route path="/order-confirmation" element={<OrderConfirmation />} />
           <Route path="/account" element={<UserAccount />} />
         </Routes>
       </main>
