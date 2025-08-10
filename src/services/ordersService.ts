@@ -39,22 +39,11 @@ interface OrderDTO {
 }
 
 const normalizeStatus = (raw?: string): Order['status'] => {
-  if (!raw) return 'processing';
-  const s = raw.toUpperCase();
-  switch (s) {
-    case 'DELIVERED':
-      return 'completed';
-    case 'SHIPPED':
-      return 'shipped';
-    case 'CANCELLED':
-    case 'REFUNDED':
-      return 'cancelled';
-    case 'PROCESSING':
-    case 'PAID':
-    case 'PENDING':
-    default:
-      return 'processing';
-  }
+  // Preserve backend-provided status so UI can display the actual value from the database.
+  // Fallback to 'unknown' only when status is missing/null/empty.
+  if (raw == null) return 'unknown';
+  const s = String(raw).trim();
+  return s.length > 0 ? s : 'unknown';
 };
 
 const toNumber = (value: any): number => {

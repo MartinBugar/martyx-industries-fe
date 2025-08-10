@@ -9,7 +9,9 @@ export interface Order {
     price: number;
   }>;
   totalAmount: number;
-  status: 'completed' | 'processing' | 'cancelled' | 'shipped';
+  // Status comes from backend (e.g., PENDING, PAID, PROCESSING, SHIPPED, DELIVERED, CANCELLED, REFUNDED, etc.)
+  // Keep it flexible to display the actual value from the database.
+  status: string;
 }
 
 // Define the structure of a user
