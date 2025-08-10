@@ -157,12 +157,57 @@ export const ordersService = {
         return false;
       }
 
-      // Get filename from headers
+      // Get filename from headers with robust parsing and sanitization
       const disposition = response.headers.get('Content-Disposition') || response.headers.get('content-disposition') || '';
-      let filename = `product-${productId}.zip`;
-      const match = disposition.match(/filename\*=UTF-8''([^;]+)|filename="?([^";]+)"?/i);
-      if (match) {
-        filename = decodeURIComponent(match[1] || match[2]);
+
+      const extractFilename = (disp: string): string | null => {
+        if (!disp) return null;
+        // Try RFC 5987: filename*=charset'lang'value
+        let m = disp.match(/filename\*=(?:UTF-8)?'(?:[^']*)'([^;\r\n]+)/i);
+        if (m && m[1]) {
+          const val = m[1].trim().replace(/^"|"$/g, '');
+          try { return decodeURIComponent(val); } catch { return val; }
+        }
+        // Try simplified RFC 5987: filename*=UTF-8''value
+        m = disp.match(/filename\*=UTF-8''([^;\r\n]+)/i);
+        if (m && m[1]) {
+          const val = m[1].trim().replace(/^"|"$/g, '');
+          try { return decodeURIComponent(val); } catch { return val; }
+        }
+        // Try quoted filename
+        m = disp.match(/filename="([^"\r\n]+)"/i);
+        if (m && m[1]) {
+          const val = m[1].trim();
+          try { return decodeURIComponent(val); } catch { return val; }
+        }
+        // Try unquoted filename
+        m = disp.match(/filename=([^;\r\n]+)/i);
+        if (m && m[1]) {
+          const val = m[1].trim().replace(/^"|"$/g, '');
+          try { return decodeURIComponent(val); } catch { return val; }
+        }
+        return null;
+      };
+
+      const sanitizeFilename = (name: string): string => {
+        // keep only basename and allow safe characters
+        const base = (name || '').split(/[\\/]/).pop() || '';
+        // whitelist: letters, numbers, spaces, dot, dash, underscore, and parentheses
+        const cleaned = base.replace(/[^a-zA-Z0-9 ._()-]+/g, '_').trim();
+        // avoid leading/trailing dots/spaces
+        const trimmedDots = cleaned.replace(/^[. ]+|[. ]+$/g, '');
+        return trimmedDots || '';
+      };
+
+      let filename = extractFilename(disposition) || '';
+      filename = sanitizeFilename(filename);
+      if (!filename) {
+        filename = `product-${productId}.rar`;
+      } else {
+        // If no extension present, default to .rar to match expected file type
+        if (!/\.[a-zA-Z0-9]{1,8}$/.test(filename)) {
+          filename = `${filename}.rar`;
+        }
       }
 
       const blob = await response.blob();
