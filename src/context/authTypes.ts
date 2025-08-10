@@ -9,7 +9,7 @@ export interface Order {
     price: number;
   }>;
   totalAmount: number;
-  status: 'completed' | 'processing' | 'cancelled';
+  status: 'completed' | 'processing' | 'cancelled' | 'shipped';
 }
 
 // Define the structure of a user

@@ -5,6 +5,7 @@ import { AuthContext } from './AuthContext';
 import { authApi, setAuthToken, removeAuthToken } from '../services/api';
 import { profileService } from '../services/profileService';
 import { isTokenExpired } from '../services/apiUtils';
+import { ordersService } from '../services/ordersService';
 
 // Props for the AuthProvider component
 interface AuthProviderProps {
@@ -20,39 +21,49 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   
   // Check if user and token are stored in localStorage on initial load
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    const token = localStorage.getItem('token');
-    
-    // Check if token exists and is valid
-    if (token) {
-      // Check if token is expired
-      if (isTokenExpired(token)) {
-        console.log('Token has expired, logging out user');
-        // Clear expired token and user data
-        localStorage.removeItem('user');
-        localStorage.removeItem('token');
-        removeAuthToken();
-        setUser(null);
-      } else {
-        // Token is valid, set it for API requests
-        setAuthToken(token);
-        
-        // If user exists, set it in state
-        if (storedUser) {
+    const init = async () => {
+      const storedUser = localStorage.getItem('user');
+      const token = localStorage.getItem('token');
+      
+      // Check if token exists and is valid
+      if (token) {
+        // Check if token is expired
+        if (isTokenExpired(token)) {
+          console.log('Token has expired, logging out user');
+          // Clear expired token and user data
+          localStorage.removeItem('user');
+          localStorage.removeItem('token');
+          removeAuthToken();
+          setUser(null);
+        } else {
+          // Token is valid, set it for API requests
+          setAuthToken(token);
+          
+          // If user exists, set it in state
+          if (storedUser) {
+            try {
+              setUser(JSON.parse(storedUser));
+            } catch (error) {
+              console.error('Failed to parse stored user:', error);
+              localStorage.removeItem('user');
+              localStorage.removeItem('token');
+              removeAuthToken();
+            }
+          }
+          
+          // Fetch orders for the authenticated user
           try {
-            setUser(JSON.parse(storedUser));
-          } catch (error) {
-            console.error('Failed to parse stored user:', error);
-            localStorage.removeItem('user');
-            localStorage.removeItem('token');
-            removeAuthToken();
+            await refreshOrders();
+          } catch (e) {
+            console.error('Failed to refresh orders on init:', e);
           }
         }
       }
-    }
-    
-    // Set loading to false after attempting to restore authentication state
-    setIsLoading(false);
+      
+      // Set loading to false after attempting to restore authentication state
+      setIsLoading(false);
+    };
+    void init();
   }, []);
 
   // Listen for 401 logout events from API calls
@@ -105,6 +116,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       // Set auth token for future API requests
       setAuthToken(token);
+
+      // Fetch user's orders from backend
+      try {
+        await refreshOrders();
+      } catch (e) {
+        console.error('Failed to fetch orders after login:', e);
+      }
       
       return true;
     } catch (error) {
@@ -208,6 +226,36 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       return true;
     } catch (error) {
       console.error('Update profile error:', error);
+      return false;
+    }
+  };
+
+  // Fetch orders from backend and update user state
+  const refreshOrders = async (): Promise<boolean> => {
+    try {
+      const fetchedOrders = await ordersService.fetchMyOrders();
+      // Determine the base user: prefer current state, else from localStorage
+      let baseUser = user as User | null;
+      if (!baseUser) {
+        try {
+          const stored = localStorage.getItem('user');
+          baseUser = stored ? (JSON.parse(stored) as User) : null;
+        } catch {
+          baseUser = null;
+        }
+      }
+      if (!baseUser) {
+        return false;
+      }
+      const updatedUser: User = {
+        ...baseUser,
+        orders: fetchedOrders,
+      };
+      setUser(updatedUser);
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      return true;
+    } catch (e) {
+      console.error('Failed to fetch user orders:', e);
       return false;
     }
   };
