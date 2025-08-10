@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { product } from '../../data/productData';
+import { ordersService } from '../../services/ordersService';
 import './OrderConfirmation.css';
 
 const OrderConfirmation: React.FC = () => {
@@ -8,6 +9,16 @@ const OrderConfirmation: React.FC = () => {
   const [customerEmail, setCustomerEmail] = useState<string>('');
   const [orderNumber, setOrderNumber] = useState<string>('');
   const [isEmailSent, setIsEmailSent] = useState<boolean>(false);
+  const [downloadUrls] = useState<string[]>(() => {
+    try {
+      const raw = sessionStorage.getItem('downloadUrls');
+      return raw ? (JSON.parse(raw) as string[]) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [downloading, setDownloading] = useState<boolean>(false);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
   
   useEffect(() => {
     // Get customer email from session storage
@@ -45,10 +56,22 @@ const OrderConfirmation: React.FC = () => {
   };
   
   // Handle download click
-  const handleDownload = () => {
-    // In a real application, this would generate a secure download link
-    // For this demo, we'll just show an alert
-    alert(`Download started for ${product.name}.zip`);
+  const handleDownload = async () => {
+    setDownloadError(null);
+    if (!downloadUrls || downloadUrls.length === 0) {
+      setDownloadError('Download link is not available yet. Please check your email or try again later.');
+      return;
+    }
+    try {
+      setDownloading(true);
+      // Use the first available download URL; backend may return multiple per item
+      await ordersService.downloadByUrl(downloadUrls[0], product.name);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'Failed to download product';
+      setDownloadError(msg);
+    } finally {
+      setDownloading(false);
+    }
   };
   
   if (!customerEmail) {
@@ -118,9 +141,13 @@ const OrderConfirmation: React.FC = () => {
             <button 
               className="download-btn"
               onClick={handleDownload}
+              disabled={downloading || !downloadUrls || downloadUrls.length === 0}
             >
-              Download {product.name}.zip
+              {downloading ? 'Downloading…' : `Download ${product.name}.zip`}
             </button>
+            {downloadError && (
+              <p className="download-info" role="alert" style={{ color: '#b00020' }}>{downloadError}</p>
+            )}
             
             <div className="download-info">
               <p>Your download link will expire in 24 hours.</p>

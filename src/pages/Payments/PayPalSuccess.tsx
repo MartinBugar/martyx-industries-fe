@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { paymentService, type PaymentDTO } from '../../services/paymentService';
 import { orderService } from '../../services/orderService';
+import { ordersService } from '../../services/ordersService';
 import { useAuth } from '../../context/useAuth';
 import { useCart } from '../../context/useCart';
 import './PayPalSuccess.css';
@@ -18,6 +19,15 @@ const PayPalSuccess: React.FC = () => {
   const [payment, setPayment] = useState<PaymentDTO | null>(null);
   const [dlError, setDlError] = useState<string | null>(null);
   const [downloading, setDownloading] = useState<boolean>(false);
+  const [downloadUrls, setDownloadUrls] = useState<string[]>(() => {
+    try {
+      const raw = sessionStorage.getItem('downloadUrls');
+      return raw ? (JSON.parse(raw) as string[]) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [downloadingProduct, setDownloadingProduct] = useState<boolean>(false);
   const processedRef = useRef(false);
 
   useEffect(() => {
@@ -41,6 +51,18 @@ const PayPalSuccess: React.FC = () => {
             // Store email used
             if (statePayment.payerEmail || payerEmail) {
               sessionStorage.setItem('customerEmail', statePayment.payerEmail || payerEmail);
+            }
+
+            // Extract download URLs/tokens from response and store for later pages
+            const links: string[] = [];
+            if (Array.isArray(statePayment.downloadUrls)) links.push(...statePayment.downloadUrls.filter(Boolean));
+            if (typeof statePayment.downloadUrl === 'string' && statePayment.downloadUrl) links.push(statePayment.downloadUrl);
+            const toUrl = (t: string) => `/api/download/${encodeURIComponent(t)}`;
+            if (Array.isArray(statePayment.downloadTokens)) links.push(...statePayment.downloadTokens.filter(Boolean).map(toUrl));
+            if (typeof statePayment.downloadToken === 'string' && statePayment.downloadToken) links.push(toUrl(statePayment.downloadToken));
+            if (links.length > 0) {
+              sessionStorage.setItem('downloadUrls', JSON.stringify(links));
+              setDownloadUrls(links);
             }
 
             // Save order to user's history if logged in
@@ -92,6 +114,17 @@ const PayPalSuccess: React.FC = () => {
             sessionStorage.setItem('customerEmail', res.payerEmail || payerEmail);
           }
 
+          // Extract download URLs/tokens from response and store for later pages
+          const links: string[] = [];
+          if (Array.isArray(res.downloadUrls)) links.push(...res.downloadUrls.filter(Boolean));
+          if (typeof res.downloadUrl === 'string' && res.downloadUrl) links.push(res.downloadUrl);
+          const toUrl = (t: string) => `/api/download/${encodeURIComponent(t)}`;
+          if (Array.isArray(res.downloadTokens)) links.push(...res.downloadTokens.filter(Boolean).map(toUrl));
+          if (typeof res.downloadToken === 'string' && res.downloadToken) links.push(toUrl(res.downloadToken));
+          if (links.length > 0) {
+            sessionStorage.setItem('downloadUrls', JSON.stringify(links));
+          }
+
           // Save order to user's history if logged in
           if (isAuthenticated && user) {
             addOrder({
@@ -141,6 +174,23 @@ const PayPalSuccess: React.FC = () => {
       setDlError(msg);
     } finally {
       setDownloading(false);
+    }
+  };
+
+  const handleDownloadProduct = async () => {
+    setDlError(null);
+    if (!downloadUrls || downloadUrls.length === 0) {
+      setDlError('Download link is not available yet.');
+      return;
+    }
+    try {
+      setDownloadingProduct(true);
+      await ordersService.downloadByUrl(downloadUrls[0], 'product');
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'Failed to download product';
+      setDlError(msg);
+    } finally {
+      setDownloadingProduct(false);
     }
   };
 
@@ -212,6 +262,11 @@ const PayPalSuccess: React.FC = () => {
                   {typeof payment.orderId === 'number' && (
                     <button onClick={handleDownloadInvoice} disabled={downloading}>
                       {downloading ? 'Downloading…' : 'Download Invoice'}
+                    </button>
+                  )}
+                  {downloadUrls && downloadUrls.length > 0 && (
+                    <button onClick={handleDownloadProduct} disabled={downloadingProduct}>
+                      {downloadingProduct ? 'Downloading…' : 'Download Product'}
                     </button>
                   )}
                   <button onClick={() => navigate('/order-confirmation')}>Continue</button>

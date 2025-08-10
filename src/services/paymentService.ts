@@ -27,6 +27,13 @@ export interface PaymentDTO {
   payerId?: string | null;
   payerEmail?: string;
   paymentUrl?: string;
+  // Optional download info returned by backend after successful payment
+  // Backend may return a single URL (including token) or an array per item
+  downloadUrl?: string;
+  downloadUrls?: string[];
+  // Or backend may return token(s) only; FE should then construct /api/download/{token}
+  downloadToken?: string;
+  downloadTokens?: string[];
   errorMessage?: string | null;
   createdAt?: string;
   updatedAt?: string;

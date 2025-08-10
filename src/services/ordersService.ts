@@ -127,7 +127,7 @@ export const ordersService = {
     return Array.isArray(data) ? data.map(mapOrderDTOToOrder) : [];
   },
 
-  // Download a paid digital product for a specific order item
+  // Download a paid digital product for a specific order item (legacy endpoint; may not be supported)
   downloadProduct: async (orderId: string | number, productId: string | number, productName?: string): Promise<boolean> => {
     try {
       const url = `${API_BASE_URL}/api/orders/${orderId}/items/${productId}/download`;
@@ -243,6 +243,120 @@ export const ordersService = {
       return true;
     } catch (error) {
       console.error('Download product error:', error);
+      alert('An unexpected error occurred while downloading the file.');
+      return false;
+    }
+  },
+
+  // Download by full URL (including token), e.g. /api/download/{token}
+  downloadByUrl: async (downloadUrl: string, suggestedName?: string): Promise<boolean> => {
+    try {
+      if (!downloadUrl) {
+        alert('Missing download URL.');
+        return false;
+      }
+      // If relative path, prefix with API_BASE_URL
+      let url = downloadUrl;
+      if (downloadUrl.startsWith('/')) {
+        url = `${API_BASE_URL}${downloadUrl}`;
+      }
+
+      const headers: Record<string, string> = {};
+      Object.entries(defaultHeaders).forEach(([key, value]) => {
+        if (value !== undefined) headers[key] = value;
+      });
+      delete headers['Content-Type'];
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: headers as HeadersInit,
+      });
+
+      if (!response.ok) {
+        let message = await response.text().catch(() => 'Failed to download');
+        if (response.status === 410) message = 'Download link expired';
+        else if (response.status === 403) message = 'Not entitled to download this product';
+        else if (response.status === 404) message = 'Product file not available';
+        else if (response.status === 400) message = 'Invalid download link';
+        if (response.status === 401) {
+          localStorage.removeItem('user');
+          localStorage.removeItem('token');
+          removeAuthToken();
+          window.dispatchEvent(new CustomEvent('auth:logout', { detail: { reason: 'api_error' } }));
+        }
+        alert(message || `Error ${response.status}: Unable to download the file`);
+        return false;
+      }
+
+      const disposition = response.headers.get('Content-Disposition') || response.headers.get('content-disposition') || '';
+      const extractFilename = (disp: string): string | null => {
+        if (!disp) return null;
+        let m = disp.match(/filename\*=(?:UTF-8)?'(?:[^']*)'([^;\r\n]+)/i);
+        if (m && m[1]) {
+          const val = m[1].trim().replace(/^"|"$/g, '');
+          try { return decodeURIComponent(val); } catch { return val; }
+        }
+        m = disp.match(/filename\*=UTF-8''([^;\r\n]+)/i);
+        if (m && m[1]) {
+          const val = m[1].trim().replace(/^"|"$/g, '');
+          try { return decodeURIComponent(val); } catch { return val; }
+        }
+        m = disp.match(/filename=\"([^\"\r\n]+)\"/i);
+        if (m && m[1]) {
+          const val = m[1].trim();
+          try { return decodeURIComponent(val); } catch { return val; }
+        }
+        m = disp.match(/filename=([^;\r\n]+)/i);
+        if (m && m[1]) {
+          const val = m[1].trim().replace(/^\"|\"$/g, '');
+          try { return decodeURIComponent(val); } catch { return val; }
+        }
+        return null;
+      };
+
+      const sanitizeFilename = (name: string): string => {
+        const base = (name || '').split(/[\\\\\/]/).pop() || '';
+        const cleaned = base.replace(/[^a-zA-Z0-9 ._()-]+/g, '_').trim();
+        const trimmedDots = cleaned.replace(/^[. ]+|[. ]+$/g, '');
+        return trimmedDots || '';
+      };
+
+      const forceZipExtension = (name: string): string => {
+        if (!name) return 'product.zip';
+        let base = name.trim();
+        if (/\.zip$/i.test(base)) {
+          return base.replace(/\.[^.]+$/i, '.zip');
+        }
+        base = base.replace(/\.[^.]+$/i, '');
+        return `${base}.zip`;
+      };
+
+      let filenameBase = '';
+      if (suggestedName) filenameBase = sanitizeFilename(suggestedName);
+      if (!filenameBase) {
+        const headerName = extractFilename(disposition) || '';
+        filenameBase = sanitizeFilename(headerName);
+      }
+      if (!filenameBase) filenameBase = 'product';
+      const filename = forceZipExtension(filenameBase);
+
+      const blob = await response.blob();
+      if (!blob || blob.size === 0) {
+        alert('File not available for download');
+        return false;
+      }
+
+      const link = document.createElement('a');
+      const objectUrl = URL.createObjectURL(blob);
+      link.href = objectUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(objectUrl);
+      return true;
+    } catch (error) {
+      console.error('Download by URL error:', error);
       alert('An unexpected error occurred while downloading the file.');
       return false;
     }
