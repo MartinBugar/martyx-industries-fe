@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { useAuth } from '../../context/useAuth';
 import './Header.css';
+import logoImg from '../../assets/logo/logo.png';
 
 interface HeaderProps {
   cartItems: number;
@@ -24,8 +25,8 @@ const Header: React.FC<HeaderProps> = ({ cartItems, onCartClick }) => {
   return (
     <header className="shop-header">
       <div className="logo">
-        <Link to="/" className="logo-link">
-          <h1>Martyx Industries</h1>
+        <Link to="/" className="logo-link" aria-label="Martyx Industries">
+          <img src={logoImg} alt="Martyx Industries" className="logo-img" />
         </Link>
       </div>
       

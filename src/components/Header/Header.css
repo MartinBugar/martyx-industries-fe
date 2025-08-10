@@ -30,6 +30,12 @@
   font-weight: 600;
 }
 
+.logo-img {
+  height: 36px;
+  width: auto;
+  display: block;
+}
+
 /* Navigation styles */
 .main-nav {
   display: flex;
