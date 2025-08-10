@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { paymentService, type PaymentDTO } from '../../services/paymentService';
 import { useAuth } from '../../context/useAuth';
@@ -14,8 +14,11 @@ const PayPalSuccess: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState<boolean>(true);
   const [payment, setPayment] = useState<PaymentDTO | null>(null);
+  const processedRef = useRef(false);
 
   useEffect(() => {
+    if (processedRef.current) return;
+    processedRef.current = true;
     const run = async () => {
       const paymentId = searchParams.get('paymentId');
       const payerEmail =
@@ -117,7 +120,7 @@ const PayPalSuccess: React.FC = () => {
       }
     };
     run();
-  }, [searchParams, locationState, addOrder, clearCart, getTotalPrice, isAuthenticated, updateProfile, user, items]);
+  }, []);
 
   if (isProcessing) {
     return <div className="page-container"><p>Finalizing your payment…</p></div>;

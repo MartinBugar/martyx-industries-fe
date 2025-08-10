@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import './Footer.css';
 
 const Footer: React.FC = () => {
@@ -11,27 +12,27 @@ const Footer: React.FC = () => {
           <div className="footer-section">
             <h3>About Us</h3>
             <ul className="footer-links">
-              <li><a href="#">Our Story</a></li>
-              <li><a href="#">Team</a></li>
-              <li><a href="#">Careers</a></li>
+              <li><Link to="/about">Our Story</Link></li>
+              <li><Link to="/about">Team</Link></li>
+              <li><Link to="/about">Careers</Link></li>
             </ul>
           </div>
           
           <div className="footer-section">
             <h3>Customer Service</h3>
             <ul className="footer-links">
-              <li><a href="#">Contact Us</a></li>
-              <li><a href="#">FAQ</a></li>
-              <li><a href="#">Shipping & Returns</a></li>
+              <li><Link to="/about">Contact Us</Link></li>
+              <li><Link to="/about">FAQ</Link></li>
+              <li><Link to="/products">Shipping & Returns</Link></li>
             </ul>
           </div>
           
           <div className="footer-section">
             <h3>Legal</h3>
             <ul className="footer-links">
-              <li><a href="#">Terms of Service</a></li>
-              <li><a href="#">Privacy Policy</a></li>
-              <li><a href="#">Cookie Policy</a></li>
+              <li><Link to="/about">Terms of Service</Link></li>
+              <li><Link to="/about">Privacy Policy</Link></li>
+              <li><Link to="/about">Cookie Policy</Link></li>
             </ul>
           </div>
           
