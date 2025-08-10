@@ -75,3 +75,13 @@ h3 {
     align-items: flex-start;
   }
 }
+
+:root {
+  --primary-color: #213547;
+  --secondary-color: #4caf50;
+  --text-color: #213547;
+  --background-color: #ffffff;
+  --light-gray: #f9f9f9;
+  --border-radius: 8px;
+  --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}

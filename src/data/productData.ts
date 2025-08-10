@@ -51,3 +51,38 @@ export const defaultModelViewerSettings = {
   roughnessFactor: "0.36",
   height: "500px"
 };
+
+// Multiple products array for the catalog (keeps single export for backward compatibility)
+export const products: Product[] = [
+  product,
+  {
+    id: "2",
+    name: "Endeavour Pro - RC APC Variant",
+    price: 129.99,
+    currency: "USD",
+    description: "Enhanced variant with extended features and higher detail level for professional use and display.",
+    features: [
+      "High-resolution textures",
+      "Extended interaction presets",
+      "Optimized for performance",
+      "Great for demos and showcases"
+    ],
+    modelPath: axisModel,
+    interactionInstructions: product.interactionInstructions
+  },
+  {
+    id: "3",
+    name: "Endeavour Lite - Educational Pack",
+    price: 59.99,
+    currency: "USD",
+    description: "Lightweight version ideal for teaching fundamentals and quick previews.",
+    features: [
+      "Lightweight assets",
+      "Fast loading",
+      "Perfect for learning",
+      "Beginner friendly"
+    ],
+    modelPath: axisModel,
+    interactionInstructions: product.interactionInstructions
+  }
+];

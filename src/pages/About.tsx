@@ -4,34 +4,54 @@ import './Pages.css';
 const About: React.FC = () => {
   return (
     <div className="page-container about-page">
-      <h1>About Martyx Industries</h1>
-      
-      <section className="about-section">
-        <h2>Our Story</h2>
+      <section className="about-hero">
+        <h1>3D‑Printed RC Models, Engineered to Perform</h1>
         <p>
-          Founded in 2020, Martyx Industries has been at the forefront of 3D product innovation.
-          We specialize in creating high-quality 3D models and products for various industries.
+          We design and 3D print modular, RC‑ready vehicles and parts — precision tuned, field tested,
+          and upgrade friendly.
         </p>
       </section>
-      
-      <section className="about-section">
-        <h2>Our Mission</h2>
-        <p>
-          At Martyx Industries, our mission is to provide cutting-edge 3D solutions that help
-          businesses and individuals bring their ideas to life. We believe in the power of
-          visualization and strive to make 3D technology accessible to everyone.
-        </p>
+
+      <section className="about-grid" aria-label="What makes us different">
+        <div className="about-card">
+          <h3>Precision 3D Printing</h3>
+          <p>Functional geometries, strong infill patterns, and material profiles dialed for real RC use.</p>
+        </div>
+        <div className="about-card">
+          <h3>RC‑Ready by Design</h3>
+          <p>Standardized mounting points, hardware compatibility, and electronics space planned from day one.</p>
+        </div>
+        <div className="about-card">
+          <h3>Modular & Repairable</h3>
+          <p>Replace only what breaks. Upgrade in stages. Keep your model running without the hassle.</p>
+        </div>
       </section>
-      
-      <section className="about-section">
-        <h2>Contact Us</h2>
-        <p>
-          Have questions or want to learn more about our products? Reach out to us:
-        </p>
-        <div className="contact-info">
-          <p>Email: info@martyxindustries.com</p>
-          <p>Phone: (555) 123-4567</p>
-          <p>Address: 123 Innovation Way, Tech City, TC 12345</p>
+
+      <section className="about-details">
+        <div className="detail">
+          <h2>Materials & Tuning</h2>
+          <p>
+            PLA+ for prototyping, PETG/ABS for durability, and Nylon/CF for high‑stress parts. We publish
+            recommended slicer presets and torque specs.
+          </p>
+        </div>
+        <div className="detail">
+          <h2>From CAD to Track</h2>
+          <p>
+            Every release is printed, assembled, and track‑tested. Documentation includes BOM, assembly steps,
+            and maintenance tips.
+          </p>
+        </div>
+      </section>
+
+      <section className="about-cta">
+        <div className="cta-inner">
+          <h2>Ready to build?</h2>
+          <p>Explore our RC models and parts — or contact us for custom work.</p>
+          <div className="cta-actions">
+            <a className="btn primary" href="/products">Explore Models</a>
+            <a className="btn subtle" href="mailto:info@martyxindustries.com">Contact Us</a>
+          </div>
         </div>
       </section>
     </div>

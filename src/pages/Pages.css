@@ -115,3 +115,244 @@
     font-size: 2rem;
   }
 }
+
+/* Product cards grid - minimalistic and consistent with global styles */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+  align-items: stretch;
+}
+
+.product-card {
+  background: var(--background-color);
+  border: 1px solid #eeeeee;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  transition: box-shadow 0.2s ease, transform 0.1s ease, border-color 0.2s ease;
+}
+
+.product-card:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+  border-color: #e6e6e6;
+}
+
+.card-media {
+  background: var(--light-gray);
+  aspect-ratio: 4 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.poster-placeholder {
+  width: 64px;
+  height: 64px;
+  border-radius: 8px;
+  border: 2px dashed #d8d8d8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-weight: 600;
+}
+
+.card-body {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.card-title {
+  font-size: 1rem;
+  margin: 0;
+  line-height: 1.3;
+  min-height: calc(1.3em * 2);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-price {
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.card-desc {
+  font-size: 0.9rem;
+  color: #555;
+  line-height: 1.4;
+  min-height: calc(1.4em * 3);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-actions {
+  margin-top: auto;
+}
+
+/* Reuse global button style but adapt spacing for cards */
+.product-card .add-to-cart-btn {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 6px;
+}
+
+.product-card .add-to-cart-btn:focus {
+  outline: 3px solid rgba(33, 53, 71, 0.25);
+  outline-offset: 2px;
+}
+
+@media (max-width: 768px) {
+  .products-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .products-grid {
+    grid-template-columns: 1fr;
+  }
+}
+/* About page - modern minimal redesign */
+.about-page .about-hero {
+  text-align: center;
+  max-width: 900px;
+  margin: 0 auto 3rem;
+}
+
+.about-page .about-hero h1 {
+  font-size: clamp(1.8rem, 2.5vw + 1rem, 3rem);
+  margin-bottom: 0.75rem;
+}
+
+.about-page .about-hero p {
+  font-size: 1.1rem;
+  color: #555;
+}
+
+.about-page .about-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 2.5rem;
+}
+
+.about-page .about-card {
+  background: var(--background-color);
+  border: 1px solid #eeeeee;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  padding: 1.25rem;
+  transition: box-shadow 0.2s ease, transform 0.12s ease, border-color 0.2s ease;
+}
+
+.about-page .about-card:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+  border-color: #e6e6e6;
+}
+
+.about-page .about-card h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+}
+
+.about-page .about-card p {
+  color: #555;
+  margin: 0;
+}
+
+.about-page .about-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin: 2rem 0 3rem;
+}
+
+.about-page .detail h2 {
+  margin-bottom: 0.5rem;
+  font-size: 1.4rem;
+}
+
+.about-page .detail p {
+  color: #444;
+  line-height: 1.6;
+}
+
+.about-page .about-cta {
+  background: var(--light-gray);
+  border-radius: var(--border-radius);
+  padding: 2rem;
+}
+
+.about-page .cta-inner {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.about-page .cta-actions {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Minimal button styles for About page CTAs */
+.about-page .btn {
+  display: inline-block;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  border: 1px solid transparent;
+}
+
+.about-page .btn.primary {
+  background: var(--primary-color);
+  color: #fff;
+}
+
+.about-page .btn.primary:hover {
+  filter: brightness(1.05);
+}
+
+.about-page .btn.subtle {
+  background: transparent;
+  color: var(--primary-color);
+  border-color: #dcdcdc;
+}
+
+.about-page .btn.subtle:hover {
+  background: #f6f8fa;
+}
+
+@media (max-width: 900px) {
+  .about-page .about-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .about-page .about-details {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .about-page .about-grid {
+    grid-template-columns: 1fr;
+  }
+}
