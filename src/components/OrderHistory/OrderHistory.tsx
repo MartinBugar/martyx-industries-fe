@@ -44,9 +44,9 @@ const OrderHistory: React.FC = () => {
   };
 
   // Handle download of digital product
-  const handleDownload = async (order: Order, productId: string) => {
+  const handleDownload = async (order: Order, productId: string, productName?: string) => {
     const orderId = order.backendId || order.id;
-    await ordersService.downloadProduct(orderId, productId);
+    await ordersService.downloadProduct(orderId, productId, productName);
   };
   
   // Get status badge class
@@ -236,7 +236,7 @@ const OrderHistory: React.FC = () => {
                           <td className="item-quantity" data-label="Quantity">{item.quantity}</td>
                           <td className="item-price" data-label="Total">{formatCurrency(item.price * item.quantity, order.currency)}</td>
                           <td className="item-actions" data-label="Actions">
-                            <button className="download-button" onClick={() => void handleDownload(order, item.productId)}>
+                            <button className="download-button" onClick={() => void handleDownload(order, item.productId, item.productName)}>
                               Download
                             </button>
                           </td>

@@ -48,7 +48,7 @@ const OrderConfirmation: React.FC = () => {
   const handleDownload = () => {
     // In a real application, this would generate a secure download link
     // For this demo, we'll just show an alert
-    alert(`Download started for ${product.name}.rar`);
+    alert(`Download started for ${product.name}.zip`);
   };
   
   if (!customerEmail) {
@@ -119,7 +119,7 @@ const OrderConfirmation: React.FC = () => {
               className="download-btn"
               onClick={handleDownload}
             >
-              Download {product.name}.rar
+              Download {product.name}.zip
             </button>
             
             <div className="download-info">

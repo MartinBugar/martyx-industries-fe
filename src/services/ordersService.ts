@@ -128,7 +128,7 @@ export const ordersService = {
   },
 
   // Download a paid digital product for a specific order item
-  downloadProduct: async (orderId: string | number, productId: string | number): Promise<boolean> => {
+  downloadProduct: async (orderId: string | number, productId: string | number, productName?: string): Promise<boolean> => {
     try {
       const url = `${API_BASE_URL}/api/orders/${orderId}/items/${productId}/download`;
       // Clone headers from defaultHeaders and remove Content-Type for binary GET
@@ -175,7 +175,7 @@ export const ordersService = {
           try { return decodeURIComponent(val); } catch { return val; }
         }
         // Try quoted filename
-        m = disp.match(/filename="([^"\r\n]+)"/i);
+        m = disp.match(/filename=\"([^\"\r\n]+)\"/i);
         if (m && m[1]) {
           const val = m[1].trim();
           try { return decodeURIComponent(val); } catch { return val; }
@@ -183,7 +183,7 @@ export const ordersService = {
         // Try unquoted filename
         m = disp.match(/filename=([^;\r\n]+)/i);
         if (m && m[1]) {
-          const val = m[1].trim().replace(/^"|"$/g, '');
+          const val = m[1].trim().replace(/^\"|\"$/g, '');
           try { return decodeURIComponent(val); } catch { return val; }
         }
         return null;
@@ -191,7 +191,7 @@ export const ordersService = {
 
       const sanitizeFilename = (name: string): string => {
         // keep only basename and allow safe characters
-        const base = (name || '').split(/[\\/]/).pop() || '';
+        const base = (name || '').split(/[\\\\\/]/).pop() || '';
         // whitelist: letters, numbers, spaces, dot, dash, underscore, and parentheses
         const cleaned = base.replace(/[^a-zA-Z0-9 ._()-]+/g, '_').trim();
         // avoid leading/trailing dots/spaces
@@ -199,16 +199,32 @@ export const ordersService = {
         return trimmedDots || '';
       };
 
-      let filename = extractFilename(disposition) || '';
-      filename = sanitizeFilename(filename);
-      if (!filename) {
-        filename = `product-${productId}.rar`;
-      } else {
-        // If no extension present, default to .rar to match expected file type
-        if (!/\.[a-zA-Z0-9]{1,8}$/.test(filename)) {
-          filename = `${filename}.rar`;
+      // Ensure the downloaded filename ends with .zip
+      const forceZipExtension = (name: string): string => {
+        if (!name) return 'product.zip';
+        let base = name.trim();
+        // If already .zip (any case), normalize to lower-case extension
+        if (/\.zip$/i.test(base)) {
+          return base.replace(/\.[^.]+$/i, '.zip');
         }
+        // Remove any existing extension and add .zip
+        base = base.replace(/\.[^.]+$/i, '');
+        return `${base}.zip`;
+      };
+
+      // Priority: provided productName -> header filename -> default
+      let filenameBase = '';
+      if (productName) {
+        filenameBase = sanitizeFilename(productName);
       }
+      if (!filenameBase) {
+        const headerName = extractFilename(disposition) || '';
+        filenameBase = sanitizeFilename(headerName);
+      }
+      if (!filenameBase) {
+        filenameBase = `product-${productId}`;
+      }
+      const filename = forceZipExtension(filenameBase);
 
       const blob = await response.blob();
       if (!blob || blob.size === 0) {
