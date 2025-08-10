@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { paymentService, type PaymentDTO } from '../../services/paymentService';
+import { orderService } from '../../services/orderService';
 import { useAuth } from '../../context/useAuth';
 import { useCart } from '../../context/useCart';
 
@@ -14,6 +15,8 @@ const PayPalSuccess: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState<boolean>(true);
   const [payment, setPayment] = useState<PaymentDTO | null>(null);
+  const [dlError, setDlError] = useState<string | null>(null);
+  const [downloading, setDownloading] = useState<boolean>(false);
   const processedRef = useRef(false);
 
   useEffect(() => {
@@ -122,6 +125,24 @@ const PayPalSuccess: React.FC = () => {
     run();
   }, []);
 
+  const handleDownloadInvoice = async () => {
+    setDlError(null);
+    const current = payment;
+    if (!current || current.status !== 'COMPLETED' || current.orderId == null) {
+      setDlError('Invoice is available only for completed orders.');
+      return;
+    }
+    try {
+      setDownloading(true);
+      await orderService.downloadInvoice(current.orderId as number);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'Failed to download invoice';
+      setDlError(msg);
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   if (isProcessing) {
     return <div className="page-container"><p>Finalizing your payment…</p></div>;
   }
@@ -166,12 +187,22 @@ const PayPalSuccess: React.FC = () => {
 
           <div className="actions" style={{ marginTop: '16px' }}>
             {payment.status === 'COMPLETED' ? (
-              <button onClick={() => navigate('/order-confirmation')}>Continue</button>
+              <>
+                {typeof payment.orderId === 'number' && (
+                  <button onClick={handleDownloadInvoice} disabled={downloading}>
+                    {downloading ? 'Downloading…' : 'Download Invoice'}
+                  </button>
+                )}
+                <button style={{ marginLeft: 8 }} onClick={() => navigate('/order-confirmation')}>Continue</button>
+              </>
             ) : (
               <button onClick={() => navigate('/checkout')}>Back to Checkout</button>
             )}
             <button style={{ marginLeft: 8 }} onClick={() => navigate('/')}>Go to Home</button>
           </div>
+          {dlError && (
+            <p style={{ color: 'var(--danger, #b00020)', marginTop: 8 }}>{dlError}</p>
+          )}
         </div>
       ) : (
         <div className="payment-summary">

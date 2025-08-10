@@ -3,10 +3,13 @@ import { useAuth } from '../../context/useAuth';
 import type { Order } from '../../context/authTypes';
 import './OrderHistory.css';
 import { ordersService } from '../../services/ordersService';
+import { orderService } from '../../services/orderService';
 
 const OrderHistory: React.FC = () => {
   const { user, getOrders, refreshOrders, ordersLoading, hasLoadedOrders } = useAuth();
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [invoiceDownloadingId, setInvoiceDownloadingId] = useState<string | null>(null);
+  const [invoiceError, setInvoiceError] = useState<string | null>(null);
   
   // Trigger fetching orders when this tab/component is opened
   useEffect(() => {
@@ -47,6 +50,21 @@ const OrderHistory: React.FC = () => {
   const handleDownload = async (order: Order, productId: string, productName?: string) => {
     const orderId = order.backendId || order.id;
     await ordersService.downloadProduct(orderId, productId, productName);
+  };
+
+  // Handle invoice download
+  const handleInvoiceDownload = async (order: Order) => {
+    setInvoiceError(null);
+    const apiOrderId = order.backendId || order.id;
+    try {
+      setInvoiceDownloadingId(order.id);
+      await orderService.downloadInvoice(apiOrderId);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'Failed to download invoice';
+      setInvoiceError(msg);
+    } finally {
+      setInvoiceDownloadingId(null);
+    }
   };
   
   // Get status badge class
@@ -208,6 +226,24 @@ const OrderHistory: React.FC = () => {
                         <span className="v note">{order.notes}</span>
                       </div>
                     </div>
+                  )}
+                </div>
+
+                <div className="order-section">
+                  <h4 className="section-title">Invoice</h4>
+                  {( ['completed','paid'].includes(order.status.toLowerCase()) ) ? (
+                    <>
+                      <button className="download-button" onClick={() => void handleInvoiceDownload(order)} disabled={invoiceDownloadingId === order.id}>
+                        {invoiceDownloadingId === order.id ? 'Downloading…' : 'Download Invoice'}
+                      </button>
+                      {invoiceError && selectedOrder?.id === order.id && (
+                        <div className="kv">
+                          <span className="v" style={{ color: 'var(--danger, #b00020)' }}>{invoiceError}</span>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="kv"><span className="v">Invoice available after payment is completed.</span></div>
                   )}
                 </div>
 
