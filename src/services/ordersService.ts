@@ -1,4 +1,5 @@
 import { API_BASE_URL, defaultHeaders, handleResponse } from './apiUtils';
+import { removeAuthToken } from './api';
 import type { Order } from '../context/authTypes';
 
 // Types that approximate the backend OrderDTO shape
@@ -13,11 +14,16 @@ interface OrderItemDTO {
   unitPrice?: number;
   price?: number;
   subtotal?: number;
+  // common casing variants for product type coming from backend
+  productType?: string;
+  ProductType?: string;
   // nested product reference if present
   product?: {
     id?: string | number;
     name?: string;
     title?: string;
+    productType?: string;
+    ProductType?: string;
   };
 }
 
@@ -67,12 +73,15 @@ export const mapOrderDTOToOrder = (dto: OrderDTO): Order => {
     if (price == null && it.subtotal != null && quantity > 0) price = toNumber(it.subtotal) / quantity;
     const numericPrice = toNumber(price);
     const productId = (it.productId ?? it.product?.id ?? it.id ?? `${idx+1}`).toString();
+    const rawType = it.productType ?? it.ProductType ?? it.product?.productType ?? it.product?.ProductType;
+    const productType = rawType != null ? String(rawType) : undefined;
 
     return {
       productId,
       productName,
       quantity,
       price: numericPrice,
+      productType,
     };
   });
 
@@ -88,6 +97,7 @@ export const mapOrderDTOToOrder = (dto: OrderDTO): Order => {
 
   return {
     id: String(idSource),
+    backendId: dto.id != null ? String(dto.id) : undefined,
     date: String(date),
     items,
     totalAmount,
@@ -115,5 +125,65 @@ export const ordersService = {
     const data = await handleResponse(response) as OrderDTO[];
     // Map DTOs to frontend Order shape
     return Array.isArray(data) ? data.map(mapOrderDTOToOrder) : [];
+  },
+
+  // Download a paid digital product for a specific order item
+  downloadProduct: async (orderId: string | number, productId: string | number): Promise<boolean> => {
+    try {
+      const url = `${API_BASE_URL}/api/orders/${orderId}/items/${productId}/download`;
+      // Clone headers from defaultHeaders and remove Content-Type for binary GET
+      const headers: Record<string, string> = {};
+      Object.entries(defaultHeaders).forEach(([key, value]) => {
+        if (value !== undefined) headers[key] = value;
+      });
+      delete headers['Content-Type'];
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: headers as HeadersInit,
+      });
+
+      if (!response.ok) {
+        // Attempt to read error message as text
+        const message = await response.text().catch(() => 'Failed to download');
+        if (response.status === 401) {
+          // Mirror apiUtils.handleResponse 401 handling
+          localStorage.removeItem('user');
+          localStorage.removeItem('token');
+          removeAuthToken();
+          window.dispatchEvent(new CustomEvent('auth:logout', { detail: { reason: 'api_error' } }));
+        }
+        alert(message || `Error ${response.status}: Unable to download the file`);
+        return false;
+      }
+
+      // Get filename from headers
+      const disposition = response.headers.get('Content-Disposition') || response.headers.get('content-disposition') || '';
+      let filename = `product-${productId}.zip`;
+      const match = disposition.match(/filename\*=UTF-8''([^;]+)|filename="?([^";]+)"?/i);
+      if (match) {
+        filename = decodeURIComponent(match[1] || match[2]);
+      }
+
+      const blob = await response.blob();
+      if (!blob || blob.size === 0) {
+        alert('File not available for download');
+        return false;
+      }
+
+      const link = document.createElement('a');
+      const objectUrl = URL.createObjectURL(blob);
+      link.href = objectUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(objectUrl);
+      return true;
+    } catch (error) {
+      console.error('Download product error:', error);
+      alert('An unexpected error occurred while downloading the file.');
+      return false;
+    }
   },
 };

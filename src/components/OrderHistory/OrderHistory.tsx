@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/useAuth';
 import type { Order } from '../../context/authTypes';
 import './OrderHistory.css';
+import { ordersService } from '../../services/ordersService';
 
 const OrderHistory: React.FC = () => {
   const { user, getOrders, refreshOrders, ordersLoading, hasLoadedOrders } = useAuth();
@@ -40,6 +41,12 @@ const OrderHistory: React.FC = () => {
   // Handle order selection
   const handleOrderSelect = (order: Order) => {
     setSelectedOrder(order === selectedOrder ? null : order);
+  };
+
+  // Handle download of digital product
+  const handleDownload = async (order: Order, productId: string) => {
+    const orderId = order.backendId || order.id;
+    await ordersService.downloadProduct(orderId, productId);
   };
   
   // Get status badge class
@@ -212,6 +219,7 @@ const OrderHistory: React.FC = () => {
                         <th>Unit Price</th>
                         <th>Quantity</th>
                         <th>Total</th>
+                        <th>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -220,10 +228,18 @@ const OrderHistory: React.FC = () => {
                           <td className="item-name" data-label="Product">
                             <div>{item.productName}</div>
                             <div className="item-subtext">ID: {item.productId}</div>
+                            {item.productType && (
+                              <div className="item-subtext">Type: {item.productType}</div>
+                            )}
                           </td>
                           <td className="item-unit-price" data-label="Unit Price">{formatCurrency(item.price, order.currency)}</td>
                           <td className="item-quantity" data-label="Quantity">{item.quantity}</td>
                           <td className="item-price" data-label="Total">{formatCurrency(item.price * item.quantity, order.currency)}</td>
+                          <td className="item-actions" data-label="Actions">
+                            <button className="download-button" onClick={() => void handleDownload(order, item.productId)}>
+                              Download
+                            </button>
+                          </td>
                         </tr>
                       ))}
                     </tbody>

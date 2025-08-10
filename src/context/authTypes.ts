@@ -1,12 +1,16 @@
 // Define the structure of an order
 export interface Order {
   id: string;
+  // Backend numeric ID for API operations (kept separate from display id/orderNumber)
+  backendId?: string;
   date: string;
   items: Array<{
     productId: string;
     productName: string;
     quantity: number;
     price: number; // unit price
+    // optional product type returned by backend (e.g., DIGITAL, PHYSICAL, SUBSCRIPTION)
+    productType?: string;
   }>;
   totalAmount: number;
   // Status comes from backend (e.g., PENDING, PAID, PROCESSING, SHIPPED, DELIVERED, CANCELLED, REFUNDED, etc.)
