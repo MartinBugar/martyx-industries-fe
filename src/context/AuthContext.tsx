@@ -16,6 +16,9 @@ export interface AuthContextType {
   // Order history management
   addOrder: (order: Omit<Order, 'id' | 'date'>) => void;
   getOrders: () => Order[];
+  refreshOrders: () => Promise<boolean>;
+  ordersLoading: boolean;
+  hasLoadedOrders: boolean;
   // Password reset
   forgotPassword: (email: string) => Promise<{ success: boolean; message: string }>;
   resetPassword: (token: string, password: string) => Promise<{ success: boolean; message: string }>;

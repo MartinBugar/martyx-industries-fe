@@ -18,6 +18,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // and validate against a backend server
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [ordersLoading, setOrdersLoading] = useState<boolean>(false);
+  const [hasLoadedOrders, setHasLoadedOrders] = useState<boolean>(false);
   
   // Check if user and token are stored in localStorage on initial load
   useEffect(() => {
@@ -51,12 +53,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             }
           }
           
-          // Fetch orders for the authenticated user
-          try {
-            await refreshOrders();
-          } catch (e) {
-            console.error('Failed to refresh orders on init:', e);
-          }
+          // Defer fetching orders until the user opens the Order History tab
         }
       }
       
@@ -117,12 +114,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Set auth token for future API requests
       setAuthToken(token);
 
-      // Fetch user's orders from backend
-      try {
-        await refreshOrders();
-      } catch (e) {
-        console.error('Failed to fetch orders after login:', e);
-      }
+      // Defer fetching user's orders until the Order History tab is opened
+      setHasLoadedOrders(false);
       
       return true;
     } catch (error) {
@@ -160,6 +153,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(null);
       localStorage.removeItem('user');
       localStorage.removeItem('token');
+      
+      // Reset orders loading flags
+      setOrdersLoading(false);
+      setHasLoadedOrders(false);
       
       // Remove auth token from future API requests
       removeAuthToken();
@@ -232,6 +229,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Fetch orders from backend and update user state
   const refreshOrders = async (): Promise<boolean> => {
+    setOrdersLoading(true);
     try {
       const fetchedOrders = await ordersService.fetchMyOrders();
       // Determine the base user: prefer current state, else from localStorage
@@ -257,6 +255,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } catch (e) {
       console.error('Failed to fetch user orders:', e);
       return false;
+    } finally {
+      setOrdersLoading(false);
+      setHasLoadedOrders(true);
     }
   };
 
@@ -333,6 +334,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       fetchProfile,
       addOrder,
       getOrders,
+      refreshOrders,
+      ordersLoading,
+      hasLoadedOrders,
       forgotPassword,
       resetPassword
     }}>

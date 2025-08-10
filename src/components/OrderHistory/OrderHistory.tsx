@@ -1,11 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/useAuth';
 import type { Order } from '../../context/authTypes';
 import './OrderHistory.css';
 
 const OrderHistory: React.FC = () => {
-  const { user, getOrders } = useAuth();
+  const { user, getOrders, refreshOrders, ordersLoading, hasLoadedOrders } = useAuth();
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  
+  // Trigger fetching orders when this tab/component is opened
+  useEffect(() => {
+    if (user && !hasLoadedOrders && !ordersLoading) {
+      void refreshOrders();
+    }
+  }, [user, hasLoadedOrders, ordersLoading, refreshOrders]);
   
   // Get orders from context
   const orders = getOrders();
@@ -49,7 +56,16 @@ const OrderHistory: React.FC = () => {
     );
   }
 
-  if (orders.length === 0) {
+  if (ordersLoading || (!hasLoadedOrders && user)) {
+    return (
+      <div className="orders-container">
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <p>Loading your orders...</p>
+        </div>
+      </div>
+    );
+  } else if (orders.length === 0 && hasLoadedOrders) {
     return (
       <div className="orders-container">
         <div className="orders-empty-state">
