@@ -27,6 +27,14 @@ const PayPalSuccess: React.FC = () => {
       return [];
     }
   });
+  const [invoiceDownloadUrls, setInvoiceDownloadUrls] = useState<string[]>(() => {
+    try {
+      const raw = sessionStorage.getItem('invoiceDownloadUrls');
+      return raw ? (JSON.parse(raw) as string[]) : [];
+    } catch {
+      return [];
+    }
+  });
   const [downloadingProduct, setDownloadingProduct] = useState<boolean>(false);
   const processedRef = useRef(false);
 
@@ -63,6 +71,18 @@ const PayPalSuccess: React.FC = () => {
             if (links.length > 0) {
               sessionStorage.setItem('downloadUrls', JSON.stringify(links));
               setDownloadUrls(links);
+            }
+
+            // Extract invoice download URLs/tokens and store
+            const invLinks: string[] = [];
+            if (Array.isArray(statePayment.invoiceDownloadUrls)) invLinks.push(...statePayment.invoiceDownloadUrls.filter(Boolean));
+            if (typeof statePayment.invoiceDownloadUrl === 'string' && statePayment.invoiceDownloadUrl) invLinks.push(statePayment.invoiceDownloadUrl);
+            const toInvoiceUrl = (t: string) => `/api/download/invoice/${encodeURIComponent(t)}`;
+            if (Array.isArray(statePayment.invoiceDownloadTokens)) invLinks.push(...statePayment.invoiceDownloadTokens.filter(Boolean).map(toInvoiceUrl));
+            if (typeof statePayment.invoiceDownloadToken === 'string' && statePayment.invoiceDownloadToken) invLinks.push(toInvoiceUrl(statePayment.invoiceDownloadToken));
+            if (invLinks.length > 0) {
+              sessionStorage.setItem('invoiceDownloadUrls', JSON.stringify(invLinks));
+              setInvoiceDownloadUrls(invLinks);
             }
 
             // Save order to user's history if logged in
@@ -125,6 +145,18 @@ const PayPalSuccess: React.FC = () => {
             sessionStorage.setItem('downloadUrls', JSON.stringify(links));
           }
 
+          // Extract invoice download URLs/tokens and store
+          const invLinks: string[] = [];
+          if (Array.isArray(res.invoiceDownloadUrls)) invLinks.push(...res.invoiceDownloadUrls.filter(Boolean));
+          if (typeof res.invoiceDownloadUrl === 'string' && res.invoiceDownloadUrl) invLinks.push(res.invoiceDownloadUrl);
+          const toInvoiceUrl = (t: string) => `/api/download/invoice/${encodeURIComponent(t)}`;
+          if (Array.isArray(res.invoiceDownloadTokens)) invLinks.push(...res.invoiceDownloadTokens.filter(Boolean).map(toInvoiceUrl));
+          if (typeof res.invoiceDownloadToken === 'string' && res.invoiceDownloadToken) invLinks.push(toInvoiceUrl(res.invoiceDownloadToken));
+          if (invLinks.length > 0) {
+            sessionStorage.setItem('invoiceDownloadUrls', JSON.stringify(invLinks));
+            setInvoiceDownloadUrls(invLinks);
+          }
+
           // Save order to user's history if logged in
           if (isAuthenticated && user) {
             addOrder({
@@ -162,13 +194,20 @@ const PayPalSuccess: React.FC = () => {
   const handleDownloadInvoice = async () => {
     setDlError(null);
     const current = payment;
-    if (!current || current.status !== 'COMPLETED' || current.orderId == null) {
+    if (!current || current.status !== 'COMPLETED') {
       setDlError('Invoice is available only for completed orders.');
       return;
     }
     try {
       setDownloading(true);
-      await orderService.downloadInvoice(current.orderId as number);
+      if (invoiceDownloadUrls && invoiceDownloadUrls.length > 0) {
+        await ordersService.downloadInvoiceByUrl(invoiceDownloadUrls[0]);
+      } else if (current.orderId != null) {
+        await orderService.downloadInvoice(current.orderId as number);
+      } else {
+        setDlError('Invoice link is not available yet.');
+        return;
+      }
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'Failed to download invoice';
       setDlError(msg);
@@ -259,7 +298,7 @@ const PayPalSuccess: React.FC = () => {
             <div className="actions">
               {payment.status === 'COMPLETED' ? (
                 <>
-                  {typeof payment.orderId === 'number' && (
+                  {(typeof payment.orderId === 'number' || (invoiceDownloadUrls && invoiceDownloadUrls.length > 0)) && (
                     <button onClick={handleDownloadInvoice} disabled={downloading}>
                       {downloading ? 'Downloading…' : 'Download Invoice'}
                     </button>

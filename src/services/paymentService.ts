@@ -34,6 +34,11 @@ export interface PaymentDTO {
   // Or backend may return token(s) only; FE should then construct /api/download/{token}
   downloadToken?: string;
   downloadTokens?: string[];
+  // Invoice token/URL support
+  invoiceDownloadUrl?: string;
+  invoiceDownloadUrls?: string[];
+  invoiceDownloadToken?: string;
+  invoiceDownloadTokens?: string[];
   errorMessage?: string | null;
   createdAt?: string;
   updatedAt?: string;
