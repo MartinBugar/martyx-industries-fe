@@ -474,4 +474,19 @@ export const ordersService = {
       return false;
     }
   },
+
+  // Trigger sending order confirmation/download email to the customer
+  sendOrderEmail: async (orderId: number | string, email?: string): Promise<void> => {
+    const url = `${API_BASE_URL}/api/orders/${orderId}/email`;
+    const headers: Record<string, string> = {};
+    Object.entries(defaultHeaders).forEach(([key, value]) => {
+      if (value !== undefined) headers[key] = value as string;
+    });
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: headers as HeadersInit,
+      body: JSON.stringify(email ? { email } : {}),
+    });
+    await handleResponse(response);
+  },
 };
