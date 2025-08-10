@@ -1,10 +1,12 @@
 import React from 'react';
-import { products, type Product } from '../data/productData';
+import { product, type Product } from '../data/productData';
 import { useCart } from '../context/useCart';
 import './Pages.css';
 
 const Products: React.FC = () => {
   const { addToCart } = useCart();
+
+  const productsList: Product[] = [product];
 
   const handleAdd = (p: Product) => () => addToCart(p);
 
@@ -22,7 +24,7 @@ const Products: React.FC = () => {
       </div>
 
       <section aria-label="Product catalog" className="products-grid">
-        {products.map((p) => (
+        {productsList.map((p) => (
           <article key={p.id} className="product-card">
             <div className="card-media" aria-hidden="true">
               {/* Minimal visual placeholder aligned with site style */}
