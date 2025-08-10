@@ -144,45 +144,57 @@
   color: #213547;
 }
 
-/* Account icon styles */
+/* Account icon styles - modern minimal avatar */
 .account-icon {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background-color: #f3f4f6; /* light gray */
+  border: 1px solid #e5e7eb; /* subtle border */
+  color: #213547; /* primary */
+  text-decoration: none;
   position: relative;
   cursor: pointer;
-  font-size: 1rem;
-  color: #555;
-  text-decoration: none;
-  display: inline-block;
-  padding: 0.5rem 0;
-  font-weight: 500;
-  transition: color 0.3s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease, transform 0.05s ease;
 }
 
-.account-icon::after {
-  content: "👤";
-  font-size: 1.2rem;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+.account-icon::before {
+  content: "";
+  width: 18px;
+  height: 18px;
+  background-color: currentColor;
+  -webkit-mask-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-4.33 0-8 1.92-8 4.5V21h16v-2.5c0-2.58-3.67-4.5-8-4.5z"/></svg>');
+  mask-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-4.33 0-8 1.92-8 4.5V21h16v-2.5c0-2.58-3.67-4.5-8-4.5z"/></svg>');
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-position: center;
+  mask-position: center;
 }
 
 .account-icon:hover {
-  color: #213547;
+  background-color: #eef2f7;
+  border-color: #d0d7e1;
+  box-shadow: 0 0 0 3px rgba(33, 53, 71, 0.08);
 }
 
+.account-icon:active {
+  transform: translateY(0.5px);
+  background-color: #e6ebf2;
+  border-color: #c7cfdb;
+}
+
+.account-icon:focus-visible,
 .account-icon.active {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(33, 53, 71, 0.25);
+  border-color: #213547;
+  background-color: #f0f4f9;
   color: #213547;
-  font-weight: 600;
-}
-
-.account-icon.active::before {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background-color: #213547;
 }
 
 /* Cart icon styles */
