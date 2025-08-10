@@ -6,12 +6,22 @@ export interface Order {
     productId: string;
     productName: string;
     quantity: number;
-    price: number;
+    price: number; // unit price
   }>;
   totalAmount: number;
   // Status comes from backend (e.g., PENDING, PAID, PROCESSING, SHIPPED, DELIVERED, CANCELLED, REFUNDED, etc.)
   // Keep it flexible to display the actual value from the database.
   status: string;
+  // Optional fields coming from backend (if available)
+  orderNumber?: string;
+  userEmail?: string;
+  currency?: string;
+  paymentDate?: string;
+  shippingAddress?: string;
+  billingAddress?: string;
+  paymentMethod?: string;
+  paymentId?: string;
+  notes?: string;
 }
 
 // Define the structure of a user

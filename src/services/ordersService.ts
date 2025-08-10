@@ -46,9 +46,15 @@ const normalizeStatus = (raw?: string): Order['status'] => {
   return s.length > 0 ? s : 'unknown';
 };
 
-const toNumber = (value: any): number => {
-  const n = typeof value === 'number' ? value : Number(value);
-  return Number.isFinite(n) ? n : 0;
+const toNumber = (value: unknown): number => {
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? value : 0;
+  }
+  if (typeof value === 'string') {
+    const n = Number(value);
+    return Number.isFinite(n) ? n : 0;
+  }
+  return 0;
 };
 
 export const mapOrderDTOToOrder = (dto: OrderDTO): Order => {
@@ -86,6 +92,16 @@ export const mapOrderDTOToOrder = (dto: OrderDTO): Order => {
     items,
     totalAmount,
     status: normalizeStatus(dto.status),
+    // Optional fields
+    orderNumber: dto.orderNumber ? String(dto.orderNumber) : undefined,
+    userEmail: dto.userEmail,
+    currency: dto.currency,
+    paymentDate: dto.paymentDate,
+    shippingAddress: dto.shippingAddress,
+    billingAddress: dto.billingAddress,
+    paymentMethod: dto.paymentMethod,
+    paymentId: dto.paymentId,
+    notes: dto.notes,
   };
 };
 
