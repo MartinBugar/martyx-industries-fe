@@ -153,14 +153,23 @@ const OrderHistory: React.FC = () => {
                   {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                 </div>
                 <div className="order-amount">{formatCurrency(order.totalAmount, order.currency)}</div>
-                <button className="toggle-details" aria-label="Toggle order details">
-                  {selectedOrder?.id === order.id ? '−' : '+'}
+                <button
+                  className="toggle-details"
+                  type="button"
+                  aria-label={selectedOrder?.id === order.id ? 'Collapse order details' : 'Expand order details'}
+                  aria-expanded={selectedOrder?.id === order.id ? true : false}
+                  aria-controls={`order-details-${order.id}`}
+                >
+                  <svg className="chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  <span className="sr-only">{selectedOrder?.id === order.id ? 'Collapse details' : 'Expand details'}</span>
                 </button>
               </div>
             </div>
             
             {selectedOrder?.id === order.id && (
-              <div className="order-details">
+              <div className="order-details" id={`order-details-${order.id}`} role="region" aria-label="Order details">
                 <div className="order-info-grid">
                   <div className="order-section">
                     <h4 className="section-title">Order Summary</h4>
