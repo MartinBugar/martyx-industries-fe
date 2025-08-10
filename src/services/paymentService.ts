@@ -16,21 +16,37 @@ export interface PaymentOrderDTO {
 }
 
 export interface PaymentDTO {
+  id?: number;
   paymentReference?: string;
-  transactionId: string;
+  orderId?: number;
   amount: number;
-  paymentMethod?: 'PAYPAL';
-  status: 'PENDING' | 'COMPLETED' | 'CANCELLED' | 'REFUNDED';
-  paymentUrl?: string;
+  currency?: string;
+  paymentMethod?: 'PAYPAL' | string;
+  status: 'PENDING' | 'COMPLETED' | 'CANCELLED' | 'REFUNDED' | 'FAILED';
+  transactionId?: string;
+  payerId?: string | null;
   payerEmail?: string;
+  paymentUrl?: string;
+  errorMessage?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+  completedAt?: string | null;
 }
 
 export const paymentService = {
   createPayPalPayment: async (order: PaymentOrderDTO): Promise<PaymentDTO> => {
+    // Provide frontend success/cancel URLs so backend redirects back to our app after PayPal approval
+    const origin = window.location.origin;
+    const successUrl = `${origin}/payment/paypal/success`;
+    const cancelUrl = `${origin}/payment/paypal/cancel`;
+
+    // Extend payload with redirect URLs (backend can choose to use these)
+    const payload: PaymentOrderDTO & { successUrl: string; cancelUrl: string } = { ...order, successUrl, cancelUrl };
+
     const response = await fetch(`${API_BASE_URL}/api/payments/paypal/create`, {
       method: 'POST',
       headers: defaultHeaders as HeadersInit,
-      body: JSON.stringify(order),
+      body: JSON.stringify(payload),
     });
     return (await handleResponse(response)) as PaymentDTO;
   },

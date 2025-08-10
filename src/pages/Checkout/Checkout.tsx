@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useCart } from '../../context/useCart';
 import { useAuth } from '../../context/useAuth';
 import './Checkout.css';
@@ -18,6 +18,7 @@ const Checkout: React.FC = () => {
   const { items, getTotalPrice } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [isProcessing, setIsProcessing] = useState(false);
   const [formData, setFormData] = useState<CheckoutFormData>({
     firstName: user?.firstName || '',
@@ -27,6 +28,18 @@ const Checkout: React.FC = () => {
     cardExpiry: '',
     cardCvc: ''
   });
+
+  // If returned from PayPal to /checkout with payment params, forward to success route
+  useEffect(() => {
+    const paymentId = searchParams.get('paymentId');
+    if (paymentId) {
+      const params = new URLSearchParams();
+      params.set('paymentId', paymentId);
+      const payerEmail = searchParams.get('PayerEmail');
+      if (payerEmail) params.set('PayerEmail', payerEmail);
+      navigate(`/payment/paypal/success?${params.toString()}`, { replace: true });
+    }
+  }, [searchParams, navigate]);
   
   // Handle form input changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -77,7 +90,9 @@ const Checkout: React.FC = () => {
       const payment = await paymentService.createPayPalPayment(orderDto);
 
       if (!payment.paymentUrl) {
-        throw new Error('No payment URL returned');
+        // If backend returns a completed/pending payment without a redirect URL, go to the summary page
+        navigate('/payment/paypal/success', { state: { payment } });
+        return;
       }
 
       // Redirect to approval/success URL provided by backend
@@ -89,6 +104,18 @@ const Checkout: React.FC = () => {
       setIsProcessing(false);
     }
   };
+  
+  // If redirected from PayPal with payment params, show processing instead of empty cart
+  if (searchParams.get('paymentId')) {
+    return (
+      <div className="checkout-container">
+        <div className="empty-cart-message">
+          <h2>Finalizing your payment…</h2>
+          <p>Redirecting to payment summary.</p>
+        </div>
+      </div>
+    );
+  }
   
   // If cart is empty, redirect to products
   if (items.length === 0) {
