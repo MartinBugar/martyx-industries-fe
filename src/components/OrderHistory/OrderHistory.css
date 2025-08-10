@@ -253,6 +253,12 @@
   background: rgba(239, 68, 68, 0.08);
 }
 
+.status-badge.status-completed {
+  color: #ffffff;
+  background: #22c55e;
+  border-color: #22c55e;
+}
+
 /* Items table */
 .order-items {
   margin-top: 16px;
