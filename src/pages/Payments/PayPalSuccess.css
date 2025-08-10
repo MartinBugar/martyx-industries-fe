@@ -1,17 +1,20 @@
-/* Minimalistic Order Detail (Payment Success) Styles */
+/* PayPal Success - modern minimal light theme aligned with site */
 
 .order-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0;
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
 .order-card {
-  background: var(--surface, #111416);
-  border: 1px solid rgba(255,255,255,0.06);
+  background: var(--background-color, #ffffff);
+  border: 1px solid #eeeeee;
   border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  padding: 24px;
+  box-shadow: var(--box-shadow, 0 2px 4px rgba(0, 0, 0, 0.05));
 }
 
 .order-header {
@@ -20,11 +23,14 @@
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 8px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f0f0f0;
 }
 
 .order-header h2,
 .order-header h3 {
   margin: 0;
+  color: var(--text-color, #213547);
 }
 
 .status-badge {
@@ -40,14 +46,14 @@
 }
 
 .status-completed {
-  color: #0f5132;
-  background: #d1e7dd;
-  border-color: #badbcc;
+  color: #1b5e20;
+  background: #e8f5e9;
+  border-color: #c8e6c9;
 }
 
 .status-pending {
-  color: #664d03;
-  background: #fff3cd;
+  color: #8a6d3b;
+  background: #fff8e1;
   border-color: #ffecb5;
 }
 
@@ -55,38 +61,39 @@
 .status-error,
 .status-canceled,
 .status-cancelled {
-  color: #842029;
-  background: #f8d7da;
-  border-color: #f5c2c7;
+  color: #b71c1c;
+  background: #ffebee;
+  border-color: #ffcdd2;
 }
 
 .order-message {
-  color: #aab0b7;
-  margin: 4px 0 0;
+  color: #555;
+  margin: 8px 0 0;
 }
 
 .summary-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 12px;
-  margin: 12px 0 4px;
+  gap: 8px;
+  margin: 16px 0 8px;
 }
 
 .summary-item {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  border-bottom: 1px dashed rgba(255,255,255,0.08);
-  padding: 8px 0;
+  border-bottom: 1px dashed #eeeeee;
+  padding: 10px 0;
 }
 
 .summary-item .label {
-  color: #aab0b7;
-  font-size: 13px;
+  color: #666;
+  font-size: 14px;
 }
 
 .summary-item .value {
   font-weight: 600;
+  color: var(--text-color, #213547);
 }
 
 .detail-grid {
@@ -101,38 +108,46 @@
 }
 
 .detail-grid dt {
-  color: #aab0b7;
+  color: #666;
   font-size: 12px;
 }
 
 .detail-grid dd {
-  margin: 0 0 8px 0;
+  margin: 0 0 12px 0;
   font-size: 14px;
+  color: var(--text-color, #213547);
+  word-break: break-word;
 }
 
 .actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 16px;
+  gap: 10px;
+  margin-top: 20px;
 }
 
 .actions button {
-  background: #2563eb;
-  color: white;
-  border: none;
+  background: var(--secondary-color, #4caf50);
+  color: #ffffff;
+  border: 1px solid var(--secondary-color, #4caf50);
   border-radius: 8px;
   padding: 10px 14px;
   cursor: pointer;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.actions button:hover {
+  filter: brightness(0.95);
 }
 
 .actions button[disabled] {
-  background: #93c5fd;
+  background: #b9e6c9;
+  border-color: #b9e6c9;
   cursor: not-allowed;
 }
 
 .msg-error {
-  color: #f87171;
+  color: #d32f2f;
   margin-top: 8px;
 }
 

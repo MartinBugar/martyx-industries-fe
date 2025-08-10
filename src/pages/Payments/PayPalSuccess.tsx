@@ -234,15 +234,37 @@ const PayPalSuccess: React.FC = () => {
   };
 
   if (isProcessing) {
-    return <div className="page-container"><p>Finalizing your payment…</p></div>;
+    return (
+      <div className="page-container">
+        <div className="order-container">
+          <div className="order-card" aria-live="polite" aria-busy={true}>
+            <div className="order-header">
+              <h2>Processing Payment</h2>
+              <span className="status-badge status-pending">PENDING</span>
+            </div>
+            <p className="order-message">Finalizing your payment…</p>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (error && !payment) {
     return (
       <div className="page-container">
-        <h2>Payment Error</h2>
-        <p>{error}</p>
-        <button onClick={() => navigate('/checkout')}>Back to Checkout</button>
+        <div className="order-container">
+          <div className="order-card">
+            <div className="order-header">
+              <h2>Payment Error</h2>
+              <span className="status-badge status-error">ERROR</span>
+            </div>
+            <p className="order-message">{error}</p>
+            <div className="actions">
+              <button onClick={() => navigate('/checkout')}>Back to Checkout</button>
+              <button onClick={() => navigate('/')}>Go to Home</button>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
