@@ -284,3 +284,39 @@
     content: "Total: ";
   }
 }
+
+/* Orders Toolbar */
+.orders-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+
+/* Refresh Button */
+.refresh-button {
+  padding: 6px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #fff;
+  color: #333;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.refresh-button:hover:not([disabled]) {
+  background-color: #f8f9fa;
+  border-color: #ccc;
+}
+
+.refresh-button[disabled],
+.refresh-button[aria-busy="true"] {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+@media (max-width: 768px) {
+  .orders-toolbar {
+    justify-content: flex-start;
+  }
+}
