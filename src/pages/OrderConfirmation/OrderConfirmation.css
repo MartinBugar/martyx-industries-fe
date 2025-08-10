@@ -127,10 +127,6 @@
   100% { transform: rotate(360deg); }
 }
 
-.download-section {
-  margin-top: 1.5rem;
-}
-
 .download-btn {
   display: block;
   width: 100%;

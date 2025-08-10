@@ -10,6 +10,7 @@ const OrderHistory: React.FC = () => {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [invoiceDownloadingId, setInvoiceDownloadingId] = useState<string | null>(null);
   const [invoiceError, setInvoiceError] = useState<string | null>(null);
+  const [productsDownloadingId, setProductsDownloadingId] = useState<string | null>(null);
   
   // Trigger fetching orders when this tab/component is opened
   useEffect(() => {
@@ -46,11 +47,6 @@ const OrderHistory: React.FC = () => {
     setSelectedOrder(order === selectedOrder ? null : order);
   };
 
-  // Handle download of digital product
-  const handleDownload = async (order: Order, productId: string, productName?: string) => {
-    const orderId = order.backendId || order.id;
-    await ordersService.downloadProduct(orderId, productId, productName);
-  };
 
   // Handle invoice download
   const handleInvoiceDownload = async (order: Order) => {
@@ -64,6 +60,21 @@ const OrderHistory: React.FC = () => {
       setInvoiceError(msg);
     } finally {
       setInvoiceDownloadingId(null);
+    }
+  };
+
+  // Handle download of all products in an order
+  const handleDownloadAllProducts = async (order: Order) => {
+    try {
+      setProductsDownloadingId(order.id);
+      const orderId = order.backendId || order.id;
+      for (const item of order.items) {
+        await ordersService.downloadProduct(orderId, item.productId, item.productName);
+      }
+    } catch {
+      // Could add error handling per item if needed
+    } finally {
+      setProductsDownloadingId(null);
     }
   };
   
@@ -183,6 +194,25 @@ const OrderHistory: React.FC = () => {
                     </div>
                   </div>
 
+                  <div className="order-section download-section" aria-label="Downloadable content">
+                    <h4 className="section-title">Downloadable content</h4>
+                    <div className="download-actions">
+                      {(['completed','paid'].includes(order.status.toLowerCase())) ? (
+                        <button className="download-button" onClick={() => void handleInvoiceDownload(order)} disabled={invoiceDownloadingId === order.id}>
+                          {invoiceDownloadingId === order.id ? 'Downloading…' : 'Download invoice'}
+                        </button>
+                      ) : (
+                        <div className="download-note">Invoice available once the order is paid.</div>
+                      )}
+                      <button className="download-button" onClick={() => void handleDownloadAllProducts(order)} disabled={productsDownloadingId === order.id}>
+                        {productsDownloadingId === order.id ? 'Downloading…' : 'Download products'}
+                      </button>
+                    </div>
+                    {invoiceError && selectedOrder?.id === order.id && (
+                      <div className="download-error" role="alert">{invoiceError}</div>
+                    )}
+                  </div>
+
                   {(order.shippingAddress || order.billingAddress) && (
                     <div className="order-section">
                       <h4 className="section-title">Addresses</h4>
@@ -229,24 +259,6 @@ const OrderHistory: React.FC = () => {
                   )}
                 </div>
 
-                <div className="order-section">
-                  <h4 className="section-title">Invoice</h4>
-                  {( ['completed','paid'].includes(order.status.toLowerCase()) ) ? (
-                    <>
-                      <button className="download-button" onClick={() => void handleInvoiceDownload(order)} disabled={invoiceDownloadingId === order.id}>
-                        {invoiceDownloadingId === order.id ? 'Downloading…' : 'Download Invoice'}
-                      </button>
-                      {invoiceError && selectedOrder?.id === order.id && (
-                        <div className="kv">
-                          <span className="v" style={{ color: 'var(--danger, #b00020)' }}>{invoiceError}</span>
-                        </div>
-                      )}
-                    </>
-                  ) : (
-                    <div className="kv"><span className="v">Invoice available after payment is completed.</span></div>
-                  )}
-                </div>
-
                 <div className="order-items">
                   <table className="items-table">
                     <thead>
@@ -255,7 +267,6 @@ const OrderHistory: React.FC = () => {
                         <th>Unit Price</th>
                         <th>Quantity</th>
                         <th>Total</th>
-                        <th>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -271,11 +282,6 @@ const OrderHistory: React.FC = () => {
                           <td className="item-unit-price" data-label="Unit Price">{formatCurrency(item.price, order.currency)}</td>
                           <td className="item-quantity" data-label="Quantity">{item.quantity}</td>
                           <td className="item-price" data-label="Total">{formatCurrency(item.price * item.quantity, order.currency)}</td>
-                          <td className="item-actions" data-label="Actions">
-                            <button className="download-button" onClick={() => void handleDownload(order, item.productId, item.productName)}>
-                              Download
-                            </button>
-                          </td>
                         </tr>
                       ))}
                     </tbody>
