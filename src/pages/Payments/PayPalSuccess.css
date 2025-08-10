@@ -1,0 +1,146 @@
+/* Minimalistic Order Detail (Payment Success) Styles */
+
+.order-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.order-card {
+  background: var(--surface, #111416);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+
+.order-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.order-header h2,
+.order-header h3 {
+  margin: 0;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  letter-spacing: 0.3px;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+}
+
+.status-completed {
+  color: #0f5132;
+  background: #d1e7dd;
+  border-color: #badbcc;
+}
+
+.status-pending {
+  color: #664d03;
+  background: #fff3cd;
+  border-color: #ffecb5;
+}
+
+.status-failed,
+.status-error,
+.status-canceled,
+.status-cancelled {
+  color: #842029;
+  background: #f8d7da;
+  border-color: #f5c2c7;
+}
+
+.order-message {
+  color: #aab0b7;
+  margin: 4px 0 0;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin: 12px 0 4px;
+}
+
+.summary-item {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  border-bottom: 1px dashed rgba(255,255,255,0.08);
+  padding: 8px 0;
+}
+
+.summary-item .label {
+  color: #aab0b7;
+  font-size: 13px;
+}
+
+.summary-item .value {
+  font-weight: 600;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px 16px;
+  margin-top: 12px;
+}
+
+.detail-grid dl {
+  display: contents;
+}
+
+.detail-grid dt {
+  color: #aab0b7;
+  font-size: 12px;
+}
+
+.detail-grid dd {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.actions button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 14px;
+  cursor: pointer;
+}
+
+.actions button[disabled] {
+  background: #93c5fd;
+  cursor: not-allowed;
+}
+
+.msg-error {
+  color: #f87171;
+  margin-top: 8px;
+}
+
+@media (min-width: 720px) {
+  .summary-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .detail-grid {
+    grid-template-columns: 1fr 2fr;
+  }
+}

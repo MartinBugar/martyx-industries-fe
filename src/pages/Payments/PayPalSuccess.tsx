@@ -4,6 +4,7 @@ import { paymentService, type PaymentDTO } from '../../services/paymentService';
 import { orderService } from '../../services/orderService';
 import { useAuth } from '../../context/useAuth';
 import { useCart } from '../../context/useCart';
+import './PayPalSuccess.css';
 
 const PayPalSuccess: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -159,56 +160,81 @@ const PayPalSuccess: React.FC = () => {
 
   return (
     <div className="page-container">
-      <h2>Payment Summary</h2>
       {payment ? (
-        <div className="payment-summary">
-          <div className={`status-badge status-${payment.status?.toLowerCase()}`}>
-            {payment.status}
-          </div>
+        <div className="order-container">
+          <div className="order-card" aria-live="polite" aria-busy={isProcessing}>
+            <div className="order-header">
+              <h2>Order Details</h2>
+              <span className={`status-badge status-${payment.status?.toLowerCase()}`}>{payment.status ?? 'UNKNOWN'}</span>
+            </div>
 
-          {payment.status === 'COMPLETED' ? (
-            <p>Your payment has been successfully completed.</p>
-          ) : payment.status === 'PENDING' ? (
-            <p>Your payment is pending. You will receive an email once it is completed.</p>
-          ) : (
-            <p>Payment was not successful. {payment.errorMessage ? `Reason: ${payment.errorMessage}` : ''}</p>
-          )}
-
-          <div className="payment-details">
-            <div><strong>Reference:</strong> {payment.paymentReference || '-'}</div>
-            <div><strong>Transaction ID:</strong> {payment.transactionId || '-'}</div>
-            <div><strong>Order ID:</strong> {payment.orderId ?? '-'}</div>
-            <div><strong>Amount:</strong> {payment.amount?.toFixed(2)} {payment.currency || ''}</div>
-            <div><strong>Method:</strong> {payment.paymentMethod || 'PAYPAL'}</div>
-            <div><strong>Payer Email:</strong> {payment.payerEmail || '-'}</div>
-            <div><strong>Created At:</strong> {payment.createdAt ? new Date(payment.createdAt).toLocaleString() : '-'}</div>
-            <div><strong>Completed At:</strong> {payment.completedAt ? new Date(payment.completedAt).toLocaleString() : '-'}</div>
-          </div>
-
-          <div className="actions" style={{ marginTop: '16px' }}>
             {payment.status === 'COMPLETED' ? (
-              <>
-                {typeof payment.orderId === 'number' && (
-                  <button onClick={handleDownloadInvoice} disabled={downloading}>
-                    {downloading ? 'Downloading…' : 'Download Invoice'}
-                  </button>
-                )}
-                <button style={{ marginLeft: 8 }} onClick={() => navigate('/order-confirmation')}>Continue</button>
-              </>
+              <p className="order-message">Your payment has been successfully completed.</p>
+            ) : payment.status === 'PENDING' ? (
+              <p className="order-message">Your payment is pending. You will receive an email once it is completed.</p>
             ) : (
-              <button onClick={() => navigate('/checkout')}>Back to Checkout</button>
+              <p className="order-message">Payment was not successful. {payment.errorMessage ? `Reason: ${payment.errorMessage}` : ''}</p>
             )}
-            <button style={{ marginLeft: 8 }} onClick={() => navigate('/')}>Go to Home</button>
+
+            <div className="summary-grid" aria-label="Order summary">
+              <div className="summary-item">
+                <span className="label">Amount</span>
+                <span className="value">{payment.amount?.toFixed(2)} {payment.currency || ''}</span>
+              </div>
+              <div className="summary-item">
+                <span className="label">Method</span>
+                <span className="value">{payment.paymentMethod || 'PAYPAL'}</span>
+              </div>
+              <div className="summary-item">
+                <span className="label">Order ID</span>
+                <span className="value">{payment.orderId ?? '-'}</span>
+              </div>
+            </div>
+
+            <div className="detail-grid" aria-label="Payment details">
+              <dl>
+                <dt>Reference</dt>
+                <dd>{payment.paymentReference || '-'}</dd>
+                <dt>Transaction ID</dt>
+                <dd>{payment.transactionId || '-'}</dd>
+                <dt>Payer Email</dt>
+                <dd>{payment.payerEmail || '-'}</dd>
+                <dt>Created At</dt>
+                <dd>{payment.createdAt ? new Date(payment.createdAt).toLocaleString() : '-'}</dd>
+                <dt>Completed At</dt>
+                <dd>{payment.completedAt ? new Date(payment.completedAt).toLocaleString() : '-'}</dd>
+              </dl>
+            </div>
+
+            <div className="actions">
+              {payment.status === 'COMPLETED' ? (
+                <>
+                  {typeof payment.orderId === 'number' && (
+                    <button onClick={handleDownloadInvoice} disabled={downloading}>
+                      {downloading ? 'Downloading…' : 'Download Invoice'}
+                    </button>
+                  )}
+                  <button onClick={() => navigate('/order-confirmation')}>Continue</button>
+                </>
+              ) : (
+                <button onClick={() => navigate('/checkout')}>Back to Checkout</button>
+              )}
+              <button onClick={() => navigate('/')}>Go to Home</button>
+            </div>
+            {dlError && (
+              <p className="msg-error">{dlError}</p>
+            )}
           </div>
-          {dlError && (
-            <p style={{ color: 'var(--danger, #b00020)', marginTop: 8 }}>{dlError}</p>
-          )}
         </div>
       ) : (
-        <div className="payment-summary">
-          <p>Could not retrieve payment details.</p>
-          <div className="actions" style={{ marginTop: '16px' }}>
-            <button onClick={() => navigate('/checkout')}>Back to Checkout</button>
+        <div className="order-container">
+          <div className="order-card">
+            <h2>Order Details</h2>
+            <p>Could not retrieve payment details.</p>
+            <div className="actions">
+              <button onClick={() => navigate('/checkout')}>Back to Checkout</button>
+              <button onClick={() => navigate('/')}>Go to Home</button>
+            </div>
           </div>
         </div>
       )}
