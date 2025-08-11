@@ -2,18 +2,15 @@ import React, { useState } from 'react';
 import './Gallery.css';
 import Skeleton from '../Skeleton/Skeleton';
 
-// Using actual images from the endavourGallery folder
-const basePath = import.meta.env.BASE_URL ?? '/';
-const galleryImages = Array.from({ length: 6 }, (_, i) => `${basePath}endavourGallery/${i + 1}.png`);
-
 interface GalleryProps {
   productName: string;
+  images: string[];
 }
 
-const Gallery: React.FC<GalleryProps> = ({ productName }) => {
+const Gallery: React.FC<GalleryProps> = ({ productName, images }) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [loaded, setLoaded] = useState<boolean[]>(() => galleryImages.map(() => false));
+  const [loaded, setLoaded] = useState<boolean[]>(() => images.map(() => false));
   const imgRefs = React.useRef<(HTMLImageElement | null)[]>([]);
 
   // After mount, mark cached images as loaded (in case onLoad doesn't fire)
@@ -47,11 +44,11 @@ const Gallery: React.FC<GalleryProps> = ({ productName }) => {
   const navigateGallery = (direction: 'prev' | 'next') => {
     if (direction === 'prev') {
       setCurrentImageIndex((prevIndex) => 
-        prevIndex === 0 ? galleryImages.length - 1 : prevIndex - 1
+        prevIndex === 0 ? images.length - 1 : prevIndex - 1
       );
     } else {
       setCurrentImageIndex((prevIndex) => 
-        prevIndex === galleryImages.length - 1 ? 0 : prevIndex + 1
+        prevIndex === images.length - 1 ? 0 : prevIndex + 1
       );
     }
   };
@@ -76,10 +73,14 @@ const Gallery: React.FC<GalleryProps> = ({ productName }) => {
     };
   }, [isFullscreen]);
 
+  if (!images || images.length === 0) {
+    return null;
+  }
+
   return (
     <div className="product-gallery">
       <div className="gallery-thumbnails">
-        {galleryImages.map((image, index) => (
+        {images.map((image, index) => (
           <div 
             key={index} 
             className="gallery-thumbnail"
@@ -135,12 +136,12 @@ const Gallery: React.FC<GalleryProps> = ({ productName }) => {
             </button>
             <div className="fullscreen-image-container">
               <img 
-                src={galleryImages[currentImageIndex]} 
+                src={images[currentImageIndex]} 
                 alt={`${productName} - Image ${currentImageIndex + 1}`} 
                 className="fullscreen-image"
               />
               <div className="image-counter">
-                {currentImageIndex + 1} / {galleryImages.length}
+                {currentImageIndex + 1} / {images.length}
               </div>
             </div>
             <button 

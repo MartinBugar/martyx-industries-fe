@@ -47,7 +47,7 @@ const ProductView: React.FC<ProductViewProps> = ({ product }) => {
       </div>
       
       {/* Product Gallery */}
-      <Gallery productName={product.name} />
+      <Gallery productName={product.name} images={product.gallery} />
     </div>
   );
 };

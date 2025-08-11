@@ -1,5 +1,7 @@
 // Product data for the 3D model e-shop
 import axisModel from '../assets/axis.glb';
+const basePath = import.meta.env.BASE_URL ?? '/';
+const makeGallery = (productId: string, count: number) => Array.from({ length: count }, (_, i) => `${basePath}productsGallery/${productId}/${i + 1}.png`);
 
 export interface Product {
   id: string;
@@ -9,6 +11,7 @@ export interface Product {
   description: string;
   features: string[];
   modelPath: string;
+  gallery: string[];
   interactionInstructions: string[];
 }
 
@@ -26,6 +29,7 @@ export const product: Product = {
     "Compatible with all major 3D software"
   ],
   modelPath: axisModel,
+  gallery: makeGallery("1", 6),
   interactionInstructions: [
     "Click and drag to rotate",
     "Scroll to zoom in/out",
@@ -68,6 +72,7 @@ export const products: Product[] = [
       "Great for demos and showcases"
     ],
     modelPath: axisModel,
+    gallery: [],
     interactionInstructions: product.interactionInstructions
   },
   {
@@ -83,6 +88,7 @@ export const products: Product[] = [
       "Beginner friendly"
     ],
     modelPath: axisModel,
+    gallery: [],
     interactionInstructions: product.interactionInstructions
   }
 ];
