@@ -920,3 +920,11 @@
     display: none;
   }
 }
+
+
+/* Hide cart icon in header on mobile; visible only inside mobile menu */
+@media (max-width: 768px) {
+  .shop-header .header-actions .cart-icon {
+    display: none;
+  }
+}
