@@ -194,3 +194,34 @@
     width: calc(50% - 5px);
   }
 }
+
+/* Safe-area adjustments for fullscreen UI on modern mobile devices */
+@supports (padding: max(0px)) {
+  .fullscreen-content {
+    padding-top: max(10px, var(--safe-top));
+    padding-bottom: max(10px, var(--safe-bottom));
+    padding-left: max(10px, var(--safe-left));
+    padding-right: max(10px, var(--safe-right));
+  }
+  .gallery-close-btn {
+    top: max(10px, var(--safe-top));
+    right: max(10px, var(--safe-right));
+  }
+  .prev-btn {
+    left: max(10px, var(--safe-left));
+  }
+  .next-btn {
+    right: max(10px, var(--safe-right));
+  }
+  .image-counter {
+    bottom: max(12px, var(--safe-bottom));
+  }
+}
+
+@media (max-width: 360px) {
+  .gallery-nav-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+}

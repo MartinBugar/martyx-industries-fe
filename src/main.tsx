@@ -8,3 +8,13 @@ createRoot(document.getElementById('root')!).render(
     <App />
   </StrictMode>,
 )
+
+// Register Service Worker (only in supported browsers)
+if ('serviceWorker' in navigator) {
+  const register = () => navigator.serviceWorker.register('/sw.js');
+  if (document.readyState === 'complete') {
+    register().catch(() => {});
+  } else {
+    window.addEventListener('load', () => register().catch(() => {}));
+  }
+}

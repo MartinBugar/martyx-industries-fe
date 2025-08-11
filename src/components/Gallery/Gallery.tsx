@@ -1,15 +1,10 @@
 import React, { useState } from 'react';
 import './Gallery.css';
+import Skeleton from '../Skeleton/Skeleton';
 
 // Using actual images from the endavourGallery folder
-const galleryImages = [
-  '/endavourGallery/1.png',
-  '/endavourGallery/2.png',
-  '/endavourGallery/3.png',
-  '/endavourGallery/4.png',
-  '/endavourGallery/5.png',
-  '/endavourGallery/6.png',
-];
+const basePath = import.meta.env.BASE_URL ?? '/';
+const galleryImages = Array.from({ length: 6 }, (_, i) => `${basePath}endavourGallery/${i + 1}.png`);
 
 interface GalleryProps {
   productName: string;
@@ -18,6 +13,23 @@ interface GalleryProps {
 const Gallery: React.FC<GalleryProps> = ({ productName }) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [loaded, setLoaded] = useState<boolean[]>(() => galleryImages.map(() => false));
+  const imgRefs = React.useRef<(HTMLImageElement | null)[]>([]);
+
+  // After mount, mark cached images as loaded (in case onLoad doesn't fire)
+  React.useEffect(() => {
+    setLoaded((prev) => {
+      const next = [...prev];
+      let changed = false;
+      imgRefs.current.forEach((img, i) => {
+        if (img && !next[i] && img.complete && img.naturalWidth > 0) {
+          next[i] = true;
+          changed = true;
+        }
+      });
+      return changed ? next : prev;
+    });
+  }, []);
 
   const openFullscreenGallery = (index: number) => {
     setCurrentImageIndex(index);
@@ -73,10 +85,31 @@ const Gallery: React.FC<GalleryProps> = ({ productName }) => {
             className="gallery-thumbnail"
             onClick={() => openFullscreenGallery(index)}
           >
-            <img 
-              src={image} 
-              alt={`${productName} - Image ${index + 1}`} 
-              loading="lazy"
+            {!loaded[index] && (
+              <Skeleton variant="rect" />
+            )}
+            <img
+              ref={(el) => { imgRefs.current[index] = el; }}
+              src={image}
+              alt={`${productName} - Image ${index + 1}`}
+              decoding="async"
+              loading="eager"
+              style={{ visibility: loaded[index] ? 'visible' : 'hidden' }}
+              onLoad={() => {
+                setLoaded(prev => {
+                  const next = [...prev];
+                  next[index] = true;
+                  return next;
+                });
+              }}
+              onError={() => {
+                // Keep skeleton visible if there is an error
+                setLoaded(prev => {
+                  const next = [...prev];
+                  next[index] = false;
+                  return next;
+                });
+              }}
             />
           </div>
         ))}

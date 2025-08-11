@@ -1,4 +1,4 @@
-import React, { useState, type ReactNode } from 'react';
+import React, { useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { Product } from '../data/productData';
 import { CartContext, type CartItem } from './cartContextTypes';
 
@@ -7,18 +7,50 @@ interface CartProviderProps {
   children: ReactNode;
 }
 
+const STORAGE_KEY = 'martyx_cart_v1';
+
+type UnknownRecord = Record<string, unknown>;
+function isRecord(value: unknown): value is UnknownRecord {
+  return typeof value === 'object' && value !== null;
+}
+function isCartItem(value: unknown): value is CartItem {
+  if (!isRecord(value)) return false;
+  const rec = value as UnknownRecord;
+  return 'product' in rec && 'quantity' in rec && typeof rec['quantity'] === 'number';
+}
+
+function safeLoad(): CartItem[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    // Basic validation
+    return parsed.filter(isCartItem);
+  } catch (e) {
+    console.warn('[Cart] Failed to load persisted cart:', e);
+    return [];
+  }
+}
+
 // CartProvider component to wrap the app and provide cart functionality
 export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
-  const [items, setItems] = useState<CartItem[]>([]);
+  const [items, setItems] = useState<CartItem[]>(() => safeLoad());
+
+  // Persist to localStorage for offline support
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    } catch (e) {
+      console.warn('[Cart] Failed to persist cart:', e);
+    }
+  }, [items]);
 
   // Add a product to the cart
   const addToCart = (product: Product) => {
     setItems(prevItems => {
-      // Check if the product is already in the cart
       const existingItemIndex = prevItems.findIndex(item => item.product.id === product.id);
-      
       if (existingItemIndex >= 0) {
-        // If the product is already in the cart, increase its quantity
         const updatedItems = [...prevItems];
         updatedItems[existingItemIndex] = {
           ...updatedItems[existingItemIndex],
@@ -26,7 +58,6 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         };
         return updatedItems;
       } else {
-        // If the product is not in the cart, add it with quantity 1
         return [...prevItems, { product, quantity: 1 }];
       }
     });
@@ -58,15 +89,15 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     setItems([]);
   };
 
-  // Get the total number of items in the cart
-  const getTotalItems = () => {
-    return items.reduce((total, item) => total + item.quantity, 0);
-  };
+  // Memoize totals
+  const totals = useMemo(() => {
+    const totalItems = items.reduce((total, item) => total + item.quantity, 0);
+    const totalPrice = items.reduce((total, item) => total + (item.product.price * item.quantity), 0);
+    return { totalItems, totalPrice };
+  }, [items]);
 
-  // Get the total price of all items in the cart
-  const getTotalPrice = () => {
-    return items.reduce((total, item) => total + (item.product.price * item.quantity), 0);
-  };
+  const getTotalItems = () => totals.totalItems;
+  const getTotalPrice = () => totals.totalPrice;
 
   // Provide the cart context to children components
   return (

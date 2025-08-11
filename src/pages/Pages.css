@@ -356,3 +356,32 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Products toolbar base layout */
+.products-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Safe-area aware paddings for page container */
+@supports (padding: max(0px)) {
+  .page-container {
+    padding-left: max(1rem, var(--safe-left));
+    padding-right: max(1rem, var(--safe-right));
+  }
+}
+
+@media (max-width: 480px) {
+  .page-container {
+    padding: max(0.75rem, var(--safe-top)) max(0.75rem, var(--safe-right)) max(1rem, var(--safe-bottom)) max(0.75rem, var(--safe-left));
+  }
+  .products-toolbar {
+    justify-content: stretch;
+  }
+  .products-toolbar > * {
+    flex: 1 1 auto;
+  }
+}
