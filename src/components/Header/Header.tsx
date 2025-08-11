@@ -50,6 +50,17 @@ const Header: React.FC<HeaderProps> = ({ cartItems, onCartClick }) => {
     }
   }, [isMobileMenuOpen]);
 
+  // Close mobile menu when resizing to desktop to keep hamburger icon in sync
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 769) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const NavItems: React.FC<{ onClick?: () => void }> = ({ onClick }) => (
     <ul className="nav-links">
       <li>
