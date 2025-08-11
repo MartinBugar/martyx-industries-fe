@@ -207,7 +207,7 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
         left: 0,
         width: '100vw',
         height: '100vh',
-        zIndex: 1000,
+        zIndex: 3000,
         backgroundColor: 'black',
     } : {
         width,

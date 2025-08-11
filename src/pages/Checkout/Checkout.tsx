@@ -4,6 +4,7 @@ import { useCart } from '../../context/useCart';
 import { useAuth } from '../../context/useAuth';
 import './Checkout.css';
 import { paymentService } from '../../services/paymentService';
+import paypalIcon from '../../assets/icons/paypal.png';
 
 interface CheckoutFormData {
   firstName: string;
@@ -212,6 +213,9 @@ const Checkout: React.FC = () => {
             
             <h3>Payment</h3>
             <p>We use PayPal for secure checkout of digital products.</p>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '10px' }}>
+              <img src={paypalIcon} alt="PayPal" style={{ height: '48px', width: 'auto' }} />
+            </div>
             <button
               type="submit"
               className="place-order-btn"
