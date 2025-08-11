@@ -63,8 +63,6 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
                                                      shadowIntensity = '1.8',
                                                      shadowSoftness = '0.8',
                                                      fieldOfView = 'auto',
-                                                     width = '100%',
-                                                     height = '400px',
                                                      backgroundColor = 'white',
                                                      toneMapping = 'neutral',
                                                      metallicFactor = '0.28',
@@ -201,8 +199,8 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
         zIndex: 3000,
         backgroundColor: 'black',
     } : {
-        width,
-        height,
+        width: '100%',
+        height: '100%',
     };
 
     return (
@@ -223,6 +221,8 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
                 'tone-mapping': toneMapping,
                 'metallic-factor': metalness,
                 'roughness-factor': roughness,
+                'camera-target': 'auto',
+                bounds: 'tight',
                 ...otherProps,
                 className: "model-viewer",
                 style: { backgroundColor }
