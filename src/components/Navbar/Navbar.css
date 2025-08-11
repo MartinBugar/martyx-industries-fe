@@ -509,3 +509,11 @@
 @media (min-width: 769px) {
   .mobile-menu-overlay { display: none; }
 }
+
+
+/* Hide account icon in navbar on mobile; visible only inside mobile menu */
+@media (max-width: 768px) {
+  .shop-header .header-actions .account-icon {
+    display: none;
+  }
+}
