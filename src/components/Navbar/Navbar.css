@@ -594,3 +594,11 @@
     transition: none !important;
   }
 }
+
+
+/* Hide login/register auth links in navbar on mobile; visible only inside mobile menu */
+@media (max-width: 768px) {
+  .shop-header .header-actions .auth-links {
+    display: none;
+  }
+}
