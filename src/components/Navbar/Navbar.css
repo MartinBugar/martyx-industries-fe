@@ -412,10 +412,11 @@
 .mobile-menu-panel {
   position: absolute;
   top: 0;
+  left: 0;
   right: 0;
   height: 100%;
-  width: 85%;
-  max-width: 360px;
+  width: 100vw;
+  max-width: none;
   background: #ffffff;
   box-shadow: -2px 0 12px rgba(0, 0, 0, 0.1);
   transform: translateX(100%);
