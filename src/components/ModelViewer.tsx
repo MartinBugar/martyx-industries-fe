@@ -126,17 +126,8 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
             updateMaterialProps(metalness, roughness);
         };
         
-        // Handler for camera-change to log rotation position
-        const handleCameraChange = () => {
-            if (modelViewerRef.current) {
-                // Get the current camera orbit (rotation position)
-                const cameraOrbit = modelViewerRef.current.getCameraOrbit 
-                    ? modelViewerRef.current.getCameraOrbit() 
-                    : modelViewerRef.current.getAttribute('camera-orbit');
-                
-                console.log('Current rotation position:', cameraOrbit);
-            }
-        };
+        // Handler for camera-change (no-op after removing debug logging)
+        const handleCameraChange = () => {};
         
         // Add event listener for ESC key to exit fullscreen
         const handleEscKey = (event: KeyboardEvent) => {

@@ -58,3 +58,8 @@
     backdrop-filter: blur(2px);
   }
 }
+
+/* Temporarily hide all controls (sliders) */
+.controls-container {
+  display: none !important;
+}

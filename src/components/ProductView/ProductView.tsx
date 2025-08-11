@@ -11,9 +11,6 @@ interface ProductViewProps {
 const ProductView: React.FC<ProductViewProps> = ({ product }) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  const toggleFullscreen = () => {
-    setIsFullscreen(!isFullscreen);
-  };
 
   const settings = product.id === '1' ? defaultModelViewerSettings : (product.modelViewerSettings ?? {});
 
@@ -40,9 +37,15 @@ const ProductView: React.FC<ProductViewProps> = ({ product }) => {
           fullscreen={isFullscreen}
           onFullscreenChange={setIsFullscreen}
         />
+      </div>
+
+      {/* Toolbar below model */}
+      <div className="model-toolbar" aria-label="Model actions">
         <button 
           className="fullscreen-btn"
-          onClick={toggleFullscreen}
+          onClick={() => setIsFullscreen(!isFullscreen)}
+          aria-pressed={isFullscreen}
+          aria-label={isFullscreen ? 'Exit fullscreen' : 'View in fullscreen'}
         >
           {isFullscreen ? 'Exit Fullscreen' : 'View in Fullscreen'}
         </button>
