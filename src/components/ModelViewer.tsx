@@ -215,7 +215,7 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
     };
 
     return (
-        <div className="model-viewer-container" style={containerStyle}>
+        <div className={`model-viewer-container${isFullscreen ? ' fullscreen' : ''}`} style={containerStyle}>
             {React.createElement('model-viewer', {
                 ref: modelViewerRef,
                 src: modelPath,

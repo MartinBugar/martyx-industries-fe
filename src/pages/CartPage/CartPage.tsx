@@ -27,7 +27,7 @@ const CartPage: React.FC = () => {
           </button>
         </div>
       ) : (
-        <>
+        <div className="cart-layout">
           <div className="cart-items">
             {items.map(item => (
               <div key={item.product.id} className="cart-item">
@@ -37,17 +37,20 @@ const CartPage: React.FC = () => {
                 </div>
                 
                 <div className="cart-item-actions">
-                  <div className="quantity-controls">
+                  <div className="quantity-controls" role="group" aria-label={`Quantity for ${item.product.name}`}>
                     <button 
                       onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
                       className="quantity-btn"
+                      aria-label={`Decrease quantity of ${item.product.name}`}
+                      disabled={item.quantity <= 1}
                     >
                       -
                     </button>
-                    <span className="quantity">{item.quantity}</span>
+                    <span className="quantity" aria-live="polite">{item.quantity}</span>
                     <button 
                       onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
                       className="quantity-btn"
+                      aria-label={`Increase quantity of ${item.product.name}`}
                     >
                       +
                     </button>
@@ -58,6 +61,7 @@ const CartPage: React.FC = () => {
                   <button 
                     onClick={() => removeFromCart(item.product.id)}
                     className="remove-btn"
+                    aria-label={`Remove ${item.product.name} from cart`}
                   >
                     Remove
                   </button>
@@ -66,7 +70,7 @@ const CartPage: React.FC = () => {
             ))}
           </div>
           
-          <div className="cart-summary">
+          <div className="cart-summary" aria-label="Cart summary">
             <div className="cart-total">
               <span>Total Items: {getTotalItems()}</span>
               <strong>Total: ${getTotalPrice().toFixed(2)}</strong>
@@ -81,7 +85,7 @@ const CartPage: React.FC = () => {
               </button>
             </div>
           </div>
-        </>
+        </div>
       )}
     </div>
   );
