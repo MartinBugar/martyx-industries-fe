@@ -34,3 +34,10 @@
   border-radius: 4px;
   cursor: pointer;
 }
+
+/* Hide controls container on mobile devices */
+@media (max-width: 768px) {
+  .controls-container {
+    display: none;
+  }
+}
