@@ -43,7 +43,7 @@ const CookieConsent: React.FC = () => {
         <div className="cookie-text">
           <strong>We use cookies</strong>
           <p>
-            We use necessary cookies to make our site work. We’d also like to set optional analytics and marketing cookies to help us improve the site and show relevant content. See our <Link to="/about">Cookie Policy</Link>.
+            We use necessary cookies to make our site work. We’d also like to set optional analytics and marketing cookies to help us improve the site and show relevant content. See our <Link to="/cookies-policy">Cookie Policy</Link>.
           </p>
         </div>
         <div className="cookie-actions">

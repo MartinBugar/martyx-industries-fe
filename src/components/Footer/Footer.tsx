@@ -59,7 +59,7 @@ const Footer: React.FC = () => {
               <ul className="footer-links">
                 <li><Link to="/about">Terms of Service</Link></li>
                 <li><Link to="/about">Privacy Policy</Link></li>
-                <li><Link to="/about">Cookie Policy</Link></li>
+                <li><Link to="/cookies-policy">Cookie Policy</Link></li>
               </ul>
             </div>
           </div>
@@ -70,7 +70,7 @@ const Footer: React.FC = () => {
           <nav className="bottom-nav" aria-label="Legal links">
             <Link to="/about">Privacy</Link>
             <Link to="/about">Terms</Link>
-            <Link to="/about">Cookies</Link>
+            <Link to="/cookies-policy">Cookies</Link>
           </nav>
         </div>
       </div>
