@@ -16,28 +16,12 @@ export interface Product {
   productType: 'DIGITAL' | 'PHYSICAL';
 }
 
-// Main product data
-export const product: Product = {
-  id: "1",
-  name: "Endeavour - 3D printed RC APC",
-  price: 99.99,
-  currency: "USD",
-  description: "High-quality 3D model of an axis coordinate system. Perfect for educational purposes, visualization projects, or as a reference for 3D modeling and game development.",
-  features: [
-    "High-resolution textures",
-    "Fully interactive 3D model",
-    "Adjustable material properties",
-    "Compatible with all major 3D software"
-  ],
-  modelPath: axisModel,
-  gallery: makeGallery("1", 6),
-  interactionInstructions: [
-    "Click and drag to rotate",
-    "Scroll to zoom in/out",
-    "Right-click and drag to pan"
-  ],
-  productType: 'DIGITAL'
-};
+// Base interaction instructions shared across products
+const baseInteractionInstructions: string[] = [
+  "Click and drag to rotate",
+  "Scroll to zoom in/out",
+  "Right-click and drag to pan"
+];
 
 // Default model viewer settings
 export const defaultModelViewerSettings = {
@@ -58,9 +42,25 @@ export const defaultModelViewerSettings = {
   height: "500px"
 };
 
-// Multiple products array for the catalog (keeps single export for backward compatibility)
+// Multiple products array for the catalog
 export const products: Product[] = [
-  product,
+  {
+    id: "1",
+    name: "Endeavour - 3D printed RC APC",
+    price: 99.99,
+    currency: "USD",
+    description: "High-quality 3D model of an axis coordinate system. Perfect for educational purposes, visualization projects, or as a reference for 3D modeling and game development.",
+    features: [
+      "High-resolution textures",
+      "Fully interactive 3D model",
+      "Adjustable material properties",
+      "Compatible with all major 3D software"
+    ],
+    modelPath: axisModel,
+    gallery: makeGallery("1", 6),
+    interactionInstructions: baseInteractionInstructions,
+    productType: 'DIGITAL'
+  },
   {
     id: "2",
     name: "Endeavour Pro - RC APC Variant",
@@ -75,7 +75,7 @@ export const products: Product[] = [
     ],
     modelPath: axisModel,
     gallery: [],
-    interactionInstructions: product.interactionInstructions,
+    interactionInstructions: baseInteractionInstructions,
     productType: 'DIGITAL'
   },
   {
@@ -92,7 +92,9 @@ export const products: Product[] = [
     ],
     modelPath: axisModel,
     gallery: [],
-    interactionInstructions: product.interactionInstructions,
+    interactionInstructions: baseInteractionInstructions,
     productType: 'DIGITAL'
   }
 ];
+
+export const product: Product = products[0];

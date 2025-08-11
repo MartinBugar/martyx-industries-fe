@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { product } from '../../data/productData';
+import { products } from '../../data/productData';
 import { ordersService } from '../../services/ordersService';
 import './OrderConfirmation.css';
 
 const OrderConfirmation: React.FC = () => {
   const navigate = useNavigate();
+    const product = products.find(p => p.id === "1") ?? products[0];
   const [customerEmail, setCustomerEmail] = useState<string>('');
   const [orderNumber, setOrderNumber] = useState<string>('');
   const [isEmailSent, setIsEmailSent] = useState<boolean>(false);
