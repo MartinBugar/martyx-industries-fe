@@ -25,6 +25,7 @@ import PayPalCancel from './pages/Payments/PayPalCancel'
 import CartPage from './pages/CartPage/CartPage'
 import UserAccount from './pages/UserAccount/UserAccount'
 import EmailConfirmation from './components/EmailConfirmation/EmailConfirmation'
+import CookieConsent from './components/CookieConsent/CookieConsent'
 
 // App wrapper to provide DevPasswordGate, AuthContext, and CartContext
 function AppWrapper() {
@@ -95,6 +96,9 @@ function MainContent() {
       
       {/* Global session expiration notification */}
       <SessionExpiredNotification />
+
+      {/* Cookie consent banner */}
+      <CookieConsent />
     </div>
   );
 }
