@@ -51,3 +51,11 @@
     gap: 10px;
   }
 }
+
+@media (min-width: 768px) {
+  .product-view-container {
+    width: auto;
+    flex: 1 1 0;
+    min-width: 0;
+  }
+}

@@ -15,20 +15,20 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
   };
   
   return (
-    <div className="product-details">
+    <div id="details" className="product-details">
       <h2>{product.name}</h2>
       <div className="product-type">{product.productType}</div>
       <div className="price">${product.price.toFixed(2)}</div>
       <p className="description">{product.description}</p>
       
-      <h3>Features:</h3>
+      <h3 id="features">Features:</h3>
       <ul className="features-list">
         {product.features.map((feature, index) => (
           <li key={index}>{feature}</li>
         ))}
       </ul>
       
-      <div className="interaction-info">
+      <div id="interaction" className="interaction-info">
         <h3>Interact with the 3D Model:</h3>
         <ul>
           {product.interactionInstructions.map((instruction, index) => (

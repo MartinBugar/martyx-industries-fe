@@ -49,7 +49,9 @@ const ProductView: React.FC<ProductViewProps> = ({ product }) => {
       </div>
       
       {/* Product Gallery */}
-      <Gallery productName={product.name} images={product.gallery} />
+      <div id="gallery" className="product-gallery-section">
+        <Gallery productName={product.name} images={product.gallery} />
+      </div>
     </div>
   );
 };

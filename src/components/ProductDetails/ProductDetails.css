@@ -98,3 +98,10 @@
     font-size: 1.8rem;
   }
 }
+
+@media (min-width: 768px) {
+  .product-details {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+}

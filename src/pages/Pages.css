@@ -385,3 +385,200 @@
     flex: 1 1 auto;
   }
 }
+
+
+/* Product bookmarks bar (sticky tabs) */
+.product-bookmarks {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background-color: #ffffff;
+  border-top: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
+  backdrop-filter: saturate(180%) blur(8px);
+}
+
+.product-bookmarks a {
+  color: #213547;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 0.5rem 0.75rem;
+  border-radius: 9999px;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.product-bookmarks a:hover,
+.product-bookmarks a:focus {
+  background-color: #e9eef5;
+  outline: none;
+}
+
+@media (max-width: 640px) {
+  .product-bookmarks {
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Offset scroll for anchored sections to account for sticky bar height */
+#gallery,
+#details,
+#features,
+#interaction {
+  scroll-margin-top: 80px;
+}
+
+/* About page - enhanced hero visuals */
+.about-page .about-hero {
+  background: linear-gradient(180deg, rgba(33,53,71,0.04), rgba(33,53,71,0.02));
+  padding: 2rem 1.25rem;
+  border: 1px solid #eeeeee;
+  border-radius: var(--border-radius);
+}
+
+.about-page .eyebrow {
+  display: inline-block;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+}
+
+.about-page .hero-actions {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Stats / trust indicators */
+.about-page .about-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  background: var(--background-color);
+  border: 1px solid #eeeeee;
+  border-radius: var(--border-radius);
+  padding: 1rem;
+  margin: 0 0 2.5rem;
+}
+
+.about-page .stat {
+  text-align: center;
+}
+
+.about-page .stat .number {
+  font-size: clamp(1.25rem, 1.2vw + 1rem, 1.75rem);
+  font-weight: 800;
+  color: var(--text-color);
+}
+
+.about-page .stat .label {
+  color: #666;
+  font-size: 0.95rem;
+}
+
+/* Icons in value cards */
+.about-page .about-card .icon {
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: #f6f8fa;
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+}
+
+/* Timeline / process */
+.about-page .about-timeline {
+  background: var(--background-color);
+  border: 1px solid #eeeeee;
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  margin: 2rem 0 3rem;
+}
+
+.about-page .timeline {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.about-page .timeline .step {
+  background: #fafbfc;
+  border: 1px solid #efefef;
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.about-page .timeline .step h4 {
+  margin: 0.25rem 0 0.25rem;
+}
+
+.about-page .timeline .step p {
+  margin: 0;
+  color: #555;
+}
+
+.about-page .step-index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: var(--primary-color);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+/* Focus styles for accessibility */
+.about-page .btn:focus-visible {
+  outline: 3px solid rgba(33, 53, 71, 0.25);
+  outline-offset: 2px;
+}
+
+/* Responsive tweaks for new sections */
+@media (max-width: 900px) {
+  .about-page .about-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+  .about-page .timeline {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .about-page .about-stats {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+  .about-page .timeline {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Ensure bookmarks span full width within product container */
+.product-container .product-bookmarks {
+  flex-basis: 100%;
+  width: 100%;
+  order: 99;
+}

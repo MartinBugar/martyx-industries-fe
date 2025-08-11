@@ -15,6 +15,13 @@ const ProductDetail: React.FC = () => {
       <div className="product-container">
         <ProductView product={selected} />
         <ProductDetails product={selected} />
+
+        <nav className="product-bookmarks" aria-label="Product sections">
+          <a href="#gallery">Gallery</a>
+          <a href="#details">Details</a>
+          <a href="#features">Features</a>
+          <a href="#interaction">Interaction</a>
+        </nav>
       </div>
     </div>
   );
