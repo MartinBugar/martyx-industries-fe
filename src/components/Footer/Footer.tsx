@@ -57,8 +57,8 @@ const Footer: React.FC = () => {
             <div className="links-column">
               <span className="section-title">Legal</span>
               <ul className="footer-links">
-                <li><Link to="/about">Terms of Service</Link></li>
-                <li><Link to="/about">Privacy Policy</Link></li>
+                <li><Link to="/terms-of-service">Terms of Service</Link></li>
+                <li><Link to="/privacy-policy">Privacy Policy</Link></li>
                 <li><Link to="/cookies-policy">Cookie Policy</Link></li>
               </ul>
             </div>
@@ -68,8 +68,8 @@ const Footer: React.FC = () => {
         <div className="footer-bottom">
           <p className="copyright">&copy; {currentYear} Martyx Industries. All rights reserved.</p>
           <nav className="bottom-nav" aria-label="Legal links">
-            <Link to="/about">Privacy</Link>
-            <Link to="/about">Terms</Link>
+            <Link to="/privacy-policy">Privacy</Link>
+            <Link to="/terms-of-service">Terms</Link>
             <Link to="/cookies-policy">Cookies</Link>
           </nav>
         </div>

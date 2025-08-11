@@ -27,6 +27,8 @@ import UserAccount from './pages/UserAccount/UserAccount'
 import EmailConfirmation from './components/EmailConfirmation/EmailConfirmation'
 import CookieConsent from './components/CookieConsent/CookieConsent'
 import CookiesPolicy from './pages/CookiesPolicy/CookiesPolicy'
+import PrivacyPolicy from './pages/PrivacyPolicy/PrivacyPolicy'
+import TermsOfService from './pages/TermsOfService/TermsOfService'
 
 // App wrapper to provide DevPasswordGate, AuthContext, and CartContext
 function AppWrapper() {
@@ -91,6 +93,8 @@ function MainContent() {
           <Route path="/payment/paypal/cancel" element={<PayPalCancel />} />
           <Route path="/account" element={<UserAccount />} />
           <Route path="/cookies-policy" element={<CookiesPolicy />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-of-service" element={<TermsOfService />} />
         </Routes>
       </main>
       

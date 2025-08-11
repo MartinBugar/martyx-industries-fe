@@ -12,7 +12,7 @@ const CookiesPolicy: React.FC = () => {
       <section className="about-section">
         <p>
           This Cookie Policy explains how Martyx Industries ("we", "us", or "our") uses cookies and similar
-          technologies on our website. It should be read together with our <Link to="/about">Privacy Policy</Link>.
+          technologies on our website. It should be read together with our <Link to="/privacy-policy">Privacy Policy</Link>.
         </p>
       </section>
 
