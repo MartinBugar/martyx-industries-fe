@@ -264,14 +264,16 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
                 />
             </div>
             
-            {isFullscreen && (
-                <button 
-                    onClick={toggleFullscreen}
-                    className="fullscreen-button"
-                >
-                    Exit Fullscreen
-                </button>
-            )}
+            <button
+                type="button"
+                onClick={toggleFullscreen}
+                className="fullscreen-button"
+                aria-pressed={isFullscreen}
+                aria-label={isFullscreen ? 'Exit fullscreen' : 'View in fullscreen'}
+                title={isFullscreen ? 'Exit fullscreen' : 'View in fullscreen'}
+            >
+                {isFullscreen ? 'Exit Fullscreen' : 'View in Fullscreen'}
+            </button>
         </div>
     );
 };

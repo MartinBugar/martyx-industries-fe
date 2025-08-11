@@ -39,17 +39,17 @@ const ProductView: React.FC<ProductViewProps> = ({ product }) => {
         />
       </div>
 
-      {/* Toolbar below model */}
-      <div className="model-toolbar" aria-label="Model actions">
-        <button 
-          className="fullscreen-btn"
-          onClick={() => setIsFullscreen(!isFullscreen)}
-          aria-pressed={isFullscreen}
-          aria-label={isFullscreen ? 'Exit fullscreen' : 'View in fullscreen'}
-        >
-          {isFullscreen ? 'Exit Fullscreen' : 'View in Fullscreen'}
-        </button>
-      </div>
+      {/*/!* Toolbar below model *!/*/}
+      {/*<div className="model-toolbar" aria-label="Model actions">*/}
+      {/*  <button */}
+      {/*    className="fullscreen-btn"*/}
+      {/*    onClick={() => setIsFullscreen(!isFullscreen)}*/}
+      {/*    aria-pressed={isFullscreen}*/}
+      {/*    aria-label={isFullscreen ? 'Exit fullscreen' : 'View in fullscreen'}*/}
+      {/*  >*/}
+      {/*    {isFullscreen ? 'Exit Fullscreen' : 'View in Fullscreen'}*/}
+      {/*  </button>*/}
+      {/*</div>*/}
       
       {/* Product Gallery */}
       <div id="gallery" className="product-gallery-section">
