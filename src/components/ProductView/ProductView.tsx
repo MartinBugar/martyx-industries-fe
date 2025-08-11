@@ -15,26 +15,28 @@ const ProductView: React.FC<ProductViewProps> = ({ product }) => {
     setIsFullscreen(!isFullscreen);
   };
 
+  const settings = product.id === '1' ? defaultModelViewerSettings : (product.modelViewerSettings ?? {});
+
   return (
     <div className="product-view-container">
       <div className="model-container">
         <ModelViewer 
           modelPath={product.modelPath}
           alt={`A 3D model of ${product.name}`}
-          poster={defaultModelViewerSettings.poster}
-          camera-orbit={defaultModelViewerSettings.cameraOrbit}
-          touch-action={defaultModelViewerSettings.touchAction}
-          cameraControls={defaultModelViewerSettings.cameraControls}
-          autoRotate={defaultModelViewerSettings.autoRotate}
-          interaction-prompt={defaultModelViewerSettings.interactionPrompt}
-          shadowIntensity={defaultModelViewerSettings.shadowIntensity}
-          exposure={defaultModelViewerSettings.exposure}
-          environment-image={defaultModelViewerSettings.environmentImage}
-          shadow-softness={defaultModelViewerSettings.shadowSoftness}
-          toneMapping={defaultModelViewerSettings.toneMapping}
-          metallicFactor={defaultModelViewerSettings.metallicFactor}
-          roughnessFactor={defaultModelViewerSettings.roughnessFactor}
-          height={defaultModelViewerSettings.height}
+          poster={settings?.poster}
+          camera-orbit={settings?.cameraOrbit}
+          touch-action={settings?.touchAction}
+          cameraControls={settings?.cameraControls}
+          autoRotate={settings?.autoRotate}
+          interaction-prompt={settings?.interactionPrompt}
+          shadowIntensity={settings?.shadowIntensity}
+          exposure={settings?.exposure}
+          environment-image={settings?.environmentImage}
+          shadow-softness={settings?.shadowSoftness}
+          toneMapping={settings?.toneMapping}
+          metallicFactor={settings?.metallicFactor}
+          roughnessFactor={settings?.roughnessFactor}
+          height={settings?.height}
           fullscreen={isFullscreen}
           onFullscreenChange={setIsFullscreen}
         />

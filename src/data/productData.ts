@@ -15,6 +15,7 @@ export interface Product {
     gallery: string[];
     interactionInstructions: string[];
     productType: 'DIGITAL' | 'PHYSICAL';
+    modelViewerSettings?: ModelViewerSettings;
 }
 
 // Base interaction instructions shared across products
@@ -24,20 +25,39 @@ const baseInteractionInstructions: string[] = [
     "Right-click and drag to pan"
 ];
 
-// Default model viewer settings
-export const defaultModelViewerSettings = {
+// Model viewer settings type
+export type ModelViewerSettings = {
+    poster?: string;
+    cameraOrbit?: string;
+    touchAction?: string;
+    alt?: string;
+    cameraControls?: boolean;
+    autoRotate?: boolean;
+    interactionPrompt?: 'auto' | 'when-focused' | 'none';
+    shadowIntensity?: string;
+    exposure?: number | string;
+    environmentImage?: string;
+    shadowSoftness?: string;
+    toneMapping?: 'auto' | 'commerce' | 'filmic' | 'neutral' | 'legacy';
+    metallicFactor?: string | number;
+    roughnessFactor?: string | number;
+    height?: string;
+};
+
+// Default model viewer settings for product id "1"
+export const defaultModelViewerSettings: ModelViewerSettings = {
     poster: undefined,
     cameraOrbit: "3.953671009374416rad 1.3734740705980852red 55deg 4m",
     touchAction: "pan-y",
     alt: "A 3D model of an axis coordinate system",
     cameraControls: true,
     autoRotate: false,
-    interactionPrompt: "none" as 'auto' | 'when-focused' | 'none',
+    interactionPrompt: "none",
     shadowIntensity: "1.38",
     exposure: 0.42,
     environmentImage: "legacy",
     shadowSoftness: "1",
-    toneMapping: "neutral" as 'auto' | 'commerce' | 'filmic' | 'neutral' | 'legacy',
+    toneMapping: "neutral",
     metallicFactor: "0.28",
     roughnessFactor: "0.36",
     height: "500px"
@@ -60,7 +80,8 @@ export const products: Product[] = [
         modelPath: axisModel,
         gallery: makeGallery("1", 6),
         interactionInstructions: baseInteractionInstructions,
-        productType: 'DIGITAL'
+        productType: 'DIGITAL',
+        modelViewerSettings: defaultModelViewerSettings
     }
 ];
 
