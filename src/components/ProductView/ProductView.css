@@ -14,7 +14,10 @@
   overflow: hidden;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
   background-color: #f9f9f9;
-  height: 500px;
+  aspect-ratio: 16/9;
+  height: auto;
+  min-height: 320px;
+  max-height: min(70vh, 650px);
 }
 
 .fullscreen-btn {
@@ -42,7 +45,8 @@
   }
   
   .model-container {
-    height: 400px;
+    height: auto;
+    max-height: 60vh;
   }
 }
 
