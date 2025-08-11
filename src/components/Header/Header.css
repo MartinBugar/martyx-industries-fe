@@ -998,3 +998,7 @@
     display: none;
   }
 }
+
+
+/* Ensure header stacking is above page content for mobile menu overlay */
+.shop-header { z-index: 3000; }
