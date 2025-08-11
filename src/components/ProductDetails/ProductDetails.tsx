@@ -17,6 +17,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
   return (
     <div className="product-details">
       <h2>{product.name}</h2>
+      <div className="product-type">{product.productType}</div>
       <div className="price">${product.price.toFixed(2)}</div>
       <p className="description">{product.description}</p>
       

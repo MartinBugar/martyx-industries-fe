@@ -13,6 +13,7 @@ export interface Product {
   modelPath: string;
   gallery: string[];
   interactionInstructions: string[];
+  productType: 'DIGITAL' | 'PHYSICAL';
 }
 
 // Main product data
@@ -34,7 +35,8 @@ export const product: Product = {
     "Click and drag to rotate",
     "Scroll to zoom in/out",
     "Right-click and drag to pan"
-  ]
+  ],
+  productType: 'DIGITAL'
 };
 
 // Default model viewer settings
@@ -73,7 +75,8 @@ export const products: Product[] = [
     ],
     modelPath: axisModel,
     gallery: [],
-    interactionInstructions: product.interactionInstructions
+    interactionInstructions: product.interactionInstructions,
+    productType: 'DIGITAL'
   },
   {
     id: "3",
@@ -89,6 +92,7 @@ export const products: Product[] = [
     ],
     modelPath: axisModel,
     gallery: [],
-    interactionInstructions: product.interactionInstructions
+    interactionInstructions: product.interactionInstructions,
+    productType: 'DIGITAL'
   }
 ];

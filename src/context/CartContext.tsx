@@ -51,10 +51,15 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     setItems(prevItems => {
       const existingItemIndex = prevItems.findIndex(item => item.product.id === product.id);
       if (existingItemIndex >= 0) {
+        const existingItem = prevItems[existingItemIndex];
+        // If the product is DIGITAL, enforce max quantity of 1
+        if (existingItem.product.productType === 'DIGITAL') {
+          return prevItems;
+        }
         const updatedItems = [...prevItems];
         updatedItems[existingItemIndex] = {
-          ...updatedItems[existingItemIndex],
-          quantity: updatedItems[existingItemIndex].quantity + 1
+          ...existingItem,
+          quantity: existingItem.quantity + 1
         };
         return updatedItems;
       } else {
@@ -76,11 +81,12 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     }
 
     setItems(prevItems => 
-      prevItems.map(item => 
-        item.product.id === productId 
-          ? { ...item, quantity } 
-          : item
-      )
+      prevItems.map(item => {
+        if (item.product.id !== productId) return item;
+        const isDigital = item.product.productType === 'DIGITAL';
+        const nextQty = isDigital ? 1 : quantity;
+        return { ...item, quantity: nextQty };
+      })
     );
   };
 
