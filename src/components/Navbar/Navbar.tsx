@@ -1,15 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { useAuth } from '../../context/useAuth';
-import './Header.css';
+import './Navbar.css';
 import logoImg from '../../assets/logo/logo.png';
 
-interface HeaderProps {
+interface NavbarProps {
   cartItems: number;
   onCartClick: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ cartItems, onCartClick }) => {
+const Navbar: React.FC<NavbarProps> = ({ cartItems, onCartClick }) => {
   const { isAuthenticated, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement | null>(null);
@@ -28,19 +28,19 @@ const Header: React.FC<HeaderProps> = ({ cartItems, onCartClick }) => {
     closeMobileMenu();
   };
 
-  // Body scroll lock and ESC key handler
+  // Body scroll lock, ESC key, and focus first link
   useEffect(() => {
     if (isMobileMenuOpen) {
       document.body.classList.add('no-scroll');
       const onKeyDown = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') {
-          closeMobileMenu();
-        }
+        if (e.key === 'Escape') closeMobileMenu();
       };
       window.addEventListener('keydown', onKeyDown);
-      // focus first actionable element
-      const firstFocusable = panelRef.current?.querySelector<HTMLElement>('a, button');
-      firstFocusable?.focus();
+
+      // Focus first link in the mobile panel
+      const firstLink = panelRef.current?.querySelector<HTMLAnchorElement>('a, button');
+      firstLink?.focus();
+
       return () => {
         window.removeEventListener('keydown', onKeyDown);
         document.body.classList.remove('no-scroll');
@@ -68,7 +68,7 @@ const Header: React.FC<HeaderProps> = ({ cartItems, onCartClick }) => {
         </NavLink>
       </li>
       <li>
-        <NavLink to="/cart" onClick={() => { onClick?.(); }} className={({ isActive }) => isActive ? 'active' : ''}>
+        <NavLink to="/cart" onClick={onClick} className={({ isActive }) => isActive ? 'active' : ''}>
           Cart
         </NavLink>
       </li>
@@ -168,4 +168,4 @@ const Header: React.FC<HeaderProps> = ({ cartItems, onCartClick }) => {
   );
 };
 
-export default Header;
+export default Navbar;

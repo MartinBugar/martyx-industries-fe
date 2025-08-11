@@ -85,3 +85,28 @@ h3 {
   --border-radius: 8px;
   --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
+
+
+/* Responsive padding for main content to improve mobile layout */
+@media (max-width: 1024px) {
+  .main-content {
+    padding: 2rem 3rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-content {
+    padding: 0.75rem;
+  }
+}
+
+/* Prevent background scroll when mobile menu is open */
+body.no-scroll {
+  overflow: hidden;
+}

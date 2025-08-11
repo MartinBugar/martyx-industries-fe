@@ -6,7 +6,7 @@ import { AuthProvider } from './context/AuthProvider'
 import { useCart } from './context/useCart'
 import { DevPasswordGateProvider } from './context/DevPasswordGateProvider'
 import { DevPasswordGate } from './components/DevPasswordGate/DevPasswordGate'
-import Header from './components/Header/Header'
+import Navbar from './components/Navbar/Navbar'
 import Cart from './components/Cart/Cart'
 import Footer from './components/Footer/Footer'
 import SessionExpiredNotification from './components/SessionExpiredNotification/SessionExpiredNotification'
@@ -58,7 +58,7 @@ function MainContent() {
 
   return (
     <div className="app-container">
-      <Header 
+      <Navbar 
         cartItems={getTotalItems()} 
         onCartClick={toggleCart} 
       />
