@@ -912,3 +912,11 @@
     display: none;
   }
 }
+
+
+/* Hide logout button in header on mobile; visible only inside mobile menu */
+@media (max-width: 768px) {
+  .shop-header .header-actions .logout-btn {
+    display: none;
+  }
+}
