@@ -251,6 +251,99 @@
   background: #94a3b8;
 }
 
+/* Popup Message - appears above Add to Cart button */
+.popup-message {
+  margin-bottom: 1rem;
+  animation: slideInDown 0.3s ease-out;
+}
+
+.popup-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  width: 100%;
+}
+
+.popup-message.success .popup-content {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+}
+
+.popup-message.warning .popup-content {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+  box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);
+}
+
+.popup-icon {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.popup-text {
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.4;
+  flex: 1;
+}
+
+.popup-close {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.popup-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  transform: scale(1.1);
+}
+
+.popup-close:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
+}
+
+/* Popup Animation */
+@keyframes slideInDown {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
 /* Responsive styles */
 @media (min-width: 768px) and (max-width: 1023px) {
   .product-details {
@@ -353,5 +446,38 @@
   .product-details {
     width: 100%;
     align-self: start;
+  }
+}
+
+/* Responsive popup */
+@media (max-width: 767px) {
+  .popup-content {
+    padding: 0.875rem 1rem;
+  }
+  
+  .popup-text {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .popup-content {
+    padding: 0.75rem 0.875rem;
+  }
+  
+  .popup-text {
+    font-size: 0.85rem;
+  }
+  
+  .popup-icon {
+    width: 20px;
+    height: 20px;
+    font-size: 1rem;
+  }
+  
+  .popup-close {
+    width: 18px;
+    height: 18px;
+    font-size: 1.25rem;
   }
 }

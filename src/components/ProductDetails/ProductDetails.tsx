@@ -8,7 +8,10 @@ interface ProductDetailsProps {
 }
 
 const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
-  const { addToCart } = useCart();
+  const { addToCart, items } = useCart();
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupMessage, setPopupMessage] = useState('');
+  const [popupType, setPopupType] = useState<'success' | 'warning'>('success');
   const [expandedSections, setExpandedSections] = useState<{
     features: boolean;
     interaction: boolean;
@@ -18,7 +21,34 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
   });
   
   const handleAddToCart = () => {
+    // Check if this is a digital product and if it's already in the cart
+    if (product.productType === 'DIGITAL') {
+      const existingItem = items.find(item => item.product.id === product.id);
+      
+      if (existingItem) {
+        // Digital product already in cart - show warning
+        setPopupMessage('Only one digital product is allowed in the cart');
+        setPopupType('warning');
+        setShowPopup(true);
+        
+        // Hide popup after 3 seconds
+        setTimeout(() => {
+          setShowPopup(false);
+        }, 3000);
+        return;
+      }
+    }
+    
+    // Add product to cart and show success message
     addToCart(product);
+    setPopupMessage(`${product.name} added to cart!`);
+    setPopupType('success');
+    setShowPopup(true);
+    
+    // Hide popup after 3 seconds
+    setTimeout(() => {
+      setShowPopup(false);
+    }, 3000);
   };
 
   const toggleSection = (section: 'features' | 'interaction') => {
@@ -79,6 +109,25 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
           </ul>
         </div>
       </div>
+
+      {/* Popup Message - appears above the button */}
+      {showPopup && (
+        <div className={`popup-message ${popupType}`}>
+          <div className="popup-content">
+            <span className="popup-icon">
+              {popupType === 'success' ? '✓' : '⚠'}
+            </span>
+            <span className="popup-text">{popupMessage}</span>
+            <button 
+              className="popup-close"
+              onClick={() => setShowPopup(false)}
+              aria-label="Close notification"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Add to Cart Button */}
       <button 
