@@ -13,8 +13,13 @@ const ProductDetail: React.FC = () => {
   return (
     <div className="page-container product-detail-page">
       <div className="product-container">
-        <ProductView product={selected} />
-        <ProductDetails product={selected} />
+        <div className="product-main-content">
+          <ProductView product={selected} />
+        </div>
+        
+        <div className="product-sidebar">
+          <ProductDetails product={selected} />
+        </div>
 
         <nav className="product-bookmarks" aria-label="Product sections">
           <a href="#gallery">Gallery</a>

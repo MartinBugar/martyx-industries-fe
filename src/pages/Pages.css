@@ -434,7 +434,7 @@ html {
 #details,
 #features,
 #interaction {
-  scroll-margin-top: 80px;
+  scroll-margin-top: 100px;
 }
 
 /* About page - enhanced hero visuals */
@@ -579,6 +579,150 @@ html {
 /* Ensure bookmarks span full width within product container */
 .product-container .product-bookmarks {
   flex-basis: 100%;
+  width: 100%;
+  order: 99;
+}
+
+/* Product detail page specific styles */
+.product-detail-page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.product-detail-page .product-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.product-main-content {
+  width: 100%;
+}
+
+.product-sidebar {
+  width: 100%;
+}
+
+/* Responsive grid layout */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .product-detail-page .product-container {
+    gap: 2rem;
+  }
+  
+  .product-details {
+    padding: 1.25rem;
+    border-radius: 12px;
+    position: static;
+    max-height: none;
+    overflow-y: visible;
+  }
+}
+
+@media (min-width: 1024px) {
+  .product-detail-page .product-container {
+    grid-template-columns: 1fr 380px;
+    gap: 2.5rem;
+    align-items: start;
+  }
+  
+  .product-main-content {
+    order: 1;
+  }
+  
+  .product-sidebar {
+    order: 2;
+  }
+}
+
+@media (min-width: 1200px) {
+  .product-detail-page .product-container {
+    grid-template-columns: 1fr 420px;
+    gap: 3rem;
+  }
+}
+
+@media (min-width: 1400px) {
+  .product-detail-page .product-container {
+    grid-template-columns: 1fr 450px;
+    gap: 3.5rem;
+  }
+}
+
+/* Product bookmarks - modern sticky navigation */
+.product-bookmarks {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-bottom: 1px solid #e5e7eb;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  margin: 0 -1rem 2rem -1rem;
+}
+
+.product-bookmarks a {
+  color: #213547;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.9rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+
+.product-bookmarks a:hover,
+.product-bookmarks a:focus {
+  background-color: #f8fafc;
+  color: #213547;
+  border-color: #e2e8f0;
+  outline: none;
+}
+
+.product-bookmarks a:active {
+  background-color: #e2e8f0;
+  transform: translateY(1px);
+}
+
+.product-bookmarks a:focus-visible {
+  outline: 2px solid #213547;
+  outline-offset: 2px;
+  background-color: #f8fafc;
+}
+
+@media (max-width: 768px) {
+  .product-bookmarks {
+    gap: 0.25rem;
+    padding: 0.75rem;
+    overflow-x: auto;
+    justify-content: flex-start;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  
+  .product-bookmarks::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .product-bookmarks a {
+    font-size: 0.85rem;
+    padding: 0.5rem 1rem;
+    flex-shrink: 0;
+  }
+}
+
+/* Ensure bookmarks span full width within product container */
+.product-container .product-bookmarks {
+  grid-column: 1 / -1;
   width: 100%;
   order: 99;
 }
