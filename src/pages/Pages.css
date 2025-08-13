@@ -602,7 +602,6 @@ html {
 .product-container .product-bookmarks {
   flex-basis: 100%;
   width: 100%;
-  order: 99;
 }
 
 
