@@ -1,9 +1,30 @@
 import { API_BASE_URL, defaultHeaders, handleResponse } from './apiUtils';
+import { authApi } from './api';
 
 export const adminService = {
   // Verifies if the current authenticated user has ADMIN privileges on the backend
-  checkAdmin: async (): Promise<boolean> => {
+  // If credentials are provided, performs a temporary login with email/password to check admin access.
+  checkAdmin: async (credentials?: { email: string; password: string }): Promise<boolean> => {
+    // Preserve the current Authorization header to avoid side effects
+    const previousAuth = defaultHeaders['Authorization'];
+    const usingTempCredentials = !!(credentials?.email && credentials?.password);
+
     try {
+      // If email/password provided, obtain a temporary token via login
+      if (usingTempCredentials) {
+        try {
+          const loginResp = await authApi.login(credentials!.email, credentials!.password);
+          if (!loginResp?.token) {
+            return false;
+          }
+          // Temporarily set Authorization header with admin token (do not touch localStorage)
+          defaultHeaders['Authorization'] = `Bearer ${loginResp.token}`;
+        } catch {
+          // Invalid credentials or login error
+          return false;
+        }
+      }
+
       const response = await fetch(`${API_BASE_URL}/api/admin/check`, {
         method: 'GET',
         headers: defaultHeaders as HeadersInit,
@@ -13,14 +34,16 @@ export const adminService = {
         return true; // User is admin
       }
 
-      if (response.status === 401) {
+      // When using existing session, a 401 should clear auth state (expired token)
+      if (!usingTempCredentials && response.status === 401) {
         // Use common handler to clear auth and dispatch logout event
         try { await handleResponse(response); } catch { /* ignore thrown error */ }
         return false;
       }
 
-      if (response.status === 403) {
-        // Authenticated but forbidden: not an admin
+      // For temporary credentials, 401/403 simply mean credentials lack admin access or are invalid
+      if (response.status === 401 || response.status === 403) {
+        // Authenticated but forbidden: not an admin, or unauthorized
         return false;
       }
 
@@ -29,6 +52,15 @@ export const adminService = {
     } catch (error) {
       console.error('Admin check error:', error);
       return false;
+    } finally {
+      // Restore previous Authorization header to avoid altering global auth
+      if (usingTempCredentials) {
+        if (previousAuth) {
+          defaultHeaders['Authorization'] = previousAuth;
+        } else {
+          delete defaultHeaders['Authorization'];
+        }
+      }
     }
   }
 };
