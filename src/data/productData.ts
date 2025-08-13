@@ -1,5 +1,6 @@
 // Product data for the 3D model e-shop
 import axisModel from '../assets/axis.glb';
+import endeavourBuildPdf from '../assets/buildguide/1/endeavourBuild.pdf';
 
 const basePath = import.meta.env.BASE_URL ?? '/';
 const makeGallery = (productId: string, count: number) => Array.from({length: count}, (_, i) => `${basePath}productsGallery/${productId}/${i + 1}.png`);
@@ -107,7 +108,7 @@ export const products: Product[] = [
                 label: 'Details',
                 content: {
                     kind: 'text',
-                    text: 'aaa'
+                    text: '<h2>Endeavour - 3D Printed RC APC Project</h2>\n\n<p>The Endeavour is an exciting 3D printed RC Armored Personnel Carrier (APC) project that brings together modern DIY technology and RC modeling. This comprehensive kit provides everything you need to create your own Arduino-powered RC vehicle from the ground up.</p>\n\n<p>Our DIY kit includes all the necessary STL files for 3D printing the complete vehicle - from chassis and wheels to body panels and internal components. The innovative modular design allows for easy assembly and customization to match your preferences. At the heart of the Endeavour is an Arduino Mega 2560 board that handles all movement control and auxiliary features with precision.</p>\n\n<h3>Key Technical Specifications:</h3>\n\n<p>• Overall dimensions: 45cm (L) x 25cm (W) x 20cm (H)\n• Weight: ~2.5kg when fully assembled\n• Drive system: 4 DC motors with tank-style tracks\n• Control: 2.4GHz RC transmitter/receiver\n• Power: 2x 7.4V 2200mAh LiPo batteries\n• Print time: ~60 hours total\n• Recommended layer height: 0.2mm\n• Infill: 20-30%</p>\n\n<p>The kit comes complete with detailed step-by-step assembly instructions, comprehensive wiring diagrams, and ready-to-use Arduino code. This project is ideal for makers with intermediate experience in 3D printing and basic Arduino programming skills. Please note that additional hardware components like motors, electronics, and fasteners need to be purchased separately.</p>'
                 }
             },
             {
@@ -116,8 +117,7 @@ export const products: Product[] = [
                 content: {
                     kind: 'downloads',
                     items: [
-                        { label: 'STL Pack (ZIP)', url: `${basePath}downloads/1/endeavour-stl-pack.zip`, size: '120 MB', format: 'ZIP' },
-                        { label: 'User Manual (PDF)', url: `${basePath}downloads/1/endeavour-manual.pdf`, size: '2.1 MB', format: 'PDF' }
+                        { label: 'Endeavour Build Guide (PDF)', url: endeavourBuildPdf, format: 'PDF' }
                     ]
                 }
             },
