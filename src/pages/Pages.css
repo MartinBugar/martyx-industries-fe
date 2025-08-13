@@ -615,3 +615,11 @@ html {
 .product-tab-panel {
   padding: 1rem 0;
 }
+
+/* Constrain Product Detail page content width on large screens */
+@media (min-width: 1400px) {
+  .product-detail-page .product-container {
+    /* Keep full width on smaller screens; cap width to 75% of viewport on big monitors */
+    max-width: 75vw;
+  }
+}
