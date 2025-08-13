@@ -25,6 +25,7 @@
 
 .hero-section {
   text-align: center;
+    margin-top: 5rem;
   margin-bottom: 3rem;
 }
 
@@ -37,6 +38,24 @@
 .hero-section p {
   font-size: 1.2rem;
   color: #666;
+}
+
+/* Hero video wrapper for responsive 16:9 YouTube embed */
+.hero-video {
+  margin: 1.5rem auto 0;
+  max-width: 1000px;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.hero-video iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
 }
 
 /* About page styles */
@@ -455,7 +474,9 @@ html {
 #gallery,
 #details,
 #features,
-#interaction {
+#interaction,
+#why-us,
+#process {
   scroll-margin-top: 80px;
 }
 
@@ -620,6 +641,15 @@ html {
 @media (min-width: 1400px) {
   .product-detail-page .product-container {
     /* Keep full width on smaller screens; cap width to 75% of viewport on big monitors */
+    max-width: 75vw;
+  }
+}
+
+
+/* Constrain About page content width on large screens */
+@media (min-width: 1400px) {
+  .about-page {
+    /* Cap width to 75% of the viewport on big monitors for optimal readability */
     max-width: 75vw;
   }
 }
