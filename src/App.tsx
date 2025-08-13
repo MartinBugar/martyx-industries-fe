@@ -1,6 +1,6 @@
 import './App.css'
 import { useState } from 'react'
-import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom'
 import { CartProvider } from './context/CartContext'
 import { AuthProvider } from './context/AuthProvider'
 import { useCart } from './context/useCart'
@@ -29,6 +29,9 @@ import CookieConsent from './components/CookieConsent/CookieConsent'
 import CookiesPolicy from './pages/CookiesPolicy/CookiesPolicy'
 import PrivacyPolicy from './pages/PrivacyPolicy/PrivacyPolicy'
 import TermsOfService from './pages/TermsOfService/TermsOfService'
+import AdminLogin from './pages/admin/AdminLogin'
+import AdminDashboard from './pages/admin/AdminDashboard'
+import RequireAdmin from './pages/admin/RequireAdmin'
 
 // App wrapper to provide DevPasswordGate, AuthContext, and CartContext
 function AppWrapper() {
@@ -50,6 +53,8 @@ function MainContent() {
   const { getTotalItems } = useCart();
   const [showCart, setShowCart] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith('/admin');
 
   const toggleCart = () => {
     setShowCart(!showCart);
@@ -63,19 +68,24 @@ function MainContent() {
 
   return (
     <div className="app-container">
-      <Navbar 
-        cartItems={getTotalItems()} 
-        onCartClick={toggleCart} 
-      />
+      {!isAdminRoute && (
+        <Navbar 
+          cartItems={getTotalItems()} 
+          onCartClick={toggleCart} 
+        />
+      )}
       
-      <Cart 
-        isOpen={showCart} 
-        onClose={toggleCart} 
-        onCheckout={handleCheckout} 
-      />
+      {!isAdminRoute && (
+        <Cart 
+          isOpen={showCart} 
+          onClose={toggleCart} 
+          onCheckout={handleCheckout} 
+        />
+      )}
 
-      <main className="main-content">
+      <main className="main-content" style={isAdminRoute ? { padding: 0 } : undefined}>
         <Routes>
+          {/* Public routes */}
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<Products />} />
           <Route path="/products/:id" element={<ProductDetail />} />
@@ -95,16 +105,24 @@ function MainContent() {
           <Route path="/cookies-policy" element={<CookiesPolicy />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />
+
+          {/* Admin routes */}
+          <Route path="/admin" element={<AdminLogin />} />
+          <Route path="/admin/panel" element={
+            <RequireAdmin>
+              <AdminDashboard />
+            </RequireAdmin>
+          } />
         </Routes>
       </main>
       
-      <Footer />
+      {!isAdminRoute && <Footer />}
       
       {/* Global session expiration notification */}
-      <SessionExpiredNotification />
+      {!isAdminRoute && <SessionExpiredNotification />}
 
       {/* Cookie consent banner */}
-      <CookieConsent />
+      {!isAdminRoute && <CookieConsent />}
     </div>
   );
 }
