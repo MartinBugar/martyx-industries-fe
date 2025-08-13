@@ -4,7 +4,7 @@ import { useCart } from '../../context/useCart';
 import './CartPage.css';
 
 const CartPage: React.FC = () => {
-  const { items, removeFromCart, updateQuantity, getTotalItems, getTotalPrice } = useCart();
+  const { items, removeFromCart, updateQuantity, getTotalItems, getTotalPrice, clearCart } = useCart();
   const navigate = useNavigate();
 
   const handleCheckout = () => {
@@ -59,23 +59,24 @@ const CartPage: React.FC = () => {
               <h2>Cart Items</h2>
               <button 
                 className="clear-cart-btn"
-                onClick={() => items.forEach(item => removeFromCart(item.product.id))}
+                onClick={clearCart}
               >
                 Clear Cart
               </button>
             </div>
             
             <div className="cart-items">
-              {items.map(item => (
+              {items.map(item => {
+                const thumb = item.product.gallery?.[0];
+                const isDigital = item.product.productType === 'DIGITAL';
+                return (
                 <div key={item.product.id} className="cart-item">
                   <div className="cart-item-image">
-                    <img 
-                      src={`/public/productsGallery/1/1.png`} 
-                      alt={item.product.name}
-                      onError={(e) => {
-                        e.currentTarget.src = '/public/logo/logo.png';
-                      }}
-                    />
+                    {thumb ? (
+                      <img src={thumb} alt={item.product.name} />
+                    ) : (
+                      <div aria-hidden="true" style={{width: '100%', height: '100%', background: '#f1f5f9'}} />
+                    )}
                   </div>
                   
                   <div className="cart-item-details">
@@ -91,19 +92,21 @@ const CartPage: React.FC = () => {
                     </div>
                     
                     <div className="cart-item-actions">
-                      <div className="quantity-controls">
+                      <div className="quantity-controls" aria-label={`Quantity controls for ${item.product.name}`}>
                         <button 
                           onClick={() => handleQuantityChange(item.product.id, item.quantity - 1)}
                           className="quantity-btn"
-                          aria-label="Decrease quantity"
+                          aria-label={`Decrease quantity of ${item.product.name}`}
+                          disabled={item.quantity <= 1}
                         >
                           −
                         </button>
-                        <span className="quantity-display">{item.quantity}</span>
+                        <span className="quantity-display" aria-live="polite" aria-atomic="true">{item.quantity}</span>
                         <button 
                           onClick={() => handleQuantityChange(item.product.id, item.quantity + 1)}
                           className="quantity-btn"
-                          aria-label="Increase quantity"
+                          aria-label={`Increase quantity of ${item.product.name}`}
+                          disabled={isDigital && item.quantity >= 1}
                         >
                           +
                         </button>
@@ -117,7 +120,7 @@ const CartPage: React.FC = () => {
                       <button 
                         onClick={() => removeFromCart(item.product.id)}
                         className="remove-btn"
-                        aria-label="Remove item"
+                        aria-label={`Remove ${item.product.name} from cart` }
                       >
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                           <path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -127,7 +130,8 @@ const CartPage: React.FC = () => {
                     </div>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
             
             <div className="cart-continue-shopping">
