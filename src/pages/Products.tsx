@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { product, type Product } from '../data/productData';
 import { useCart } from '../context/useCart';
@@ -8,7 +8,35 @@ const Products: React.FC = () => {
   const { addToCart } = useCart();
   const productsList: Product[] = [product];
 
-  const handleAdd = (p: Product) => () => addToCart(p);
+  type Popup = { visible: boolean; message: string; variant: 'success' | 'warning' };
+  const [popups, setPopups] = useState<Record<string, Popup>>({});
+  const timersRef = useRef<Record<string, number>>({});
+
+  useEffect(() => {
+    return () => {
+      // cleanup all timers on unmount
+      Object.values(timersRef.current).forEach(id => window.clearTimeout(id));
+      timersRef.current = {};
+    };
+  }, []);
+
+  const handleAdd = (p: Product) => () => {
+    const status = addToCart(p);
+    const isLimit = status === 'limit';
+    const message = isLimit ? 'Only 1 piece of this product is allowed in cart' : 'Product was added to cart';
+    const variant: Popup['variant'] = isLimit ? 'warning' : 'success';
+
+    setPopups(prev => ({ ...prev, [p.id]: { visible: true, message, variant } }));
+
+    const existing = timersRef.current[p.id];
+    if (existing) window.clearTimeout(existing);
+
+    timersRef.current[p.id] = window.setTimeout(() => {
+      setPopups(prev => ({ ...prev, [p.id]: { ...(prev[p.id] || { message: '', variant: 'success' }), visible: false } }));
+      delete timersRef.current[p.id];
+    }, 2000);
+  };
+
   const formatPrice = (value: number) => `$${value.toFixed(2)}`;
 
   return (
@@ -40,7 +68,14 @@ const Products: React.FC = () => {
                 </div>
               </Link>
               <div className="card-actions">
-                <button className="add-to-cart-btn" onClick={handleAdd(p)}>Add to Cart</button>
+                <button
+                  className={`add-to-cart-btn${popups[p.id]?.visible ? ` is-popup ${popups[p.id].variant}` : ''}`}
+                  onClick={handleAdd(p)}
+                  disabled={!!popups[p.id]?.visible}
+                  aria-live="polite"
+                >
+                  {popups[p.id]?.visible ? popups[p.id].message : 'Add to Cart'}
+                </button>
               </div>
             </article>
           );

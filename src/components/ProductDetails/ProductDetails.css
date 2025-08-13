@@ -105,3 +105,26 @@
     min-width: 0;
   }
 }
+
+/* Inline popup state for Add to Cart button */
+.add-to-cart-btn.is-popup {
+  display: block;
+  width: 100%;
+  padding: 1rem;
+  font-weight: bold;
+  border-radius: 4px;
+  cursor: default;
+  pointer-events: none;
+  transition: background-color 0.2s ease;
+}
+.add-to-cart-btn.is-popup.success {
+  background-color: #2e7d32; /* green */
+  color: #fff;
+}
+.add-to-cart-btn.is-popup.warning {
+  background-color: #b23c17; /* orange/red */
+  color: #fff;
+}
+.add-to-cart-btn:disabled {
+  opacity: 1; /* keep full visibility when showing popup */
+}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { type Product } from '../../data/productData';
 import { useCart } from '../../context/useCart';
 import './ProductDetails.css';
@@ -9,9 +9,35 @@ interface ProductDetailsProps {
 
 const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
   const { addToCart } = useCart();
+
+  const [popup, setPopup] = useState<{ visible: boolean; message: string; variant: 'success' | 'warning' }>({
+    visible: false,
+    message: '',
+    variant: 'success'
+  });
+  const timerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        window.clearTimeout(timerRef.current);
+      }
+    };
+  }, []);
   
   const handleAddToCart = () => {
-    addToCart(product);
+    const status = addToCart(product);
+    const isLimit = status === 'limit';
+    const message = isLimit ? 'Only 1 piece of this product is allowed in cart' : 'Product was added to cart';
+    const variant = isLimit ? 'warning' : 'success';
+
+    setPopup({ visible: true, message, variant });
+    if (timerRef.current) {
+      window.clearTimeout(timerRef.current);
+    }
+    timerRef.current = window.setTimeout(() => {
+      setPopup(p => ({ ...p, visible: false }));
+    }, 2000);
   };
   
   return (
@@ -38,10 +64,12 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
       </div>
       
       <button 
-        className="add-to-cart-btn"
+        className={`add-to-cart-btn${popup.visible ? ` is-popup ${popup.variant}` : ''}`}
         onClick={handleAddToCart}
+        disabled={popup.visible}
+        aria-live="polite"
       >
-        Add to Cart
+        {popup.visible ? popup.message : 'Add to Cart'}
       </button>
     </div>
   );

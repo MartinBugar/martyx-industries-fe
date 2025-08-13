@@ -47,13 +47,15 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   }, [items]);
 
   // Add a product to the cart
-  const addToCart = (product: Product) => {
+  const addToCart = (product: Product): 'added' | 'limit' => {
+    let result: 'added' | 'limit' = 'added';
     setItems(prevItems => {
       const existingItemIndex = prevItems.findIndex(item => item.product.id === product.id);
       if (existingItemIndex >= 0) {
         const existingItem = prevItems[existingItemIndex];
         // If the product is DIGITAL, enforce max quantity of 1
         if (existingItem.product.productType === 'DIGITAL') {
+          result = 'limit';
           return prevItems;
         }
         const updatedItems = [...prevItems];
@@ -61,11 +63,14 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
           ...existingItem,
           quantity: existingItem.quantity + 1
         };
+        result = 'added';
         return updatedItems;
       } else {
+        result = 'added';
         return [...prevItems, { product, quantity: 1 }];
       }
     });
+    return result;
   };
 
   // Remove a product from the cart

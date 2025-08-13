@@ -10,7 +10,7 @@ export interface CartItem {
 // Define the shape of the cart context
 export interface CartContextType {
   items: CartItem[];
-  addToCart: (product: Product) => void;
+  addToCart: (product: Product) => 'added' | 'limit';
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
