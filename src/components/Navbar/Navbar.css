@@ -5,9 +5,9 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  background-color: #ffffff;
-  color: #213547;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background-color: #111827; /* dark background */
+  color: #e5e7eb; /* light text for contrast */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
   position: sticky;
   top: 0;
   z-index: 3000;
@@ -26,7 +26,7 @@
 .logo h1 {
   font-size: 1.6rem;
   margin: 0;
-  color: #213547;
+  color: #e5e7eb;
   font-weight: 600;
 }
 
@@ -51,21 +51,21 @@
 }
 
 .nav-links li a {
-  color: #555;
+  color: #cbd5e1; /* slate-300 */
   text-decoration: none;
   font-size: 1rem;
   font-weight: 500;
   padding: 0.5rem 0;
   position: relative;
-  transition: color 0.3s ease;
+  transition: color 0.2s ease;
 }
 
 .nav-links li a:hover {
-  color: #213547;
+  color: #f1f5f9; /* lighter on dark bg */
 }
 
 .nav-links li a.active {
-  color: #213547;
+  color: #ffffff;
   font-weight: 600;
 }
 
@@ -76,7 +76,7 @@
   left: 0;
   width: 100%;
   height: 2px;
-  background-color: #213547;
+  background-color: #60a5fa; /* accent underline on dark */
 }
 
 /* Header actions container */
@@ -93,21 +93,21 @@
 }
 
 .auth-links a {
-  color: #555;
+  color: #cbd5e1; /* slate-300 */
   text-decoration: none;
   font-size: 1rem;
   font-weight: 500;
   padding: 0.5rem 0;
   position: relative;
-  transition: color 0.3s ease;
+  transition: color 0.2s ease;
 }
 
 .auth-links a:hover {
-  color: #213547;
+  color: #f1f5f9;
 }
 
 .auth-links a.active {
-  color: #213547;
+  color: #ffffff;
   font-weight: 600;
 }
 
@@ -118,7 +118,7 @@
   left: 0;
   width: 100%;
   height: 2px;
-  background-color: #213547;
+  background-color: #60a5fa;
 }
 
 /* User menu styles */
@@ -129,25 +129,25 @@
 }
 
 .user-greeting {
-  color: #213547;
+  color: #cbd5e1;
   font-weight: 500;
 }
 
 .logout-btn {
   background-color: transparent;
-  border: 1px solid #ddd;
+  border: 1px solid #334155; /* slate-700 */
   border-radius: 4px;
   padding: 0.3rem 0.8rem;
-  color: #555;
+  color: #e5e7eb; /* light text on dark */
   font-size: 0.9rem;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .logout-btn:hover {
-  background-color: #f5f5f5;
-  border-color: #ccc;
-  color: #213547;
+  background-color: #1f2937; /* darker hover */
+  border-color: #475569; /* slate-600 */
+  color: #ffffff;
 }
 
 /* Account icon styles - modern minimal avatar */
@@ -208,7 +208,7 @@
   position: relative;
   cursor: pointer;
   font-size: 1.5rem;
-  color: #213547;
+  color: #e5e7eb; /* light icon on dark header */
 }
 
 .cart-icon::after {
@@ -333,7 +333,7 @@
   display: block;
   width: 22px;
   height: 2px;
-  background-color: #213547;
+  background-color: #e5e7eb; /* visible on dark header */
   transition: transform 0.2s ease, opacity 0.2s ease, background-color 0.2s ease;
 }
 
