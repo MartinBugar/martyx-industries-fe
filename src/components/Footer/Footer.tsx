@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './Footer.css';
+import logoImg from '../../assets/logo/logo.png';
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
@@ -10,7 +11,9 @@ const Footer: React.FC = () => {
       <div className="footer-content">
         <div className="footer-top">
           <div className="brand-area">
-            <div className="brand-name" aria-label="Martyx Industries">Martyx Industries</div>
+            <Link to="/" className="brand-logo" aria-label="Martyx Industries">
+              <img src={logoImg} alt="Martyx Industries" className="brand-logo-img" />
+            </Link>
             <p className="brand-tagline">Advanced 3D solutions for modern creators.</p>
             <div className="social-links" aria-label="Social media">
               <a href="#" aria-label="Twitter" className="social-link" title="Twitter">

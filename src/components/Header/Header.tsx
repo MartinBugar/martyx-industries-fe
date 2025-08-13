@@ -89,7 +89,15 @@ const Header: React.FC<HeaderProps> = ({ cartItems, onCartClick }) => {
   return (
     <header className={`shop-header ${isMobileMenuOpen ? 'menu-open' : ''}`}>
       <div className="logo">
-        <Link to="/" className="logo-link" aria-label="Martyx Industries">
+        <Link
+          to="/"
+          className="logo-link"
+          aria-label="Martyx Industries"
+          onClick={(e) => {
+            e.preventDefault();
+            window.location.reload();
+          }}
+        >
           <img src={logoImg} alt="Martyx Industries" className="logo-img" />
         </Link>
       </div>
@@ -149,7 +157,15 @@ const Header: React.FC<HeaderProps> = ({ cartItems, onCartClick }) => {
           ref={panelRef}
         >
           <div className="mobile-menu-header">
-            <Link to="/" className="logo-link" onClick={closeMobileMenu} aria-label="Martyx Industries">
+            <Link
+              to="/"
+              className="logo-link"
+              aria-label="Martyx Industries"
+              onClick={(e) => {
+                e.preventDefault();
+                window.location.reload();
+              }}
+            >
               <img src={logoImg} alt="Martyx Industries" className="logo-img" />
             </Link>
             <button className="mobile-close-btn" aria-label="Close menu" onClick={closeMobileMenu}>✕</button>
