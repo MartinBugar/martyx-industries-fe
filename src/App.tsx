@@ -1,6 +1,6 @@
 import './App.css'
-import { useState, useEffect } from 'react'
-import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom'
+import { useState } from 'react'
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'
 import { CartProvider } from './context/CartContext'
 import { AuthProvider } from './context/AuthProvider'
 import { useCart } from './context/useCart'
@@ -29,22 +29,6 @@ import CookieConsent from './components/CookieConsent/CookieConsent'
 import CookiesPolicy from './pages/CookiesPolicy/CookiesPolicy'
 import PrivacyPolicy from './pages/PrivacyPolicy/PrivacyPolicy'
 import TermsOfService from './pages/TermsOfService/TermsOfService'
-
-// Component to scroll to top on route changes
-function ScrollToTop() {
-  const { pathname } = useLocation();
-
-  useEffect(() => {
-    // Scroll to top when pathname changes
-    window.scrollTo({
-      top: 0,
-      left: 0,
-      behavior: 'smooth'
-    });
-  }, [pathname]);
-
-  return null;
-}
 
 // App wrapper to provide DevPasswordGate, AuthContext, and CartContext
 function AppWrapper() {
@@ -79,7 +63,6 @@ function MainContent() {
 
   return (
     <div className="app-container">
-      <ScrollToTop />
       <Navbar 
         cartItems={getTotalItems()} 
         onCartClick={toggleCart} 

@@ -64,7 +64,7 @@ h3 {
 .product-container {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1.5rem;
+  gap: 2rem;
   margin: 0 auto;
   width: 100%;
   max-width: 1400px;
@@ -74,7 +74,7 @@ h3 {
 @media (min-width: 1024px) {
   .product-container {
     grid-template-columns: 1fr 380px;
-    gap: 2rem;
+    gap: 2.5rem;
     align-items: start;
   }
 }
@@ -82,14 +82,14 @@ h3 {
 @media (min-width: 1200px) {
   .product-container {
     grid-template-columns: 1fr 420px;
-    gap: 2.5rem;
+    gap: 3rem;
   }
 }
 
 @media (min-width: 1400px) {
   .product-container {
     grid-template-columns: 1fr 450px;
-    gap: 3rem;
+    gap: 3.5rem;
   }
 }
 
