@@ -8,7 +8,12 @@ interface DetailsTabProps {
 const DetailsTab: React.FC<DetailsTabProps> = ({ content }) => {
   switch (content.kind) {
     case 'text':
-      return <p>{content.text}</p>;
+      return (
+        <div
+          className="rich-text"
+          dangerouslySetInnerHTML={{ __html: content.text }}
+        />
+      );
     case 'list':
       return (
         <ul>

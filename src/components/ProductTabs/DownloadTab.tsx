@@ -8,7 +8,12 @@ interface DownloadTabProps {
 const DownloadTab: React.FC<DownloadTabProps> = ({ content }) => {
   switch (content.kind) {
     case 'text':
-      return <p>{content.text}</p>;
+      return (
+        <div
+          className="rich-text"
+          dangerouslySetInnerHTML={{ __html: content.text }}
+        />
+      );
     case 'list':
       return (
         <ul>

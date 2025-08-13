@@ -9,7 +9,12 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ content }) => {
   let body: React.ReactNode = null;
   switch (content.kind) {
     case 'text':
-      body = <p>{content.text}</p>;
+      body = (
+        <div
+          className="rich-text"
+          dangerouslySetInnerHTML={{ __html: content.text }}
+        />
+      );
       break;
     case 'list':
       body = (
