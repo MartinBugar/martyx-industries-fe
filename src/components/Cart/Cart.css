@@ -346,7 +346,6 @@
 
 .checkout-btn {
   flex: 1;
-  padding: 10px 14px;
   background: #111;
   color: #fff;
   border: 1px solid #111;
@@ -379,4 +378,14 @@
   .item-total {
     margin-left: 0;
   }
+}
+
+/* Cart summary button alignment fixes */
+.cart-buttons {
+  align-items: stretch;
+}
+.cart-buttons .view-cart-btn,
+.cart-buttons .checkout-btn {
+  flex: 1 1 0;
+  min-height: 42px;
 }
