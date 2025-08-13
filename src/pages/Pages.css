@@ -461,20 +461,17 @@
 
 @media (max-width: 640px) {
   .product-bookmarks {
-    gap: 0.25rem;
+    gap: 0.5rem; /* increased gap between tabs on mobile */
     flex-wrap: nowrap;
-    overflow-x: hidden; /* remove horizontal scroll bar */
+    overflow-x: hidden; /* keep no horizontal scroll bar */
     justify-content: space-between; /* distribute tabs evenly */
   }
   .product-bookmarks a {
-    flex: 1 1 0; /* equal widths, allow shrink */
-    min-width: 0; /* allow flex items to shrink below content size */
+    flex: 0 1 auto; /* natural width per label */
     text-align: center;
     white-space: nowrap;
     font-size: clamp(11px, 3.4vw, 13px);
-    padding: 0.35rem 0.5rem; /* tighter padding for mobile */
-    overflow: hidden; /* prevent overlap */
-    text-overflow: ellipsis; /* safety for extreme narrow screens */
+    padding: 0.35rem 0.5rem; /* compact padding for mobile */
   }
 }
 
