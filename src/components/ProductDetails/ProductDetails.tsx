@@ -43,7 +43,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
   return (
     <div id="details" className="product-details">
       <h2>{product.name}</h2>
-      <div className="product-type">{product.productType}</div>
+      <div className="product-type">{product.productType === 'DIGITAL' ? 'DIGITAL PRODUCT' : (product.productType === 'PHYSICAL' ? 'PHYSICAL PRODUCT' : product.productType)}</div>
       <div className="price">${product.price.toFixed(2)}</div>
       <p className="description">{product.description}</p>
       
