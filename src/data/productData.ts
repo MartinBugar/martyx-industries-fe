@@ -99,7 +99,7 @@ export const products: Product[] = [
             { id: 'Details', label: 'Details', content: { kind: 'text', text: "Detailed information about the product, materials, and usage instructions." } },
             { id: 'Download', label: 'Download', content: { kind: 'text', text: "After purchase, you can download the 3D model files from your account page." } },
             { id: 'Features', label: 'Features', content: { kind: 'list', items: [
-                "High-resolution textures",
+                "High-resolution textures ",
                 "Fully interactive 3D model",
                 "Adjustable material properties",
                 "Compatible with all major 3D software"

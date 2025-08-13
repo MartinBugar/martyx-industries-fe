@@ -4,6 +4,7 @@ import { product as defaultProduct, products, type Product, type ProductTab, typ
 import ProductView from '../components/ProductView/ProductView';
 import ProductDetails from '../components/ProductDetails/ProductDetails';
 import './Pages.css';
+import { DetailsTab, DownloadTab, FeaturesTab, ReviewsTab} from '../components/ProductTabs';
 
 const buildTabs = (p: Product): ProductTab[] => {
   if (p.tabs && p.tabs.length > 0) return p.tabs;
@@ -60,16 +61,10 @@ const ProductDetail: React.FC = () => {
             aria-labelledby={`tab-${activeTab.id}`}
             className="product-tab-panel"
           >
-            {activeTab.content.kind === 'text' && (
-              <p>{activeTab.content.text}</p>
-            )}
-            {activeTab.content.kind === 'list' && (
-              <ul>
-                {activeTab.content.items.map((it, i) => (
-                  <li key={i}>{it}</li>
-                ))}
-              </ul>
-            )}
+            {activeTab.id === 'Details' && <DetailsTab content={activeTab.content} />}
+            {activeTab.id === 'Download' && <DownloadTab content={activeTab.content} />}
+            {activeTab.id === 'Features' && <FeaturesTab content={activeTab.content} />}
+            {activeTab.id === 'Reviews' && <ReviewsTab content={activeTab.content} />}
           </div>
         )}
       </div>
