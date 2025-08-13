@@ -4,6 +4,18 @@ import axisModel from '../assets/axis.glb';
 const basePath = import.meta.env.BASE_URL ?? '/';
 const makeGallery = (productId: string, count: number) => Array.from({length: count}, (_, i) => `${basePath}productsGallery/${productId}/${i + 1}.png`);
 
+export type ProductTabId = 'Details' | 'Download' | 'Features' | 'Reviews';
+
+export type TabContent =
+    | { kind: 'text'; text: string }
+    | { kind: 'list'; items: string[] };
+
+export interface ProductTab {
+    id: ProductTabId;
+    label: string;
+    content: TabContent;
+}
+
 export interface Product {
     id: string;
     name: string;
@@ -16,6 +28,7 @@ export interface Product {
     interactionInstructions: string[];
     productType: 'DIGITAL' | 'PHYSICAL';
     modelViewerSettings?: ModelViewerSettings;
+    tabs?: ProductTab[];
 }
 
 // Base interaction instructions shared across products
@@ -81,7 +94,18 @@ export const products: Product[] = [
         gallery: makeGallery("1", 6),
         interactionInstructions: baseInteractionInstructions,
         productType: 'DIGITAL',
-        modelViewerSettings: defaultModelViewerSettings
+        modelViewerSettings: defaultModelViewerSettings,
+        tabs: [
+            { id: 'Details', label: 'Details', content: { kind: 'text', text: "Detailed information about the product, materials, and usage instructions." } },
+            { id: 'Download', label: 'Download', content: { kind: 'text', text: "After purchase, you can download the 3D model files from your account page." } },
+            { id: 'Features', label: 'Features', content: { kind: 'list', items: [
+                "High-resolution textures",
+                "Fully interactive 3D model",
+                "Adjustable material properties",
+                "Compatible with all major 3D software"
+            ] } },
+            { id: 'Reviews', label: 'Reviews', content: { kind: 'text', text: "No reviews yet. Be the first to review this product!" } }
+        ]
     }
 ];
 

@@ -604,3 +604,15 @@ html {
   width: 100%;
   order: 99;
 }
+
+
+/* Active state for product bookmarks tabs */
+.product-bookmarks a[aria-selected="true"] {
+  background-color: #213547;
+  color: #ffffff;
+}
+
+/* Basic panel spacing under tabs */
+.product-tab-panel {
+  padding: 1rem 0;
+}
