@@ -6,9 +6,15 @@ const makeGallery = (productId: string, count: number) => Array.from({length: co
 
 export type ProductTabId = 'Details' | 'Download' | 'Features' | 'Reviews';
 
+export type TabImage = { src: string; alt?: string; caption?: string };
+export type TabDownloadItem = { label: string; url: string; size?: string; format?: string };
+
 export type TabContent =
     | { kind: 'text'; text: string }
-    | { kind: 'list'; items: string[] };
+    | { kind: 'list'; items: string[] }
+    | { kind: 'image'; image: TabImage }
+    | { kind: 'gallery'; images: TabImage[] }
+    | { kind: 'downloads'; items: TabDownloadItem[] };
 
 export interface ProductTab {
     id: ProductTabId;
@@ -96,8 +102,25 @@ export const products: Product[] = [
         productType: 'DIGITAL',
         modelViewerSettings: defaultModelViewerSettings,
         tabs: [
-            { id: 'Details', label: 'Details', content: { kind: 'text', text: "Detailed information about the product, materials, and usage instructions." } },
-            { id: 'Download', label: 'Download', content: { kind: 'text', text: "After purchase, you can download the 3D model files from your account page." } },
+            {
+                id: 'Details',
+                label: 'Details',
+                content: {
+                    kind: 'text',
+                    text: 'aaa'
+                }
+            },
+            {
+                id: 'Download',
+                label: 'Download',
+                content: {
+                    kind: 'downloads',
+                    items: [
+                        { label: 'STL Pack (ZIP)', url: `${basePath}downloads/1/endeavour-stl-pack.zip`, size: '120 MB', format: 'ZIP' },
+                        { label: 'User Manual (PDF)', url: `${basePath}downloads/1/endeavour-manual.pdf`, size: '2.1 MB', format: 'PDF' }
+                    ]
+                }
+            },
             { id: 'Features', label: 'Features', content: { kind: 'list', items: [
                 "High-resolution textures ",
                 "Fully interactive 3D model",
