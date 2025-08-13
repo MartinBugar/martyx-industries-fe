@@ -53,15 +53,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
           <li key={index}>{feature}</li>
         ))}
       </ul>
-      
-      <div id="interaction" className="interaction-info">
-        <h3>Interact with the 3D Model:</h3>
-        <ul>
-          {product.interactionInstructions.map((instruction, index) => (
-            <li key={index}>{instruction}</li>
-          ))}
-        </ul>
-      </div>
+
       
       <button 
         className={`add-to-cart-btn${popup.visible ? ` is-popup ${popup.variant}` : ''}`}

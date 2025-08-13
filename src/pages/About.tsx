@@ -4,16 +4,17 @@ import './Pages.css';
 const About: React.FC = () => {
   return (
     <div className="page-container about-page" role="main">
-      <section className="about-hero" aria-labelledby="about-hero-heading">
+      <section className="about-hero" aria-labelledby="about-hero-heading" aria-describedby="about-hero-desc" id="top">
         <span className="eyebrow">About MartyX Industries</span>
         <h1 id="about-hero-heading">Engineered RC platforms. 3D‑printed. Track‑proven.</h1>
-        <p>
+        <p id="about-hero-desc">
           We design and 3D print modular, RC‑ready vehicles and parts — precision tuned, field‑tested,
           and upgrade‑friendly. From CAD to course, everything is built to run hard and be easy to maintain.
         </p>
         <div className="hero-actions">
           <a className="btn primary" href="/products">Explore Models</a>
-          <a className="btn subtle" href="mailto:info@martyxindustries.com">Contact Us</a>
+          <a className="btn subtle" href="#why-us">Why Us</a>
+          <a className="btn subtle" href="#process">Our Process</a>
         </div>
       </section>
 
@@ -36,7 +37,7 @@ const About: React.FC = () => {
         </div>
       </section>
 
-      <section className="about-grid" aria-label="What makes us different">
+      <section className="about-grid" aria-label="What makes us different" id="why-us">
         <div className="about-card">
           <div className="icon" aria-hidden="true">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -65,6 +66,16 @@ const About: React.FC = () => {
           <h3>Modular & Repairable</h3>
           <p>Replace only what breaks. Upgrade in stages. Keep your model running.</p>
         </div>
+        <div className="about-card">
+          <div className="icon" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M4 4h12a2 2 0 0 1 2 2v12H6a2 2 0 0 1-2-2V4z" stroke="currentColor" strokeWidth="1.5" />
+              <path d="M6 6h8" stroke="currentColor" strokeWidth="1.5" />
+            </svg>
+          </div>
+          <h3>Support & Docs</h3>
+          <p>Clear BOMs, build guides, and print profiles so you can assemble with confidence.</p>
+        </div>
       </section>
 
       <section className="about-details">
@@ -84,7 +95,7 @@ const About: React.FC = () => {
         </div>
       </section>
 
-      <section className="about-timeline" aria-label="Our process">
+      <section className="about-timeline" aria-label="Our process" id="process">
         <ol className="timeline">
           <li className="step">
             <span className="step-index">01</span>
