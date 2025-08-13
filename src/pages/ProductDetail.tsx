@@ -17,10 +17,10 @@ const ProductDetail: React.FC = () => {
         <ProductDetails product={selected} />
 
         <nav className="product-bookmarks" aria-label="Product sections">
-          <a href="#Details">Gallery</a>
-          <a href="#Download">Details</a>
+          <a href="#Details">Details</a>
+          <a href="#Download">Download</a>
           <a href="#Features">Features</a>
-          <a href="#Reviews">Interaction</a>
+          <a href="#Reviews">Reviews</a>
         </nav>
       </div>
     </div>
