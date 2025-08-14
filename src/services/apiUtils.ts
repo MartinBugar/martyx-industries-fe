@@ -64,7 +64,23 @@ export const handleResponse = async (response: Response) => {
 };
 
 // API base URL - shared across services
-export const API_BASE_URL = 'http://localhost:8080';
+// Prefer VITE_API_BASE_URL if provided; otherwise use production default when building for prod,
+// and localhost for development. Normalize to avoid trailing slashes.
+const ENV_API_URL: string | undefined =
+  typeof import.meta !== 'undefined' && import.meta.env
+    ? import.meta.env.VITE_API_BASE_URL
+    : undefined;
+
+const computeApiBaseUrl = (): string => {
+  const raw = (ENV_API_URL && ENV_API_URL.trim().length > 0)
+    ? ENV_API_URL.trim()
+    : ((typeof import.meta !== 'undefined' && (import.meta as any).env && (import.meta as any).env.PROD)
+        ? 'https://martyx-industries-be-2xf3x.ondigitalocean.app'
+        : 'http://localhost:8080');
+  return raw.endsWith('/') ? raw.slice(0, -1) : raw;
+};
+
+export const API_BASE_URL = computeApiBaseUrl();
 
 // Default headers for API requests
 export const defaultHeaders: ApiHeaders = {
