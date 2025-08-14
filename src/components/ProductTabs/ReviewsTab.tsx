@@ -78,6 +78,35 @@ const Stars: React.FC<{ value: number }> = ({ value }) => {
   return <span aria-label={`${value} out of 5 stars`} title={`${value}/5`}>{stars}</span>;
 };
 
+const StarRating: React.FC<{ value: number; onChange: (v: number) => void; id?: string }> = ({ value, onChange, id }) => {
+  const [hover, setHover] = useState<number | null>(null);
+  const current = hover ?? value;
+  return (
+    <div className="star-rating" role="radiogroup" aria-labelledby={id ? `${id}-label` : undefined}>
+      {[1, 2, 3, 4, 5].map((v) => {
+        const filled = v <= current;
+        return (
+          <button
+            key={v}
+            type="button"
+            role="radio"
+            aria-checked={value === v}
+            className={`star ${filled ? 'filled' : ''}`}
+            onMouseEnter={() => setHover(v)}
+            onMouseLeave={() => setHover(null)}
+            onFocus={() => setHover(v)}
+            onBlur={() => setHover(null)}
+            onClick={() => onChange(v)}
+            aria-label={`${v} star${v > 1 ? 's' : ''}`}
+          >
+            ★
+          </button>
+        );
+      })}
+    </div>
+  );
+};
+
 const ReviewsTab: React.FC<ReviewsTabProps> = ({ content, productId }) => {
   const { isAuthenticated } = useAuth();
   const [reviews, setReviews] = useState<Array<ReviewModel & { displayName: string; createdAt: string }>>([]);
@@ -129,9 +158,9 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ content, productId }) => {
   return (
     <>
       {body}
-      <div className="reviews-section" style={{ marginTop: '16px' }}>
-        <div className="reviews-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h3 style={{ margin: 0 }}>Reviews</h3>
+      <div className="reviews-section">
+        <div className="reviews-header">
+          <h3 className="reviews-title">Reviews</h3>
           {isAuthenticated ? (
             <button onClick={() => setFormOpen((v) => !v)} className="primary-btn">
               {formOpen ? 'Cancel' : 'Write a review'}
@@ -142,44 +171,41 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ content, productId }) => {
         </div>
 
         {formOpen && isAuthenticated && (
-          <form onSubmit={handleSubmit} style={{ marginTop: '12px', display: 'grid', gap: '8px', maxWidth: '600px' }} aria-label="Write a review form">
-            <label>
-              Rating
-              <select value={rating} onChange={(e) => setRating(Number(e.target.value))} aria-label="Rating">
-                {[5,4,3,2,1].map((v) => (
-                  <option key={v} value={v}>{v}</option>
-                ))}
-              </select>
-            </label>
-            <label>
-              Review
-              <textarea value={text} onChange={(e) => setText(e.target.value)} rows={4} required aria-label="Review text" />
-            </label>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <button type="submit" className="primary-btn" disabled={submitting}>{submitting ? 'Submitting...' : 'Submit Review'}</button>
+          <form onSubmit={handleSubmit} className="review-form" aria-label="Write a review form">
+            <div className="form-field">
+              <label id="rating-label" htmlFor="rating-stars">Rating</label>
+              <StarRating id="rating-stars" value={rating} onChange={setRating} />
+              <small className="muted">Tap a star to set your rating</small>
+            </div>
+            <div className="form-field">
+              <label htmlFor="review-text">Your review</label>
+              <textarea id="review-text" value={text} onChange={(e) => setText(e.target.value)} rows={5} required placeholder="Share your thoughts about this product..." />
+            </div>
+            <div className="form-actions">
+              <button type="submit" className="primary-btn" disabled={submitting || !text.trim()}>{submitting ? 'Submitting...' : 'Submit Review'}</button>
               <button type="button" className="secondary-btn" onClick={() => setFormOpen(false)} disabled={submitting}>Cancel</button>
             </div>
           </form>
         )}
 
-        {loading && <p>Loading reviews...</p>}
-        {error && <p role="alert" style={{ color: 'crimson' }}>{error}</p>}
+        {loading && <p className="muted">Loading reviews...</p>}
+        {error && <p role="alert" className="error-text">{error}</p>}
 
         {!loading && !error && (
           reviews.length === 0 ? (
-            <p>No reviews yet.</p>
+            <p className="muted">No reviews yet.</p>
           ) : (
-            <ul style={{ listStyle: 'none', padding: 0, marginTop: '12px', display: 'grid', gap: '12px' }}>
+            <ul className="reviews-list">
               {reviews.map((r, idx) => (
-                <li key={(r.id ?? idx).toString()} style={{ border: '1px solid #e2e8f0', borderRadius: 8, padding: 12 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                <li key={(r.id ?? idx).toString()} className="review-card">
+                  <div className="review-card-header">
                     <strong>{r.displayName}</strong>
-                    <small style={{ color: '#64748b' }}>{formatDate(r.createdAt)}</small>
+                    <small className="muted">{formatDate(r.createdAt)}</small>
                   </div>
-                  <div style={{ margin: '4px 0' }}>
+                  <div className="review-card-stars">
                     <Stars value={r.rating ?? 0} />
                   </div>
-                  <p style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{r.text}</p>
+                  <p className="review-card-text">{r.text}</p>
                 </li>
               ))}
             </ul>

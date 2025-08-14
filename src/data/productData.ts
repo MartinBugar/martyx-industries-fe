@@ -138,11 +138,6 @@ export const products: Product[] = [
                     ]
                 }
             },
-            {
-                id: 'Reviews',
-                label: 'Reviews',
-                content: {kind: 'text', text: ""}
-            }
         ]
     }
 ];

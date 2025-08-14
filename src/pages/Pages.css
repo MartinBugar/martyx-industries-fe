@@ -643,7 +643,7 @@ html {
 
 /* Basic panel spacing under tabs */
 .product-tab-panel {
-  padding: 1rem 0;
+  padding: 0 0 1rem;
 }
 
 /* Constrain Product Detail page content width on large screens */

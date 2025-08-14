@@ -25,15 +25,22 @@ const toYouTubeEmbedUrl = (url: string): string => {
 };
 
 const buildTabs = (p: Product): ProductTab[] => {
-  if (p.tabs && p.tabs.length > 0) return p.tabs;
-  const tabs: ProductTab[] = [
-    { id: 'Details', label: 'Details', content: { kind: 'text', text: p.description } },
-    { id: 'Features', label: 'Features', content: { kind: 'list', items: p.features } }
-  ];
-  if (p.productType === 'DIGITAL') {
-    tabs.splice(1, 0, { id: 'Download', label: 'Download', content: { kind: 'text', text: 'Files available for download after purchase.' } });
+  let tabs: ProductTab[];
+  if (p.tabs && p.tabs.length > 0) {
+    tabs = [...p.tabs];
+  } else {
+    tabs = [
+      { id: 'Details', label: 'Details', content: { kind: 'text', text: p.description } },
+      { id: 'Features', label: 'Features', content: { kind: 'list', items: p.features } }
+    ];
+    if (p.productType === 'DIGITAL') {
+      tabs.splice(1, 0, { id: 'Download', label: 'Download', content: { kind: 'text', text: 'Files available for download after purchase.' } });
+    }
   }
-  tabs.push({ id: 'Reviews', label: 'Reviews', content: { kind: 'text', text: 'No reviews yet.' } });
+  // Ensure Reviews tab exists but do not source its content from static data
+  if (!tabs.some(t => t.id === 'Reviews')) {
+    tabs.push({ id: 'Reviews', label: 'Reviews', content: { kind: 'text', text: '' } });
+  }
   return tabs;
 };
 
