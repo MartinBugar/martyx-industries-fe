@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { type TabContent } from '../../data/productData';
 import { reviewsService, type Review as ReviewModel } from '../../services/reviewsService';
 import { useAuth } from '../../context/useAuth';
+import { adminService } from '../../services/adminService';
 
 interface ReviewsTabProps {
   content: TabContent;
@@ -116,6 +117,8 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ content, productId }) => {
   const [rating, setRating] = useState<number>(5);
   const [text, setText] = useState<string>('');
   const [submitting, setSubmitting] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | number | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -127,6 +130,25 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ content, productId }) => {
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
   }, [productId]);
+
+  // Check if current user is ADMIN to conditionally show delete buttons
+  useEffect(() => {
+    let cancelled = false;
+    const check = async () => {
+      if (!isAuthenticated) {
+        if (!cancelled) setIsAdmin(false);
+        return;
+      }
+      try {
+        const ok = await adminService.checkAdmin();
+        if (!cancelled) setIsAdmin(ok);
+      } catch {
+        if (!cancelled) setIsAdmin(false);
+      }
+    };
+    void check();
+    return () => { cancelled = true; };
+  }, [isAuthenticated]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -158,6 +180,21 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ content, productId }) => {
     const sum = reviews.reduce((acc, r) => acc + (r.rating ?? 0), 0);
     return sum / reviews.length;
   }, [reviews]);
+
+  const handleDelete = async (reviewId: string | number) => {
+    if (!isAdmin) return;
+    const confirmed = window.confirm('Are you sure you want to delete this review?');
+    if (!confirmed) return;
+    try {
+      setDeletingId(reviewId);
+      await reviewsService.deleteReview(productId, reviewId);
+      setReviews(prev => prev.filter(r => r.id !== reviewId));
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Failed to delete review');
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   const body = renderTabBody(content);
 
@@ -217,9 +254,23 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ content, productId }) => {
             <ul className="reviews-list">
               {reviews.map((r, idx) => (
                 <li key={(r.id ?? idx).toString()} className="review-card">
-                  <div className="review-card-header">
-                    <strong>{r.displayName}</strong>
-                    <small className="muted">{formatDate(r.createdAt)}</small>
+                  <div className="review-card-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                    <div className="review-card-meta" style={{ display: 'flex', flexDirection: 'column' }}>
+                      <strong>{r.displayName}</strong>
+                      <small className="muted">{formatDate(r.createdAt)}</small>
+                    </div>
+                    {isAdmin && r.id != null && (
+                      <button
+                        type="button"
+                        className="review-delete-btn"
+                        onClick={() => handleDelete(r.id as string | number)}
+                        disabled={deletingId === r.id}
+                        aria-label="Delete review"
+                        title="Delete review"
+                      >
+                        ×
+                      </button>
+                    )}
                   </div>
                   <div className="review-card-stars">
                     <Stars value={r.rating ?? 0} />

@@ -70,5 +70,18 @@ export const reviewsService = {
     });
     const data = await handleResponse(resp) as Review;
     return toReviewDisplay(data);
+  },
+
+  async deleteReview(productId: string | number, reviewId: string | number): Promise<void> {
+    const resp = await fetch(`${API_BASE_URL}/api/products/${productId}/reviews/${reviewId}`, {
+      method: 'DELETE',
+      headers: defaultHeaders as HeadersInit,
+    });
+    // Handle 204 No Content explicitly to avoid JSON parsing errors
+    if (resp.status === 204) {
+      return;
+    }
+    // For any other response, reuse common handler (will throw on non-2xx)
+    await handleResponse(resp);
   }
 };
