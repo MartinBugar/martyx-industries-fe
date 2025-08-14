@@ -11,6 +11,7 @@ const AdminLogin: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showDeniedModal, setShowDeniedModal] = useState(false);
 
   // If already authenticated, redirect to panel (only if token is valid)
   useEffect(() => {
@@ -55,17 +56,16 @@ const AdminLogin: React.FC = () => {
         return;
       }
 
-      // Not an admin -> clear token and show ACCESS DENIED
+      // Not an admin -> clear token and show ACCES DENIED
       removeAuthToken();
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      setError('ACCESS DENIED');
-      if (typeof window !== 'undefined') {
-        window.alert('ACCESS DENIED');
-      }
+      setError('ACCES DENIED');
+      setShowDeniedModal(true);
     } catch (err) {
       console.error('Admin login error:', err);
-      setError('Invalid email or password');
+      setError('ACCES DENIED');
+      setShowDeniedModal(true);
     } finally {
       setLoading(false);
     }
@@ -101,6 +101,22 @@ const AdminLogin: React.FC = () => {
           {loading ? 'Logging In…' : 'Log In'}
         </button>
       </form>
+
+      {showDeniedModal && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
+          <div style={{ background: '#fff', padding: '32px 28px', borderRadius: 12, maxWidth: 520, width: '90%', textAlign: 'center', boxShadow: '0 10px 25px rgba(0,0,0,0.2)' }} role="dialog" aria-modal="true" aria-labelledby="admin-access-denied-title">
+            <h2 id="admin-access-denied-title" style={{ fontSize: 32, margin: '0 0 16px', color: '#111827', letterSpacing: 1 }}>ACCES DENIED</h2>
+            <p style={{ fontSize: 16, marginBottom: 24, color: '#374151' }}>You do not have permission to access the admin panel.</p>
+            <button
+              autoFocus
+              onClick={() => setShowDeniedModal(false)}
+              style={{ background: '#111827', color: '#fff', padding: '10px 16px', border: 'none', borderRadius: 6, cursor: 'pointer' }}
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
     </AdminLayout>
   );
 };
