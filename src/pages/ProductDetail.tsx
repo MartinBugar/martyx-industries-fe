@@ -6,6 +6,24 @@ import ProductDetails from '../components/ProductDetails/ProductDetails';
 import './Pages.css';
 import { DetailsTab, DownloadTab, FeaturesTab, ReviewsTab} from '../components/ProductTabs';
 
+const toYouTubeEmbedUrl = (url: string): string => {
+  try {
+    const u = new URL(url);
+    if (u.hostname.includes('youtu.be')) {
+      const id = u.pathname.replace(/^\//, '');
+      return `https://www.youtube.com/embed/${id}`;
+    }
+    if (u.hostname.includes('youtube.com')) {
+      if (u.pathname.startsWith('/embed/')) return url;
+      const v = u.searchParams.get('v');
+      if (v) return `https://www.youtube.com/embed/${v}`;
+    }
+  } catch {
+    return url;
+  }
+  return url;
+};
+
 const buildTabs = (p: Product): ProductTab[] => {
   if (p.tabs && p.tabs.length > 0) return p.tabs;
   const tabs: ProductTab[] = [
@@ -65,6 +83,20 @@ const ProductDetail: React.FC = () => {
             {activeTab.id === 'Download' && <DownloadTab content={activeTab.content} />}
             {activeTab.id === 'Features' && <FeaturesTab content={activeTab.content} />}
             {activeTab.id === 'Reviews' && <ReviewsTab content={activeTab.content} />}
+          </div>
+        )}
+
+        {selected.videoUrl && (
+          <div className="product-video-section" style={{ marginTop: '24px' }}>
+            <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden', borderRadius: '8px' }}>
+              <iframe
+                title="Product video"
+                src={toYouTubeEmbedUrl(selected.videoUrl)}
+                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              />
+            </div>
           </div>
         )}
       </div>

@@ -36,6 +36,7 @@ export interface Product {
     productType: 'DIGITAL' | 'PHYSICAL';
     modelViewerSettings?: ModelViewerSettings;
     tabs?: ProductTab[];
+    videoUrl?: string;
 }
 
 // Base interaction instructions shared across products
@@ -102,6 +103,7 @@ export const products: Product[] = [
         interactionInstructions: baseInteractionInstructions,
         productType: 'DIGITAL',
         modelViewerSettings: defaultModelViewerSettings,
+        videoUrl: 'https://www.youtube-nocookie.com/embed/bXxOCo0VL1Y',
         tabs: [
             {
                 id: 'Details',

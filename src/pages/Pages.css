@@ -681,3 +681,50 @@ html {
 .product-tab-panel .rich-text ol {
   margin: 0.5rem 0 0.5rem 1.25rem;
 }
+
+
+/* Minimal About page container and typography overrides */
+.about-page .about-container {
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* Limit content width to max 60% on larger screens */
+@media (min-width: 1024px) {
+  .about-page .about-container {
+    max-width: 60%;
+  }
+}
+
+/* Full width (within page padding) on smaller screens */
+@media (max-width: 1023.98px) {
+  .about-page .about-container {
+    max-width: 100%;
+  }
+}
+
+.about-page .about-lead {
+  font-size: 1.1rem;
+  color: #555;
+  margin: 0.75rem auto 1rem;
+  line-height: 1.6;
+  max-width: 65ch;
+}
+
+.about-page .about-highlights {
+  list-style: disc;
+  text-align: left;
+  margin: 0.5rem auto 0;
+  padding-left: 1.25rem;
+  max-width: 48ch;
+  color: #444;
+  line-height: 1.7;
+}
+
+/* Make the CTA minimal */
+.about-page .about-cta {
+  margin-top: 1.25rem;
+  text-align: center;
+  padding: 0;
+  background: transparent;
+}
