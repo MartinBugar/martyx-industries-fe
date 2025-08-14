@@ -736,3 +736,11 @@ html {
   flex-basis: 100%;
   width: 100%;
 }
+
+
+/* Constrain product video size and center it under tab panels */
+.product-container .product-video-section {
+  max-width: 800px; /* keep it smaller on large screens */
+  margin-left: auto;
+  margin-right: auto;
+}
