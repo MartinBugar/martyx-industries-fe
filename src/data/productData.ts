@@ -141,7 +141,7 @@ export const products: Product[] = [
             {
                 id: 'Reviews',
                 label: 'Reviews',
-                content: {kind: 'text', text: "No reviews yet. Be the first to review this product!"}
+                content: {kind: 'text', text: ""}
             }
         ]
     }

@@ -82,7 +82,7 @@ const ProductDetail: React.FC = () => {
             {activeTab.id === 'Details' && <DetailsTab content={activeTab.content} />}
             {activeTab.id === 'Download' && <DownloadTab content={activeTab.content} />}
             {activeTab.id === 'Features' && <FeaturesTab content={activeTab.content} />}
-            {activeTab.id === 'Reviews' && <ReviewsTab content={activeTab.content} />}
+            {activeTab.id === 'Reviews' && <ReviewsTab content={activeTab.content} productId={selected.id} />}
           </div>
         )}
 
