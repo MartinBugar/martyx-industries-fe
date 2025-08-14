@@ -12,6 +12,7 @@ const AdminProductDetail: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [saving, setSaving] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [savedMsg, setSavedMsg] = useState<string | null>(null);
 
   const load = async () => {
     if (!id) return;
@@ -34,6 +35,7 @@ const AdminProductDetail: React.FC = () => {
   }, [id]);
 
   const updateField = (key: keyof BaseProduct, value: unknown) => {
+    setSavedMsg(null);
     setProduct(prev => (prev ? { ...prev, [key]: value } : prev));
   };
 
@@ -41,6 +43,7 @@ const AdminProductDetail: React.FC = () => {
     if (!product || !id) return;
     setSaving(true);
     setError(null);
+    setSavedMsg(null);
     try {
       const payload: Record<string, unknown> = { ...product };
       (['sku','category','description','currency'] as const).forEach((k) => {
@@ -56,9 +59,11 @@ const AdminProductDetail: React.FC = () => {
         updated = await adminProductsService.updateDigitalProduct(id, payload as DigitalProduct);
       }
       setProduct(updated);
+      setSavedMsg('Changes saved successfully.');
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Failed to save product';
       setError(msg);
+      setSavedMsg(null);
     } finally {
       setSaving(false);
     }
@@ -98,6 +103,7 @@ const AdminProductDetail: React.FC = () => {
           ) : (
             <div className="admin-card">
               {error && <div className="alert alert-error">{error}</div>}
+              {savedMsg && <div className="alert alert-success">{savedMsg}</div>}
               <div className="form-grid">
                 <div>
                   <label className="form-label">Type</label>

@@ -1,5 +1,5 @@
 import './App.css'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom'
 import { CartProvider } from './context/CartContext'
 import { AuthProvider } from './context/AuthProvider'
@@ -11,6 +11,7 @@ import Cart from './components/Cart/Cart'
 import Footer from './components/Footer/Footer'
 import SessionExpiredNotification from './components/SessionExpiredNotification/SessionExpiredNotification'
 import Home from './pages/Home'
+import { visitorService } from './services/visitorService'
 import Products from './pages/Products'
 import ProductDetail from './pages/ProductDetail'
 import About from './pages/About'
@@ -159,6 +160,22 @@ function MainContent() {
 
 // Main app content
 function AppContent() {
+  useEffect(() => {
+    try {
+      if (typeof window !== 'undefined') {
+        const alreadyTracked = window.sessionStorage.getItem('visitTracked');
+        if (!alreadyTracked) {
+          visitorService.trackVisit().catch((err) => {
+            console.warn('Visitor tracking failed:', err);
+          });
+          window.sessionStorage.setItem('visitTracked', 'true');
+        }
+      }
+    } catch (e) {
+      console.warn('Visitor tracking setup error:', e);
+    }
+  }, []);
+
   return (
     <BrowserRouter>
       <MainContent />

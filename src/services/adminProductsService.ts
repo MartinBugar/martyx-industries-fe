@@ -74,6 +74,10 @@ export const adminProductsService = {
       headers: defaultHeaders as HeadersInit,
       body: JSON.stringify(payload),
     });
+    // Some backends may return 204 No Content for successful updates
+    if (resp.status === 204) {
+      return await adminProductsService.getProductById(id);
+    }
     return await handleResponse(resp) as BaseProduct;
   },
 
@@ -83,6 +87,10 @@ export const adminProductsService = {
       headers: defaultHeaders as HeadersInit,
       body: JSON.stringify(payload),
     });
+    // Some backends may return 204 No Content for successful updates
+    if (resp.status === 204) {
+      return await adminProductsService.getProductById(id);
+    }
     return await handleResponse(resp) as BaseProduct;
   },
 
