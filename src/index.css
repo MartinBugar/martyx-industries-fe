@@ -175,3 +175,17 @@ html, body, #root {
 .review-card-header { display: flex; justify-content: space-between; align-items: baseline; }
 .review-card-stars { margin: 4px 0; }
 .review-card-text { margin: 0; white-space: pre-wrap; }
+
+/* Compact chip-style button utility (used in Reviews header) */
+.chip-btn { font-size: 0.875rem; padding: 0.35em 0.75em; border-radius: 999px; line-height: 1.1; min-height: 32px; }
+@media (pointer: coarse) {
+  .chip-btn { padding: 0.5em 0.85em; }
+}
+
+
+/* Reviews header average rating inline styles */
+.reviews-title-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.reviews-average { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); }
+.reviews-average .stars { color: #f59e0b; font-size: 1.1rem; line-height: 1; }
+.reviews-average .avg-number { font-weight: 600; }
+.reviews-average .avg-count { font-size: 0.9rem; }

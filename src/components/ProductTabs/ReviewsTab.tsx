@@ -153,6 +153,12 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ content, productId }) => {
     }
   };
 
+  const averageRating = useMemo(() => {
+    if (!reviews.length) return 0;
+    const sum = reviews.reduce((acc, r) => acc + (r.rating ?? 0), 0);
+    return sum / reviews.length;
+  }, [reviews]);
+
   const body = renderTabBody(content);
 
   return (
@@ -160,9 +166,22 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ content, productId }) => {
       {body}
       <div className="reviews-section">
         <div className="reviews-header">
-          <h3 className="reviews-title">Reviews</h3>
+          <div className="reviews-title-row">
+            <h3 className="reviews-title">Reviews</h3>
+            {reviews.length > 0 && (
+              <div
+                className="reviews-average"
+                aria-label={`Average rating ${averageRating.toFixed(1)} out of 5 based on ${reviews.length} reviews`}
+                title={`${averageRating.toFixed(1)} / 5 (${reviews.length} review${reviews.length > 1 ? 's' : ''})`}
+             >
+                <span className="stars"><Stars value={averageRating} /></span>
+                <span className="avg-number">{averageRating.toFixed(1)}</span>
+                <span className="avg-count">({reviews.length})</span>
+              </div>
+            )}
+          </div>
           {isAuthenticated ? (
-            <button onClick={() => setFormOpen((v) => !v)} className="primary-btn">
+            <button onClick={() => setFormOpen((v) => !v)} className="primary-btn chip-btn">
               {formOpen ? 'Cancel' : 'Write a review'}
             </button>
           ) : (
