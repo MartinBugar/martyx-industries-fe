@@ -6,6 +6,8 @@
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
+  /* Default (dark) page background for overall canvas */
+  --page-background-color: #e0e0e0;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -56,12 +58,18 @@ button:focus-visible {
   :root {
     color: #213547;
     background-color: #ffffff;
+    /* Light-page background resembling common e-shop canvas */
+    --page-background-color: #f5f5f7;
   }
   a:hover {
     color: #747bff;
   }
   button {
     background-color: #f9f9f9;
+  }
+  /* Apply page background to full viewport */
+  html, body, #root {
+    background-color: var(--page-background-color);
   }
 }
 
@@ -108,4 +116,10 @@ button {
   --safe-right: env(safe-area-inset-right, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
+}
+
+
+/* Apply page background globally using theme variable */
+html, body, #root {
+  background-color: var(--page-background-color);
 }

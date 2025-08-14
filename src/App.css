@@ -21,7 +21,8 @@ body {
   line-height: 1.5;
   font-weight: 400;
   color: var(--text-color);
-  background-color: var(--background-color);
+  /* Use transparent so the global page background from index.css shows through */
+  background-color: transparent;
 }
 
 .app-container {
