@@ -643,7 +643,7 @@ html {
 
 /* Minimal, modern card container for all tab panels */
 .product-tab-panel {
-  background: var(--card-bg, #ffffff);
+  background: #ffffff;
   color: #213547;
   border: 1px solid var(--border-color, #e2e8f0);
   border-radius: 12px;
@@ -665,7 +665,7 @@ html {
   align-items: start;
   gap: 10px;
   padding: 10px 12px;
-  background: var(--card-bg, #ffffff);
+  background: #ffffff;
   border: 1px solid var(--border-color, #e2e8f0);
   border-radius: 10px;
 }
