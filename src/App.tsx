@@ -32,6 +32,10 @@ import TermsOfService from './pages/TermsOfService/TermsOfService'
 import AdminLogin from './pages/admin/AdminLogin'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import RequireAdmin from './pages/admin/RequireAdmin'
+import AdminUsers from './pages/admin/AdminUsers'
+import AdminUserDetail from './pages/admin/AdminUserDetail'
+import AdminProducts from './pages/admin/AdminProducts'
+import AdminOrders from './pages/admin/AdminOrders'
 
 // App wrapper to provide DevPasswordGate, AuthContext, and CartContext
 function AppWrapper() {
@@ -111,6 +115,26 @@ function MainContent() {
           <Route path="/admin/panel" element={
             <RequireAdmin>
               <AdminDashboard />
+            </RequireAdmin>
+          } />
+          <Route path="/admin/users" element={
+            <RequireAdmin>
+              <AdminUsers />
+            </RequireAdmin>
+          } />
+          <Route path="/admin/users/:id" element={
+            <RequireAdmin>
+              <AdminUserDetail />
+            </RequireAdmin>
+          } />
+          <Route path="/admin/products" element={
+            <RequireAdmin>
+              <AdminProducts />
+            </RequireAdmin>
+          } />
+          <Route path="/admin/orders" element={
+            <RequireAdmin>
+              <AdminOrders />
             </RequireAdmin>
           } />
         </Routes>
