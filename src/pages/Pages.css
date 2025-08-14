@@ -728,3 +728,11 @@ html {
   padding: 0;
   background: transparent;
 }
+
+
+/* Ensure tab panel and video span full width in flex container */
+.product-container .product-tab-panel,
+.product-container .product-video-section {
+  flex-basis: 100%;
+  width: 100%;
+}
