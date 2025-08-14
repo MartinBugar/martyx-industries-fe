@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import AdminLayout from './AdminLayout';
 import { visitorService, type VisitorTimeSeriesPoint } from '../../services/visitorService';
 import VisitorsTimeSeriesChart from '../../components/Charts/VisitorsTimeSeriesChart';
+import { doMetricsService } from '../../services/doMetricsService';
 
 const AdminDashboard: React.FC = () => {
   const [count, setCount] = useState<number | null>(null);
@@ -11,6 +12,10 @@ const AdminDashboard: React.FC = () => {
   const [series, setSeries] = useState<VisitorTimeSeriesPoint[] | null>(null);
   const [seriesLoading, setSeriesLoading] = useState<boolean>(true);
   const [seriesError, setSeriesError] = useState<string | null>(null);
+
+  const [bandwidth, setBandwidth] = useState<unknown | null>(null);
+  const [bandwidthLoading, setBandwidthLoading] = useState<boolean>(true);
+  const [bandwidthError, setBandwidthError] = useState<string | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -43,6 +48,19 @@ const AdminDashboard: React.FC = () => {
       }
     })();
 
+    // Load daily bandwidth (today)
+    (async () => {
+      try {
+        const data = await doMetricsService.getBandwidthDaily();
+        if (mounted) setBandwidth(data);
+      } catch (e) {
+        console.error('Failed to fetch daily bandwidth', e);
+        if (mounted) setBandwidthError('Failed to load daily bandwidth');
+      } finally {
+        if (mounted) setBandwidthLoading(false);
+      }
+    })();
+
     return () => { mounted = false; };
   }, []);
 
@@ -62,6 +80,24 @@ const AdminDashboard: React.FC = () => {
             )}
           </div>
 
+          {/* Daily Bandwidth card */}
+          <div style={{ background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, minWidth: 320 }}>
+            <div style={{ fontSize: 14, color: '#6b7280', marginBottom: 8 }}>Daily Bandwidth</div>
+            {bandwidthLoading ? (
+              <div>Loading…</div>
+            ) : bandwidthError ? (
+              <div style={{ color: '#b91c1c' }}>{bandwidthError}</div>
+            ) : (
+              <div style={{ maxWidth: 420, overflowX: 'auto' }}>
+                {typeof bandwidth === 'string' ? (
+                  <code>{bandwidth}</code>
+                ) : (
+                  <pre style={{ margin: 0 }}>{JSON.stringify(bandwidth, null, 2)}</pre>
+                )}
+              </div>
+            )}
+          </div>
+
           {/* Visitors over time chart card */}
           <div style={{ background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, minWidth: 320, flex: 1 }}>
             <div style={{ fontSize: 14, color: '#6b7280', marginBottom: 8 }}>Visitors Over Time</div>
@@ -76,13 +112,6 @@ const AdminDashboard: React.FC = () => {
             )}
           </div>
         </div>
-        <p>Welcome to the admin dashboard.</p>
-        <ul>
-          <li>Use the sidebar to navigate between sections.</li>
-          <li>Users: manage application users.</li>
-          <li>Products: manage products/catalog.</li>
-          <li>Orders: review and manage orders.</li>
-        </ul>
       </div>
     </AdminLayout>
   );
