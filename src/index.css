@@ -333,6 +333,32 @@ html, body, #root {
     }
 }
 
+/* Icon-only circular button utility (for Write Review action) */
+.icon-btn {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+.icon-btn svg {
+    width: 22px;
+    height: 22px;
+}
+@media (pointer: coarse) {
+    .icon-btn {
+        width: 48px;
+        height: 48px;
+    }
+    .icon-btn svg {
+        width: 24px;
+        height: 24px;
+    }
+}
+
 
 /* Reviews header average rating inline styles */
 .reviews-title-row {

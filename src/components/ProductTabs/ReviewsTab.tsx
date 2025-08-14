@@ -218,8 +218,25 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ content, productId }) => {
             )}
           </div>
           {isAuthenticated ? (
-            <button onClick={() => setFormOpen((v) => !v)} className="primary-btn chip-btn">
-              {formOpen ? 'Cancel' : 'Write a review'}
+            <button
+              type="button"
+              onClick={() => setFormOpen((v) => !v)}
+              className="icon-btn"
+              aria-label={formOpen ? 'Close review form' : 'Write a review'}
+              title={formOpen ? 'Close review form' : 'Write a review'}
+              aria-expanded={formOpen}
+              aria-controls="write-review-form"
+            >
+              {formOpen ? (
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                </svg>
+              ) : (
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M4 17.25V20h2.75L17.81 8.94l-2.75-2.75L4 17.25z" fill="currentColor"/>
+                  <path d="M20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 2.75 2.75 1.84-1.82z" fill="currentColor"/>
+                </svg>
+              )}
             </button>
           ) : (
             <a href="/login" className="secondary-btn chip-btn">Log in to write a review</a>
@@ -227,7 +244,7 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ content, productId }) => {
         </div>
 
         {formOpen && isAuthenticated && (
-          <form onSubmit={handleSubmit} className="review-form" aria-label="Write a review form">
+          <form id="write-review-form" onSubmit={handleSubmit} className="review-form" aria-label="Write a review form">
             <div className="form-field">
               <label id="rating-label" htmlFor="rating-stars">Rating</label>
               <StarRating id="rating-stars" value={rating} onChange={setRating} />
