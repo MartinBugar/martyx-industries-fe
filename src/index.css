@@ -513,3 +513,14 @@ html, body, #root {
     opacity: 0.6;
     cursor: not-allowed;
 }
+
+
+/* Improve visibility of review text field border */
+#review-text {
+    border-color: #000;
+}
+
+/* Keep accent color on focus for consistency */
+#review-text:focus {
+    border-color: var(--accent);
+}
