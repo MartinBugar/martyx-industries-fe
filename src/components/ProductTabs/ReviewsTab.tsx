@@ -185,7 +185,7 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ content, productId }) => {
               {formOpen ? 'Cancel' : 'Write a review'}
             </button>
           ) : (
-            <a href="/login" className="secondary-btn">Log in to write a review</a>
+            <a href="/login" className="secondary-btn chip-btn">Log in to write a review</a>
           )}
         </div>
 
