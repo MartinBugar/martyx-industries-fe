@@ -47,6 +47,7 @@ export const handleResponse = async (response: Response) => {
       // Clear expired token and user data
       localStorage.removeItem('user');
       localStorage.removeItem('token');
+      localStorage.removeItem('adminAuthed');
       // Remove authorization header
       delete defaultHeaders['Authorization'];
       // Dispatch logout event with api_error reason to distinguish from token expiration
@@ -69,3 +70,25 @@ export const API_BASE_URL = 'http://localhost:8080';
 export const defaultHeaders: ApiHeaders = {
   'Content-Type': 'application/json',
 };
+
+// Bootstrap Authorization header from stored token on module load to survive refreshes
+try {
+  if (typeof window !== 'undefined') {
+    const token = window.localStorage.getItem('token');
+    if (token) {
+      const payload = decodeJWT(token);
+      const now = Math.floor(Date.now() / 1000);
+      if (payload && typeof payload.exp === 'number' && payload.exp > now) {
+        // Token valid: set Authorization header for immediate API calls
+        defaultHeaders['Authorization'] = `Bearer ${token}`;
+      } else {
+        // Expired/invalid token: cleanup
+        window.localStorage.removeItem('token');
+        window.localStorage.removeItem('user');
+        window.localStorage.removeItem('adminAuthed');
+      }
+    }
+  }
+} catch (e) {
+  console.warn('Auth bootstrap failed:', e);
+}

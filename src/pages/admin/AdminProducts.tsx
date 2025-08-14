@@ -4,7 +4,9 @@ import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
 import { adminProductsService, type BaseProduct, type DigitalProduct, type PhysicalProduct } from '../../services/adminProductsService';
 
-const initialCreate: (DigitalProduct | PhysicalProduct) & { productType: 'DIGITAL' | 'PHYSICAL' } = {
+type CreateProduct = BaseProduct & { productType: 'DIGITAL' | 'PHYSICAL' };
+
+const initialCreate: CreateProduct = {
   name: '',
   sku: '',
   category: '',

@@ -39,14 +39,68 @@ export const visitorService = {
 
   // Admin endpoint: returns time series of visits (default: last 30 days)
   async getVisitorTimeSeries(days: number = 30): Promise<VisitorTimeSeriesPoint[]> {
-    const url = `${API_BASE_URL}/api/admin/visitors/timeseries?days=${encodeURIComponent(days)}`;
-    const resp = await fetch(url, {
-      method: 'GET',
-      headers: defaultHeaders as HeadersInit,
-    });
-    const data = await handleResponse(resp);
-    // Expecting an array of { timestamp, count }
-    return Array.isArray(data) ? (data as VisitorTimeSeriesPoint[]) : [];
+    try {
+      // Fetch all visitor records (admin-only endpoint)
+      const visitors = await this.getAllVisitors();
+
+      // Prepare day buckets for the last `days` days (including today)
+      const now = new Date();
+      const startOfToday = new Date(now);
+      startOfToday.setHours(0, 0, 0, 0);
+
+      const dayKeys: string[] = [];
+      for (let i = days - 1; i >= 0; i--) {
+        const d = new Date(startOfToday);
+        d.setDate(d.getDate() - i);
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        dayKeys.push(key);
+      }
+
+      // Initialize counts map with zeros for continuity in the chart
+      const counts = new Map<string, number>();
+      dayKeys.forEach(k => counts.set(k, 0));
+
+      // Helper to pick the most relevant timestamp from a visitor record
+      const pickTimestamp = (v: Visitor): string | null => {
+        // Prefer lastVisitAt, then createdAt, then updatedAt as fallback
+        const t = (v.lastVisitAt ?? v.createdAt ?? v.updatedAt) as string | null | undefined;
+        return t ?? null;
+      };
+
+      // Aggregate by local date key
+      for (const v of visitors) {
+        const ts = pickTimestamp(v);
+        if (!ts) continue;
+        const dt = new Date(ts);
+        if (!Number.isFinite(dt.getTime())) continue;
+        const key = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
+        if (counts.has(key)) {
+          counts.set(key, (counts.get(key) || 0) + 1);
+        }
+      }
+
+      // Build the result with timestamps at local midnight for each day bucket
+      const series: VisitorTimeSeriesPoint[] = dayKeys.map(k => {
+        const [Y, M, D] = k.split('-').map(Number);
+        const localMidnight = new Date(Y, (M as number) - 1, D as number, 0, 0, 0, 0);
+        return {
+          timestamp: localMidnight.toISOString(),
+          count: counts.get(k) || 0,
+        };
+      });
+
+      return series;
+    } catch (err) {
+      console.error('Failed to compute visitor time series from all visitors. Trying legacy endpoint...', err);
+      // Fallback to legacy timeseries endpoint if available
+      const url = `${API_BASE_URL}/api/admin/visitors/timeseries?days=${encodeURIComponent(days)}`;
+      const resp = await fetch(url, {
+        method: 'GET',
+        headers: defaultHeaders as HeadersInit,
+      });
+      const data = await handleResponse(resp);
+      return Array.isArray(data) ? (data as VisitorTimeSeriesPoint[]) : [];
+    }
   },
 
   // Admin endpoint: returns all visitor records
