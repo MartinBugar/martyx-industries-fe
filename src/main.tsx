@@ -9,6 +9,31 @@ createRoot(document.getElementById('root')!).render(
   </StrictMode>,
 )
 
+// Silences a known Chrome extension messaging error that can surface as an unhandled rejection
+// without our app using extension APIs. We prevent only the specific, known message.
+window.addEventListener('unhandledrejection', (event) => {
+  try {
+    const reason = event.reason as unknown;
+    let msg = '' as string;
+    if (typeof reason === 'string') {
+      msg = reason;
+    } else if (typeof reason === 'object' && reason !== null) {
+      const maybeMessage = (reason as { message?: unknown }).message;
+      if (typeof maybeMessage === 'string') {
+        msg = maybeMessage;
+      }
+    }
+    if (
+      typeof msg === 'string' &&
+      msg.includes('A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received')
+    ) {
+      event.preventDefault();
+    }
+  } catch {
+    // no-op
+  }
+});
+
 // Register/Unregister Service Worker depending on environment
 // Only register in production to avoid dev server issues (e.g., MIME/type errors due to SW caching)
 if (import.meta.env.PROD && 'serviceWorker' in navigator) {

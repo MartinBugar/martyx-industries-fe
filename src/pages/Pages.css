@@ -641,9 +641,64 @@ html {
   color: #ffffff;
 }
 
-/* Basic panel spacing under tabs */
+/* Minimal, modern card container for all tab panels */
 .product-tab-panel {
-  padding: 0 0 1rem;
+  background: var(--card-bg, #ffffff);
+  color: #213547;
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+
+/* Clean list styling inside tab panels (used by Features) */
+.product-tab-panel .tab-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.product-tab-panel .tab-list > li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--card-bg, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 10px;
+}
+.product-tab-panel .tab-list > li::before {
+  content: '•';
+  color: var(--accent, #646cff);
+  font-weight: 700;
+  line-height: 1;
+  margin-top: 2px;
+}
+
+/* Image and gallery polish inside panels */
+.product-tab-panel .tab-image img {
+  border-radius: 10px;
+  border: 1px solid var(--border-color, #e2e8f0);
+}
+.product-tab-panel .tab-gallery {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+}
+.product-tab-panel .tab-gallery-item img {
+  border-radius: 10px;
+  border: 1px solid var(--border-color, #e2e8f0);
+}
+
+/* Avoid double containers for nested sections */
+.product-tab-panel .downloads-section,
+.product-tab-panel .reviews-section {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  box-shadow: none;
 }
 
 /* Constrain Product Detail page content width on large screens */

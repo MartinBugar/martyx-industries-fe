@@ -135,7 +135,7 @@ html, body, #root {
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --border-color: #3a3a3a;
+    --border-color: #ffffff;
     --card-bg: #1f1f1f;
     --muted: #94a3b8;
   }
@@ -189,3 +189,88 @@ html, body, #root {
 .reviews-average .stars { color: #f59e0b; font-size: 1.1rem; line-height: 1; }
 .reviews-average .avg-number { font-weight: 600; }
 .reviews-average .avg-count { font-size: 0.9rem; }
+
+
+/* Downloads UI modern minimal styles */
+.downloads-section { 
+  margin-top: 16px; 
+  background: #ffffff; 
+  color: #213547; 
+  border: 1px solid var(--border-color); 
+  border-radius: 12px; 
+  padding: 12px; 
+}
+
+.downloads-list { 
+  list-style: none; 
+  margin: 0; 
+  padding: 0; 
+  display: grid; 
+  gap: 10px; 
+}
+
+.download-item { 
+  display: flex; 
+  align-items: center; 
+  justify-content: flex-start; 
+  gap: 12px; 
+  padding: 12px; 
+  background: #ffffff; 
+  border: 1px solid var(--border-color); 
+  border-radius: 10px; 
+}
+
+.download-item:hover { 
+  border-color: var(--accent); 
+}
+
+.download-info { 
+  display: grid; 
+  gap: 4px; 
+  min-width: 0; 
+}
+
+.download-label { 
+  font-weight: 600; 
+  letter-spacing: 0.2px; 
+}
+
+.download-meta { 
+  color: var(--muted); 
+  font-size: 0.92rem; 
+}
+
+.download-actions { 
+  flex-shrink: 0; 
+}
+
+.download-btn { 
+  /* Smaller, compact download button */
+  padding: 0.4em 0.8em; 
+  font-size: 0.9rem;
+}
+
+@media (max-width: 480px) { 
+  .download-item { 
+    flex-direction: column; 
+    align-items: stretch; 
+  }
+  .download-actions .download-btn { 
+    width: 100%; 
+  }
+}
+
+
+/* Hide download metadata (size/format) inside downloads section */
+.downloads-section .download-meta {
+  display: none;
+}
+
+
+/* Inline layout for download label and button */
+.download-title-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}

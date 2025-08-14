@@ -24,21 +24,34 @@ const DownloadTab: React.FC<DownloadTabProps> = ({ content }) => {
       );
     case 'downloads':
       return (
-        <ul className="downloads-list">
-          {content.items.map((d, i) => (
-            <li key={i} className="download-item">
-              <a href={d.url} download>
-                {d.label}
-              </a>
-              {(d.size || d.format) && (
-                <span className="download-meta">
-                  {d.format ? ` ${d.format}` : ''}
-                  {d.size ? ` · ${d.size}` : ''}
-                </span>
-              )}
-            </li>
-          ))}
-        </ul>
+        <section className="downloads-section" aria-label="Available downloads">
+          <ul className="downloads-list">
+            {content.items.map((d, i) => (
+              <li key={i} className="download-item">
+                <div className="download-info">
+                  <div className="download-title-row">
+                    <div className="download-label">{d.label}</div>
+                    <a
+                      className="secondary-btn download-btn"
+                      href={d.url}
+                      download
+                      rel="noopener noreferrer"
+                      aria-label={`Download ${d.label}${d.format ? ` (${d.format})` : ''}${d.size ? `, size ${d.size}` : ''}`}
+                    >
+                      Download
+                    </a>
+                  </div>
+                  {(d.size || d.format) && (
+                    <div className="download-meta">
+                      {d.format ? d.format : ''}
+                      {d.size ? ` · ${d.size}` : ''}
+                    </div>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
       );
     default:
       return <p>No downloads available.</p>;

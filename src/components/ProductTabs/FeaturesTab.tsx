@@ -9,7 +9,7 @@ const FeaturesTab: React.FC<FeaturesTabProps> = ({ content }) => {
   switch (content.kind) {
     case 'list':
       return (
-        <ul>
+        <ul className="tab-list features-list">
           {content.items.map((it, i) => (
             <li key={i}>{it}</li>
           ))}
