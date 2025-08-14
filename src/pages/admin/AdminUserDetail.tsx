@@ -13,8 +13,9 @@ const AdminUserDetail: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   const [editing, setEditing] = useState<boolean>(false);
-  const [form, setForm] = useState<Partial<AdminUser> & { password?: string }>({});
+  const [form, setForm] = useState<Record<string, unknown> & { password?: string }>({});
   const [saving, setSaving] = useState<boolean>(false);
+  const [fieldTypes, setFieldTypes] = useState<Record<string, 'boolean' | 'number' | 'string' | 'object'>>({});
 
   const loadUser = async () => {
     if (!id) return;
@@ -23,11 +24,25 @@ const AdminUserDetail: React.FC = () => {
     try {
       const data = await adminUsersService.getUserById(id);
       setUser(data);
-      setForm({
-        email: data.email,
-        firstName: data.firstName,
-        lastName: data.lastName,
+      // Initialize form with all editable fields (exclude id and hidden sensitive ones)
+      const initialForm: Record<string, unknown> = {};
+      const types: Record<string, 'boolean' | 'number' | 'string' | 'object'> = {};
+      Object.entries(data as Record<string, unknown>).forEach(([key, value]) => {
+        if (hiddenKeys.has(key)) return;
+        if (key === 'id') return; // keep id read-only
+        types[key] = Array.isArray(value) ? 'object' : (typeof value === 'object' && value !== null ? 'object' : (typeof value as 'boolean' | 'number' | 'string' | 'object'));
+        if (types[key] === 'object') {
+          try {
+            initialForm[key] = JSON.stringify(value, null, 2);
+          } catch {
+            initialForm[key] = String(value);
+          }
+        } else {
+          initialForm[key] = value as unknown;
+        }
       });
+      setForm(prev => ({ ...prev, ...initialForm }));
+      setFieldTypes(types);
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Failed to load user';
       setError(msg);
@@ -46,7 +61,53 @@ const AdminUserDetail: React.FC = () => {
     setSaving(true);
     setError(null);
     try {
-      const updated = await adminUsersService.updateUser(id, form);
+      // Build payload converting strings to proper types
+      const payload: Record<string, unknown> = {};
+      Object.entries(form).forEach(([key, rawVal]) => {
+        if (key === 'password') return; // handle separately
+        if (key === 'id') return;
+        if (hiddenKeys.has(key)) return;
+        const t = fieldTypes[key];
+        if (!t) {
+          payload[key] = rawVal;
+          return;
+        }
+        if (t === 'boolean') {
+          payload[key] = Boolean(rawVal);
+        } else if (t === 'number') {
+          const str = String(rawVal ?? '');
+          if (str.trim() === '') {
+            payload[key] = null; // treat empty as null
+          } else {
+            const num = Number(str);
+            if (Number.isNaN(num)) {
+              throw new Error(`Field "${key}" must be a valid number`);
+            }
+            payload[key] = num;
+          }
+        } else if (t === 'object') {
+          if (typeof rawVal === 'string') {
+            const txt = rawVal as string;
+            if (txt.trim() === '') {
+              payload[key] = null;
+            } else {
+              try {
+                payload[key] = JSON.parse(txt);
+              } catch {
+                throw new Error(`Field "${key}" contains invalid JSON`);
+              }
+            }
+          } else {
+            payload[key] = rawVal;
+          }
+        } else {
+          payload[key] = rawVal as unknown;
+        }
+      });
+      if ((form as { password?: string }).password) {
+        payload.password = (form as { password?: string }).password;
+      }
+      const updated = await adminUsersService.updateUser(id, payload as Partial<AdminUser> & { password?: string });
       setUser(updated);
       setEditing(false);
     } catch (e: unknown) {
@@ -161,40 +222,85 @@ const AdminUserDetail: React.FC = () => {
                 </div>
               ) : (
                 <div>
-                  <div className="form-grid">
-                    <div>
-                      <label className="form-label">First Name</label>
-                      <input
-                        className="form-input"
-                        value={form.firstName ?? ''}
-                        onChange={(e) => setForm(prev => ({ ...prev, firstName: e.target.value }))}
-                      />
-                    </div>
-                    <div>
-                      <label className="form-label">Last Name</label>
-                      <input
-                        className="form-input"
-                        value={form.lastName ?? ''}
-                        onChange={(e) => setForm(prev => ({ ...prev, lastName: e.target.value }))}
-                      />
-                    </div>
-                    <div>
-                      <label className="form-label">Email</label>
-                      <input
-                        type="email"
-                        className="form-input"
-                        value={form.email ?? ''}
-                        onChange={(e) => setForm(prev => ({ ...prev, email: e.target.value }))}
-                      />
-                    </div>
-                    <div>
-                      <label className="form-label">New Password (optional)</label>
-                      <input
-                        type="password"
-                        className="form-input"
-                        value={form.password ?? ''}
-                        onChange={(e) => setForm(prev => ({ ...prev, password: e.target.value }))}
-                      />
+                  <div style={{ marginTop: 8 }}>
+                    <h3 className="section-title">Edit All Fields</h3>
+                    <div className="table-wrapper" style={{ marginTop: 8 }}>
+                      <table className="admin-table">
+                        <thead>
+                          <tr>
+                            <th style={{ width: 240 }}>Field</th>
+                            <th>Value</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {getSortedEntries(user as unknown as Record<string, unknown>).map(([key]) => {
+                            if (key === 'id' || hiddenKeys.has(key)) return null;
+                            const t = fieldTypes[key] ?? 'string';
+                            const val = (form as Record<string, unknown>)[key];
+                            return (
+                              <tr key={key}>
+                                <td style={{ verticalAlign: 'top' }}><code>{key}</code></td>
+                                <td>
+                                  {t === 'boolean' ? (
+                                    <input
+                                      type="checkbox"
+                                      checked={Boolean(val)}
+                                      onChange={(e) => {
+                                        const checked = e.currentTarget.checked;
+                                        setForm(prev => ({ ...prev, [key]: checked }));
+                                      }}
+                                    />
+                                  ) : t === 'number' ? (
+                                    <input
+                                      type="number"
+                                      className="form-input"
+                                      value={String(val ?? '')}
+                                      onChange={(e) => {
+                                        const v = e.currentTarget.value;
+                                        setForm(prev => ({ ...prev, [key]: v }));
+                                      }}
+                                    />
+                                  ) : t === 'object' ? (
+                                    <textarea
+                                      className="form-input"
+                                      rows={4}
+                                      value={String(val ?? '')}
+                                      onChange={(e) => {
+                                        const v = e.currentTarget.value;
+                                        setForm(prev => ({ ...prev, [key]: v }));
+                                      }}
+                                    />
+                                  ) : (
+                                    <input
+                                      className="form-input"
+                                      type={key === 'email' ? 'email' : 'text'}
+                                      value={String(val ?? '')}
+                                      onChange={(e) => {
+                                        const v = e.currentTarget.value;
+                                        setForm(prev => ({ ...prev, [key]: v }));
+                                      }}
+                                    />
+                                  )}
+                                </td>
+                              </tr>
+                            );
+                          })}
+                          <tr>
+                            <td><code>password</code> <span style={{ color: '#888' }}>(optional)</span></td>
+                            <td>
+                              <input
+                                type="password"
+                                className="form-input"
+                                value={(form as { password?: string }).password ?? ''}
+                                onChange={(e) => {
+                                  const v = e.currentTarget.value;
+                                  setForm(prev => ({ ...prev, password: v }));
+                                }}
+                              />
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
                     </div>
                   </div>
                   <div className="form-actions">

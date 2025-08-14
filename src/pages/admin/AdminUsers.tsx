@@ -53,6 +53,51 @@ const AdminUsers: React.FC = () => {
     loadUsers();
   }, []);
 
+  // Helpers for extra columns
+  const getConfirmed = (user: AdminUser): string => {
+    const u = user as Record<string, unknown>;
+    const raw: unknown = u['confirmed'] ?? u['enabled'] ?? u['emailConfirmed'];
+    if (typeof raw === 'boolean') return raw ? 'Yes' : 'No';
+    if (typeof raw === 'string') {
+      const val = raw.toLowerCase();
+      if (val === 'true') return 'Yes';
+      if (val === 'false') return 'No';
+    }
+    return '—';
+  };
+
+  const getRoles = (user: AdminUser): string => {
+    const u = user as Record<string, unknown>;
+    const raw: unknown = u['roles'] ?? u['authorities'];
+    if (Array.isArray(raw)) {
+      const parts = (raw as unknown[]).map((r) => {
+        if (r == null) return '';
+        if (typeof r === 'string') return r;
+        if (typeof r === 'object') {
+          const obj = r as Record<string, unknown>;
+          return (obj['name'] ?? obj['role'] ?? obj['authority'] ?? '') as string;
+        }
+        return String(r);
+      }).filter(Boolean) as string[];
+      return parts.length ? parts.join(', ') : '—';
+    }
+    if (typeof raw === 'string') return raw || '—';
+    return '—';
+  };
+
+  const formatDateTime = (value: unknown): string => {
+    if (!value) return '—';
+    const d = new Date(String(value));
+    if (isNaN(d.getTime())) return '—';
+    return d.toLocaleString();
+  };
+
+  const getCreatedAt = (user: AdminUser): string => {
+    const u = user as Record<string, unknown>;
+    const raw = u['createdAt'] ?? u['created_at'] ?? u['createdDate'] ?? u['created'];
+    return formatDateTime(raw);
+  };
+
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -221,14 +266,17 @@ const AdminUsers: React.FC = () => {
                   <th style={{ width: 70 }}>ID</th>
                   <th>Name</th>
                   <th>Email</th>
+                  <th>Confirmed</th>
+                  <th>Roles</th>
+                  <th>Created At</th>
                   <th style={{ width: 240 }} className="text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan={4} className="table-empty">Loading users...</td></tr>
+                  <tr><td colSpan={7} className="table-empty">Loading users...</td></tr>
                 ) : filteredUsers.length === 0 ? (
-                  <tr><td colSpan={4} className="table-empty">No users found.</td></tr>
+                  <tr><td colSpan={7} className="table-empty">No users found.</td></tr>
                 ) : (
                   filteredUsers.map(user => (
                     <tr key={user.id}>
@@ -277,6 +325,9 @@ const AdminUsers: React.FC = () => {
                           user.email
                         )}
                       </td>
+                      <td>{getConfirmed(user)}</td>
+                      <td>{getRoles(user)}</td>
+                      <td>{getCreatedAt(user)}</td>
                       <td className="text-right">
                         {editingId === user.id ? (
                           <>

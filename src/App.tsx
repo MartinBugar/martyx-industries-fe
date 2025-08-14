@@ -35,6 +35,7 @@ import RequireAdmin from './pages/admin/RequireAdmin'
 import AdminUsers from './pages/admin/AdminUsers'
 import AdminUserDetail from './pages/admin/AdminUserDetail'
 import AdminProducts from './pages/admin/AdminProducts'
+import AdminProductDetail from './pages/admin/AdminProductDetail'
 import AdminOrders from './pages/admin/AdminOrders'
 
 // App wrapper to provide DevPasswordGate, AuthContext, and CartContext
@@ -130,6 +131,11 @@ function MainContent() {
           <Route path="/admin/products" element={
             <RequireAdmin>
               <AdminProducts />
+            </RequireAdmin>
+          } />
+          <Route path="/admin/products/:id" element={
+            <RequireAdmin>
+              <AdminProductDetail />
             </RequireAdmin>
           } />
           <Route path="/admin/orders" element={
