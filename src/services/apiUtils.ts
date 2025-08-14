@@ -74,7 +74,7 @@ const ENV_API_URL: string | undefined =
 const computeApiBaseUrl = (): string => {
   const raw = (ENV_API_URL && ENV_API_URL.trim().length > 0)
     ? ENV_API_URL.trim()
-    : ((typeof import.meta !== 'undefined' && (import.meta as any).env && (import.meta as any).env.PROD)
+    : ((typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PROD)
         ? 'https://martyx-industries-be-2xf3x.ondigitalocean.app'
         : 'http://localhost:8080');
   return raw.endsWith('/') ? raw.slice(0, -1) : raw;
