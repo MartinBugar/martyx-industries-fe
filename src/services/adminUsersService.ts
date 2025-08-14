@@ -8,6 +8,7 @@ export interface AdminUser {
   name?: string; // some backends return a full name
   phone?: string;
   // add other fields as needed
+  [key: string]: unknown;
 }
 
 export interface AdminSignupRequest {

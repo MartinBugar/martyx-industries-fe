@@ -70,6 +70,35 @@ const AdminUserDetail: React.FC = () => {
     }
   };
 
+  // Helper definitions for rendering all fields
+  const hiddenKeys = new Set(['password', 'passwordHash', 'salt']);
+
+  const formatValue = (val: unknown): string => {
+    if (val === null) return 'null';
+    if (val === undefined) return '—';
+    if (typeof val === 'string' || typeof val === 'number' || typeof val === 'boolean') {
+      return String(val);
+    }
+    try {
+      return JSON.stringify(val, null, 2);
+    } catch {
+      return String(val);
+    }
+  };
+
+  const getSortedEntries = (obj: Record<string, unknown>): [string, unknown][] => {
+    const preferredOrder = ['id', 'email', 'firstName', 'lastName', 'name', 'phone', 'roles', 'authorities', 'enabled', 'status', 'createdAt', 'updatedAt'];
+    const entries = Object.entries(obj).filter(([k]) => !hiddenKeys.has(k));
+    return entries.sort(([a], [b]) => {
+      const ia = preferredOrder.indexOf(a);
+      const ib = preferredOrder.indexOf(b);
+      if (ia !== -1 && ib !== -1) return ia - ib;
+      if (ia !== -1) return -1;
+      if (ib !== -1) return 1;
+      return a.localeCompare(b);
+    });
+  };
+
   return (
     <AdminLayout title={`User Detail`}>
       <div className="admin-page">
@@ -100,6 +129,34 @@ const AdminUserDetail: React.FC = () => {
                   <div className="form-actions">
                     <button className="btn btn-outline" onClick={() => setEditing(true)}>Edit</button>
                     <button className="btn btn-danger" onClick={handleDelete}>Delete</button>
+                  </div>
+
+                  <div style={{ marginTop: 16 }}>
+                    <h3 className="section-title">All User Data</h3>
+                    <div className="table-wrapper" style={{ marginTop: 8 }}>
+                      <table className="admin-table">
+                        <thead>
+                          <tr>
+                            <th style={{ width: 240 }}>Field</th>
+                            <th>Value</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {getSortedEntries(user as unknown as Record<string, unknown>).map(([key, val]) => (
+                            <tr key={key}>
+                              <td style={{ verticalAlign: 'top' }}><code>{key}</code></td>
+                              <td>
+                                {typeof val === 'object' && val !== null ? (
+                                  <pre style={{ margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{formatValue(val)}</pre>
+                                ) : (
+                                  <span>{formatValue(val)}</span>
+                                )}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               ) : (
