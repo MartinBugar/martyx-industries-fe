@@ -15,6 +15,10 @@ const CartPage: React.FC = () => {
     navigate('/products');
   };
 
+  const handleGoHome = () => {
+    navigate('/');
+  };
+
   const handleQuantityChange = (productId: string, newQuantity: number) => {
     if (newQuantity < 1) {
       removeFromCart(productId);
@@ -26,32 +30,29 @@ const CartPage: React.FC = () => {
   const subtotal = getTotalPrice();
   const shipping = items.length > 0 ? 5.99 : 0;
   const total = subtotal + shipping;
+  const isEmpty = items.length === 0;
 
   return (
     <div className="cart-page-container">
-      <div className="cart-header">
-        <h1>Shopping Cart</h1>
-        <p className="cart-subtitle">
-          {items.length === 0 
-            ? "Your cart is empty" 
-            : `${getTotalItems()} item${getTotalItems() !== 1 ? 's' : ''} in your cart`
-          }
-        </p>
-      </div>
       
-      {items.length === 0 ? (
-        <div className="empty-cart">
-          <div className="empty-cart-icon">
+      {isEmpty ? (
+        <section className="empty-cart" role="region" aria-labelledby="empty-cart-title">
+          <div className="empty-cart-icon" aria-hidden="true">
             <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
               <path d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m0 0h9m-9 0a2 2 0 100 4 2 2 0 000-4zm9 0a2 2 0 100 4 2 2 0 000-4z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </div>
-          <h2>Your cart is empty</h2>
+          <h2 id="empty-cart-title">Your cart is empty</h2>
           <p>Looks like you haven't added any items to your cart yet.</p>
-          <button className="primary-btn" onClick={handleBackToShopping}>
-            Start Shopping
-          </button>
-        </div>
+          <div className="empty-cart-actions">
+            <button className="primary-btn" onClick={handleBackToShopping}>
+              Start Shopping
+            </button>
+            <button className="secondary-btn" onClick={handleGoHome}>
+              Go to Home
+            </button>
+          </div>
+        </section>
       ) : (
         <div className="cart-layout">
           <div className="cart-main">
