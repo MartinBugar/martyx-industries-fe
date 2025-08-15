@@ -197,6 +197,30 @@
   text-decoration: underline;
 }
 
+.success-message {
+  background-color: #e8f5e9; /* light green */
+  color: #2e7d32; /* dark green text */
+  border-left: 4px solid #4caf50; /* green accent */
+  padding: 0.9rem 1rem;
+  border-radius: 6px;
+  margin: 0 0 1rem 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.failure-message {
+  background-color: #ffebee; /* light red */
+  color: #c62828; /* dark red text */
+  border-left: 4px solid #e53935; /* red accent */
+  padding: 0.9rem 1rem;
+  border-radius: 6px;
+  margin: 0 0 1rem 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
 /* Responsive styles */
 @media (max-width: 576px) {
   .login-container {

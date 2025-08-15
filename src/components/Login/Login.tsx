@@ -10,7 +10,13 @@ interface LoginFormData {
   password: string;
 }
 
-const Login: React.FC = () => {
+type ConfirmationStatus = 'success' | 'failed';
+
+interface LoginProps {
+  confirmationStatus?: ConfirmationStatus | null;
+}
+
+const Login: React.FC<LoginProps> = ({ confirmationStatus = null }) => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -99,6 +105,14 @@ const Login: React.FC = () => {
   
   return (
     <div className="login-container">
+      {/* Confirmation banners inside the login container, above the form card */}
+      {confirmationStatus === 'success' && (
+        <div className="success-message">Your email has been confirmed successfully. You can now log in.</div>
+      )}
+      {confirmationStatus === 'failed' && (
+        <div className="failure-message">Email confirmation failed. Please try again or contact support.</div>
+      )}
+
       <div className="login-form-container">
         {error && (
           <div className={`error-message ${error.includes('Account not activated') ? 'account-not-activated' : ''}`}>
