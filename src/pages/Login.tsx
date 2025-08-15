@@ -2,14 +2,15 @@ import React from 'react';
 import { useLocation } from 'react-router-dom';
 import LoginComponent from '../components/Login/Login';
 import './Pages.css';
-import '../components/Login/Login.css';
 
 const Login: React.FC = () => {
   const location = useLocation();
 
-  // Extract confirmation status from query or hash (in case some redirects put it there)
-  const getConfirmation = (): 'success' | 'failed' | null => {
-    const extract = (query: string | null) => {
+  type Status = 'success' | 'failed' | null;
+
+  // Compute initial confirmation once to avoid flicker on first paint
+  const getInitialConfirmation = (): Status => {
+    const extract = (query: string | null): Status => {
       if (!query) return null;
       const params = new URLSearchParams(query);
       const raw =
@@ -38,7 +39,28 @@ const Login: React.FC = () => {
     return null;
   };
 
-  const confirmation = getConfirmation();
+  const confirmation = React.useMemo<Status>(() => getInitialConfirmation(), []);
+
+  // After reading the status, clean the URL so the param doesn't stick around
+  React.useEffect(() => {
+    const hasQuery = !!location.search;
+    const hasHashQuery = typeof window !== 'undefined' && window.location.hash.includes('?');
+    const hasStatus = confirmation !== null;
+    if (!hasStatus) return;
+
+    try {
+      if (typeof window !== 'undefined' && (hasQuery || hasHashQuery)) {
+        const fullHash = window.location.hash || '';
+        const cleanHash = (() => {
+          if (!fullHash) return '';
+          const idx = fullHash.indexOf('?');
+          return idx === -1 ? fullHash : fullHash.slice(0, idx);
+        })();
+        const newUrl = location.pathname + cleanHash;
+        window.history.replaceState({}, '', newUrl);
+      }
+    } catch {/* no-op */}
+  }, [confirmation, location.pathname, location.search]);
 
   return (
     <div className="page-container login-page">
