@@ -31,7 +31,17 @@ export const adminService = {
       });
 
       if (response.ok) {
-        return true; // User is admin
+        // Backend now returns a boolean body: true if admin, false otherwise
+        try {
+          const data = await response.json();
+          if (typeof data === 'boolean') return data;
+          if (typeof data === 'string') return data.trim().toLowerCase() === 'true';
+          if (data && typeof data.isAdmin === 'boolean') return data.isAdmin;
+          return false;
+        } catch {
+          // If body can't be parsed, assume not admin
+          return false;
+        }
       }
 
       // When using existing session, a 401 should clear auth state (expired token)
@@ -43,7 +53,7 @@ export const adminService = {
 
       // For temporary credentials, 401/403 simply mean credentials lack admin access or are invalid
       if (response.status === 401 || response.status === 403) {
-        // Authenticated but forbidden: not an admin, or unauthorized
+        // Not an admin or unauthorized
         return false;
       }
 
