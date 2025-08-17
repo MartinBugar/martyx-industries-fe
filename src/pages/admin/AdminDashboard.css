@@ -10,26 +10,24 @@
 }
 
 .admin-cards-grid-280 {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 16px;
-  align-items: flex-start;
+  align-items: stretch;
 }
 
-.admin-cards-grid-280 > .admin-card {
-  flex: 1 1 280px;
-  min-width: 280px;
-}
-
+/* Compact cards can still be inline-sized within grids */
 .admin-cards-grid-280 > .admin-card.admin-card--compact {
-  flex: 0 0 auto;
-  min-width: 0;
+  width: max-content;
 }
 
 .admin-cards-grid-320 {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 16px;
+}
+.admin-cards-grid-320 > .admin-card {
+  justify-self: stretch;
 }
 
 .admin-card {

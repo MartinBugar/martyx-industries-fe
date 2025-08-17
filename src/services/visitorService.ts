@@ -32,13 +32,24 @@ export interface Visit {
 }
 
 export const visitorService = {
-  // Public endpoint: increments the counter and returns the current count
-  async trackVisit(): Promise<VisitorCountResponse> {
-    const resp = await fetch(`${API_BASE_URL}/api/visit`, {
-      method: 'POST',
-      headers: defaultHeaders as HeadersInit,
-    });
-    return await handleResponse(resp) as VisitorCountResponse;
+  // Track a visit via admin-protected endpoint. Swallow auth errors to avoid affecting user session.
+  async trackVisit(): Promise<VisitorCountResponse | null> {
+    try {
+      const resp = await fetch(`${API_BASE_URL}/api/admin/visits/track`, {
+        method: 'POST',
+        headers: defaultHeaders as HeadersInit,
+      });
+      if (!resp.ok) {
+        // Do not use global handleResponse here to avoid clearing tokens on 401 from this endpoint
+        return null;
+      }
+      // Best-effort parse
+      const data = await resp.json().catch(() => null);
+      return (data as VisitorCountResponse) ?? null;
+    } catch (e) {
+      console.warn('Visitor tracking failed:', e);
+      return null;
+    }
   },
 
   // Admin endpoint: returns current total count

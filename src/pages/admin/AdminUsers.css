@@ -162,3 +162,31 @@
   padding: 12px;
   text-align: center;
 }
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .admin-page { padding: 12px; }
+
+  .admin-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  /* Wrap action controls row in admin headers (second child is the actions container) */
+  .admin-header > div:last-child {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* Ensure inputs don’t get too tiny in wrapped rows */
+  .admin-header > div:last-child .form-input,
+  .admin-header > div:last-child .btn {
+    flex: 1 1 auto;
+  }
+
+  /* Slightly larger tap targets on mobile */
+  .btn { min-height: 40px; }
+}

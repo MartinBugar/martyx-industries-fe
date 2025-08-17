@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import './AdminLayout.css';
 
 interface AdminLayoutProps {
   title?: string;
@@ -24,10 +25,15 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ title, children }) => {
   const location = useLocation();
   const isAuthed = typeof window !== 'undefined' && window.localStorage.getItem('adminAuthed') === 'true';
 
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   const handleLogout = () => {
     window.localStorage.removeItem('adminAuthed');
     navigate('/admin');
   };
+
+  // Close sidebar when route changes
+  useEffect(() => { setSidebarOpen(false); }, [location.pathname]);
 
   if (!isAuthed) {
     // Public view for admin login page
@@ -41,29 +47,42 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ title, children }) => {
     );
   }
 
-  // Private admin layout with sidebar
+  // Private admin layout with responsive sidebar
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#0f172a' }}>
+    <div className="admin-shell">
       {/* Sidebar */}
-      <aside style={{ width: 240, background: '#111827', color: '#e5e7eb', padding: 16, position: 'relative' }}>
-        <div style={{ fontWeight: 700, marginBottom: 16, fontSize: 18 }}>Admin Panel</div>
+      <aside className={`admin-sidebar${sidebarOpen ? ' is-open' : ''}`} id="admin-sidebar" aria-label="Admin navigation">
+        <div className="admin-sidebar-title">Admin Panel</div>
         <nav>
           <Link to="/admin/panel" style={{ ...sidebarLinkStyle, ...(location.pathname === '/admin/panel' ? activeLinkStyle : {}) }}>Dashboard</Link>
           <Link to="/admin/users" style={{ ...sidebarLinkStyle, ...(location.pathname.startsWith('/admin/users') ? activeLinkStyle : {}) }}>Users</Link>
           <Link to="/admin/products" style={{ ...sidebarLinkStyle, ...(location.pathname.startsWith('/admin/products') ? activeLinkStyle : {}) }}>Products</Link>
           <Link to="/admin/orders" style={{ ...sidebarLinkStyle, ...(location.pathname.startsWith('/admin/orders') ? activeLinkStyle : {}) }}>Orders</Link>
         </nav>
-        <div style={{ position: 'absolute', bottom: 16 }}>
+        <div className="admin-logout-wrap">
           <button onClick={handleLogout} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: 6, cursor: 'pointer' }}>Logout</button>
         </div>
       </aside>
 
+      {/* Overlay for mobile */}
+      {sidebarOpen && <div className="admin-overlay" aria-hidden="true" onClick={() => setSidebarOpen(false)} />}
+
       {/* Content */}
-      <div style={{ flex: 1, background: '#f8fafc', color: '#0f172a' }}>
-        <header style={{ background: '#ffffff', borderBottom: '1px solid #e5e7eb', padding: '12px 16px' }}>
-          <h1 style={{ margin: 0, fontSize: 20 }}>{title ?? 'Admin'}</h1>
+      <div className="admin-content">
+        <header className="admin-topbar">
+          <button
+            type="button"
+            className="admin-burger"
+            aria-label="Toggle sidebar"
+            aria-controls="admin-sidebar"
+            aria-expanded={sidebarOpen}
+            onClick={() => setSidebarOpen(v => !v)}
+          >
+            ☰
+          </button>
+          <h1 className="admin-topbar-title">{title ?? 'Admin'}</h1>
         </header>
-        <section style={{ padding: 16 }}>
+        <section className="admin-main">
           {children}
         </section>
       </div>

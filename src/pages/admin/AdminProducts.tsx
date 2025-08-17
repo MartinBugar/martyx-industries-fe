@@ -113,6 +113,11 @@ const AdminProducts: React.FC = () => {
     }
   };
 
+  const getProductType = (p: BaseProduct): string => {
+    const t: unknown = p.productType ?? (p as Record<string, unknown>)['type'];
+    return typeof t === 'string' && t.trim() ? t : '—';
+  };
+
   return (
     <AdminLayout title="Products">
       <div className="admin-page">
@@ -266,7 +271,7 @@ const AdminProducts: React.FC = () => {
                       <td>{p.name}</td>
                       <td>{p.sku || '—'}</td>
                       <td>{p.category || '—'}</td>
-                      <td>{(p.productType as string) || '—'}</td>
+                      <td>{getProductType(p)}</td>
                       <td>{typeof p.price === 'number' ? `${p.price} ${p.currency ?? ''}` : '—'}</td>
                       <td>{p.active ? 'Yes' : 'No'}</td>
                       <td className="text-right">
