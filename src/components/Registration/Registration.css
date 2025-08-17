@@ -81,13 +81,19 @@
   border-radius: 4px;
   margin-top: 1rem;
   font-size: 0.9rem;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.5rem; /* ensure vertical centering area */
 }
 
 .success-message {
-  background-color: #e8f5e9;
-  color: #2e7d32;
-  padding: 1.2rem;
-  border-radius: 4px;
+  background-color: #f8f9fa; /* neutral subtle background */
+  color: #333;
+  padding: 1.25rem 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb; /* subtle border for minimal card */
   margin-top: 1rem;
   text-align: center;
   font-size: 1rem;
@@ -98,7 +104,8 @@
   font-weight: 500;
 }
 
-.go-to-home-btn {
+.go-to-home-btn,
+.go-to-login-btn {
   padding: 0.8rem 1.2rem;
   background-color: #4caf50;
   color: white;
@@ -107,12 +114,21 @@
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s, box-shadow 0.2s;
   margin-top: 0.5rem;
 }
 
-.go-to-home-btn:hover {
+.go-to-home-btn:hover,
+.go-to-login-btn:hover {
   background-color: #45a049;
+}
+
+/* Improve accessibility for keyboard users */
+.register-btn:focus-visible,
+.go-to-home-btn:focus-visible,
+.go-to-login-btn:focus-visible {
+  outline: 2px solid #2e7d32;
+  outline-offset: 2px;
 }
 
 .registration-footer {

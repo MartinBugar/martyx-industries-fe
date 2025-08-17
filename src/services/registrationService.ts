@@ -11,13 +11,37 @@ export const registrationService = {
                 headers: defaultHeaders as HeadersInit,
                 body: JSON.stringify({ email, password }),
             });
-      
-      const data = await handleResponse(response);
-      return !!data; // Return true if data exists, false otherwise
-    } catch (error) {
-      console.error('Registration API error:', error);
-      throw error;
-    }
+
+            // Handle success
+            if (response.ok) {
+                // Consume response body if available to keep consistent behavior
+                try { await response.json(); } catch { /* ignore JSON errors on success */ }
+                return true;
+            }
+
+            // Attempt to read error message from body
+            let message = 'An error occurred';
+            try {
+                const data = await response.json();
+                if (data && typeof data.message === 'string') {
+                    message = data.message;
+                }
+            } catch {
+                // ignore JSON parse errors
+            }
+
+            // Detect duplicate email by HTTP status or response message
+            if (response.status === 409 || /(already\s*(in)?\s*use|already.*(exist|registered))/i.test(message)) {
+                const err = new Error(message || 'Email is already in use') as Error & { code?: string };
+                err.code = 'EMAIL_ALREADY_REGISTERED';
+                throw err;
+            }
+
+            throw new Error(message);
+        } catch (error) {
+            console.error('Registration API error:', error);
+            throw error;
+        }
   },
 
   // Confirm email with token

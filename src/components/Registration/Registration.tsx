@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { registrationService } from '../../services/registrationService';
 import './Registration.css';
@@ -19,6 +19,14 @@ const Registration: React.FC = () => {
     password: '',
     confirmPassword: ''
   });
+  
+  const loginBtnRef = useRef<HTMLButtonElement | null>(null);
+  
+  useEffect(() => {
+    if (successMessage && loginBtnRef.current) {
+      loginBtnRef.current.focus();
+    }
+  }, [successMessage]);
   
   // Handle form input changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -80,8 +88,13 @@ const Registration: React.FC = () => {
         setError('Registration failed. Please try again.');
       }
     } catch (err) {
-      setError('An error occurred during registration. Please try again.');
-      console.error('Registration error:', err);
+      const e = err as Error & { code?: string };
+      if (e.code === 'EMAIL_ALREADY_REGISTERED' || e.message === 'EMAIL_ALREADY_REGISTERED') {
+        setError(e.message || 'Email is already in use');
+      } else {
+        setError('An error occurred during registration. Please try again.');
+        console.error('Registration error:', err);
+      }
     } finally {
       setIsProcessing(false);
     }
@@ -90,13 +103,14 @@ const Registration: React.FC = () => {
   return (
     <div className="registration-container">
       <div className="registration-form-container">
-        <h2>Create an Account</h2>
+        <h2>{successMessage ? 'Check your email' : 'Create an Account'}</h2>
         
         {error && <div className="error-message">{error}</div>}
         {successMessage && (
-          <div className="success-message">
+          <div className="success-message" role="status" aria-live="polite">
             <p>{successMessage}</p>
             <button 
+              ref={loginBtnRef}
               className="go-to-login-btn" 
               onClick={() => navigate('/login')}
             >
