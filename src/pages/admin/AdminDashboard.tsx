@@ -3,6 +3,7 @@ import AdminLayout from './AdminLayout';
 import { visitorService, type VisitorTimeSeriesPoint } from '../../services/visitorService';
 import VisitorsTimeSeriesChart from '../../components/Charts/VisitorsTimeSeriesChart';
 import { doMetricsService } from '../../services/doMetricsService';
+import { salesService, type SalesTimeSeriesPoint, type SalesSummary } from '../../services/salesService';
 
 const AdminDashboard: React.FC = () => {
   const [count, setCount] = useState<number | null>(null);
@@ -12,6 +13,11 @@ const AdminDashboard: React.FC = () => {
   const [series, setSeries] = useState<VisitorTimeSeriesPoint[] | null>(null);
   const [seriesLoading, setSeriesLoading] = useState<boolean>(true);
   const [seriesError, setSeriesError] = useState<string | null>(null);
+
+  const [salesSeries, setSalesSeries] = useState<SalesTimeSeriesPoint[] | null>(null);
+  const [salesLoading, setSalesLoading] = useState<boolean>(true);
+  const [salesError, setSalesError] = useState<string | null>(null);
+  const [salesSummary, setSalesSummary] = useState<SalesSummary | null>(null);
 
   const [bandwidth, setBandwidth] = useState<unknown | null>(null);
   const [bandwidthLoading, setBandwidthLoading] = useState<boolean>(true);
@@ -61,6 +67,29 @@ const AdminDashboard: React.FC = () => {
       }
     })();
 
+    // Load sales time series (last 30 days)
+    (async () => {
+      try {
+        const sales = await salesService.getSalesTimeSeries(30);
+        if (mounted) setSalesSeries(sales);
+      } catch (e) {
+        console.error('Failed to fetch sales time series', e);
+        if (mounted) setSalesError('Failed to load sales time series');
+      } finally {
+        if (mounted) setSalesLoading(false);
+      }
+    })();
+
+    // Load sales summary (last 30 days)
+    (async () => {
+      try {
+        const summary = await salesService.getSalesSummary(30);
+        if (mounted) setSalesSummary(summary);
+      } catch (e) {
+        console.error('Failed to fetch sales summary', e);
+      }
+    })();
+
     return () => { mounted = false; };
   }, []);
 
@@ -77,6 +106,19 @@ const AdminDashboard: React.FC = () => {
               <div style={{ color: '#b91c1c' }}>{error}</div>
             ) : (
               <div style={{ fontSize: 28, fontWeight: 700 }}>{count ?? 0}</div>
+            )}
+          </div>
+
+          {/* Sales Summary (last 30 days) */}
+          <div style={{ background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, minWidth: 220 }}>
+            <div style={{ fontSize: 14, color: '#6b7280', marginBottom: 8 }}>Sales (30 days)</div>
+            {salesSummary ? (
+              <div>
+                <div style={{ fontSize: 24, fontWeight: 700 }}>{salesSummary.ordersCount} orders</div>
+                <div style={{ fontSize: 14, color: '#374151' }}>Revenue: {salesSummary.totalAmount?.toLocaleString(undefined, { style: 'currency', currency: 'USD' })}</div>
+              </div>
+            ) : (
+              <div>Loading…</div>
             )}
           </div>
 
@@ -107,7 +149,21 @@ const AdminDashboard: React.FC = () => {
               <div style={{ color: '#b91c1c' }}>{seriesError}</div>
             ) : (
               <div style={{ overflowX: 'auto' }}>
-                <VisitorsTimeSeriesChart data={series ?? []} width={560} height={200} />
+                <VisitorsTimeSeriesChart data={series ?? []} width={560} height={200} ariaLabel="Visitors over time" />
+              </div>
+            )}
+          </div>
+
+          {/* Sales over time chart card */}
+          <div style={{ background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, minWidth: 320, flex: 1 }}>
+            <div style={{ fontSize: 14, color: '#6b7280', marginBottom: 8 }}>Sales Over Time (Last 30 days)</div>
+            {salesLoading ? (
+              <div>Loading…</div>
+            ) : salesError ? (
+              <div style={{ color: '#b91c1c' }}>{salesError}</div>
+            ) : (
+              <div style={{ overflowX: 'auto' }}>
+                <VisitorsTimeSeriesChart data={salesSeries ?? []} width={560} height={200} stroke="#10b981" fill="rgba(16, 185, 129, 0.15)" ariaLabel="Sales over time" />
               </div>
             )}
           </div>

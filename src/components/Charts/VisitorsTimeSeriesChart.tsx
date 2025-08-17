@@ -1,12 +1,17 @@
 import React from 'react';
-import type { VisitorTimeSeriesPoint } from '../../services/visitorService';
+
+interface TimeSeriesPoint {
+  timestamp: string;
+  count: number;
+}
 
 interface Props {
-  data: VisitorTimeSeriesPoint[];
+  data: TimeSeriesPoint[];
   width?: number; // px
   height?: number; // px
   stroke?: string;
   fill?: string;
+  ariaLabel?: string;
 }
 
 // A tiny, dependency-free SVG line/area chart for time-series data
@@ -15,7 +20,8 @@ const VisitorsTimeSeriesChart: React.FC<Props> = ({
   width = 560,
   height = 180,
   stroke = '#2563eb',
-  fill = 'rgba(37, 99, 235, 0.15)'
+  fill = 'rgba(37, 99, 235, 0.15)',
+  ariaLabel = 'Time series'
 }) => {
   // Padding for axes
   const padding = { top: 10, right: 12, bottom: 22, left: 32 };
@@ -61,7 +67,7 @@ const VisitorsTimeSeriesChart: React.FC<Props> = ({
   const yTicks: number[] = [0, Math.round(yMax / 2), yMax];
 
   return (
-    <svg width={width} height={height} role="img" aria-label="Visitors over time">
+    <svg width={width} height={height} role="img" aria-label={ariaLabel}>
       {/* Axes */}
       <line x1={padding.left} y1={padding.top}
             x2={padding.left} y2={padding.top + innerH}
