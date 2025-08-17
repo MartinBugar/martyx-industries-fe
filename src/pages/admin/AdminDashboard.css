@@ -74,6 +74,9 @@
 
 .overflow-x-auto {
   overflow-x: auto;
+  display: inline-block;
+  width: max-content;
+  max-width: 100%;
 }
 
 .max-w-420 {
