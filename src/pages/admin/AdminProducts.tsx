@@ -29,6 +29,7 @@ const AdminProducts: React.FC = () => {
   // Create form state
   const [createData, setCreateData] = useState<typeof initialCreate>({ ...initialCreate });
   const [creating, setCreating] = useState<boolean>(false);
+  const [showCreateForm, setShowCreateForm] = useState<boolean>(false);
 
   const filteredProducts = useMemo(() => {
     let data = products;
@@ -91,6 +92,7 @@ const AdminProducts: React.FC = () => {
       }
       setProducts(prev => [created, ...prev]);
       resetCreate();
+      setShowCreateForm(false);
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Failed to create product';
       setError(msg);
@@ -133,12 +135,16 @@ const AdminProducts: React.FC = () => {
               </label>
               <button className="btn btn-outline" onClick={loadProducts} disabled={loading}>Apply</button>
               <button className="btn btn-outline" onClick={() => { setCategory(''); setActiveOnly(false); }} disabled={loading}>Clear</button>
+              <button className="btn btn-primary" onClick={() => { if (!showCreateForm) resetCreate(); setShowCreateForm(!showCreateForm); }}>
+                {showCreateForm ? 'Hide Create Form' : 'Create New Product'}
+              </button>
             </div>
           </div>
 
           {error && <div className="alert alert-error">{error}</div>}
 
           {/* Create Product */}
+          {showCreateForm && (
           <div className="admin-card">
             <h3 className="section-title">Create New Product</h3>
             <form onSubmit={handleCreate} className="form-grid">
@@ -227,9 +233,11 @@ const AdminProducts: React.FC = () => {
                   {creating ? 'Creating...' : 'Create Product'}
                 </button>
                 <button type="button" className="btn btn-outline" onClick={resetCreate} disabled={creating}>Clear</button>
+                <button type="button" className="btn" onClick={() => { resetCreate(); setShowCreateForm(false); }} disabled={creating}>Cancel</button>
               </div>
             </form>
           </div>
+          )}
 
           {/* Products Table */}
           <div className="table-wrapper">

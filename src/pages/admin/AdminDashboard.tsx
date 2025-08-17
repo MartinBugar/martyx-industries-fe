@@ -102,7 +102,7 @@ const AdminDashboard: React.FC = () => {
           <h2 className="admin-section-title">Visit Management</h2>
           <div className="admin-cards-grid-280">
             {/* Total visitors */}
-            <div className="admin-card">
+            <div className="admin-card admin-card--compact">
               <div className="admin-card-label">Total Visitors</div>
               {loading ? (
                 <div>Loading…</div>
@@ -134,7 +134,7 @@ const AdminDashboard: React.FC = () => {
           <h2 className="admin-section-title">Sales</h2>
           <div className="admin-cards-grid-280">
             {/* Sales summary (last 30 days) */}
-            <div className="admin-card">
+            <div className="admin-card admin-card--compact">
               <div className="admin-card-label">Sales (30 days)</div>
               {salesSummary ? (
                 <div>
