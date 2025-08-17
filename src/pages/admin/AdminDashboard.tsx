@@ -4,6 +4,7 @@ import { visitorService, type VisitorTimeSeriesPoint } from '../../services/visi
 import VisitorsTimeSeriesChart from '../../components/Charts/VisitorsTimeSeriesChart';
 import { doMetricsService } from '../../services/doMetricsService';
 import { salesService, type SalesTimeSeriesPoint, type SalesSummary } from '../../services/salesService';
+import './AdminDashboard.css';
 
 const AdminDashboard: React.FC = () => {
   const [count, setCount] = useState<number | null>(null);
@@ -95,32 +96,32 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <AdminLayout title="Dashboard">
-      <div style={{ display: 'grid', gap: 24 }}>
+      <div className="admin-dashboard">
         {/* Visit Management */}
         <section>
-          <h2 style={{ margin: '0 0 12px 0', fontSize: 18, color: '#111827' }}>Visit Management</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
+          <h2 className="admin-section-title">Visit Management</h2>
+          <div className="admin-cards-grid-280">
             {/* Total visitors */}
-            <div style={{ background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: 8, padding: 16 }}>
-              <div style={{ fontSize: 14, color: '#6b7280', marginBottom: 8 }}>Total Visitors</div>
+            <div className="admin-card">
+              <div className="admin-card-label">Total Visitors</div>
               {loading ? (
                 <div>Loading…</div>
               ) : error ? (
-                <div style={{ color: '#b91c1c' }}>{error}</div>
+                <div className="admin-error">{error}</div>
               ) : (
-                <div style={{ fontSize: 28, fontWeight: 700 }}>{count ?? 0}</div>
+                <div className="admin-big-number">{count ?? 0}</div>
               )}
             </div>
 
             {/* Visitors over time */}
-            <div style={{ background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: 8, padding: 16 }}>
-              <div style={{ fontSize: 14, color: '#6b7280', marginBottom: 8 }}>Visitors Over Time</div>
+            <div className="admin-card">
+              <div className="admin-card-label">Visitors Over Time</div>
               {seriesLoading ? (
                 <div>Loading…</div>
               ) : seriesError ? (
-                <div style={{ color: '#b91c1c' }}>{seriesError}</div>
+                <div className="admin-error">{seriesError}</div>
               ) : (
-                <div style={{ overflowX: 'auto' }}>
+                <div className="overflow-x-auto">
                   <VisitorsTimeSeriesChart data={series ?? []} width={560} height={200} ariaLabel="Visitors over time" />
                 </div>
               )}
@@ -130,15 +131,15 @@ const AdminDashboard: React.FC = () => {
 
         {/* Sales */}
         <section>
-          <h2 style={{ margin: '0 0 12px 0', fontSize: 18, color: '#111827' }}>Sales</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
+          <h2 className="admin-section-title">Sales</h2>
+          <div className="admin-cards-grid-280">
             {/* Sales summary (last 30 days) */}
-            <div style={{ background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: 8, padding: 16 }}>
-              <div style={{ fontSize: 14, color: '#6b7280', marginBottom: 8 }}>Sales (30 days)</div>
+            <div className="admin-card">
+              <div className="admin-card-label">Sales (30 days)</div>
               {salesSummary ? (
                 <div>
-                  <div style={{ fontSize: 24, fontWeight: 700 }}>{salesSummary.ordersCount} orders</div>
-                  <div style={{ fontSize: 14, color: '#374151' }}>
+                  <div className="admin-number">{salesSummary.ordersCount} orders</div>
+                  <div className="admin-secondary-text">
                     Revenue: {Number(salesSummary.totalAmount || 0).toLocaleString(undefined, { style: 'currency', currency: salesSummary.currency || 'USD' })}
                   </div>
                 </div>
@@ -148,14 +149,14 @@ const AdminDashboard: React.FC = () => {
             </div>
 
             {/* Sales over time */}
-            <div style={{ background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: 8, padding: 16 }}>
-              <div style={{ fontSize: 14, color: '#6b7280', marginBottom: 8 }}>Sales Over Time (Last 30 days)</div>
+            <div className="admin-card">
+              <div className="admin-card-label">Sales Over Time (Last 30 days)</div>
               {salesLoading ? (
                 <div>Loading…</div>
               ) : salesError ? (
-                <div style={{ color: '#b91c1c' }}>{salesError}</div>
+                <div className="admin-error">{salesError}</div>
               ) : (
-                <div style={{ overflowX: 'auto' }}>
+                <div className="overflow-x-auto">
                   <VisitorsTimeSeriesChart data={salesSeries ?? []} width={560} height={200} stroke="#10b981" fill="rgba(16, 185, 129, 0.15)" ariaLabel="Sales over time" />
                 </div>
               )}
@@ -165,21 +166,21 @@ const AdminDashboard: React.FC = () => {
 
         {/* System (optional) */}
         <section>
-          <h2 style={{ margin: '0 0 12px 0', fontSize: 18, color: '#111827' }}>System</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 16 }}>
+          <h2 className="admin-section-title">System</h2>
+          <div className="admin-cards-grid-320">
             {/* Daily Bandwidth card */}
-            <div style={{ background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: 8, padding: 16 }}>
-              <div style={{ fontSize: 14, color: '#6b7280', marginBottom: 8 }}>Daily Bandwidth</div>
+            <div className="admin-card">
+              <div className="admin-card-label">Daily Bandwidth</div>
               {bandwidthLoading ? (
                 <div>Loading…</div>
               ) : bandwidthError ? (
-                <div style={{ color: '#b91c1c' }}>{bandwidthError}</div>
+                <div className="admin-error">{bandwidthError}</div>
               ) : (
-                <div style={{ maxWidth: 420, overflowX: 'auto' }}>
+                <div className="max-w-420 overflow-x-auto">
                   {typeof bandwidth === 'string' ? (
                     <code>{bandwidth}</code>
                   ) : (
-                    <pre style={{ margin: 0 }}>{JSON.stringify(bandwidth, null, 2)}</pre>
+                    <pre className="pre-reset">{JSON.stringify(bandwidth, null, 2)}</pre>
                   )}
                 </div>
               )}

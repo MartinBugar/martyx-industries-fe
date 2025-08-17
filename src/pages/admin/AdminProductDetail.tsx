@@ -14,6 +14,11 @@ const AdminProductDetail: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [savedMsg, setSavedMsg] = useState<string | null>(null);
 
+
+  const productType = String(product?.productType ?? 'DIGITAL').toUpperCase();
+  const phys: PhysicalProduct | null = productType === 'PHYSICAL' ? (product as PhysicalProduct) : null;
+  const digi: DigitalProduct | null = productType === 'DIGITAL' ? (product as DigitalProduct) : null;
+
   const load = async () => {
     if (!id) return;
     setLoading(true);
@@ -34,7 +39,7 @@ const AdminProductDetail: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
-  const updateField = (key: keyof BaseProduct, value: unknown) => {
+  const updateField = (key: string, value: unknown) => {
     setSavedMsg(null);
     setProduct(prev => (prev ? { ...prev, [key]: value } : prev));
   };
@@ -46,9 +51,24 @@ const AdminProductDetail: React.FC = () => {
     setSavedMsg(null);
     try {
       const payload: Record<string, unknown> = { ...product };
-      (['sku','category','description','currency'] as const).forEach((k) => {
+      // Clean optional text fields: turn empty strings into undefined to avoid validation issues
+      ([
+        'sku',
+        'category',
+        'description',
+        'currency',
+        'imageUrl',
+        // physical
+        'dimensions', 'material', 'countryOfOrigin',
+        // digital
+        'downloadUrl', 'fileFormat', 'licenseInfo', 'version', 'fileName',
+      ] as const).forEach((k) => {
         if (payload[k] === '') (payload as Record<string, unknown>)[k] = undefined;
       });
+      // Strip read-only/large fields
+      delete (payload as Record<string, unknown>)['createdAt'];
+      delete (payload as Record<string, unknown>)['updatedAt'];
+      delete (payload as Record<string, unknown>)['fileContent'];
 
       let updated: BaseProduct;
       const type = (product.productType as string)?.toUpperCase();
@@ -138,6 +158,16 @@ const AdminProductDetail: React.FC = () => {
                   <label className="form-label">Currency</label>
                   <input className="form-input" value={String(product.currency ?? '')} onChange={(e) => updateField('currency', e.target.value)} />
                 </div>
+                <div>
+                  <label className="form-label">Image URL</label>
+                  <input className="form-input" value={String(product.imageUrl ?? '')} onChange={(e) => updateField('imageUrl', e.target.value)} placeholder="https://..." />
+                </div>
+                {product.imageUrl ? (
+                  <div>
+                    <label className="form-label">Preview</label>
+                    <img src={String(product.imageUrl)} alt="Preview" style={{ display: 'block', maxWidth: 180, maxHeight: 120, borderRadius: 6, border: '1px solid #e5e7eb' }} />
+                  </div>
+                ) : null}
                 <div style={{ gridColumn: '1 / -1' }}>
                   <label className="form-label">Description</label>
                   <textarea className="form-input" rows={4} value={String(product.description ?? '')} onChange={(e) => updateField('description', e.target.value)} />
@@ -149,8 +179,84 @@ const AdminProductDetail: React.FC = () => {
                     <option value="false">No</option>
                   </select>
                 </div>
+                <div>
+                  <label className="form-label">Created At</label>
+                  <input className="form-input" value={product.createdAt ? new Date(product.createdAt).toLocaleString() : ''} readOnly />
+                </div>
+                <div>
+                  <label className="form-label">Updated At</label>
+                  <input className="form-input" value={product.updatedAt ? new Date(product.updatedAt).toLocaleString() : ''} readOnly />
+                </div>
               </div>
-              <div className="form-actions">
+
+              {/* Conditional sections */}
+              {productType === 'PHYSICAL' ? (
+                <div className="admin-card" style={{ marginTop: 16 }}>
+                  <h3 className="section-title">Physical Product Details</h3>
+                  <div className="form-grid">
+                    <div>
+                      <label className="form-label">Stock Quantity</label>
+                      <input type="number" className="form-input" value={typeof phys?.stockQuantity === 'number' ? (phys?.stockQuantity ?? '') : ''} onChange={(e) => updateField('stockQuantity', e.target.value === '' ? undefined : Number(e.target.value))} />
+                    </div>
+                    <div>
+                      <label className="form-label">Weight (g)</label>
+                      <input type="number" className="form-input" value={typeof phys?.weight === 'number' ? (phys?.weight ?? '') : ''} onChange={(e) => updateField('weight', e.target.value === '' ? undefined : Number(e.target.value))} />
+                    </div>
+                    <div>
+                      <label className="form-label">Dimensions (LxWxH cm)</label>
+                      <input className="form-input" value={String(phys?.dimensions ?? '')} onChange={(e) => updateField('dimensions', e.target.value)} />
+                    </div>
+                    <div>
+                      <label className="form-label">Material</label>
+                      <input className="form-input" value={String(phys?.material ?? '')} onChange={(e) => updateField('material', e.target.value)} />
+                    </div>
+                    <div>
+                      <label className="form-label">Country of Origin</label>
+                      <input className="form-input" value={String(phys?.countryOfOrigin ?? '')} onChange={(e) => updateField('countryOfOrigin', e.target.value)} />
+                    </div>
+                    <div>
+                      <label className="form-label">Shipping Time (days)</label>
+                      <input type="number" className="form-input" value={typeof phys?.shippingTime === 'number' ? (phys?.shippingTime ?? '') : ''} onChange={(e) => updateField('shippingTime', e.target.value === '' ? undefined : Number(e.target.value))} />
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="admin-card" style={{ marginTop: 16 }}>
+                  <h3 className="section-title">Digital Product Details</h3>
+                  <div className="form-grid">
+                    <div>
+                      <label className="form-label">Download URL</label>
+                      <input className="form-input" value={String(digi?.downloadUrl ?? '')} onChange={(e) => updateField('downloadUrl', e.target.value)} placeholder="https://..." />
+                    </div>
+                    <div>
+                      <label className="form-label">File Size (bytes)</label>
+                      <input type="number" className="form-input" value={typeof digi?.fileSize === 'number' ? (digi?.fileSize ?? '') : ''} onChange={(e) => updateField('fileSize', e.target.value === '' ? undefined : Number(e.target.value))} />
+                    </div>
+                    <div>
+                      <label className="form-label">File Format</label>
+                      <input className="form-input" value={String(digi?.fileFormat ?? '')} onChange={(e) => updateField('fileFormat', e.target.value)} placeholder="PDF, MP3, ZIP..." />
+                    </div>
+                    <div>
+                      <label className="form-label">License Info</label>
+                      <input className="form-input" value={String(digi?.licenseInfo ?? '')} onChange={(e) => updateField('licenseInfo', e.target.value)} />
+                    </div>
+                    <div>
+                      <label className="form-label">Version</label>
+                      <input className="form-input" value={String(digi?.version ?? '')} onChange={(e) => updateField('version', e.target.value)} />
+                    </div>
+                    <div>
+                      <label className="form-label">File Name</label>
+                      <input className="form-input" value={String(digi?.fileName ?? '')} onChange={(e) => updateField('fileName', e.target.value)} placeholder="archive.zip" />
+                    </div>
+                    <div>
+                      <label className="form-label">File Content</label>
+                      <input className="form-input" value={digi?.fileContent ? 'Present' : ''} readOnly />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="form-actions" style={{ marginTop: 16 }}>
                 <button className="btn btn-primary" onClick={handleSave} disabled={saving}>{saving ? 'Saving...' : 'Save Changes'}</button>
                 <button className="btn btn-danger" onClick={handleDelete} disabled={saving}>Delete</button>
               </div>

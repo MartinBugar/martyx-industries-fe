@@ -1,0 +1,66 @@
+.admin-dashboard {
+  display: grid;
+  gap: 24px;
+}
+
+.admin-section-title {
+  margin: 0 0 12px 0;
+  font-size: 18px;
+  color: #111827;
+}
+
+.admin-cards-grid-280 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.admin-cards-grid-320 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.admin-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.admin-card-label {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+.admin-error {
+  color: #b91c1c;
+}
+
+.admin-big-number {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.admin-number {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.overflow-x-auto {
+  overflow-x: auto;
+}
+
+.max-w-420 {
+  max-width: 420px;
+}
+
+.admin-secondary-text {
+  font-size: 14px;
+  color: #374151;
+}
+
+.pre-reset {
+  margin: 0;
+}
