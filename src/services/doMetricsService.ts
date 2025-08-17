@@ -1,22 +1,19 @@
 import { API_BASE_URL, defaultHeaders, handleResponse } from './apiUtils';
 
-export type BandwidthDailyResponse = unknown; // Backend returns JSON string; keep flexible
-
+// Minimal wrapper for a DigitalOcean metrics endpoint (or any bandwidth provider).
+// If the backend endpoint is unavailable, this function will return a friendly string.
 export const doMetricsService = {
-  async getBandwidthDaily(date?: string | Date): Promise<BandwidthDailyResponse> {
-    let url = `${API_BASE_URL}/api/do/bandwidth-daily`;
-    if (date) {
-      const d = typeof date === 'string' ? new Date(date) : date;
-      if (!Number.isNaN(d.getTime())) {
-        const isoDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-        url += `?date=${encodeURIComponent(isoDate)}`;
-      }
+  async getBandwidthDaily(): Promise<unknown> {
+    try {
+      const resp = await fetch(`${API_BASE_URL}/api/admin/metrics/bandwidth/daily`, {
+        method: 'GET',
+        headers: defaultHeaders as HeadersInit,
+      });
+      // If the endpoint exists, parse and return structured data
+      return await handleResponse(resp);
+    } catch {
+      console.warn('Bandwidth endpoint not available, returning placeholder');
+      return 'Bandwidth metrics not available';
     }
-
-    const resp = await fetch(url, {
-      method: 'GET',
-      headers: defaultHeaders as HeadersInit,
-    });
-    return await handleResponse(resp) as BandwidthDailyResponse;
-  }
+  },
 };

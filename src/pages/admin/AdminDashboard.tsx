@@ -95,79 +95,97 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <AdminLayout title="Dashboard">
-      <div>
-        <div style={{ display: 'flex', gap: 16, marginBottom: 16, flexWrap: 'wrap' }}>
-          {/* Total visitors card (unchanged) */}
-          <div style={{ background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, minWidth: 220 }}>
-            <div style={{ fontSize: 14, color: '#6b7280', marginBottom: 8 }}>Total Visitors</div>
-            {loading ? (
-              <div>Loading…</div>
-            ) : error ? (
-              <div style={{ color: '#b91c1c' }}>{error}</div>
-            ) : (
-              <div style={{ fontSize: 28, fontWeight: 700 }}>{count ?? 0}</div>
-            )}
-          </div>
+      <div style={{ display: 'grid', gap: 24 }}>
+        {/* Visit Management */}
+        <section>
+          <h2 style={{ margin: '0 0 12px 0', fontSize: 18, color: '#111827' }}>Visit Management</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
+            {/* Total visitors */}
+            <div style={{ background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: 8, padding: 16 }}>
+              <div style={{ fontSize: 14, color: '#6b7280', marginBottom: 8 }}>Total Visitors</div>
+              {loading ? (
+                <div>Loading…</div>
+              ) : error ? (
+                <div style={{ color: '#b91c1c' }}>{error}</div>
+              ) : (
+                <div style={{ fontSize: 28, fontWeight: 700 }}>{count ?? 0}</div>
+              )}
+            </div>
 
-          {/* Sales Summary (last 30 days) */}
-          <div style={{ background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, minWidth: 220 }}>
-            <div style={{ fontSize: 14, color: '#6b7280', marginBottom: 8 }}>Sales (30 days)</div>
-            {salesSummary ? (
-              <div>
-                <div style={{ fontSize: 24, fontWeight: 700 }}>{salesSummary.ordersCount} orders</div>
-                <div style={{ fontSize: 14, color: '#374151' }}>Revenue: {salesSummary.totalAmount?.toLocaleString(undefined, { style: 'currency', currency: 'USD' })}</div>
-              </div>
-            ) : (
-              <div>Loading…</div>
-            )}
+            {/* Visitors over time */}
+            <div style={{ background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: 8, padding: 16 }}>
+              <div style={{ fontSize: 14, color: '#6b7280', marginBottom: 8 }}>Visitors Over Time</div>
+              {seriesLoading ? (
+                <div>Loading…</div>
+              ) : seriesError ? (
+                <div style={{ color: '#b91c1c' }}>{seriesError}</div>
+              ) : (
+                <div style={{ overflowX: 'auto' }}>
+                  <VisitorsTimeSeriesChart data={series ?? []} width={560} height={200} ariaLabel="Visitors over time" />
+                </div>
+              )}
+            </div>
           </div>
+        </section>
 
-          {/* Daily Bandwidth card */}
-          <div style={{ background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, minWidth: 320 }}>
-            <div style={{ fontSize: 14, color: '#6b7280', marginBottom: 8 }}>Daily Bandwidth</div>
-            {bandwidthLoading ? (
-              <div>Loading…</div>
-            ) : bandwidthError ? (
-              <div style={{ color: '#b91c1c' }}>{bandwidthError}</div>
-            ) : (
-              <div style={{ maxWidth: 420, overflowX: 'auto' }}>
-                {typeof bandwidth === 'string' ? (
-                  <code>{bandwidth}</code>
-                ) : (
-                  <pre style={{ margin: 0 }}>{JSON.stringify(bandwidth, null, 2)}</pre>
-                )}
-              </div>
-            )}
-          </div>
+        {/* Sales */}
+        <section>
+          <h2 style={{ margin: '0 0 12px 0', fontSize: 18, color: '#111827' }}>Sales</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
+            {/* Sales summary (last 30 days) */}
+            <div style={{ background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: 8, padding: 16 }}>
+              <div style={{ fontSize: 14, color: '#6b7280', marginBottom: 8 }}>Sales (30 days)</div>
+              {salesSummary ? (
+                <div>
+                  <div style={{ fontSize: 24, fontWeight: 700 }}>{salesSummary.ordersCount} orders</div>
+                  <div style={{ fontSize: 14, color: '#374151' }}>
+                    Revenue: {Number(salesSummary.totalAmount || 0).toLocaleString(undefined, { style: 'currency', currency: salesSummary.currency || 'USD' })}
+                  </div>
+                </div>
+              ) : (
+                <div>Loading…</div>
+              )}
+            </div>
 
-          {/* Visitors over time chart card */}
-          <div style={{ background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, minWidth: 320, flex: 1 }}>
-            <div style={{ fontSize: 14, color: '#6b7280', marginBottom: 8 }}>Visitors Over Time</div>
-            {seriesLoading ? (
-              <div>Loading…</div>
-            ) : seriesError ? (
-              <div style={{ color: '#b91c1c' }}>{seriesError}</div>
-            ) : (
-              <div style={{ overflowX: 'auto' }}>
-                <VisitorsTimeSeriesChart data={series ?? []} width={560} height={200} ariaLabel="Visitors over time" />
-              </div>
-            )}
+            {/* Sales over time */}
+            <div style={{ background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: 8, padding: 16 }}>
+              <div style={{ fontSize: 14, color: '#6b7280', marginBottom: 8 }}>Sales Over Time (Last 30 days)</div>
+              {salesLoading ? (
+                <div>Loading…</div>
+              ) : salesError ? (
+                <div style={{ color: '#b91c1c' }}>{salesError}</div>
+              ) : (
+                <div style={{ overflowX: 'auto' }}>
+                  <VisitorsTimeSeriesChart data={salesSeries ?? []} width={560} height={200} stroke="#10b981" fill="rgba(16, 185, 129, 0.15)" ariaLabel="Sales over time" />
+                </div>
+              )}
+            </div>
           </div>
+        </section>
 
-          {/* Sales over time chart card */}
-          <div style={{ background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, minWidth: 320, flex: 1 }}>
-            <div style={{ fontSize: 14, color: '#6b7280', marginBottom: 8 }}>Sales Over Time (Last 30 days)</div>
-            {salesLoading ? (
-              <div>Loading…</div>
-            ) : salesError ? (
-              <div style={{ color: '#b91c1c' }}>{salesError}</div>
-            ) : (
-              <div style={{ overflowX: 'auto' }}>
-                <VisitorsTimeSeriesChart data={salesSeries ?? []} width={560} height={200} stroke="#10b981" fill="rgba(16, 185, 129, 0.15)" ariaLabel="Sales over time" />
-              </div>
-            )}
+        {/* System (optional) */}
+        <section>
+          <h2 style={{ margin: '0 0 12px 0', fontSize: 18, color: '#111827' }}>System</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 16 }}>
+            {/* Daily Bandwidth card */}
+            <div style={{ background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: 8, padding: 16 }}>
+              <div style={{ fontSize: 14, color: '#6b7280', marginBottom: 8 }}>Daily Bandwidth</div>
+              {bandwidthLoading ? (
+                <div>Loading…</div>
+              ) : bandwidthError ? (
+                <div style={{ color: '#b91c1c' }}>{bandwidthError}</div>
+              ) : (
+                <div style={{ maxWidth: 420, overflowX: 'auto' }}>
+                  {typeof bandwidth === 'string' ? (
+                    <code>{bandwidth}</code>
+                  ) : (
+                    <pre style={{ margin: 0 }}>{JSON.stringify(bandwidth, null, 2)}</pre>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        </section>
       </div>
     </AdminLayout>
   );
