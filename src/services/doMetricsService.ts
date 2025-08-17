@@ -5,7 +5,7 @@ import { API_BASE_URL, defaultHeaders, handleResponse } from './apiUtils';
 export const doMetricsService = {
   async getBandwidthDaily(): Promise<unknown> {
     try {
-      const resp = await fetch(`${API_BASE_URL}/api/admin/metrics/bandwidth/daily`, {
+      const resp = await fetch(`${API_BASE_URL}/api/do/bandwidth-daily`, {
         method: 'GET',
         headers: defaultHeaders as HeadersInit,
       });

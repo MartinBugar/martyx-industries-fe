@@ -8,7 +8,10 @@ export interface BaseProduct {
   price?: number | null;
   currency?: string | null;
   description?: string | null;
+  imageUrl?: string | null;
   active?: boolean | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
   productType?: 'DIGITAL' | 'PHYSICAL' | string;
   // allow extra fields from backend without tightening typing
   [key: string]: unknown;
@@ -16,12 +19,23 @@ export interface BaseProduct {
 
 export interface DigitalProduct extends BaseProduct {
   productType?: 'DIGITAL';
-  // digital-specific fields (optional, unknown to FE)
+  downloadUrl?: string | null;
+  fileSize?: number | null; // bytes
+  fileFormat?: string | null;
+  licenseInfo?: string | null;
+  version?: string | null;
+  fileContent?: unknown; // not edited in UI; may be base64/byte[] representation
+  fileName?: string | null;
 }
 
 export interface PhysicalProduct extends BaseProduct {
   productType?: 'PHYSICAL';
-  // physical-specific fields (optional, unknown to FE)
+  stockQuantity?: number | null;
+  weight?: number | null; // grams
+  dimensions?: string | null; // "LxWxH" in cm
+  material?: string | null;
+  countryOfOrigin?: string | null;
+  shippingTime?: number | null; // days
 }
 
 export interface MessageResponse {
