@@ -9,12 +9,25 @@ export interface VisitorTimeSeriesPoint {
   count: number;     // visits during bucket
 }
 
+// Legacy Visitor shape kept for compatibility with any older endpoints if needed
 export interface Visitor {
   id: string | number;
   totalCount: number;
   lastVisitAt?: string | null;
   createdAt?: string | null;
   updatedAt?: string | null;
+  [key: string]: unknown;
+}
+
+// Visit entity aligned with backend `Visit` (visitedAt + optional meta)
+export interface Visit {
+  id: string | number;
+  visitedAt: string;
+  ipAddress?: string | null;
+  userAgent?: string | null;
+  path?: string | null;
+  referrer?: string | null;
+  user?: unknown;
   [key: string]: unknown;
 }
 
@@ -40,8 +53,8 @@ export const visitorService = {
   // Admin endpoint: returns time series of visits (default: last 30 days)
   async getVisitorTimeSeries(days: number = 30): Promise<VisitorTimeSeriesPoint[]> {
     try {
-      // Fetch all visitor records (admin-only endpoint)
-      const visitors = await this.getAllVisitors();
+      // Fetch all Visit records (admin-only endpoint)
+      const visits = await this.getAllVisits();
 
       // Prepare day buckets for the last `days` days (including today)
       const now = new Date();
@@ -60,16 +73,9 @@ export const visitorService = {
       const counts = new Map<string, number>();
       dayKeys.forEach(k => counts.set(k, 0));
 
-      // Helper to pick the most relevant timestamp from a visitor record
-      const pickTimestamp = (v: Visitor): string | null => {
-        // Prefer lastVisitAt, then createdAt, then updatedAt as fallback
-        const t = (v.lastVisitAt ?? v.createdAt ?? v.updatedAt) as string | null | undefined;
-        return t ?? null;
-      };
-
-      // Aggregate by local date key
-      for (const v of visitors) {
-        const ts = pickTimestamp(v);
+      // Aggregate by local date key using `visitedAt`
+      for (const v of visits) {
+        const ts = (v as Visit).visitedAt as string | undefined;
         if (!ts) continue;
         const dt = new Date(ts);
         if (!Number.isFinite(dt.getTime())) continue;
@@ -91,7 +97,7 @@ export const visitorService = {
 
       return series;
     } catch (err) {
-      console.error('Failed to compute visitor time series from all visitors. Trying legacy endpoint...', err);
+      console.error('Failed to compute visitor time series from visits. Trying legacy endpoint...', err);
       // Fallback to legacy timeseries endpoint if available
       const url = `${API_BASE_URL}/api/admin/visitors/timeseries?days=${encodeURIComponent(days)}`;
       const resp = await fetch(url, {
@@ -103,7 +109,17 @@ export const visitorService = {
     }
   },
 
-  // Admin endpoint: returns all visitor records
+  // Admin endpoint: returns all Visit records
+  async getAllVisits(): Promise<Visit[]> {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/visits`, {
+      method: 'GET',
+      headers: defaultHeaders as HeadersInit,
+    });
+    const data = await handleResponse(resp);
+    return Array.isArray(data) ? (data as Visit[]) : [];
+  },
+
+  // Legacy: Admin endpoint returning generic visitors (kept for compatibility if used elsewhere)
   async getAllVisitors(): Promise<Visitor[]> {
     const resp = await fetch(`${API_BASE_URL}/api/admin/visitors`, {
       method: 'GET',
