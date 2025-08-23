@@ -454,7 +454,7 @@
     justify-content: center;
     cursor: pointer;
     box-shadow: 0 1px 2px rgba(16, 24, 40, 0.06), 0 1px 3px rgba(16, 24, 40, 0.10);
-    color: transparent;
+    color: #213547;
 }
 
 .mobile-close-btn::before,
@@ -744,18 +744,9 @@ body {
 
 .mi-link[aria-current="page"] {
     opacity: 1;
+    color: var(--accent);
 }
 
-.mi-link[aria-current="page"]::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: -10px;
-    width: 28px;
-    height: 2px;
-    background: var(--accent);
-    border-radius: 999px;
-}
 
 /* Actions: buttons/icons */
 .mi-actions {
@@ -938,6 +929,11 @@ body {
     opacity: 1;
 }
 
+.mi-drawer__link[aria-current="page"] {
+    color: var(--accent);
+    opacity: 1;
+}
+
 /* A11y helper */
 .visually-hidden {
     position: absolute !important;
@@ -974,77 +970,203 @@ body {
 body.mi-lock-scroll {
     overflow: hidden;
 }
-.mi-menu-bars{
-    display:inline-flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:4px;
-    width:18px; height:18px;
+
+.mi-menu-bars {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: 18px;
+    height: 18px;
 }
-.mi-menu-bars > span{
-    display:block;
-    width:18px; height:2px;
+
+.mi-menu-bars > span {
+    display: block;
+    width: 18px;
+    height: 2px;
     background: currentColor;
-    border-radius:2px;
+    border-radius: 2px;
 }
 
 /* istota, aby farba barov vždy dedila z tlačidla */
-.mi-iconbtn{ color: var(--text) !important; }
+.mi-iconbtn {
+    color: var(--text) !important;
+}
 
 /* --- CSS-only hamburger icon (nezavisle od SVG) --- */
-.mi-menu-icon{
-  position:relative; display:block; width:18px; height:18px; color:currentColor;
+.mi-menu-icon {
+    position: relative;
+    display: block;
+    width: 18px;
+    height: 18px;
+    color: currentColor;
 }
+
 .mi-menu-icon::before,
 .mi-menu-icon::after,
-.mi-menu-icon i{
-  content:""; position:absolute; left:3px; right:3px; height:2px;
-  background:currentColor; border-radius:2px;
+.mi-menu-icon i {
+    content: "";
+    position: absolute;
+    left: 3px;
+    right: 3px;
+    height: 2px;
+    background: currentColor;
+    border-radius: 2px;
 }
-.mi-menu-icon::before{ top:4px; }  /* horna ciara */
-.mi-menu-icon i{ top:8px; }        /* stredna ciara */
-.mi-menu-icon::after{ bottom:4px; }/* dolna ciara */
+
+.mi-menu-icon::before {
+    top: 4px;
+}
+
+/* horna ciara */
+.mi-menu-icon i {
+    top: 8px;
+}
+
+/* stredna ciara */
+.mi-menu-icon::after {
+    bottom: 4px;
+}
+
+/* dolna ciara */
 
 /* pre istotu farbu ikon setni sem (dedene cez currentColor) */
-.mi-iconbtn{ color: var(--text) !important; }
+.mi-iconbtn {
+    color: var(--text) !important;
+}
 
 
 /* Drawer header: search + close */
-.mi-drawer__header{
-  display:flex; align-items:center; gap:8px;
-  margin-bottom:10px;
+.mi-drawer__header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
 }
-.mi-drawer__search{ flex:1; }
-.mi-drawer__searchbox{
-  display:flex; align-items:center; gap:8px;
-  height:44px; padding:0 10px;
+
+.mi-drawer__search {
+    flex: 1;
 }
-.mi-drawer__searchbox input{
-  background:transparent; border:none; color:var(--text);
-  padding:0 8px; outline:none; width:100%;
+
+.mi-drawer__searchbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 44px;
+    padding: 0 10px;
+}
+
+.mi-drawer__searchbox input {
+    background: transparent;
+    border: none;
+    color: var(--text);
+    padding: 0 8px;
+    outline: none;
+    width: 100%;
 }
 
 /* Close button (kruh) */
+.mi-closebtn {
+    -webkit-tap-highlight-color: transparent;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--text);
+}
+
+.mi-closebtn:hover {
+    background: rgba(255, 255, 255, .05);
+}
+
+.mi-closebtn:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+}
+
+/* X ikonka z dvoch spanov */
+.mi-close-x {
+    position: relative;
+    width: 16px;
+    height: 16px;
+    display: block;
+}
+
+.mi-close-x > span {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 2px;
+    background: currentColor;
+    border-radius: 2px;
+    transform-origin: 50% 50%;
+}
+
+.mi-close-x > span:first-child {
+    transform: translateY(-50%) rotate(45deg);
+}
+
+.mi-close-x > span:last-child {
+    transform: translateY(-50%) rotate(-45deg);
+}
+
+/* istota: farba ikon dedí z tlačidla */
+.mi-closebtn, .mi-iconbtn {
+    color: var(--text) !important;
+}
+
+/* Drawer header: search + close (už máš) */
+/* ...mi-drawer__header, .mi-drawer__search, .mi-drawer__searchbox... */
+
+/* Close button v kruhu (už máš) */
 .mi-closebtn{
-  -webkit-tap-highlight-color: transparent;
-  display:inline-flex; align-items:center; justify-content:center;
-  width:40px; height:40px;
-  border:1px solid var(--border); border-radius:999px;
-  background:transparent; color:var(--text);
+    -webkit-tap-highlight-color: transparent;
+    display:inline-flex; align-items:center; justify-content:center;
+    width:40px; height:40px;
+    border:1px solid var(--border); border-radius:999px;
+    background:transparent; color:var(--text);
 }
 .mi-closebtn:hover{ background:rgba(255,255,255,.05); }
 .mi-closebtn:focus-visible{ outline:2px solid var(--ring); outline-offset:2px; }
 
-/* X ikonka z dvoch spanov */
+/* X z dvoch reálnych spanov – odolné voči resetom */
 .mi-close-x{ position:relative; width:16px; height:16px; display:block; }
 .mi-close-x > span{
-  position:absolute; left:0; right:0; top:50%;
-  height:2px; background:currentColor; border-radius:2px;
-  transform-origin:50% 50%;
+    position:absolute; left:0; right:0; top:50%;
+    height:2px; background:currentColor !important; border-radius:2px;
+    transform-origin:50% 50%;
 }
 .mi-close-x > span:first-child{ transform: translateY(-50%) rotate(45deg); }
 .mi-close-x > span:last-child{  transform: translateY(-50%) rotate(-45deg); }
 
 /* istota: farba ikon dedí z tlačidla */
 .mi-closebtn, .mi-iconbtn{ color: var(--text) !important; }
+
+/* Kruh zostáva – len doplníme textový znak × */
+.mi-closebtn{
+    -webkit-tap-highlight-color: transparent;
+    display:inline-flex; align-items:center; justify-content:center;
+    width:40px; height:40px;
+    border:1px solid var(--border); border-radius:999px;
+    background:transparent;
+    color: var(--text) !important;   /* tvrdé zdedenie farby */
+}
+.mi-closebtn:hover{ background:rgba(255,255,255,.05); }
+.mi-closebtn:focus-visible{ outline:2px solid var(--ring); outline-offset:2px; }
+
+/* Znak × vnútri tlačidla */
+.mi-x{
+    font-size:20px;                  /* viditeľná veľkosť */
+    line-height:1;
+    font-weight:700;
+    color: var(--text) !important;   /* nech je vždy svetlý */
+    transform: translateY(-1px);     /* optické centrovanie */
+    user-select:none;
+    pointer-events:none;
+}

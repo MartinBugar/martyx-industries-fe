@@ -116,7 +116,7 @@ export default function Navbar({cartCount = 0, activePath, onSearchSubmit}: Prop
                         aria-label="Close menu"
                         onClick={() => setDrawerOpen(false)}
                     >
-                        <span className="mi-close-x" aria-hidden="true"><span></span><span></span></span>
+                        <span className="mi-x" aria-hidden="true">×</span>
                     </button>
                 </div>
 
