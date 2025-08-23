@@ -10,9 +10,12 @@ import {Link, NavLink, useNavigate, useLocation} from "react-router-dom";
  */
 
 type NavItem = { label: string; href: string };
+type User = { id: string; name?: string; avatarUrl?: string };
 type Props = {
     cartCount?: number;
     onSearchSubmit?: (q: string) => void;
+    user?: User | null;
+    onLogout?: () => Promise<void> | void;
 };
 
 const LINKS: NavItem[] = [
@@ -21,7 +24,7 @@ const LINKS: NavItem[] = [
     {label: "About", href: "/about"},
 ];
 
-export default function Navbar({cartCount = 0, onSearchSubmit}: Props) {
+export default function Navbar({cartCount = 0, onSearchSubmit, user, onLogout}: Props) {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [q, setQ] = useState("");
     const navigate = useNavigate();
@@ -119,6 +122,24 @@ export default function Navbar({cartCount = 0, onSearchSubmit}: Props) {
         setDrawerOpen(false);
     }, [q, onSearchSubmit, navigate]);
 
+    const fallbackLogout = useCallback(() => {
+        try {
+            localStorage.removeItem("token");
+            localStorage.removeItem("auth:user");
+        } catch {
+            /* ignore */
+        }
+        navigate("/login");
+    }, [navigate]);
+
+    const doLogout = useCallback(async () => {
+        try {
+            await (onLogout ?? fallbackLogout)();
+        } finally {
+            setDrawerOpen(false);
+        }
+    }, [onLogout, fallbackLogout]);
+
     const Drawer = (
         <div
             id="nav-drawer"
@@ -166,10 +187,27 @@ export default function Navbar({cartCount = 0, onSearchSubmit}: Props) {
                     </NavLink>
                 ))}
 
-                {/* Auth actions */}
-                <div style={{display: "flex", gap: 8, marginTop: 10}}>
-                    <Link to="/login" className="mi-btn mi-btn--ghost" style={{flex: 1}}>Login</Link>
-                    <Link to="/register" className="mi-btn mi-btn--primary" style={{flex: 1}}>Register</Link>
+                {/* Auth / User actions (mobile drawer) */}
+                <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+                  {!user ? (
+                    <>
+                      <Link className="mi-btn mi-btn--ghost" to="/login" style={{ flex: 1 }} onClick={handleCloseDrawer}>
+                        Login
+                      </Link>
+                      <Link className="mi-btn mi-btn--primary" to="/register" style={{ flex: 1 }} onClick={handleCloseDrawer}>
+                        Register
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <Link className="mi-btn mi-btn--ghost" to="/account" style={{ flex: 1 }} onClick={handleCloseDrawer}>
+                        Account
+                      </Link>
+                      <button type="button" className="mi-btn mi-btn--ghost" style={{ flex: 1 }} onClick={doLogout}>
+                        Logout
+                      </button>
+                    </>
+                  )}
                 </div>
             </div>
         </div>
@@ -219,9 +257,22 @@ export default function Navbar({cartCount = 0, onSearchSubmit}: Props) {
                                 </div>
                             </form>
 
-                            {/* Auth (desktop) */}
-                            <Link to="/login" className="mi-btn mi-btn--ghost mi-desktop">Login</Link>
-                            <Link to="/register" className="mi-btn mi-btn--primary mi-desktop">Register</Link>
+                            {/* Auth / User (desktop) */}
+                            {!user ? (
+                                <>
+                                    <Link to="/login" className="mi-btn mi-btn--ghost mi-desktop">Login</Link>
+                                    <Link to="/register" className="mi-btn mi-btn--primary mi-desktop">Register</Link>
+                                </>
+                            ) : (
+                                <>
+                                    <Link to="/account" className="mi-iconbtn mi-desktop" aria-label="Account">
+                                        <UserIcon />
+                                    </Link>
+                                    <button type="button" className="mi-btn mi-btn--ghost mi-desktop" onClick={doLogout}>
+                                        Logout
+                                    </button>
+                                </>
+                            )}
 
                             {/* Cart (always visible) */}
                             <Link to="/cart" className="mi-iconbtn" aria-label="Cart">
@@ -274,6 +325,15 @@ function SearchIcon() {
              aria-hidden="true">
             <circle cx="11" cy="11" r="7"/>
             <path d="m21 21-4.3-4.3"/>
+        </svg>
+    );
+}
+
+function UserIcon() {
+    return (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+            <circle cx="12" cy="8" r="4" />
+            <path d="M4 20c0-4 4-6 8-6s8 2 8 6" />
         </svg>
     );
 }
