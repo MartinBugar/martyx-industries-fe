@@ -1125,48 +1125,90 @@ body.mi-lock-scroll {
 /* ...mi-drawer__header, .mi-drawer__search, .mi-drawer__searchbox... */
 
 /* Close button v kruhu (už máš) */
-.mi-closebtn{
+.mi-closebtn {
     -webkit-tap-highlight-color: transparent;
-    display:inline-flex; align-items:center; justify-content:center;
-    width:40px; height:40px;
-    border:1px solid var(--border); border-radius:999px;
-    background:transparent; color:var(--text);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--text);
 }
-.mi-closebtn:hover{ background:rgba(255,255,255,.05); }
-.mi-closebtn:focus-visible{ outline:2px solid var(--ring); outline-offset:2px; }
+
+.mi-closebtn:hover {
+    background: rgba(255, 255, 255, .05);
+}
+
+.mi-closebtn:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+}
 
 /* X z dvoch reálnych spanov – odolné voči resetom */
-.mi-close-x{ position:relative; width:16px; height:16px; display:block; }
-.mi-close-x > span{
-    position:absolute; left:0; right:0; top:50%;
-    height:2px; background:currentColor !important; border-radius:2px;
-    transform-origin:50% 50%;
+.mi-close-x {
+    position: relative;
+    width: 16px;
+    height: 16px;
+    display: block;
 }
-.mi-close-x > span:first-child{ transform: translateY(-50%) rotate(45deg); }
-.mi-close-x > span:last-child{  transform: translateY(-50%) rotate(-45deg); }
+
+.mi-close-x > span {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 2px;
+    background: currentColor !important;
+    border-radius: 2px;
+    transform-origin: 50% 50%;
+}
+
+.mi-close-x > span:first-child {
+    transform: translateY(-50%) rotate(45deg);
+}
+
+.mi-close-x > span:last-child {
+    transform: translateY(-50%) rotate(-45deg);
+}
 
 /* istota: farba ikon dedí z tlačidla */
-.mi-closebtn, .mi-iconbtn{ color: var(--text) !important; }
+.mi-closebtn, .mi-iconbtn {
+    color: var(--text) !important;
+}
 
 /* Kruh zostáva – len doplníme textový znak × */
-.mi-closebtn{
+.mi-closebtn {
     -webkit-tap-highlight-color: transparent;
-    display:inline-flex; align-items:center; justify-content:center;
-    width:40px; height:40px;
-    border:1px solid var(--border); border-radius:999px;
-    background:transparent;
-    color: var(--text) !important;   /* tvrdé zdedenie farby */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--text) !important; /* tvrdé zdedenie farby */
 }
-.mi-closebtn:hover{ background:rgba(255,255,255,.05); }
-.mi-closebtn:focus-visible{ outline:2px solid var(--ring); outline-offset:2px; }
+
+.mi-closebtn:hover {
+    background: rgba(255, 255, 255, .05);
+}
+
+.mi-closebtn:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+}
 
 /* Znak × vnútri tlačidla */
-.mi-x{
-    font-size:20px;                  /* viditeľná veľkosť */
-    line-height:1;
-    font-weight:700;
-    color: var(--text) !important;   /* nech je vždy svetlý */
-    transform: translateY(-1px);     /* optické centrovanie */
-    user-select:none;
-    pointer-events:none;
+.mi-x {
+    font-size: 20px; /* viditeľná veľkosť */
+    line-height: 1;
+    font-weight: 700;
+    color: var(--text) !important; /* nech je vždy svetlý */
+    transform: translateY(-1px); /* optické centrovanie */
+    user-select: none;
+    pointer-events: none;
 }
