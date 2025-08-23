@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useRef, useState} from "react";
+import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {createPortal} from "react-dom";
 import "./Navbar.css";
 
@@ -27,7 +27,7 @@ export default function Navbar({cartCount = 0, activePath, onSearchSubmit}: Prop
     const drawerRef = useRef<HTMLDivElement>(null);
     const panelRef = useRef<HTMLDivElement>(null);
     const searchInputRef = useRef<HTMLInputElement>(null);
-    const prevBodyPrRef = useRef<string | undefined>();
+    const prevBodyPrRef = useRef<string | undefined>(undefined);
 
     const currentPath = useMemo(
         () => activePath ?? (typeof window !== "undefined" ? window.location.pathname : ""),
@@ -71,9 +71,15 @@ export default function Navbar({cartCount = 0, activePath, onSearchSubmit}: Prop
         return () => window.removeEventListener("keydown", onKey);
     }, []);
 
-    function handleOverlayClick(e: React.MouseEvent<HTMLDivElement>) {
+    const handleOverlayClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
         if (e.target === drawerRef.current) setDrawerOpen(false);
-    }
+    }, []);
+
+    const handleCloseDrawer = useCallback(() => setDrawerOpen(false), []);
+
+    const handleToggleDrawer = useCallback(() => setDrawerOpen(v => !v), []);
+
+    const onChangeQ = useCallback((e: React.ChangeEvent<HTMLInputElement>) => setQ(e.target.value), []);
 
     /** Basic focus trap inside drawer panel */
     useEffect(() => {
@@ -100,13 +106,13 @@ export default function Navbar({cartCount = 0, activePath, onSearchSubmit}: Prop
         return () => panelRef.current?.removeEventListener("keydown", handler);
     }, [drawerOpen]);
 
-    function submitSearch(e: React.FormEvent) {
+    const submitSearch = useCallback((e: React.FormEvent) => {
         e.preventDefault();
         const query = q.trim();
         if (!query) return;
         (onSearchSubmit ?? ((qq) => window.location.assign(`/search?q=${encodeURIComponent(qq)}`)))(query);
         setDrawerOpen(false);
-    }
+    }, [q, onSearchSubmit]);
 
     const Drawer = (
         <div
@@ -123,10 +129,11 @@ export default function Navbar({cartCount = 0, activePath, onSearchSubmit}: Prop
                         <div className="mi-panel mi-drawer__searchbox">
                             <SearchIcon/>
                             <input
+                                type="search"
                                 placeholder="Search models…"
                                 ref={searchInputRef}
                                 value={q}
-                                onChange={(e) => setQ(e.target.value)}
+                                onChange={onChangeQ}
                             />
                         </div>
                     </form>
@@ -135,7 +142,7 @@ export default function Navbar({cartCount = 0, activePath, onSearchSubmit}: Prop
                         type="button"
                         className="mi-closebtn"
                         aria-label="Close menu"
-                        onClick={() => setDrawerOpen(false)}
+                        onClick={handleCloseDrawer}
                     >
                         <span className="mi-x" aria-hidden="true">×</span>
                     </button>
@@ -148,7 +155,7 @@ export default function Navbar({cartCount = 0, activePath, onSearchSubmit}: Prop
                         className="mi-drawer__link"
                         href={l.href}
                         aria-current={currentPath === l.href ? "page" : undefined}
-                        onClick={() => setDrawerOpen(false)}
+                        onClick={handleCloseDrawer}
                     >
                         {l.label}
                     </a>
@@ -197,11 +204,12 @@ export default function Navbar({cartCount = 0, activePath, onSearchSubmit}: Prop
                                 <div className="mi-panel">
                                     <SearchIcon/>
                                     <input
+                                        type="search"
                                         name="q"
                                         placeholder="Search models…"
                                         autoComplete="off"
                                         value={q}
-                                        onChange={(e) => setQ(e.target.value)}
+                                        onChange={onChangeQ}
                                     />
                                 </div>
                             </form>
@@ -222,8 +230,8 @@ export default function Navbar({cartCount = 0, activePath, onSearchSubmit}: Prop
                                 className="mi-iconbtn mi-mobile"
                                 aria-expanded={drawerOpen}
                                 aria-controls="nav-drawer"
-                                aria-label="Open menu"
-                                onClick={() => setDrawerOpen(v => !v)}
+                                aria-label={drawerOpen ? "Close menu" : "Open menu"}
+                                onClick={handleToggleDrawer}
                             >
   <span className="mi-menu-bars" aria-hidden="true">
     <span></span><span></span><span></span>
@@ -240,7 +248,7 @@ export default function Navbar({cartCount = 0, activePath, onSearchSubmit}: Prop
 }
 
 /* ===== Inline SVG icons ===== */
-function MILogo() {
+const MILogo = React.memo(function MILogo() {
     return (
         <svg width="34" height="34" viewBox="0 0 32 32" aria-hidden="true">
             <rect x="1.5" y="1.5" width="29" height="29" rx="8" fill="url(#g-mi)" stroke="rgba(255,255,255,.12)"/>
@@ -253,7 +261,7 @@ function MILogo() {
             </defs>
         </svg>
     );
-}
+});
 
 function SearchIcon() {
     return (

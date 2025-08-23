@@ -659,10 +659,7 @@
     --h-nav: 68px;
 }
 
-/* Page bg so nav blends nicely */
-body {
-    background: var(--bg);
-}
+/* Page bg so nav blends nicely (disabled to avoid overriding global app background) */
 
 /* Container */
 .mi-container {
