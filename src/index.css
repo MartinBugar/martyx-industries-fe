@@ -524,3 +524,16 @@ html, body, #root {
 #review-text:focus {
     border-color: var(--accent);
 }
+
+
+/* Keep a stable gutter for the vertical scrollbar on all pages */
+html {
+    scrollbar-gutter: stable both-edges;
+}
+
+/* Fallback for browsers without scrollbar-gutter (Safari/older) */
+@supports not (scrollbar-gutter: stable) {
+    html, body {
+        overflow-y: scroll; /* always reserve space for the scrollbar */
+    }
+}

@@ -27,17 +27,38 @@ export default function Navbar({cartCount = 0, activePath, onSearchSubmit}: Prop
     const drawerRef = useRef<HTMLDivElement>(null);
     const panelRef = useRef<HTMLDivElement>(null);
     const searchInputRef = useRef<HTMLInputElement>(null);
+    const prevBodyPrRef = useRef<string | undefined>();
 
     const currentPath = useMemo(
         () => activePath ?? (typeof window !== "undefined" ? window.location.pathname : ""),
         [activePath]
     );
 
-    /** Lock body scroll when drawer open (via class) */
+    /** Lock body scroll when drawer open with visual compensation for scrollbar width */
     useEffect(() => {
-        if (typeof document === "undefined") return;
-        document.body.classList.toggle("mi-lock-scroll", drawerOpen);
-        return () => document.body.classList.remove("mi-lock-scroll");
+        if (typeof window === "undefined" || typeof document === "undefined") return;
+
+        const body = document.body;
+        const docEl = document.documentElement;
+        // Scrollbar width = window innerWidth - document content width
+        const sbw = window.innerWidth - docEl.clientWidth;
+
+        body.classList.toggle("mi-lock-scroll", drawerOpen);
+
+        if (drawerOpen) {
+            // save previous padding-right to restore later
+            prevBodyPrRef.current = body.style.paddingRight;
+            body.style.paddingRight = `${sbw}px`; // visual compensation
+        } else {
+            body.style.paddingRight = prevBodyPrRef.current ?? "";
+            prevBodyPrRef.current = undefined;
+        }
+
+        return () => {
+            body.classList.remove("mi-lock-scroll");
+            body.style.paddingRight = prevBodyPrRef.current ?? "";
+            prevBodyPrRef.current = undefined;
+        };
     }, [drawerOpen]);
 
     /** Esc closes; click on overlay closes */

@@ -1232,8 +1232,30 @@ body.mi-lock-scroll {
     .mi-drawer__header{
         position: sticky;
         top: env(safe-area-inset-top, 0);
-        background: inherit;
         z-index: 1;
         padding-top: 2px;
     }
+}
+
+
+
+/* Use the same gradient for drawer panel as the rest of the UI */
+.mi-drawer__panel.mi-panel{
+  background: linear-gradient(180deg, #182028 0%, #131a21 100%);
+  /* keep subtle polish, avoid mismatched inset banding */
+  box-shadow: 0 0 0 1px rgba(255,255,255,.02), 0 8px 22px rgba(0,0,0,.35) inset;
+}
+
+/* Make the sticky header transparent so the panel's gradient shows through */
+.mi-drawer__header{
+  background: transparent !important;  /* was inherit; causes tone seams */
+  border-bottom: none;                  /* remove any light separator */
+  transform: translateZ(0);             /* stabilize GPU compositing on iOS */
+}
+
+/* Ensure the search box inside the header uses the same panel look */
+.mi-drawer__searchbox.mi-panel{
+  background: linear-gradient(180deg, #182028 0%, #131a21 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
 }
