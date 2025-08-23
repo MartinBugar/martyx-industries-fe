@@ -1212,3 +1212,28 @@ body.mi-lock-scroll {
     user-select: none;
     pointer-events: none;
 }
+
+/* ===== Full-width mobile drawer ===== */
+@media (max-width: 768px){
+    .mi-drawer__panel{
+        /* cez celý display */
+        width: 100vw;
+        left: 0;
+        right: 0;
+        border-left: none;   /* bez pravej/ľavej hrany */
+        border-right: none;
+        border-radius: 0;    /* žiadne zaoblenia, pekne „edge-to-edge“ */
+        padding-left: max(14px, env(safe-area-inset-left));
+        padding-right: max(14px, env(safe-area-inset-right));
+        padding-top: max(14px, env(safe-area-inset-top));
+    }
+
+    /* nech header (search + X) ostáva hore pri scrollovaní */
+    .mi-drawer__header{
+        position: sticky;
+        top: env(safe-area-inset-top, 0);
+        background: inherit;
+        z-index: 1;
+        padding-top: 2px;
+    }
+}
