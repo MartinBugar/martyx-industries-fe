@@ -1,6 +1,7 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import {createPortal} from "react-dom";
 import "./Navbar.css";
+import {Link, NavLink, useNavigate, useLocation} from "react-router-dom";
 
 /**
  * MARTYX "Metal" Navbar – fully responsive with hamburger mobile drawer.
@@ -8,31 +9,28 @@ import "./Navbar.css";
  * - Mobile: hamburger opens drawer with search + links + auth
  */
 
-type NavLink = { label: string; href: string };
+type NavItem = { label: string; href: string };
 type Props = {
     cartCount?: number;
-    activePath?: string;                 // optional; falls back to location.pathname
     onSearchSubmit?: (q: string) => void;
 };
 
-const LINKS: NavLink[] = [
+const LINKS: NavItem[] = [
     {label: "Home", href: "/"},
     {label: "Products", href: "/products"},
     {label: "About", href: "/about"},
 ];
 
-export default function Navbar({cartCount = 0, activePath, onSearchSubmit}: Props) {
+export default function Navbar({cartCount = 0, onSearchSubmit}: Props) {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [q, setQ] = useState("");
+    const navigate = useNavigate();
+    const location = useLocation();
     const drawerRef = useRef<HTMLDivElement>(null);
     const panelRef = useRef<HTMLDivElement>(null);
     const searchInputRef = useRef<HTMLInputElement>(null);
     const prevBodyPrRef = useRef<string | undefined>(undefined);
 
-    const currentPath = useMemo(
-        () => activePath ?? (typeof window !== "undefined" ? window.location.pathname : ""),
-        [activePath]
-    );
 
     /** Lock body scroll when drawer open with visual compensation for scrollbar width */
     useEffect(() => {
@@ -70,6 +68,11 @@ export default function Navbar({cartCount = 0, activePath, onSearchSubmit}: Prop
         window.addEventListener("keydown", onKey);
         return () => window.removeEventListener("keydown", onKey);
     }, []);
+
+    // Close drawer on route change
+    useEffect(() => {
+        setDrawerOpen(false);
+    }, [location.pathname]);
 
     const handleOverlayClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
         if (e.target === drawerRef.current) setDrawerOpen(false);
@@ -110,9 +113,11 @@ export default function Navbar({cartCount = 0, activePath, onSearchSubmit}: Prop
         e.preventDefault();
         const query = q.trim();
         if (!query) return;
-        (onSearchSubmit ?? ((qq) => window.location.assign(`/search?q=${encodeURIComponent(qq)}`)))(query);
+        (onSearchSubmit ?? ((qq: string) =>
+                navigate(`/search?q=${encodeURIComponent(qq)}`)
+        ))(query);
         setDrawerOpen(false);
-    }, [q, onSearchSubmit]);
+    }, [q, onSearchSubmit, navigate]);
 
     const Drawer = (
         <div
@@ -150,21 +155,21 @@ export default function Navbar({cartCount = 0, activePath, onSearchSubmit}: Prop
 
                 {/* Links */}
                 {LINKS.map((l) => (
-                    <a
+                    <NavLink
                         key={l.href}
-                        className="mi-drawer__link"
-                        href={l.href}
-                        aria-current={currentPath === l.href ? "page" : undefined}
+                        to={l.href}
+                        end
+                        className={({isActive}) => `mi-drawer__link${isActive ? " is-active" : ""}`}
                         onClick={handleCloseDrawer}
                     >
                         {l.label}
-                    </a>
+                    </NavLink>
                 ))}
 
                 {/* Auth actions */}
                 <div style={{display: "flex", gap: 8, marginTop: 10}}>
-                    <a className="mi-btn mi-btn--ghost" href="/login" style={{flex: 1}}>Login</a>
-                    <a className="mi-btn mi-btn--primary" href="/register" style={{flex: 1}}>Register</a>
+                    <Link to="/login" className="mi-btn mi-btn--ghost" style={{flex: 1}}>Login</Link>
+                    <Link to="/register" className="mi-btn mi-btn--primary" style={{flex: 1}}>Register</Link>
                 </div>
             </div>
         </div>
@@ -176,22 +181,22 @@ export default function Navbar({cartCount = 0, activePath, onSearchSubmit}: Prop
                 <div className="mi-container">
                     <div className="mi-nav__bar">
                         {/* Brand */}
-                        <a href="/" className="mi-brand" aria-label="Martyx Industries">
+                        <Link to="/" className="mi-brand" aria-label="Martyx Industries">
                             <MILogo/>
                             <span className="mi-brand__text">MARTYX INDUSTRIES</span>
-                        </a>
+                        </Link>
 
                         {/* Primary links (desktop) */}
                         <ul className="mi-links mi-desktop">
                             {LINKS.map((l) => (
                                 <li key={l.href}>
-                                    <a
-                                        className="mi-link"
-                                        href={l.href}
-                                        aria-current={currentPath === l.href ? "page" : undefined}
+                                    <NavLink
+                                        to={l.href}
+                                        end
+                                        className={({isActive}) => `mi-link${isActive ? " is-active" : ""}`}
                                     >
                                         {l.label}
-                                    </a>
+                                    </NavLink>
                                 </li>
                             ))}
                         </ul>
@@ -215,15 +220,15 @@ export default function Navbar({cartCount = 0, activePath, onSearchSubmit}: Prop
                             </form>
 
                             {/* Auth (desktop) */}
-                            <a href="/login" className="mi-btn mi-btn--ghost mi-desktop">Login</a>
-                            <a href="/register" className="mi-btn mi-btn--primary mi-desktop">Register</a>
+                            <Link to="/login" className="mi-btn mi-btn--ghost mi-desktop">Login</Link>
+                            <Link to="/register" className="mi-btn mi-btn--primary mi-desktop">Register</Link>
 
                             {/* Cart (always visible) */}
-                            <a href="/cart" className="mi-iconbtn" aria-label="Cart">
+                            <Link to="/cart" className="mi-iconbtn" aria-label="Cart">
                                 <CartIcon/>
                                 {cartCount > 0 && <span className="mi-badge" aria-live="polite">{cartCount}</span>}
                                 <span className="visually-hidden">Open cart</span>
-                            </a>
+                            </Link>
 
                             {/* MOBILE: hamburger (bez SVG/pseudo) */}
                             <button

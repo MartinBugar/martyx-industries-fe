@@ -1211,22 +1211,22 @@ body.mi-lock-scroll {
 }
 
 /* ===== Full-width mobile drawer ===== */
-@media (max-width: 768px){
-    .mi-drawer__panel{
+@media (max-width: 768px) {
+    .mi-drawer__panel {
         /* cez celý display */
         width: 100vw;
         left: 0;
         right: 0;
-        border-left: none;   /* bez pravej/ľavej hrany */
+        border-left: none; /* bez pravej/ľavej hrany */
         border-right: none;
-        border-radius: 0;    /* žiadne zaoblenia, pekne „edge-to-edge“ */
+        border-radius: 0; /* žiadne zaoblenia, pekne „edge-to-edge“ */
         padding-left: max(14px, env(safe-area-inset-left));
         padding-right: max(14px, env(safe-area-inset-right));
         padding-top: max(14px, env(safe-area-inset-top));
     }
 
     /* nech header (search + X) ostáva hore pri scrollovaní */
-    .mi-drawer__header{
+    .mi-drawer__header {
         position: sticky;
         top: env(safe-area-inset-top, 0);
         z-index: 1;
@@ -1235,24 +1235,31 @@ body.mi-lock-scroll {
 }
 
 
-
 /* Use the same gradient for drawer panel as the rest of the UI */
-.mi-drawer__panel.mi-panel{
-  background: linear-gradient(180deg, #182028 0%, #131a21 100%);
-  /* keep subtle polish, avoid mismatched inset banding */
-  box-shadow: 0 0 0 1px rgba(255,255,255,.02), 0 8px 22px rgba(0,0,0,.35) inset;
+.mi-drawer__panel.mi-panel {
+    background: linear-gradient(180deg, #182028 0%, #131a21 100%);
+    /* keep subtle polish, avoid mismatched inset banding */
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, .02), 0 8px 22px rgba(0, 0, 0, .35) inset;
 }
 
 /* Make the sticky header transparent so the panel's gradient shows through */
-.mi-drawer__header{
-  background: transparent !important;  /* was inherit; causes tone seams */
-  border-bottom: none;                  /* remove any light separator */
-  transform: translateZ(0);             /* stabilize GPU compositing on iOS */
+.mi-drawer__header {
+    background: transparent !important; /* was inherit; causes tone seams */
+    border-bottom: none; /* remove any light separator */
+    transform: translateZ(0); /* stabilize GPU compositing on iOS */
 }
 
 /* Ensure the search box inside the header uses the same panel look */
-.mi-drawer__searchbox.mi-panel{
-  background: linear-gradient(180deg, #182028 0%, #131a21 100%);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+.mi-drawer__searchbox.mi-panel {
+    background: linear-gradient(180deg, #182028 0%, #131a21 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+
+/* Active states for router NavLink */
+.mi-link.is-active,
+.mi-drawer__link.is-active {
+    opacity: 1;
+    color: var(--accent);
 }
