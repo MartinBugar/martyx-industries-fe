@@ -624,3 +624,163 @@
     display: none;
   }
 }
+
+
+/* ===== MARTYX "Metal" Navbar – CSS (responsive + mobile drawer) ===== */
+
+:root{
+  --bg:#0B0F14;
+  --panel:#141A20;
+  --panel-2:#0F151B;
+  --text:#E7EBF2;
+  --muted:#A5B0BD;
+  --accent:#F6C845;
+  --border:rgba(255,255,255,.08);
+  --ring:rgba(246,200,69,.55);
+  --radius:14px;
+  --h-nav:68px;
+}
+
+/* Page bg so nav blends nicely */
+body{ background:var(--bg); }
+
+/* Container */
+.mi-container{ max-width:1200px; margin:0 auto; padding:0 20px; }
+
+/* Root navbar */
+.mi-nav{
+  position:sticky; top:0; z-index:50;
+  background: linear-gradient(180deg, #161d24 0%, #12181f 100%);
+  backdrop-filter: blur(8px);
+  border-bottom:1px solid var(--border);
+}
+.mi-nav__bar{
+  height:var(--h-nav);
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+}
+
+/* Brand */
+.mi-brand{ display:flex; align-items:center; gap:12px; text-decoration:none; }
+.mi-brand__text{ color:var(--text); font-weight:700; letter-spacing:.06em; white-space:nowrap; }
+
+/* "Brushed metal" panel */
+.mi-panel{
+  background: linear-gradient(180deg,#182028 0%,#131a21 100%);
+  border:1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 22px rgba(0,0,0,.35) inset, 0 0 0 1px rgba(255,255,255,.02);
+}
+
+/* Primary links */
+.mi-links{ gap:22px; align-items:center; list-style:none; padding:0; margin:0; }
+.mi-link{
+  position:relative; color:var(--text); opacity:.9; text-decoration:none;
+  font-weight:500; padding:8px 0; display:inline-flex; align-items:center;
+}
+.mi-link:hover{ opacity:1; }
+.mi-link:focus-visible{ outline:2px solid var(--ring); outline-offset:2px; border-radius:6px; }
+.mi-link[aria-current="page"]{ opacity:1; }
+.mi-link[aria-current="page"]::after{
+  content:""; position:absolute; left:0; bottom:-10px; width:28px; height:2px;
+  background:var(--accent); border-radius:999px;
+}
+
+/* Actions: buttons/icons */
+.mi-actions{ display:flex; align-items:center; gap:8px; }
+
+.mi-btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  height:40px; padding:0 14px; font-weight:600; border-radius:999px;
+  text-decoration:none; cursor:pointer; user-select:none;
+}
+.mi-btn--ghost{ color:var(--text); border:1px solid var(--border); background:transparent; }
+.mi-btn--ghost:hover{ background:rgba(255,255,255,.05); border-color:rgba(255,255,255,.18); }
+.mi-btn--primary{ background:var(--accent); color:#0B0F14; }
+.mi-btn--primary:hover{ filter:brightness(.95); }
+
+.mi-iconbtn{
+  position:relative; display:inline-flex; align-items:center; justify-content:center;
+  width:40px; height:40px; border:1px solid var(--border);
+  border-radius:999px; background:transparent; color:var(--text);
+}
+.mi-iconbtn:hover{ background:rgba(255,255,255,.05); }
+.mi-iconbtn:focus-visible{ outline:2px solid var(--ring); outline-offset:2px; }
+
+.mi-badge{
+  position:absolute; top:-6px; right:-6px; background:var(--accent); color:#0B0F14;
+  font-weight:800; font-size:10px; padding:1px 6px; border-radius:999px;
+  box-shadow:0 0 0 1px rgba(0,0,0,.2);
+}
+
+/* Search */
+.mi-search .mi-panel{
+  display:flex; align-items:center; gap:10px; padding:0 10px; height:40px;
+}
+.mi-search input{
+  background:transparent; border:none; color:var(--text);
+  padding:0 8px; outline:none; width:220px;
+}
+
+/* Visibility helpers (mobile-first) */
+.mi-desktop{ display:none !important; }   /* hidden by default */
+.mi-mobile{ display:flex !important; }    /* show on mobile by default */
+
+@media (min-width:1024px){
+  .mi-desktop{ display:flex !important; }
+  .mi-mobile{ display:none !important; }
+  .mi-brand__text{ display:inline; }
+}
+
+/* Mobile drawer (overlay + slide-in panel) */
+.mi-drawer{
+  position: fixed;      /* critical */
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 999;         /* above navbar */
+  background: rgba(0,0,0,.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .22s ease;
+}
+.mi-drawer.is-open{ opacity:1; pointer-events:auto; }
+.mi-drawer__panel{
+  position:absolute; top:0; right:0; width:min(92vw,420px); height:100%;
+  overflow:auto; border-left:1px solid var(--border);
+  padding:14px;
+  transform:translateX(100%);
+  transition:transform .22s ease;
+}
+.mi-drawer.is-open .mi-drawer__panel{ transform:translateX(0); }
+
+.mi-drawer__link{
+  display:block; padding:12px 10px; color:var(--text); text-decoration:none;
+  opacity:.9; border-radius:8px; margin-bottom:6px;
+}
+.mi-drawer__link:hover{ background:rgba(255,255,255,.05); opacity:1; }
+
+/* A11y helper */
+.visually-hidden{
+  position:absolute!important; height:1px; width:1px; overflow:hidden;
+  clip:rect(1px,1px,1px,1px); white-space:nowrap; border:0; padding:0; margin:-1px;
+}
+
+:root{
+  --bg:#0B0F14;
+  --panel:#141A20;
+  --panel-2:#0F151B;
+  --text:#E7EBF2;
+  --muted:#A5B0BD;
+  --accent:#F6C845;
+  --border:rgba(255,255,255,.08);
+  --ring:rgba(246,200,69,.55);
+  --radius:14px;
+  --h-nav:68px;
+}
+
+
+/* Do not clip overlay */
+.mi-nav{ overflow: visible; }
+
+/* Lock body scroll while drawer open */
+body.mi-lock-scroll{ overflow: hidden; }

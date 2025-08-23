@@ -75,10 +75,7 @@ function MainContent() {
   return (
     <div className="app-container">
       {!isAdminRoute && (
-        <Navbar 
-          cartItems={getTotalItems()} 
-          onCartClick={toggleCart} 
-        />
+        <Navbar cartCount={getTotalItems()} />
       )}
       
       {!isAdminRoute && (
