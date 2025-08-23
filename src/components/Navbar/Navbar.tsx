@@ -96,27 +96,29 @@ export default function Navbar({cartCount = 0, activePath, onSearchSubmit}: Prop
             ref={drawerRef}
         >
             <div className="mi-drawer__panel mi-panel" role="dialog" aria-modal="true" aria-label="Menu" ref={panelRef}>
-                {/* Search in drawer */}
-                <form role="search" onSubmit={submitSearch} style={{marginBottom: 10}}>
-                    <div className="mi-panel"
-                         style={{display: "flex", alignItems: "center", gap: 8, height: 44, padding: "0 10px"}}>
-                        <SearchIcon/>
-                        <input
-                            placeholder="Search models…"
-                            ref={searchInputRef}
-                            value={q}
-                            onChange={(e) => setQ(e.target.value)}
-                            style={{
-                                background: "transparent",
-                                border: "none",
-                                color: "var(--text)",
-                                padding: "0 8px",
-                                outline: "none",
-                                width: "100%"
-                            }}
-                        />
-                    </div>
-                </form>
+                {/* Header: search (vľavo) + close (vpravo) */}
+                <div className="mi-drawer__header">
+                    <form className="mi-drawer__search" role="search" onSubmit={submitSearch}>
+                        <div className="mi-panel mi-drawer__searchbox">
+                            <SearchIcon/>
+                            <input
+                                placeholder="Search models…"
+                                ref={searchInputRef}
+                                value={q}
+                                onChange={(e) => setQ(e.target.value)}
+                            />
+                        </div>
+                    </form>
+
+                    <button
+                        type="button"
+                        className="mi-closebtn"
+                        aria-label="Close menu"
+                        onClick={() => setDrawerOpen(false)}
+                    >
+                        <span className="mi-close-x" aria-hidden="true"><span></span><span></span></span>
+                    </button>
+                </div>
 
                 {/* Links */}
                 {LINKS.map((l) => (

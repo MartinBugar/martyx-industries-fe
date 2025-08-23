@@ -1008,3 +1008,43 @@ body.mi-lock-scroll {
 
 /* pre istotu farbu ikon setni sem (dedene cez currentColor) */
 .mi-iconbtn{ color: var(--text) !important; }
+
+
+/* Drawer header: search + close */
+.mi-drawer__header{
+  display:flex; align-items:center; gap:8px;
+  margin-bottom:10px;
+}
+.mi-drawer__search{ flex:1; }
+.mi-drawer__searchbox{
+  display:flex; align-items:center; gap:8px;
+  height:44px; padding:0 10px;
+}
+.mi-drawer__searchbox input{
+  background:transparent; border:none; color:var(--text);
+  padding:0 8px; outline:none; width:100%;
+}
+
+/* Close button (kruh) */
+.mi-closebtn{
+  -webkit-tap-highlight-color: transparent;
+  display:inline-flex; align-items:center; justify-content:center;
+  width:40px; height:40px;
+  border:1px solid var(--border); border-radius:999px;
+  background:transparent; color:var(--text);
+}
+.mi-closebtn:hover{ background:rgba(255,255,255,.05); }
+.mi-closebtn:focus-visible{ outline:2px solid var(--ring); outline-offset:2px; }
+
+/* X ikonka z dvoch spanov */
+.mi-close-x{ position:relative; width:16px; height:16px; display:block; }
+.mi-close-x > span{
+  position:absolute; left:0; right:0; top:50%;
+  height:2px; background:currentColor; border-radius:2px;
+  transform-origin:50% 50%;
+}
+.mi-close-x > span:first-child{ transform: translateY(-50%) rotate(45deg); }
+.mi-close-x > span:last-child{  transform: translateY(-50%) rotate(-45deg); }
+
+/* istota: farba ikon dedí z tlačidla */
+.mi-closebtn, .mi-iconbtn{ color: var(--text) !important; }
