@@ -47,9 +47,9 @@
 .hero-img-wrap {
     width: 100%;
     aspect-ratio: 9 / 5;
-    background-color: var(--card);
-    border-radius: var(--radius-lg);
-    box-shadow: 0 0 0 1px var(--accent-soft) inset;
+    background-color: var(--card, #141a20);
+    border-radius: var(--radius-lg, 16px);
+    box-shadow: 0 0 0 1px var(--accent-soft, rgba(40, 193, 255, 0.15)) inset;
     overflow: hidden;
     display: flex;
     align-items: center;

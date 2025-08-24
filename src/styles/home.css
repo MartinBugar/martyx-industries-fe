@@ -8,12 +8,126 @@
 .section { max-width: 1200px; margin: 0 auto; padding: clamp(24px, 4vw, 64px); }
 
 /* HERO */
-.hero { display:grid; align-items:center; gap:24px; }
-@media (min-width:1024px){ .hero { grid-template-columns: 1.2fr .8fr; } }
-.hero-title { font-size: clamp(28px,4.5vw,54px); line-height:1.05; margin: 0 0 12px; }
-.hero-sub { color: var(--muted); font-size: clamp(14px,1.6vw,18px); }
-.hero-cta { display:flex; gap:12px; margin-top:20px; flex-wrap:wrap; }
-.hero-kpis { margin-top:20px; display:grid; gap:8px; color:var(--muted); }
+.hero { 
+  display: grid; 
+  align-items: center; 
+  gap: 2rem; 
+  min-height: 70vh;
+}
+
+/* Override container width for hero section to use full width */
+.hero .container {
+  max-width: none; /* Remove width constraint */
+  width: 100%; /* Use full width */
+  padding-inline: 1rem; /* Add padding for edges on mobile */
+}
+
+@media (min-width: 640px) {
+  .hero .container {
+    padding-inline: 2rem; /* More padding on larger screens */
+  }
+}
+
+@media (min-width: 1400px) {
+  .hero .container {
+    max-width: 1400px; /* Cap at reasonable max width on very large screens */
+    margin: 0 auto; /* Center the content */
+  }
+}
+
+.hero-grid { 
+  display: grid; 
+  grid-template-columns: 1fr;
+  gap: 2rem; 
+  align-items: center;
+  width: 100%;
+}
+
+/* Desktop layout - 50/50 split */
+@media (min-width: 768px) { 
+  .hero-grid { 
+    grid-template-columns: 1fr 1fr; 
+    gap: 4rem; /* Increase gap for better spacing */
+  } 
+}
+
+/* Large screens - maintain proper spacing */
+@media (min-width: 1200px) { 
+  .hero-grid { 
+    gap: 6rem; /* Even more space on large screens */
+  } 
+}
+
+.hero-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.hero-title { 
+  font-size: clamp(28px, 4.5vw, 54px); 
+  line-height: 1.05; 
+  margin: 0 0 1rem 0; 
+  color: var(--text);
+}
+
+.hero-sub { 
+  color: var(--muted); 
+  font-size: clamp(16px, 1.6vw, 20px);
+  margin-bottom: 2rem;
+}
+
+.hero-cta, .hero-ctas { 
+  display: flex; 
+  gap: 1rem; 
+  margin-bottom: 2rem; 
+  flex-wrap: wrap; 
+}
+
+.hero-ctas .btn {
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.hero-kpis { 
+  margin: 0; 
+  padding: 0;
+  list-style: none;
+  display: grid; 
+  gap: 0.5rem; 
+  color: var(--muted); 
+}
+
+.hero-visual { 
+  width: 100%; 
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-visual img {
+  width: 100%;
+  height: auto;
+  max-height: 400px;
+  object-fit: cover;
+  border-radius: var(--radius);
+  border: 1px solid #1f2a33;
+}
+
+.hero-image { 
+  width: 100%; 
+  height: 400px;
+  background: var(--card); 
+  border-radius: var(--radius); 
+  border: 1px solid #1f2a33;
+  background-image: url('../assets/home/tank.png');
+  background-size: cover;
+  background-position: center;
+}
 
 /* CARDS / GRIDS */
 .card{ background:var(--card); border:1px solid #1f2a33; border-radius:var(--radius); padding:16px; }

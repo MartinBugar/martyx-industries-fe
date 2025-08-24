@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import './Hero.css';
-import tankImage from '../../assets/home/tank.png';
 
 export default function Hero() {
 
@@ -23,7 +22,7 @@ export default function Hero() {
         <div className="hero-visual">
           <div className="hero-img-wrap">
             <img 
-              src={tankImage} 
+              src="/assets/hero-tank.png" 
               alt="MartyX RC tank" 
               className="hero-tank-image"
             />

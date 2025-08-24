@@ -3,6 +3,7 @@
 /* Import component styles used in this page */
 @import url('../../components/home/Hero.css');
 @import url('../../components/home/FeaturedProducts.css');
+@import url('../../styles/home.css');
 
 /* Home page container */
 .home-container {
@@ -18,6 +19,11 @@
 
 .home-section {
     padding-block: 3.5rem;
+}
+
+/* Special styling for hero section to use full width */
+.home-section.hero {
+    padding-inline: 0; /* Remove side padding for hero */
 }
 
 @media (min-width: 1024px) {
