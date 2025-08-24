@@ -1,70 +1,99 @@
-/* ProductView Component Styles */
+/* Modern ProductView Component - Minimalist E-commerce Design */
+
+/* CSS Variables matching site theme */
+:root {
+  --product-bg: #0f1419;
+  --product-surface: #1a1f2e;
+  --product-border: #2a3038;
+  --product-text: #ffffff;
+  --product-text-secondary: #d1d5db;
+  --product-text-muted: #9ca3af;
+  --product-accent: #6b7280;
+  --product-success: #059669;
+  --product-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --product-shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.15);
+  --product-transition: all 0.2s ease;
+  --product-radius: 8px;
+  --product-radius-lg: 12px;
+}
 
 .product-view-container {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 1.5rem;
 }
 
+/* 3D Model Container with Premium Gradient Background */
 .model-container {
   width: 100%;
   position: relative;
-  border-radius: 8px;
+  border-radius: var(--product-radius-lg);
   overflow: hidden;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
-  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0.06) 32%, var(--background) 100%);
-  aspect-ratio: 16/9;
+  border: 1px solid var(--product-border);
+  
+  /* Premium radial gradient - lightest in center, darker towards edges */
+  background: radial-gradient(
+    ellipse at center,
+    #2a3441 0%,      /* Lightest center */
+    #242b36 25%,     /* Light-medium */
+    #1e252f 50%,     /* Medium */
+    #1a1f2e 75%,     /* Dark */
+    #0f1419 100%     /* Darkest edges */
+  );
+  
+  /* Subtle overlay for depth */
+  background-image: 
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 70% 70%, rgba(107, 114, 128, 0.05) 0%, transparent 50%);
+  
+  aspect-ratio: 16/10;
   height: auto;
-  min-height: 320px;
-  max-height: min(70vh, 650px);
+  min-height: 300px;
+  max-height: min(65vh, 600px);
+  
+  /* Subtle shadow for depth */
+  box-shadow: var(--product-shadow-lg);
+  
+  /* Smooth transitions */
+  transition: var(--product-transition);
 }
 
-.model-toolbar {
-  width: 100%;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 8px;
-  margin-top: 8px;
-  padding: 8px 12px;
-  background-color: #f5f5f5;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
+.model-container:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
 }
 
-.fullscreen-btn {
-  padding: 8px 12px;
-  background-color: rgba(0, 0, 0, 0.75);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s;
+/* Gallery Section Styling */
+.product-gallery-section {
+  margin-top: 1rem;
 }
 
-.fullscreen-btn:hover {
-  background-color: rgba(0, 0, 0, 0.9);
-}
-
-/* Responsive styles */
+/* Responsive Design */
 @media (max-width: 767px) {
   .product-view-container {
-    gap: 15px;
+    gap: 1rem;
   }
 
   .model-container {
-    height: auto;
-    max-height: 60vh;
+    aspect-ratio: 16/9;
+    min-height: 250px;
+    max-height: 50vh;
+    border-radius: var(--product-radius);
   }
 }
 
 @media (max-width: 480px) {
   .product-view-container {
-    gap: 10px;
+    gap: 0.75rem;
+  }
+  
+  .model-container {
+    min-height: 200px;
+    max-height: 45vh;
   }
 }
 
+/* Desktop Layout */
 @media (min-width: 768px) {
   .product-view-container {
     width: auto;
@@ -74,6 +103,85 @@
   }
 
   .product-gallery-section {
-    margin-top: auto;
+    margin-top: 1.5rem;
+  }
+  
+  .model-container {
+    min-height: 350px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .model-container {
+    min-height: 400px;
+  }
+}
+
+/* Large screens optimization */
+@media (min-width: 1400px) {
+  .model-container {
+    max-height: min(70vh, 700px);
+  }
+}
+
+/* Fullscreen enhancement */
+.model-container.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  max-height: none;
+  z-index: 9999;
+  border-radius: 0;
+  aspect-ratio: auto;
+}
+
+/* Loading state */
+.model-container.loading {
+  background: radial-gradient(
+    ellipse at center,
+    #2a3441 0%,
+    #1a1f2e 100%
+  );
+}
+
+.model-container.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--product-border);
+  border-top: 3px solid var(--product-accent);
+  border-radius: 50%;
+  animation: loading-spin 1s linear infinite;
+}
+
+@keyframes loading-spin {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .model-container {
+    border-width: 2px;
+    background: radial-gradient(
+      ellipse at center,
+      #333 0%,
+      #111 100%
+    );
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
