@@ -1,14 +1,16 @@
 .admin-dashboard {
   display: grid;
   gap: 24px;
+  padding: 1rem;
 }
 
 .admin-section-title {
   margin: 0 0 12px 0;
   font-size: 18px;
-  color: #111827;
+  color: #ffffff;
 }
 
+/* Responsive grid layouts */
 .admin-cards-grid-280 {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -16,7 +18,6 @@
   align-items: stretch;
 }
 
-/* Compact cards can still be inline-sized within grids */
 .admin-cards-grid-280 > .admin-card.admin-card--compact {
   width: max-content;
 }
@@ -26,15 +27,24 @@
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 16px;
 }
+
 .admin-cards-grid-320 > .admin-card {
   justify-self: stretch;
 }
 
+/* Admin cards */
 .admin-card {
   background: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.admin-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
 }
 
 /* Compact variant for number-only cards */
@@ -44,7 +54,9 @@
   align-self: start;
   width: max-content;
   display: inline-block;
+  min-width: 120px;
 }
+
 .admin-card--compact .admin-card-label {
   margin-bottom: 4px;
   font-size: 12px;
@@ -54,6 +66,7 @@
   font-size: 14px;
   color: #6b7280;
   margin-bottom: 8px;
+  font-weight: 500;
 }
 
 .admin-error {
@@ -63,11 +76,13 @@
 .admin-big-number {
   font-size: 28px;
   font-weight: 700;
+  color: #111827;
 }
 
 .admin-number {
   font-size: 24px;
   font-weight: 700;
+  color: #111827;
 }
 
 .overflow-x-auto {
@@ -88,4 +103,121 @@
 
 .pre-reset {
   margin: 0;
+}
+
+/* Responsive breakpoints */
+@media (max-width: 1024px) {
+  .admin-dashboard {
+    gap: 20px;
+    padding: 0.75rem;
+  }
+  
+  .admin-cards-grid-280 {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+  }
+  
+  .admin-cards-grid-320 {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-dashboard {
+    gap: 16px;
+    padding: 0.5rem;
+  }
+  
+  .admin-section-title {
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+  
+  .admin-cards-grid-280,
+  .admin-cards-grid-320 {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .admin-card {
+    padding: 12px;
+  }
+  
+  .admin-card--compact {
+    width: 100%;
+    display: block;
+    justify-self: stretch;
+    min-width: unset;
+  }
+  
+  .admin-big-number {
+    font-size: 24px;
+  }
+  
+  .admin-number {
+    font-size: 20px;
+  }
+  
+  .overflow-x-auto {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 576px) {
+  .admin-dashboard {
+    gap: 12px;
+    padding: 0.25rem;
+  }
+  
+  .admin-section-title {
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+  
+  .admin-card {
+    padding: 10px;
+    border-radius: 6px;
+  }
+  
+  .admin-card-label {
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+  
+  .admin-big-number {
+    font-size: 20px;
+  }
+  
+  .admin-number {
+    font-size: 18px;
+  }
+  
+  .admin-secondary-text {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-dashboard {
+    gap: 8px;
+    padding: 0.125rem;
+  }
+  
+  .admin-card {
+    padding: 8px;
+  }
+  
+  .admin-card--compact {
+    padding: 6px 8px;
+  }
+  
+  .admin-big-number {
+    font-size: 18px;
+  }
+  
+  .admin-number {
+    font-size: 16px;
+  }
 }
