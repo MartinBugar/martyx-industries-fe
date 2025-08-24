@@ -33,8 +33,8 @@ const Home: React.FC = () => {
 
   // Try to import hero image via bundler; fallback to CSS placeholder if not present
   const heroAlt = 'RC Tank Kits & STL Files — product hero image';
-  const heroMap = import.meta.glob('../assets/home/hero-tank.png', { eager: true, as: 'url' });
-  const heroSrc = (heroMap['../assets/home/hero-tank.png'] as string) || '';
+  const heroMap = import.meta.glob('../assets/home/tank.png', { eager: true, as: 'url' });
+  const heroSrc = (heroMap['../assets/home/tank.png'] as string) || '';
 
   // Preload hero image for better LCP when available
   useEffect(() => {

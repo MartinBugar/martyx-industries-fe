@@ -120,8 +120,9 @@ html, body {
 }
 
 body {
-    padding-left: max(0px, var(--safe-left));
-    padding-right: max(0px, var(--safe-right));
+    /* Remove safe-area padding to ensure content is flush with the left and right screen edges */
+    padding-left: 0;
+    padding-right: 0;
 }
 
 input, button, textarea, select {

@@ -669,6 +669,12 @@
     padding: 0 20px;
 }
 
+/* Remove side padding for navbar so it sits flush with screen edges */
+.mi-nav .mi-container {
+    padding-left: 0;
+    padding-right: 0;
+}
+
 /* Root navbar */
 .mi-nav {
     position: sticky;
