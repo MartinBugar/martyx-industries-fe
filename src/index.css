@@ -92,6 +92,10 @@ img, picture, video, canvas, svg {
 
 html, body {
     width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 :root {
