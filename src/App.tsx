@@ -7,6 +7,7 @@ import { useCart } from './context/useCart'
 import { DevPasswordGateProvider } from './context/DevPasswordGateProvider'
 import { DevPasswordGate } from './components/DevPasswordGate/DevPasswordGate'
 import Navbar from './components/Navbar/Navbar'
+import { useAuth } from './context/useAuth'
 import Cart from './components/Cart/Cart'
 import Footer from './components/Footer/Footer'
 import SessionExpiredNotification from './components/SessionExpiredNotification/SessionExpiredNotification'
@@ -57,6 +58,7 @@ function AppWrapper() {
 // Main content component that uses navigation
 function MainContent() {
   const { getTotalItems } = useCart();
+  const { user, logout } = useAuth();
   const [showCart, setShowCart] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -75,7 +77,7 @@ function MainContent() {
   return (
     <div className="app-container">
       {!isAdminRoute && (
-        <Navbar cartCount={getTotalItems()} />
+        <Navbar cartCount={getTotalItems()} user={user} onLogout={logout} />
       )}
       
       {!isAdminRoute && (
