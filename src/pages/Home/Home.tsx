@@ -1,12 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState, Suspense, lazy } from 'react';
-import { products } from '../data/productData';
-import './Home/Home.css';
-import '../components/home/Hero.css';
-import '../components/home/FeaturedProducts.css';
+import { products } from '../../data/productData';
+import './Home.css';
 
 // Lazy chunks (loaded on intersection)
-const Interactive3D = lazy(() => import('../components/home/Interactive3D'));
-const VideoDemo = lazy(() => import('../components/home/VideoDemo'));
+const Interactive3D = lazy(() => import('../../components/home/Interactive3D'));
+const VideoDemo = lazy(() => import('../../components/home/VideoDemo'));
 
 const Home: React.FC = () => {
   const featured = useMemo(() => products.slice(0, 6), []);

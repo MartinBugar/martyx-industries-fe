@@ -1,5 +1,9 @@
 /* Home Page Styles */
 
+/* Import component styles used in this page */
+@import url('../../components/home/Hero.css');
+@import url('../../components/home/FeaturedProducts.css');
+
 /* Home page container */
 .home-container {
     margin: 0 auto;

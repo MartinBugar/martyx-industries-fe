@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { product, type Product } from '../data/productData';
-import { useCart } from '../context/useCart';
-import './Products/Products.css';
+import { product, type Product } from '../../data/productData';
+import { useCart } from '../../context/useCart';
+import './Products.css';
 
 const Products: React.FC = () => {
   const { addToCart } = useCart();

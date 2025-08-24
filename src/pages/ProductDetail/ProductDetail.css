@@ -1,5 +1,9 @@
 /* ProductDetail Page Styles */
 
+/* Import component styles used in this page */
+@import url('../../components/ProductDetails/ProductDetails.css');
+@import url('../../components/ProductTabs/ProductTabs.css');
+
 .product-detail-page {
     margin: 0 auto;
     padding: 2rem;
@@ -11,6 +15,35 @@
     gap: 1.5rem;
     max-width: 1200px;
     margin: 0 auto;
+}
+
+/* Product container responsive layout */
+@media (min-width: 768px) {
+    .product-container {
+        flex-direction: row;
+        align-items: stretch;
+        flex-wrap: wrap;
+    }
+}
+
+/* Ensure tab panel and video span full width in flex container */
+.product-container .product-tab-panel,
+.product-container .product-video-section {
+    flex-basis: 100%;
+    width: 100%;
+}
+
+/* Constrain product video size and center it under tab panels */
+.product-container .product-video-section {
+    max-width: 800px; /* keep it smaller on large screens */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Ensure bookmarks span full width within product container */
+.product-container .product-bookmarks {
+    flex-basis: 100%;
+    width: 100%;
 }
 
 /* Offset scroll for anchored sections to account for sticky bar height */
