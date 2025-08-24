@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState, Suspense, lazy } from 'react';
+import { Link } from 'react-router-dom';
 import { products } from '../../data/productData';
 import './Home.css';
 
@@ -50,7 +51,7 @@ const Home: React.FC = () => {
   return (
     <div className="home-root" aria-label="Home Page">
       {/* 1) Hero */}
-      <section className="home-section" aria-label="Hero">
+      <section className="hero-section" aria-label="Hero">
         <div className="container">
           <div className="hero-grid">
             <div className="hero-copy">
@@ -86,7 +87,7 @@ const Home: React.FC = () => {
       </section>
 
       {/* 2) How it works */}
-      <section className="home-section how" aria-label="How it works">
+      <section className="home-section how-section" aria-label="How it works">
         <div className="container">
           <div className="section-header"><h2>How it works</h2></div>
           <div className="how-grid">
@@ -110,22 +111,30 @@ const Home: React.FC = () => {
       </section>
 
       {/* 3) Featured */}
-      <section className="home-section featured" aria-label="Featured products">
+      <section className="home-section featured-section" aria-label="Featured products">
         <div className="container">
-          <div className="section-header row">
-            <h2>Featured</h2>
-            <a className="btn btn-soft" href="/products">View all</a>
+          <div className="section-header">
+            <h2>Featured Products</h2>
+            <div style={{textAlign: 'center', marginTop: '1rem'}}>
+              <Link className="btn primary" to="/products">View All Products</Link>
+            </div>
           </div>
           <div className="featured-grid">
             {featured.map((p) => (
               <article key={p.id} className="product-card">
-                <div className="media aspect-16-9" aria-hidden="true" />
-                <div className="product-body">
-                  <div className="row">
-                    <strong className="name">{p.name}</strong>
-                    <span className="price">{p.currency} {p.price.toFixed(2)}</span>
+                <Link to={`/products/${p.id}`} className="product-card-link">
+                  <img 
+                    src={p.gallery?.[0] || '/assets/kit-01.png'} 
+                    alt={p.name}
+                    className="product-image"
+                    loading="lazy"
+                  />
+                  <div className="product-info">
+                    <h3 className="product-title">{p.name}</h3>
+                    <div className="product-price">{p.currency} {p.price.toFixed(2)}</div>
+                    <p className="product-description">{p.description}</p>
                   </div>
-                </div>
+                </Link>
               </article>
             ))}
           </div>
