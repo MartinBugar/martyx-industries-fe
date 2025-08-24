@@ -547,7 +547,7 @@ html, body, #root {
 
 /* Keep a stable gutter for the vertical scrollbar on all pages */
 html {
-    scrollbar-gutter: stable both-edges;
+    scrollbar-gutter: stable;
 }
 
 /* Fallback for browsers without scrollbar-gutter (Safari/older) */
