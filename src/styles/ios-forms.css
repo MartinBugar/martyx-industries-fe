@@ -1,0 +1,28 @@
+/* Ensure iOS doesn't auto-zoom form controls */
+@supports (-webkit-touch-callout: none) {
+  input, select, textarea, button {
+    font-size: 16px !important;    /* key line: >=16px stops the zoom */
+    line-height: 1.25;
+    min-height: 44px;               /* Apple HIG tap target */
+  }
+
+  /* If designs used smaller input text originally, visually balance with padding */
+  .input,
+  .form-control {
+    padding: 10px 14px;             /* adjust to taste */
+    border-radius: 10px;
+  }
+}
+
+/* Prevent iOS text auto-resize surprises */
+html { -webkit-text-size-adjust: 100%; }
+
+/* Optional: smaller label while keeping input at 16px */
+.form-label { font-size: 12px; opacity: .8; }
+
+/* Ensure forms are responsive & usable */
+.form { display: grid; gap: 12px; }
+.form .form-control, .form button { width: 100%; }
+@media (min-width: 768px) {
+  .form.two-col { grid-template-columns: 1fr 1fr; }
+}

@@ -166,6 +166,8 @@ const Login: React.FC<LoginProps> = ({ confirmationStatus = null }) => {
               name="email"
               value={formData.email}
               onChange={handleInputChange}
+              inputMode="email"
+              autoComplete="email"
               required
             />
           </div>
@@ -178,6 +180,7 @@ const Login: React.FC<LoginProps> = ({ confirmationStatus = null }) => {
               name="password"
               value={formData.password}
               onChange={handleInputChange}
+              autoComplete="current-password"
               required
             />
           </div>

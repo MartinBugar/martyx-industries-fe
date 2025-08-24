@@ -39,6 +39,7 @@ import AdminUserDetail from './pages/admin/AdminUserDetail'
 import AdminProducts from './pages/admin/AdminProducts'
 import AdminProductDetail from './pages/admin/AdminProductDetail'
 import AdminOrders from './pages/admin/AdminOrders'
+import { useIOSNoZoomOnFocus } from './hooks/useIOSNoZoomOnFocus'
 
 // App wrapper to provide DevPasswordGate, AuthContext, and CartContext
 function AppWrapper() {
@@ -159,6 +160,7 @@ function MainContent() {
 
 // Main app content
 function AppContent() {
+  useIOSNoZoomOnFocus();
   useEffect(() => {
     try {
       if (typeof window !== 'undefined') {

@@ -129,6 +129,8 @@ const Registration: React.FC = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
+                inputMode="email"
+                autoComplete="email"
                 required
               />
             </div>
@@ -141,6 +143,7 @@ const Registration: React.FC = () => {
                 name="password"
                 value={formData.password}
                 onChange={handleInputChange}
+                autoComplete="new-password"
                 required
                 minLength={6}
               />
@@ -154,6 +157,7 @@ const Registration: React.FC = () => {
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
+                autoComplete="new-password"
                 required
               />
             </div>
