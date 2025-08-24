@@ -419,7 +419,7 @@
     left: 0;
     right: 0;
     height: 100%;
-    width: 100vw;
+    width: 100dvw;
     max-width: none;
     background: #ffffff;
     box-shadow: -2px 0 12px rgba(0, 0, 0, 0.1);
@@ -427,6 +427,7 @@
     transition: transform 0.25s ease;
     display: flex;
     flex-direction: column;
+    box-sizing: border-box;
 }
 
 .mobile-menu-overlay.open .mobile-menu-panel {
@@ -880,8 +881,8 @@
 .mi-drawer {
     position: fixed; /* critical */
     inset: 0;
-    width: 100vw;
-    height: 100vh;
+    width: 100dvw;
+    height: 100dvh;
     z-index: 999; /* above navbar */
     background: rgba(0, 0, 0, .45);
     opacity: 0;
@@ -903,6 +904,7 @@
     overflow: auto;
     border-left: 1px solid var(--border);
     padding: 14px;
+    box-sizing: border-box;
     transform: translateX(100%);
     transition: transform .22s ease;
 }
@@ -1214,7 +1216,7 @@ body.mi-lock-scroll {
 @media (max-width: 768px) {
     .mi-drawer__panel {
         /* cez celý display */
-        width: 100vw;
+        width: 100dvw;
         left: 0;
         right: 0;
         border-left: none; /* bez pravej/ľavej hrany */
@@ -1223,6 +1225,7 @@ body.mi-lock-scroll {
         padding-left: max(14px, env(safe-area-inset-left));
         padding-right: max(14px, env(safe-area-inset-right));
         padding-top: max(14px, env(safe-area-inset-top));
+        box-sizing: border-box;
     }
 
     /* nech header (search + X) ostáva hore pri scrollovaní */

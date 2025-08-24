@@ -194,8 +194,8 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
         position: 'fixed' as const,
         top: 0,
         left: 0,
-        width: '100vw',
-        height: '100vh',
+        width: '100dvw',
+        height: '100dvh',
         zIndex: 3000,
         backgroundColor: 'black',
     } : {
