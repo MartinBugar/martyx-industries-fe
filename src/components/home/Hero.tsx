@@ -1,14 +1,8 @@
-import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import './Hero.css';
+import tankImage from '../../assets/home/tank.png';
 
 export default function Hero() {
-  // Ensure the model-viewer web component is registered on the client
-  useEffect(() => {
-    import("@google/model-viewer").catch((err) => {
-      console.warn("Model Viewer failed to load", err);
-    });
-  }, []);
 
   return (
     <section className="section" aria-labelledby="hero-title">
@@ -27,18 +21,12 @@ export default function Hero() {
           </ul>
         </div>
         <div className="hero-visual">
-          <div className="hero-img-wrap viewer-wrap">
-            {React.createElement('model-viewer', {
-              src: '/assets/demo.glb',
-              poster: '/assets/demo-poster.jpg',
-              alt: 'MartyX RC tank 3D model',
-              'camera-controls': true,
-              'auto-rotate': true,
-              exposure: 1,
-              'shadow-intensity': 1,
-              'environment-image': 'neutral',
-              style: { width: '100%', height: '100%' }
-            })}
+          <div className="hero-img-wrap">
+            <img 
+              src={tankImage} 
+              alt="MartyX RC tank" 
+              className="hero-tank-image"
+            />
           </div>
         </div>
       </div>
