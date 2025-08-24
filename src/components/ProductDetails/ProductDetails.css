@@ -1,130 +1,140 @@
 /* ProductDetails Component Styles */
 
 .product-details {
-  padding: 1.5rem;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    padding: 1.5rem;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .product-details h2 {
-  font-size: 1.8rem;
-  margin-top: 0;
-  margin-bottom: 1rem;
-  color: #213547;
+    font-size: 1.8rem;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: #213547;
 }
 
 .product-type {
-  display: inline-block;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #213547;
-  background-color: #e9eef5;
-  padding: 0.25rem 1.5rem;
-  border-radius: 9999px;
-  margin-bottom: 0.75rem;
+    display: inline-block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #213547;
+    background-color: #e9eef5;
+    padding: 0.25rem 1.5rem;
+    border-radius: 9999px;
+    margin-bottom: 0.75rem;
 }
 
 .price {
-  font-size: 2rem;
-  font-weight: bold;
-  color: #213547;
-  margin-bottom: 1rem;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #213547;
+    margin-bottom: 1rem;
 }
 
 .description {
-  margin-bottom: 1.5rem;
-  line-height: 1.6;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+    color: #444;
 }
 
 .features-list {
-  padding-left: 1.5rem;
-  margin-top: 0.5rem;
-  margin-bottom: 1.5rem;
+    padding-left: 1.5rem;
+    margin-top: 0.5rem;
+    margin-bottom: 1.5rem;
+    color: #444;
 }
 
 .features-list li {
-  margin-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
 .interaction-info {
-  background-color: #f0f0f0;
-  padding: 1rem;
-  border-radius: 4px;
-  margin-bottom: 1.5rem;
+    background-color: #f0f0f0;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1.5rem;
 }
 
 .interaction-info h3 {
-  font-size: 1.2rem;
-  margin-top: 0;
-  margin-bottom: 0.5rem;
-  color: #213547;
+    font-size: 1.2rem;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    color: #213547;
 }
 
 .interaction-info ul {
-  padding-left: 1.5rem;
-  margin-top: 0.5rem;
+    padding-left: 1.5rem;
+    margin-top: 0.5rem;
 }
 
 .interaction-info li {
-  margin-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
 .add-to-cart-btn {
-  display: block;
-  width: 100%;
-  padding: 1rem;
-  background-color: #213547;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 1.1rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s;
+    display: block;
+    width: 100%;
+    padding: 1rem;
+    background-color: #213547;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
 }
 
 .add-to-cart-btn:hover {
-  background-color: #1a2a3a;
+    background-color: #1a2a3a;
 }
 
 /* Responsive styles */
 @media (max-width: 767px) {
-  .product-details {
-    padding: 1rem;
-  }
-  
-  .price {
-    font-size: 1.8rem;
-  }
+    .product-details {
+        padding: 1rem;
+    }
+
+    .price {
+        font-size: 1.8rem;
+    }
 }
 
 @media (min-width: 768px) {
-  .product-details {
-    flex: 1 1 0;
-    min-width: 0;
-  }
+    .product-details {
+        flex: 1 1 0;
+        min-width: 0;
+    }
 }
 
 /* Inline popup state for Add to Cart button */
 .add-to-cart-btn.is-popup {
-  display: block;
-  width: 100%;
-  padding: 1rem;
-  font-weight: bold;
-  border-radius: 4px;
-  cursor: default;
-  pointer-events: none;
-  transition: background-color 0.2s ease;
+    display: block;
+    width: 100%;
+    padding: 1rem;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: default;
+    pointer-events: none;
+    transition: background-color 0.2s ease;
 }
+
 .add-to-cart-btn.is-popup.success {
-  background-color: #2e7d32; /* green */
-  color: #fff;
+    background-color: #2e7d32; /* green */
+    color: #fff;
 }
+
 .add-to-cart-btn.is-popup.warning {
-  background-color: #b23c17; /* orange/red */
-  color: #fff;
+    background-color: #b23c17; /* orange/red */
+    color: #fff;
 }
+
 .add-to-cart-btn:disabled {
-  opacity: 1; /* keep full visibility when showing popup */
+    opacity: 1; /* keep full visibility when showing popup */
+}
+
+/* Anchor offset for this component section */
+#details {
+    scroll-margin-top: 80px;
 }

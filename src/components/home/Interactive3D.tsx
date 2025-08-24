@@ -25,7 +25,7 @@ const Interactive3D: React.FC<Interactive3DProps> = ({ modelUrl, onLoaded }) => 
     ref: (node: HTMLElement | null) => { ref.current = node; },
     src: modelUrl,
     alt: 'Interactive 3D model preview',
-    style: { width: '100%', height: '420px', borderRadius: 'var(--radius-lg)', background: 'var(--card)' },
+    style: { width: '100%', height: '420px', borderRadius: 'var(--radius-lg)', background: 'radial-gradient(ellipse at center, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.06) 32%, var(--background) 100%)' },
     'camera-controls': true,
     exposure: '0.4',
     'shadow-intensity': '1.2',

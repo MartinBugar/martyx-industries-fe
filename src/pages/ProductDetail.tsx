@@ -2,9 +2,75 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { product as defaultProduct, products, type Product, type ProductTab, type ProductTabId } from '../data/productData';
 import ProductView from '../components/ProductView/ProductView';
-import ProductDetails from '../components/ProductDetails/ProductDetails';
 import './Pages.css';
+import '../components/ProductDetails/ProductDetails.css';
 import { DetailsTab, DownloadTab, FeaturesTab, ReviewsTab} from '../components/ProductTabs';
+import { useCart } from '../context/useCart';
+
+// Local inlined ProductDetails component (previously in components/ProductDetails/ProductDetails.tsx)
+interface ProductDetailsProps {
+  product: Product;
+}
+
+const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
+  const { addToCart } = useCart();
+
+  const [popup, setPopup] = React.useState<{ visible: boolean; message: string; variant: 'success' | 'warning' }>({
+    visible: false,
+    message: '',
+    variant: 'success'
+  });
+  const timerRef = React.useRef<number | null>(null);
+
+  React.useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        window.clearTimeout(timerRef.current);
+      }
+    };
+  }, []);
+  
+  const handleAddToCart = () => {
+    const status = addToCart(product);
+    const isLimit = status === 'limit';
+    const message = isLimit ? 'Only 1 piece of this product is allowed in cart' : 'Product was added to cart';
+    const variant = isLimit ? 'warning' : 'success';
+
+    setPopup({ visible: true, message, variant });
+    if (timerRef.current) {
+      window.clearTimeout(timerRef.current);
+    }
+    timerRef.current = window.setTimeout(() => {
+      setPopup(p => ({ ...p, visible: false }));
+    }, 2000);
+  };
+  
+  return (
+    <div id="details" className="product-details">
+      <h2>{product.name}</h2>
+      <div className="product-type">{product.productType === 'DIGITAL' ? 'DIGITAL PRODUCT' : (product.productType === 'PHYSICAL' ? 'PHYSICAL PRODUCT' : product.productType)}</div>
+      <div className="price">${product.price.toFixed(2)}</div>
+      <p className="description">{product.description}</p>
+      
+      <h3 id="features">Features:</h3>
+      <ul className="features-list">
+        {product.features.map((feature, index) => (
+          <li key={index}>{feature}</li>
+        ))}
+      </ul>
+
+      
+      <button 
+        className={`add-to-cart-btn${popup.visible ? ` is-popup ${popup.variant}` : ''}`}
+        onClick={handleAddToCart}
+        disabled={popup.visible}
+        aria-live="polite"
+      >
+        {popup.visible ? popup.message : 'Add to Cart'}
+      </button>
+    </div>
+  );
+};
 
 const toYouTubeEmbedUrl = (url: string): string => {
   try {
@@ -58,7 +124,7 @@ const ProductDetail: React.FC = () => {
   const activeTab = tabs.find(t => t.id === active) ?? tabs[0];
 
   return (
-    <div className="page-container product-detail-page">
+    <div className="product-detail-page">
       <div className="product-container">
         <ProductView product={selected} />
         <ProductDetails product={selected} />
