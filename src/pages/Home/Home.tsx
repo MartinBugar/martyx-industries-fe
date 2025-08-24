@@ -87,7 +87,7 @@ const Home: React.FC = () => {
       </section>
 
       {/* 2) How it works */}
-      <section className="home-section how-section" aria-label="How it works">
+      <section className="how-section" aria-label="How it works">
         <div className="container">
           <div className="section-header"><h2>How it works</h2></div>
           <div className="how-grid">
