@@ -112,7 +112,16 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  text-align: left;
+  max-width: 100%;
   animation: slideInLeft 0.8s ease-out;
+}
+
+@media (max-width: 767px) {
+  .hero-copy {
+    text-align: center; /* Center on mobile */
+    align-items: center;
+  }
 }
 
 @keyframes slideInLeft {
@@ -127,32 +136,59 @@
 }
 
 .hero-title { 
-  font-size: clamp(32px, 6vw, 72px); 
+  font-size: clamp(28px, 5vw, 56px); 
   font-weight: 800;
-  line-height: 1.1; 
-  margin: 0 0 1.5rem 0; 
+  line-height: 1.15; 
+  margin: 0 0 1rem 0; 
   color: var(--text);
   background: linear-gradient(135deg, var(--text) 0%, var(--accent) 50%, var(--success) 100%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
+  max-width: 100%;
+}
+
+@media (max-width: 767px) {
+  .hero-title {
+    font-size: clamp(24px, 7vw, 36px);
+    margin-bottom: 1.5rem;
+  }
 }
 
 .hero-sub { 
   color: var(--text-secondary); 
-  font-size: clamp(18px, 2vw, 24px);
+  font-size: clamp(16px, 1.8vw, 20px);
   font-weight: 400;
   line-height: 1.6;
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
   opacity: 0.9;
+  max-width: 100%;
+}
+
+@media (max-width: 767px) {
+  .hero-sub {
+    font-size: clamp(14px, 4vw, 18px);
+    margin-bottom: 2.5rem;
+  }
 }
 
 .hero-cta, .hero-ctas { 
   display: flex; 
-  gap: 1.5rem; 
-  margin-bottom: 3rem; 
-  flex-wrap: wrap; 
+  gap: 1rem; 
+  margin-bottom: 2.5rem; 
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+@media (max-width: 767px) {
+  .hero-ctas {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    width: 100%;
+    max-width: 300px;
+  }
 }
 
 .hero-ctas .btn {
@@ -214,26 +250,48 @@
   padding: 0;
   list-style: none;
   display: grid; 
-  gap: 1rem; 
+  gap: 0.75rem; 
   color: var(--muted); 
+  max-width: 100%;
 }
 
 .hero-kpis li {
   position: relative;
-  padding-left: 2rem;
-  font-size: 15px;
+  padding-left: 1.75rem;
+  font-size: 14px;
   line-height: 1.5;
   opacity: 0.9;
+  display: flex;
+  align-items: flex-start;
 }
 
 .hero-kpis li::before {
   content: '✓';
   position: absolute;
   left: 0;
-  top: 0;
+  top: 0.1rem;
   color: var(--success);
   font-weight: bold;
-  font-size: 16px;
+  font-size: 14px;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(16, 185, 129, 0.1);
+  border-radius: 50%;
+}
+
+@media (max-width: 767px) {
+  .hero-kpis {
+    align-self: center;
+    max-width: 280px;
+  }
+  
+  .hero-kpis li {
+    font-size: 13px;
+    text-align: left;
+  }
 }
 
 .hero-visual { 
