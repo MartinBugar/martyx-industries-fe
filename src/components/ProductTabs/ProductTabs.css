@@ -65,8 +65,8 @@
 
 /* Minimal, modern card container for all tab panels */
 .product-tab-panel {
-  background: var(--tabs-surface);
-  color: var(--tabs-text-secondary);
+  background: #ffffff;
+  color: #000000;
   border: none;
   border-radius: 0;
   padding: 2rem;
@@ -86,16 +86,19 @@
 .product-tab-panel .tab-list > li {
   display: flex;
   align-items: flex-start;
-  gap: 0.75rem;
-  padding: 0.75rem;
-  background: var(--tabs-bg);
-  border: 1px solid var(--tabs-border);
-  border-radius: var(--tabs-radius);
-  transition: var(--tabs-transition);
+  gap: 1rem;
+  padding: 1.25rem;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  color: #000000;
+  margin-bottom: 0.5rem;
 }
 
 .product-tab-panel .tab-list > li:hover {
-  border-color: var(--tabs-accent);
+  border-color: #d1d5db;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .product-tab-panel .tab-list > li::before {
@@ -103,21 +106,41 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
-  background: rgba(5, 150, 105, 0.1);
-  color: #059669;
+  width: 1.5rem;
+  height: 1.5rem;
+  background: #10b981;
+  color: white;
   border-radius: 50%;
-  font-weight: 700;
-  font-size: 0.75rem;
+  font-weight: 600;
+  font-size: 0.875rem;
   flex-shrink: 0;
   margin-top: 0.125rem;
 }
 
+/* Features content styling */
+.product-tab-panel .tab-list > li h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.product-tab-panel .tab-list > li p {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #4b5563;
+}
+
+.product-tab-panel .tab-list > li strong {
+  color: #111827;
+  font-weight: 600;
+}
+
 /* Image and gallery polish inside panels */
 .product-tab-panel .tab-image img {
-  border-radius: var(--tabs-radius);
-  border: 1px solid var(--tabs-border);
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
 }
 
 .product-tab-panel .tab-gallery {
@@ -127,8 +150,8 @@
 }
 
 .product-tab-panel .tab-gallery-item img {
-  border-radius: var(--tabs-radius);
-  border: 1px solid var(--tabs-border);
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
 }
 
 /* Avoid double containers for nested sections */
@@ -165,9 +188,9 @@
 
 /* Reviews Component Styles */
 .reviews-section {
-  margin-top: 1rem;
+  margin-top: 0.5rem;
   background: transparent;
-  color: var(--tabs-text-secondary);
+  color: #000000;
   border-radius: 0;
   padding: 0;
 }
@@ -183,6 +206,8 @@
     margin: 0;
     font-size: 1.25rem;
     letter-spacing: 0.2px;
+    color: #000000;
+    font-weight: 600;
 }
 
 .review-form {
@@ -196,6 +221,7 @@
     display: block;
     font-weight: 600;
     margin-bottom: 6px;
+    color: #000000;
 }
 
 .review-form textarea {
@@ -235,14 +261,14 @@
     border: none;
     font-size: 1.6rem;
     line-height: 1;
-    color: #cbd5e1;
+    color: #e5e7eb;
     padding: 2px;
     cursor: pointer;
     transition: transform .05s ease;
 }
 
 .star-rating .star.filled {
-    color: #f59e0b;
+    color: #fbbf24;
 }
 
 .star-rating .star:focus-visible {
@@ -272,9 +298,10 @@
 
 .review-card {
     background: #ffffff;
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 1rem;
+    color: #000000;
 }
 
 .review-card-header {
@@ -285,11 +312,23 @@
 
 .review-card-stars {
     margin: 4px 0;
+    color: #fbbf24;
+}
+
+.review-card-stars .star {
+    color: #e5e7eb;
+    font-size: 1.2rem;
+}
+
+.review-card-stars .star.filled {
+    color: #fbbf24;
 }
 
 .review-card-text {
     margin: 0;
     white-space: pre-wrap;
+    color: #000000;
+    line-height: 1.5;
 }
 
 /* Compact chip-style button utility (used in Reviews header) */

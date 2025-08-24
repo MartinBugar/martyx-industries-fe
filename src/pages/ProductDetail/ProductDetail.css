@@ -273,8 +273,8 @@
 .product-tab-panel {
   flex-basis: 100%;
   width: 100%;
-  background: var(--product-detail-surface);
-  color: var(--product-detail-text-secondary);
+  background: #ffffff;
+  color: #000000;
   border: none;
   border-radius: 0;
   padding: 2rem 1.5rem;
