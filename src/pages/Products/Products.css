@@ -1,0 +1,183 @@
+/* Products Page Styles */
+
+/* Products page styles */
+.products-intro {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.products-intro p {
+    font-size: 1.1rem;
+    color: #555;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.more-products {
+    text-align: center;
+    padding: 2rem;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+.more-products h2 {
+    margin-bottom: 1rem;
+}
+
+.more-products p {
+    color: #666;
+}
+
+/* Product cards grid - minimalistic and consistent with global styles */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+    align-items: stretch;
+}
+
+.product-card {
+    background: var(--background-color);
+    border: 1px solid #eeeeee;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: box-shadow 0.2s ease, transform 0.1s ease, border-color 0.2s ease;
+}
+
+.product-card:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+    border-color: #e6e6e6;
+}
+
+.card-media {
+    background: var(--light-gray);
+    aspect-ratio: 4 / 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.poster-placeholder {
+    width: 64px;
+    height: 64px;
+    border-radius: 8px;
+    border: 2px dashed #d8d8d8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+    font-weight: 600;
+}
+
+.card-body {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.card-title {
+    font-size: 1rem;
+    margin: 0;
+    line-height: 1.3;
+    min-height: calc(1.3em * 2);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.card-price {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.card-desc {
+    font-size: 0.9rem;
+    color: #555;
+    line-height: 1.4;
+    min-height: calc(1.4em * 3);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.card-actions {
+    margin-top: auto;
+}
+
+/* Reuse global button style but adapt spacing for cards */
+.product-card .add-to-cart-btn {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 6px;
+}
+
+.product-card .add-to-cart-btn:focus {
+    outline: 3px solid rgba(33, 53, 71, 0.25);
+    outline-offset: 2px;
+}
+
+/* Inline popup state for Add to Cart button in product cards */
+.product-card .add-to-cart-btn.is-popup {
+    width: 100%;
+    padding: 0.75rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: default;
+    pointer-events: none;
+    transition: background-color 0.2s ease;
+}
+
+.product-card .add-to-cart-btn.is-popup.success {
+    background-color: #2e7d32; /* green */
+    color: #fff;
+}
+
+.product-card .add-to-cart-btn.is-popup.warning {
+    background-color: #b23c17; /* orange/red */
+    color: #fff;
+}
+
+.product-card .add-to-cart-btn:disabled {
+    opacity: 1; /* keep full visibility when showing popup */
+}
+
+/* Products toolbar base layout */
+.products-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+    .products-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .products-toolbar {
+        justify-content: stretch;
+    }
+
+    .products-toolbar > * {
+        flex: 1 1 auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .products-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -3,6 +3,7 @@ import { type TabContent } from '../../data/productData';
 import { reviewsService, type Review as ReviewModel } from '../../services/reviewsService';
 import { useAuth } from '../../context/useAuth';
 import { adminService } from '../../services/adminService';
+import './ProductTabs.css';
 
 interface ReviewsTabProps {
   content: TabContent;

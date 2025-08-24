@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState, Suspense, lazy } from 'react';
 import { products } from '../data/productData';
-import './Pages.css';
+import './Home/Home.css';
+import '../components/home/Hero.css';
+import '../components/home/FeaturedProducts.css';
 
 // Lazy chunks (loaded on intersection)
 const Interactive3D = lazy(() => import('../components/home/Interactive3D'));

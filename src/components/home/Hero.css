@@ -1,0 +1,104 @@
+/* Hero Component Styles */
+
+.hero {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    align-items: center;
+}
+
+@media (min-width: 960px) {
+    .hero {
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 2rem;
+    }
+}
+
+.hero-title {
+    font-size: clamp(2rem, 1.2rem + 2vw, 3rem);
+    margin: 0 0 0.5rem 0;
+}
+
+.hero-sub {
+    color: var(--text-muted);
+    margin: 0 0 1rem 0;
+}
+
+.hero-cta {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+.hero-kpis {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0.4rem;
+    color: var(--text-muted);
+}
+
+.hero-visual {
+    width: 100%;
+}
+
+.hero-img-wrap {
+    width: 100%;
+    aspect-ratio: 9 / 5;
+    background-color: var(--card);
+    background-image: url("../../assets/home/tank.png");
+    background-size: cover;
+    background-position: center;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 0 0 1px var(--accent-soft) inset;
+}
+
+.viewer-wrap {
+    background-image: none;
+    background-color: transparent;
+}
+
+/* Hero section container */
+.hero-section {
+    text-align: center;
+    margin-top: 5rem;
+    margin-bottom: 3rem;
+}
+
+.hero-section h1 {
+    font-size: 2.5rem;
+    color: #213547;
+    margin-bottom: 1rem;
+}
+
+.hero-section p {
+    font-size: 1.2rem;
+    color: #666;
+}
+
+/* Hero video wrapper for responsive 16:9 YouTube embed */
+.hero-video {
+    margin: 1.5rem auto 0;
+    max-width: 1000px;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.hero-video iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .hero-section h1 {
+        font-size: 2rem;
+    }
+}

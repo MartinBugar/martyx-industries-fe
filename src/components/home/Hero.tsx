@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
+import './Hero.css';
 
 export default function Hero() {
   // Ensure the model-viewer web component is registered on the client

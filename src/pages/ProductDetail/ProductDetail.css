@@ -1,0 +1,43 @@
+/* ProductDetail Page Styles */
+
+.product-detail-page {
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.product-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Offset scroll for anchored sections to account for sticky bar height */
+#gallery,
+#features,
+#interaction,
+#why-us,
+#process {
+    scroll-margin-top: 80px;
+}
+
+/* Constrain Product Detail page content width on large screens */
+@media (min-width: 1400px) {
+    .product-detail-page .product-container {
+        /* Keep full width on smaller screens; cap width to 75% of viewport on big monitors */
+        max-width: 75vw;
+    }
+}
+
+/* Smooth scrolling for anchored sections */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .product-detail-page {
+        padding: 1.5rem;
+    }
+}

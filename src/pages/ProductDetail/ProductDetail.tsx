@@ -2,8 +2,9 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { product as defaultProduct, products, type Product, type ProductTab, type ProductTabId } from '../data/productData';
 import ProductView from '../components/ProductView/ProductView';
-import './Pages.css';
+import './ProductDetail/ProductDetail.css';
 import '../components/ProductDetails/ProductDetails.css';
+import '../components/ProductTabs/ProductTabs.css';
 import { DetailsTab, DownloadTab, FeaturesTab, ReviewsTab} from '../components/ProductTabs';
 import { useCart } from '../context/useCart';
 

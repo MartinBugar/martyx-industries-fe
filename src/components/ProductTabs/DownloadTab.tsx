@@ -1,5 +1,6 @@
 import React from 'react';
 import { type TabContent } from '../../data/productData';
+import './ProductTabs.css';
 
 interface DownloadTabProps {
   content: TabContent;

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { product, type Product } from '../data/productData';
 import { useCart } from '../context/useCart';
-import './Pages.css';
+import './Products/Products.css';
 
 const Products: React.FC = () => {
   const { addToCart } = useCart();

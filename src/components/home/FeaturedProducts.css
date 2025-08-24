@@ -1,0 +1,59 @@
+/* FeaturedProducts Component Styles */
+
+.cards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+@media (min-width: 640px) {
+    .cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .cards {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.card {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.card .img {
+    width: 100%;
+    background: var(--card);
+    border-bottom: 1px solid var(--accent-soft);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+}
+
+.card .muted {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+/* Featured products section styles */
+.featured-product {
+    margin-bottom: 3rem;
+}
+
+.featured-product h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
