@@ -1,133 +1,282 @@
+/* Modern Token Expiration Timer Styles */
+
 .token-timer {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 16px;
-  margin: 16px 0;
-  border-radius: 8px;
-  border: 1px solid #e0e0e0;
-  background-color: #f8f9fa;
-  transition: all 0.3s ease;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.token-timer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.02) 100%);
+  pointer-events: none;
 }
 
 .token-timer__icon {
-  font-size: 20px;
+  font-size: 1.125rem;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 32px;
   height: 32px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
 }
 
 .token-timer__content {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 0.25rem;
+  min-width: 0;
+  position: relative;
+  z-index: 1;
 }
 
 .token-timer__label {
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: #666;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin: 0;
 }
 
 .token-timer__time {
-  font-size: 16px;
+  font-size: 0.875rem;
   font-weight: 700;
-  font-family: 'Courier New', monospace;
-  color: #333;
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1;
 }
 
 /* Active state - token is valid and not expired */
 .token-timer--active {
-  background-color: #e8f5e8;
-  border-color: #4caf50;
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.08) 0%, rgba(16, 185, 129, 0.05) 100%);
+  border-color: rgba(34, 197, 94, 0.2);
+  box-shadow: 0 4px 20px rgba(34, 197, 94, 0.05);
+}
+
+.token-timer--active .token-timer__icon {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(16, 185, 129, 0.1) 100%);
+  color: #22c55e;
 }
 
 .token-timer--active .token-timer__label {
-  color: #2e7d32;
+  color: #16a34a;
 }
 
 .token-timer--active .token-timer__time {
-  color: #1b5e20;
-}
-
-/* Expired state - token has expired */
-.token-timer--expired {
-  background-color: #ffebee;
-  border-color: #f44336;
-}
-
-.token-timer--expired .token-timer__label {
-  color: #c62828;
-}
-
-.token-timer--expired .token-timer__time {
-  color: #b71c1c;
-}
-
-/* Invalid state - token is invalid or missing */
-.token-timer--invalid {
-  background-color: #fff3e0;
-  border-color: #ff9800;
-}
-
-.token-timer--invalid .token-timer__label {
-  color: #ef6c00;
-}
-
-.token-timer--invalid .token-timer__time {
-  color: #e65100;
+  color: #22c55e;
 }
 
 /* Warning state when time is running low (less than 5 minutes) */
 .token-timer--warning {
-  background-color: #fff8e1;
-  border-color: #ffc107;
-  animation: pulse-warning 2s infinite;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(251, 146, 60, 0.05) 100%);
+  border-color: rgba(245, 158, 11, 0.3);
+  box-shadow: 0 4px 20px rgba(245, 158, 11, 0.1);
+  animation: warning-pulse 2s ease-in-out infinite;
+}
+
+.token-timer--warning .token-timer__icon {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(251, 146, 60, 0.1) 100%);
+  color: #f59e0b;
+  animation: warning-glow 2s ease-in-out infinite;
 }
 
 .token-timer--warning .token-timer__label {
-  color: #f57c00;
+  color: #d97706;
 }
 
 .token-timer--warning .token-timer__time {
-  color: #ef6c00;
+  color: #f59e0b;
+  animation: time-blink 1s ease-in-out infinite;
 }
 
-@keyframes pulse-warning {
-  0% {
-    box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.4);
+/* Expired state - token has expired */
+.token-timer--expired {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(220, 38, 38, 0.05) 100%);
+  border-color: rgba(239, 68, 68, 0.3);
+  box-shadow: 0 4px 20px rgba(239, 68, 68, 0.1);
+}
+
+.token-timer--expired .token-timer__icon {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(220, 38, 38, 0.1) 100%);
+  color: #ef4444;
+  animation: error-pulse 1s ease-in-out infinite;
+}
+
+.token-timer--expired .token-timer__label {
+  color: #dc2626;
+}
+
+.token-timer--expired .token-timer__time {
+  color: #ef4444;
+}
+
+/* Invalid state - token is invalid or missing */
+.token-timer--invalid {
+  background: linear-gradient(135deg, rgba(156, 163, 175, 0.08) 0%, rgba(107, 114, 128, 0.05) 100%);
+  border-color: rgba(156, 163, 175, 0.2);
+}
+
+.token-timer--invalid .token-timer__icon {
+  background: linear-gradient(135deg, rgba(156, 163, 175, 0.15) 0%, rgba(107, 114, 128, 0.1) 100%);
+  color: #9ca3af;
+}
+
+.token-timer--invalid .token-timer__label {
+  color: #6b7280;
+}
+
+.token-timer--invalid .token-timer__time {
+  color: #9ca3af;
+}
+
+/* Animations */
+@keyframes warning-pulse {
+  0%, 100% {
+    box-shadow: 0 4px 20px rgba(245, 158, 11, 0.1);
+    border-color: rgba(245, 158, 11, 0.3);
   }
-  70% {
-    box-shadow: 0 0 0 10px rgba(255, 193, 7, 0);
+  50% {
+    box-shadow: 0 8px 30px rgba(245, 158, 11, 0.2);
+    border-color: rgba(245, 158, 11, 0.5);
   }
-  100% {
-    box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);
+}
+
+@keyframes warning-glow {
+  0%, 100% {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(251, 146, 60, 0.1) 100%);
   }
+  50% {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.25) 0%, rgba(251, 146, 60, 0.2) 100%);
+  }
+}
+
+@keyframes time-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes error-pulse {
+  0%, 100% {
+    transform: scale(1);
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(220, 38, 38, 0.1) 100%);
+  }
+  50% {
+    transform: scale(1.05);
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.25) 0%, rgba(220, 38, 38, 0.2) 100%);
+  }
+}
+
+/* Hover effects */
+.token-timer:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.token-timer--active:hover {
+  box-shadow: 0 8px 30px rgba(34, 197, 94, 0.1);
+}
+
+.token-timer--warning:hover {
+  box-shadow: 0 8px 30px rgba(245, 158, 11, 0.15);
+}
+
+.token-timer--expired:hover {
+  box-shadow: 0 8px 30px rgba(239, 68, 68, 0.15);
 }
 
 /* Responsive design */
 @media (max-width: 768px) {
   .token-timer {
-    padding: 12px;
-    margin: 12px 0;
+    padding: 0.75rem;
+    gap: 0.5rem;
   }
   
   .token-timer__icon {
-    font-size: 18px;
     width: 28px;
     height: 28px;
+    font-size: 1rem;
   }
   
   .token-timer__label {
-    font-size: 11px;
+    font-size: 0.7rem;
   }
   
   .token-timer__time {
-    font-size: 14px;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .token-timer {
+    padding: 0.5rem;
+  }
+  
+  .token-timer__icon {
+    width: 24px;
+    height: 24px;
+    font-size: 0.875rem;
+  }
+  
+  .token-timer__label {
+    font-size: 0.65rem;
+  }
+  
+  .token-timer__time {
+    font-size: 0.75rem;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .token-timer {
+    border-width: 2px;
+  }
+  
+  .token-timer--active {
+    border-color: #22c55e;
+  }
+  
+  .token-timer--warning {
+    border-color: #f59e0b;
+  }
+  
+  .token-timer--expired {
+    border-color: #ef4444;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .token-timer,
+  .token-timer__icon,
+  .token-timer__time {
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  .token-timer:hover {
+    transform: none;
   }
 }

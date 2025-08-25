@@ -88,7 +88,11 @@ const TokenExpirationTimer: React.FC<TokenExpirationTimerProps> = ({ className }
   if (!isValid) {
     return (
       <div className={`token-timer ${className || ''} token-timer--invalid`}>
-        <div className="token-timer__icon">⚠️</div>
+        <div className="token-timer__icon">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
         <div className="token-timer__content">
           <div className="token-timer__label">Session Status</div>
           <div className="token-timer__time">{timeRemaining}</div>
@@ -97,6 +101,32 @@ const TokenExpirationTimer: React.FC<TokenExpirationTimerProps> = ({ className }
     );
   }
 
+  const renderIcon = () => {
+    if (isExpired) {
+      return (
+        <svg viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
+          <path d="m15 9-6 6m0-6 6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      );
+    }
+    
+    if (isWarning) {
+      return (
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      );
+    }
+    
+    return (
+      <svg viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
+        <polyline points="12,6 12,12 16,14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    );
+  };
+
   return (
     <div className={`token-timer ${className || ''} ${
       isExpired ? 'token-timer--expired' : 
@@ -104,7 +134,7 @@ const TokenExpirationTimer: React.FC<TokenExpirationTimerProps> = ({ className }
       'token-timer--active'
     }`}>
       <div className="token-timer__icon">
-        {isExpired ? '🔴' : isWarning ? '⚠️' : '🕐'}
+        {renderIcon()}
       </div>
       <div className="token-timer__content">
         <div className="token-timer__label">

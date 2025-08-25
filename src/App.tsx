@@ -44,6 +44,7 @@ import AdminProducts from './pages/admin/AdminProducts'
 import AdminProductDetail from './pages/admin/AdminProductDetail'
 import AdminOrders from './pages/admin/AdminOrders'
 import { useIOSNoZoomOnFocus } from './hooks/useIOSNoZoomOnFocus'
+import ScrollToTop from './components/ScrollToTop/ScrollToTop'
 
 // App wrapper to provide DevPasswordGate, AuthContext, and CartContext
 function AppWrapper() {
@@ -200,6 +201,7 @@ function AppContent() {
 
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <MainContent />
     </BrowserRouter>
   );
