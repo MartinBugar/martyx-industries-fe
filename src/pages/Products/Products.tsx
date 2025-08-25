@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { product, type Product } from '../../data/productData';
 import { useCart } from '../../context/useCart';
 import './Products.css';
@@ -7,12 +7,19 @@ import './Products.css';
 const Products: React.FC = () => {
   const { addToCart } = useCart();
   const productsList: Product[] = [product];
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
   const [sortBy, setSortBy] = useState<'name' | 'price' | 'newest'>('newest');
 
   type Popup = { visible: boolean; message: string; variant: 'success' | 'warning' };
   const [popups, setPopups] = useState<Record<string, Popup>>({});
   const timersRef = useRef<Record<string, number>>({});
+
+  // Update search term when URL search param changes
+  useEffect(() => {
+    const urlSearchTerm = searchParams.get('search') || '';
+    setSearchTerm(urlSearchTerm);
+  }, [searchParams]);
 
   useEffect(() => {
     return () => {
@@ -67,7 +74,16 @@ const Products: React.FC = () => {
               type="text"
               placeholder="Search products..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                const newSearchTerm = e.target.value;
+                setSearchTerm(newSearchTerm);
+                // Update URL parameter
+                if (newSearchTerm.trim()) {
+                  setSearchParams({ search: newSearchTerm });
+                } else {
+                  setSearchParams({});
+                }
+              }}
               className="search-input"
             />
           </div>

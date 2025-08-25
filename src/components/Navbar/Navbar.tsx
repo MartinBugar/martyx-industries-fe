@@ -117,7 +117,7 @@ export default function Navbar({cartCount = 0, onSearchSubmit, user, onLogout}: 
         const query = q.trim();
         if (!query) return;
         (onSearchSubmit ?? ((qq: string) =>
-                navigate(`/search?q=${encodeURIComponent(qq)}`)
+                navigate(`/products?search=${encodeURIComponent(qq)}`)
         ))(query);
         setDrawerOpen(false);
     }, [q, onSearchSubmit, navigate]);
