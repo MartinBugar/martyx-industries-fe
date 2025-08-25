@@ -25,40 +25,79 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Check if user and token are stored in localStorage on initial load
   useEffect(() => {
     const init = async () => {
-      const storedUser = secureLocalStorage.get('user', null);
-      const token = secureLocalStorage.get('token', null);
+      console.log('🔄 AuthProvider init started');
+      
+      // Try both secureLocalStorage and regular localStorage for compatibility
+      let storedUser = secureLocalStorage.get('user', null);
+      let token = secureLocalStorage.get('token', null);
+      
+      // Fallback to regular localStorage if secureLocalStorage is empty
+      if (!token) {
+        const tokenRaw = localStorage.getItem('token');
+        if (tokenRaw) {
+          try {
+            token = JSON.parse(tokenRaw);
+          } catch {
+            token = tokenRaw;
+          }
+        }
+      }
+      
+      if (!storedUser) {
+        const userRaw = localStorage.getItem('user');
+        if (userRaw) {
+          try {
+            storedUser = JSON.parse(userRaw);
+          } catch {
+            storedUser = null;
+          }
+        }
+      }
+      
+      console.log('📦 Stored data:', { hasUser: !!storedUser, hasToken: !!token, tokenType: typeof token });
       
       // Check if token exists and is valid
       if (token && typeof token === 'string') {
         // Check if token is expired
         if (isTokenExpired(token)) {
-          console.log('Token has expired, logging out user');
+          console.log('❌ Token has expired, logging out user');
           // Clear expired token and user data
           secureLocalStorage.remove('user');
           secureLocalStorage.remove('token');
+          localStorage.removeItem('user');
+          localStorage.removeItem('token');
           removeAuthToken();
           setUser(null);
         } else {
+          console.log('✅ Token is valid, setting auth');
           // Token is valid, set it for API requests
           setAuthToken(token);
           
           // If user exists, set it in state
           if (storedUser && typeof storedUser === 'object') {
             try {
+              console.log('👤 Setting user from stored data');
               setUser(storedUser as User);
             } catch (error) {
-              console.error('Failed to parse stored user:', error);
+              console.error('❌ Failed to parse stored user:', error);
               secureLocalStorage.remove('user');
               secureLocalStorage.remove('token');
+              localStorage.removeItem('user');
+              localStorage.removeItem('token');
               removeAuthToken();
             }
+          } else {
+            console.log('⚠️ No stored user found');
           }
           
           // Defer fetching orders until the user opens the Order History tab
         }
+      } else {
+        console.log('🚫 No valid token found');
       }
       
       // Set loading to false after attempting to restore authentication state
+      console.log('🏁 AuthProvider init completed, isLoading: false');
       setIsLoading(false);
     };
     void init();
@@ -117,10 +156,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       // Store user data in state and localStorage
       setUser(newUser);
+      console.log('💾 Storing user:', newUser);
       secureLocalStorage.set('user', newUser);
+      localStorage.setItem('user', JSON.stringify(newUser)); // Also store in regular localStorage
       
       // Store token in localStorage
+      console.log('🔑 Storing token:', token);
       secureLocalStorage.set('token', token);
+      localStorage.setItem('token', JSON.stringify(token)); // Also store in regular localStorage
       
       // Reset rate limiter on successful login
       loginRateLimiter.reset(identifier);
@@ -153,8 +196,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Logout function - makes an API call to the backend if a token exists
   const logout = async () => {
     try {
-      // Get token from localStorage
-      const token = localStorage.getItem('token');
+      // Get token from secureLocalStorage
+      const token = secureLocalStorage.get('token', null);
       
       // If token exists, call the logout API endpoint
       if (token) {
@@ -167,6 +210,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(null);
       secureLocalStorage.remove('user');
       secureLocalStorage.remove('token');
+      localStorage.removeItem('user'); // Also clear regular localStorage
+      localStorage.removeItem('token'); // Also clear regular localStorage
       
       // Reset orders loading flags
       setOrdersLoading(false);
@@ -196,9 +241,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         orders: profileData.orders || user.orders
       };
 
-      // Update state and localStorage
+      // Update state and secureLocalStorage
       setUser(updatedUser);
-      localStorage.setItem('user', JSON.stringify(updatedUser));
+      secureLocalStorage.set('user', updatedUser);
       
       return true;
     } catch (error) {
@@ -230,9 +275,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         orders: updatedProfileData.orders || user.orders
       };
 
-      // Update state and localStorage
+      // Update state and secureLocalStorage
       setUser(updatedUser);
-      localStorage.setItem('user', JSON.stringify(updatedUser));
+      secureLocalStorage.set('user', updatedUser);
       
       return true;
     } catch (error) {
@@ -246,12 +291,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setOrdersLoading(true);
     try {
       const fetchedOrders = await ordersService.fetchMyOrders();
-      // Determine the base user: prefer current state, else from localStorage
+      // Determine the base user: prefer current state, else from secureLocalStorage
       let baseUser = user as User | null;
       if (!baseUser) {
         try {
-          const stored = localStorage.getItem('user');
-          baseUser = stored ? (JSON.parse(stored) as User) : null;
+          baseUser = secureLocalStorage.get('user', null);
         } catch {
           baseUser = null;
         }
@@ -264,7 +308,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         orders: fetchedOrders,
       };
       setUser(updatedUser);
-      localStorage.setItem('user', JSON.stringify(updatedUser));
+      secureLocalStorage.set('user', updatedUser);
       return true;
     } catch (e) {
       console.error('Failed to fetch user orders:', e);
@@ -292,9 +336,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       orders: [...user.orders, newOrder]
     };
 
-    // Update state and localStorage
+    // Update state and secureLocalStorage
     setUser(updatedUser);
-    localStorage.setItem('user', JSON.stringify(updatedUser));
+    secureLocalStorage.set('user', updatedUser);
   };
 
   // Get user's order history
