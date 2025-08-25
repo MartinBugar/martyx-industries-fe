@@ -76,7 +76,16 @@ const Home: React.FC = () => {
                   height={1000}
                   loading="eager"
                   decoding="sync"
-                  style={{ width: '100%', height: 'auto', display: 'block', borderRadius: 'var(--radius-lg)' }}
+                  style={{ 
+                    width: '100%', 
+                    height: 'auto', 
+                    display: 'block', 
+                    borderRadius: 'var(--radius-lg)',
+                    userSelect: 'none',
+                    WebkitUserSelect: 'none',
+                    MozUserSelect: 'none',
+                    msUserSelect: 'none'
+                  }}
                 />
               ) : (
                 <div className="hero-image" role="img" aria-label={heroAlt} />
