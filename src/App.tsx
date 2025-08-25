@@ -8,6 +8,8 @@ import { AuthProvider } from './context/AuthProvider'
 import { useCart } from './context/useCart'
 import { DevPasswordGateProvider } from './context/DevPasswordGateProvider'
 import { DevPasswordGate } from './components/DevPasswordGate/DevPasswordGate'
+// import { ParticleEffects, particleConfigs } from './components/effects'
+import ConstellationParticles from './components/effects/ConstellationParticles'
 import Navbar from './components/Navbar/Navbar'
 import { useAuth } from './context/useAuth'
 import Cart from './components/Cart/Cart'
@@ -87,6 +89,15 @@ function MainContent() {
 
   return (
     <div className="app-container">
+      {/* Constellation Particle Network */}
+      <ConstellationParticles />
+      
+      {/* Advanced Particle Effects (disabled for testing) */}
+      {/* <ParticleEffects
+        enabled={true}
+        {...particleConfigs.sparkle}
+      /> */}
+      
       {!isAdminRoute && (
         <Navbar cartCount={getTotalItems()} user={user} onLogout={logout} />
       )}

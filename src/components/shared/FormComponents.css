@@ -47,84 +47,8 @@
   box-sizing: border-box;
 }
 
-/* ===== ANIMOVANÉ POZADIE ===== */
-.animated-background {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: var(--z-background);
-}
-
-.glow {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.15;
-  animation: subtleFloat var(--glow-animation-duration) ease-in-out infinite;
-}
-
-.animated-background--login .glow-1 {
-  width: 300px;
-  height: 300px;
-  background: radial-gradient(circle, rgba(40, 193, 255, 0.08) 0%, transparent 60%);
-  top: -150px;
-  left: -150px;
-  animation-delay: 0s;
-}
-
-.animated-background--login .glow-2 {
-  width: 250px;
-  height: 250px;
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.05) 0%, transparent 60%);
-  bottom: -125px;
-  right: -125px;
-  animation-delay: 3s;
-}
-
-.animated-background--registration .glow-1 {
-  width: 300px;
-  height: 300px;
-  background: radial-gradient(circle, rgba(40, 193, 255, 0.08) 0%, transparent 60%);
-  top: -150px;
-  right: -150px;
-  animation-delay: 1s;
-}
-
-.animated-background--registration .glow-2 {
-  width: 250px;
-  height: 250px;
-  background: radial-gradient(circle, rgba(16, 185, 129, 0.05) 0%, transparent 60%);
-  bottom: -125px;
-  left: -125px;
-  animation-delay: 4s;
-}
-
-.animated-background--forgot .glow-1 {
-  width: 300px;
-  height: 300px;
-  background: radial-gradient(circle, rgba(40, 193, 255, 0.08) 0%, transparent 60%);
-  top: -150px;
-  left: -150px;
-  animation-delay: 0s;
-}
-
-.animated-background--forgot .glow-2 {
-  width: 250px;
-  height: 250px;
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.05) 0%, transparent 60%);
-  bottom: -125px;
-  right: -125px;
-  animation-delay: 3s;
-}
-
-@keyframes subtleFloat {
-  0%, 100% { 
-    transform: translate(0, 0) scale(1); 
-  }
-  50% { 
-    transform: translate(10px, -10px) scale(1.05); 
-  }
-}
+/* ===== ANIMOVANÉ POZADIE ODSTRÁNENÉ ===== */
+/* Všetky rušivé animované efekty boli odstránené pre lepší UX */
 
 /* ===== AUTH KONTAJNER ===== */
 .auth-container {

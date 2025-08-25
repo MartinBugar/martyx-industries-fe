@@ -252,26 +252,14 @@ export const SubmitButton: React.FC<SubmitButtonProps> = ({
 );
 
 /**
- * Animované pozadie s glow efektmi
- */
-export const AnimatedBackground: React.FC<{ variant?: 'login' | 'registration' | 'forgot' }> = ({ 
-  variant = 'login' 
-}) => (
-  <div className={`animated-background animated-background--${variant}`}>
-    <div className="glow glow-1"></div>
-    <div className="glow glow-2"></div>
-  </div>
-);
-
-/**
  * Kontajner pre Auth stránky (login, registrácia, forgot password)
+ * Teraz bez rušivých animovaných efektov
  */
 export const AuthContainer: React.FC<{ 
   children: React.ReactNode;
   variant?: 'login' | 'registration' | 'forgot';
 }> = ({ children, variant = 'login' }) => (
   <div className={`auth-container auth-container--${variant}`}>
-    <AnimatedBackground variant={variant} />
     <div className="auth-card">
       {children}
     </div>

@@ -1,0 +1,144 @@
+/**
+ * Click Particles Effect Styles
+ * Optimalizované CSS pre particles animácie
+ */
+
+.click-particle {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  user-select: none;
+  will-change: transform, opacity;
+  transition: none;
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Optimalizácia pre lepší výkon */
+.click-particle {
+  contain: layout style paint;
+  transform: translateZ(0);
+}
+
+/* Alternate particle styles pre rôzne efekty */
+.click-particle--sparkle {
+  background: radial-gradient(circle, currentColor 0%, transparent 70%);
+  animation: sparkle 0.8s ease-out forwards;
+}
+
+.click-particle--star {
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  background: currentColor;
+}
+
+.click-particle--heart {
+  background: currentColor;
+  position: relative;
+  transform: rotate(-45deg);
+}
+
+.click-particle--heart::before,
+.click-particle--heart::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  background: inherit;
+  border-radius: 50%;
+  transform: translateX(-50%);
+}
+
+.click-particle--heart::before {
+  width: 100%;
+  height: 100%;
+}
+
+.click-particle--heart::after {
+  width: 100%;
+  height: 100%;
+  left: 0;
+  transform: rotate(90deg);
+  transform-origin: center center;
+}
+
+/* Keyframe animácie */
+@keyframes sparkle {
+  0% {
+    transform: scale(0) rotate(0deg);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1) rotate(180deg);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(0.2) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+}
+
+/* Media queries pre performance */
+@media (prefers-reduced-motion: reduce) {
+  .click-particle {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High performance mode pre slabšie zariadenia */
+@media (max-width: 768px) {
+  .click-particle {
+    will-change: auto;
+  }
+}
+
+/* Dark mode variations */
+@media (prefers-color-scheme: dark) {
+  .click-particle {
+    box-shadow: 0 0 8px currentColor;
+  }
+}
+
+/* Cursor interaction enhancement */
+body {
+  cursor: default;
+}
+
+body:active {
+  cursor: default;
+}
+
+/* Zabránenie text selection počas particles */
+.particles-active {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
