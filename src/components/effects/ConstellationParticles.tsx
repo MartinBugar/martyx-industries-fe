@@ -38,22 +38,22 @@ const ConstellationParticles: React.FC = () => {
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
-    // Jedna modrá farba pre všetky particles
-    const particleColor = '#3b82f6'; // Modrá
+    // Neonová modrá farba pre všetky particles
+    const particleColor = '#00bfff'; // Neonová modrá
 
     // Vytvorenie particle
     const createParticle = (x: number, y: number): Particle => {
       const angle = Math.random() * Math.PI * 2;
-      const speed = Math.random() * 2 + 1;
+      const speed = Math.random() * 1.5 + 0.5; // Pomalšie particles
       
       return {
         x,
         y,
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed,
-        life: 3000, // 3 sekundy
-        maxLife: 3000,
-        size: Math.random() * 2 + 1, // Menšie particles: 1-3px
+        life: 2000, // 2 sekundy - kratšia životnosť
+        maxLife: 2000,
+        size: Math.random() * 1 + 0.3, // Veľmi malé particles: 0.3-1.3px
         color: particleColor
       };
     };
@@ -65,12 +65,12 @@ const ConstellationParticles: React.FC = () => {
       
       // Click efekt na pozícii myši
       
-      // Vytvorenie 8-12 particles okolo click pozície
-      const particleCount = Math.floor(Math.random() * 5) + 8;
+      // Vytvorenie 5-8 particles okolo click pozície
+      const particleCount = Math.floor(Math.random() * 4) + 5;
       
       for (let i = 0; i < particleCount; i++) {
-        const offsetX = (Math.random() - 0.5) * 20; // Menší rozptyl: ±10px
-        const offsetY = (Math.random() - 0.5) * 20; // Menší rozptyl: ±10px
+        const offsetX = (Math.random() - 0.5) * 8; // Minimálny rozptyl: ±4px
+        const offsetY = (Math.random() - 0.5) * 8; // Minimálny rozptyl: ±4px
         const particle = createParticle(x + offsetX, y + offsetY);
         particlesRef.current.push(particle);
       }
@@ -109,8 +109,8 @@ const ConstellationParticles: React.FC = () => {
           continue;
         }
         
-        // Opacity na základe životnosti
-        const opacity = particle.life / particle.maxLife;
+        // Opacity na základe životnosti - ešte jemnejšie
+        const opacity = (particle.life / particle.maxLife) * 0.7;
         
         // Kreslenie particle
         ctx.globalAlpha = opacity;
@@ -120,9 +120,9 @@ const ConstellationParticles: React.FC = () => {
         ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
         ctx.fill();
         
-        // Glow efekt
+        // Jemný glow efekt
         ctx.shadowColor = particle.color;
-        ctx.shadowBlur = 10;
+        ctx.shadowBlur = 4;
         ctx.fill();
         ctx.shadowBlur = 0;
       }
