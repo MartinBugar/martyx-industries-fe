@@ -1,6 +1,6 @@
 /**
- * Kompletné štýly pre Registration komponent
- * Obsahuje všetky potrebné štýly pre správne fungovanie
+ * Zdieľané štýly pre formulárové komponenty
+ * Optimalizované pre performance a konzistentnosť
  */
 
 /* ===== CSS CUSTOM PROPERTIES ===== */
@@ -17,6 +17,7 @@
   --field-padding: 0.75rem 1rem 0.75rem 3rem;
   --field-padding-with-toggle: 0.75rem 3rem 0.75rem 3rem;
   --field-border-radius: 12px;
+  --field-border-width: 1px;
   
   /* Icons */
   --icon-size-sm: 16px;
@@ -25,6 +26,7 @@
   
   /* Buttons */
   --btn-height: 48px;
+  --btn-padding: 0.875rem 1.5rem;
   --btn-border-radius: 12px;
   
   /* Animations */
@@ -38,32 +40,81 @@
   --z-toggle: 3;
 }
 
-/* ===== ANIMOVANÉ POZADIE ===== */
-.auth-container {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 4rem 1rem 2rem;
-  background: var(--background);
-  position: relative;
-  overflow: hidden;
+/* ===== ZÁKLADNÉ RESETOVANIE ===== */
+.auth-container *,
+.auth-container *::before,
+.auth-container *::after {
+  box-sizing: border-box;
 }
 
-.auth-container::before {
-  content: '';
+/* ===== ANIMOVANÉ POZADIE ===== */
+.animated-background {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: 
-    radial-gradient(circle at 90% 20%, rgba(40, 193, 255, 0.15) 0%, transparent 40%),
-    radial-gradient(circle at 10% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 40%);
+  inset: 0;
   pointer-events: none;
   z-index: var(--z-background);
+}
+
+.glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.6;
   animation: float var(--glow-animation-duration) ease-in-out infinite;
+}
+
+.animated-background--login .glow-1 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(40, 193, 255, 0.15) 0%, transparent 70%);
+  top: -200px;
+  left: -200px;
+  animation-delay: 0s;
+}
+
+.animated-background--login .glow-2 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+  bottom: -150px;
+  right: -150px;
+  animation-delay: 3s;
+}
+
+.animated-background--registration .glow-1 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(40, 193, 255, 0.15) 0%, transparent 70%);
+  top: -200px;
+  right: -200px;
+  animation-delay: 1s;
+}
+
+.animated-background--registration .glow-2 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%);
+  bottom: -150px;
+  left: -150px;
+  animation-delay: 4s;
+}
+
+.animated-background--forgot .glow-1 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(40, 193, 255, 0.15) 0%, transparent 70%);
+  top: -200px;
+  left: -200px;
+  animation-delay: 0s;
+}
+
+.animated-background--forgot .glow-2 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+  bottom: -150px;
+  right: -150px;
+  animation-delay: 3s;
 }
 
 @keyframes float {
@@ -78,14 +129,26 @@
   }
 }
 
-/* ===== AUTH CARD ===== */
+/* ===== AUTH KONTAJNER ===== */
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 4rem 1rem 2rem;
+  background: var(--background);
+  position: relative;
+  overflow: hidden;
+}
+
 .auth-card {
   background: var(--card);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-lg);
   padding: var(--auth-card-padding);
   width: 100%;
-  max-width: var(--auth-card-width-lg);
+  max-width: var(--auth-card-width);
   backdrop-filter: blur(16px);
   box-shadow: 
     0 20px 25px -5px rgba(0, 0, 0, 0.1),
@@ -93,6 +156,10 @@
     0 0 0 1px rgba(255, 255, 255, 0.05);
   position: relative;
   z-index: var(--z-card);
+}
+
+.auth-container--registration .auth-card {
+  max-width: var(--auth-card-width-lg);
 }
 
 /* ===== AUTH HEADER ===== */
@@ -113,10 +180,21 @@
   justify-content: center;
   width: 64px;
   height: 64px;
-  background: linear-gradient(135deg, var(--accent) 0%, #10b981 100%);
   border-radius: 16px;
   color: white;
   box-shadow: 0 8px 25px rgba(40, 193, 255, 0.3);
+}
+
+.auth-container--login .logo-icon {
+  background: linear-gradient(135deg, var(--accent) 0%, #3b82f6 100%);
+}
+
+.auth-container--registration .logo-icon {
+  background: linear-gradient(135deg, var(--accent) 0%, #10b981 100%);
+}
+
+.auth-container--forgot .logo-icon {
+  background: linear-gradient(135deg, var(--accent) 0%, #3b82f6 100%);
 }
 
 .auth-header h1 {
@@ -135,12 +213,6 @@
 }
 
 /* ===== FORMULÁROVÉ POLIA ===== */
-.modern-registration-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
 .form-field {
   display: flex;
   flex-direction: column;
@@ -175,7 +247,7 @@
   height: var(--field-height);
   padding: var(--field-padding);
   background: var(--surface);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: var(--field-border-width) solid rgba(255, 255, 255, 0.1);
   border-radius: var(--field-border-radius);
   color: var(--text-primary);
   font-size: 1rem;
@@ -240,27 +312,33 @@
 }
 
 /* ===== CHYBOVÉ A ÚSPEŠNÉ SPRÁVY ===== */
-.modern-error {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.2);
-  border-radius: 12px;
-  color: #ef4444;
-}
-
+.modern-error,
 .modern-success {
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;
   padding: 1rem;
   margin-bottom: 1.5rem;
-  background: rgba(16, 185, 129, 0.1);
-  border: 1px solid rgba(16, 185, 129, 0.2);
   border-radius: 12px;
+  border-width: 1px;
+  border-style: solid;
+}
+
+.modern-error {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+.modern-error.activation-error {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.2);
+  color: #3b82f6;
+}
+
+.modern-success {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.2);
   color: #10b981;
 }
 
@@ -273,6 +351,11 @@
   height: var(--icon-size-md);
   flex-shrink: 0;
   margin-top: 0.125rem;
+}
+
+.error-content,
+.success-content {
+  flex: 1;
 }
 
 .error-content p,
@@ -289,13 +372,11 @@
   font-weight: 600;
 }
 
-/* ===== SUBMIT BUTTON ===== */
-.registration-submit-btn {
+/* ===== TLAČIDLÁ ===== */
+.submit-btn {
   width: 100%;
   height: var(--btn-height);
-  padding: 0.875rem 1.5rem;
-  background: linear-gradient(135deg, var(--accent) 0%, #10b981 100%);
-  color: white;
+  padding: var(--btn-padding);
   border: none;
   border-radius: var(--btn-border-radius);
   font-size: 1rem;
@@ -310,48 +391,35 @@
   box-shadow: 0 4px 12px rgba(40, 193, 255, 0.2);
 }
 
-.registration-submit-btn:hover:not(:disabled) {
+.auth-container--login .submit-btn {
+  background: linear-gradient(135deg, var(--accent) 0%, #3b82f6 100%);
+  color: white;
+}
+
+.auth-container--registration .submit-btn {
+  background: linear-gradient(135deg, var(--accent) 0%, #10b981 100%);
+  color: white;
+}
+
+.auth-container--forgot .submit-btn {
+  background: linear-gradient(135deg, var(--accent) 0%, #3b82f6 100%);
+  color: white;
+}
+
+.submit-btn:hover:not(:disabled) {
   transform: translateY(-1px);
   box-shadow: 0 8px 25px rgba(40, 193, 255, 0.3);
 }
 
-.registration-submit-btn:active:not(:disabled) {
+.submit-btn:active:not(:disabled) {
   transform: translateY(0);
 }
 
-.registration-submit-btn:disabled {
+.submit-btn:disabled {
   opacity: 0.7;
   cursor: not-allowed;
   transform: none;
   box-shadow: 0 4px 12px rgba(40, 193, 255, 0.1);
-}
-
-/* ===== GO TO LOGIN BUTTON ===== */
-.go-to-login-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.5rem 1rem;
-  background: var(--accent);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  text-decoration: none;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: var(--auth-transition);
-  margin-top: 0.5rem;
-}
-
-.go-to-login-btn:hover {
-  background: var(--accent-hover, #2563eb);
-  transform: translateY(-1px);
-}
-
-.go-to-login-btn:focus {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
 }
 
 /* ===== LOADING SPINNER ===== */
@@ -366,6 +434,16 @@
 .loading-spinner--sm {
   width: var(--icon-size-sm);
   height: var(--icon-size-sm);
+}
+
+.loading-spinner--md {
+  width: var(--icon-size-md);
+  height: var(--icon-size-md);
+}
+
+.loading-spinner--lg {
+  width: var(--icon-size-lg);
+  height: var(--icon-size-lg);
 }
 
 @keyframes spin {
@@ -473,6 +551,11 @@
     width: 18px;
     height: 18px;
   }
+
+  .glow {
+    width: 300px !important;
+    height: 300px !important;
+  }
 }
 
 @media (max-width: 360px) {
@@ -501,16 +584,14 @@
 
 /* ===== ACCESSIBILITY ===== */
 @media (prefers-reduced-motion: reduce) {
-  .auth-container::before,
+  .glow,
   .loading-spinner,
-  .registration-submit-btn,
+  .submit-btn,
   .auth-link,
   .field-input,
-  .password-toggle,
-  .go-to-login-btn {
+  .password-toggle {
     animation: none !important;
     transition: none !important;
-    transform: none !important;
   }
 }
 
