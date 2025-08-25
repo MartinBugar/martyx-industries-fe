@@ -7,8 +7,7 @@
 import { 
   sanitizeText, 
   isValidEmail, 
-  validatePassword as secureValidatePassword, 
-  sanitizeHtml 
+  validatePassword as secureValidatePassword 
 } from './security';
 
 // ===== TYPY A INTERFACES =====
@@ -243,10 +242,10 @@ export const debounce = <T extends (...args: any[]) => any>(
   func: T, 
   delay: number
 ): ((...args: Parameters<T>) => void) => {
-  let timeoutId: NodeJS.Timeout;
+  let timeoutId: number | undefined;
   
   return (...args: Parameters<T>) => {
-    clearTimeout(timeoutId);
+    if (timeoutId) clearTimeout(timeoutId);
     timeoutId = setTimeout(() => func(...args), delay);
   };
 };

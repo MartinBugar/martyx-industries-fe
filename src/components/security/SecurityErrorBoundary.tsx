@@ -3,7 +3,7 @@
  * Zachytáva a bezpečne spracováva chyby bez odhalenia citlivých informácií
  */
 
-import React, { Component, ErrorInfo, ReactNode } from 'react';
+import { Component, type ErrorInfo, type ReactNode } from 'react';
 import './SecurityErrorBoundary.css';
 
 interface Props {
@@ -42,7 +42,7 @@ class SecurityErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // Detailné logovanie pre development
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       console.error('Error details:', error);
       console.error('Error info:', errorInfo);
     }
@@ -54,7 +54,7 @@ class SecurityErrorBoundary extends Component<Props, State> {
   private logErrorToService = (error: Error, errorInfo: ErrorInfo) => {
     // Implementácia posielania chýb na monitoring service
     // Napríklad Sentry, LogRocket, atď.
-    if (process.env.NODE_ENV === 'production') {
+    if (import.meta.env.PROD) {
       try {
         // Bezpečné logovanie bez citlivých údajov
         const safeError = {
@@ -64,8 +64,12 @@ class SecurityErrorBoundary extends Component<Props, State> {
           componentStack: errorInfo.componentStack?.split('\n').slice(0, 5).join('\n'),
           timestamp: new Date().toISOString(),
           userAgent: navigator.userAgent,
-          url: window.location.href
+          url: window.location.href,
+          errorId: this.state.errorId
         };
+        
+        // Použitie safeError pre logging
+        console.log('Error logged:', safeError);
         
         // Poslanie na monitoring endpoint
         // fetch('/api/errors', {
@@ -132,7 +136,7 @@ class SecurityErrorBoundary extends Component<Props, State> {
               </button>
             </div>
             
-            {process.env.NODE_ENV === 'development' && this.state.errorId && (
+            {import.meta.env.DEV && this.state.errorId && (
               <div className="error-debug">
                 <p>Error ID: {this.state.errorId}</p>
               </div>

@@ -301,7 +301,7 @@ export const secureLocalStorage = {
  * Content Security Policy reporter (pre development)
  */
 export const setupCSPReporting = (): void => {
-  if (process.env.NODE_ENV === 'development') {
+  if (import.meta.env.DEV) {
     document.addEventListener('securitypolicyviolation', (event) => {
       console.warn('CSP Violation:', {
         directive: event.violatedDirective,

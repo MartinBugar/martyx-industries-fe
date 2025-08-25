@@ -11,7 +11,7 @@ import {
   sanitizeInput,
   debounce 
 } from '../utils/validation';
-import { registrationRateLimiter } from '../utils/security';
+// import { registrationRateLimiter } from '../utils/security';
 
 // ===== TYPY A INTERFACES =====
 export interface AuthFormData {
@@ -94,7 +94,7 @@ export const useAuthForm = ({
     debounce((fieldName: string, value: string, currentData: AuthFormData) => {
       if (!enableRealTimeValidation) return;
       
-      let validation;
+      let validation: any;
       switch (fieldName) {
         case 'email':
           validation = validateForgotPasswordForm(value);
@@ -113,22 +113,47 @@ export const useAuthForm = ({
           return;
       }
       
-      if (!validation.isValid && validation.error) {
-        setState(prev => ({
-          ...prev,
-          errors: {
-            ...prev.errors,
-            [fieldName]: validation.error
-          }
-        }));
+      // Pre jednoduchú validáciu (email)
+      if (fieldName === 'email') {
+        if (!validation.isValid && validation.error) {
+          setState(prev => ({
+            ...prev,
+            errors: {
+              ...prev.errors,
+              [fieldName]: validation.error
+            }
+          }));
+        } else {
+          setState(prev => ({
+            ...prev,
+            errors: {
+              ...prev.errors,
+              [fieldName]: undefined
+            }
+          }));
+        }
       } else {
-        setState(prev => ({
-          ...prev,
-          errors: {
-            ...prev.errors,
-            [fieldName]: undefined
+        // Pre formulárové validácie (password, registration)
+        if (!validation.isFormValid) {
+          const fieldError = validation[fieldName]?.error;
+          if (fieldError) {
+            setState(prev => ({
+              ...prev,
+              errors: {
+                ...prev.errors,
+                [fieldName]: fieldError
+              }
+            }));
           }
-        }));
+        } else {
+          setState(prev => ({
+            ...prev,
+            errors: {
+              ...prev.errors,
+              [fieldName]: undefined
+            }
+          }));
+        }
       }
     }, 300),
     [formType, enableRealTimeValidation]
@@ -143,20 +168,24 @@ export const useAuthForm = ({
       const { name, value } = e.target;
       const sanitizedValue = sanitizeInput(value);
       
-      setState(prev => ({
-        ...prev,
-        data: {
+      setState(prev => {
+        const newData = {
           ...prev.data,
           [name]: sanitizedValue
-        },
-        errors: {
-          ...prev.errors,
-          [name]: undefined // Vyčistenie chyby pri písaní
-        }
-      }));
-      
-      // Real-time validácia
-      debouncedValidation(name, sanitizedValue, prev.data);
+        };
+        
+        // Real-time validácia s aktuálnymi dátami
+        debouncedValidation(name, sanitizedValue, newData);
+        
+        return {
+          ...prev,
+          data: newData,
+          errors: {
+            ...prev.errors,
+            [name]: undefined // Vyčistenie chyby pri písaní
+          }
+        };
+      });
     }, [debouncedValidation]),
 
     /**
@@ -168,13 +197,13 @@ export const useAuthForm = ({
       // Validácia formulára
       const validation = validateForm();
       
-      if (!validation.isFormValid) {
+      if (!(validation as any).isFormValid) {
         setState(prev => ({
           ...prev,
           errors: {
-            email: validation.email?.error,
-            password: validation.password?.error,
-            confirmPassword: validation.confirmPassword?.error
+            email: (validation as any).email?.error,
+            password: (validation as any).password?.error,
+            confirmPassword: (validation as any).confirmPassword?.error
           }
         }));
         return;
@@ -269,10 +298,10 @@ export const useAuthForm = ({
     const validation = validateForm();
     
     return {
-      isFormValid: validation.isFormValid,
+      isFormValid: (validation as any).isFormValid,
       hasErrors: Object.values(state.errors).some(error => Boolean(error)),
-      firstError: validation.firstError || Object.values(state.errors).find(Boolean),
-      isSubmitDisabled: state.isProcessing || !validation.isFormValid
+      firstError: (validation as any).firstError || Object.values(state.errors).find(Boolean),
+      isSubmitDisabled: state.isProcessing || !(validation as any).isFormValid
     };
   }, [validateForm, state.errors, state.isProcessing]);
 
