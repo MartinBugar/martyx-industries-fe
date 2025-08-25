@@ -324,14 +324,93 @@ const Home: React.FC = () => {
       {/* 7) Newsletter */}
       <section className="home-section newsletter" aria-label="Newsletter subscribe">
         <div className="container">
-          <form className="newsletter-form" onSubmit={(e) => { e.preventDefault(); setSubscribed(true); console.log('newsletter_subscribed'); }}>
-            <label htmlFor="email" className="sr-only">Email address</label>
-            <input id="email" name="email" type="email" required placeholder="you@example.com" aria-label="Email address" />
-            <button type="submit" className="btn btn-accent">Subscribe</button>
-          </form>
-          {subscribed && (
-            <p className="newsletter-success" role="status" aria-live="polite">Thanks! You’re subscribed.</p>
-          )}
+          <div className="newsletter-container">
+            <div className="newsletter-content">
+              <div className="newsletter-header">
+                <div className="newsletter-icon">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <polyline points="22,6 12,13 2,6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+                <h2 className="newsletter-title">Stay in the Loop</h2>
+                <p className="newsletter-description">
+                  Get exclusive access to new tank models, 3D printing tips, and special offers. 
+                  Join our community of RC enthusiasts!
+                </p>
+              </div>
+              
+              <div className="newsletter-benefits">
+                <div className="benefit-item">
+                  <div className="benefit-icon">
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                  <span>Early access to new releases</span>
+                </div>
+                <div className="benefit-item">
+                  <div className="benefit-icon">
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                  <span>Exclusive 3D printing guides</span>
+                </div>
+                <div className="benefit-item">
+                  <div className="benefit-icon">
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                  <span>Member-only discounts</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="newsletter-form-container">
+              <form className="newsletter-form" onSubmit={(e) => { e.preventDefault(); setSubscribed(true); console.log('newsletter_subscribed'); }}>
+                <div className="form-group">
+                  <label htmlFor="newsletter-email" className="form-label">Email address</label>
+                  <div className="input-wrapper">
+                    <input 
+                      id="newsletter-email" 
+                      name="email" 
+                      type="email" 
+                      required 
+                      placeholder="Enter your email" 
+                      className="newsletter-input"
+                      aria-label="Email address for newsletter subscription"
+                    />
+                    <button type="submit" className="newsletter-submit" aria-label="Subscribe to newsletter">
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M22 2L11 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+                <p className="form-note">
+                  🔒 We respect your privacy. Unsubscribe at any time.
+                </p>
+              </form>
+              
+              {subscribed && (
+                <div className="newsletter-success" role="status" aria-live="polite">
+                  <div className="success-icon">
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <polyline points="22,4 12,14.01 9,11.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                  <div className="success-content">
+                    <h3>Welcome aboard! 🎉</h3>
+                    <p>You're now subscribed to our newsletter. Check your email for a welcome message.</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </section>
     </div>
