@@ -11,8 +11,8 @@
   max-width: 1400px;
   margin: 0 auto;
   display: grid;
-  gap: 2rem;
-  grid-template-rows: auto auto 1fr;
+  gap: 1rem;
+  grid-template-rows: auto 1fr;
 }
 
 /* Loading State */
@@ -253,18 +253,37 @@
   min-width: 280px;
 }
 
+/* Unified Tabbed Interface */
+.account-tabbed-interface {
+  background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.account-tabbed-interface::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 20% 20%, var(--accent-soft) 0%, transparent 50%);
+  pointer-events: none;
+}
+
 /* Navigation Tabs */
 .account-navigation {
   display: flex;
-  background: var(--surface);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   padding: 0.5rem;
   gap: 0.5rem;
-  backdrop-filter: blur(20px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   position: relative;
-  overflow: hidden;
+  z-index: 1;
 }
 
 .account-navigation::before {
@@ -311,8 +330,8 @@
 }
 
 .tab-icon {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -334,26 +353,12 @@
   white-space: nowrap;
 }
 
-.tab-indicator {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 0;
-  height: 2px;
-  background: var(--accent);
-  border-radius: 1px;
-  transition: width 0.3s ease;
-}
-
-.nav-tab.active .tab-indicator {
-  width: 60%;
-}
-
 /* Content Panels */
 .account-content {
   position: relative;
   min-height: 600px;
+  background: rgba(0, 0, 0, 0.2);
+  z-index: 1;
 }
 
 .content-panel {
@@ -366,6 +371,7 @@
   transform: translateY(20px);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 1;
+  padding: 2rem;
 }
 
 .content-panel.active {
@@ -380,14 +386,18 @@
 .settings-content {
   display: grid;
   gap: 1.5rem;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
 }
 
 .settings-card {
-  background: var(--surface);
+  background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--radius-lg);
+  border-radius: 12px;
   padding: 2rem;
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(10px);
 }
 
 .settings-card h2 {
@@ -467,18 +477,8 @@
     justify-content: flex-start;
   }
   
-  .tab-indicator {
-    bottom: auto;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 2px;
-    height: 0;
-  }
-  
-  .nav-tab.active .tab-indicator {
-    width: 2px;
-    height: 60%;
+  .content-panel {
+    padding: 1rem;
   }
 }
 
@@ -500,6 +500,10 @@
   .nav-tab {
     padding: 0.5rem 0.75rem;
     gap: 0.5rem;
+  }
+  
+  .content-panel {
+    padding: 0.75rem;
   }
   
   .tab-icon {

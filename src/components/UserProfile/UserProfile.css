@@ -3,6 +3,10 @@
 .profile-container {
   width: 100%;
   position: relative;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
 }
 
 .profile-empty-state {
