@@ -150,47 +150,173 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* 4) Interactive 3D (lazy) */}
-      <section ref={threeRef} className="home-section three" aria-label="Interactive 3D">
-        <div className="container">
-          {show3D ? (
-            <Suspense fallback={<div className="lazy-box" aria-label="Loading 3D preview" />}> 
-              <Interactive3D 
-                modelUrl={products[0]?.modelPath}
-                onLoaded={() => console.log('interactive_3d_loaded')}
-              />
-            </Suspense>
-          ) : (
-            <div className="lazy-box" aria-label="3D preview placeholder" />
-          )}
-        </div>
-      </section>
-
-      {/* 5) Video Demo (lazy) */}
-      <section ref={videoRef} className="home-section video" aria-label="Video Demo">
-        <div className="container">
-          {showVideo ? (
-            <Suspense fallback={<div className="lazy-box" aria-label="Loading video" />}> 
-              <VideoDemo />
-            </Suspense>
-          ) : (
-            <div className="lazy-box" aria-label="Video placeholder" />
-          )}
-        </div>
-      </section>
-
       {/* 6) Testimonials */}
-      <section className="home-section testimonials" aria-label="Testimonials">
+      <section className="home-section testimonials" aria-label="Customer Reviews">
         <div className="container">
+          <div className="section-header">
+            <h2>What Our Customers Say</h2>
+            <p className="section-subtitle">Real feedback from RC tank enthusiasts</p>
+          </div>
           <div className="testimonials-grid">
-            <blockquote className="quote">
-              <p>“Printed over a weekend, runs like a charm.”</p>
-              <footer>— J. Park</footer>
-            </blockquote>
-            <blockquote className="quote">
-              <p>“Clean STLs, no supports needed on my setup.”</p>
-              <footer>— A. N.</footer>
-            </blockquote>
+            <article className="testimonial-card">
+              <div className="testimonial-header">
+                <div className="customer-info">
+                  <div className="customer-avatar">
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                  <div className="customer-details">
+                    <h4 className="customer-name">J. Park</h4>
+                    <div className="star-rating">
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+                <div className="review-date">2 weeks ago</div>
+              </div>
+              <blockquote className="testimonial-content">
+                <p>"Printed over a weekend, runs like a charm. The STL files are perfectly optimized and the assembly guide is crystal clear. My kids love driving it around!"</p>
+              </blockquote>
+              <div className="testimonial-footer">
+                <span className="product-tag">Tiger I Kit</span>
+              </div>
+            </article>
+
+            <article className="testimonial-card">
+              <div className="testimonial-header">
+                <div className="customer-info">
+                  <div className="customer-avatar">
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                  <div className="customer-details">
+                    <h4 className="customer-name">A. Novak</h4>
+                    <div className="star-rating">
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+                <div className="review-date">1 month ago</div>
+              </div>
+              <blockquote className="testimonial-content">
+                <p>"Clean STLs, no supports needed on my setup. The modular design makes it easy to customize and the electronics integration is seamless. Highly recommended!"</p>
+              </blockquote>
+              <div className="testimonial-footer">
+                <span className="product-tag">Sherman STL Bundle</span>
+              </div>
+            </article>
+
+            <article className="testimonial-card">
+              <div className="testimonial-header">
+                <div className="customer-info">
+                  <div className="customer-avatar">
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                  <div className="customer-details">
+                    <h4 className="customer-name">M. Chen</h4>
+                    <div className="star-rating">
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+                <div className="review-date">3 weeks ago</div>
+              </div>
+              <blockquote className="testimonial-content">
+                <p>"Amazing quality! The tracks work perfectly and the suspension system is incredibly realistic. Assembly took exactly as advertised - under 4 hours."</p>
+              </blockquote>
+              <div className="testimonial-footer">
+                <span className="product-tag">T-34 Kit</span>
+              </div>
+            </article>
+
+            <article className="testimonial-card">
+              <div className="testimonial-header">
+                <div className="customer-info">
+                  <div className="customer-avatar">
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                  <div className="customer-details">
+                    <h4 className="customer-name">R. Schmidt</h4>
+                    <div className="star-rating">
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+                <div className="review-date">1 week ago</div>
+              </div>
+              <blockquote className="testimonial-content">
+                <p>"The attention to detail is incredible. Every bolt and rivet is perfectly modeled. The controller range is impressive and the sound effects are spot on!"</p>
+              </blockquote>
+              <div className="testimonial-footer">
+                <span className="product-tag">Panther STL Bundle</span>
+              </div>
+            </article>
           </div>
         </div>
       </section>
