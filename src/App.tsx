@@ -1,6 +1,8 @@
 import './App.css'
 import { useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom'
+import SecurityErrorBoundary from './components/security/SecurityErrorBoundary'
+import { setupCSPReporting, initializeCSRFToken } from './utils/security'
 import { CartProvider } from './context/CartContext'
 import { AuthProvider } from './context/AuthProvider'
 import { useCart } from './context/useCart'
@@ -43,16 +45,24 @@ import { useIOSNoZoomOnFocus } from './hooks/useIOSNoZoomOnFocus'
 
 // App wrapper to provide DevPasswordGate, AuthContext, and CartContext
 function AppWrapper() {
+  // Inicializácia bezpečnostných opatrení
+  useEffect(() => {
+    setupCSPReporting();
+    initializeCSRFToken();
+  }, []);
+
   return (
-    <DevPasswordGateProvider>
-      <DevPasswordGate>
-        <AuthProvider>
-          <CartProvider>
-            <AppContent />
-          </CartProvider>
-        </AuthProvider>
-      </DevPasswordGate>
-    </DevPasswordGateProvider>
+    <SecurityErrorBoundary>
+      <DevPasswordGateProvider>
+        <DevPasswordGate>
+          <AuthProvider>
+            <CartProvider>
+              <AppContent />
+            </CartProvider>
+          </AuthProvider>
+        </DevPasswordGate>
+      </DevPasswordGateProvider>
+    </SecurityErrorBoundary>
   );
 }
 

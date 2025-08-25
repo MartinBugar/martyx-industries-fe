@@ -299,18 +299,5 @@ export const AuthHeader: React.FC<{
 
 /**
  * Footer pre Auth stránky s dividerom a linkom
+ * POZNÁMKA: Tento komponent nie je už používaný - používame priamo Link komponenty v súboroch
  */
-export const AuthFooter: React.FC<{
-  dividerText: string;
-  linkTo: string;
-  linkText: string;
-}> = ({ dividerText, linkTo, linkText }) => (
-  <div className="auth-footer">
-    <div className="divider">
-      <span>{dividerText}</span>
-    </div>
-    <a href={linkTo} className="auth-link">
-      {linkText}
-    </a>
-  </div>
-);

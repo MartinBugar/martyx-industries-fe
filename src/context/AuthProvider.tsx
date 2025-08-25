@@ -6,6 +6,7 @@ import { authApi, setAuthToken, removeAuthToken } from '../services/api';
 import { profileService } from '../services/profileService';
 import { isTokenExpired } from '../services/apiUtils';
 import { ordersService } from '../services/ordersService';
+import { secureLocalStorage, loginRateLimiter } from '../utils/security';
 
 // Props for the AuthProvider component
 interface AuthProviderProps {
@@ -24,17 +25,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Check if user and token are stored in localStorage on initial load
   useEffect(() => {
     const init = async () => {
-      const storedUser = localStorage.getItem('user');
-      const token = localStorage.getItem('token');
+      const storedUser = secureLocalStorage.get('user', null);
+      const token = secureLocalStorage.get('token', null);
       
       // Check if token exists and is valid
-      if (token) {
+      if (token && typeof token === 'string') {
         // Check if token is expired
         if (isTokenExpired(token)) {
           console.log('Token has expired, logging out user');
           // Clear expired token and user data
-          localStorage.removeItem('user');
-          localStorage.removeItem('token');
+          secureLocalStorage.remove('user');
+          secureLocalStorage.remove('token');
           removeAuthToken();
           setUser(null);
         } else {
@@ -42,13 +43,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           setAuthToken(token);
           
           // If user exists, set it in state
-          if (storedUser) {
+          if (storedUser && typeof storedUser === 'object') {
             try {
-              setUser(JSON.parse(storedUser));
+              setUser(storedUser as User);
             } catch (error) {
               console.error('Failed to parse stored user:', error);
-              localStorage.removeItem('user');
-              localStorage.removeItem('token');
+              secureLocalStorage.remove('user');
+              secureLocalStorage.remove('token');
               removeAuthToken();
             }
           }
@@ -82,6 +83,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Login function - makes an API call to the backend
   const login = async (email: string, password: string): Promise<boolean | { error: string; type: string }> => {
     try {
+      // Rate limiting check
+      const identifier = email.toLowerCase();
+      if (!loginRateLimiter.isAllowed(identifier)) {
+        const remainingTime = Math.ceil(loginRateLimiter.getRemainingTime(identifier) / 60000);
+        return {
+          error: `Príliš veľa pokusov o prihlásenie. Skúste znovu za ${remainingTime} minút.`,
+          type: 'rate_limited'
+        };
+      }
+      
       // Call the login API endpoint
       const response = await authApi.login(email, password);
 
@@ -106,10 +117,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       // Store user data in state and localStorage
       setUser(newUser);
-      localStorage.setItem('user', JSON.stringify(newUser));
+      secureLocalStorage.set('user', newUser);
       
       // Store token in localStorage
-      localStorage.setItem('token', token);
+      secureLocalStorage.set('token', token);
+      
+      // Reset rate limiter on successful login
+      loginRateLimiter.reset(identifier);
       
       // Set auth token for future API requests
       setAuthToken(token);
@@ -151,8 +165,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } finally {
       // Clear user data and token regardless of API call success
       setUser(null);
-      localStorage.removeItem('user');
-      localStorage.removeItem('token');
+      secureLocalStorage.remove('user');
+      secureLocalStorage.remove('token');
       
       // Reset orders loading flags
       setOrdersLoading(false);

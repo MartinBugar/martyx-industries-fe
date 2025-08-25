@@ -58,8 +58,8 @@ const Home: React.FC = () => {
               <h1 className="hero-title">RC Tank Kits & STL Files</h1>
               <p className="hero-sub">Build. Print. Command.</p>
               <div className="hero-ctas">
-                <a className="btn btn-accent" href="/products" onClick={() => console.log('hero_shop_kits_click')}>Shop Kits</a>
-                <a className="btn btn-outline" href="/products" onClick={() => console.log('hero_download_stl_click')}>Download STL</a>
+                <Link to="/products" className="btn btn-accent" onClick={() => console.log('hero_shop_kits_click')}>Shop Kits</Link>
+                <Link to="/products" className="btn btn-outline" onClick={() => console.log('hero_download_stl_click')}>Download STL</Link>
               </div>
               <ul className="hero-kpis" aria-label="Key product facts">
                 <li>Assembly under 4h (prototype)</li>

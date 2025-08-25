@@ -246,7 +246,7 @@
   border-radius: 2px;
 }
 
-.product-bookmarks a {
+.product-bookmarks button {
   color: var(--product-detail-text-muted);
   text-decoration: none;
   font-weight: 500;
@@ -256,14 +256,18 @@
   transition: var(--product-detail-transition);
   white-space: nowrap;
   border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
 }
 
-.product-bookmarks a:hover {
+.product-bookmarks button:hover {
   background: var(--product-detail-border);
   color: var(--product-detail-text-secondary);
 }
 
-.product-bookmarks a[aria-selected="true"] {
+.product-bookmarks button[aria-selected="true"],
+.product-bookmarks button.active {
   background: var(--product-detail-text);
   color: var(--product-detail-bg);
   border-color: var(--product-detail-text);
@@ -353,7 +357,7 @@ html {
 
 /* Focus States for Accessibility */
 .add-to-cart-btn:focus-visible,
-.product-bookmarks a:focus-visible {
+.product-bookmarks button:focus-visible {
   outline: 2px solid var(--product-detail-accent);
   outline-offset: 2px;
 }

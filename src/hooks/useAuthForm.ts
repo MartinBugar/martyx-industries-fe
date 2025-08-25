@@ -11,6 +11,7 @@ import {
   sanitizeInput,
   debounce 
 } from '../utils/validation';
+import { registrationRateLimiter } from '../utils/security';
 
 // ===== TYPY A INTERFACES =====
 export interface AuthFormData {

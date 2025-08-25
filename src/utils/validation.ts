@@ -1,7 +1,15 @@
 /**
  * Utility funkcie pre validáciu formulárov
  * Centralizované validačné pravidlá pre celú aplikáciu
+ * Implementuje bezpečnostné opatrenia proti útokom
  */
+
+import { 
+  sanitizeText, 
+  isValidEmail, 
+  validatePassword as secureValidatePassword, 
+  sanitizeHtml 
+} from './security';
 
 // ===== TYPY A INTERFACES =====
 export interface ValidationResult {
@@ -37,16 +45,23 @@ export const VALIDATION_MESSAGES = {
 // ===== ZÁKLADNÉ VALIDAČNÉ FUNKCIE =====
 
 /**
- * Validácia emailovej adresy
+ * Validácia emailovej adresy s bezpečnostnými kontrolami
  * @param email - Emailová adresa na validáciu
  * @returns ValidationResult s výsledkom validácie
  */
 export const validateEmail = (email: string): ValidationResult => {
-  if (!email.trim()) {
+  if (!email || typeof email !== 'string') {
     return { isValid: false, error: VALIDATION_MESSAGES.required };
   }
   
-  if (!VALIDATION_PATTERNS.email.test(email)) {
+  // Sanitizácia vstupu
+  const sanitizedEmail = sanitizeText(email.trim());
+  
+  if (!sanitizedEmail) {
+    return { isValid: false, error: VALIDATION_MESSAGES.required };
+  }
+  
+  if (!isValidEmail(sanitizedEmail)) {
     return { isValid: false, error: VALIDATION_MESSAGES.email };
   }
   
@@ -54,23 +69,34 @@ export const validateEmail = (email: string): ValidationResult => {
 };
 
 /**
- * Validácia hesla
+ * Validácia hesla s pokročilými bezpečnostnými kontrolami
  * @param password - Heslo na validáciu
  * @param isStrong - Či má byť heslo silné (voliteľné)
  * @returns ValidationResult s výsledkom validácie
  */
 export const validatePassword = (password: string, isStrong = false): ValidationResult => {
+  if (!password || typeof password !== 'string') {
+    return { isValid: false, error: VALIDATION_MESSAGES.required };
+  }
+  
   if (!password.trim()) {
     return { isValid: false, error: VALIDATION_MESSAGES.required };
   }
   
-  const pattern = isStrong ? VALIDATION_PATTERNS.strongPassword : VALIDATION_PATTERNS.password;
-  
-  if (!pattern.test(password)) {
-    const message = isStrong 
-      ? 'Heslo musí mať minimálne 8 znakov, veľké a malé písmená a číslice'
-      : VALIDATION_MESSAGES.password;
-    return { isValid: false, error: message };
+  // Použitie bezpečnej validácie hesla
+  if (isStrong) {
+    const secureValidation = secureValidatePassword(password);
+    if (!secureValidation.isValid) {
+      return { 
+        isValid: false, 
+        error: secureValidation.errors[0] || 'Heslo nespĺňa bezpečnostné požiadavky' 
+      };
+    }
+  } else {
+    // Základná validácia pre obyčajné heslá
+    if (!VALIDATION_PATTERNS.password.test(password)) {
+      return { isValid: false, error: VALIDATION_MESSAGES.password };
+    }
   }
   
   return { isValid: true };
@@ -196,15 +222,15 @@ export const validateForgotPasswordForm = (email: string) => {
 // ===== UTILITY FUNKCIE =====
 
 /**
- * Sanitizácia vstupu - odstránenie nebezpečných znakov
+ * Sanitizácia vstupu - používa pokročilé bezpečnostné funkcie
  * @param input - Vstupný text
  * @returns Sanitizovaný text
  */
 export const sanitizeInput = (input: string): string => {
-  return input
-    .trim()
-    .replace(/[<>\"'&]/g, '') // Odstránenie základných nebezpečných znakov
-    .slice(0, 500); // Obmedzenie dĺžky
+  if (!input || typeof input !== 'string') return '';
+  
+  // Použitie bezpečnej sanitizácie
+  return sanitizeText(input);
 };
 
 /**

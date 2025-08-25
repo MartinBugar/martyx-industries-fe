@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { type TabContent } from '../../data/productData';
 import { reviewsService, type Review as ReviewModel } from '../../services/reviewsService';
 import { useAuth } from '../../context/useAuth';
@@ -240,7 +241,7 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ content, productId }) => {
               )}
             </button>
           ) : (
-            <a href="/login" className="secondary-btn chip-btn">Log in to write a review</a>
+            <Link to="/login" className="secondary-btn chip-btn">Log in to write a review</Link>
           )}
         </div>
 

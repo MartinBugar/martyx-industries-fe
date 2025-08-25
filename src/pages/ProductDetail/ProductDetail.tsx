@@ -130,17 +130,18 @@ const ProductDetail: React.FC = () => {
 
         <nav className="product-bookmarks" aria-label="Product sections" role="tablist">
           {tabs.map((t) => (
-            <a
+            <button
               key={t.id}
               id={`tab-${t.id}`}
-              href="#"
+              type="button"
               role="tab"
               aria-selected={t.id === active}
               aria-controls={`panel-${t.id}`}
-              onClick={(e) => { e.preventDefault(); setActive(t.id); }}
+              onClick={() => setActive(t.id)}
+              className={t.id === active ? 'active' : ''}
             >
               {t.label}
-            </a>
+            </button>
           ))}
         </nav>
 

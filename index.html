@@ -6,11 +6,38 @@
     <meta name="theme-color" content="#0b0f14" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    
+    <!-- Security Headers -->
+    <meta http-equiv="Content-Security-Policy" content="
+      default-src 'self';
+      script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.stripe.com https://www.paypal.com https://www.sandbox.paypal.com;
+      style-src 'self' 'unsafe-inline';
+      img-src 'self' data: https: blob:;
+      font-src 'self' data:;
+      connect-src 'self' https://api.stripe.com https://api.paypal.com https://api.sandbox.paypal.com wss: ws:;
+      frame-src 'self' https://js.stripe.com https://www.paypal.com https://www.sandbox.paypal.com;
+      object-src 'none';
+      base-uri 'self';
+      form-action 'self';
+      frame-ancestors 'none';
+      upgrade-insecure-requests;
+    " />
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+    <meta http-equiv="Permissions-Policy" content="
+      camera=(),
+      microphone=(),
+      geolocation=(),
+      interest-cohort=()
+    " />
+    
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="manifest" href="/manifest.webmanifest" crossorigin="use-credentials" />
     <title>MARTYX INDUSTRIES</title>
     <link rel="preconnect" href="https://js.stripe.com" />
-    <script defer src="https://js.stripe.com/v3/"></script>
+    <script defer src="https://js.stripe.com/v3/" integrity="sha384-h1/p3dBGnBpGrNRvN9n3F6yHJ9XVfvBz8g8T4Zs1hcJ6l8z+vY9AwazpYfKzj9r" crossorigin="anonymous" nonce="stripe-script"></script>
   </head>
   <body>
     <div id="root"></div>

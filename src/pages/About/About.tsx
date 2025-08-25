@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import './About.css';
 
 const About: React.FC = () => {
@@ -16,7 +17,7 @@ const About: React.FC = () => {
           <li>Clear build docs, BOMs, and slicer presets</li>
         </ul>
         <div className="about-cta">
-          <a className="btn primary" href="/products">Shop Products</a>
+          <Link to="/products" className="btn primary">Shop Products</Link>
         </div>
       </section>
     </main>
