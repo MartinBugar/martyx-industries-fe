@@ -3,6 +3,10 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import './styles/ios-forms.css'
 import App from './App.tsx'
+import { initializeModelViewerConfig } from './utils/modelViewerConfig'
+
+// Initialize model-viewer configuration for production optimization
+initializeModelViewerConfig();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

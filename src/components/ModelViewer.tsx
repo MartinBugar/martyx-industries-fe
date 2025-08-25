@@ -117,15 +117,19 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
 
     // Effect for model event listeners
     useEffect(() => {
+        const modelElement = modelViewerRef.current;
+        if (!modelElement) return;
+
         // Define event handlers outside to ensure the same reference is used for cleanup
         const handleModelLoad = () => {
-            console.log('Model loaded successfully');
-            // Apply metalness and roughness when model is loaded
-            updateMaterialProps(metalness, roughness);
+            if (import.meta.env.DEV) {
+                console.log('Model loaded successfully');
+            }
+            // Apply metalness and roughness when model is loaded with a slight delay
+            setTimeout(() => {
+                updateMaterialProps(metalness, roughness);
+            }, 100);
         };
-        
-        // Handler for camera-change (no-op after removing debug logging)
-        const handleCameraChange = () => {};
         
         // Add event listener for ESC key to exit fullscreen
         const handleEscKey = (event: KeyboardEvent) => {
@@ -138,44 +142,39 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
         };
         
         // Add event listeners
-        if (modelViewerRef.current) {
-            modelViewerRef.current.addEventListener('load', handleModelLoad);
-            modelViewerRef.current.addEventListener('camera-change', handleCameraChange);
-            
-            // Log initial camera position
-            const initialCameraOrbit = modelViewerRef.current.getAttribute('camera-orbit');
+        modelElement.addEventListener('load', handleModelLoad);
+        document.addEventListener('keydown', handleEscKey);
+
+        if (import.meta.env.DEV) {
+            // Log initial camera position only in dev
+            const initialCameraOrbit = modelElement.getAttribute('camera-orbit');
             console.log('Initial camera position:', initialCameraOrbit);
         }
-        
-        document.addEventListener('keydown', handleEscKey);
 
         return () => {
             // Cleanup event listeners using the same function references
-            if (modelViewerRef.current) {
-                modelViewerRef.current.removeEventListener('load', handleModelLoad);
-                modelViewerRef.current.removeEventListener('camera-change', handleCameraChange);
-            }
+            modelElement.removeEventListener('load', handleModelLoad);
             document.removeEventListener('keydown', handleEscKey);
         };
-    }, [isFullscreen, metalness, roughness, exposureValue]);
+    }, [isFullscreen]); // Reduced dependencies to prevent unnecessary re-runs
     
-    // Effect to update metalness when the metallicFactor prop changes
+    // Effect to update material properties when props change
     useEffect(() => {
-        const newValue = typeof metallicFactor === 'string' ? parseFloat(metallicFactor) : metallicFactor;
-        setMetalness(newValue);
-    }, [metallicFactor]);
-    
-    // Effect to update roughness when the roughnessFactor prop changes
-    useEffect(() => {
-        const newValue = typeof roughnessFactor === 'string' ? parseFloat(roughnessFactor) : roughnessFactor;
-        setRoughness(newValue);
-    }, [roughnessFactor]);
-    
-    // Effect to update exposure when the exposure prop changes
-    useEffect(() => {
-        const newValue = typeof exposure === 'string' ? parseFloat(exposure) : exposure;
-        setExposureValue(newValue);
-    }, [exposure]);
+        const newMetalness = typeof metallicFactor === 'string' ? parseFloat(metallicFactor) : metallicFactor;
+        const newRoughness = typeof roughnessFactor === 'string' ? parseFloat(roughnessFactor) : roughnessFactor;
+        const newExposure = typeof exposure === 'string' ? parseFloat(exposure) : exposure;
+        
+        setMetalness(newMetalness);
+        setRoughness(newRoughness);
+        setExposureValue(newExposure);
+        
+        // Update material properties with debouncing to avoid rapid updates
+        const timeoutId = setTimeout(() => {
+            updateMaterialProps(newMetalness, newRoughness);
+        }, 50);
+        
+        return () => clearTimeout(timeoutId);
+    }, [metallicFactor, roughnessFactor, exposure]);
 
     // Update isFullscreen when fullscreen prop changes
     useEffect(() => {

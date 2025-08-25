@@ -228,8 +228,10 @@ export const safeJsonParse = <T>(jsonString: string, fallback: T): T => {
     
     // Základná validácia proti prototype pollution
     if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
-      if ('__proto__' in parsed || 'constructor' in parsed || 'prototype' in parsed) {
-        console.warn('Potential prototype pollution detected in JSON');
+      if ('__proto__' in parsed || ('constructor' in parsed && parsed.constructor !== Object) || 'prototype' in parsed) {
+        if (import.meta.env.DEV) {
+          console.warn('Potential prototype pollution detected in JSON');
+        }
         return fallback;
       }
     }

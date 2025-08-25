@@ -58,74 +58,71 @@
 .glow {
   position: absolute;
   border-radius: 50%;
-  filter: blur(120px);
-  opacity: 0.6;
-  animation: float var(--glow-animation-duration) ease-in-out infinite;
+  filter: blur(80px);
+  opacity: 0.15;
+  animation: subtleFloat var(--glow-animation-duration) ease-in-out infinite;
 }
 
 .animated-background--login .glow-1 {
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, rgba(40, 193, 255, 0.15) 0%, transparent 70%);
-  top: -200px;
-  left: -200px;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(40, 193, 255, 0.08) 0%, transparent 60%);
+  top: -150px;
+  left: -150px;
   animation-delay: 0s;
 }
 
 .animated-background--login .glow-2 {
-  width: 300px;
-  height: 300px;
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
-  bottom: -150px;
-  right: -150px;
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.05) 0%, transparent 60%);
+  bottom: -125px;
+  right: -125px;
   animation-delay: 3s;
 }
 
 .animated-background--registration .glow-1 {
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, rgba(40, 193, 255, 0.15) 0%, transparent 70%);
-  top: -200px;
-  right: -200px;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(40, 193, 255, 0.08) 0%, transparent 60%);
+  top: -150px;
+  right: -150px;
   animation-delay: 1s;
 }
 
 .animated-background--registration .glow-2 {
-  width: 300px;
-  height: 300px;
-  background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%);
-  bottom: -150px;
-  left: -150px;
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.05) 0%, transparent 60%);
+  bottom: -125px;
+  left: -125px;
   animation-delay: 4s;
 }
 
 .animated-background--forgot .glow-1 {
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, rgba(40, 193, 255, 0.15) 0%, transparent 70%);
-  top: -200px;
-  left: -200px;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(40, 193, 255, 0.08) 0%, transparent 60%);
+  top: -150px;
+  left: -150px;
   animation-delay: 0s;
 }
 
 .animated-background--forgot .glow-2 {
-  width: 300px;
-  height: 300px;
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
-  bottom: -150px;
-  right: -150px;
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.05) 0%, transparent 60%);
+  bottom: -125px;
+  right: -125px;
   animation-delay: 3s;
 }
 
-@keyframes float {
+@keyframes subtleFloat {
   0%, 100% { 
-    transform: translate(0, 0) rotate(0deg); 
+    transform: translate(0, 0) scale(1); 
   }
-  33% { 
-    transform: translate(30px, -30px) rotate(120deg); 
-  }
-  66% { 
-    transform: translate(-20px, 20px) rotate(240deg); 
+  50% { 
+    transform: translate(10px, -10px) scale(1.05); 
   }
 }
 

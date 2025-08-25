@@ -58,24 +58,13 @@
   right: 0;
   bottom: 0;
   background: 
-    radial-gradient(circle at 10% 20%, rgba(40, 193, 255, 0.15) 0%, transparent 40%),
-    radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 40%);
+    radial-gradient(circle at 10% 20%, rgba(40, 193, 255, 0.03) 0%, transparent 30%),
+    radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.02) 0%, transparent 30%);
   pointer-events: none;
   z-index: var(--z-background);
-  animation: float var(--glow-animation-duration) ease-in-out infinite;
 }
 
-@keyframes float {
-  0%, 100% { 
-    transform: translate(0, 0) rotate(0deg); 
-  }
-  33% { 
-    transform: translate(30px, -30px) rotate(120deg); 
-  }
-  66% { 
-    transform: translate(-20px, 20px) rotate(240deg); 
-  }
-}
+/* Removed overly distracting animation - using subtle static gradients instead */
 
 /* ===== AUTH CARD ===== */
 .auth-card {
