@@ -1,36 +1,12 @@
-import React, { useEffect, useMemo, useRef, useState, Suspense, lazy } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { products } from '../../data/productData';
 import './Home.css';
 
-// Lazy chunks (loaded on intersection)
-const Interactive3D = lazy(() => import('../../components/home/Interactive3D'));
-const VideoDemo = lazy(() => import('../../components/home/VideoDemo'));
-
 const Home: React.FC = () => {
   const featured = useMemo(() => products.slice(0, 6), []);
 
-  // Intersection visibility for lazy sections
-  const threeRef = useRef<HTMLDivElement | null>(null);
-  const videoRef = useRef<HTMLDivElement | null>(null);
-  const [show3D, setShow3D] = useState(false);
-  const [showVideo, setShowVideo] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
-
-  useEffect(() => {
-    const obs = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          if (entry.target === threeRef.current) setShow3D(true);
-          if (entry.target === videoRef.current) setShowVideo(true);
-        }
-      });
-    }, { root: null, rootMargin: '200px 0px', threshold: 0.1 });
-
-    if (threeRef.current) obs.observe(threeRef.current);
-    if (videoRef.current) obs.observe(videoRef.current);
-    return () => obs.disconnect();
-  }, []);
 
   // Try to import hero image via bundler; fallback to CSS placeholder if not present
   const heroAlt = 'RC Tank Kits & STL Files — product hero image';

@@ -29,14 +29,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       // Try both secureLocalStorage and regular localStorage for compatibility
       let storedUser = secureLocalStorage.get('user', null);
-      let token = secureLocalStorage.get('token', null);
+      let token: string | null = secureLocalStorage.get('token', null);
       
       // Fallback to regular localStorage if secureLocalStorage is empty
       if (!token) {
         const tokenRaw = localStorage.getItem('token');
         if (tokenRaw) {
           try {
-            token = JSON.parse(tokenRaw);
+            const parsed = JSON.parse(tokenRaw);
+            token = typeof parsed === 'string' ? parsed : null;
           } catch {
             token = tokenRaw;
           }
