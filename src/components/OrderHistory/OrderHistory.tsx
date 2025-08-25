@@ -18,6 +18,18 @@ const OrderHistory: React.FC = () => {
       void refreshOrders();
     }
   }, [user, hasLoadedOrders, ordersLoading, refreshOrders]);
+
+  // Listen for refresh orders event from navigation
+  useEffect(() => {
+    const handleRefreshOrders = () => {
+      if (user && !ordersLoading) {
+        void refreshOrders();
+      }
+    };
+
+    window.addEventListener('refreshOrders', handleRefreshOrders);
+    return () => window.removeEventListener('refreshOrders', handleRefreshOrders);
+  }, [user, ordersLoading, refreshOrders]);
   
   // Get orders from context
   const orders = getOrders();
@@ -124,11 +136,6 @@ const OrderHistory: React.FC = () => {
   } else if (orders.length === 0 && hasLoadedOrders) {
     return (
       <div className="orders-container">
-        <div className="orders-toolbar">
-          <button className="refresh-button" onClick={() => void refreshOrders()} disabled={ordersLoading} aria-busy={ordersLoading}>
-            {ordersLoading ? 'Refreshing...' : 'Refresh'}
-          </button>
-        </div>
         <div className="orders-empty-state">
           <div className="empty-icon">📦</div>
           <h3>No Orders Yet</h3>
@@ -141,11 +148,6 @@ const OrderHistory: React.FC = () => {
 
   return (
     <div className="orders-container">
-      <div className="orders-toolbar">
-        <button className="refresh-button" onClick={() => void refreshOrders()} disabled={ordersLoading} aria-busy={ordersLoading}>
-          {ordersLoading ? 'Refreshing...' : 'Refresh'}
-        </button>
-      </div>
       <div className="orders-list">
         {orders.map(order => (
           <div 

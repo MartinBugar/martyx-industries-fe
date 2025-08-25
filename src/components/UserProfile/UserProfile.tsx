@@ -148,6 +148,18 @@ const UserProfile: React.FC = () => {
     }
   };
 
+  // Listen for edit profile event from navigation
+  useEffect(() => {
+    const handleEditProfile = () => {
+      if (!isEditing) {
+        toggleEditMode();
+      }
+    };
+
+    window.addEventListener('editProfile', handleEditProfile);
+    return () => window.removeEventListener('editProfile', handleEditProfile);
+  }, [isEditing]);
+
   if (!user) {
     return (
       <div className="profile-empty-state">
@@ -182,17 +194,6 @@ const UserProfile: React.FC = () => {
       
       {!isEditing ? (
         <>
-          <div className="profile-actions">
-            <button 
-              className="edit-button"
-              onClick={toggleEditMode}
-              aria-label="Edit profile"
-              disabled={isFetching}
-            >
-              Edit
-            </button>
-          </div>
-
           <div className="profile-sections">
             <div className="profile-section">
               <h3 className="section-title">Personal Information</h3>
