@@ -4,8 +4,7 @@ import './Pages.css';
 
 const ForgotPassword: React.FC = () => {
   return (
-    <div className="page-container forgot-password-page">
-      <h1>Forgot Password</h1>
+    <div className="forgot-password-page">
       <ForgotPasswordComponent />
     </div>
   );

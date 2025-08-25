@@ -63,7 +63,7 @@ const Login: React.FC = () => {
   }, [confirmation, location.pathname, location.search]);
 
   return (
-    <div className="page-container login-page">
+    <div className="login-page">
       <LoginComponent confirmationStatus={confirmation} />
     </div>
   );
