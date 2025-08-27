@@ -72,21 +72,21 @@ const Checkout: React.FC = () => {
   // If redirected from PayPal with payment params, show processing instead of empty cart
   if (searchParams.get('paymentId')) {
     return (
-      <div className="checkout-container">
+      <main className="checkout-container" role="main" aria-labelledby="checkout-title">
         <div className="empty-cart-message">
           <h2>Finalizing your payment…</h2>
           <p>Redirecting to payment summary.</p>
         </div>
-      </div>
+      </main>
     );
   }
   
   // If cart is empty, redirect to products
   if (items.length === 0) {
     return (
-      <div className="checkout-container">
+      <main className="checkout-container" role="main" aria-labelledby="checkout-title">
         <div className="empty-cart-message">
-          <h2>Your cart is empty</h2>
+          <h2 id="checkout-title">Your cart is empty</h2>
           <p>Add some products to your cart before proceeding to checkout.</p>
           <button 
             className="continue-shopping-btn"
@@ -95,34 +95,54 @@ const Checkout: React.FC = () => {
             Continue Shopping
           </button>
         </div>
-      </div>
+      </main>
     );
   }
   
   return (
-    <div className="checkout-container">
-      <h1>Checkout</h1>
+    <main className="checkout-container" role="main" aria-labelledby="checkout-title">
+      <h1 id="checkout-title">Checkout</h1>
       
       <div className="checkout-content">
         {/* Order Summary */}
-        <div className="order-summary">
-          <h2>Order Summary</h2>
+        <div className="order-summary" role="region" aria-labelledby="order-summary-title">
+          <h2 id="order-summary-title">Order Summary</h2>
           
-          <div className="order-items">
-            {items.map(item => (
-              <div key={item.product.id} className="order-item">
-                <div className="item-name">{item.product.name}</div>
-                <div className="item-details">
-                  <span>Qty: {item.quantity}</span>
-                  <span>${(item.product.price * item.quantity).toFixed(2)}</span>
+          <div className="order-items" role="list">
+            {items.map(item => {
+              const unit = Number(item.product.price);
+              const qty = Number(item.quantity);
+              const lineTotal = (unit * qty).toFixed(2);
+              return (
+                <div
+                  key={item.product.id}
+                  className="order-item"
+                  role="listitem"
+                  aria-label={`${item.product.name}, quantity ${qty}, total €${lineTotal}`}
+                >
+                  <div className="item-name">{item.product.name}</div>
+                  <div className="item-details">
+                    <span className="item-meta">€{unit.toFixed(2)} × {qty}</span>
+                    <span className="item-amount">€{lineTotal}</span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
           
-          <div className="order-total">
-            <span>Total:</span>
-            <span>${getTotalPrice().toFixed(2)}</span>
+          <div className="order-breakdown" aria-live="polite">
+            <div className="breakdown-row">
+              <span>Items ({items.length})</span>
+              <span>€{getTotalPrice().toFixed(2)}</span>
+            </div>
+            <div className="breakdown-row muted">
+              <span>Fees</span>
+              <span>€0.00</span>
+            </div>
+            <div className="order-total breakdown-total">
+              <span>Total</span>
+              <span>€{getTotalPrice().toFixed(2)}</span>
+            </div>
           </div>
           
           <div className="delivery-info">
@@ -143,6 +163,7 @@ const Checkout: React.FC = () => {
                   type="text"
                   id="firstName"
                   name="firstName"
+                  autoComplete="given-name"
                   value={formData.firstName}
                   onChange={handleInputChange}
                   required
@@ -155,6 +176,7 @@ const Checkout: React.FC = () => {
                   type="text"
                   id="lastName"
                   name="lastName"
+                  autoComplete="family-name"
                   value={formData.lastName}
                   onChange={handleInputChange}
                   required
@@ -168,6 +190,7 @@ const Checkout: React.FC = () => {
                 type="email"
                 id="email"
                 name="email"
+                autoComplete="email"
                 value={formData.email}
                 onChange={handleInputChange}
                 required
@@ -192,13 +215,15 @@ const Checkout: React.FC = () => {
             </div>
             
             {/* Status messages */}
-            {payStatus === "processing" && <p>Processing payment…</p>}
-            {payStatus === "success" && <p>Payment completed.</p>}
-            {payStatus === "error" && <p>Payment failed. Please try again.</p>}
+            <div className="payment-status" role="status" aria-live="polite" aria-atomic="true">
+              {payStatus === "processing" && <p>Processing payment…</p>}
+              {payStatus === "success" && <p>Payment completed.</p>}
+              {payStatus === "error" && <p>Payment failed. Please try again.</p>}
+            </div>
           </form>
         </div>
       </div>
-    </div>
+    </main>
   );
 };
 

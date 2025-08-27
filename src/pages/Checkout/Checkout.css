@@ -322,3 +322,225 @@
     gap: 2.5rem;
   }
 }
+
+
+/* === Dark theme redesign aligned with site tokens === */
+.checkout-container {
+  max-width: var(--max-content-width);
+  color: var(--text-primary);
+}
+
+.checkout-container h1 {
+  color: var(--text-primary);
+  letter-spacing: 0.2px;
+}
+
+.checkout-content {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 2rem;
+}
+
+@media (max-width: 992px) {
+  .checkout-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+.order-summary,
+.checkout-form-container {
+  background: var(--card);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.order-summary h2,
+.checkout-form-container h2,
+.checkout-form-container h3 {
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.order-items {
+  margin-bottom: 1.25rem;
+}
+
+.item-name {
+  color: var(--text-primary);
+}
+
+.item-details {
+  color: var(--text-muted);
+}
+
+.order-total span:last-child {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.delivery-info {
+  background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+}
+
+.delivery-info h3 {
+  color: var(--text-primary);
+}
+
+.checkout-form .form-group label {
+  color: var(--text-primary);
+}
+
+.checkout-form .form-group input {
+  background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  border-radius: 12px;
+}
+
+.checkout-form .form-group input::placeholder {
+  color: var(--text-muted);
+}
+
+.checkout-form .form-group input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.payment-section h3 {
+  color: var(--text-primary);
+}
+
+.payment-status p {
+  margin-top: 0.75rem;
+  color: var(--text-muted);
+}
+
+.continue-shopping-btn {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+}
+
+.continue-shopping-btn:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: rgba(40, 193, 255, 0.08);
+}
+
+/* Spacing refinements */
+.order-item { padding: 0.9rem 0; }
+.order-summary { padding: 1.5rem; }
+.checkout-form-container { padding: 1.5rem; }
+
+@media (max-width: 768px) {
+  .order-summary,
+  .checkout-form-container { padding: 1.25rem; }
+}
+
+
+/* Force PayPal Smart Buttons area to be transparent on dark theme */
+/* Target PayPal wrappers and iframe classes mentioned in the issue */
+.checkout-form-container .paypal-buttons,
+.checkout-form-container .paypal-buttons *,
+.checkout-form-container iframe.paypal-buttons-context-iframe,
+.checkout-form-container .paypal-buttons-label-pay,
+.checkout-form-container .paypal-buttons-layout-vertical,
+.checkout-form-container .paypal-buttons iframe {
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border: 0 !important;
+}
+
+/* Ensure the immediate PayPal container does not introduce spacing artifacts */
+.checkout-form-container .paypal-buttons {
+  padding: 0 !important;
+}
+
+/* === Order Summary UX enhancements === */
+.order-items .item-meta {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.order-items .item-amount {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.order-breakdown {
+  margin-top: 0.5rem;
+  border-top: 2px solid rgba(255, 255, 255, 0.08);
+}
+
+.order-breakdown .breakdown-row,
+.order-breakdown .breakdown-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+}
+
+.order-breakdown .breakdown-row.muted span:first-child {
+  color: var(--text-muted);
+}
+
+.order-breakdown .breakdown-total span:last-child {
+  color: var(--accent);
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+/* Sticky summary on desktop for better scanability */
+@media (min-width: 992px) {
+  .order-summary {
+    position: sticky;
+    top: calc(var(--safe-top, 0px) + 1rem);
+    align-self: start;
+  }
+}
+
+
+/* Full-width PayPal button sizing within payment section */
+.payment-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  align-items: stretch;
+}
+
+.payment-section h3 {
+  margin-bottom: 0.25rem;
+}
+
+/* Make the PayPal Smart Buttons container span full width */
+.payment-section .paypal-buttons {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Center behavior removed to ensure full width across breakpoints */
+@media (max-width: 768px) {
+  .payment-section {
+    align-items: stretch;
+  }
+}
+@media (min-width: 769px) {
+  .payment-section {
+    align-items: stretch;
+  }
+}
+
+/* Ensure full width on very narrow screens as well */
+@media (max-width: 380px) {
+  .payment-section .paypal-buttons {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+}
