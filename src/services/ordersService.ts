@@ -261,97 +261,26 @@ export const ordersService = {
         url = `${API_BASE_URL}${downloadUrl}`;
       }
 
-      // Perform token-based download without Authorization headers
-      const response = await fetch(url, {
-        method: 'GET',
-      });
-
-      if (!response.ok) {
-        let message = await response.text().catch(() => 'Failed to download');
-        if (response.status === 410) message = 'Download link expired';
-        else if (response.status === 403) message = 'Not entitled to download this product';
-        else if (response.status === 404) message = 'Product file not available';
-        else if (response.status === 400) message = 'Invalid download link';
-        if (response.status === 401) {
-          localStorage.removeItem('user');
-          localStorage.removeItem('token');
-          removeAuthToken();
-          window.dispatchEvent(new CustomEvent('auth:logout', { detail: { reason: 'api_error' } }));
-        }
-        alert(message || `Error ${response.status}: Unable to download the file`);
-        return false;
-      }
-
-      const disposition = response.headers.get('Content-Disposition') || response.headers.get('content-disposition') || '';
-      const extractFilename = (disp: string): string | null => {
-        if (!disp) return null;
-        let m = disp.match(/filename\*=(?:UTF-8)?'(?:[^']*)'([^;\r\n]+)/i);
-        if (m && m[1]) {
-          const val = m[1].trim().replace(/^"|"$/g, '');
-          try { return decodeURIComponent(val); } catch { return val; }
-        }
-        m = disp.match(/filename\*=UTF-8''([^;\r\n]+)/i);
-        if (m && m[1]) {
-          const val = m[1].trim().replace(/^"|"$/g, '');
-          try { return decodeURIComponent(val); } catch { return val; }
-        }
-        m = disp.match(/filename=\"([^\"\r\n]+)\"/i);
-        if (m && m[1]) {
-          const val = m[1].trim();
-          try { return decodeURIComponent(val); } catch { return val; }
-        }
-        m = disp.match(/filename=([^;\r\n]+)/i);
-        if (m && m[1]) {
-          const val = m[1].trim().replace(/^\"|\"$/g, '');
-          try { return decodeURIComponent(val); } catch { return val; }
-        }
-        return null;
-      };
-
-      const sanitizeFilename = (name: string): string => {
-        const base = (name || '').split(/[\\\\\/]/).pop() || '';
-        const cleaned = base.replace(/[^a-zA-Z0-9 ._()-]+/g, '_').trim();
-        const trimmedDots = cleaned.replace(/^[. ]+|[. ]+$/g, '');
-        return trimmedDots || '';
-      };
-
-      const forceZipExtension = (name: string): string => {
-        if (!name) return 'product.zip';
-        let base = name.trim();
-        if (/\.zip$/i.test(base)) {
-          return base.replace(/\.[^.]+$/i, '.zip');
-        }
-        base = base.replace(/\.[^.]+$/i, '');
-        return `${base}.zip`;
-      };
-
-      let filenameBase = '';
-      if (suggestedName) filenameBase = sanitizeFilename(suggestedName);
-      if (!filenameBase) {
-        const headerName = extractFilename(disposition) || '';
-        filenameBase = sanitizeFilename(headerName);
-      }
-      if (!filenameBase) filenameBase = 'product';
-      const filename = forceZipExtension(filenameBase);
-
-      const blob = await response.blob();
-      if (!blob || blob.size === 0) {
-        alert('File not available for download');
-        return false;
-      }
-
+      // Prefer native browser download by navigating to the URL so the request always hits backend
       const link = document.createElement('a');
-      const objectUrl = URL.createObjectURL(blob);
-      link.href = objectUrl;
-      link.download = filename;
+      link.href = url;
+      // Open in new tab to avoid leaving the app; browser will still download due to Content-Disposition
+      link.target = '_blank';
+      // Provide a hint filename if caller suggests one; browser may override via Content-Disposition
+      if (suggestedName) {
+        try {
+          const safeName = suggestedName.replace(/[^a-zA-Z0-9 ._()-]+/g, '_').trim() || 'product';
+          link.download = /\.[A-Za-z0-9]{2,5}$/.test(safeName) ? safeName : `${safeName}.zip`;
+        } catch { /* ignore */ }
+      }
+      link.rel = 'noopener';
       document.body.appendChild(link);
       link.click();
       link.remove();
-      URL.revokeObjectURL(objectUrl);
       return true;
     } catch (error) {
       console.error('Download by URL error:', error);
-      alert('An unexpected error occurred while downloading the file.');
+      alert('An unexpected error occurred while initiating the download.');
       return false;
     }
   },
@@ -368,97 +297,23 @@ export const ordersService = {
         url = `${API_BASE_URL}${downloadUrl}`;
       }
 
-      // Perform token-based download without Authorization headers
-      const response = await fetch(url, {
-        method: 'GET',
-      });
-
-      if (!response.ok) {
-        let message = await response.text().catch(() => 'Failed to download invoice');
-        if (response.status === 410) message = 'Download link expired';
-        else if (response.status === 403) message = 'Not entitled to download this invoice';
-        else if (response.status === 404) message = 'Invoice not available';
-        else if (response.status === 400) message = 'Invalid download link';
-        if (response.status === 401) {
-          localStorage.removeItem('user');
-          localStorage.removeItem('token');
-          removeAuthToken();
-          window.dispatchEvent(new CustomEvent('auth:logout', { detail: { reason: 'api_error' } }));
-        }
-        alert(message || `Error ${response.status}: Unable to download the invoice`);
-        return false;
-      }
-
-      const disposition = response.headers.get('Content-Disposition') || response.headers.get('content-disposition') || '';
-      const extractFilename = (disp: string): string | null => {
-        if (!disp) return null;
-        let m = disp.match(/filename\*=(?:UTF-8)?'(?:[^']*)'([^;\r\n]+)/i);
-        if (m && m[1]) {
-          const val = m[1].trim().replace(/^"|"$/g, '');
-          try { return decodeURIComponent(val); } catch { return val; }
-        }
-        m = disp.match(/filename\*=UTF-8''([^;\r\n]+)/i);
-        if (m && m[1]) {
-          const val = m[1].trim().replace(/^"|"$/g, '');
-          try { return decodeURIComponent(val); } catch { return val; }
-        }
-        m = disp.match(/filename=\"([^\"\r\n]+)\"/i);
-        if (m && m[1]) {
-          const val = m[1].trim();
-          try { return decodeURIComponent(val); } catch { return val; }
-        }
-        m = disp.match(/filename=([^;\r\n]+)/i);
-        if (m && m[1]) {
-          const val = m[1].trim().replace(/^\"|\"$/g, '');
-          try { return decodeURIComponent(val); } catch { return val; }
-        }
-        return null;
-      };
-
-      const sanitizeFilename = (name: string): string => {
-        const base = (name || '').split(/[\\\\\/]/).pop() || '';
-        const cleaned = base.replace(/[^a-zA-Z0-9 ._()-]+/g, '_').trim();
-        const trimmedDots = cleaned.replace(/^[. ]+|[. ]+$/g, '');
-        return trimmedDots || '';
-      };
-
-      const forcePdfExtension = (name: string): string => {
-        if (!name) return 'invoice.pdf';
-        let base = name.trim();
-        if (/\.pdf$/i.test(base)) {
-          return base.replace(/\.[^.]+$/i, '.pdf');
-        }
-        base = base.replace(/\.[^.]+$/i, '');
-        return `${base}.pdf`;
-      };
-
-      let filenameBase = '';
-      if (suggestedName) filenameBase = sanitizeFilename(suggestedName);
-      if (!filenameBase) {
-        const headerName = extractFilename(disposition) || '';
-        filenameBase = sanitizeFilename(headerName);
-      }
-      if (!filenameBase) filenameBase = 'invoice';
-      const filename = forcePdfExtension(filenameBase);
-
-      const blob = await response.blob();
-      if (!blob || blob.size === 0) {
-        alert('Invoice file not available for download');
-        return false;
-      }
-
+      // Prefer native navigation to ensure backend is contacted and browser handles PDF
       const link = document.createElement('a');
-      const objectUrl = URL.createObjectURL(blob);
-      link.href = objectUrl;
-      link.download = filename;
+      link.href = url;
+      if (suggestedName) {
+        try {
+          const safeName = suggestedName.replace(/[^a-zA-Z0-9 ._()-]+/g, '_').trim() || 'invoice';
+          link.download = /\.[A-Za-z0-9]{2,5}$/.test(safeName) ? safeName : `${safeName}.pdf`;
+        } catch { /* ignore */ }
+      }
+      link.rel = 'noopener';
       document.body.appendChild(link);
       link.click();
       link.remove();
-      URL.revokeObjectURL(objectUrl);
       return true;
     } catch (error) {
       console.error('Download invoice by URL error:', error);
-      alert('An unexpected error occurred while downloading the invoice.');
+      alert('An unexpected error occurred while initiating the invoice download.');
       return false;
     }
   },
