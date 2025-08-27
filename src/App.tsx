@@ -49,7 +49,7 @@ import ScrollToTop from './components/ScrollToTop/ScrollToTop'
 
 // PayPal configuration
 const paypalOptions = {
-  clientId: import.meta.env.VITE_PAYPAL_CLIENT_ID || "YOUR_SANDBOX_CLIENT_ID",
+  clientId: import.meta.env.VITE_PAYPAL_CLIENT_ID || "ARuSpd8MqECuEZ-L8I5tOHUSCRPNcTXHq7C_pliB76gHjIcE3ehpjEir8GUP760PB0Ap4sIpkuuDKqjh",
   currency: "EUR",
   intent: "capture"
   // optional: "locale": "sk_SK",
