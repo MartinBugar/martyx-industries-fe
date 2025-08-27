@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useCart } from '../../context/useCart';
 import { useAuth } from '../../context/useAuth';
 import './Checkout.css';
-import { paymentService } from '../../services/paymentService';
-import paypalIcon from '../../assets/icons/paypal.png';
+import PayPalCheckoutButton from '../../components/PayPalCheckoutButton';
 
 interface CheckoutFormData {
   firstName: string;
@@ -20,7 +19,7 @@ const Checkout: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [payStatus, setPayStatus] = useState<"idle"|"processing"|"success"|"error">("idle");
   const [formData, setFormData] = useState<CheckoutFormData>({
     firstName: user?.firstName || '',
     lastName: user?.lastName || '',
@@ -30,18 +29,12 @@ const Checkout: React.FC = () => {
     cardCvc: ''
   });
 
-  // If returned from PayPal to /checkout with payment params, forward to success route
-  useEffect(() => {
-    const paymentId = searchParams.get('paymentId');
-    if (paymentId) {
-      const params = new URLSearchParams();
-      params.set('paymentId', paymentId);
-      const payerEmail = searchParams.get('PayerEmail');
-      if (payerEmail) params.set('PayerEmail', payerEmail);
-      navigate(`/payment/paypal/success?${params.toString()}`, { replace: true });
-    }
-  }, [searchParams, navigate]);
-  
+  // Compute cartHash that changes when cart total or items change
+  const cartHash = useMemo(() => {
+    const totalCents = Math.round(getTotalPrice() * 100);
+    return `${totalCents}:${items.length}`;
+  }, [getTotalPrice, items.length]);
+
   // Handle form input changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -50,60 +43,30 @@ const Checkout: React.FC = () => {
       [name]: value
     });
   };
-  
-  // Handle PayPal payment creation and redirect
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
 
-    // Validate form
-    if (!formData.firstName || !formData.lastName || !formData.email) {
-      alert('Please fill in your name and email');
-      return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      alert('Please enter a valid email address');
-      return;
-    }
-
-    try {
-      setIsProcessing(true);
-
-      // Persist email for later use (success page and order confirmation)
+  // PayPal success handler
+  const handlePayPalSuccess = (capture: any) => {
+    setPayStatus("success");
+    console.log('Payment successful:', capture);
+    
+    // Persist email for later use
+    if (formData.email) {
       sessionStorage.setItem('customerEmail', formData.email);
       localStorage.setItem('customerEmail', formData.email);
-
-      // Build order DTO expected by backend (guest checkout supported)
-      const orderDto = {
-        orderItems: items.map((item) => ({
-          product: { id: item.product.id, name: item.product.name },
-          quantity: item.quantity,
-          price: item.product.price,
-          currency: item.product.currency ?? 'USD',
-        })),
-        totalAmount: getTotalPrice(),
-        currency: items[0]?.product.currency ?? 'USD',
-        user: { email: formData.email },
-      };
-
-      // Create PayPal payment
-      const payment = await paymentService.createPayPalPayment(orderDto);
-
-      if (!payment.paymentUrl) {
-        // If backend returns a completed/pending payment without a redirect URL, go to the summary page
-        navigate('/payment/paypal/success', { state: { payment } });
-        return;
-      }
-
-      // Redirect to approval/success URL provided by backend
-      window.location.href = payment.paymentUrl;
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to initiate payment';
-      alert(message);
-    } finally {
-      setIsProcessing(false);
     }
+    
+    // TODO: Navigate to thank-you page with order summary
+    // navigate('/order/thank-you', { state: { capture, orderSummary } });
+    
+    // For now, show success message
+    alert('Payment successful! You will receive your digital products via email.');
+  };
+
+  // PayPal error handler
+  const handlePayPalError = (err: unknown) => {
+    console.error('PayPal payment error:', err);
+    setPayStatus("error");
+    alert('Payment failed. Please try again.');
   };
   
   // If redirected from PayPal with payment params, show processing instead of empty cart
@@ -172,7 +135,7 @@ const Checkout: React.FC = () => {
         <div className="checkout-form-container">
           <h2>Your Information</h2>
           
-          <form className="checkout-form" onSubmit={handleSubmit}>
+          <form className="checkout-form">
             <div className="form-row">
               <div className="form-group">
                 <label htmlFor="firstName">First Name</label>
@@ -213,16 +176,28 @@ const Checkout: React.FC = () => {
             
             <h3>Payment</h3>
             <p>We use PayPal for secure checkout of digital products.</p>
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '10px' }}>
-              <img src={paypalIcon} alt="PayPal" style={{ height: '48px', width: 'auto' }} />
-            </div>
-            <button
-              type="submit"
-              className="place-order-btn"
-              disabled={isProcessing}
-            >
-              {isProcessing ? 'Redirecting…' : 'Pay with PayPal'}
-            </button>
+            
+            {/* PayPal Checkout Button */}
+            {user?.id && (
+              <div className="payment-section">
+                <h3>Pay with PayPal</h3>
+                <PayPalCheckoutButton
+                  userId={user.id}
+                  cartHash={cartHash}
+                  onSuccess={handlePayPalSuccess}
+                  onError={handlePayPalError}
+                />
+              </div>
+            )}
+            
+            {/* Status messages */}
+            {payStatus === "processing" && <p>Processing payment…</p>}
+            {payStatus === "success" && <p>Payment completed.</p>}
+            {payStatus === "error" && <p>Payment failed. Please try again.</p>}
+            
+            {!user?.id && (
+              <p>Please log in to complete your purchase.</p>
+            )}
           </form>
         </div>
       </div>

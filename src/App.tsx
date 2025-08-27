@@ -1,6 +1,7 @@
 import './App.css'
 import { useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom'
+import { PayPalScriptProvider } from '@paypal/react-paypal-js'
 import SecurityErrorBoundary from './components/security/SecurityErrorBoundary'
 import { setupCSPReporting, initializeCSRFToken } from './utils/security'
 import { CartProvider } from './context/CartContext'
@@ -46,6 +47,14 @@ import AdminOrders from './pages/admin/AdminOrders'
 import { useIOSNoZoomOnFocus } from './hooks/useIOSNoZoomOnFocus'
 import ScrollToTop from './components/ScrollToTop/ScrollToTop'
 
+// PayPal configuration
+const paypalOptions = {
+  clientId: import.meta.env.VITE_PAYPAL_CLIENT_ID || "YOUR_SANDBOX_CLIENT_ID",
+  currency: "EUR",
+  intent: "capture"
+  // optional: "locale": "sk_SK",
+};
+
 // App wrapper to provide DevPasswordGate, AuthContext, and CartContext
 function AppWrapper() {
   // Inicializácia bezpečnostných opatrení
@@ -55,17 +64,19 @@ function AppWrapper() {
   }, []);
 
   return (
-    <SecurityErrorBoundary>
-      <DevPasswordGateProvider>
-        <DevPasswordGate>
-          <AuthProvider>
-            <CartProvider>
-              <AppContent />
-            </CartProvider>
-          </AuthProvider>
-        </DevPasswordGate>
-      </DevPasswordGateProvider>
-    </SecurityErrorBoundary>
+    <PayPalScriptProvider options={paypalOptions}>
+      <SecurityErrorBoundary>
+        <DevPasswordGateProvider>
+          <DevPasswordGate>
+            <AuthProvider>
+              <CartProvider>
+                <AppContent />
+              </CartProvider>
+            </AuthProvider>
+          </DevPasswordGate>
+        </DevPasswordGateProvider>
+      </SecurityErrorBoundary>
+    </PayPalScriptProvider>
   );
 }
 
