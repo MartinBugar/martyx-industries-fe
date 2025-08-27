@@ -46,20 +46,82 @@ const Checkout: React.FC = () => {
 
   // PayPal success handler
   const handlePayPalSuccess = (capture: unknown) => {
-    setPayStatus("success");
-    console.log('Payment successful:', capture);
-    
-    // Persist email for later use
+    console.log('Payment capture response:', capture);
+
+    // Normalize capture data into a flexible shape and check backend status
+    type PayPalCaptureLoose = {
+      id?: string;
+      transactionId?: string;
+      amount?: number;
+      orderId?: number | string;
+      payerEmail?: string;
+      payer?: { email_address?: string };
+      purchase_units?: Array<{
+        amount?: { currency_code?: string; value?: string };
+        payments?: { captures?: Array<{ id?: string }> };
+      }>;
+      currency?: string;
+      order?: { id?: number | string };
+      // New fields from backend capture-order response
+      status?: string; // expects "PAID" for success
+      orderNumber?: string;
+      downloadUrl?: string;
+      downloadUrls?: string[];
+      downloadToken?: string;
+      downloadTokens?: string[];
+      invoiceDownloadUrl?: string;
+      invoiceDownloadUrls?: string[];
+      invoiceDownloadToken?: string;
+      invoiceDownloadTokens?: string[];
+    };
+
+    const c = capture as PayPalCaptureLoose;
+    const backendStatus = (c?.status || '').toString().toUpperCase();
+
+    // Only proceed if backend reports PAID
+    if (backendStatus !== 'PAID') {
+      console.error('Capture not PAID, aborting success navigation. Status:', c?.status);
+      setPayStatus('error');
+      alert('Payment not completed. Please try again or contact support.');
+      return;
+    }
+
+    // Persist email for later use (on success only)
     if (formData.email) {
       sessionStorage.setItem('customerEmail', formData.email);
       localStorage.setItem('customerEmail', formData.email);
     }
-    
-    // TODO: Navigate to thank-you page with order summary
-    // navigate('/order/thank-you', { state: { capture, orderSummary } });
-    
-    // For now, show success message
-    alert('Payment successful! You will receive your digital products via email.');
+
+    const txId = c?.transactionId || c?.id || c?.purchase_units?.[0]?.payments?.captures?.[0]?.id || undefined;
+    const payerEmail = c?.payer?.email_address || c?.payerEmail || formData.email || undefined;
+    const orderId = c?.orderId ?? c?.order?.id ?? undefined;
+    const currency = (c?.currency || c?.purchase_units?.[0]?.amount?.currency_code || 'EUR') as string;
+    const amount = typeof c?.amount === 'number' ? c.amount : Number(c?.purchase_units?.[0]?.amount?.value) || getTotalPrice();
+
+    const paymentState = {
+      status: 'COMPLETED', // map backend PAID -> UI COMPLETED
+      amount,
+      currency,
+      paymentMethod: 'PAYPAL',
+      transactionId: txId,
+      payerEmail,
+      orderId,
+      orderNumber: c?.orderNumber,
+      // pass-through any optional download info if backend provided it
+      downloadUrl: c?.downloadUrl,
+      downloadUrls: Array.isArray(c?.downloadUrls) ? c.downloadUrls : undefined,
+      downloadToken: c?.downloadToken,
+      downloadTokens: Array.isArray(c?.downloadTokens) ? c.downloadTokens : undefined,
+      invoiceDownloadUrl: c?.invoiceDownloadUrl,
+      invoiceDownloadUrls: Array.isArray(c?.invoiceDownloadUrls) ? c.invoiceDownloadUrls : undefined,
+      invoiceDownloadToken: c?.invoiceDownloadToken,
+      invoiceDownloadTokens: Array.isArray(c?.invoiceDownloadTokens) ? c.invoiceDownloadTokens : undefined,
+    } as const;
+
+    setPayStatus('success');
+
+    // Navigate to the dedicated PayPal success page with normalized payment data
+    navigate('/payment/paypal/success', { state: { payment: paymentState } });
   };
 
   // PayPal error handler

@@ -17,7 +17,7 @@ Tento dokument popisuje implementované bezpečnostné opatrenia v frontend apli
 ```html
 <meta http-equiv="Content-Security-Policy" content="
   default-src 'self';
-  script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.stripe.com;
+  script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.paypal.com https://www.sandbox.paypal.com;
   style-src 'self' 'unsafe-inline';
   img-src 'self' data: https: blob:;
   ...

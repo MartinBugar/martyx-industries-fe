@@ -11,12 +11,12 @@
     <!-- Security Headers -->
     <meta http-equiv="Content-Security-Policy" content="
       default-src 'self';
-      script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.stripe.com https://www.paypal.com https://www.sandbox.paypal.com;
+      script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.paypal.com https://www.sandbox.paypal.com;
       style-src 'self' 'unsafe-inline';
       img-src 'self' data: https: blob:;
       font-src 'self' data:;
-      connect-src 'self' https://api.stripe.com https://api.paypal.com https://api.sandbox.paypal.com http://localhost:8080 https://martyx-industries-be-2xf3x.ondigitalocean.app wss: ws:;
-      frame-src 'self' https://js.stripe.com https://www.paypal.com https://www.sandbox.paypal.com https://www.youtube.com https://www.youtube-nocookie.com;
+      connect-src 'self' https://api.paypal.com https://api.sandbox.paypal.com http://localhost:8080 https://martyx-industries-be-2xf3x.ondigitalocean.app wss: ws:;
+      frame-src 'self' https://www.paypal.com https://www.sandbox.paypal.com https://www.youtube.com https://www.youtube-nocookie.com;
       object-src 'none';
       base-uri 'self';
       form-action 'self';
@@ -35,8 +35,6 @@
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="manifest" href="/manifest.webmanifest" crossorigin="use-credentials" />
     <title>MARTYX INDUSTRIES</title>
-    <link rel="preconnect" href="https://js.stripe.com" />
-    <script defer src="https://js.stripe.com/v3/" crossorigin="anonymous"></script>
   </head>
   <body>
     <div id="root"></div>

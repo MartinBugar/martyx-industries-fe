@@ -261,15 +261,9 @@ export const ordersService = {
         url = `${API_BASE_URL}${downloadUrl}`;
       }
 
-      const headers: Record<string, string> = {};
-      Object.entries(defaultHeaders).forEach(([key, value]) => {
-        if (value !== undefined) headers[key] = value;
-      });
-      delete headers['Content-Type'];
-
+      // Perform token-based download without Authorization headers
       const response = await fetch(url, {
         method: 'GET',
-        headers: headers as HeadersInit,
       });
 
       if (!response.ok) {
@@ -374,15 +368,9 @@ export const ordersService = {
         url = `${API_BASE_URL}${downloadUrl}`;
       }
 
-      const headers: Record<string, string> = {};
-      Object.entries(defaultHeaders).forEach(([key, value]) => {
-        if (value !== undefined) headers[key] = value;
-      });
-      delete headers['Content-Type'];
-
+      // Perform token-based download without Authorization headers
       const response = await fetch(url, {
         method: 'GET',
-        headers: headers as HeadersInit,
       });
 
       if (!response.ok) {

@@ -143,6 +143,7 @@ const PayPalSuccess: React.FC = () => {
           if (typeof res.downloadToken === 'string' && res.downloadToken) links.push(toUrl(res.downloadToken));
           if (links.length > 0) {
             sessionStorage.setItem('downloadUrls', JSON.stringify(links));
+            setDownloadUrls(links);
           }
 
           // Extract invoice download URLs/tokens and store
@@ -282,7 +283,7 @@ const PayPalSuccess: React.FC = () => {
 
             {payment.status === 'COMPLETED' ? (
               <>
-                <p className="order-message">Your payment has been successfully completed.</p>
+                <p className="order-message">Order successfully paid.</p>
                 <p className="order-message">We have sent an email with your invoice and digital product.</p>
               </>
             ) : payment.status === 'PENDING' ? (
@@ -302,7 +303,7 @@ const PayPalSuccess: React.FC = () => {
               </div>
               <div className="summary-item">
                 <span className="label">Order ID</span>
-                <span className="value">{payment.orderId ?? '-'}</span>
+                <span className="value">{(payment as any)?.orderNumber || payment.orderId || '-'}</span>
               </div>
             </div>
 
@@ -324,16 +325,12 @@ const PayPalSuccess: React.FC = () => {
             <div className="actions">
               {payment.status === 'COMPLETED' ? (
                 <>
-                  {(typeof payment.orderId === 'number' || (invoiceDownloadUrls && invoiceDownloadUrls.length > 0)) && (
-                    <button onClick={handleDownloadInvoice} disabled={downloading}>
-                      {downloading ? 'Downloading…' : 'Download Invoice'}
-                    </button>
-                  )}
-                  {downloadUrls && downloadUrls.length > 0 && (
-                    <button onClick={handleDownloadProduct} disabled={downloadingProduct}>
-                      {downloadingProduct ? 'Downloading…' : 'Download Product'}
-                    </button>
-                  )}
+                  <button onClick={handleDownloadProduct} disabled={downloadingProduct}>
+                    {downloadingProduct ? 'Downloading…' : 'Download Digital Product'}
+                  </button>
+                  <button onClick={handleDownloadInvoice} disabled={downloading}>
+                    {downloading ? 'Downloading…' : 'Download Invoice'}
+                  </button>
                 </>
               ) : (
                 <button onClick={() => navigate('/checkout')}>Back to Checkout</button>
