@@ -1,24 +1,40 @@
 import { useCallback, useMemo } from "react";
 import { PayPalButtons } from "@paypal/react-paypal-js";
+import type { CartItem } from "../context/cartContextTypes";
+import { API_BASE_URL } from "../services/apiUtils";
 
 type Props = {
-  userId: string;
+  items: CartItem[];
+  totalAmount: number;
+  currency?: string; // e.g., "EUR"
+  email?: string; // guest or logged-in user's email
   cartHash: string | number; // changes whenever cart content/total changes
-  onSuccess: (capture: any) => void;
+  onSuccess: (capture: unknown) => void;
   onError: (err: unknown) => void;
 };
 
-export default function PayPalCheckoutButton({ userId, cartHash, onSuccess, onError }: Props) {
+export default function PayPalCheckoutButton({ items, totalAmount, currency = "EUR", email, cartHash, onSuccess, onError }: Props) {
 
   // Create order on server
   const createOrder = useCallback(async () => {
-    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'https://martyx-industries-be-2xf3x.ondigitalocean.app'}/api/paypal/create-order`, {
+    const payload = {
+      orderItems: items.map(i => ({
+        product: { id: Number(i.product.id) },
+        quantity: i.quantity,
+        price: Number(i.product.price),
+        currency: (i.product.currency || currency).toUpperCase()
+      })),
+      totalAmount: Number(totalAmount.toFixed(2)),
+      currency: currency.toUpperCase(),
+      user: email && email.trim() ? { email } : null
+    };
+
+    const res = await fetch(`${API_BASE_URL}/api/paypal/create-order`, {
       method: "POST",
       headers: { 
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${localStorage.getItem('token')}`
+        "Content-Type": "application/json"
       },
-      body: JSON.stringify({ userId })
+      body: JSON.stringify(payload)
     });
 
     if (!res.ok) {
@@ -29,15 +45,14 @@ export default function PayPalCheckoutButton({ userId, cartHash, onSuccess, onEr
     const data = await res.json();
     if (!data?.id) throw new Error("Server did not return order id.");
     return data.id as string;
-  }, [userId]);
+  }, [items, totalAmount, currency, email]);
 
   // Capture on server after approval
   const onApprove = useCallback(async (data: { orderID: string }) => {
-    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'https://martyx-industries-be-2xf3x.ondigitalocean.app'}/api/paypal/capture-order`, {
+    const res = await fetch(`${API_BASE_URL}/api/paypal/capture-order`, {
       method: "POST",
       headers: { 
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${localStorage.getItem('token')}`
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({ orderId: data.orderID })
     });
@@ -52,7 +67,7 @@ export default function PayPalCheckoutButton({ userId, cartHash, onSuccess, onEr
   }, [onSuccess]);
 
   // Force PayPalButtons to re-render when cart changes
-  const forceReRender = useMemo(() => [cartHash, "EUR", "capture"], [cartHash]);
+  const forceReRender = useMemo(() => [cartHash, currency, "capture"], [cartHash, currency]);
 
   return (
     <PayPalButtons

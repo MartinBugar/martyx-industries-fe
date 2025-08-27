@@ -1,5 +1,5 @@
 # PayPal Configuration
-VITE_PAYPAL_CLIENT_ID=YOUR_SANDBOX_CLIENT_ID
+VITE_PAYPAL_CLIENT_ID=AYGXoyyXegEDEbGLz1CkoU_NjBKhDE3QMQ3YmbAnFYEJEZoSUfELxj--8cK6_Y1CqmhausO4ZAJesWv6
 
 # API Configuration
 VITE_API_BASE_URL=https://martyx-industries-be-2xf3x.ondigitalocean.app

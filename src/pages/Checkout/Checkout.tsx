@@ -45,7 +45,7 @@ const Checkout: React.FC = () => {
   };
 
   // PayPal success handler
-  const handlePayPalSuccess = (capture: any) => {
+  const handlePayPalSuccess = (capture: unknown) => {
     setPayStatus("success");
     console.log('Payment successful:', capture);
     
@@ -178,26 +178,23 @@ const Checkout: React.FC = () => {
             <p>We use PayPal for secure checkout of digital products.</p>
             
             {/* PayPal Checkout Button */}
-            {user?.id && (
-              <div className="payment-section">
-                <h3>Pay with PayPal</h3>
-                <PayPalCheckoutButton
-                  userId={user.id}
-                  cartHash={cartHash}
-                  onSuccess={handlePayPalSuccess}
-                  onError={handlePayPalError}
-                />
-              </div>
-            )}
+            <div className="payment-section">
+              <h3>Pay with PayPal</h3>
+              <PayPalCheckoutButton
+                items={items}
+                totalAmount={getTotalPrice()}
+                currency={"EUR"}
+                email={formData.email}
+                cartHash={cartHash}
+                onSuccess={handlePayPalSuccess}
+                onError={handlePayPalError}
+              />
+            </div>
             
             {/* Status messages */}
             {payStatus === "processing" && <p>Processing payment…</p>}
             {payStatus === "success" && <p>Payment completed.</p>}
             {payStatus === "error" && <p>Payment failed. Please try again.</p>}
-            
-            {!user?.id && (
-              <p>Please log in to complete your purchase.</p>
-            )}
           </form>
         </div>
       </div>
