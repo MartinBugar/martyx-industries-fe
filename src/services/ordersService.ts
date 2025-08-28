@@ -252,35 +252,13 @@ export const ordersService = {
   downloadByUrl: async (downloadUrl: string, suggestedName?: string): Promise<boolean> => {
     try {
       if (!downloadUrl) {
-        alert('Missing download URL.');
+        console.debug('[ordersService.downloadByUrl] No downloadUrl provided');
         return false;
       }
-      // If relative path, prefix with API_BASE_URL
-      let url = downloadUrl;
-      if (downloadUrl.startsWith('/')) {
-        url = `${API_BASE_URL}${downloadUrl}`;
-      }
-
-      // Prefer native browser download by navigating to the URL so the request always hits backend
-      const link = document.createElement('a');
-      link.href = url;
-      // Open in new tab to avoid leaving the app; browser will still download due to Content-Disposition
-      link.target = '_blank';
-      // Provide a hint filename if caller suggests one; browser may override via Content-Disposition
-      if (suggestedName) {
-        try {
-          const safeName = suggestedName.replace(/[^a-zA-Z0-9 ._()-]+/g, '_').trim() || 'product';
-          link.download = /\.[A-Za-z0-9]{2,5}$/.test(safeName) ? safeName : `${safeName}.zip`;
-        } catch { /* ignore */ }
-      }
-      link.rel = 'noopener';
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      return true;
+      const { downloadByUrl } = await import('./download');
+      return await downloadByUrl(downloadUrl, suggestedName);
     } catch (error) {
       console.error('Download by URL error:', error);
-      alert('An unexpected error occurred while initiating the download.');
       return false;
     }
   },
@@ -289,31 +267,13 @@ export const ordersService = {
   downloadInvoiceByUrl: async (downloadUrl: string, suggestedName?: string): Promise<boolean> => {
     try {
       if (!downloadUrl) {
-        alert('Missing invoice download URL.');
+        console.debug('[ordersService.downloadInvoiceByUrl] No downloadUrl provided');
         return false;
       }
-      let url = downloadUrl;
-      if (downloadUrl.startsWith('/')) {
-        url = `${API_BASE_URL}${downloadUrl}`;
-      }
-
-      // Prefer native navigation to ensure backend is contacted and browser handles PDF
-      const link = document.createElement('a');
-      link.href = url;
-      if (suggestedName) {
-        try {
-          const safeName = suggestedName.replace(/[^a-zA-Z0-9 ._()-]+/g, '_').trim() || 'invoice';
-          link.download = /\.[A-Za-z0-9]{2,5}$/.test(safeName) ? safeName : `${safeName}.pdf`;
-        } catch { /* ignore */ }
-      }
-      link.rel = 'noopener';
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      return true;
+      const { downloadInvoiceByUrl } = await import('./download');
+      return await downloadInvoiceByUrl(downloadUrl, suggestedName);
     } catch (error) {
       console.error('Download invoice by URL error:', error);
-      alert('An unexpected error occurred while initiating the invoice download.');
       return false;
     }
   },

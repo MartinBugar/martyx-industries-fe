@@ -78,9 +78,9 @@ const Checkout: React.FC = () => {
     const c = capture as PayPalCaptureLoose;
     const backendStatus = (c?.status || '').toString().toUpperCase();
 
-    // Only proceed if backend reports PAID
-    if (backendStatus !== 'PAID') {
-      console.error('Capture not PAID, aborting success navigation. Status:', c?.status);
+    // Accept both PAID and COMPLETED as successful statuses from backend
+    if (backendStatus !== 'PAID' && backendStatus !== 'COMPLETED') {
+      console.error('Capture not successful, aborting success navigation. Status:', c?.status);
       setPayStatus('error');
       alert('Payment not completed. Please try again or contact support.');
       return;

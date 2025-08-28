@@ -36,6 +36,7 @@ const PayPalSuccess: React.FC = () => {
     }
   });
   const [downloadingProduct, setDownloadingProduct] = useState<boolean>(false);
+  const [showStatusModal, setShowStatusModal] = useState<boolean>(false);
   const processedRef = useRef(false);
 
   useEffect(() => {
@@ -49,11 +50,22 @@ const PayPalSuccess: React.FC = () => {
         localStorage.getItem('customerEmail') ||
         '';
 
+      // Telemetry: log current sessionStorage state at page load
+      console.debug('[PayPalSuccess] Page load debug', {
+        existingDownloadUrls: downloadUrls,
+        existingInvoiceDownloadUrls: invoiceDownloadUrls,
+        paymentId,
+      });
+
       // If we received payment details via navigation state, use them directly
       const statePayment = locationState?.payment;
       if (statePayment) {
         try {
           setPayment(statePayment);
+          console.debug('[PayPalSuccess] Payment from navigation state', {
+            status: statePayment.status,
+            orderId: statePayment.orderId,
+          });
 
           if (statePayment.status === 'COMPLETED') {
             // Store email used
@@ -72,6 +84,7 @@ const PayPalSuccess: React.FC = () => {
               sessionStorage.setItem('downloadUrls', JSON.stringify(links));
               setDownloadUrls(links);
             }
+            console.debug('[PayPalSuccess] Parsed downloadUrls from payment state:', links);
 
             // Extract invoice download URLs/tokens and store
             const invLinks: string[] = [];
@@ -84,6 +97,7 @@ const PayPalSuccess: React.FC = () => {
               sessionStorage.setItem('invoiceDownloadUrls', JSON.stringify(invLinks));
               setInvoiceDownloadUrls(invLinks);
             }
+            console.debug('[PayPalSuccess] Parsed invoiceDownloadUrls from payment state:', invLinks);
 
             // Save order to user's history if logged in
             if (isAuthenticated && user) {
@@ -106,8 +120,8 @@ const PayPalSuccess: React.FC = () => {
 
             // Clear cart on success
             clearCart();
-          } else if (statePayment.status !== 'PENDING') {
-            setError(statePayment.errorMessage || 'Payment not completed');
+          } else {
+            setShowStatusModal(true);
           }
         } catch (e) {
           const msg = e instanceof Error ? e.message : 'Failed to finalize payment';
@@ -127,6 +141,10 @@ const PayPalSuccess: React.FC = () => {
       try {
         const res = await paymentService.executePayPalPayment(paymentId, payerEmail);
         setPayment(res);
+        console.debug('[PayPalSuccess] Payment from server response', {
+          status: res.status,
+          orderId: res.orderId,
+        });
 
         if (res.status === 'COMPLETED') {
           // Store email used
@@ -145,6 +163,7 @@ const PayPalSuccess: React.FC = () => {
             sessionStorage.setItem('downloadUrls', JSON.stringify(links));
             setDownloadUrls(links);
           }
+          console.debug('[PayPalSuccess] Parsed downloadUrls from payment response:', links);
 
           // Extract invoice download URLs/tokens and store
           const invLinks: string[] = [];
@@ -179,8 +198,8 @@ const PayPalSuccess: React.FC = () => {
 
           // Clear cart on success
           clearCart();
-        } else if (res.status !== 'PENDING') {
-          setError(res.errorMessage || 'Payment not completed');
+        } else {
+          setShowStatusModal(true);
         }
       } catch (e) {
         const msg = e instanceof Error ? e.message : 'Failed to finalize payment';
@@ -198,6 +217,7 @@ const PayPalSuccess: React.FC = () => {
     const current = payment;
     if (!current || current.status !== 'COMPLETED') {
       setDlError('Invoice is available only for completed orders.');
+      console.debug('[DownloadInvoice] Not firing request: payment not completed', { status: current?.status });
       return;
     }
     try {
@@ -208,10 +228,16 @@ const PayPalSuccess: React.FC = () => {
         await orderService.downloadInvoice(current.orderId as number);
       } else {
         setDlError('Invoice link is not available yet.');
+        console.debug('[DownloadInvoice] No invoiceDownloadUrls and no orderId, not firing request', {
+          paymentStatus: current.status,
+          orderId: current.orderId,
+          invoiceUrlsCount: invoiceDownloadUrls?.length || 0,
+        });
         return;
       }
     } catch (e) {
-      const msg = e instanceof Error ? e.message : 'Failed to download invoice';
+      const msg = 'Failed to download invoice. Please try again later or check your email.';
+      console.debug('[DownloadInvoice] Fetch failed', e);
       setDlError(msg);
     } finally {
       setDownloading(false);
@@ -222,14 +248,22 @@ const PayPalSuccess: React.FC = () => {
     setDlError(null);
     if (!downloadUrls || downloadUrls.length === 0) {
       setDlError('Download link is not available yet.');
+      console.debug('[DownloadProduct] No downloadUrls available; not firing request', {
+        paymentStatus: payment?.status,
+        orderId: payment?.orderId,
+        urlsLength: downloadUrls?.length || 0,
+      });
       return;
     }
     try {
       setDownloadingProduct(true);
-      await ordersService.downloadByUrl(downloadUrls[0], 'product');
+      const ok = await ordersService.downloadByUrl(downloadUrls[0], 'product');
+      if (!ok) {
+        setDlError('Failed to download product. Your link may have expired; please check your email for a fresh link.');
+      }
     } catch (e) {
-      const msg = e instanceof Error ? e.message : 'Failed to download product';
-      setDlError(msg);
+      setDlError('Failed to download product. Your link may have expired; please check your email for a fresh link.');
+      console.debug('[DownloadProduct] Fetch failed', e);
     } finally {
       setDownloadingProduct(false);
     }
@@ -272,7 +306,7 @@ const PayPalSuccess: React.FC = () => {
   }
 
   return (
-    <div className="page-container">
+    <div className="page-container" aria-hidden={showStatusModal}>
       {payment ? (
         <div className="order-container">
           <div className="order-card" aria-live="polite" aria-busy={isProcessing}>
@@ -285,6 +319,7 @@ const PayPalSuccess: React.FC = () => {
               <>
                 <p className="order-message">Order successfully paid.</p>
                 <p className="order-message">We have sent an email with your invoice and digital product.</p>
+                <p className="order-message" style={{ opacity: 0.85 }}>Note: links may take a moment to appear while we generate your files.</p>
               </>
             ) : payment.status === 'PENDING' ? (
               <p className="order-message">Your payment is pending. You will receive an email once it is completed.</p>
@@ -303,7 +338,7 @@ const PayPalSuccess: React.FC = () => {
               </div>
               <div className="summary-item">
                 <span className="label">Order ID</span>
-                <span className="value">{(payment as any)?.orderNumber || payment.orderId || '-'}</span>
+                <span className="value">{payment.orderNumber ?? payment.orderId ?? '-'}</span>
               </div>
             </div>
 
@@ -325,10 +360,10 @@ const PayPalSuccess: React.FC = () => {
             <div className="actions">
               {payment.status === 'COMPLETED' ? (
                 <>
-                  <button onClick={handleDownloadProduct} disabled={downloadingProduct}>
+                  <button onClick={handleDownloadProduct} disabled={downloadingProduct || !(downloadUrls && downloadUrls.length > 0)}>
                     {downloadingProduct ? 'Downloading…' : 'Download Digital Product'}
                   </button>
-                  <button onClick={handleDownloadInvoice} disabled={downloading}>
+                  <button onClick={handleDownloadInvoice} disabled={downloading || !((invoiceDownloadUrls && invoiceDownloadUrls.length > 0) || !!payment.orderId)}>
                     {downloading ? 'Downloading…' : 'Download Invoice'}
                   </button>
                 </>
@@ -348,6 +383,27 @@ const PayPalSuccess: React.FC = () => {
             <h2>Order Details</h2>
             <p>Could not retrieve payment details.</p>
             <div className="actions">
+              <button onClick={() => navigate('/checkout')}>Back to Checkout</button>
+              <button onClick={() => navigate('/')}>Go to Home</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showStatusModal && payment && payment.status !== 'COMPLETED' && (
+        <div className="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="status-modal-title">
+          <div className="modal-card">
+            <div className="order-header">
+              <h3 id="status-modal-title">Payment Status</h3>
+              <span className={`status-badge status-${payment.status?.toLowerCase()}`}>{payment.status ?? 'UNKNOWN'}</span>
+            </div>
+            {payment.status === 'PENDING' ? (
+              <p className="order-message">Your payment is pending. You will receive an email once it is completed.</p>
+            ) : (
+              <p className="order-message">Payment was not completed. {payment.errorMessage ? `Reason: ${payment.errorMessage}` : ''}</p>
+            )}
+            <div className="actions">
+              <button onClick={() => setShowStatusModal(false)}>Close</button>
               <button onClick={() => navigate('/checkout')}>Back to Checkout</button>
               <button onClick={() => navigate('/')}>Go to Home</button>
             </div>

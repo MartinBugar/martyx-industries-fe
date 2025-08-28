@@ -19,6 +19,7 @@ export interface PaymentDTO {
   id?: number;
   paymentReference?: string;
   orderId?: number;
+  orderNumber?: string | number;
   amount: number;
   currency?: string;
   paymentMethod?: 'PAYPAL' | string;
