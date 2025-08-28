@@ -255,8 +255,8 @@ export const ordersService = {
         console.debug('[ordersService.downloadByUrl] No downloadUrl provided');
         return false;
       }
-      const { downloadByUrl } = await import('./download');
-      return await downloadByUrl(downloadUrl, suggestedName);
+      const { downloadProductByUrl } = await import('./download');
+      return await downloadProductByUrl(downloadUrl, suggestedName);
     } catch (error) {
       console.error('Download by URL error:', error);
       return false;

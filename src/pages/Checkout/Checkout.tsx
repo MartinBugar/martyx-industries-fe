@@ -118,6 +118,12 @@ const Checkout: React.FC = () => {
       invoiceDownloadTokens: Array.isArray(c?.invoiceDownloadTokens) ? c.invoiceDownloadTokens : undefined,
     } as const;
 
+    try {
+      sessionStorage.setItem('paypalCaptureRaw', JSON.stringify(capture));
+    } catch (err) {
+      console.warn('[Checkout] Failed to persist raw PayPal capture response', err);
+    }
+
     setPayStatus('success');
 
     // Navigate to the dedicated PayPal success page with normalized payment data

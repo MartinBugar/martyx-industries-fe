@@ -68,6 +68,8 @@ export type DownloadOptions = {
   withCredentials?: boolean;
   // Allow caller to customize error message for UI
   friendlyError?: string;
+  // If true, force the final filename to have .zip extension
+  forceZip?: boolean;
 };
 
 // Core helper to fetch a URL (absolute or relative), read Blob, and trigger a download.
@@ -113,7 +115,20 @@ export const downloadFile = async (inputUrl: string, opts: DownloadOptions = {})
   // Determine filename: server header takes precedence
   const disp = response.headers.get('Content-Disposition') || response.headers.get('content-disposition') || undefined;
   const fromHeader = extractFilenameFromDisposition(disp);
-  const finalName = sanitizeFilename(fromHeader || suggestedName);
+  let finalName = sanitizeFilename(fromHeader || suggestedName);
+
+  // Enforce .zip extension if requested
+  if (opts.forceZip) {
+    if (!finalName) finalName = 'product.zip';
+    // If already has .zip (any case), normalize to .zip
+    if (/\.zip$/i.test(finalName)) {
+      finalName = finalName.replace(/\.[^.]+$/i, '.zip');
+    } else {
+      // Remove existing extension and append .zip
+      finalName = finalName.replace(/\.[^.]+$/i, '');
+      finalName = `${finalName}.zip`;
+    }
+  }
 
   const objectUrl = URL.createObjectURL(blob);
   try {
@@ -140,6 +155,31 @@ export const downloadByUrl = async (url: string, suggestedName?: string): Promis
     });
   } catch (e) {
     console.debug('[downloadByUrl] Error', e);
+    throw e;
+  }
+};
+
+// Product-specific variant that enforces .zip filenames
+export const downloadProductByUrl = async (url: string, suggestedName?: string): Promise<boolean> => {
+  try {
+    // Ensure suggested name ends with .zip if provided
+    let name = suggestedName;
+    if (name) {
+      if (/\.zip$/i.test(name)) {
+        name = name.replace(/\.[^.]+$/i, '.zip');
+      } else {
+        name = name.replace(/\.[^.]+$/i, '');
+        name = `${name}.zip`;
+      }
+    }
+    return await downloadFile(url, {
+      suggestedName: name,
+      withCredentials: true,
+      friendlyError: 'Failed to download product. Your link may have expired; please check your email for a fresh link.',
+      forceZip: true,
+    });
+  } catch (e) {
+    console.debug('[downloadProductByUrl] Error', e);
     throw e;
   }
 };

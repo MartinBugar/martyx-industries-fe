@@ -7,6 +7,25 @@ import { useAuth } from '../../context/useAuth';
 import { useCart } from '../../context/useCart';
 import './PayPalSuccess.css';
 
+function isObject(val: unknown): val is Record<string, unknown> {
+  return val !== null && typeof val === 'object' && !Array.isArray(val);
+}
+
+function deepOmitTokens<T>(value: T): T {
+  if (Array.isArray(value)) {
+    return value.map((v) => deepOmitTokens(v)) as unknown as T;
+  }
+  if (isObject(value)) {
+    const result: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(value)) {
+      if (/token/i.test(k)) continue;
+      result[k] = deepOmitTokens(v);
+    }
+    return result as unknown as T;
+  }
+  return value;
+}
+
 const PayPalSuccess: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -38,6 +57,16 @@ const PayPalSuccess: React.FC = () => {
   const [downloadingProduct, setDownloadingProduct] = useState<boolean>(false);
   const [showStatusModal, setShowStatusModal] = useState<boolean>(false);
   const processedRef = useRef(false);
+  const [rawCapture, setRawCapture] = useState<unknown | null>(null);
+
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem('paypalCaptureRaw');
+      if (raw) setRawCapture(JSON.parse(raw));
+    } catch (e) {
+      console.debug('[PayPalSuccess] Failed to parse raw capture from sessionStorage', e);
+    }
+  }, []);
 
   useEffect(() => {
     if (processedRef.current) return;
@@ -329,7 +358,7 @@ const PayPalSuccess: React.FC = () => {
 
             <div className="summary-grid" aria-label="Order summary">
               <div className="summary-item">
-                <span className="label">Amount</span>
+                <span className="label">Price</span>
                 <span className="value">{payment.amount?.toFixed(2)} {payment.currency || ''}</span>
               </div>
               <div className="summary-item">
@@ -344,16 +373,10 @@ const PayPalSuccess: React.FC = () => {
 
             <div className="detail-grid" aria-label="Payment details">
               <dl>
-                <dt>Reference</dt>
-                <dd>{payment.paymentReference || '-'}</dd>
                 <dt>Transaction ID</dt>
                 <dd>{payment.transactionId || '-'}</dd>
                 <dt>Payer Email</dt>
                 <dd>{payment.payerEmail || '-'}</dd>
-                <dt>Created At</dt>
-                <dd>{payment.createdAt ? new Date(payment.createdAt).toLocaleString() : '-'}</dd>
-                <dt>Completed At</dt>
-                <dd>{payment.completedAt ? new Date(payment.completedAt).toLocaleString() : '-'}</dd>
               </dl>
             </div>
 
@@ -374,6 +397,17 @@ const PayPalSuccess: React.FC = () => {
             </div>
             {dlError && (
               <p className="msg-error">{dlError}</p>
+            )}
+
+            {payment.status === 'COMPLETED' && rawCapture != null && (
+              <div className="capture-section" aria-label="Capture response">
+                <div className="order-header" style={{ marginTop: 16 }}>
+                  <h3>Payment Response (Capture)</h3>
+                </div>
+                <pre style={{ whiteSpace: 'pre-wrap', overflowX: 'auto', maxHeight: 400 }} aria-label="PayPal capture response">
+{JSON.stringify(deepOmitTokens(rawCapture), null, 2)}
+                </pre>
+              </div>
             )}
           </div>
         </div>
