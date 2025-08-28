@@ -26,6 +26,64 @@ function deepOmitTokens<T>(value: T): T {
   return value;
 }
 
+function formatAmount(val: number | string | undefined): string {
+  if (typeof val === 'number') return Number.isFinite(val) ? val.toFixed(2) : '-';
+  if (typeof val === 'string') {
+    const n = Number(val);
+    return Number.isFinite(n) ? n.toFixed(2) : val;
+  }
+  return '-';
+}
+
+function mapDownloadError(err: unknown): string {
+  const msg = err instanceof Error ? err.message : String(err);
+  if (/410|expired|expire/i.test(msg)) {
+    return 'This download link expired. Please refresh to generate a new one.';
+  }
+  if (/403|forbidden|not authorized|unauthor/i.test(msg)) {
+    return 'You are not entitled to download this file.';
+  }
+  if (/404|not found/i.test(msg)) {
+    return 'The file is not available.';
+  }
+  return 'Failed to download file. Please try again later.';
+}
+
+function toDownloadUrl(token?: string | null): string | null {
+  if (!token) return null;
+  try { return `/api/download/${encodeURIComponent(token)}`; } catch { return `/api/download/${token}`; }
+}
+
+function buildAllProductsUrl(dto?: PaymentDTO | null): string | null {
+  if (!dto) return null;
+  return dto.allProductsDownloadUrl || toDownloadUrl(dto.allProductsDownloadToken);
+}
+
+function buildProductLinks(dto?: PaymentDTO | null): Array<{ label: string; url: string }> {
+  const list: Array<{ label: string; url: string }> = [];
+  if (!dto) return list;
+  if (Array.isArray(dto.downloadLinks) && dto.downloadLinks.length > 0) {
+    for (const dl of dto.downloadLinks) {
+      const label = dl.productName || 'Download product';
+      const url = dl.url || toDownloadUrl(dl.token) || '';
+      if (url) list.push({ label, url });
+    }
+    return list;
+  }
+  const urls: string[] = [];
+  if (Array.isArray(dto.downloadUrls)) urls.push(...dto.downloadUrls.filter(Boolean));
+  if (Array.isArray(dto.downloadTokens)) urls.push(...dto.downloadTokens.filter(Boolean).map((t) => toDownloadUrl(t)!).filter(Boolean) as string[]);
+  if (dto.downloadUrl) urls.push(dto.downloadUrl);
+  if (dto.downloadToken) {
+    const u = toDownloadUrl(dto.downloadToken);
+    if (u) urls.push(u);
+  }
+  if (urls.length > 0) {
+    urls.forEach((u, idx) => list.push({ label: `Download product ${idx + 1}`, url: u }));
+  }
+  return list;
+}
+
 const PayPalSuccess: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -58,6 +116,10 @@ const PayPalSuccess: React.FC = () => {
   const [showStatusModal, setShowStatusModal] = useState<boolean>(false);
   const processedRef = useRef(false);
   const [rawCapture, setRawCapture] = useState<unknown | null>(null);
+  const [productLinks, setProductLinks] = useState<Array<{ label: string; url: string }>>([]);
+  const [allProductsUrl, setAllProductsUrl] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
+  const paymentIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     try {
@@ -73,6 +135,7 @@ const PayPalSuccess: React.FC = () => {
     processedRef.current = true;
     const run = async () => {
       const paymentId = searchParams.get('paymentId');
+      paymentIdRef.current = paymentId;
       const payerEmail =
         searchParams.get('PayerEmail') ||
         sessionStorage.getItem('customerEmail') ||
@@ -102,7 +165,13 @@ const PayPalSuccess: React.FC = () => {
               sessionStorage.setItem('customerEmail', statePayment.payerEmail || payerEmail);
             }
 
-            // Extract download URLs/tokens from response and store for later pages
+            // Prefer new structured fields for downloads
+            const builtLinks = buildProductLinks(statePayment);
+            setProductLinks(builtLinks);
+            const allUrl = buildAllProductsUrl(statePayment);
+            setAllProductsUrl(allUrl);
+
+            // Keep legacy arrays in sessionStorage for other pages
             const links: string[] = [];
             if (Array.isArray(statePayment.downloadUrls)) links.push(...statePayment.downloadUrls.filter(Boolean));
             if (typeof statePayment.downloadUrl === 'string' && statePayment.downloadUrl) links.push(statePayment.downloadUrl);
@@ -181,7 +250,13 @@ const PayPalSuccess: React.FC = () => {
             sessionStorage.setItem('customerEmail', res.payerEmail || payerEmail);
           }
 
-          // Extract download URLs/tokens from response and store for later pages
+          // Prefer new structured fields for downloads
+          const builtLinks = buildProductLinks(res);
+          setProductLinks(builtLinks);
+          const allUrl = buildAllProductsUrl(res);
+          setAllProductsUrl(allUrl);
+
+          // Keep legacy arrays in sessionStorage for other pages
           const links: string[] = [];
           if (Array.isArray(res.downloadUrls)) links.push(...res.downloadUrls.filter(Boolean));
           if (typeof res.downloadUrl === 'string' && res.downloadUrl) links.push(res.downloadUrl);
@@ -359,7 +434,7 @@ const PayPalSuccess: React.FC = () => {
             <div className="summary-grid" aria-label="Order summary">
               <div className="summary-item">
                 <span className="label">Price</span>
-                <span className="value">{payment.amount?.toFixed(2)} {payment.currency || ''}</span>
+                <span className="value">{formatAmount(payment.amount)} {payment.currency || ''}</span>
               </div>
               <div className="summary-item">
                 <span className="label">Method</span>
@@ -383,12 +458,100 @@ const PayPalSuccess: React.FC = () => {
             <div className="actions">
               {payment.status === 'COMPLETED' ? (
                 <>
-                  <button onClick={handleDownloadProduct} disabled={downloadingProduct || !(downloadUrls && downloadUrls.length > 0)}>
-                    {downloadingProduct ? 'Downloading…' : 'Download Digital Product'}
+                  {allProductsUrl && (
+                    <button onClick={async () => {
+                      console.log('[analytics] all-products click');
+                      setDlError(null);
+                      try {
+                        setDownloadingProduct(true);
+                        const ok = await ordersService.downloadByUrl(allProductsUrl, 'all-products');
+                        if (!ok) setDlError('Failed to download file.');
+                      } catch (e) {
+                        setDlError(mapDownloadError(e));
+                      } finally {
+                        setDownloadingProduct(false);
+                      }
+                    }} disabled={downloadingProduct}>
+                      {downloadingProduct ? 'Downloading…' : 'Download all products (ZIP)'}
+                    </button>
+                  )}
+
+                  {productLinks && productLinks.length > 0 ? (
+                    <div className="download-list">
+                      {productLinks.map((pl, idx) => (
+                        <button key={idx} onClick={async () => {
+                          console.log('[analytics] per-product download click', { index: idx, label: pl.label });
+                          setDlError(null);
+                          try {
+                            setDownloadingProduct(true);
+                            const ok = await ordersService.downloadByUrl(pl.url, pl.label);
+                            if (!ok) setDlError('Failed to download file.');
+                          } catch (e) {
+                            setDlError(mapDownloadError(e));
+                          } finally {
+                            setDownloadingProduct(false);
+                          }
+                        }} disabled={downloadingProduct}>
+                          {downloadingProduct ? 'Downloading…' : (pl.label || 'Download')}
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <button onClick={handleDownloadProduct} disabled={downloadingProduct || !(downloadUrls && downloadUrls.length > 0)}>
+                      {downloadingProduct ? 'Downloading…' : 'Download Digital Product'}
+                    </button>
+                  )}
+
+                  <button onClick={async () => {
+                    console.log('[analytics] invoice click');
+                    await handleDownloadInvoice();
+                  }} disabled={downloading || !((invoiceDownloadUrls && invoiceDownloadUrls.length > 0) || !!payment.orderId)}>
+                    {downloading ? 'Downloading…' : 'Download invoice (PDF)'}
                   </button>
-                  <button onClick={handleDownloadInvoice} disabled={downloading || !((invoiceDownloadUrls && invoiceDownloadUrls.length > 0) || !!payment.orderId)}>
-                    {downloading ? 'Downloading…' : 'Download Invoice'}
-                  </button>
+
+                  <div className="helper-text" style={{ marginTop: 8, opacity: 0.9 }}>
+                    <p>Links expire in ~1 hour. If expired, refresh your order.</p>
+                    <button onClick={async () => {
+                      setDlError(null);
+                      setRefreshing(true);
+                      try {
+                        const pid = payment?.paymentReference || (payment?.id != null ? String(payment.id) : paymentIdRef.current);
+                        if (!pid) {
+                          setDlError('Cannot refresh links at the moment.');
+                        } else {
+                          const latest = await paymentService.getPaymentDetails(pid);
+                          setPayment(latest);
+                          setProductLinks(buildProductLinks(latest));
+                          setAllProductsUrl(buildAllProductsUrl(latest));
+
+                          // update legacy arrays for compatibility
+                          const links: string[] = [];
+                          if (Array.isArray(latest.downloadUrls)) links.push(...latest.downloadUrls.filter(Boolean));
+                          if (typeof latest.downloadUrl === 'string' && latest.downloadUrl) links.push(latest.downloadUrl);
+                          const toUrl = (t: string) => `/api/download/${encodeURIComponent(t)}`;
+                          if (Array.isArray(latest.downloadTokens)) links.push(...latest.downloadTokens.filter(Boolean).map(toUrl));
+                          if (typeof latest.downloadToken === 'string' && latest.downloadToken) links.push(toUrl(latest.downloadToken));
+                          sessionStorage.setItem('downloadUrls', JSON.stringify(links));
+                          setDownloadUrls(links);
+
+                          const invLinks: string[] = [];
+                          if (Array.isArray(latest.invoiceDownloadUrls)) invLinks.push(...latest.invoiceDownloadUrls.filter(Boolean));
+                          if (typeof latest.invoiceDownloadUrl === 'string' && latest.invoiceDownloadUrl) invLinks.push(latest.invoiceDownloadUrl);
+                          const toInvoiceUrl = (t: string) => `/api/download/invoice/${encodeURIComponent(t)}`;
+                          if (Array.isArray(latest.invoiceDownloadTokens)) invLinks.push(...latest.invoiceDownloadTokens.filter(Boolean).map(toInvoiceUrl));
+                          if (typeof latest.invoiceDownloadToken === 'string' && latest.invoiceDownloadToken) invLinks.push(toInvoiceUrl(latest.invoiceDownloadToken));
+                          sessionStorage.setItem('invoiceDownloadUrls', JSON.stringify(invLinks));
+                          setInvoiceDownloadUrls(invLinks);
+                        }
+                      } catch (e) {
+                        setDlError(mapDownloadError(e));
+                      } finally {
+                        setRefreshing(false);
+                      }
+                    }} disabled={refreshing}>
+                      {refreshing ? 'Refreshing…' : 'Refresh links'}
+                    </button>
+                  </div>
                 </>
               ) : (
                 <button onClick={() => navigate('/checkout')}>Back to Checkout</button>

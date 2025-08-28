@@ -20,30 +20,53 @@ export interface PaymentDTO {
   paymentReference?: string;
   orderId?: number;
   orderNumber?: string | number;
-  amount: number;
+  amount?: number | string;
   currency?: string;
   paymentMethod?: 'PAYPAL' | string;
-  status: 'PENDING' | 'COMPLETED' | 'CANCELLED' | 'REFUNDED' | 'FAILED';
+  status?: 'PENDING' | 'COMPLETED' | 'CANCELLED' | 'REFUNDED' | 'FAILED' | string;
   transactionId?: string;
   payerId?: string | null;
   payerEmail?: string;
-  paymentUrl?: string;
-  // Optional download info returned by backend after successful payment
-  // Backend may return a single URL (including token) or an array per item
-  downloadUrl?: string;
+  paymentUrl?: string | null;
+
+  // Legacy single-link fields
+  downloadUrl?: string | null;
+  invoiceDownloadUrl?: string | null;
+
+  // New convenience all-products fields
+  allProductsDownloadUrl?: string | null;
+  allProductsDownloadToken?: string | null;
+
+  // Arrays (preferred)
   downloadUrls?: string[];
-  // Or backend may return token(s) only; FE should then construct /api/download/{token}
-  downloadToken?: string;
   downloadTokens?: string[];
-  // Invoice token/URL support
-  invoiceDownloadUrl?: string;
   invoiceDownloadUrls?: string[];
-  invoiceDownloadToken?: string;
   invoiceDownloadTokens?: string[];
+
+  // Legacy single token fields (backward compatibility)
+  downloadToken?: string | null;
+  invoiceDownloadToken?: string | null;
+
+  // Structured per-product mapping (preferred for rendering)
+  downloadLinks?: Array<{
+    productId?: number;
+    productName?: string | null;
+    url: string;
+    token: string;
+  }>;
+
+  // Order items for receipts/summary UI
+  orderItems?: Array<{
+    productId?: number;
+    productName?: string | null;
+    quantity?: number;
+    unitPrice?: number | string;
+  }>;
+
   errorMessage?: string | null;
-  createdAt?: string;
-  updatedAt?: string;
-  completedAt?: string | null;
+  createdAt?: string; // ISO date
+  updatedAt?: string; // ISO date
+  completedAt?: string | null; // ISO date
 }
 
 export const paymentService = {
