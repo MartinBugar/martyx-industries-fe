@@ -1,7 +1,7 @@
 import { API_BASE_URL, defaultHeaders } from './apiUtils';
 
 export const orderService = {
-  downloadProduct: async (orderId: number | string, productId: number | string): Promise<void> => {
+  downloadProduct: async (orderId: number | string, productId: number | string, productName?: string): Promise<void> => {
     const url = `${API_BASE_URL}/api/orders/${orderId}/items/${productId}/download`;
 
     // Build headers without forcing Content-Type for binary response
@@ -36,9 +36,10 @@ export const orderService = {
 
     const blob = await response.blob();
 
-    // Determine filename from Content-Disposition header if present
+    // Determine filename from Content-Disposition header if present, otherwise use product name
     const cd = response.headers.get('content-disposition') || response.headers.get('Content-Disposition');
     let filename = `product-${productId}.zip`;
+    
     if (cd) {
       const match = cd.match(/filename\*?=(?:UTF-8''|")?([^";]+)/i);
       if (match && match[1]) {
@@ -46,6 +47,14 @@ export const orderService = {
         try { fn = decodeURIComponent(fn); } catch { /* ignore decode errors */ }
         filename = fn;
       }
+    } else if (productName) {
+      // Use product name as filename if no Content-Disposition header
+      // Clean the product name to be safe for filenames
+      const cleanName = productName
+        .replace(/[<>:"/\\|?*]/g, '') // Remove invalid filename characters
+        .replace(/\s+/g, '-') // Replace spaces with dashes
+        .trim();
+      filename = cleanName ? `${cleanName}.zip` : `product-${productId}.zip`;
     }
 
     const blobUrl = window.URL.createObjectURL(blob);

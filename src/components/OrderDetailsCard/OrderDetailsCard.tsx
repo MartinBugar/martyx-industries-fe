@@ -75,11 +75,11 @@ const OrderDetailsCard: React.FC<OrderDetailsCardProps> = ({
   };
 
   // Handle individual product download
-  const handleProductDownload = async (productId: string) => {
+  const handleProductDownload = async (productId: string, productName: string) => {
     const apiOrderId = order.backendId || order.id;
     try {
       setDownloadingItemId(productId);
-      await orderService.downloadProduct(apiOrderId, productId);
+      await orderService.downloadProduct(apiOrderId, productId, productName);
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'Failed to download product';
       onError?.(msg);
@@ -361,7 +361,7 @@ const OrderDetailsCard: React.FC<OrderDetailsCardProps> = ({
                         {allowsDownloads ? (
                           <button
                             className="item-download-btn"
-                            onClick={() => handleProductDownload(item.productId)}
+                            onClick={() => handleProductDownload(item.productId, item.productName)}
                             disabled={downloadingItemId === item.productId}
                           >
                             <svg className="download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
