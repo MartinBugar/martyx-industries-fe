@@ -69,9 +69,6 @@ const LanguageSwitcher: React.FC = () => {
         aria-label={t('language')}
         title={`${t('language')}: ${currentLanguage.nativeName}`}
       >
-        <span className="language-switcher__flag" aria-hidden="true">
-          {currentLanguage.flag}
-        </span>
         <span className="language-switcher__code">
           {currentLanguage.code.toUpperCase()}
         </span>
