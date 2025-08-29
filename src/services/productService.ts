@@ -1,50 +1,65 @@
-import { apiClient } from './apiClient';
+import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
+import type { ProductDto } from '../types/api';
 
 /**
- * ProductDto interface matching the backend API response
- * This represents the data structure returned by /api/products endpoints
+ * Service for product-related API calls with i18n support
  */
-export interface ProductDto {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  currency: string;
-  imageUrl: string | null;
-  sku: string;
-  category: string | null;
-  productType: 'DIGITAL' | 'PHYSICAL';
-  active: boolean;
+export class ProductService {
+  /**
+   * Get list of products with optional category filter
+   * @param category - Optional category filter
+   * @param language - Optional language override (defaults to current i18n language)
+   * @returns Promise<ProductDto[]>
+   */
+  async getProducts(category?: string, language?: string): Promise<ProductDto[]> {
+    const url = new URL(`${API_BASE_URL}/api/products`);
+    
+    if (category) {
+      url.searchParams.set('category', category);
+    }
+    
+    if (language) {
+      url.searchParams.set('lang', language);
+    }
+
+    const response = await fetch(url.toString(), withLangHeaders({
+      method: 'GET',
+      headers: defaultHeaders as HeadersInit,
+    }));
+
+    return handleResponse(response);
+  }
+
+  /**
+   * Get single product by ID with localized content
+   * @param id - Product ID
+   * @param language - Optional language override (defaults to current i18n language)
+   * @returns Promise<ProductDto>
+   */
+  async getProduct(id: number, language?: string): Promise<ProductDto> {
+    const url = new URL(`${API_BASE_URL}/api/products/${id}`);
+    
+    if (language) {
+      url.searchParams.set('lang', language);
+    }
+
+    const response = await fetch(url.toString(), withLangHeaders({
+      method: 'GET',
+      headers: defaultHeaders as HeadersInit,
+    }));
+
+    return handleResponse(response);
+  }
+
+  /**
+   * Get products by category with localized content
+   * @param category - Product category
+   * @param language - Optional language override
+   * @returns Promise<ProductDto[]>
+   */
+  async getProductsByCategory(category: string, language?: string): Promise<ProductDto[]> {
+    return this.getProducts(category, language);
+  }
 }
 
-/**
- * Service for fetching products from the new backend API
- */
-export const productService = {
-  /**
-   * Get all products with optional category filter
-   * GET /api/products?category=...
-   */
-  async getProducts(category?: string): Promise<ProductDto[]> {
-    const endpoint = category 
-      ? `/api/products?category=${encodeURIComponent(category)}`
-      : '/api/products';
-    
-    return apiClient.get<ProductDto[]>(endpoint, { 
-      cache: true,
-      retry: true 
-    });
-  },
-
-  /**
-   * Get a single product by ID
-   * GET /api/products/{id}
-   * Returns ProductDto if found and active, throws error if 404
-   */
-  async getProductById(id: number): Promise<ProductDto> {
-    return apiClient.get<ProductDto>(`/api/products/${id}`, { 
-      cache: true,
-      retry: true 
-    });
-  }
-};
+export const productService = new ProductService();

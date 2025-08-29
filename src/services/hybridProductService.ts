@@ -1,4 +1,5 @@
-import { productService, type ProductDto } from './productService';
+import { productService } from './productService';
+import type { ProductDto } from '../types/api';
 import { hardcodedProductsData, type HardcodedProductData, type Product } from '../data/productData';
 
 /**
@@ -146,7 +147,7 @@ export class HybridProductService {
       }
 
       // Fetch from backend
-      const backendProduct = await productService.getProductById(id);
+      const backendProduct = await productService.getProduct(id);
       
       // Check if product is active - throw a special error type
       if (!backendProduct.active) {

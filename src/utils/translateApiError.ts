@@ -1,14 +1,6 @@
 import type { TFunction } from 'i18next';
-
-/**
- * API Error structure expected from the backend
- */
-export interface ApiErrorResponse {
-  message?: string;
-  errorCode?: string;
-  details?: Record<string, unknown>;
-  [key: string]: unknown;
-}
+import type { ApiErrorResponse } from '../types/api';
+import { API_ERROR_CODES } from '../types/api';
 
 /**
  * Arguments that can be passed to translation functions
@@ -19,8 +11,9 @@ export interface TranslationArgs {
 
 /**
  * Translates API error responses to user-friendly messages using i18next
+ * Works with the unified error contract from backend
  * 
- * @param error - The error object, can be Error, Response, or parsed error data
+ * @param error - The error object, can be Error with errorData, Response, or parsed error data
  * @param t - The translation function from useTranslation
  * @param args - Optional arguments to pass to the translation function
  * @returns A translated error message
@@ -30,93 +23,72 @@ export const translateApiError = (
   t: TFunction,
   args?: TranslationArgs
 ): string => {
-  // Handle different types of error input
-  let errorData: ApiErrorResponse = {};
+  let errorData: ApiErrorResponse | null = null;
   
   if (error instanceof Error) {
-    // Standard JavaScript Error
-    try {
-      // Try to parse error message as JSON (in case it contains API error data)
-      errorData = JSON.parse(error.message);
-    } catch {
-      // If not JSON, use the message directly
-      errorData = { message: error.message };
+    // Check if error has errorData attached (from handleResponse)
+    if ((error as any).errorData) {
+      errorData = (error as any).errorData;
+    } else {
+      // Fallback: try to parse error message as error code
+      const errorCode = error.message || 'ERR_INTERNAL';
+      errorData = {
+        timestamp: new Date().toISOString(),
+        path: '',
+        errorCode,
+        args: {}
+      };
     }
   } else if (error && typeof error === 'object') {
-    // Already parsed error object
+    // Already parsed error object with unified contract
     errorData = error as ApiErrorResponse;
   } else if (typeof error === 'string') {
-    // String error message
-    errorData = { message: error };
+    // String error code
+    errorData = {
+      timestamp: new Date().toISOString(),
+      path: '',
+      errorCode: error,
+      args: {}
+    };
   }
 
-  // Extract error code and details
-  const { errorCode, message, details, ...otherProps } = errorData;
+  if (!errorData) {
+    return t('errors.generic', args);
+  }
 
-  // Prepare translation arguments
+  // Prepare translation arguments from error args and additional args
   const translationArgs: TranslationArgs = {
+    ...errorData.args,
     ...args,
-    ...(details as TranslationArgs),
-    ...(otherProps as TranslationArgs),
   };
 
-  // Map specific error codes to translation keys
-  if (errorCode) {
-    const errorKey = `errors.${errorCode}`;
-    
-    // Check if translation exists for this error code
-    const translatedMessage = t(errorKey, { 
-      defaultValue: '', 
-      ...translationArgs 
+  // Map errorCode to translation key using the API_ERROR_CODES mapping
+  const translationKey = API_ERROR_CODES[errorData.errorCode as keyof typeof API_ERROR_CODES];
+  
+  if (translationKey) {
+    const translatedMessage = t(translationKey, {
+      defaultValue: '',
+      ...translationArgs
     });
     
     // If translation exists and is not empty, use it
-    if (translatedMessage && translatedMessage !== errorKey) {
+    if (translatedMessage && translatedMessage !== translationKey) {
       return translatedMessage;
     }
   }
 
-  // Map common HTTP status-based errors
-  if (message) {
-    const lowerMessage = message.toLowerCase();
-    
-    // Common error patterns
-    const errorMappings: Record<string, string> = {
-      'unauthorized': 'errors.unauthorized',
-      'forbidden': 'errors.unauthorized',
-      'not found': 'errors.order_not_found',
-      'validation': 'errors.validation',
-      'invalid credentials': 'errors.invalid_credentials',
-      'email already exists': 'errors.email_already_exists',
-      'weak password': 'errors.weak_password',
-      'session expired': 'errors.session_expired',
-      'payment failed': 'errors.payment_failed',
-      'insufficient stock': 'errors.insufficient_stock',
-      'network error': 'errors.network',
-      'server error': 'errors.server_error',
-      'internal server error': 'errors.server_error',
-    };
-
-    // Find matching error pattern
-    for (const [pattern, key] of Object.entries(errorMappings)) {
-      if (lowerMessage.includes(pattern)) {
-        const translatedMessage = t(key, {
-          defaultValue: '',
-          ...translationArgs
-        });
-        
-        if (translatedMessage && translatedMessage !== key) {
-          return translatedMessage;
-        }
-        break;
-      }
-    }
-
-    // If no pattern matches, try to use the message directly
-    return message;
+  // Fallback: try direct mapping errors.{errorCode}
+  const directKey = `errors.${errorData.errorCode.toLowerCase()}`;
+  const directTranslation = t(directKey, {
+    defaultValue: '',
+    ...translationArgs
+  });
+  
+  if (directTranslation && directTranslation !== directKey) {
+    return directTranslation;
   }
 
-  // Fallback to generic error message
+  // Ultimate fallback to generic error message
   return t('errors.generic', translationArgs);
 };
 
@@ -155,14 +127,18 @@ export const extractErrorInfo = async (error: unknown): Promise<ApiErrorResponse
     try {
       const errorData = await error.json();
       return {
+        timestamp: new Date().toISOString(),
+        path: error.url,
+        errorCode: errorData.errorCode || 'ERR_INTERNAL',
+        args: errorData.args || {},
         ...errorData,
-        statusCode: error.status,
-        statusText: error.statusText,
       };
     } catch {
       return {
-        message: error.statusText || 'Network error',
-        statusCode: error.status,
+        timestamp: new Date().toISOString(),
+        path: error.url,
+        errorCode: 'ERR_INTERNAL',
+        args: {},
       };
     }
   }
@@ -174,8 +150,10 @@ export const extractErrorInfo = async (error: unknown): Promise<ApiErrorResponse
       return parsed;
     } catch {
       return {
-        message: error.message,
-        name: error.name,
+        timestamp: new Date().toISOString(),
+        path: '',
+        errorCode: 'ERR_INTERNAL',
+        args: {},
       };
     }
   }
@@ -185,10 +163,20 @@ export const extractErrorInfo = async (error: unknown): Promise<ApiErrorResponse
   }
 
   if (typeof error === 'string') {
-    return { message: error };
+    return {
+      timestamp: new Date().toISOString(),
+      path: '',
+      errorCode: error,
+      args: {},
+    };
   }
 
-  return { message: 'Unknown error occurred' };
+  return {
+    timestamp: new Date().toISOString(),
+    path: '',
+    errorCode: 'ERR_INTERNAL',
+    args: {},
+  };
 };
 
 /**

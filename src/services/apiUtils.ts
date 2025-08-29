@@ -38,11 +38,22 @@ export const isTokenExpired = (token: string): boolean => {
   return payload.exp < currentTime;
 };
 
-// Helper function to handle API responses
+// Helper function to handle API responses with unified error contract
 export const handleResponse = async (response: Response) => {
-  const data = await response.json();
-  
   if (!response.ok) {
+    let errorData;
+    try {
+      errorData = await response.json();
+    } catch {
+      // If JSON parsing fails, create a generic error
+      errorData = {
+        timestamp: new Date().toISOString(),
+        path: response.url,
+        errorCode: 'ERR_INTERNAL',
+        args: {}
+      };
+    }
+    
     // Handle 401 Unauthorized responses (expired/invalid tokens)
     if (response.status === 401) {
       console.log('Received 401 Unauthorized, clearing authentication data');
@@ -58,10 +69,14 @@ export const handleResponse = async (response: Response) => {
       }));
     }
     
-    // If the server response was not ok, throw an error with the response data
-    throw new Error(data.message || 'An error occurred');
+    // Throw error with unified contract data
+    const error = new Error(errorData.errorCode || 'Unknown error');
+    (error as any).errorData = errorData;
+    throw error;
   }
   
+  // Parse successful response
+  const data = await response.json();
   return data;
 };
 
