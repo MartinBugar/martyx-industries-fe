@@ -85,7 +85,6 @@ const PayPalSuccess: React.FC = () => {
   const [rawCapture, setRawCapture] = useState<unknown | null>(null);
   const [productLinks, setProductLinks] = useState<Array<{ label: string; url: string }>>([]);
   const [allProductsUrl, setAllProductsUrl] = useState<string | null>(null);
-  const [refreshing, setRefreshing] = useState<boolean>(false);
   const paymentIdRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -288,30 +287,6 @@ const PayPalSuccess: React.FC = () => {
     }
   };
 
-  const handleDownloadProduct = async () => {
-    setDlError(null);
-    if (!downloadUrls || downloadUrls.length === 0) {
-      setDlError('Download link is not available yet.');
-      console.debug('[DownloadProduct] No downloadUrls available; not firing request', {
-        paymentStatus: payment?.status,
-        orderId: payment?.orderId,
-        urlsLength: downloadUrls?.length || 0,
-      });
-      return;
-    }
-    try {
-      setDownloadingProduct(true);
-      const ok = await ordersService.downloadByUrl(downloadUrls[0], 'product');
-      if (!ok) {
-        setDlError('Failed to download product. Your link may have expired; please check your email for a fresh link.');
-      }
-    } catch (e) {
-      setDlError('Failed to download product. Your link may have expired; please check your email for a fresh link.');
-      console.debug('[DownloadProduct] Fetch failed', e);
-    } finally {
-      setDownloadingProduct(false);
-    }
-  };
 
   if (isProcessing) {
     return (
@@ -437,8 +412,40 @@ const PayPalSuccess: React.FC = () => {
                       ))}
                     </div>
                   ) : (
-                    <button onClick={handleDownloadProduct} disabled={downloadingProduct || !(downloadUrls && downloadUrls.length > 0)}>
-                      {downloadingProduct ? 'Downloading…' : 'Download Digital Product'}
+                    <button
+                      onClick={async () => {
+                        setDlError(null);
+                        try {
+                          setDownloadingProduct(true);
+
+                          // Prefer structured single item from downloadLinks
+                          const dl = payment?.downloadLinks?.[0];
+                          const src =
+                            dl?.url ??
+                            (typeof dl?.token === 'string' ? `/api/download/${encodeURIComponent(dl.token)}` : undefined) ??
+                            // last-resort legacy fallback:
+                            downloadUrls?.[0];
+
+                          const label = `Download ${(dl?.productName || 'product').trim()}`;
+
+                          if (!src) {
+                            setDlError('Download link is not available yet.');
+                            return;
+                          }
+
+                          const ok = await ordersService.downloadByUrl(src, label);
+                          if (!ok) setDlError('Failed to download file.');
+                        } catch (e) {
+                          setDlError(mapDownloadError(e));
+                        } finally {
+                          setDownloadingProduct(false);
+                        }
+                      }}
+                      disabled={downloadingProduct}
+                    >
+                      {downloadingProduct
+                        ? 'Downloading…'
+                        : `Download ${(payment?.downloadLinks?.[0]?.productName || 'product').trim()}`}
                     </button>
                   )}
 
@@ -449,53 +456,6 @@ const PayPalSuccess: React.FC = () => {
                     {downloading ? 'Downloading…' : 'Download invoice (PDF)'}
                   </button>
 
-                  <div className="helper-text" style={{ marginTop: 8, opacity: 0.9 }}>
-                    <p>Links expire in ~1 hour. If expired, refresh your order.</p>
-                    <button onClick={async () => {
-                      setDlError(null);
-                      setRefreshing(true);
-                      try {
-                        const latest = payment;
-                        if (!latest) {
-                          setDlError('Cannot refresh links at the moment.');
-                        } else {
-                          setPayment(latest);
-                          setProductLinks(extractPerProductLinks(latest));
-                          setAllProductsUrl(extractAllProductsUrl(latest));
-
-                          // update legacy arrays for compatibility (products/invoices), tokens excluded
-                          sessionStorage.removeItem('downloadUrls');
-                          sessionStorage.removeItem('invoiceDownloadUrls');
-
-                          const links: string[] = [];
-                          if (Array.isArray(latest.downloadUrls)) links.push(...latest.downloadUrls.filter(Boolean));
-                          if (typeof latest.downloadUrl === 'string' && latest.downloadUrl) links.push(latest.downloadUrl);
-                          if (links.length > 0) {
-                            sessionStorage.setItem('downloadUrls', JSON.stringify(links));
-                            setDownloadUrls(links);
-                          } else {
-                            setDownloadUrls([]);
-                          }
-
-                          const invLinks: string[] = [];
-                          if (Array.isArray(latest.invoiceDownloadUrls)) invLinks.push(...latest.invoiceDownloadUrls.filter(Boolean));
-                          if (typeof latest.invoiceDownloadUrl === 'string' && latest.invoiceDownloadUrl) invLinks.push(latest.invoiceDownloadUrl);
-                          if (invLinks.length > 0) {
-                            sessionStorage.setItem('invoiceDownloadUrls', JSON.stringify(invLinks));
-                            setInvoiceDownloadUrls(invLinks);
-                          } else {
-                            setInvoiceDownloadUrls([]);
-                          }
-                        }
-                      } catch (e) {
-                        setDlError(mapDownloadError(e));
-                      } finally {
-                        setRefreshing(false);
-                      }
-                    }} disabled={refreshing}>
-                      {refreshing ? 'Refreshing…' : 'Refresh links'}
-                    </button>
-                  </div>
                 </>
               ) : (
                 <button onClick={() => navigate('/checkout')}>Back to Checkout</button>

@@ -12,7 +12,7 @@ export function extractPerProductLinks(dto?: PaymentDTO | null): ProductLink[] {
   if (!dto || !Array.isArray(dto.downloadLinks)) return [];
   const list: ProductLink[] = [];
   for (const dl of dto.downloadLinks) {
-    const label = dl.productName || "Download product";
+    const label = `Download ${(dl.productName || 'product').trim()}`;
     const url = dl.url || toDownloadUrl(dl.token) || ""; // token optional
     if (url) list.push({ label, url });
   }
