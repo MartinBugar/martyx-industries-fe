@@ -5,6 +5,7 @@ import { orderService } from '../../services/orderService';
 import { ordersService } from '../../services/ordersService';
 import { useAuth } from '../../context/useAuth';
 import { useCart } from '../../context/useCart';
+import { extractPerProductLinks, extractAllProductsUrl } from '../../helpers/downloads';
 import './PayPalSuccess.css';
 
 function isObject(val: unknown): val is Record<string, unknown> {
@@ -49,40 +50,6 @@ function mapDownloadError(err: unknown): string {
   return 'Failed to download file. Please try again later.';
 }
 
-function toDownloadUrl(token?: string | null): string | null {
-  if (!token) return null;
-  try { return `/api/download/${encodeURIComponent(token)}`; } catch { return `/api/download/${token}`; }
-}
-
-function buildAllProductsUrl(dto?: PaymentDTO | null): string | null {
-  if (!dto) return null;
-  return dto.allProductsDownloadUrl || toDownloadUrl(dto.allProductsDownloadToken);
-}
-
-function buildProductLinks(dto?: PaymentDTO | null): Array<{ label: string; url: string }> {
-  const list: Array<{ label: string; url: string }> = [];
-  if (!dto) return list;
-  if (Array.isArray(dto.downloadLinks) && dto.downloadLinks.length > 0) {
-    for (const dl of dto.downloadLinks) {
-      const label = dl.productName || 'Download product';
-      const url = dl.url || toDownloadUrl(dl.token) || '';
-      if (url) list.push({ label, url });
-    }
-    return list;
-  }
-  const urls: string[] = [];
-  if (Array.isArray(dto.downloadUrls)) urls.push(...dto.downloadUrls.filter(Boolean));
-  if (Array.isArray(dto.downloadTokens)) urls.push(...dto.downloadTokens.filter(Boolean).map((t) => toDownloadUrl(t)!).filter(Boolean) as string[]);
-  if (dto.downloadUrl) urls.push(dto.downloadUrl);
-  if (dto.downloadToken) {
-    const u = toDownloadUrl(dto.downloadToken);
-    if (u) urls.push(u);
-  }
-  if (urls.length > 0) {
-    urls.forEach((u, idx) => list.push({ label: `Download product ${idx + 1}`, url: u }));
-  }
-  return list;
-}
 
 const PayPalSuccess: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -149,11 +116,44 @@ const PayPalSuccess: React.FC = () => {
         paymentId,
       });
 
+      const applyCanonicalDetails = async (base: PaymentDTO) => {
+        const ref = base.paymentReference || String(base.id ?? '') || String(base.orderId ?? '');
+        const latest = ref ? await paymentService.getPaymentDetails(ref) : base;
+        setPayment(latest);
+
+        // Build per-product buttons strictly from downloadLinks
+        setProductLinks(extractPerProductLinks(latest));
+        setAllProductsUrl(extractAllProductsUrl(latest));
+
+        // (Optional legacy storage for other pages – do not use to render per-product buttons)
+        sessionStorage.removeItem('downloadUrls');
+        sessionStorage.removeItem('invoiceDownloadUrls');
+
+        const legacyProductUrls: string[] = [];
+        if (Array.isArray(latest.downloadUrls)) legacyProductUrls.push(...latest.downloadUrls.filter(Boolean));
+        if (typeof latest.downloadUrl === 'string' && latest.downloadUrl) legacyProductUrls.push(latest.downloadUrl);
+        if (legacyProductUrls.length > 0) {
+          sessionStorage.setItem('downloadUrls', JSON.stringify(legacyProductUrls));
+          setDownloadUrls(legacyProductUrls);
+        } else {
+          setDownloadUrls([]);
+        }
+
+        const legacyInvoiceUrls: string[] = [];
+        if (Array.isArray(latest.invoiceDownloadUrls)) legacyInvoiceUrls.push(...latest.invoiceDownloadUrls.filter(Boolean));
+        if (typeof latest.invoiceDownloadUrl === 'string' && latest.invoiceDownloadUrl) legacyInvoiceUrls.push(latest.invoiceDownloadUrl);
+        if (legacyInvoiceUrls.length > 0) {
+          sessionStorage.setItem('invoiceDownloadUrls', JSON.stringify(legacyInvoiceUrls));
+          setInvoiceDownloadUrls(legacyInvoiceUrls);
+        } else {
+          setInvoiceDownloadUrls([]);
+        }
+      };
+
       // If we received payment details via navigation state, use them directly
       const statePayment = locationState?.payment;
       if (statePayment) {
         try {
-          setPayment(statePayment);
           console.debug('[PayPalSuccess] Payment from navigation state', {
             status: statePayment.status,
             orderId: statePayment.orderId,
@@ -165,37 +165,7 @@ const PayPalSuccess: React.FC = () => {
               sessionStorage.setItem('customerEmail', statePayment.payerEmail || payerEmail);
             }
 
-            // Prefer new structured fields for downloads
-            const builtLinks = buildProductLinks(statePayment);
-            setProductLinks(builtLinks);
-            const allUrl = buildAllProductsUrl(statePayment);
-            setAllProductsUrl(allUrl);
-
-            // Keep legacy arrays in sessionStorage for other pages
-            const links: string[] = [];
-            if (Array.isArray(statePayment.downloadUrls)) links.push(...statePayment.downloadUrls.filter(Boolean));
-            if (typeof statePayment.downloadUrl === 'string' && statePayment.downloadUrl) links.push(statePayment.downloadUrl);
-            const toUrl = (t: string) => `/api/download/${encodeURIComponent(t)}`;
-            if (Array.isArray(statePayment.downloadTokens)) links.push(...statePayment.downloadTokens.filter(Boolean).map(toUrl));
-            if (typeof statePayment.downloadToken === 'string' && statePayment.downloadToken) links.push(toUrl(statePayment.downloadToken));
-            if (links.length > 0) {
-              sessionStorage.setItem('downloadUrls', JSON.stringify(links));
-              setDownloadUrls(links);
-            }
-            console.debug('[PayPalSuccess] Parsed downloadUrls from payment state:', links);
-
-            // Extract invoice download URLs/tokens and store
-            const invLinks: string[] = [];
-            if (Array.isArray(statePayment.invoiceDownloadUrls)) invLinks.push(...statePayment.invoiceDownloadUrls.filter(Boolean));
-            if (typeof statePayment.invoiceDownloadUrl === 'string' && statePayment.invoiceDownloadUrl) invLinks.push(statePayment.invoiceDownloadUrl);
-            const toInvoiceUrl = (t: string) => `/api/download/invoice/${encodeURIComponent(t)}`;
-            if (Array.isArray(statePayment.invoiceDownloadTokens)) invLinks.push(...statePayment.invoiceDownloadTokens.filter(Boolean).map(toInvoiceUrl));
-            if (typeof statePayment.invoiceDownloadToken === 'string' && statePayment.invoiceDownloadToken) invLinks.push(toInvoiceUrl(statePayment.invoiceDownloadToken));
-            if (invLinks.length > 0) {
-              sessionStorage.setItem('invoiceDownloadUrls', JSON.stringify(invLinks));
-              setInvoiceDownloadUrls(invLinks);
-            }
-            console.debug('[PayPalSuccess] Parsed invoiceDownloadUrls from payment state:', invLinks);
+            await applyCanonicalDetails(statePayment);
 
             // Save order to user's history if logged in
             if (isAuthenticated && user) {
@@ -238,7 +208,6 @@ const PayPalSuccess: React.FC = () => {
 
       try {
         const res = await paymentService.executePayPalPayment(paymentId, payerEmail);
-        setPayment(res);
         console.debug('[PayPalSuccess] Payment from server response', {
           status: res.status,
           orderId: res.orderId,
@@ -250,36 +219,7 @@ const PayPalSuccess: React.FC = () => {
             sessionStorage.setItem('customerEmail', res.payerEmail || payerEmail);
           }
 
-          // Prefer new structured fields for downloads
-          const builtLinks = buildProductLinks(res);
-          setProductLinks(builtLinks);
-          const allUrl = buildAllProductsUrl(res);
-          setAllProductsUrl(allUrl);
-
-          // Keep legacy arrays in sessionStorage for other pages
-          const links: string[] = [];
-          if (Array.isArray(res.downloadUrls)) links.push(...res.downloadUrls.filter(Boolean));
-          if (typeof res.downloadUrl === 'string' && res.downloadUrl) links.push(res.downloadUrl);
-          const toUrl = (t: string) => `/api/download/${encodeURIComponent(t)}`;
-          if (Array.isArray(res.downloadTokens)) links.push(...res.downloadTokens.filter(Boolean).map(toUrl));
-          if (typeof res.downloadToken === 'string' && res.downloadToken) links.push(toUrl(res.downloadToken));
-          if (links.length > 0) {
-            sessionStorage.setItem('downloadUrls', JSON.stringify(links));
-            setDownloadUrls(links);
-          }
-          console.debug('[PayPalSuccess] Parsed downloadUrls from payment response:', links);
-
-          // Extract invoice download URLs/tokens and store
-          const invLinks: string[] = [];
-          if (Array.isArray(res.invoiceDownloadUrls)) invLinks.push(...res.invoiceDownloadUrls.filter(Boolean));
-          if (typeof res.invoiceDownloadUrl === 'string' && res.invoiceDownloadUrl) invLinks.push(res.invoiceDownloadUrl);
-          const toInvoiceUrl = (t: string) => `/api/download/invoice/${encodeURIComponent(t)}`;
-          if (Array.isArray(res.invoiceDownloadTokens)) invLinks.push(...res.invoiceDownloadTokens.filter(Boolean).map(toInvoiceUrl));
-          if (typeof res.invoiceDownloadToken === 'string' && res.invoiceDownloadToken) invLinks.push(toInvoiceUrl(res.invoiceDownloadToken));
-          if (invLinks.length > 0) {
-            sessionStorage.setItem('invoiceDownloadUrls', JSON.stringify(invLinks));
-            setInvoiceDownloadUrls(invLinks);
-          }
+          await applyCanonicalDetails(res);
 
           // Save order to user's history if logged in
           if (isAuthenticated && user) {
@@ -458,7 +398,7 @@ const PayPalSuccess: React.FC = () => {
             <div className="actions">
               {payment.status === 'COMPLETED' ? (
                 <>
-                  {allProductsUrl && (
+                  {allProductsUrl && productLinks && productLinks.length > 1 && (
                     <button onClick={async () => {
                       console.log('[analytics] all-products click');
                       setDlError(null);
@@ -521,27 +461,32 @@ const PayPalSuccess: React.FC = () => {
                         } else {
                           const latest = await paymentService.getPaymentDetails(pid);
                           setPayment(latest);
-                          setProductLinks(buildProductLinks(latest));
-                          setAllProductsUrl(buildAllProductsUrl(latest));
+                          setProductLinks(extractPerProductLinks(latest));
+                          setAllProductsUrl(extractAllProductsUrl(latest));
 
-                          // update legacy arrays for compatibility
+                          // update legacy arrays for compatibility (products/invoices), tokens excluded
+                          sessionStorage.removeItem('downloadUrls');
+                          sessionStorage.removeItem('invoiceDownloadUrls');
+
                           const links: string[] = [];
                           if (Array.isArray(latest.downloadUrls)) links.push(...latest.downloadUrls.filter(Boolean));
                           if (typeof latest.downloadUrl === 'string' && latest.downloadUrl) links.push(latest.downloadUrl);
-                          const toUrl = (t: string) => `/api/download/${encodeURIComponent(t)}`;
-                          if (Array.isArray(latest.downloadTokens)) links.push(...latest.downloadTokens.filter(Boolean).map(toUrl));
-                          if (typeof latest.downloadToken === 'string' && latest.downloadToken) links.push(toUrl(latest.downloadToken));
-                          sessionStorage.setItem('downloadUrls', JSON.stringify(links));
-                          setDownloadUrls(links);
+                          if (links.length > 0) {
+                            sessionStorage.setItem('downloadUrls', JSON.stringify(links));
+                            setDownloadUrls(links);
+                          } else {
+                            setDownloadUrls([]);
+                          }
 
                           const invLinks: string[] = [];
                           if (Array.isArray(latest.invoiceDownloadUrls)) invLinks.push(...latest.invoiceDownloadUrls.filter(Boolean));
                           if (typeof latest.invoiceDownloadUrl === 'string' && latest.invoiceDownloadUrl) invLinks.push(latest.invoiceDownloadUrl);
-                          const toInvoiceUrl = (t: string) => `/api/download/invoice/${encodeURIComponent(t)}`;
-                          if (Array.isArray(latest.invoiceDownloadTokens)) invLinks.push(...latest.invoiceDownloadTokens.filter(Boolean).map(toInvoiceUrl));
-                          if (typeof latest.invoiceDownloadToken === 'string' && latest.invoiceDownloadToken) invLinks.push(toInvoiceUrl(latest.invoiceDownloadToken));
-                          sessionStorage.setItem('invoiceDownloadUrls', JSON.stringify(invLinks));
-                          setInvoiceDownloadUrls(invLinks);
+                          if (invLinks.length > 0) {
+                            sessionStorage.setItem('invoiceDownloadUrls', JSON.stringify(invLinks));
+                            setInvoiceDownloadUrls(invLinks);
+                          } else {
+                            setInvoiceDownloadUrls([]);
+                          }
                         }
                       } catch (e) {
                         setDlError(mapDownloadError(e));

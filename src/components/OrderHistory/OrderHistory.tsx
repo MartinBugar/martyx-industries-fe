@@ -4,6 +4,9 @@ import type { Order } from '../../context/authTypes';
 import './OrderHistory.css';
 import { ordersService } from '../../services/ordersService';
 import { orderService } from '../../services/orderService';
+import { paymentService } from '../../services/paymentService';
+import { extractPerProductLinks } from '../../helpers/downloads';
+
 
 const OrderHistory: React.FC = () => {
   const { user, getOrders, refreshOrders, ordersLoading, hasLoadedOrders } = useAuth();
@@ -33,6 +36,27 @@ const OrderHistory: React.FC = () => {
   
   // Get orders from context
   const orders = getOrders();
+
+    // Per-order dynamic download links derived from PaymentDTO
+    const [productLinksByOrder, setProductLinksByOrder] = useState<Record<string, Array<{ label: string; url: string }>>>({});
+    const [linksLoadingId, setLinksLoadingId] = useState<string | null>(null);
+    const [linksErrorByOrder, setLinksErrorByOrder] = useState<Record<string, string | null>>({});
+
+    const ensureProductLinks = async (order: Order) => {
+      try {
+        if (!order || !order.paymentId) return;
+        if (productLinksByOrder[order.id]) return;
+        setLinksLoadingId(order.id);
+        const dto = await paymentService.getPaymentDetails(order.paymentId);
+        const built = extractPerProductLinks(dto);
+        setProductLinksByOrder(prev => ({ ...prev, [order.id]: built }));
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : 'Failed to load download links';
+        setLinksErrorByOrder(prev => ({ ...prev, [order.id]: msg }));
+      } finally {
+        setLinksLoadingId(null);
+      }
+    };
   
   // Format date/time string
   const formatDateTime = (dateString: string) => {
@@ -58,6 +82,13 @@ const OrderHistory: React.FC = () => {
   const handleOrderSelect = (order: Order) => {
     setSelectedOrder(order === selectedOrder ? null : order);
   };
+
+  // When an order is selected, try to load its product download links (if paymentId is known)
+  useEffect(() => {
+    if (selectedOrder) {
+      void ensureProductLinks(selectedOrder);
+    }
+  }, [selectedOrder]);
 
 
   // Handle invoice download
@@ -228,9 +259,51 @@ const OrderHistory: React.FC = () => {
                       ) : (
                         <div className="download-note">Invoice available once the order is paid.</div>
                       )}
-                      <button className="download-button" onClick={() => void handleDownloadAllProducts(order)} disabled={productsDownloadingId === order.id}>
-                        {productsDownloadingId === order.id ? 'Downloading…' : 'Download products'}
-                      </button>
+                      {/* Dynamic per-product download buttons */}
+                      {productLinksByOrder[order.id] && productLinksByOrder[order.id].length > 0 ? (
+                        <div className="download-list">
+                          {productLinksByOrder[order.id].map((pl, idx) => (
+                            <button
+                              key={idx}
+                              className="download-button"
+                              onClick={async () => {
+                                try {
+                                  console.log('[analytics] order-history per-product download click', { orderId: order.id, index: idx, label: pl.label });
+                                  setProductsDownloadingId(order.id);
+                                  const ok = await ordersService.downloadByUrl(pl.url, pl.label);
+                                  if (!ok) {
+                                    // Record a lightweight error for this order if needed
+                                    // (we reuse invoiceError slot for simplicity to avoid adding more state)
+                                    setInvoiceError('Failed to download file.');
+                                  } else {
+                                    setInvoiceError(null);
+                                  }
+                                } catch {
+                                  setInvoiceError('Failed to download file.');
+                                } finally {
+                                  setProductsDownloadingId(null);
+                                }
+                              }}
+                              disabled={productsDownloadingId === order.id}
+                            >
+                              {productsDownloadingId === order.id ? 'Downloading…' : (pl.label || 'Download')}
+                            </button>
+                          ))}
+                        </div>
+                      ) : (
+                        <>
+                          {linksLoadingId === order.id && (
+                            <div className="download-note">Loading links…</div>
+                          )}
+                          {linksErrorByOrder[order.id] && (
+                            <div className="download-error" role="alert">{linksErrorByOrder[order.id]}</div>
+                          )}
+                          {/* Fallback: legacy one-click to download all items sequentially */}
+                          <button className="download-button" onClick={() => void handleDownloadAllProducts(order)} disabled={productsDownloadingId === order.id}>
+                            {productsDownloadingId === order.id ? 'Downloading…' : 'Download products'}
+                          </button>
+                        </>
+                      )}
                     </div>
                     {invoiceError && selectedOrder?.id === order.id && (
                       <div className="download-error" role="alert">{invoiceError}</div>

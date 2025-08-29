@@ -49,10 +49,10 @@ export interface PaymentDTO {
 
   // Structured per-product mapping (preferred for rendering)
   downloadLinks?: Array<{
-    productId?: number;
-    productName?: string | null;
-    url: string;
-    token: string;
+    productId: number;
+    productName: string;
+    url?: string;
+    token?: string;
   }>;
 
   // Order items for receipts/summary UI
