@@ -68,7 +68,7 @@ const PayPalSuccess: React.FC = () => {
       return [];
     }
   });
-  const [downloadingProduct, setDownloadingProduct] = useState<boolean>(false);
+
   const [showStatusModal, setShowStatusModal] = useState<boolean>(false);
   const processedRef = useRef(false);
   const [rawCapture, setRawCapture] = useState<unknown | null>(null);
@@ -94,19 +94,27 @@ const PayPalSuccess: React.FC = () => {
 
     setPayment(latest);
 
-    // Prefer structured links from the canonical response, but if it lacks
-    // meaningful product names, fall back to the initial (base) payload
-    // which may contain richer "downloadLinks" with productName.
+    // Prefer capture response (base) if it has structured downloadLinks with proper productName,
+    // otherwise fall back to API response (latest)
+    const builtBase = extractPerProductLinks(base);
     const builtLatest = extractPerProductLinks(latest);
+    
+
+    
     let built = builtLatest;
-    if (
-      builtLatest.length === 0 ||
-      builtLatest.every(pl => !pl.productName || /^product(\s+\d+)?$/i.test(pl.productName))
+    
+    // If base payload has downloadLinks with proper product names, prefer it
+    if (Array.isArray(base.downloadLinks) && base.downloadLinks.length > 0 && 
+        base.downloadLinks.some(dl => dl.productName && dl.productName.trim() && !/^product(\s+\d+)?$/i.test(dl.productName))) {
+
+      built = builtBase;
+    }
+    // Otherwise, if latest doesn't have good names but base does (from orderItems), use base
+    else if (
+      (builtLatest.length === 0 || builtLatest.every(pl => !pl.productName || /^product(\s+\d+)?$/i.test(pl.productName))) &&
+      builtBase.length > 0 && builtBase.some(pl => pl.productName && !/^product(\s+\d+)?$/i.test(pl.productName))
     ) {
-      const builtBase = extractPerProductLinks(base);
-      if (builtBase.length > 0) {
-        built = builtBase;
-      }
+      built = builtBase;
     }
     setProductLinks(built);
 

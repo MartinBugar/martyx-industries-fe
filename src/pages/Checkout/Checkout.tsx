@@ -112,6 +112,9 @@ const Checkout: React.FC = () => {
       downloadUrls: Array.isArray(c?.downloadUrls) ? c.downloadUrls : undefined,
       downloadToken: c?.downloadToken,
       downloadTokens: Array.isArray(c?.downloadTokens) ? c.downloadTokens : undefined,
+      // Include structured download links and order items
+      downloadLinks: Array.isArray(c?.downloadLinks) ? c.downloadLinks : undefined,
+      orderItems: Array.isArray(c?.orderItems) ? c.orderItems : undefined,
       invoiceDownloadUrl: c?.invoiceDownloadUrl,
       invoiceDownloadUrls: Array.isArray(c?.invoiceDownloadUrls) ? c.invoiceDownloadUrls : undefined,
       invoiceDownloadToken: c?.invoiceDownloadToken,
