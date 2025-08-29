@@ -17,8 +17,6 @@ import {
   FormField,
   ErrorMessage,
   SubmitButton,
-  EmailIcon,
-  PasswordIcon,
   LoadingSpinner
 } from '../shared/FormComponents';
 import { useAuthForm } from '../../hooks/useAuthForm';
@@ -245,7 +243,7 @@ const Login: React.FC<LoginProps> = ({ confirmationStatus = null }) => {
           required
           autoComplete="email"
           inputMode="email"
-          icon={<EmailIcon />}
+          icon=""
         />
         
         <FormField
@@ -257,7 +255,7 @@ const Login: React.FC<LoginProps> = ({ confirmationStatus = null }) => {
           placeholder="Zadajte vaše heslo"
           required
           autoComplete="current-password"
-          icon={<PasswordIcon />}
+          icon=""
           showPasswordToggle
           showPassword={showPassword}
           onTogglePassword={togglePasswordVisibility}
