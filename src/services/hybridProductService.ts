@@ -25,7 +25,6 @@ export class HybridProductService {
   private mergeProductData(backendProduct: ProductDto, hardcodedData: HardcodedProductData | null): Product {
     // Default values for missing hardcoded data
     const defaultHardcodedData: Partial<HardcodedProductData> = {
-      currency: 'USD',
       features: [],
       modelPath: '',
       gallery: [],
@@ -41,7 +40,7 @@ export class HybridProductService {
       id: backendProduct.id.toString(),
       name: backendProduct.name,
       price: backendProduct.price,
-      currency: mergedHardcodedData.currency!,
+      currency: backendProduct.currency, // Now comes from backend
       description: backendProduct.description,
       features: mergedHardcodedData.features!,
       modelPath: mergedHardcodedData.modelPath!,
@@ -111,6 +110,7 @@ export class HybridProductService {
           name: `Mock Product ${hardcodedData.id}`,
           description: 'Product data unavailable - backend connection failed',
           price: 0,
+          currency: 'USD', // Default fallback currency
           imageUrl: null,
           sku: `MOCK-${hardcodedData.id}`,
           category: null,
@@ -154,6 +154,7 @@ export class HybridProductService {
           name: `Mock Product ${id}`,
           description: 'Product data unavailable - backend connection failed',
           price: 0,
+          currency: 'USD', // Default fallback currency
           imageUrl: null,
           sku: `MOCK-${id}`,
           category: null,

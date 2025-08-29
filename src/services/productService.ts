@@ -9,6 +9,7 @@ export interface ProductDto {
   name: string;
   description: string;
   price: number;
+  currency: string;
   imageUrl: string | null;
   sku: string;
   category: string | null;

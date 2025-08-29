@@ -88,7 +88,6 @@ export const defaultModelViewerSettings: ModelViewerSettings = {
 // These complement the backend ProductDto data
 export interface HardcodedProductData {
     id: string; // Must match backend product ID for pairing
-    currency: string;
     features: string[];
     modelPath: string;
     gallery: string[];
@@ -102,7 +101,6 @@ export interface HardcodedProductData {
 export const hardcodedProductsData: HardcodedProductData[] = [
     {
         id: "1", // Must match backend product ID
-        currency: "USD",
         features: [
             "High-resolution textures",
             "Fully interactive 3D model",
