@@ -8,7 +8,6 @@ import { useCart } from '../../context/useCart';
 import { extractPerProductLinks, extractAllProductsUrl } from '../../helpers/downloads';
 import './PayPalSuccess.css';
 import { DownloadDropdown } from '../../components/DownloadDropdown';
-import { mapDownloadError } from '../../utils/downloadErrors';
 
 function isObject(val: unknown): val is Record<string, unknown> {
   return val !== null && typeof val === 'object' && !Array.isArray(val);
@@ -404,31 +403,23 @@ const PayPalSuccess: React.FC = () => {
                         onError={(msg) => setDlError(msg)}
                       />
                     ) : (
-                      // As a last resort (no structured links yet), keep the legacy single button
-                      <button onClick={async () => {
-                        setDlError(null);
-                        try {
-                          setDownloadingProduct(true);
-                          // Prefer structured single item from downloadLinks
-                          const dl = payment?.downloadLinks?.[0];
-                          const src =
-                            dl?.url ??
-                            (typeof dl?.token === 'string' ? `/api/download/${encodeURIComponent(dl.token)}` : undefined) ??
-                            // last-resort legacy fallback:
-                            downloadUrls?.[0];
-                          const label = (dl?.productName || 'Product').trim();
-                          if (!src) {
-                            setDlError('Download link is not available yet.');
-                            return;
+                      // LAST-RESORT fallback while links are not yet available
+                      <button
+                        onClick={async () => {
+                          setDlError(null);
+                          try {
+                            setDownloadingProduct(true);
+                            // fall back to legacy array if present
+                            const ok = await ordersService.downloadByUrl(downloadUrls?.[0], 'product');
+                            if (!ok) setDlError('Failed to download file.');
+                          } catch {
+                            setDlError('Failed to download file.');
+                          } finally {
+                            setDownloadingProduct(false);
                           }
-                          const ok = await ordersService.downloadByUrl(src, label);
-                          if (!ok) setDlError('Failed to download file.');
-                        } catch (e) {
-                          setDlError(mapDownloadError(e));
-                        } finally {
-                          setDownloadingProduct(false);
-                        }
-                      }} disabled={downloadingProduct || !(downloadUrls && downloadUrls.length > 0)}>
+                        }}
+                        disabled={downloadingProduct || !(downloadUrls && downloadUrls.length > 0)}
+                      >
                         {downloadingProduct ? 'Downloading…' : 'Download Digital Product'}
                       </button>
                     );
