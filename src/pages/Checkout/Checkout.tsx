@@ -35,6 +35,21 @@ const Checkout: React.FC = () => {
     return `${totalCents}:${items.length}`;
   }, [getTotalPrice, items.length]);
 
+  // Derive currency from cart items (from product data). Fallback to EUR if not available.
+  const derivedCurrency = useMemo(() => {
+    const currencies = items
+      .map(i => i.product?.currency)
+      .filter((c): c is string => typeof c === 'string' && c.trim().length > 0)
+      .map(c => c.toUpperCase());
+    if (currencies.length === 0) return 'EUR';
+    const first = currencies[0];
+    const mixed = !currencies.every(c => c === first);
+    if (mixed) {
+      console.warn('[Checkout] Mixed currencies detected in cart items:', currencies);
+    }
+    return first;
+  }, [items]);
+
   // Handle form input changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -317,7 +332,7 @@ const Checkout: React.FC = () => {
                   <PayPalCheckoutButton
                     items={items}
                     totalAmount={getTotalPrice()}
-                    currency={"EUR"}
+                    currency={derivedCurrency}
                     email={formData.email}
                     cartHash={cartHash}
                     onSuccess={handlePayPalSuccess}

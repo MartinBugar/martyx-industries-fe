@@ -2,7 +2,6 @@ import { useCallback, useMemo } from "react";
 import { PayPalButtons } from "@paypal/react-paypal-js";
 import type { CartItem } from "../context/cartContextTypes";
 import { API_BASE_URL } from "../services/apiUtils";
-import CardPayViaHostedFields from "./checkout/CardPayViaHostedFields";
 
 type Props = {
   items: CartItem[];
@@ -67,54 +66,67 @@ export default function PayPalCheckoutButton({ items, totalAmount, currency = "E
     onSuccess(capture);
   }, [onSuccess]);
 
-  // Force PayPalButtons to re-render when cart changes
-  const forceReRender = useMemo(() => [cartHash, currency, "capture"], [cartHash, currency]);
+  // Force re-render arrays (PayPal reads style only when forceReRender changes)
+  // Wallet keeps its own constant height (48)
+  // Card depends on CARD_HEIGHT computed below
+  // NOTE: hooks must remain in consistent order
+  // We'll declare styles first, then these hooks before return.
 
   // 1) štýl pre PayPal wallet (tmavé/white podľa chuti)
   const walletStyle = {
     layout: "vertical",
     shape: "rect",
-    color: "black",   // alebo "white" – vyber čo viac ladi
+    color: "gold",
     height: 48,
     label: "paypal",
     tagline: false
   } as const;
 
+  // 2) štýl pre PayPal card – väčšia výška, voliteľne nižšia na mobile
+  const isMobile = typeof window !== "undefined" && (window.matchMedia?.("(max-width: 480px)")?.matches ?? false);
+  // PayPal SDK requires button height between 25px and 55px. Use 48 on mobile and 55 on larger screens.
+  const CARD_HEIGHT = isMobile ? 48 : 55;
+  const cardStyle = {
+    layout: "horizontal",
+    shape: "rect",
+    color: "black",
+    height: CARD_HEIGHT,
+    label: "pay",
+    tagline: false
+  } as const;
+
+  // force re-render arrays: separate for wallet and card (PayPal re-reads style on change)
+  const forceReRenderWallet = useMemo(
+    () => [cartHash, currency, "capture", 48], // 48 is wallet height
+    [cartHash, currency]
+  );
+  const forceReRenderCard = useMemo(
+    () => [cartHash, currency, "capture", CARD_HEIGHT],
+    [cartHash, currency, CARD_HEIGHT]
+  );
+
   return (
-    <div className="grid gap-3">
+    <div className="grid gap-3" style={{ minHeight: CARD_HEIGHT }}>
       {/* PAYPAL WALLET BUTTON */}
       <PayPalButtons
+        fundingSource="paypal"
         style={walletStyle}
         createOrder={createOrder}
         onApprove={onApprove}
         onError={onError}
-        forceReRender={forceReRender}
+        forceReRender={forceReRenderWallet}
       />
 
       {/* PAYPAL CARD BUTTON */}
       <PayPalButtons
         fundingSource="card"
-        style={walletStyle}
+        style={cardStyle}
         createOrder={createOrder}
         onApprove={onApprove}
         onError={onError}
-        forceReRender={forceReRender}
+        forceReRender={forceReRenderCard}
       />
 
-      {/* HOSTED FIELDS – Kartova platba bez bieleho pruhu */}
-      <CardPayViaHostedFields
-        createOrder={createOrder}
-        onApproveCapture={async (orderId: string) => {
-          const res = await fetch(`${API_BASE_URL}/api/paypal/capture-order`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ orderId })
-          });
-          if (!res.ok) throw new Error(await res.text());
-          const capture = await res.json();
-          onSuccess(capture);
-        }}
-      />
     </div>
   );
 }
