@@ -214,9 +214,6 @@ const OrderDetailsCard: React.FC<OrderDetailsCardProps> = ({
                       {item.productType && (
                         <span className={`item-type ${item.productType?.toLowerCase() === 'digital' ? 'digital' : ''}`}>
                           {item.productType}
-                          {item.productType?.toLowerCase() === 'digital' && (
-                            <span className="digital-badge">📱</span>
-                          )}
                         </span>
                       )}
                     </div>
