@@ -29,7 +29,7 @@ const OrderDetailsCard: React.FC<OrderDetailsCardProps> = ({
 
   // Currency formatter
   const formatCurrency = (amount: number, currency?: string) => {
-    const code = (currency || 'USD').toUpperCase();
+    const code = (currency || 'EUR').toUpperCase();
     const symbol = code === 'USD' ? '$' : code === 'EUR' ? '€' : code === 'GBP' ? '£' : '';
     if (symbol) return `${symbol}${amount.toFixed(2)}`;
     return `${amount.toFixed(2)} ${code}`;
