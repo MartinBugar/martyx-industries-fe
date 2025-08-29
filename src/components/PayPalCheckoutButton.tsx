@@ -71,7 +71,14 @@ export default function PayPalCheckoutButton({ items, totalAmount, currency = "E
 
   return (
     <PayPalButtons
-      style={{ layout: "vertical", shape: "rect", label: "pay" }}
+      style={{ 
+        layout: "vertical", 
+        shape: "rect", 
+        label: "pay",
+        color: "blue",
+        height: 48,
+        tagline: false
+      }}
       createOrder={createOrder}
       onApprove={onApprove}
       onError={onError}

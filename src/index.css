@@ -415,8 +415,8 @@ body::before {
 }
 
 
-/* Global overrides to ensure PayPal Smart Buttons have transparent background */
-/* PayPal injects context iframes at document level; ensure they are transparent on dark theme */
+/* Global overrides to ensure PayPal Smart Buttons integrate properly with dark theme */
+/* PayPal injects context iframes at document level; ensure they are styled for dark theme */
 iframe.paypal-buttons-context-iframe,
 .paypal-buttons-context-iframe,
 .paypal-buttons,
@@ -427,4 +427,48 @@ iframe.paypal-buttons-context-iframe,
   background: transparent !important;
   background-color: transparent !important;
   box-shadow: none !important;
+}
+
+/* Enhanced PayPal button styling for dark theme integration */
+.paypal-buttons {
+  background: var(--surface) !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  transition: all 0.2s ease !important;
+}
+
+.paypal-buttons:hover {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 2px var(--accent-soft) !important;
+}
+
+/* PayPal button iframe specific styling */
+.paypal-buttons iframe {
+  border-radius: 12px !important;
+  min-height: 48px !important;
+}
+
+/* Container-specific PayPal styling for checkout */
+.paypal-container .paypal-buttons {
+  width: 100% !important;
+  max-width: 100% !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+  background: var(--surface) !important;
+  overflow: hidden !important;
+  transition: all 0.2s ease !important;
+}
+
+.paypal-container .paypal-buttons:hover {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px var(--accent-soft) !important;
+  transform: translateY(-1px) !important;
+}
+
+.paypal-container .paypal-buttons iframe {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 12px !important;
+  min-height: 48px !important;
 }

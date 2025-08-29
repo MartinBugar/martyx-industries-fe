@@ -69,6 +69,20 @@ const Checkout: React.FC = () => {
       downloadUrls?: string[];
       downloadToken?: string;
       downloadTokens?: string[];
+      downloadLinks?: Array<{
+        productId?: string | number;
+        productName?: string;
+        downloadUrl?: string;
+        downloadToken?: string;
+      }>;
+      orderItems?: Array<{
+        productId?: string | number;
+        productName?: string;
+        quantity?: number;
+        price?: number;
+        downloadUrl?: string;
+        downloadToken?: string;
+      }>;
       invoiceDownloadUrl?: string;
       invoiceDownloadUrls?: string[];
       invoiceDownloadToken?: string;
@@ -172,12 +186,18 @@ const Checkout: React.FC = () => {
   
   return (
     <main className="checkout-container" role="main" aria-labelledby="checkout-title">
-      <h1 id="checkout-title">Checkout</h1>
+      <div className="checkout-header">
+        <h1 id="checkout-title">Secure Checkout</h1>
+        <p className="checkout-subtitle">Complete your order securely with PayPal</p>
+      </div>
       
       <div className="checkout-content">
         {/* Order Summary */}
-        <div className="order-summary" role="region" aria-labelledby="order-summary-title">
-          <h2 id="order-summary-title">Order Summary</h2>
+        <div className="order-summary-card" role="region" aria-labelledby="order-summary-title">
+          <div className="card-header">
+            <h2 id="order-summary-title">Order Summary</h2>
+            <span className="item-count">{items.length} item{items.length !== 1 ? 's' : ''}</span>
+          </div>
           
           <div className="order-items" role="list">
             {items.map(item => {
@@ -191,11 +211,13 @@ const Checkout: React.FC = () => {
                   role="listitem"
                   aria-label={`${item.product.name}, quantity ${qty}, total €${lineTotal}`}
                 >
-                  <div className="item-name">{item.product.name}</div>
-                  <div className="item-details">
-                    <span className="item-meta">€{unit.toFixed(2)} × {qty}</span>
-                    <span className="item-amount">€{lineTotal}</span>
+                  <div className="item-content">
+                    <div className="item-name">{item.product.name}</div>
+                    <div className="item-details">
+                      <span className="item-meta">€{unit.toFixed(2)} × {qty}</span>
+                    </div>
                   </div>
+                  <div className="item-amount">€{lineTotal}</div>
                 </div>
               );
             })}
@@ -203,94 +225,134 @@ const Checkout: React.FC = () => {
           
           <div className="order-breakdown" aria-live="polite">
             <div className="breakdown-row">
-              <span>Items ({items.length})</span>
+              <span>Subtotal</span>
               <span>€{getTotalPrice().toFixed(2)}</span>
             </div>
-            <div className="breakdown-row muted">
-              <span>Fees</span>
+            <div className="breakdown-row">
+              <span>Processing fees</span>
               <span>€0.00</span>
             </div>
-            <div className="order-total breakdown-total">
+            <div className="breakdown-divider"></div>
+            <div className="order-total">
               <span>Total</span>
               <span>€{getTotalPrice().toFixed(2)}</span>
             </div>
           </div>
           
-          <div className="delivery-info">
-            <h3>Digital Product Delivery</h3>
-            <p>Your digital product will be delivered to your email immediately after purchase.</p>
+          <div className="delivery-badge">
+            <div className="badge-icon">📧</div>
+            <div className="badge-content">
+              <strong>Instant Digital Delivery</strong>
+              <p>Products delivered to your email immediately after payment</p>
+            </div>
           </div>
         </div>
         
         {/* Checkout Form */}
-        <div className="checkout-form-container">
-          <h2>Your Information</h2>
+        <div className="checkout-form-card">
+          <div className="card-header">
+            <h2>Contact Information</h2>
+            <p className="form-subtitle">We'll send your digital products to this email address</p>
+          </div>
           
           <form className="checkout-form">
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="firstName">First Name</label>
-                <input
-                  type="text"
-                  id="firstName"
-                  name="firstName"
-                  autoComplete="given-name"
-                  value={formData.firstName}
-                  onChange={handleInputChange}
-                  required
-                />
+            <div className="form-section">
+              <div className="form-row">
+                <div className="form-field">
+                  <label htmlFor="firstName">First Name</label>
+                  <input
+                    type="text"
+                    id="firstName"
+                    name="firstName"
+                    autoComplete="given-name"
+                    value={formData.firstName}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="Enter your first name"
+                  />
+                </div>
+                
+                <div className="form-field">
+                  <label htmlFor="lastName">Last Name</label>
+                  <input
+                    type="text"
+                    id="lastName"
+                    name="lastName"
+                    autoComplete="family-name"
+                    value={formData.lastName}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="Enter your last name"
+                  />
+                </div>
               </div>
               
-              <div className="form-group">
-                <label htmlFor="lastName">Last Name</label>
+              <div className="form-field">
+                <label htmlFor="email">Email Address</label>
                 <input
-                  type="text"
-                  id="lastName"
-                  name="lastName"
-                  autoComplete="family-name"
-                  value={formData.lastName}
+                  type="email"
+                  id="email"
+                  name="email"
+                  autoComplete="email"
+                  value={formData.email}
                   onChange={handleInputChange}
                   required
+                  placeholder="your.email@example.com"
                 />
               </div>
             </div>
             
-            <div className="form-group">
-              <label htmlFor="email">Email (for digital delivery)</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                autoComplete="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-            
-            <h3>Payment</h3>
-            <p>We use PayPal for secure checkout of digital products.</p>
-            
-            {/* PayPal Checkout Button */}
+            {/* Payment Section */}
             <div className="payment-section">
-              <h3>Pay with PayPal</h3>
-              <PayPalCheckoutButton
-                items={items}
-                totalAmount={getTotalPrice()}
-                currency={"EUR"}
-                email={formData.email}
-                cartHash={cartHash}
-                onSuccess={handlePayPalSuccess}
-                onError={handlePayPalError}
-              />
+              <div className="payment-header">
+                <h3>Payment Method</h3>
+                <div className="security-badge">
+                  <span className="security-icon">🔒</span>
+                  <span>Secure Payment</span>
+                </div>
+              </div>
+              
+              <div className="payment-method-card">
+                <div className="paypal-container">
+                  <PayPalCheckoutButton
+                    items={items}
+                    totalAmount={getTotalPrice()}
+                    currency={"EUR"}
+                    email={formData.email}
+                    cartHash={cartHash}
+                    onSuccess={handlePayPalSuccess}
+                    onError={handlePayPalError}
+                  />
+                </div>
+                <p className="payment-note">
+                  Pay securely with PayPal. You can use your PayPal account or pay with a credit/debit card.
+                </p>
+              </div>
             </div>
             
             {/* Status messages */}
-            <div className="payment-status" role="status" aria-live="polite" aria-atomic="true">
-              {payStatus === "processing" && <p>Processing payment…</p>}
-              {payStatus === "success" && <p>Payment completed.</p>}
-              {payStatus === "error" && <p>Payment failed. Please try again.</p>}
-            </div>
+            {payStatus !== "idle" && (
+              <div className={`payment-status status-${payStatus}`} role="status" aria-live="polite" aria-atomic="true">
+                {payStatus === "processing" && (
+                  <div className="status-content">
+                    <div className="status-icon">⏳</div>
+                    <span>Processing your payment...</span>
+                  </div>
+                )}
+                {payStatus === "success" && (
+                  <div className="status-content">
+                    <div className="status-icon">✅</div>
+                    <span>Payment completed successfully!</span>
+                  </div>
+                )}
+                {payStatus === "error" && (
+                  <div className="status-content">
+                    <div className="status-icon">❌</div>
+                    <span>Payment failed. Please try again.</span>
+                  </div>
+                )}
+              </div>
+            )}
           </form>
         </div>
       </div>
