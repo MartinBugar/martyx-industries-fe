@@ -117,8 +117,8 @@ const PayPalSuccess: React.FC = () => {
       });
 
       const applyCanonicalDetails = async (base: PaymentDTO) => {
-        const ref = base.paymentReference || String(base.id ?? '') || String(base.orderId ?? '');
-        const latest = ref ? await paymentService.getPaymentDetails(ref) : base;
+        // Use capture-order response directly; no extra fetch needed
+        const latest = base;
         setPayment(latest);
 
         // Build per-product buttons strictly from downloadLinks
@@ -455,11 +455,10 @@ const PayPalSuccess: React.FC = () => {
                       setDlError(null);
                       setRefreshing(true);
                       try {
-                        const pid = payment?.paymentReference || (payment?.id != null ? String(payment.id) : paymentIdRef.current);
-                        if (!pid) {
+                        const latest = payment;
+                        if (!latest) {
                           setDlError('Cannot refresh links at the moment.');
                         } else {
-                          const latest = await paymentService.getPaymentDetails(pid);
                           setPayment(latest);
                           setProductLinks(extractPerProductLinks(latest));
                           setAllProductsUrl(extractAllProductsUrl(latest));
