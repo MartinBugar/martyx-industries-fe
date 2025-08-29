@@ -7,6 +7,8 @@ import { useAuth } from '../../context/useAuth';
 import { useCart } from '../../context/useCart';
 import { extractPerProductLinks, extractAllProductsUrl } from '../../helpers/downloads';
 import './PayPalSuccess.css';
+import { DownloadDropdown } from '../../components/DownloadDropdown';
+import { mapDownloadError } from '../../utils/downloadErrors';
 
 function isObject(val: unknown): val is Record<string, unknown> {
   return val !== null && typeof val === 'object' && !Array.isArray(val);
@@ -36,19 +38,6 @@ function formatAmount(val: number | string | undefined): string {
   return '-';
 }
 
-function mapDownloadError(err: unknown): string {
-  const msg = err instanceof Error ? err.message : String(err);
-  if (/410|expired|expire/i.test(msg)) {
-    return 'This download link expired. Please refresh to generate a new one.';
-  }
-  if (/403|forbidden|not authorized|unauthor/i.test(msg)) {
-    return 'You are not entitled to download this file.';
-  }
-  if (/404|not found/i.test(msg)) {
-    return 'The file is not available.';
-  }
-  return 'Failed to download file. Please try again later.';
-}
 
 
 const PayPalSuccess: React.FC = () => {
@@ -87,6 +76,71 @@ const PayPalSuccess: React.FC = () => {
   const [allProductsUrl, setAllProductsUrl] = useState<string | null>(null);
   const paymentIdRef = useRef<string | null>(null);
 
+  // Fetch canonical payment details and hydrate structured download links
+  const fetchCanonicalDetails = async (base: PaymentDTO) => {
+    const ref =
+      base.paymentReference ??
+      (base.orderId != null ? String(base.orderId) : null) ??
+      (base.id != null ? String(base.id) : null);
+
+    let latest = base;
+    if (ref) {
+      try {
+        latest = await paymentService.getPaymentDetails(ref);
+      } catch (e) {
+        console.debug('[PayPalSuccess] getPaymentDetails failed, using capture payload', e);
+      }
+    }
+
+    setPayment(latest);
+
+    const built = extractPerProductLinks(latest);
+    setProductLinks(built);
+    setAllProductsUrl(extractAllProductsUrl(latest));
+
+    console.debug('[PayPalSuccess] structured links', built);
+
+    // (Optional legacy storage for other pages – do not use to render per-product buttons)
+    sessionStorage.removeItem('downloadUrls');
+    sessionStorage.removeItem('invoiceDownloadUrls');
+
+    const legacyProductUrls: string[] = [];
+    if (Array.isArray(latest.downloadUrls)) legacyProductUrls.push(...latest.downloadUrls.filter(Boolean));
+    if (typeof latest.downloadUrl === 'string' && latest.downloadUrl) legacyProductUrls.push(latest.downloadUrl);
+    if (legacyProductUrls.length > 0) {
+      sessionStorage.setItem('downloadUrls', JSON.stringify(legacyProductUrls));
+      setDownloadUrls(legacyProductUrls);
+    } else {
+      setDownloadUrls([]);
+    }
+
+    const legacyInvoiceUrls: string[] = [];
+    if (Array.isArray(latest.invoiceDownloadUrls)) legacyInvoiceUrls.push(...latest.invoiceDownloadUrls.filter(Boolean));
+    if (typeof latest.invoiceDownloadUrl === 'string' && latest.invoiceDownloadUrl) legacyInvoiceUrls.push(latest.invoiceDownloadUrl);
+    if (legacyInvoiceUrls.length > 0) {
+      sessionStorage.setItem('invoiceDownloadUrls', JSON.stringify(legacyInvoiceUrls));
+      setInvoiceDownloadUrls(legacyInvoiceUrls);
+    } else {
+      setInvoiceDownloadUrls([]);
+    }
+
+    if ((built.length === 0) && ref) {
+      setTimeout(async () => {
+        try {
+          const refreshed = await paymentService.getPaymentDetails(ref);
+          const again = extractPerProductLinks(refreshed);
+          if (again.length > 0) {
+            setPayment(refreshed);
+            setProductLinks(again);
+            setAllProductsUrl(extractAllProductsUrl(refreshed));
+          }
+        } catch (err) {
+          console.debug('[PayPalSuccess] retry getPaymentDetails failed', err);
+        }
+      }, 1500);
+    }
+  };
+
   useEffect(() => {
     try {
       const raw = sessionStorage.getItem('paypalCaptureRaw');
@@ -115,39 +169,6 @@ const PayPalSuccess: React.FC = () => {
         paymentId,
       });
 
-      const applyCanonicalDetails = async (base: PaymentDTO) => {
-        // Use capture-order response directly; no extra fetch needed
-        const latest = base;
-        setPayment(latest);
-
-        // Build per-product buttons strictly from downloadLinks
-        setProductLinks(extractPerProductLinks(latest));
-        setAllProductsUrl(extractAllProductsUrl(latest));
-
-        // (Optional legacy storage for other pages – do not use to render per-product buttons)
-        sessionStorage.removeItem('downloadUrls');
-        sessionStorage.removeItem('invoiceDownloadUrls');
-
-        const legacyProductUrls: string[] = [];
-        if (Array.isArray(latest.downloadUrls)) legacyProductUrls.push(...latest.downloadUrls.filter(Boolean));
-        if (typeof latest.downloadUrl === 'string' && latest.downloadUrl) legacyProductUrls.push(latest.downloadUrl);
-        if (legacyProductUrls.length > 0) {
-          sessionStorage.setItem('downloadUrls', JSON.stringify(legacyProductUrls));
-          setDownloadUrls(legacyProductUrls);
-        } else {
-          setDownloadUrls([]);
-        }
-
-        const legacyInvoiceUrls: string[] = [];
-        if (Array.isArray(latest.invoiceDownloadUrls)) legacyInvoiceUrls.push(...latest.invoiceDownloadUrls.filter(Boolean));
-        if (typeof latest.invoiceDownloadUrl === 'string' && latest.invoiceDownloadUrl) legacyInvoiceUrls.push(latest.invoiceDownloadUrl);
-        if (legacyInvoiceUrls.length > 0) {
-          sessionStorage.setItem('invoiceDownloadUrls', JSON.stringify(legacyInvoiceUrls));
-          setInvoiceDownloadUrls(legacyInvoiceUrls);
-        } else {
-          setInvoiceDownloadUrls([]);
-        }
-      };
 
       // If we received payment details via navigation state, use them directly
       const statePayment = locationState?.payment;
@@ -164,7 +185,7 @@ const PayPalSuccess: React.FC = () => {
               sessionStorage.setItem('customerEmail', statePayment.payerEmail || payerEmail);
             }
 
-            await applyCanonicalDetails(statePayment);
+            await fetchCanonicalDetails(statePayment);
 
             // Save order to user's history if logged in
             if (isAuthenticated && user) {
@@ -218,7 +239,7 @@ const PayPalSuccess: React.FC = () => {
             sessionStorage.setItem('customerEmail', res.payerEmail || payerEmail);
           }
 
-          await applyCanonicalDetails(res);
+          await fetchCanonicalDetails(res);
 
           // Save order to user's history if logged in
           if (isAuthenticated && user) {
@@ -373,51 +394,21 @@ const PayPalSuccess: React.FC = () => {
             <div className="actions">
               {payment.status === 'COMPLETED' ? (
                 <>
-                  {allProductsUrl && productLinks && productLinks.length > 1 && (
-                    <button onClick={async () => {
-                      console.log('[analytics] all-products click');
-                      setDlError(null);
-                      try {
-                        setDownloadingProduct(true);
-                        const ok = await ordersService.downloadByUrl(allProductsUrl, 'all-products');
-                        if (!ok) setDlError('Failed to download file.');
-                      } catch (e) {
-                        setDlError(mapDownloadError(e));
-                      } finally {
-                        setDownloadingProduct(false);
-                      }
-                    }} disabled={downloadingProduct}>
-                      {downloadingProduct ? 'Downloading…' : 'Download all products (ZIP)'}
-                    </button>
-                  )}
-
-                  {productLinks && productLinks.length > 0 ? (
-                    <div className="download-list">
-                      {productLinks.map((pl, idx) => (
-                        <button key={idx} onClick={async () => {
-                          console.log('[analytics] per-product download click', { index: idx, label: pl.label });
-                          setDlError(null);
-                          try {
-                            setDownloadingProduct(true);
-                            const ok = await ordersService.downloadByUrl(pl.url, pl.label);
-                            if (!ok) setDlError('Failed to download file.');
-                          } catch (e) {
-                            setDlError(mapDownloadError(e));
-                          } finally {
-                            setDownloadingProduct(false);
-                          }
-                        }} disabled={downloadingProduct}>
-                          {downloadingProduct ? 'Downloading…' : (pl.label || 'Download')}
-                        </button>
-                      ))}
-                    </div>
-                  ) : (
-                    <button
-                      onClick={async () => {
+                  {(() => {
+                    const structuredLinks = (productLinks?.length ?? 0) > 0 ? productLinks : extractPerProductLinks(payment);
+                    const hasStructured = (structuredLinks?.length ?? 0) > 0;
+                    return hasStructured ? (
+                      <DownloadDropdown
+                        links={structuredLinks}
+                        allUrl={allProductsUrl ?? extractAllProductsUrl(payment)}
+                        onError={(msg) => setDlError(msg)}
+                      />
+                    ) : (
+                      // As a last resort (no structured links yet), keep the legacy single button
+                      <button onClick={async () => {
                         setDlError(null);
                         try {
                           setDownloadingProduct(true);
-
                           // Prefer structured single item from downloadLinks
                           const dl = payment?.downloadLinks?.[0];
                           const src =
@@ -425,14 +416,11 @@ const PayPalSuccess: React.FC = () => {
                             (typeof dl?.token === 'string' ? `/api/download/${encodeURIComponent(dl.token)}` : undefined) ??
                             // last-resort legacy fallback:
                             downloadUrls?.[0];
-
-                          const label = `Download ${(dl?.productName || 'product').trim()}`;
-
+                          const label = (dl?.productName || 'Product').trim();
                           if (!src) {
                             setDlError('Download link is not available yet.');
                             return;
                           }
-
                           const ok = await ordersService.downloadByUrl(src, label);
                           if (!ok) setDlError('Failed to download file.');
                         } catch (e) {
@@ -440,20 +428,24 @@ const PayPalSuccess: React.FC = () => {
                         } finally {
                           setDownloadingProduct(false);
                         }
-                      }}
-                      disabled={downloadingProduct}
-                    >
-                      {downloadingProduct
-                        ? 'Downloading…'
-                        : `Download ${(payment?.downloadLinks?.[0]?.productName || 'product').trim()}`}
-                    </button>
-                  )}
+                      }} disabled={downloadingProduct || !(downloadUrls && downloadUrls.length > 0)}>
+                        {downloadingProduct ? 'Downloading…' : 'Download Digital Product'}
+                      </button>
+                    );
+                  })()}
 
                   <button onClick={async () => {
                     console.log('[analytics] invoice click');
                     await handleDownloadInvoice();
                   }} disabled={downloading || !((invoiceDownloadUrls && invoiceDownloadUrls.length > 0) || !!payment.orderId)}>
                     {downloading ? 'Downloading…' : 'Download invoice (PDF)'}
+                  </button>
+
+                  <button onClick={async () => {
+                    if (!payment) return;
+                    await fetchCanonicalDetails(payment);
+                  }}>
+                    Refresh links
                   </button>
 
                 </>
