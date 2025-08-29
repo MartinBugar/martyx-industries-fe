@@ -43,10 +43,7 @@ export const DownloadDropdown: React.FC<Props> = ({ links, allUrl, onError }) =>
     }
   };
 
-  const triggerLabel =
-    links.length > 1
-      ? `Download products (${links.length})`
-      : `Download ${links[0]?.label?.replace(/^Download\s*/i, "").trim() || "product"}`;
+  const triggerLabel = "Download product";
 
   return (
     <div className="dropdown" ref={ref}>
@@ -75,18 +72,22 @@ export const DownloadDropdown: React.FC<Props> = ({ links, allUrl, onError }) =>
             </button>
           )}
 
-          {links.map((pl, idx) => (
-            <button
-              type="button"
-              role="menuitem"
-              key={`${idx}-${pl.label}`}
-              className="dropdown-item"
-              onClick={() => handleClick(pl.url, pl.label, String(idx))}
-              disabled={busyKey === String(idx)}
-            >
-              {busyKey === String(idx) ? "Downloading…" : pl.label}
-            </button>
-          ))}
+          {links.map((pl, idx) => {
+            const displayName = (pl.productName?.trim() || pl.label?.replace(/^Download\s*/i, "").trim() || "product");
+            const analyticsLabel = pl.productName?.trim() || pl.label;
+            return (
+              <button
+                type="button"
+                role="menuitem"
+                key={`${idx}-${pl.label}`}
+                className="dropdown-item"
+                onClick={() => handleClick(pl.url, analyticsLabel, String(idx))}
+                disabled={busyKey === String(idx)}
+              >
+                {busyKey === String(idx) ? "Downloading…" : displayName}
+              </button>
+            );
+          })}
         </div>
       )}
     </div>

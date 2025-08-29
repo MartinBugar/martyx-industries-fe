@@ -6,6 +6,7 @@ import { ordersService } from '../../services/ordersService';
 import { orderService } from '../../services/orderService';
 import { paymentService } from '../../services/paymentService';
 import { extractPerProductLinks } from '../../helpers/downloads';
+import type { ProductLink } from '../../helpers/downloads';
 
 
 const OrderHistory: React.FC = () => {
@@ -38,7 +39,7 @@ const OrderHistory: React.FC = () => {
   const orders = getOrders();
 
     // Per-order dynamic download links derived from PaymentDTO
-    const [productLinksByOrder, setProductLinksByOrder] = useState<Record<string, Array<{ label: string; url: string }>>>({});
+    const [productLinksByOrder, setProductLinksByOrder] = useState<Record<string, ProductLink[]>>({});
     const [linksLoadingId, setLinksLoadingId] = useState<string | null>(null);
     const [linksErrorByOrder, setLinksErrorByOrder] = useState<Record<string, string | null>>({});
 
@@ -262,33 +263,37 @@ const OrderHistory: React.FC = () => {
                       {/* Dynamic per-product download buttons */}
                       {productLinksByOrder[order.id] && productLinksByOrder[order.id].length > 0 ? (
                         <div className="download-list">
-                          {productLinksByOrder[order.id].map((pl, idx) => (
-                            <button
-                              key={idx}
-                              className="download-button"
-                              onClick={async () => {
-                                try {
-                                  console.log('[analytics] order-history per-product download click', { orderId: order.id, index: idx, label: pl.label });
-                                  setProductsDownloadingId(order.id);
-                                  const ok = await ordersService.downloadByUrl(pl.url, pl.label);
-                                  if (!ok) {
-                                    // Record a lightweight error for this order if needed
-                                    // (we reuse invoiceError slot for simplicity to avoid adding more state)
+                          {productLinksByOrder[order.id].map((pl, idx) => {
+                            const displayName: string = (pl.productName?.trim() || pl.label?.replace(/^Download\s*/i, "").trim() || "product");
+                            const analyticsLabel: string = pl.productName?.trim() || pl.label;
+                            return (
+                              <button
+                                key={idx}
+                                className="download-button"
+                                onClick={async () => {
+                                  try {
+                                    console.log('[analytics] order-history per-product download click', { orderId: order.id, index: idx, label: analyticsLabel });
+                                    setProductsDownloadingId(order.id);
+                                    const ok = await ordersService.downloadByUrl(pl.url, analyticsLabel);
+                                    if (!ok) {
+                                      // Record a lightweight error for this order if needed
+                                      // (we reuse invoiceError slot for simplicity to avoid adding more state)
+                                      setInvoiceError('Failed to download file.');
+                                    } else {
+                                      setInvoiceError(null);
+                                    }
+                                  } catch {
                                     setInvoiceError('Failed to download file.');
-                                  } else {
-                                    setInvoiceError(null);
+                                  } finally {
+                                    setProductsDownloadingId(null);
                                   }
-                                } catch {
-                                  setInvoiceError('Failed to download file.');
-                                } finally {
-                                  setProductsDownloadingId(null);
-                                }
-                              }}
-                              disabled={productsDownloadingId === order.id}
-                            >
-                              {productsDownloadingId === order.id ? 'Downloading…' : (pl.label || 'Download')}
-                            </button>
-                          ))}
+                                }}
+                                disabled={productsDownloadingId === order.id}
+                              >
+                                {productsDownloadingId === order.id ? 'Downloading…' : displayName}
+                              </button>
+                            );
+                          })}
                         </div>
                       ) : (
                         <>

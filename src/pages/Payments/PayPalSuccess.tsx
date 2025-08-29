@@ -6,6 +6,7 @@ import { ordersService } from '../../services/ordersService';
 import { useAuth } from '../../context/useAuth';
 import { useCart } from '../../context/useCart';
 import { extractPerProductLinks, extractAllProductsUrl } from '../../helpers/downloads';
+import type { ProductLink } from '../../helpers/downloads';
 import './PayPalSuccess.css';
 import { DownloadDropdown } from '../../components/DownloadDropdown';
 
@@ -71,7 +72,7 @@ const PayPalSuccess: React.FC = () => {
   const [showStatusModal, setShowStatusModal] = useState<boolean>(false);
   const processedRef = useRef(false);
   const [rawCapture, setRawCapture] = useState<unknown | null>(null);
-  const [productLinks, setProductLinks] = useState<Array<{ label: string; url: string }>>([]);
+  const [productLinks, setProductLinks] = useState<ProductLink[]>([]);
   const [allProductsUrl, setAllProductsUrl] = useState<string | null>(null);
   const paymentIdRef = useRef<string | null>(null);
 
@@ -93,9 +94,24 @@ const PayPalSuccess: React.FC = () => {
 
     setPayment(latest);
 
-    const built = extractPerProductLinks(latest);
+    // Prefer structured links from the canonical response, but if it lacks
+    // meaningful product names, fall back to the initial (base) payload
+    // which may contain richer "downloadLinks" with productName.
+    const builtLatest = extractPerProductLinks(latest);
+    let built = builtLatest;
+    if (
+      builtLatest.length === 0 ||
+      builtLatest.every(pl => !pl.productName || /^product(\s+\d+)?$/i.test(pl.productName))
+    ) {
+      const builtBase = extractPerProductLinks(base);
+      if (builtBase.length > 0) {
+        built = builtBase;
+      }
+    }
     setProductLinks(built);
-    setAllProductsUrl(extractAllProductsUrl(latest));
+
+    const allUrl = extractAllProductsUrl(latest) ?? extractAllProductsUrl(base);
+    setAllProductsUrl(allUrl);
 
     console.debug('[PayPalSuccess] structured links', built);
 
@@ -127,12 +143,21 @@ const PayPalSuccess: React.FC = () => {
       setTimeout(async () => {
         try {
           const refreshed = await paymentService.getPaymentDetails(ref);
-          const again = extractPerProductLinks(refreshed);
-          if (again.length > 0) {
-            setPayment(refreshed);
-            setProductLinks(again);
-            setAllProductsUrl(extractAllProductsUrl(refreshed));
+          const againLatest = extractPerProductLinks(refreshed);
+          let again = againLatest;
+          if (
+            againLatest.length === 0 ||
+            againLatest.every(pl => !pl.productName || /^product(\s+\d+)?$/i.test(pl.productName))
+          ) {
+            const baseLinks = extractPerProductLinks(base);
+            if (baseLinks.length > 0) {
+              again = baseLinks;
+            }
           }
+          setPayment(refreshed);
+          setProductLinks(again);
+          const allUrlRef = extractAllProductsUrl(refreshed) ?? extractAllProductsUrl(base);
+          setAllProductsUrl(allUrlRef);
         } catch (err) {
           console.debug('[PayPalSuccess] retry getPaymentDetails failed', err);
         }
@@ -393,37 +418,15 @@ const PayPalSuccess: React.FC = () => {
             <div className="actions">
               {payment.status === 'COMPLETED' ? (
                 <>
-                  {(() => {
-                    const structuredLinks = (productLinks?.length ?? 0) > 0 ? productLinks : extractPerProductLinks(payment);
-                    const hasStructured = (structuredLinks?.length ?? 0) > 0;
-                    return hasStructured ? (
-                      <DownloadDropdown
-                        links={structuredLinks}
-                        allUrl={allProductsUrl ?? extractAllProductsUrl(payment)}
-                        onError={(msg) => setDlError(msg)}
-                      />
-                    ) : (
-                      // LAST-RESORT fallback while links are not yet available
-                      <button
-                        onClick={async () => {
-                          setDlError(null);
-                          try {
-                            setDownloadingProduct(true);
-                            // fall back to legacy array if present
-                            const ok = await ordersService.downloadByUrl(downloadUrls?.[0], 'product');
-                            if (!ok) setDlError('Failed to download file.');
-                          } catch {
-                            setDlError('Failed to download file.');
-                          } finally {
-                            setDownloadingProduct(false);
-                          }
-                        }}
-                        disabled={downloadingProduct || !(downloadUrls && downloadUrls.length > 0)}
-                      >
-                        {downloadingProduct ? 'Downloading…' : 'Download Digital Product'}
-                      </button>
-                    );
-                  })()}
+                  {productLinks && productLinks.length > 0 ? (
+                    <DownloadDropdown
+                      links={productLinks}
+                      allUrl={allProductsUrl ?? extractAllProductsUrl(payment)}
+                      onError={(msg) => setDlError(msg)}
+                    />
+                  ) : (
+                    <div className="download-note">Loading download links…</div>
+                  )}
 
                   <button onClick={async () => {
                     console.log('[analytics] invoice click');

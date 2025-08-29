@@ -1,6 +1,6 @@
 import type { PaymentDTO } from "../services/paymentService";
 
-export type ProductLink = { label: string; url: string };
+export type ProductLink = { label: string; url: string; productName?: string };
 
 export function toDownloadUrl(token?: string | null): string | null {
   if (!token) return null;
@@ -19,7 +19,7 @@ export function extractPerProductLinks(dto?: PaymentDTO | null): ProductLink[] {
           if (!url) return null;
           const name = (dl.productName || 'product').trim();
           const label = `Download ${name}`;
-          return { label, url } as ProductLink;
+          return { label, url, productName: name } as ProductLink;
         })
         .filter(Boolean) as ProductLink[])
     : [];
@@ -47,7 +47,7 @@ export function extractPerProductLinks(dto?: PaymentDTO | null): ProductLink[] {
     const rawName = items[idx]?.productName ?? `product ${idx + 1}`;
     const name = String(rawName || `product ${idx + 1}`).trim();
     const label = `Download ${name}`;
-    return { label, url: u } as ProductLink;
+    return { label, url: u, productName: name } as ProductLink;
   });
 }
 
