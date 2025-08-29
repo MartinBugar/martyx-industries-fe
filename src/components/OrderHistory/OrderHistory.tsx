@@ -36,22 +36,17 @@ const OrderHistory: React.FC = () => {
 
     // Per-order dynamic download links derived from PaymentDTO
     const [productLinksByOrder, setProductLinksByOrder] = useState<Record<string, ProductLink[]>>({});
-    const [linksLoadingId, setLinksLoadingId] = useState<string | null>(null);
-    const [linksErrorByOrder, setLinksErrorByOrder] = useState<Record<string, string | null>>({});
 
     const ensureProductLinks = async (order: Order) => {
       try {
         if (!order || !order.paymentId) return;
         if (productLinksByOrder[order.id]) return;
-        setLinksLoadingId(order.id);
         const dto = await paymentService.getPaymentDetails(order.paymentId);
         const built = extractPerProductLinks(dto);
         setProductLinksByOrder(prev => ({ ...prev, [order.id]: built }));
       } catch (e) {
         const msg = e instanceof Error ? e.message : 'Failed to load download links';
-        setLinksErrorByOrder(prev => ({ ...prev, [order.id]: msg }));
-      } finally {
-        setLinksLoadingId(null);
+        console.error('Failed to load product links:', msg);
       }
     };
   
