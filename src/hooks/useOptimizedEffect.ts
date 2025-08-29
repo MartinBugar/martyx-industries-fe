@@ -3,7 +3,7 @@
  * Prevents unnecessary re-renders and provides better performance
  */
 
-import { useEffect, useCallback, useRef, DependencyList } from 'react';
+import { useEffect, useCallback, useRef, type DependencyList } from 'react';
 
 /**
  * useStableCallback - Creates a stable callback reference that doesn't change on every render

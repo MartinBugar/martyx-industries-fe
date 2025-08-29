@@ -13,37 +13,9 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useStableCallback, useDebouncedEffect } from '../hooks/useOptimizedEffect';
 import './ModelViewer.css';
 
-declare global {
-    namespace JSX {
-        interface IntrinsicElements {
-            'model-viewer': ModelViewerElement;
-        }
-    }
-}
+// Using existing type definitions from src/types/google-model-viewer.d.ts
 
-interface ModelViewerElement extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> {
-    src?: string;
-    'environment-image'?: string;
-    'skybox-image'?: string;
-    alt?: string;
-    'ios-src'?: string;
-    poster?: string;
-    seamless?: boolean;
-    'shadow-intensity'?: number;
-    'shadow-softness'?: number;
-    exposure?: number;
-    'camera-controls'?: boolean;
-    'camera-orbit'?: string;
-    'field-of-view'?: string;
-    'min-camera-orbit'?: string;
-    'max-camera-orbit'?: string;
-    'min-field-of-view'?: string;
-    'max-field-of-view'?: string;
-    'interpolation-decay'?: number;
-    'interaction-policy'?: 'always-allow' | 'allow-when-focused';
-    'interaction-prompt'?: 'auto' | 'when-focused' | 'none';
-    'interaction-prompt-style'?: 'basic' | 'wiggle';
-}
+
 
 interface ModelViewerProps {
     modelPath: string;
@@ -78,9 +50,9 @@ const ModelViewer: React.FC<ModelViewerProps> = React.memo(({
     environmentImage = 'neutral',
     skyboxImage,
     alt = '3D model',
-    iosSrc,
+    iosSrc: _iosSrc,
     poster,
-    seamless = false,
+    seamless: _seamless = false,
     shadowIntensity = 1,
     shadowSoftness = 1,
     exposure = 1,
@@ -89,10 +61,10 @@ const ModelViewer: React.FC<ModelViewerProps> = React.memo(({
     fieldOfView = 'auto',
     minCameraOrbit = 'auto auto auto',
     maxCameraOrbit = 'auto auto auto',
-    minFieldOfView = 'auto',
-    maxFieldOfView = 'auto',
-    interpolationDecay = 100,
-    interactionPolicy = 'always-allow',
+    minFieldOfView: _minFieldOfView = 'auto',
+    maxFieldOfView: _maxFieldOfView = 'auto',
+    interpolationDecay: _interpolationDecay = 100,
+    interactionPolicy: _interactionPolicy = 'always-allow',
     interactionPrompt = 'auto',
     interactionPromptStyle = 'basic',
     fullscreen = false,
@@ -102,8 +74,6 @@ const ModelViewer: React.FC<ModelViewerProps> = React.memo(({
 }) => {
     // State management
     const [isFullscreen, setIsFullscreen] = useState(fullscreen);
-    const [metalness, setMetalness] = useState(typeof metallicFactor === 'string' ? parseFloat(metallicFactor) : metallicFactor);
-    const [roughness, setRoughness] = useState(typeof roughnessFactor === 'string' ? parseFloat(roughnessFactor) : roughnessFactor);
     const [exposureValue, setExposureValue] = useState(typeof exposure === 'string' ? parseFloat(exposure) : exposure);
 
     // Refs
@@ -171,8 +141,6 @@ const ModelViewer: React.FC<ModelViewerProps> = React.memo(({
         const newRoughness = typeof roughnessFactor === 'string' ? parseFloat(roughnessFactor) : roughnessFactor;
         const newExposure = typeof exposure === 'string' ? parseFloat(exposure) : exposure;
         
-        setMetalness(newMetalness);
-        setRoughness(newRoughness);
         setExposureValue(newExposure);
         
         updateMaterialProps(newMetalness, newRoughness);
@@ -190,31 +158,24 @@ const ModelViewer: React.FC<ModelViewerProps> = React.memo(({
         'environment-image': environmentImage,
         'skybox-image': skyboxImage,
         alt,
-        'ios-src': iosSrc,
         poster,
-        seamless,
-        'shadow-intensity': shadowIntensity,
-        'shadow-softness': shadowSoftness,
+        'shadow-intensity': shadowIntensity.toString(),
+        'shadow-softness': shadowSoftness.toString(),
         exposure: exposureValue,
         'camera-controls': cameraControls,
         'camera-orbit': cameraOrbit,
         'field-of-view': fieldOfView,
         'min-camera-orbit': minCameraOrbit,
         'max-camera-orbit': maxCameraOrbit,
-        'min-field-of-view': minFieldOfView,
-        'max-field-of-view': maxFieldOfView,
-        'interpolation-decay': interpolationDecay,
-        'interaction-policy': interactionPolicy,
         'interaction-prompt': interactionPrompt,
         'interaction-prompt-style': interactionPromptStyle,
         className: "model-viewer",
         style: { width: '100%', height: '100%' }
     }), [
-        modelPath, environmentImage, skyboxImage, alt, iosSrc, poster,
-        seamless, shadowIntensity, shadowSoftness, exposureValue,
+        modelPath, environmentImage, skyboxImage, alt, poster,
+        shadowIntensity, shadowSoftness, exposureValue,
         cameraControls, cameraOrbit, fieldOfView, minCameraOrbit,
-        maxCameraOrbit, minFieldOfView, maxFieldOfView, interpolationDecay,
-        interactionPolicy, interactionPrompt, interactionPromptStyle
+        maxCameraOrbit, interactionPrompt, interactionPromptStyle
     ]);
 
     return (

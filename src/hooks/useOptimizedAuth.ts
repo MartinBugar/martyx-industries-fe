@@ -10,7 +10,7 @@
 
 import { useState, useCallback, useMemo } from 'react';
 import { useStableCallback, useDebouncedEffect, useEffectOnce } from './useOptimizedEffect';
-import type { User, AuthResponse } from '../context/authTypes';
+import type { User } from '../context/authTypes';
 import { apiClient } from '../services/apiClient';
 
 interface AuthState {
@@ -20,8 +20,15 @@ interface AuthState {
   error: string | null;
 }
 
+interface LoginResponse {
+  success: boolean;
+  message?: string;
+  user: User | null;
+  token: string | null;
+}
+
 interface UseOptimizedAuthReturn extends AuthState {
-  login: (email: string, password: string) => Promise<AuthResponse>;
+  login: (email: string, password: string) => Promise<LoginResponse>;
   logout: () => void;
   updateProfile: (profileData: Partial<User>) => Promise<boolean>;
   fetchProfile: () => Promise<boolean>;
@@ -110,35 +117,58 @@ export const useOptimizedAuth = (): UseOptimizedAuthReturn => {
   }, [], 100);
 
   // Login function with optimized error handling
-  const login = useCallback(async (email: string, password: string): Promise<AuthResponse> => {
+  const login = useCallback(async (email: string, password: string): Promise<LoginResponse> => {
     updateAuthState({ isLoading: true, error: null });
 
     try {
-      const response = await apiClient.post<AuthResponse>('/api/auth/login', {
+      const response = await apiClient.post<any>('/api/auth/login', {
         email,
         password
       });
 
-      if (response.success && response.user && response.token) {
+      if (response.token && response.id && response.email) {
+        // Create user object from response
+        const user: User = {
+          id: response.id,
+          email: response.email,
+          orders: [],
+          firstName: response.firstName,
+          lastName: response.lastName,
+          phone: response.phone,
+          address: response.address
+        };
+
         // Store auth data
         localStorage.setItem('token', response.token);
-        localStorage.setItem('user', JSON.stringify(response.user));
+        localStorage.setItem('user', JSON.stringify(user));
         
         // Update auth state
         updateAuthState({
-          user: response.user,
+          user,
           isAuthenticated: true,
           isLoading: false,
           error: null
         });
+
+        return {
+          success: true,
+          user,
+          token: response.token
+        };
       } else {
+        const errorMessage = 'Invalid login response';
         updateAuthState({
           isLoading: false,
-          error: response.message || 'Login failed'
+          error: errorMessage
         });
-      }
 
-      return response;
+        return {
+          success: false,
+          message: errorMessage,
+          user: null,
+          token: null
+        };
+      }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Login failed';
       updateAuthState({
