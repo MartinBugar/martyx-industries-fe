@@ -1,0 +1,68 @@
+{
+  "title": "Checkout",
+  "steps": {
+    "shipping": "Shipping",
+    "payment": "Payment",
+    "review": "Review",
+    "confirmation": "Confirmation"
+  },
+  "shipping": {
+    "title": "Shipping Information",
+    "first_name": "First Name",
+    "last_name": "Last Name",
+    "email": "Email Address",
+    "phone": "Phone Number",
+    "address": "Street Address",
+    "city": "City",
+    "state": "State/Province",
+    "postal_code": "Postal Code",
+    "country": "Country",
+    "delivery_method": "Delivery Method",
+    "standard_shipping": "Standard Shipping",
+    "express_shipping": "Express Shipping",
+    "overnight_shipping": "Overnight Shipping"
+  },
+  "payment": {
+    "title": "Payment Information",
+    "method": "Payment Method",
+    "credit_card": "Credit Card",
+    "paypal": "PayPal",
+    "bank_transfer": "Bank Transfer",
+    "card_number": "Card Number",
+    "expiry_date": "Expiry Date",
+    "cvv": "CVV",
+    "cardholder_name": "Cardholder Name",
+    "billing_address": "Billing Address",
+    "same_as_shipping": "Same as shipping address"
+  },
+  "order_summary": {
+    "title": "Order Summary",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "tax": "Tax",
+    "discount": "Discount",
+    "total": "Total",
+    "item_count": "{count, plural, =1 {1 item} other {# items}}",
+    "estimated_delivery": "Estimated Delivery"
+  },
+  "cart": {
+    "title": "Shopping Cart",
+    "empty": "Your cart is empty",
+    "quantity": "Quantity",
+    "price": "Price",
+    "remove": "Remove",
+    "update": "Update Cart",
+    "continue_shopping": "Continue Shopping",
+    "proceed_to_checkout": "Proceed to Checkout"
+  },
+  "pay_amount": "Pay {amount, number, currency}",
+  "delivery_eta": "Delivery by {date, date, long}",
+  "processing": "Processing your order...",
+  "success": "Order placed successfully!",
+  "failed": "Order processing failed. Please try again.",
+  "order_number": "Order Number: {orderNumber}",
+  "confirmation_email": "A confirmation email has been sent to {email}",
+  "terms_agreement": "I agree to the Terms of Service and Privacy Policy",
+  "secure_checkout": "Secure Checkout",
+  "ssl_secured": "SSL Secured"
+}

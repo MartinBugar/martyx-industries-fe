@@ -45,6 +45,7 @@ import AdminProducts from './pages/admin/AdminProducts'
 import AdminProductDetail from './pages/admin/AdminProductDetail'
 import AdminOrders from './pages/admin/AdminOrders'
 import { useIOSNoZoomOnFocus } from './hooks/useIOSNoZoomOnFocus'
+import { useRouteNamespaces } from './hooks/useRouteNamespaces'
 import ScrollToTop from './components/ScrollToTop/ScrollToTop'
 
 // PayPal configuration
@@ -86,6 +87,12 @@ function MainContent() {
   const { getTotalItems } = useCart();
   const { user, logout } = useAuth();
   const [showCart, setShowCart] = useState(false);
+  
+  // Initialize route-based namespace loading
+  useRouteNamespaces({
+    preloadAll: false, // Set to true for faster navigation but larger initial bundle
+    enableDebug: true // Enable debug logging in development
+  });
   const navigate = useNavigate();
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');

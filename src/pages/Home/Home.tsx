@@ -1,17 +1,19 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { type Product } from '../../data/productData';
 import { hybridProductService } from '../../services/hybridProductService';
 import './Home.css';
 
 const Home: React.FC = () => {
+  const { t } = useTranslation('common');
   const [products, setProducts] = useState<Product[]>([]);
   const featured = useMemo(() => products.slice(0, 6), [products]);
 
   const [subscribed, setSubscribed] = useState(false);
 
   // Try to import hero image via bundler; fallback to CSS placeholder if not present
-  const heroAlt = 'RC Tank Kits & STL Files — product hero image';
+  const heroAlt = t('home.hero.image_alt');
   const heroMap = import.meta.glob('../../assets/home/tank.png', { eager: true, as: 'url' });
   const heroSrc = (heroMap['../../assets/home/tank.png'] as string) || '/assets/hero-tank.png';
 
@@ -48,16 +50,16 @@ const Home: React.FC = () => {
         <div className="container">
           <div className="hero-grid">
             <div className="hero-copy">
-              <h1 className="hero-title">RC Tank Kits & STL Files</h1>
-              <p className="hero-sub">Build. Print. Command.</p>
+              <h1 className="hero-title">{t('home.hero.title')}</h1>
+              <p className="hero-sub">{t('home.hero.subtitle')}</p>
               <div className="hero-ctas">
-                <Link to="/products" className="btn btn-accent" onClick={() => console.log('hero_shop_kits_click')}>Shop Kits</Link>
-                <Link to="/products" className="btn btn-outline" onClick={() => console.log('hero_download_stl_click')}>Download STL</Link>
+                <Link to="/products" className="btn btn-accent" onClick={() => console.log('hero_shop_kits_click')}>{t('home.hero.shop_kits')}</Link>
+                <Link to="/products" className="btn btn-outline" onClick={() => console.log('hero_download_stl_click')}>{t('home.hero.download_stl')}</Link>
               </div>
-              <ul className="hero-kpis" aria-label="Key product facts">
-                <li>Assembly under 4h (prototype)</li>
-                <li>Optimized for 0.1 mm layers</li>
-                <li>Modular electronics ready</li>
+              <ul className="hero-kpis" aria-label={t('home.hero.facts.assembly_time')}>
+                <li>{t('home.hero.facts.assembly_time')}</li>
+                <li>{t('home.hero.facts.layer_optimization')}</li>
+                <li>{t('home.hero.facts.electronics_ready')}</li>
               </ul>
             </div>
             <div className="hero-visual">
@@ -89,36 +91,36 @@ const Home: React.FC = () => {
       </section>
 
       {/* 2) How it works */}
-      <section className="how-section" aria-label="How it works">
+      <section className="how-section" aria-label={t('home.how_it_works.title')}>
         <div className="container">
-          <div className="section-header"><h2>How it works</h2></div>
+          <div className="section-header"><h2>{t('home.how_it_works.title')}</h2></div>
           <div className="how-grid">
             <article className="how-card">
-              <span className="how-step">Step 1</span>
-              <h3>Choose</h3>
-              <p>Pick a Kit or STL bundle.</p>
+              <span className="how-step">{t('home.how_it_works.step_1')}</span>
+              <h3>{t('home.how_it_works.step_1_title')}</h3>
+              <p>{t('home.how_it_works.step_1_description')}</p>
             </article>
             <article className="how-card">
-              <span className="how-step">Step 2</span>
-              <h3>Build or Print</h3>
-              <p>Assemble or 3D print.</p>
+              <span className="how-step">{t('home.how_it_works.step_2')}</span>
+              <h3>{t('home.how_it_works.step_2_title')}</h3>
+              <p>{t('home.how_it_works.step_2_description')}</p>
             </article>
             <article className="how-card">
-              <span className="how-step">Step 3</span>
-              <h3>Drive</h3>
-              <p>Pair controller & enjoy.</p>
+              <span className="how-step">{t('home.how_it_works.step_3')}</span>
+              <h3>{t('home.how_it_works.step_3_title')}</h3>
+              <p>{t('home.how_it_works.step_3_description')}</p>
             </article>
           </div>
         </div>
       </section>
 
       {/* 3) Featured */}
-      <section className="home-section featured-section" aria-label="Featured products">
+      <section className="home-section featured-section" aria-label={t('home.featured.title')}>
         <div className="container">
           <div className="section-header">
-            <h2>Featured Products</h2>
+            <h2>{t('home.featured.title')}</h2>
             <div style={{textAlign: 'center', marginTop: '1rem'}}>
-              <Link className="btn primary" to="/products">View All Products</Link>
+              <Link className="btn primary" to="/products">{t('home.featured.view_all')}</Link>
             </div>
           </div>
           <div className="featured-grid">
@@ -144,11 +146,11 @@ const Home: React.FC = () => {
       </section>
 
       {/* 6) Testimonials */}
-      <section className="home-section testimonials" aria-label="Customer Reviews">
+      <section className="home-section testimonials" aria-label={t('home.testimonials.title')}>
         <div className="container">
           <div className="section-header">
-            <h2>What Our Customers Say</h2>
-            <p className="section-subtitle">Real feedback from RC tank enthusiasts</p>
+            <h2>{t('home.testimonials.title')}</h2>
+            <p className="section-subtitle">{t('home.testimonials.subtitle')}</p>
           </div>
           <div className="testimonials-grid">
             <article className="testimonial-card">
@@ -315,7 +317,7 @@ const Home: React.FC = () => {
       </section>
 
       {/* 7) Newsletter */}
-      <section className="home-section newsletter" aria-label="Newsletter subscribe">
+      <section className="home-section newsletter" aria-label={t('home.newsletter.title')}>
         <div className="container">
           <div className="newsletter-container">
             <div className="newsletter-content">
@@ -326,10 +328,9 @@ const Home: React.FC = () => {
                     <polyline points="22,6 12,13 2,6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                 </div>
-                <h2 className="newsletter-title">Stay in the Loop</h2>
+                <h2 className="newsletter-title">{t('home.newsletter.title')}</h2>
                 <p className="newsletter-description">
-                  Get exclusive access to new tank models, 3D printing tips, and special offers. 
-                  Join our community of RC enthusiasts!
+                  {t('home.newsletter.description')}
                 </p>
               </div>
               
@@ -340,7 +341,7 @@ const Home: React.FC = () => {
                       <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                   </div>
-                  <span>Early access to new releases</span>
+                  <span>{t('home.newsletter.benefits.early_access')}</span>
                 </div>
                 <div className="benefit-item">
                   <div className="benefit-icon">
@@ -348,7 +349,7 @@ const Home: React.FC = () => {
                       <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                   </div>
-                  <span>Exclusive 3D printing guides</span>
+                  <span>{t('home.newsletter.benefits.exclusive_guides')}</span>
                 </div>
                 <div className="benefit-item">
                   <div className="benefit-icon">
@@ -356,7 +357,7 @@ const Home: React.FC = () => {
                       <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                   </div>
-                  <span>Member-only discounts</span>
+                  <span>{t('home.newsletter.benefits.member_discounts')}</span>
                 </div>
               </div>
             </div>
@@ -364,18 +365,18 @@ const Home: React.FC = () => {
             <div className="newsletter-form-container">
               <form className="newsletter-form" onSubmit={(e) => { e.preventDefault(); setSubscribed(true); console.log('newsletter_subscribed'); }}>
                 <div className="form-group">
-                  <label htmlFor="newsletter-email" className="form-label">Email address</label>
+                  <label htmlFor="newsletter-email" className="form-label">{t('home.newsletter.email_label')}</label>
                   <div className="input-wrapper">
                     <input 
                       id="newsletter-email" 
                       name="email" 
                       type="email" 
                       required 
-                      placeholder="Enter your email" 
+                      placeholder={t('home.newsletter.email_placeholder')} 
                       className="newsletter-input"
-                      aria-label="Email address for newsletter subscription"
+                      aria-label={t('home.newsletter.subscribe_button')}
                     />
-                    <button type="submit" className="newsletter-submit" aria-label="Subscribe to newsletter">
+                    <button type="submit" className="newsletter-submit" aria-label={t('home.newsletter.subscribe_button')}>
                       <svg viewBox="0 0 24 24" fill="none">
                         <path d="M22 2L11 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                         <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -384,7 +385,7 @@ const Home: React.FC = () => {
                   </div>
                 </div>
                 <p className="form-note">
-                  🔒 We respect your privacy. Unsubscribe at any time.
+                  {t('home.newsletter.privacy_note')}
                 </p>
               </form>
               
@@ -397,8 +398,8 @@ const Home: React.FC = () => {
                     </svg>
                   </div>
                   <div className="success-content">
-                    <h3>Welcome aboard! 🎉</h3>
-                    <p>You're now subscribed to our newsletter. Check your email for a welcome message.</p>
+                    <h3>{t('home.newsletter.success_title')}</h3>
+                    <p>{t('home.newsletter.success_message')}</p>
                   </div>
                 </div>
               )}

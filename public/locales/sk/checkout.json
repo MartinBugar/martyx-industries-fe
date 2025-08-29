@@ -1,0 +1,68 @@
+{
+  "title": "Pokladňa",
+  "steps": {
+    "shipping": "Dodanie",
+    "payment": "Platba",
+    "review": "Kontrola",
+    "confirmation": "Potvrdenie"
+  },
+  "shipping": {
+    "title": "Informácie o dodaní",
+    "first_name": "Meno",
+    "last_name": "Priezvisko",
+    "email": "E-mailová adresa",
+    "phone": "Telefónne číslo",
+    "address": "Adresa",
+    "city": "Mesto",
+    "state": "Kraj/Štát",
+    "postal_code": "PSČ",
+    "country": "Krajina",
+    "delivery_method": "Spôsob doručenia",
+    "standard_shipping": "Štandardné doručenie",
+    "express_shipping": "Expresné doručenie",
+    "overnight_shipping": "Doručenie do druhého dňa"
+  },
+  "payment": {
+    "title": "Platobné informácie",
+    "method": "Spôsob platby",
+    "credit_card": "Platobná karta",
+    "paypal": "PayPal",
+    "bank_transfer": "Bankový prevod",
+    "card_number": "Číslo karty",
+    "expiry_date": "Dátum expirácie",
+    "cvv": "CVV",
+    "cardholder_name": "Meno držiteľa karty",
+    "billing_address": "Fakturačná adresa",
+    "same_as_shipping": "Rovnaká ako dodacia adresa"
+  },
+  "order_summary": {
+    "title": "Súhrn objednávky",
+    "subtotal": "Medzisúčet",
+    "shipping": "Doprava",
+    "tax": "DPH",
+    "discount": "Zľava",
+    "total": "Celkom",
+    "item_count": "{count, plural, =1 {1 položka} few {# položky} many {# položiek} other {# položiek}}",
+    "estimated_delivery": "Odhadovaný termín dodania"
+  },
+  "cart": {
+    "title": "Nákupný košík",
+    "empty": "Váš košík je prázdny",
+    "quantity": "Množstvo",
+    "price": "Cena",
+    "remove": "Odstrániť",
+    "update": "Aktualizovať košík",
+    "continue_shopping": "Pokračovať v nákupe",
+    "proceed_to_checkout": "Pokračovať k pokladni"
+  },
+  "pay_amount": "Zaplatiť {amount, number, currency}",
+  "delivery_eta": "Doručenie do {date, date, long}",
+  "processing": "Spracovávame vašu objednávku...",
+  "success": "Objednávka bola úspešne vytvorená!",
+  "failed": "Spracovanie objednávky zlyhalo. Skúste to znovu.",
+  "order_number": "Číslo objednávky: {orderNumber}",
+  "confirmation_email": "Potvrdzujúci e-mail bol odoslaný na {email}",
+  "terms_agreement": "Súhlasím s obchodnými podmienkami a zásadami ochrany osobných údajov",
+  "secure_checkout": "Zabezpečená pokladňa",
+  "ssl_secured": "Zabezpečené SSL"
+}

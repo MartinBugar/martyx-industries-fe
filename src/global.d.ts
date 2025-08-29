@@ -68,4 +68,17 @@ declare global {
       >;
     }
   }
+  
+  interface Window {
+    gtag?: (...args: any[]) => void;
+    __I18N_MISSING_KEYS?: Set<string>;
+    __i18nDebug?: {
+      getMissingKeys: () => string[];
+      clearMissingKeys: () => void;
+      changeLanguage: (lang: string) => Promise<void>;
+      currentLanguage: () => string;
+      supportedLanguages: () => string[];
+      loadedNamespaces: () => string[];
+    };
+  }
 }

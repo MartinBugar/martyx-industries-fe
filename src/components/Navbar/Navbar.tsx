@@ -2,6 +2,8 @@ import React, {useCallback, useEffect, useRef, useState} from "react";
 import {createPortal} from "react-dom";
 import "./Navbar.css";
 import {Link, NavLink, useNavigate, useLocation} from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "../LanguageSwitcher";
 
 /**
  * MARTYX "Metal" Navbar – fully responsive with hamburger mobile drawer.
@@ -9,7 +11,7 @@ import {Link, NavLink, useNavigate, useLocation} from "react-router-dom";
  * - Mobile: hamburger opens drawer with search + links + auth
  */
 
-type NavItem = { label: string; href: string };
+type NavItem = { labelKey: string; href: string };
 type User = { id: string; name?: string; avatarUrl?: string };
 type Props = {
     cartCount?: number;
@@ -19,12 +21,13 @@ type Props = {
 };
 
 const LINKS: NavItem[] = [
-    {label: "Home", href: "/"},
-    {label: "Products", href: "/products"},
-    {label: "About", href: "/about"},
+    {labelKey: "nav:home", href: "/"},
+    {labelKey: "nav:products", href: "/products"},
+    {labelKey: "nav:about", href: "/about"},
 ];
 
 export default function Navbar({cartCount = 0, onSearchSubmit, user, onLogout}: Props) {
+    const { t } = useTranslation(['nav', 'common']);
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [q, setQ] = useState("");
     const navigate = useNavigate();
@@ -156,7 +159,7 @@ export default function Navbar({cartCount = 0, onSearchSubmit, user, onLogout}: 
                             <SearchIcon/>
                             <input
                                 type="search"
-                                placeholder="Search models…"
+                                placeholder={t('nav:search_placeholder')}
                                 ref={searchInputRef}
                                 value={q}
                                 onChange={onChangeQ}
@@ -167,7 +170,7 @@ export default function Navbar({cartCount = 0, onSearchSubmit, user, onLogout}: 
                     <button
                         type="button"
                         className="mi-closebtn"
-                        aria-label="Close menu"
+                        aria-label={t('nav:close_menu')}
                         onClick={handleCloseDrawer}
                     >
                         <span className="mi-x" aria-hidden="true">×</span>
@@ -183,28 +186,33 @@ export default function Navbar({cartCount = 0, onSearchSubmit, user, onLogout}: 
                         className={({isActive}) => `mi-drawer__link${isActive ? " is-active" : ""}`}
                         onClick={handleCloseDrawer}
                     >
-                        {l.label}
+                        {t(l.labelKey)}
                     </NavLink>
                 ))}
+
+                {/* Language Switcher (mobile drawer) */}
+                <div style={{ padding: "10px 0", borderTop: "1px solid rgba(255,255,255,0.1)", marginTop: 10 }}>
+                  <LanguageSwitcher />
+                </div>
 
                 {/* Auth / User actions (mobile drawer) */}
                 <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
                   {!user ? (
                     <>
                       <Link className="mi-btn mi-btn--ghost" to="/login" style={{ flex: 1 }} onClick={handleCloseDrawer}>
-                        Login
+                        {t('nav:sign_in')}
                       </Link>
                       <Link className="mi-btn mi-btn--primary" to="/register" style={{ flex: 1 }} onClick={handleCloseDrawer}>
-                        Register
+                        {t('nav:sign_up')}
                       </Link>
                     </>
                   ) : (
                     <>
                       <Link className="mi-btn mi-btn--ghost" to="/account" style={{ flex: 1 }} onClick={handleCloseDrawer}>
-                        Account
+                        {t('nav:account')}
                       </Link>
                       <button type="button" className="mi-btn mi-btn--ghost" style={{ flex: 1 }} onClick={doLogout}>
-                        Logout
+                        {t('nav:sign_out')}
                       </button>
                     </>
                   )}
@@ -233,7 +241,7 @@ export default function Navbar({cartCount = 0, onSearchSubmit, user, onLogout}: 
                                         end
                                         className={({isActive}) => `mi-link${isActive ? " is-active" : ""}`}
                                     >
-                                        {l.label}
+                                        {t(l.labelKey)}
                                     </NavLink>
                                 </li>
                             ))}
@@ -242,14 +250,14 @@ export default function Navbar({cartCount = 0, onSearchSubmit, user, onLogout}: 
                         {/* Right actions */}
                         <div className="mi-actions">
                             {/* Search (desktop) */}
-                            <form className="mi-search mi-desktop" role="search" aria-label="Site search"
+                            <form className="mi-search mi-desktop" role="search" aria-label={t('nav:search')}
                                   onSubmit={submitSearch}>
                                 <div className="mi-panel">
                                     <SearchIcon/>
                                     <input
                                         type="search"
                                         name="q"
-                                        placeholder="Search models…"
+                                        placeholder={t('nav:search_placeholder')}
                                         autoComplete="off"
                                         value={q}
                                         onChange={onChangeQ}
@@ -260,25 +268,28 @@ export default function Navbar({cartCount = 0, onSearchSubmit, user, onLogout}: 
                             {/* Auth / User (desktop) */}
                             {!user ? (
                                 <>
-                                    <Link to="/login" className="mi-btn mi-btn--ghost mi-desktop">Login</Link>
-                                    <Link to="/register" className="mi-btn mi-btn--primary mi-desktop">Register</Link>
+                                    <Link to="/login" className="mi-btn mi-btn--ghost mi-desktop">{t('nav:sign_in')}</Link>
+                                    <Link to="/register" className="mi-btn mi-btn--primary mi-desktop">{t('nav:sign_up')}</Link>
                                 </>
                             ) : (
                                 <>
-                                    <Link to="/account" className="mi-iconbtn mi-desktop" aria-label="Account">
+                                    <Link to="/account" className="mi-iconbtn mi-desktop" aria-label={t('nav:account')}>
                                         <UserIcon />
                                     </Link>
                                     <button type="button" className="mi-btn mi-btn--ghost mi-desktop" onClick={doLogout}>
-                                        Logout
+                                        {t('nav:sign_out')}
                                     </button>
                                 </>
                             )}
 
+                            {/* Language Switcher */}
+                            <LanguageSwitcher />
+
                             {/* Cart (always visible) */}
-                            <Link to="/cart" className="mi-iconbtn" aria-label="Cart">
+                            <Link to="/cart" className="mi-iconbtn" aria-label={t('nav:cart')}>
                                 <CartIcon/>
                                 {cartCount > 0 && <span className="mi-badge" aria-live="polite">{cartCount}</span>}
-                                <span className="visually-hidden">Open cart</span>
+                                <span className="visually-hidden">{t('nav:cart')}</span>
                             </Link>
 
                             {/* MOBILE: hamburger (bez SVG/pseudo) */}
@@ -286,7 +297,7 @@ export default function Navbar({cartCount = 0, onSearchSubmit, user, onLogout}: 
                                 className="mi-iconbtn mi-mobile"
                                 aria-expanded={drawerOpen}
                                 aria-controls="nav-drawer"
-                                aria-label={drawerOpen ? "Close menu" : "Open menu"}
+                                aria-label={drawerOpen ? t('nav:close_menu') : t('nav:toggle_navigation')}
                                 onClick={handleToggleDrawer}
                             >
   <span className="mi-menu-bars" aria-hidden="true">

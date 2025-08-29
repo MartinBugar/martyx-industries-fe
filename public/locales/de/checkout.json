@@ -1,0 +1,68 @@
+{
+  "title": "Kasse",
+  "steps": {
+    "shipping": "Versand",
+    "payment": "Zahlung",
+    "review": "Überprüfung",
+    "confirmation": "Bestätigung"
+  },
+  "shipping": {
+    "title": "Versandinformationen",
+    "first_name": "Vorname",
+    "last_name": "Nachname",
+    "email": "E-Mail-Adresse",
+    "phone": "Telefonnummer",
+    "address": "Straße und Hausnummer",
+    "city": "Stadt",
+    "state": "Bundesland",
+    "postal_code": "Postleitzahl",
+    "country": "Land",
+    "delivery_method": "Liefermethode",
+    "standard_shipping": "Standardversand",
+    "express_shipping": "Expressversand",
+    "overnight_shipping": "Über-Nacht-Versand"
+  },
+  "payment": {
+    "title": "Zahlungsinformationen",
+    "method": "Zahlungsmethode",
+    "credit_card": "Kreditkarte",
+    "paypal": "PayPal",
+    "bank_transfer": "Banküberweisung",
+    "card_number": "Kartennummer",
+    "expiry_date": "Ablaufdatum",
+    "cvv": "CVV",
+    "cardholder_name": "Name des Karteninhabers",
+    "billing_address": "Rechnungsadresse",
+    "same_as_shipping": "Gleiche wie Lieferadresse"
+  },
+  "order_summary": {
+    "title": "Bestellübersicht",
+    "subtotal": "Zwischensumme",
+    "shipping": "Versand",
+    "tax": "Steuer",
+    "discount": "Rabatt",
+    "total": "Gesamt",
+    "item_count": "{count, plural, =1 {1 Artikel} other {# Artikel}}",
+    "estimated_delivery": "Voraussichtliche Lieferung"
+  },
+  "cart": {
+    "title": "Warenkorb",
+    "empty": "Ihr Warenkorb ist leer",
+    "quantity": "Anzahl",
+    "price": "Preis",
+    "remove": "Entfernen",
+    "update": "Warenkorb aktualisieren",
+    "continue_shopping": "Weiter einkaufen",
+    "proceed_to_checkout": "Zur Kasse gehen"
+  },
+  "pay_amount": "{amount, number, currency} bezahlen",
+  "delivery_eta": "Lieferung bis {date, date, long}",
+  "processing": "Ihre Bestellung wird bearbeitet...",
+  "success": "Bestellung erfolgreich aufgegeben!",
+  "failed": "Bestellverarbeitung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+  "order_number": "Bestellnummer: {orderNumber}",
+  "confirmation_email": "Eine Bestätigungs-E-Mail wurde an {email} gesendet",
+  "terms_agreement": "Ich stimme den Allgemeinen Geschäftsbedingungen und der Datenschutzerklärung zu",
+  "secure_checkout": "Sichere Kasse",
+  "ssl_secured": "SSL-gesichert"
+}

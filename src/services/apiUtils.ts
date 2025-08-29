@@ -1,9 +1,11 @@
 // API utilities
+import i18n from '../i18n';
 
 // Define the type for headers
 export interface ApiHeaders {
   'Content-Type': string;
   'Authorization'?: string;
+  'Accept-Language'?: string;
   [key: string]: string | undefined;
 }
 
@@ -82,10 +84,37 @@ const computeApiBaseUrl = (): string => {
 
 export const API_BASE_URL = computeApiBaseUrl();
 
+// Helper function to add language headers to fetch init options
+export const withLangHeaders = (init?: RequestInit): RequestInit => {
+  const headers = new Headers(init?.headers);
+  
+  // Set Accept-Language header from current i18n language
+  if (i18n.language) {
+    headers.set('Accept-Language', i18n.language);
+  }
+  
+  return {
+    ...init,
+    headers,
+  };
+};
+
 // Default headers for API requests
 export const defaultHeaders: ApiHeaders = {
   'Content-Type': 'application/json',
 };
+
+// Update Accept-Language header when language changes
+if (typeof window !== 'undefined') {
+  i18n.on('languageChanged', (lng) => {
+    defaultHeaders['Accept-Language'] = lng;
+  });
+  
+  // Set initial Accept-Language if i18n is already initialized
+  if (i18n.language) {
+    defaultHeaders['Accept-Language'] = i18n.language;
+  }
+}
 
 // Bootstrap Authorization header from stored token on module load to survive refreshes
 try {
