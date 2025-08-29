@@ -375,8 +375,160 @@ html {
   }
 }
 
+/* Product Unavailable Overlay */
+.product-unavailable-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 20, 25, 0.95);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+/* Product Unavailable Modal */
+.product-unavailable-modal {
+  background: var(--product-detail-surface);
+  border: 2px solid var(--product-detail-border);
+  border-radius: var(--product-detail-radius-lg);
+  padding: 3rem;
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Unavailable Icon */
+.unavailable-icon {
+  color: var(--product-detail-danger);
+  margin: 0 auto 1.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+.unavailable-icon svg {
+  width: 80px;
+  height: 80px;
+}
+
+/* Unavailable Modal Text */
+.product-unavailable-modal h1 {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 700;
+  color: var(--product-detail-text);
+  margin: 0 0 1rem 0;
+  line-height: 1.2;
+}
+
+.product-unavailable-modal p {
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: var(--product-detail-text-secondary);
+  margin: 0 0 2rem 0;
+}
+
+/* Unavailable Actions */
+.unavailable-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.unavailable-actions .back-button,
+.unavailable-actions .products-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.875rem 1.5rem;
+  border-radius: var(--product-detail-radius);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--product-detail-transition);
+  text-decoration: none;
+  border: none;
+  font-family: inherit;
+  min-width: 120px;
+}
+
+.unavailable-actions .back-button {
+  background: transparent;
+  color: var(--product-detail-text-secondary);
+  border: 1px solid var(--product-detail-border);
+}
+
+.unavailable-actions .back-button:hover {
+  background: var(--product-detail-border);
+  color: var(--product-detail-text);
+}
+
+.unavailable-actions .products-button {
+  background: var(--product-detail-text);
+  color: var(--product-detail-bg);
+  border: 1px solid var(--product-detail-text);
+}
+
+.unavailable-actions .products-button:hover {
+  background: var(--product-detail-text-secondary);
+  border-color: var(--product-detail-text-secondary);
+}
+
+/* Mobile Responsive for Unavailable Modal */
+@media (max-width: 767px) {
+  .product-unavailable-modal {
+    padding: 2rem 1.5rem;
+    margin: 1rem;
+  }
+  
+  .unavailable-icon svg {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .unavailable-actions {
+    flex-direction: column;
+  }
+  
+  .unavailable-actions .back-button,
+  .unavailable-actions .products-button {
+    width: 100%;
+  }
+}
+
+/* Prevent body scroll when modal is open */
+body:has(.product-unavailable-overlay) {
+  overflow: hidden;
+}
+
+/* Fallback for browsers that don't support :has() */
+.modal-open {
+  overflow: hidden;
+}
+
 /* Reduced Motion Support */
 @media (prefers-reduced-motion: reduce) {
+  .product-unavailable-modal {
+    animation: none;
+  }
+  
   * {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;

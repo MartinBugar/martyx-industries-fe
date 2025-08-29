@@ -121,6 +121,7 @@ const ProductDetail: React.FC = () => {
     const [product, setProduct] = React.useState<Product | null>(null);
     const [loading, setLoading] = React.useState(true);
     const [error, setError] = React.useState<string | null>(null);
+    const [isProductInactive, setIsProductInactive] = React.useState(false);
 
     const tabs = React.useMemo(() => product ? buildTabs(product) : [], [product]);
     const [active, setActive] = React.useState<ProductTabId>(tabs[0]?.id ?? 'Details');
@@ -137,11 +138,21 @@ const ProductDetail: React.FC = () => {
             try {
                 setLoading(true);
                 setError(null);
+                setIsProductInactive(false);
                 const productData = await hybridProductService.getProductByStringId(id);
                 setProduct(productData);
             } catch (err) {
                 console.error('Failed to load product:', err);
-                setError('Product not found or failed to load');
+                // Check if the error is for inactive product
+                if ((err as any).code === 'PRODUCT_INACTIVE') {
+                    setIsProductInactive(true);
+                    setError(null);
+                } else {
+                    // Any other error from backend (404, etc.) should also show unavailable
+                    // Only network errors should have been handled by fallback in service
+                    setIsProductInactive(true);
+                    setError(null);
+                }
             } finally {
                 setLoading(false);
             }
@@ -162,6 +173,46 @@ const ProductDetail: React.FC = () => {
             <div className="product-detail-page">
                 <div className="product-container">
                     <div className="loading-message">Loading product...</div>
+                </div>
+            </div>
+        );
+    }
+
+    // Show product unavailable state (when product is inactive)
+    if (isProductInactive) {
+        return (
+            <div className="product-detail-page">
+                <div className="product-container">
+                    <div className="product-unavailable-overlay">
+                        <div className="product-unavailable-modal">
+                            <div className="unavailable-icon">
+                                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
+                                    <path d="m15 9-6 6" stroke="currentColor" strokeWidth="2"/>
+                                    <path d="m9 9 6 6" stroke="currentColor" strokeWidth="2"/>
+                                </svg>
+                            </div>
+                            <h1>Produkt je aktuálne nedostupný</h1>
+                            <p>
+                                Momentálne pracujeme na tomto produkte. <br />
+                                Prosím, skúste to neskôr alebo sa vráťte na hlavnú stránku.
+                            </p>
+                            <div className="unavailable-actions">
+                                <button 
+                                    onClick={() => window.history.back()} 
+                                    className="back-button"
+                                >
+                                    Späť
+                                </button>
+                                <button 
+                                    onClick={() => window.location.href = '/products'} 
+                                    className="products-button"
+                                >
+                                    Všetky produkty
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         );

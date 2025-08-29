@@ -105,25 +105,33 @@ export class HybridProductService {
     } catch (error) {
       console.error('Failed to fetch products from backend:', error);
       
-      // Fallback: return products based on hardcoded data only (for development/offline)
-      const fallbackProducts = hardcodedProductsData.map(hardcodedData => {
-        const mockBackendProduct: ProductDto = {
-          id: parseInt(hardcodedData.id),
-          name: `Mock Product ${hardcodedData.id}`,
-          description: 'Product data unavailable - backend connection failed',
-          price: 0,
-          currency: 'USD', // Default fallback currency
-          imageUrl: null,
-          sku: `MOCK-${hardcodedData.id}`,
-          category: null,
-          productType: 'DIGITAL',
-          active: true // Fallback products are considered active for development
-        };
-        return this.mergeProductData(mockBackendProduct, hardcodedData);
-      });
+      // Only use fallback for network/connection errors, not HTTP errors
+      const isNetworkError = this.isNetworkError(error as Error);
+      
+      if (isNetworkError) {
+        // Fallback: return products based on hardcoded data only (for development/offline)
+        const fallbackProducts = hardcodedProductsData.map(hardcodedData => {
+          const mockBackendProduct: ProductDto = {
+            id: parseInt(hardcodedData.id),
+            name: `Mock Product ${hardcodedData.id}`,
+            description: 'Product data unavailable - backend connection failed',
+            price: 0,
+            currency: 'USD', // Default fallback currency
+            imageUrl: null,
+            sku: `MOCK-${hardcodedData.id}`,
+            category: null,
+            productType: 'DIGITAL',
+            active: true // Fallback products are considered active for development
+          };
+          return this.mergeProductData(mockBackendProduct, hardcodedData);
+        });
 
-      console.warn('Using fallback product data due to backend error');
-      return fallbackProducts;
+        console.warn('Using fallback product data due to network error');
+        return fallbackProducts;
+      }
+      
+      // Re-throw error for HTTP errors
+      throw error;
     }
   }
 
@@ -140,9 +148,11 @@ export class HybridProductService {
       // Fetch from backend
       const backendProduct = await productService.getProductById(id);
       
-      // Check if product is active
+      // Check if product is active - throw a special error type
       if (!backendProduct.active) {
-        throw new Error(`Product ${id} is not active`);
+        const inactiveError = new Error(`Product ${id} is not active`);
+        (inactiveError as any).code = 'PRODUCT_INACTIVE';
+        throw inactiveError;
       }
       
       const hardcodedData = this.getHardcodedDataById(backendProduct.id.toString());
@@ -153,31 +163,80 @@ export class HybridProductService {
 
       return mergedProduct;
     } catch (error) {
+      // If the error is specifically about inactive product, don't use fallback
+      if ((error as any).code === 'PRODUCT_INACTIVE') {
+        throw error;
+      }
+      
       console.error(`Failed to fetch product ${id} from backend:`, error);
       
-      // Fallback: try to find in hardcoded data
-      const hardcodedData = this.getHardcodedDataById(id.toString());
-      if (hardcodedData) {
-        const mockBackendProduct: ProductDto = {
-          id: id,
-          name: `Mock Product ${id}`,
-          description: 'Product data unavailable - backend connection failed',
-          price: 0,
-          currency: 'USD', // Default fallback currency
-          imageUrl: null,
-          sku: `MOCK-${id}`,
-          category: null,
-          productType: 'DIGITAL',
-          active: true // Fallback products are considered active for development
-        };
-        const fallbackProduct = this.mergeProductData(mockBackendProduct, hardcodedData);
-        console.warn(`Using fallback data for product ${id}`);
-        return fallbackProduct;
+      // Only use fallback for network/connection errors, not HTTP errors
+      // Check if this is a network error vs HTTP error response
+      const isNetworkError = this.isNetworkError(error as Error);
+      
+      if (isNetworkError) {
+        // Fallback: try to find in hardcoded data (only for connection errors)
+        const hardcodedData = this.getHardcodedDataById(id.toString());
+        if (hardcodedData) {
+          const mockBackendProduct: ProductDto = {
+            id: id,
+            name: `Mock Product ${id}`,
+            description: 'Product data unavailable - backend connection failed',
+            price: 0,
+            currency: 'USD', // Default fallback currency
+            imageUrl: null,
+            sku: `MOCK-${id}`,
+            category: null,
+            productType: 'DIGITAL',
+            active: true // Fallback products are considered active for development
+          };
+          const fallbackProduct = this.mergeProductData(mockBackendProduct, hardcodedData);
+          console.warn(`Using fallback data for product ${id} due to network error`);
+          return fallbackProduct;
+        }
       }
 
-      // Re-throw error if no fallback available
+      // Re-throw error for HTTP errors or if no fallback available
       throw error;
     }
+  }
+
+  /**
+   * Check if error is a network/connection error vs HTTP error response
+   */
+  private isNetworkError(error: Error): boolean {
+    const message = error.message.toLowerCase();
+    
+    // Network/connection errors typically contain these keywords
+    const networkErrorKeywords = [
+      'fetch',
+      'network',
+      'connection',
+      'timeout',
+      'refused',
+      'unreachable',
+      'offline',
+      'cors',
+      'failed to fetch',
+      'network request failed'
+    ];
+    
+    // HTTP error responses typically contain structured messages or error codes
+    const isHttpError = message.includes('error occurred') || 
+                       message.includes('not found') ||
+                       message.includes('unauthorized') ||
+                       message.includes('forbidden') ||
+                       message.includes('bad request') ||
+                       message.includes('internal server error') ||
+                       /\d{3}/.test(message); // Contains HTTP status code
+    
+    // If it's clearly an HTTP error, return false - these should NOT use fallback
+    if (isHttpError) {
+      return false;
+    }
+    
+    // Check for network error keywords - only these should use fallback
+    return networkErrorKeywords.some(keyword => message.includes(keyword));
   }
 
   /**
