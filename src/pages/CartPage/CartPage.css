@@ -628,6 +628,26 @@
   flex-shrink: 0;
 }
 
+/* Digital Products Notice */
+.digital-products-notice {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%);
+  border: 2px solid rgba(59, 130, 246, 0.2);
+  border-radius: 12px;
+  font-size: 0.95rem;
+  color: var(--cart-page-accent);
+  font-weight: 600;
+  margin: 1rem 0;
+}
+
+.digital-products-notice svg {
+  color: var(--cart-page-accent);
+  flex-shrink: 0;
+}
+
 /* Summary Actions */
 .summary-actions {
   padding: 2rem;

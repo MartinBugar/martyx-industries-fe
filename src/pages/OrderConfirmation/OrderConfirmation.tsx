@@ -114,7 +114,7 @@ const OrderConfirmation: React.FC = () => {
             
             <div className="info-row">
               <span>Total:</span>
-              <span>${product.price.toFixed(2)}</span>
+              <span>{product.price.toFixed(2)} {product.currency === 'EUR' ? '€' : product.currency}</span>
             </div>
           </div>
         </div>

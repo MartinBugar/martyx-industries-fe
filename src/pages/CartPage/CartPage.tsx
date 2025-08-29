@@ -27,8 +27,16 @@ const CartPage: React.FC = () => {
     }
   };
 
+  // Helper function to format currency
+  const formatPrice = (amount: number, currency?: string) => {
+    const cur = currency || (items.length > 0 ? items[0].product.currency : 'USD');
+    return `${amount.toFixed(2)} ${cur === 'EUR' ? '€' : cur}`;
+  };
+
   const subtotal = getTotalPrice();
-  const shipping = items.length > 0 ? 5.99 : 0;
+  // Check if all items are digital products (no shipping needed for digital products)
+  const hasPhysicalProducts = items.some(item => item.product.productType === 'PHYSICAL');
+  const shipping = items.length > 0 && hasPhysicalProducts ? 5.99 : 0;
   const total = subtotal + shipping;
   const isEmpty = items.length === 0;
 
@@ -126,7 +134,7 @@ const CartPage: React.FC = () => {
                         {item.product.productType}
                       </div>
                       <div className="cart-item-price">
-                        <span className="price-amount">${item.product.price.toFixed(2)}</span>
+                        <span className="price-amount">{formatPrice(item.product.price, item.product.currency)}</span>
                         {item.quantity > 1 && (
                           <span className="price-per-item">each</span>
                         )}
@@ -161,7 +169,7 @@ const CartPage: React.FC = () => {
                       
                       <div className="cart-item-total">
                         <span className="total-label">Total</span>
-                        <span className="total-amount">${(item.product.price * item.quantity).toFixed(2)}</span>
+                        <span className="total-amount">{formatPrice(item.product.price * item.quantity, item.product.currency)}</span>
                       </div>
                       
                       <button 
@@ -203,23 +211,37 @@ const CartPage: React.FC = () => {
             <div className="summary-details">
               <div className="summary-row">
                 <span>Subtotal ({getTotalItems()} item{getTotalItems() !== 1 ? 's' : ''})</span>
-                <span>${subtotal.toFixed(2)}</span>
+                <span>{formatPrice(subtotal)}</span>
               </div>
-              <div className="summary-row">
-                <span>Shipping</span>
-                <span>{shipping > 0 ? `$${shipping.toFixed(2)}` : 'Free'}</span>
-              </div>
-              {shipping > 0 && (
-                <div className="free-shipping-notice">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                    <path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              {hasPhysicalProducts && (
+                <>
+                  <div className="summary-row">
+                    <span>Shipping</span>
+                    <span>{shipping > 0 ? formatPrice(shipping) : 'Free'}</span>
+                  </div>
+                  {shipping > 0 && (
+                    <div className="free-shipping-notice">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      Free shipping on orders over $50
+                    </div>
+                  )}
+                </>
+              )}
+              {!hasPhysicalProducts && items.length > 0 && (
+                <div className="digital-products-notice">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
+                    <polyline points="3.27,6.96 12,12.01 20.73,6.96"/>
+                    <line x1="12" y1="22.08" x2="12" y2="12"/>
                   </svg>
-                  Free shipping on orders over $50
+                  Digital products - delivered via email
                 </div>
               )}
               <div className="summary-row total">
                 <span>Total</span>
-                <span>${total.toFixed(2)}</span>
+                <span>{formatPrice(total)}</span>
               </div>
             </div>
             

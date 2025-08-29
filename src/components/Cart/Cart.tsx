@@ -18,6 +18,12 @@ const Cart: React.FC<CartProps> = ({
   const navigate = useNavigate();
   const drawerRef = useRef<HTMLDivElement>(null);
   const titleId = 'your-cart-title';
+
+  // Helper function to format currency
+  const formatPrice = (amount: number, currency?: string) => {
+    const cur = currency || (items.length > 0 ? items[0].product.currency : 'USD');
+    return `${amount.toFixed(2)} ${cur === 'EUR' ? '€' : cur}`;
+  };
   
   const handleViewFullCart = () => {
     onClose();
@@ -107,7 +113,7 @@ const Cart: React.FC<CartProps> = ({
                     <div className="cart-item-main">
                       <div className="cart-item-top">
                         <h3 className="cart-item-name">{item.product.name}</h3>
-                        <span className="cart-item-price">${item.product.price.toFixed(2)}</span>
+                        <span className="cart-item-price">{formatPrice(item.product.price, item.product.currency)}</span>
                       </div>
                       
                       <div className="cart-item-actions">
@@ -136,7 +142,7 @@ const Cart: React.FC<CartProps> = ({
                           </button>
                         </div>
                         
-                        <span className="item-total">${(item.product.price * item.quantity).toFixed(2)}</span>
+                        <span className="item-total">{formatPrice(item.product.price * item.quantity, item.product.currency)}</span>
                         
                         <button 
                           onClick={() => removeFromCart(item.product.id)}
@@ -166,7 +172,7 @@ const Cart: React.FC<CartProps> = ({
                   </svg>
                   {getTotalItems()} {getTotalItems() === 1 ? 'item' : 'items'}
                 </span>
-                <strong>${getTotalPrice().toFixed(2)}</strong>
+                <strong>{formatPrice(getTotalPrice())}</strong>
               </div>
               
               <div className="cart-buttons">
