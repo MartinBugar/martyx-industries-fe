@@ -1,12 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { product, type Product } from '../../data/productData';
+import { type Product } from '../../data/productData';
+import { hybridProductService } from '../../services/hybridProductService';
 import { useCart } from '../../context/useCart';
 import './Products.css';
 
 const Products: React.FC = () => {
   const { addToCart } = useCart();
-  const productsList: Product[] = [product];
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
   const [sortBy, setSortBy] = useState<'name' | 'price' | 'newest'>('newest');
@@ -14,6 +17,25 @@ const Products: React.FC = () => {
   type Popup = { visible: boolean; message: string; variant: 'success' | 'warning' };
   const [popups, setPopups] = useState<Record<string, Popup>>({});
   const timersRef = useRef<Record<string, number>>({});
+
+  // Load products from hybrid service
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const productsList = await hybridProductService.getProducts();
+        setProducts(productsList);
+      } catch (err) {
+        console.error('Failed to load products:', err);
+        setError('Failed to load products. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProducts();
+  }, []);
 
   // Update search term when URL search param changes
   useEffect(() => {
@@ -49,7 +71,7 @@ const Products: React.FC = () => {
   const formatPrice = (value: number) => `$${value.toFixed(2)}`;
 
   // Filter and sort products
-  const filteredProducts = productsList
+  const filteredProducts = products
     .filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()))
     .sort((a, b) => {
       switch (sortBy) {
@@ -59,6 +81,36 @@ const Products: React.FC = () => {
         default: return 0;
       }
     });
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="products-page">
+        <div className="products-container">
+          <div className="loading-message">Loading products...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="products-page">
+        <div className="products-container">
+          <div className="error-message">
+            <p>{error}</p>
+            <button 
+              onClick={() => window.location.reload()} 
+              className="retry-button"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="products-page">

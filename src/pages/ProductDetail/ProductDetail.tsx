@@ -1,6 +1,7 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { product as defaultProduct, products, type Product, type ProductTab, type ProductTabId } from '../../data/productData';
+import { type Product, type ProductTab, type ProductTabId } from '../../data/productData';
+import { hybridProductService } from '../../services/hybridProductService';
 import ProductView from '../../components/ProductView/ProductView';
 import './ProductDetail.css';
 import { DetailsTab, DownloadTab, FeaturesTab, ReviewsTab} from '../../components/ProductTabs';
@@ -111,10 +112,37 @@ const buildTabs = (p: Product): ProductTab[] => {
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const [product, setProduct] = React.useState<Product | null>(null);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
 
-  const selected = products.find(p => p.id === id) ?? defaultProduct;
-  const tabs = React.useMemo(() => buildTabs(selected), [selected]);
+  const tabs = React.useMemo(() => product ? buildTabs(product) : [], [product]);
   const [active, setActive] = React.useState<ProductTabId>(tabs[0]?.id ?? 'Details');
+
+  // Load product from hybrid service
+  React.useEffect(() => {
+    const loadProduct = async () => {
+      if (!id) {
+        setError('Product ID is required');
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        setError(null);
+        const productData = await hybridProductService.getProductByStringId(id);
+        setProduct(productData);
+      } catch (err) {
+        console.error('Failed to load product:', err);
+        setError('Product not found or failed to load');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProduct();
+  }, [id]);
 
   React.useEffect(() => {
     setActive(tabs[0]?.id ?? 'Details');
@@ -122,11 +150,38 @@ const ProductDetail: React.FC = () => {
 
   const activeTab = tabs.find(t => t.id === active) ?? tabs[0];
 
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="product-detail-page">
+        <div className="product-container">
+          <div className="loading-message">Loading product...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error || !product) {
+    return (
+      <div className="product-detail-page">
+        <div className="product-container">
+          <div className="error-message">
+            <p>{error || 'Product not found'}</p>
+            <button onClick={() => window.history.back()} className="back-button">
+              Go Back
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="product-detail-page">
       <div className="product-container">
-        <ProductView product={selected} />
-        <ProductDetails product={selected} />
+        <ProductView product={product} />
+        <ProductDetails product={product} />
 
         <nav className="product-bookmarks" aria-label="Product sections" role="tablist">
           {tabs.map((t) => (
@@ -155,16 +210,16 @@ const ProductDetail: React.FC = () => {
             {activeTab.id === 'Details' && <DetailsTab content={activeTab.content} />}
             {activeTab.id === 'Download' && <DownloadTab content={activeTab.content} />}
             {activeTab.id === 'Features' && <FeaturesTab content={activeTab.content} />}
-            {activeTab.id === 'Reviews' && <ReviewsTab content={activeTab.content} productId={selected.id} />}
+            {activeTab.id === 'Reviews' && <ReviewsTab content={activeTab.content} productId={product.id} />}
           </div>
         )}
 
-        {selected.videoUrl && (
+        {product.videoUrl && (
           <div className="product-video-section" style={{ marginTop: '24px' }}>
             <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden', borderRadius: '8px' }}>
               <iframe
                 title="Product video"
-                src={toYouTubeEmbedUrl(selected.videoUrl)}
+                src={toYouTubeEmbedUrl(product.videoUrl)}
                 style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowFullScreen

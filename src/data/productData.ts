@@ -84,14 +84,25 @@ export const defaultModelViewerSettings: ModelViewerSettings = {
     height: "500px"
 };
 
-// Multiple products array for the catalog
-export const products: Product[] = [
+// Hardcoded frontend-specific data for products (UI, assets, tabs, etc.)
+// These complement the backend ProductDto data
+export interface HardcodedProductData {
+    id: string; // Must match backend product ID for pairing
+    currency: string;
+    features: string[];
+    modelPath: string;
+    gallery: string[];
+    interactionInstructions: string[];
+    modelViewerSettings?: ModelViewerSettings;
+    videoUrl?: string;
+    tabs?: ProductTab[];
+}
+
+// Hardcoded data that cannot be retrieved from backend
+export const hardcodedProductsData: HardcodedProductData[] = [
     {
-        id: "1",
-        name: "Endeavour - 3D printed RC APC",
-        price: 99.99,
+        id: "1", // Must match backend product ID
         currency: "USD",
-        description: "High-quality 3D model of an axis coordinate system. Perfect for educational purposes, visualization projects, or as a reference for 3D modeling and game development.",
         features: [
             "High-resolution textures",
             "Fully interactive 3D model",
@@ -101,7 +112,6 @@ export const products: Product[] = [
         modelPath: axisModel,
         gallery: makeGallery("1", 6),
         interactionInstructions: baseInteractionInstructions,
-        productType: 'DIGITAL',
         modelViewerSettings: defaultModelViewerSettings,
         videoUrl: 'https://www.youtube-nocookie.com/embed/bXxOCo0VL1Y',
         tabs: [
@@ -142,4 +152,7 @@ export const products: Product[] = [
     }
 ];
 
-export const product: Product = products[0];
+// Legacy exports will be replaced by the hybrid product service
+// These are kept temporarily for backward compatibility during migration
+export const products: Product[] = []; // Will be populated by hybrid service
+export const product: Product | null = null; // Will be populated by hybrid service

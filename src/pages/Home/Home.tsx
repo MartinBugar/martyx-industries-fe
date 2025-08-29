@@ -1,10 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { products } from '../../data/productData';
+import { type Product } from '../../data/productData';
+import { hybridProductService } from '../../services/hybridProductService';
 import './Home.css';
 
 const Home: React.FC = () => {
-  const featured = useMemo(() => products.slice(0, 6), []);
+  const [products, setProducts] = useState<Product[]>([]);
+  const featured = useMemo(() => products.slice(0, 6), [products]);
 
   const [subscribed, setSubscribed] = useState(false);
 
@@ -12,6 +14,21 @@ const Home: React.FC = () => {
   const heroAlt = 'RC Tank Kits & STL Files — product hero image';
   const heroMap = import.meta.glob('../../assets/home/tank.png', { eager: true, as: 'url' });
   const heroSrc = (heroMap['../../assets/home/tank.png'] as string) || '/assets/hero-tank.png';
+
+  // Load products from hybrid service
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        const productsList = await hybridProductService.getProducts();
+        setProducts(productsList);
+      } catch (error) {
+        console.error('Failed to load products for home page:', error);
+        // Continue with empty array - don't show error on home page
+      }
+    };
+
+    loadProducts();
+  }, []);
 
   // Preload hero image for better LCP when available
   useEffect(() => {
