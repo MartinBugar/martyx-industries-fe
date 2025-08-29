@@ -11,7 +11,6 @@ import OrderDetailsCard from '../OrderDetailsCard';
 const OrderHistory: React.FC = () => {
   const { user, getOrders, refreshOrders, ordersLoading, hasLoadedOrders } = useAuth();
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const [invoiceError, setInvoiceError] = useState<string | null>(null);
   
   // Trigger fetching orders when this tab/component is opened
   useEffect(() => {
@@ -187,10 +186,7 @@ const OrderHistory: React.FC = () => {
             {selectedOrder?.id === order.id && (
               <OrderDetailsCard
                 order={order}
-                productLinks={productLinksByOrder[order.id]}
-                isLinksLoading={linksLoadingId === order.id}
-                linksError={linksErrorByOrder[order.id]}
-                onError={(error) => setInvoiceError(error)}
+                onError={(error) => console.error('Order details error:', error)}
               />
             )}
           </div>

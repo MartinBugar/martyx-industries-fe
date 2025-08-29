@@ -1,27 +1,18 @@
 import React, { useState } from 'react';
 import type { Order } from '../../context/authTypes';
-import type { ProductLink } from '../../helpers/downloads';
-import { ordersService } from '../../services/ordersService';
 import { orderService } from '../../services/orderService';
 import './OrderDetailsCard.css';
 
 export interface OrderDetailsCardProps {
   order: Order;
-  productLinks?: ProductLink[];
-  isLinksLoading?: boolean;
-  linksError?: string | null;
   onError?: (error: string) => void;
 }
 
 const OrderDetailsCard: React.FC<OrderDetailsCardProps> = ({
   order,
-  productLinks = [],
-  isLinksLoading = false,
-  linksError = null,
   onError
 }) => {
   const [invoiceDownloadingId, setInvoiceDownloadingId] = useState<string | null>(null);
-  const [productsDownloadingId, setProductsDownloadingId] = useState<string | null>(null);
   const [downloadingItemId, setDownloadingItemId] = useState<string | null>(null);
 
   // Format date/time string
