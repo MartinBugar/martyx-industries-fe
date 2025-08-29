@@ -2,19 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/useAuth';
 import type { Order } from '../../context/authTypes';
 import './OrderHistory.css';
-import { ordersService } from '../../services/ordersService';
-import { orderService } from '../../services/orderService';
 import { paymentService } from '../../services/paymentService';
 import { extractPerProductLinks } from '../../helpers/downloads';
 import type { ProductLink } from '../../helpers/downloads';
+import OrderDetailsCard from '../OrderDetailsCard';
 
 
 const OrderHistory: React.FC = () => {
   const { user, getOrders, refreshOrders, ordersLoading, hasLoadedOrders } = useAuth();
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const [invoiceDownloadingId, setInvoiceDownloadingId] = useState<string | null>(null);
   const [invoiceError, setInvoiceError] = useState<string | null>(null);
-  const [productsDownloadingId, setProductsDownloadingId] = useState<string | null>(null);
   
   // Trigger fetching orders when this tab/component is opened
   useEffect(() => {
@@ -92,35 +89,7 @@ const OrderHistory: React.FC = () => {
   }, [selectedOrder]);
 
 
-  // Handle invoice download
-  const handleInvoiceDownload = async (order: Order) => {
-    setInvoiceError(null);
-    const apiOrderId = order.backendId || order.id;
-    try {
-      setInvoiceDownloadingId(order.id);
-      await orderService.downloadInvoice(apiOrderId);
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : 'Failed to download invoice';
-      setInvoiceError(msg);
-    } finally {
-      setInvoiceDownloadingId(null);
-    }
-  };
 
-  // Handle download of all products in an order
-  const handleDownloadAllProducts = async (order: Order) => {
-    try {
-      setProductsDownloadingId(order.id);
-      const orderId = order.backendId || order.id;
-      for (const item of order.items) {
-        await ordersService.downloadProduct(orderId, item.productId, item.productName);
-      }
-    } catch {
-      // Could add error handling per item if needed
-    } finally {
-      setProductsDownloadingId(null);
-    }
-  };
   
   // Get status badge class
   const getStatusBadgeClass = (status: string) => {
@@ -216,186 +185,13 @@ const OrderHistory: React.FC = () => {
             </div>
             
             {selectedOrder?.id === order.id && (
-              <div className="order-details" id={`order-details-${order.id}`} role="region" aria-label="Order details">
-                <div className="order-info-grid">
-                  <div className="order-section">
-                    <h4 className="section-title">Order Summary</h4>
-                    <div className="kv">
-                      <span className="k">Order #</span>
-                      <span className="v">{order.orderNumber || order.id}</span>
-                    </div>
-                    <div className="kv">
-                      <span className="k">Placed at</span>
-                      <span className="v">{formatDateTime(order.date)}</span>
-                    </div>
-                    {order.paymentDate && (
-                      <div className="kv">
-                        <span className="k">Paid at</span>
-                        <span className="v">{formatDateTime(order.paymentDate)}</span>
-                      </div>
-                    )}
-                    {order.userEmail && (
-                      <div className="kv">
-                        <span className="k">Email</span>
-                        <span className="v">{order.userEmail}</span>
-                      </div>
-                    )}
-                    <div className="kv">
-                      <span className="k">Status</span>
-                      <span className={`v ${getStatusBadgeClass(order.status)}`}>{order.status}</span>
-                    </div>
-                    <div className="kv total">
-                      <span className="k">Total</span>
-                      <span className="v">{formatCurrency(order.totalAmount, order.currency)}</span>
-                    </div>
-                  </div>
-
-                  <div className="order-section download-section" aria-label="Downloadable content">
-                    <h4 className="section-title">Downloadable content</h4>
-                    <div className="download-actions">
-                      {(['completed','paid'].includes(order.status.toLowerCase())) ? (
-                        <button className="download-button" onClick={() => void handleInvoiceDownload(order)} disabled={invoiceDownloadingId === order.id}>
-                          {invoiceDownloadingId === order.id ? 'Downloading…' : 'Download invoice'}
-                        </button>
-                      ) : (
-                        <div className="download-note">Invoice available once the order is paid.</div>
-                      )}
-                      {/* Dynamic per-product download buttons */}
-                      {productLinksByOrder[order.id] && productLinksByOrder[order.id].length > 0 ? (
-                        <div className="download-list">
-                          {productLinksByOrder[order.id].map((pl, idx) => {
-                            const displayName: string = (pl.productName?.trim() || pl.label?.replace(/^Download\s*/i, "").trim() || "product");
-                            const analyticsLabel: string = pl.productName?.trim() || pl.label;
-                            return (
-                              <button
-                                key={idx}
-                                className="download-button"
-                                onClick={async () => {
-                                  try {
-                                    console.log('[analytics] order-history per-product download click', { orderId: order.id, index: idx, label: analyticsLabel });
-                                    setProductsDownloadingId(order.id);
-                                    const ok = await ordersService.downloadByUrl(pl.url, analyticsLabel);
-                                    if (!ok) {
-                                      // Record a lightweight error for this order if needed
-                                      // (we reuse invoiceError slot for simplicity to avoid adding more state)
-                                      setInvoiceError('Failed to download file.');
-                                    } else {
-                                      setInvoiceError(null);
-                                    }
-                                  } catch {
-                                    setInvoiceError('Failed to download file.');
-                                  } finally {
-                                    setProductsDownloadingId(null);
-                                  }
-                                }}
-                                disabled={productsDownloadingId === order.id}
-                              >
-                                {productsDownloadingId === order.id ? 'Downloading…' : displayName}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      ) : (
-                        <>
-                          {linksLoadingId === order.id && (
-                            <div className="download-note">Loading links…</div>
-                          )}
-                          {linksErrorByOrder[order.id] && (
-                            <div className="download-error" role="alert">{linksErrorByOrder[order.id]}</div>
-                          )}
-                          {/* Fallback: legacy one-click to download all items sequentially */}
-                          <button className="download-button" onClick={() => void handleDownloadAllProducts(order)} disabled={productsDownloadingId === order.id}>
-                            {productsDownloadingId === order.id ? 'Downloading…' : 'Download products'}
-                          </button>
-                        </>
-                      )}
-                    </div>
-                    {invoiceError && selectedOrder?.id === order.id && (
-                      <div className="download-error" role="alert">{invoiceError}</div>
-                    )}
-                  </div>
-
-                  {(order.shippingAddress || order.billingAddress) && (
-                    <div className="order-section">
-                      <h4 className="section-title">Addresses</h4>
-                      {order.shippingAddress && (
-                        <div className="kv multi">
-                          <span className="k">Shipping</span>
-                          <span className="v address">{order.shippingAddress}</span>
-                        </div>
-                      )}
-                      {order.billingAddress && (
-                        <div className="kv multi">
-                          <span className="k">Billing</span>
-                          <span className="v address">{order.billingAddress}</span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {(order.paymentMethod || order.paymentId) && (
-                    <div className="order-section">
-                      <h4 className="section-title">Payment</h4>
-                      {order.paymentMethod && (
-                        <div className="kv">
-                          <span className="k">Method</span>
-                          <span className="v">{order.paymentMethod}</span>
-                        </div>
-                      )}
-                      {order.paymentId && (
-                        <div className="kv">
-                          <span className="k">Payment ID</span>
-                          <span className="v">{order.paymentId}</span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {order.notes && (
-                    <div className="order-section">
-                      <h4 className="section-title">Notes</h4>
-                      <div className="kv multi">
-                        <span className="v note">{order.notes}</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                <div className="order-items">
-                  <table className="items-table">
-                    <thead>
-                      <tr>
-                        <th>Product</th>
-                        <th>Unit Price</th>
-                        <th>Quantity</th>
-                        <th>Total</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {order.items.map((item, index) => (
-                        <tr key={index} className="item-row">
-                          <td className="item-name" data-label="Product">
-                            <div>{item.productName}</div>
-                            <div className="item-subtext">ID: {item.productId}</div>
-                            {item.productType && (
-                              <div className="item-subtext">Type: {item.productType}</div>
-                            )}
-                          </td>
-                          <td className="item-unit-price" data-label="Unit Price">{formatCurrency(item.price, order.currency)}</td>
-                          <td className="item-quantity" data-label="Quantity">{item.quantity}</td>
-                          <td className="item-price" data-label="Total">{formatCurrency(item.price * item.quantity, order.currency)}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                    <tfoot>
-                      <tr className="total-row">
-                        <td colSpan={3}>Total</td>
-                        <td>{formatCurrency(order.totalAmount, order.currency)}</td>
-                      </tr>
-                    </tfoot>
-                  </table>
-                </div>
-              </div>
+              <OrderDetailsCard
+                order={order}
+                productLinks={productLinksByOrder[order.id]}
+                isLinksLoading={linksLoadingId === order.id}
+                linksError={linksErrorByOrder[order.id]}
+                onError={(error) => setInvoiceError(error)}
+              />
             )}
           </div>
         ))}
