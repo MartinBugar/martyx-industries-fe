@@ -538,6 +538,24 @@
   font-weight: 500;
 }
 
+.item-type.digital {
+  color: var(--oh-info);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.digital-badge {
+  font-size: 0.8rem;
+}
+
+.item-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: flex-end;
+}
+
 .item-pricing {
   display: flex;
   flex-direction: column;
@@ -580,6 +598,81 @@
   color: var(--accent);
   font-weight: 700;
   font-size: 0.9rem;
+}
+
+/* Item download styles */
+.item-download {
+  margin-top: 0.5rem;
+}
+
+.item-download-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  color: var(--oh-processing);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.75rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+  text-decoration: none;
+  min-width: 100px;
+}
+
+.item-download-btn:hover {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(139, 92, 246, 0.1) 100%);
+  border-color: rgba(139, 92, 246, 0.5);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.2);
+}
+
+.item-download-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.3);
+}
+
+.item-download-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.item-download-btn:disabled:hover {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%);
+  border-color: rgba(139, 92, 246, 0.3);
+  box-shadow: none;
+}
+
+.item-download-btn .download-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.download-unavailable {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.03);
+  font-size: 0.75rem;
+  font-weight: 500;
+  min-width: 100px;
+}
+
+.download-unavailable .lock-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
 }
 
 /* Order total */
@@ -651,9 +744,20 @@
     gap: 1rem;
   }
   
+  .item-actions {
+    align-items: flex-start;
+    width: 100%;
+  }
+  
   .item-pricing {
     min-width: unset;
     width: 100%;
+  }
+  
+  .item-download-btn,
+  .download-unavailable {
+    width: 100%;
+    justify-content: center;
   }
 }
 

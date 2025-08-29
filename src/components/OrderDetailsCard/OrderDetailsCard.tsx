@@ -22,6 +22,7 @@ const OrderDetailsCard: React.FC<OrderDetailsCardProps> = ({
 }) => {
   const [invoiceDownloadingId, setInvoiceDownloadingId] = useState<string | null>(null);
   const [productsDownloadingId, setProductsDownloadingId] = useState<string | null>(null);
+  const [downloadingItemId, setDownloadingItemId] = useState<string | null>(null);
 
   // Format date/time string
   const formatDateTime = (dateString: string) => {
@@ -72,6 +73,28 @@ const OrderDetailsCard: React.FC<OrderDetailsCardProps> = ({
       setInvoiceDownloadingId(null);
     }
   };
+
+  // Handle individual product download
+  const handleProductDownload = async (productId: string) => {
+    const apiOrderId = order.backendId || order.id;
+    try {
+      setDownloadingItemId(productId);
+      await orderService.downloadProduct(apiOrderId, productId);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'Failed to download product';
+      onError?.(msg);
+    } finally {
+      setDownloadingItemId(null);
+    }
+  };
+
+  // Check if product is digital and downloadable
+  const isDigitalProduct = (item: any) => {
+    return item.productType?.toLowerCase() === 'digital';
+  };
+
+  // Check if order allows downloads (paid status)
+  const allowsDownloads = ['completed', 'paid'].includes(order.status.toLowerCase());
 
   return (
     <div className="order-details-card" id={`order-details-${order.id}`} role="region" aria-label="Order details">
@@ -307,23 +330,61 @@ const OrderDetailsCard: React.FC<OrderDetailsCardProps> = ({
                     <div className="item-meta">
                       <span className="item-id">ID: {item.productId}</span>
                       {item.productType && (
-                        <span className="item-type">Type: {item.productType}</span>
+                        <span className={`item-type ${item.productType?.toLowerCase() === 'digital' ? 'digital' : ''}`}>
+                          {item.productType}
+                          {item.productType?.toLowerCase() === 'digital' && (
+                            <span className="digital-badge">📱</span>
+                          )}
+                        </span>
                       )}
                     </div>
                   </div>
-                  <div className="item-pricing">
-                    <div className="price-row">
-                      <span className="price-label">Unit Price</span>
-                      <span className="price-value">{formatCurrency(item.price, order.currency)}</span>
+                  <div className="item-actions">
+                    <div className="item-pricing">
+                      <div className="price-row">
+                        <span className="price-label">Unit Price</span>
+                        <span className="price-value">{formatCurrency(item.price, order.currency)}</span>
+                      </div>
+                      <div className="price-row">
+                        <span className="price-label">Quantity</span>
+                        <span className="price-value">{item.quantity}</span>
+                      </div>
+                      <div className="price-row total">
+                        <span className="price-label">Total</span>
+                        <span className="price-value">{formatCurrency(item.price * item.quantity, order.currency)}</span>
+                      </div>
                     </div>
-                    <div className="price-row">
-                      <span className="price-label">Quantity</span>
-                      <span className="price-value">{item.quantity}</span>
-                    </div>
-                    <div className="price-row total">
-                      <span className="price-label">Total</span>
-                      <span className="price-value">{formatCurrency(item.price * item.quantity, order.currency)}</span>
-                    </div>
+                    
+                    {/* Download button for digital products */}
+                    {isDigitalProduct(item) && (
+                      <div className="item-download">
+                        {allowsDownloads ? (
+                          <button
+                            className="item-download-btn"
+                            onClick={() => handleProductDownload(item.productId)}
+                            disabled={downloadingItemId === item.productId}
+                          >
+                            <svg className="download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                              <polyline points="7,10 12,15 17,10"/>
+                              <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            <span>
+                              {downloadingItemId === item.productId ? 'Downloading…' : 'Download'}
+                            </span>
+                          </button>
+                        ) : (
+                          <div className="download-unavailable">
+                            <svg className="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                              <circle cx="12" cy="16" r="1"/>
+                              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                            </svg>
+                            <span>Available after payment</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
