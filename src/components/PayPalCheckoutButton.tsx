@@ -91,6 +91,16 @@ export default function PayPalCheckoutButton({ items, totalAmount, currency = "E
         forceReRender={forceReRender}
       />
 
+      {/* PAYPAL CARD BUTTON */}
+      <PayPalButtons
+        fundingSource="card"
+        style={walletStyle}
+        createOrder={createOrder}
+        onApprove={onApprove}
+        onError={onError}
+        forceReRender={forceReRender}
+      />
+
       {/* HOSTED FIELDS – Kartova platba bez bieleho pruhu */}
       <CardPayViaHostedFields
         createOrder={createOrder}
