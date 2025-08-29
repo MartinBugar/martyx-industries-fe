@@ -51,8 +51,9 @@ import ScrollToTop from './components/ScrollToTop/ScrollToTop'
 const paypalOptions = {
   clientId: "Ae8bJdL8EaBJQtmDskm-esvEkUNfollfToURcmnNN4XCTl2j48YGAUQNUkUs6zthKZRndlKwSESyvFnh",
   currency: "EUR",
-  intent: "capture"
-  // optional: "locale": "sk_SK",
+  intent: "capture",
+  components: "buttons,hosted-fields,funding-eligibility", // PRIDAJ hosted-fields
+  locale: "sk_SK"
 };
 
 // App wrapper to provide DevPasswordGate, AuthContext, and CartContext

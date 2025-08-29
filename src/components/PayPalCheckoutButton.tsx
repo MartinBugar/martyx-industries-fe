@@ -2,6 +2,7 @@ import { useCallback, useMemo } from "react";
 import { PayPalButtons } from "@paypal/react-paypal-js";
 import type { CartItem } from "../context/cartContextTypes";
 import { API_BASE_URL } from "../services/apiUtils";
+import CardPayViaHostedFields from "./checkout/CardPayViaHostedFields";
 
 type Props = {
   items: CartItem[];
@@ -69,22 +70,41 @@ export default function PayPalCheckoutButton({ items, totalAmount, currency = "E
   // Force PayPalButtons to re-render when cart changes
   const forceReRender = useMemo(() => [cartHash, currency, "capture"], [cartHash, currency]);
 
+  // 1) štýl pre PayPal wallet (tmavé/white podľa chuti)
+  const walletStyle = {
+    layout: "vertical",
+    shape: "rect",
+    color: "black",   // alebo "white" – vyber čo viac ladi
+    height: 48,
+    label: "paypal",
+    tagline: false
+  } as const;
+
   return (
-    <PayPalButtons
-      style={{ 
-        layout: "vertical", 
-        shape: "rect", 
-        label: "pay",
-        color: "blue",
-        height: 48,
-        tagline: false
-      }}
-      createOrder={createOrder}
-      onApprove={onApprove}
-      onError={onError}
-      forceReRender={forceReRender}
-      // Optional: disable/enable based on cart validity
-      // disabled={!cartIsValid}
-    />
+    <div className="grid gap-3">
+      {/* PAYPAL WALLET BUTTON */}
+      <PayPalButtons
+        style={walletStyle}
+        createOrder={createOrder}
+        onApprove={onApprove}
+        onError={onError}
+        forceReRender={forceReRender}
+      />
+
+      {/* HOSTED FIELDS – Kartova platba bez bieleho pruhu */}
+      <CardPayViaHostedFields
+        createOrder={createOrder}
+        onApproveCapture={async (orderId: string) => {
+          const res = await fetch(`${API_BASE_URL}/api/paypal/capture-order`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ orderId })
+          });
+          if (!res.ok) throw new Error(await res.text());
+          const capture = await res.json();
+          onSuccess(capture);
+        }}
+      />
+    </div>
   );
 }

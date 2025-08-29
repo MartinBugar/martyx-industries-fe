@@ -1,0 +1,120 @@
+/* Card Pay Via Hosted Fields - Dark Theme */
+
+.card-hosted-fields-container {
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1.5rem;
+  transition: all 0.2s ease;
+}
+
+.card-hosted-fields-container:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-soft);
+}
+
+.card-fields-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.card-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-field-label {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  display: block;
+}
+
+.card-fields-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.card-submit-button {
+  height: 48px;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 0.5rem;
+}
+
+.card-submit-button:hover {
+  background: var(--card);
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(40, 193, 255, 0.2);
+}
+
+.card-submit-button:active {
+  transform: translateY(0);
+}
+
+.card-security-note {
+  margin-top: 1rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-align: center;
+  margin-bottom: 0;
+  line-height: 1.4;
+}
+
+/* PayPal Hosted Fields Styling Override */
+.card-hosted-fields-container .paypal-hosted-field-container {
+  margin: 0;
+}
+
+.card-hosted-fields-container .paypal-hosted-field {
+  width: 100%;
+  min-height: 44px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .card-fields-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .card-hosted-fields-container {
+    padding: 1.25rem;
+  }
+  
+  .card-submit-button {
+    font-size: 0.875rem;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .card-hosted-fields-container {
+    border-width: 2px;
+  }
+  
+  .card-submit-button {
+    border-width: 2px;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .card-hosted-fields-container,
+  .card-submit-button {
+    transition: none;
+  }
+  
+  .card-submit-button:hover {
+    transform: none;
+  }
+}
