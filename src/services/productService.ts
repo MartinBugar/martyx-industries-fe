@@ -14,6 +14,7 @@ export interface ProductDto {
   sku: string;
   category: string | null;
   productType: 'DIGITAL' | 'PHYSICAL';
+  active: boolean;
 }
 
 /**

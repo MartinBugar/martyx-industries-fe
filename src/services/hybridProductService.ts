@@ -82,16 +82,18 @@ export class HybridProductService {
       // Fetch from backend
       const backendProducts = await productService.getProducts(category);
       
-      // Merge with hardcoded data
-      const hybridProducts = backendProducts.map(backendProduct => {
-        const hardcodedData = this.getHardcodedDataById(backendProduct.id.toString());
-        const mergedProduct = this.mergeProductData(backendProduct, hardcodedData);
-        
-        // Cache individual products
-        this.productCache.set(backendProduct.id, mergedProduct);
-        
-        return mergedProduct;
-      });
+      // Filter only active products and merge with hardcoded data
+      const hybridProducts = backendProducts
+        .filter(backendProduct => backendProduct.active) // Only include active products
+        .map(backendProduct => {
+          const hardcodedData = this.getHardcodedDataById(backendProduct.id.toString());
+          const mergedProduct = this.mergeProductData(backendProduct, hardcodedData);
+          
+          // Cache individual products
+          this.productCache.set(backendProduct.id, mergedProduct);
+          
+          return mergedProduct;
+        });
 
       // Cache all products if no category filter
       if (!category) {
@@ -114,7 +116,8 @@ export class HybridProductService {
           imageUrl: null,
           sku: `MOCK-${hardcodedData.id}`,
           category: null,
-          productType: 'DIGITAL'
+          productType: 'DIGITAL',
+          active: true // Fallback products are considered active for development
         };
         return this.mergeProductData(mockBackendProduct, hardcodedData);
       });
@@ -136,6 +139,12 @@ export class HybridProductService {
 
       // Fetch from backend
       const backendProduct = await productService.getProductById(id);
+      
+      // Check if product is active
+      if (!backendProduct.active) {
+        throw new Error(`Product ${id} is not active`);
+      }
+      
       const hardcodedData = this.getHardcodedDataById(backendProduct.id.toString());
       const mergedProduct = this.mergeProductData(backendProduct, hardcodedData);
 
@@ -158,7 +167,8 @@ export class HybridProductService {
           imageUrl: null,
           sku: `MOCK-${id}`,
           category: null,
-          productType: 'DIGITAL'
+          productType: 'DIGITAL',
+          active: true // Fallback products are considered active for development
         };
         const fallbackProduct = this.mergeProductData(mockBackendProduct, hardcodedData);
         console.warn(`Using fallback data for product ${id}`);
