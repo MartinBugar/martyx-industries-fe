@@ -61,5 +61,6 @@
   "currency": "Mena",
   "date_format": "DD.MM.YYYY",
   "items_count": "{count, plural, =0 {Žiadne položky} =1 {1 položka} few {# položky} many {# položiek} other {# položiek}}",
-  "selected_count": "{count, plural, =0 {Nič vybrané} =1 {1 vybraná} few {# vybrané} many {# vybraných} other {# vybraných}}"
+  "selected_count": "{count, plural, =0 {Nič vybrané} =1 {1 vybraná} few {# vybrané} many {# vybraných} other {# vybraných}}",
+  "languages_available": "{count, plural, =0 {Žiadne jazyky} =1 {1 jazyk dostupný} few {# jazyky dostupné} many {# jazykov dostupných} other {# jazykov dostupných}}"
 }

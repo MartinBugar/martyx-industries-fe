@@ -1,23 +1,25 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import './About.css';
 
 const About: React.FC = () => {
+  const { t } = useTranslation('about');
+
   return (
     <main className="page-container about-page" role="main">
       <section className="about-container" aria-labelledby="about-title">
-        <h1 id="about-title">About MartyX Industries</h1>
+        <h1 id="about-title">{t('title')}</h1>
         <p className="about-lead">
-          We engineer 3D‑printed RC platforms and parts that are easy to build, maintain, and upgrade. Designed,
-          tested, and refined so you can spend more time driving and less time troubleshooting.
+          {t('lead')}
         </p>
-        <ul className="about-highlights" aria-label="What to expect">
-          <li>RC‑ready designs with standard hardware fitment</li>
-          <li>Modular parts for quick repairs and upgrades</li>
-          <li>Clear build docs, BOMs, and slicer presets</li>
+        <ul className="about-highlights" aria-label={t('highlights.title')}>
+          <li>{t('highlights.rc_ready')}</li>
+          <li>{t('highlights.modular')}</li>
+          <li>{t('highlights.documentation')}</li>
         </ul>
         <div className="about-cta">
-          <Link to="/products" className="btn primary">Shop Products</Link>
+          <Link to="/products" className="btn primary">{t('cta.shop_products')}</Link>
         </div>
       </section>
     </main>

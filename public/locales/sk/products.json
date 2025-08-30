@@ -1,0 +1,25 @@
+{
+  "title": "Produkty",
+  "loading": "Načítavam produkty...",
+  "error": "Nepodarilo sa načítať produkty. Skúste to znovu.",
+  "no_results": "Nenašli sa žiadne produkty.",
+  "search_placeholder": "Hľadať produkty...",
+  "sort_by": "Zoradiť podľa",
+  "sort_options": {
+    "newest": "Najnovšie",
+    "name": "Názov A-Z",
+    "price": "Cena nízka-vysoká"
+  },
+  "cart": {
+    "add_success": "Produkt bol pridaný do košíka",
+    "add_limit": "Len 1 kus tohto produktu je povolený v košíku"
+  },
+  "type": {
+    "digital": "Digitálny",
+    "physical": "Fyzický"
+  },
+  "price": "{amount, number, currency} {currency}",
+  "inactive": "Neaktívny",
+  "sku": "SKU",
+  "category": "Kategória"
+}

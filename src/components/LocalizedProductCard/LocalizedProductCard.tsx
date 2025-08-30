@@ -17,7 +17,7 @@ const LocalizedProductCard: React.FC<LocalizedProductCardProps> = ({
   productId,
   showFullDescription = false
 }) => {
-  const { t, i18n } = useTranslation('common');
+  const { t, i18n } = useTranslation('products');
   const [product, setProduct] = useState<ProductDto | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -95,7 +95,7 @@ const LocalizedProductCard: React.FC<LocalizedProductCardProps> = ({
         />
         {!product.active && (
           <div className="product-card__badge product-card__badge--inactive">
-            {t('product.inactive')}
+            {t('inactive')}
           </div>
         )}
       </div>
@@ -119,12 +119,12 @@ const LocalizedProductCard: React.FC<LocalizedProductCardProps> = ({
             {product.category}
           </span>
           <span className="product-card__type">
-            {t(`product.type.${product.productType.toLowerCase()}`)}
+            {t(`type.${product.productType.toLowerCase()}`)}
           </span>
         </div>
         
         <div className="product-card__price">
-          {t('product.price', { 
+          {t('price', { 
             amount: product.price, 
             currency: product.currency 
           })}
@@ -132,7 +132,7 @@ const LocalizedProductCard: React.FC<LocalizedProductCardProps> = ({
         
         <div className="product-card__meta">
           <small className="product-card__sku">
-            SKU: {product.sku}
+            {t('sku')}: {product.sku}
           </small>
           <small className="product-card__language">
             🌐 {i18n.language.toUpperCase()}

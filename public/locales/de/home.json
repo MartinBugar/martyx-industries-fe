@@ -1,0 +1,59 @@
+{
+  "hero": {
+    "title": "RC Panzer Kits & STL Dateien",
+    "subtitle": "Bauen. Drucken. Steuern.",
+    "shop_kits": "Kits kaufen",
+    "download_stl": "STL herunterladen",
+    "image_alt": "RC Panzer Kits & STL Dateien — Produktbild",
+    "facts": {
+      "assembly_time": "Montage unter 4h (Prototyp)",
+      "layer_optimization": "Optimiert für 0,1 mm Schichten",
+      "electronics_ready": "Modulare Elektronik bereit"
+    }
+  },
+  "how_it_works": {
+    "title": "Wie es funktioniert",
+    "step_1": "Schritt 1",
+    "step_1_title": "Auswählen",
+    "step_1_description": "Kit oder STL-Paket wählen.",
+    "step_2": "Schritt 2",
+    "step_2_title": "Bauen oder Drucken",
+    "step_2_description": "Zusammenbauen oder 3D drucken.",
+    "step_3": "Schritt 3", 
+    "step_3_title": "Fahren",
+    "step_3_description": "Controller koppeln & genießen."
+  },
+  "featured": {
+    "title": "Empfohlene Produkte",
+    "view_all": "Alle Produkte anzeigen"
+  },
+  "testimonials": {
+    "title": "Was Unsere Kunden Sagen",
+    "subtitle": "Echte Bewertungen von RC-Panzer-Enthusiasten",
+    "review_1": "Über ein Wochenende gedruckt, läuft wie ein Traum. Die STL-Dateien sind perfekt optimiert und die Montageanleitung ist kristallklar. Meine Kinder lieben es!",
+    "review_2": "Saubere STLs, keine Stützen bei meinem Setup nötig. Das modulare Design macht Anpassungen einfach und die Elektronikintegration ist nahtlos. Sehr empfehlenswert!",
+    "review_3": "Erstaunliche Qualität! Die Ketten funktionieren perfekt und das Federungssystem ist unglaublich realistisch. Montage dauerte genau wie beworben - unter 4 Stunden.",
+    "review_4": "Die Liebe zum Detail ist unglaublich. Jede Schraube und Niete ist perfekt modelliert. Die Controller-Reichweite ist beeindruckend und die Soundeffekte sind punktgenau!",
+    "time_ago": {
+      "weeks_2": "vor 2 Wochen",
+      "month_1": "vor 1 Monat",
+      "weeks_3": "vor 3 Wochen", 
+      "week_1": "vor 1 Woche"
+    }
+  },
+  "newsletter": {
+    "title": "Bleiben Sie auf dem Laufenden",
+    "description": "Erhalten Sie exklusiven Zugang zu neuen Panzermodellen, 3D-Druck-Tipps und Sonderangeboten. Treten Sie unserer RC-Enthusiasten-Community bei!",
+    "email_label": "E-Mail-Adresse",
+    "email_placeholder": "Ihre E-Mail eingeben",
+    "subscribe_button": "Newsletter abonnieren",
+    "privacy_note": "🔒 Wir respektieren Ihre Privatsphäre. Jederzeit abmeldbar.",
+    "success_title": "Willkommen an Bord! 🎉",
+    "success_message": "Sie haben unseren Newsletter abonniert. Prüfen Sie Ihre E-Mail für eine Willkommensnachricht.",
+    "benefits": {
+      "early_access": "Früher Zugang zu neuen Releases",
+      "exclusive_guides": "Exklusive 3D-Druck-Anleitungen",
+      "member_discounts": "Nur-Mitglieder-Rabatte"
+    }
+  }
+}

@@ -15,6 +15,8 @@ i18n
   .use(initReactI18next)
   // Initialize i18next
   .init({
+    // Default language
+    lng: 'en',
     // Fallback language if detection fails
     fallbackLng: 'en',
     
@@ -31,7 +33,9 @@ i18n
       // Cache user language preference
       caches: ['localStorage'],
       // Local storage key
-      lookupLocalStorage: 'i18nextLng'
+      lookupLocalStorage: 'i18nextLng',
+      // Fallback to 'en' if no detection method works
+      checkWhitelist: true
     },
     
     // Backend options for loading translation files
@@ -46,7 +50,7 @@ i18n
     defaultNS: 'common',
     
     // Namespaces to load by default
-    ns: ['common', 'nav', 'checkout'],
+    ns: ['common', 'nav', 'checkout', 'home', 'products', 'auth', 'about'],
     
     // ICU options
     i18nFormat: {

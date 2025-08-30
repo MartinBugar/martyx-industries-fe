@@ -8,7 +8,7 @@ import './Products.css';
 
 const Products: React.FC = () => {
     const {addToCart} = useCart();
-    const {t, i18n} = useTranslation('common');
+    const {t, i18n} = useTranslation('products');
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -56,7 +56,7 @@ const Products: React.FC = () => {
     const handleAdd = (p: Product) => () => {
         const status = addToCart(p);
         const isLimit = status === 'limit';
-        const message = isLimit ? 'Only 1 piece of this product is allowed in cart' : 'Product was added to cart';
+        const message = isLimit ? t('cart.add_limit') : t('cart.add_success');
         const variant: Popup['variant'] = isLimit ? 'warning' : 'success';
 
         setPopups(prev => ({...prev, [p.id]: {visible: true, message, variant}}));
@@ -95,7 +95,7 @@ const Products: React.FC = () => {
         return (
             <div className="products-page">
                 <div className="products-container">
-                    <div className="loading-message">Loading products...</div>
+                    <div className="loading-message">{t('loading')}</div>
                 </div>
             </div>
         );
@@ -112,7 +112,7 @@ const Products: React.FC = () => {
                             onClick={() => window.location.reload()}
                             className="retry-button"
                         >
-                            Retry
+                            {t('actions.retry')}
                         </button>
                     </div>
                 </div>
@@ -133,7 +133,7 @@ const Products: React.FC = () => {
                         </svg>
                         <input
                             type="text"
-                            placeholder="Search products..."
+                            placeholder={t('search_placeholder')}
                             value={searchTerm}
                             onChange={(e) => {
                                 const newSearchTerm = e.target.value;

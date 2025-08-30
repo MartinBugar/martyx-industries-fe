@@ -1,0 +1,25 @@
+{
+  "title": "Produkte",
+  "loading": "Produkte werden geladen...",
+  "error": "Produkte konnten nicht geladen werden. Bitte versuchen Sie es erneut.",
+  "no_results": "Keine Produkte gefunden.",
+  "search_placeholder": "Produkte suchen...",
+  "sort_by": "Sortieren nach",
+  "sort_options": {
+    "newest": "Neueste",
+    "name": "Name A-Z",
+    "price": "Preis niedrig-hoch"
+  },
+  "cart": {
+    "add_success": "Produkt wurde zum Warenkorb hinzugefügt",
+    "add_limit": "Nur 1 Stück dieses Produkts ist im Warenkorb erlaubt"
+  },
+  "type": {
+    "digital": "Digital",
+    "physical": "Physisch"
+  },
+  "price": "{amount, number, currency} {currency}",
+  "inactive": "Inaktiv",
+  "sku": "SKU",
+  "category": "Kategorie"
+}

@@ -1,0 +1,13 @@
+{
+  "title": "Über MartyX Industries",
+  "lead": "Wir entwickeln 3D-gedruckte RC-Plattformen und Teile, die einfach zu bauen, zu warten und zu upgraden sind. Entworfen, getestet und verfeinert, damit Sie mehr Zeit mit Fahren und weniger Zeit mit Fehlerbehebung verbringen können.",
+  "highlights": {
+    "title": "Was Sie erwarten können",
+    "rc_ready": "RC‑bereite Designs mit Standard-Hardware-Ausstattung",
+    "modular": "Modulare Teile für schnelle Reparaturen und Upgrades",
+    "documentation": "Klare Bau-Dokumentation, Stücklisten und Slicer-Voreinstellungen"
+  },
+  "cta": {
+    "shop_products": "Produkte kaufen"
+  }
+}

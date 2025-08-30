@@ -1,0 +1,25 @@
+{
+  "title": "Products",
+  "loading": "Loading products...",
+  "error": "Failed to load products. Please try again later.",
+  "no_results": "No products found.",
+  "search_placeholder": "Search products...",
+  "sort_by": "Sort by",
+  "sort_options": {
+    "newest": "Newest",
+    "name": "Name A-Z",
+    "price": "Price Low-High"
+  },
+  "cart": {
+    "add_success": "Product was added to cart",
+    "add_limit": "Only 1 piece of this product is allowed in cart"
+  },
+  "type": {
+    "digital": "Digital",
+    "physical": "Physical"
+  },
+  "price": "{amount, number, currency} {currency}",
+  "inactive": "Inactive",
+  "sku": "SKU",
+  "category": "Category"
+}
