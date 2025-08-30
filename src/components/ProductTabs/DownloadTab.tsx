@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { type TabContent } from '../../data/productData';
 import './ProductTabs.css';
 
@@ -7,6 +8,7 @@ interface DownloadTabProps {
 }
 
 const DownloadTab: React.FC<DownloadTabProps> = ({ content }) => {
+  const { t } = useTranslation('products');
   switch (content.kind) {
     case 'text':
       return (
@@ -39,7 +41,7 @@ const DownloadTab: React.FC<DownloadTabProps> = ({ content }) => {
                       rel="noopener noreferrer"
                       aria-label={`Download ${d.label}${d.format ? ` (${d.format})` : ''}${d.size ? `, size ${d.size}` : ''}`}
                     >
-                      Download
+                      {t('downloads.download_button')}
                     </a>
                   </div>
                   {(d.size || d.format) && (
@@ -55,7 +57,7 @@ const DownloadTab: React.FC<DownloadTabProps> = ({ content }) => {
         </section>
       );
     default:
-      return <p>No downloads available.</p>;
+      return <p>{t('downloads.no_downloads')}</p>;
   }
 };
 

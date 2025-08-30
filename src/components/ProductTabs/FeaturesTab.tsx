@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { type TabContent } from '../../data/productData';
 import './ProductTabs.css';
 
@@ -7,6 +8,7 @@ interface FeaturesTabProps {
 }
 
 const FeaturesTab: React.FC<FeaturesTabProps> = ({ content }) => {
+  const { t } = useTranslation('products');
   switch (content.kind) {
     case 'list':
       return (
@@ -41,7 +43,7 @@ const FeaturesTab: React.FC<FeaturesTabProps> = ({ content }) => {
         </div>
       );
     default:
-      return <p>Content unavailable for Features.</p>;
+      return <p>{t('features.unavailable')}</p>;
   }
 };
 

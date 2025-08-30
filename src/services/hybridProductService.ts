@@ -2,6 +2,7 @@ import { productService } from './productService';
 import type { ProductDto } from '../types/api';
 import { hardcodedProductsData, type HardcodedProductData, type Product } from '../data/productData';
 import { getCurrentLanguage } from './apiUtils';
+import { getLocalizedHardcodedProductDataForService } from '../utils/productTranslationUtils';
 
 /**
  * Hybrid Product Service
@@ -16,10 +17,19 @@ export class HybridProductService {
   private readonly CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
   /**
-   * Get hardcoded data for a product by its ID
+   * Get hardcoded data for a product by its ID with localization
    */
   private getHardcodedDataById(id: string): HardcodedProductData | null {
-    return hardcodedProductsData.find(data => data.id === id) || null;
+    const baseData = hardcodedProductsData.find(data => data.id === id);
+    if (!baseData) return null;
+
+    // Get localized data and merge with base data
+    const localizedData = getLocalizedHardcodedProductDataForService(id);
+    
+    return {
+      ...baseData,
+      ...localizedData
+    };
   }
 
   /**
@@ -120,7 +130,11 @@ export class HybridProductService {
       
       if (isNetworkError) {
         // Fallback: return products based on hardcoded data only (for development/offline)
-        const fallbackProducts = hardcodedProductsData.map(hardcodedData => {
+        const fallbackProducts = hardcodedProductsData.map(baseHardcodedData => {
+          // Get localized data for this product
+          const localizedData = getLocalizedHardcodedProductDataForService(baseHardcodedData.id);
+          const hardcodedData = { ...baseHardcodedData, ...localizedData };
+          
           const mockBackendProduct: ProductDto = {
             id: parseInt(hardcodedData.id),
             name: `Mock Product ${hardcodedData.id}`,
@@ -188,8 +202,12 @@ export class HybridProductService {
       
       if (isNetworkError) {
         // Fallback: try to find in hardcoded data (only for connection errors)
-        const hardcodedData = this.getHardcodedDataById(id.toString());
-        if (hardcodedData) {
+        const baseHardcodedData = hardcodedProductsData.find(data => data.id === id.toString());
+        if (baseHardcodedData) {
+          // Get localized data for this product
+          const localizedData = getLocalizedHardcodedProductDataForService(id.toString());
+          const hardcodedData = { ...baseHardcodedData, ...localizedData };
+          
           const mockBackendProduct: ProductDto = {
             id: id,
             name: `Mock Product ${id}`,

@@ -22,5 +22,53 @@
   "price": "{amount, number, currency} {currency}",
   "inactive": "Inaktiv",
   "sku": "SKU",
-  "category": "Kategorie"
+  "category": "Kategorie",
+  "product_data": {
+    "endeavour": {
+      "features": [
+        "Hochauflösende Texturen",
+        "Vollständig interaktives 3D-Modell",
+        "Anpassbare Materialeigenschaften",
+        "Kompatibel mit allen gängigen 3D-Software"
+      ],
+      "details": {
+        "title": "Endeavour - 3D-gedrucktes RC-APC-Projekt",
+        "intro": "Der Endeavour ist ein aufregendes 3D-gedrucktes RC-Schützenpanzer (APC) Projekt, das moderne DIY-Technologie und RC-Modellbau vereint. Dieses umfassende Kit bietet alles, was Sie benötigen, um Ihr eigenes Arduino-gesteuertes RC-Fahrzeug von Grund auf zu erstellen.",
+        "description": "Unser DIY-Kit enthält alle notwendigen STL-Dateien zum 3D-Drucken des kompletten Fahrzeugs - vom Fahrgestell und Rädern bis hin zu Karosserieteilen und internen Komponenten. Das innovative modulare Design ermöglicht eine einfache Montage und Anpassung an Ihre Vorlieben. Im Herzen des Endeavour befindet sich ein Arduino Mega 2560 Board, das alle Bewegungssteuerungen und Hilfsfunktionen mit Präzision handhabt.",
+        "specs_title": "Wichtige technische Spezifikationen:",
+        "specs": "• Gesamtabmessungen: 45cm (L) x 25cm (B) x 20cm (H)\n• Gewicht: ~2,5kg vollständig montiert\n• Antriebssystem: 4 DC-Motoren mit Panzerketten\n• Steuerung: 2,4GHz RC-Sender/Empfänger\n• Stromversorgung: 2x 7,4V 2200mAh LiPo-Batterien\n• Druckzeit: ~60 Stunden insgesamt\n• Empfohlene Schichthöhe: 0,2mm\n• Füllung: 20-30%",
+        "conclusion": "Das Kit wird komplett mit detaillierten Schritt-für-Schritt-Montageanweisungen, umfassenden Verdrahtungsdiagrammen und gebrauchsfertigem Arduino-Code geliefert. Dieses Projekt ist ideal für Bastler mit mittlerer Erfahrung im 3D-Druck und grundlegenden Arduino-Programmierkenntnissen. Bitte beachten Sie, dass zusätzliche Hardware-Komponenten wie Motoren, Elektronik und Befestigungsmaterial separat gekauft werden müssen."
+      }
+    },
+    "raketa": {
+      "features": [
+        "Fortschrittliches Raketendesign",
+        "Druckbar in mehreren Teilen",
+        "Detaillierte Montageanweisungen",
+        "Kompatibel mit Standard-Raketenmotoren"
+      ],
+      "details": {
+        "title": "Raketa - Modellraketen-Kit",
+        "intro": "Die Raketa ist ein präzisionsgefertigtes Modellraketen-Projekt für Enthusiasten, die 3D-Druck mit Luft- und Raumfahrttechnik kombinieren möchten.",
+        "description": "Dieses umfassende Kit enthält alle notwendigen Komponenten zum Bau Ihrer eigenen Modellrakete von Grund auf. Das modulare Design gewährleistet eine einfache Montage bei Erhaltung der strukturellen Integrität.",
+        "specs_title": "Technische Spezifikationen:",
+        "specs": "• Höhe: 30cm\n• Durchmesser: 5cm\n• Gewicht: ~400g\n• Motorkompatibilität: Standard-Modellraketen-Motoren\n• Bergungssystem: Fallschirm\n• Druckzeit: ~15 Stunden insgesamt",
+        "conclusion": "Perfekt für Bildungszwecke und Hobby-Raketen-Enthusiasten. Alle Sicherheitsrichtlinien und Startverfahren sind in der Dokumentation enthalten."
+      }
+    }
+  },
+  "tabs": {
+    "details": "Details",
+    "features": "Eigenschaften",
+    "download": "Download",
+    "reviews": "Bewertungen"
+  },
+  "downloads": {
+    "build_guide": "Bauanleitung (PDF)",
+    "download_button": "Herunterladen",
+    "no_downloads": "Keine Downloads verfügbar."
+  },
+  "features": {
+    "unavailable": "Inhalt für Eigenschaften nicht verfügbar."
+  }
 }
