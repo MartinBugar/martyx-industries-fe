@@ -27,14 +27,9 @@ export class ProductService {
       headers: defaultHeaders as HeadersInit,
     });
 
-    // Debug logging in development
-    if (import.meta.env.MODE === 'development') {
-      console.log('🛒 ProductService.getProducts request:', {
-        url: url.toString(),
-        headers: Object.fromEntries(requestOptions.headers as Headers),
-        category,
-        language
-      });
+    // Debug logging when explicitly enabled
+    if (import.meta.env.VITE_DEBUG_API) {
+      console.log('ProductService.getProducts:', { url: url.toString(), category, language });
     }
 
     const response = await fetch(url.toString(), requestOptions);
@@ -60,14 +55,9 @@ export class ProductService {
       headers: defaultHeaders as HeadersInit,
     });
 
-    // Debug logging in development
-    if (import.meta.env.MODE === 'development') {
-      console.log('🛒 ProductService.getProduct request:', {
-        url: url.toString(),
-        headers: Object.fromEntries(requestOptions.headers as Headers),
-        productId: id,
-        language
-      });
+    // Debug logging when explicitly enabled
+    if (import.meta.env.VITE_DEBUG_API) {
+      console.log('ProductService.getProduct:', { url: url.toString(), productId: id, language });
     }
 
     const response = await fetch(url.toString(), requestOptions);

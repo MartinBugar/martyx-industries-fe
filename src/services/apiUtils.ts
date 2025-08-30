@@ -99,34 +99,17 @@ const computeApiBaseUrl = (): string => {
 
 export const API_BASE_URL = computeApiBaseUrl();
 
-// Helper function to add language headers to fetch init options
-export const withLangHeaders = (init?: RequestInit): RequestInit => {
-  const headers = new Headers(init?.headers);
-  
-  // Get current language and format it properly for Spring Boot Locale parsing
-  const currentLang = i18n.language || 'en';
-  
-  // Spring Boot expects standard language tags (ISO 639-1)
-  // Examples: "en", "sk", "de", "en-US", "sk-SK"
-  const formattedLang = formatLanguageForBackend(currentLang);
-  
-  headers.set('Accept-Language', formattedLang);
-  
-  // Debug log in development - always show for debugging
-  if (import.meta.env.MODE === 'development') {
-    console.log(`🌐 withLangHeaders: i18n.language="${i18n.language}", formatted="${formattedLang}"`);
-    console.log('🌐 Request headers:', Object.fromEntries(headers));
-  }
-  
-  return {
-    ...init,
-    headers,
-  };
+/**
+ * Get current language from i18n with fallback
+ */
+export const getCurrentLanguage = (): string => {
+  return i18n.language || 'en';
 };
 
-// Format language tag for Spring Boot Locale parsing
+/**
+ * Format language tag for Spring Boot Locale parsing
+ */
 const formatLanguageForBackend = (lang: string): string => {
-  // Ensure we send clean language codes that Spring Boot can parse
   switch (lang) {
     case 'en':
     case 'english':
@@ -140,9 +123,27 @@ const formatLanguageForBackend = (lang: string): string => {
     case 'deutsch':
       return 'de';
     default:
-      // For any other language, ensure it's lowercase and clean
       return lang.toLowerCase().split('-')[0];
   }
+};
+
+/**
+ * Add language headers to fetch init options
+ */
+export const withLangHeaders = (init?: RequestInit): RequestInit => {
+  const headers = new Headers(init?.headers);
+  const formattedLang = formatLanguageForBackend(getCurrentLanguage());
+  
+  headers.set('Accept-Language', formattedLang);
+  
+  if (import.meta.env.VITE_DEBUG_I18N) {
+    console.log(`🌐 withLangHeaders: language="${formattedLang}"`);
+  }
+  
+  return {
+    ...init,
+    headers,
+  };
 };
 
 // Default headers for API requests
@@ -150,8 +151,7 @@ export const defaultHeaders: ApiHeaders = {
   'Content-Type': 'application/json',
 };
 
-// Note: Accept-Language header is now handled dynamically by withLangHeaders()
-// This ensures fresh language detection on each request and proper formatting
+// Accept-Language header is handled dynamically by withLangHeaders()
 
 // Bootstrap Authorization header from stored token on module load to survive refreshes
 try {

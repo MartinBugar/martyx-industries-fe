@@ -44,7 +44,6 @@ const LocaleSelector: React.FC = () => {
   const handleLanguageChange = async (locale: string) => {
     try {
       await i18n.changeLanguage(locale);
-      console.log(`🌐 Language changed to: ${locale}`);
     } catch (err) {
       console.error('Failed to change language:', err);
       const errorMessage = translateApiError(err, t);

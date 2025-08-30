@@ -1,7 +1,7 @@
 import { productService } from './productService';
 import type { ProductDto } from '../types/api';
 import { hardcodedProductsData, type HardcodedProductData, type Product } from '../data/productData';
-import i18n from '../i18n';
+import { getCurrentLanguage } from './apiUtils';
 
 /**
  * Hybrid Product Service
@@ -57,16 +57,12 @@ export class HybridProductService {
   }
 
   /**
-   * Check if cache is still valid (considering time and language changes)
+   * Check if cache is still valid (time and language)
    */
   private isCacheValid(): boolean {
-    const currentLanguage = i18n.language || 'en';
+    const currentLanguage = getCurrentLanguage();
     const isTimeValid = Date.now() - this.lastCacheTime < this.CACHE_DURATION;
     const isLanguageValid = this.lastCacheLanguage === currentLanguage;
-    
-    if (!isLanguageValid) {
-      console.log(`🗄️ Cache invalidated due to language change: ${this.lastCacheLanguage} → ${currentLanguage}`);
-    }
     
     return isTimeValid && isLanguageValid;
   }
@@ -90,10 +86,8 @@ export class HybridProductService {
         return this.allProductsCache;
       }
 
-      // Get current language for backend call
-      const currentLanguage = i18n.language || 'en';
-      console.log(`🔄 HybridProductService: Fetching products with language: ${currentLanguage}, category: ${category || 'all'}`);
-
+      const currentLanguage = getCurrentLanguage();
+      
       // Fetch from backend with current language
       const backendProducts = await productService.getProducts(category, currentLanguage);
       
@@ -161,10 +155,8 @@ export class HybridProductService {
         return this.productCache.get(id)!;
       }
 
-      // Get current language for backend call
-      const currentLanguage = i18n.language || 'en';
-      console.log(`🔄 HybridProductService: Fetching product ${id} with language: ${currentLanguage}`);
-
+      const currentLanguage = getCurrentLanguage();
+      
       // Fetch from backend with current language
       const backendProduct = await productService.getProduct(id, currentLanguage);
       

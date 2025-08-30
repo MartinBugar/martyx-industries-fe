@@ -28,13 +28,11 @@ const LocalizedProductCard: React.FC<LocalizedProductCardProps> = ({
         setLoading(true);
         setError(null);
 
-        console.log(`🌐 Loading product ${productId} in language: ${i18n.language}`);
-
         // The productService automatically sends Accept-Language headers
         const productData = await productService.getProduct(productId);
         setProduct(productData);
 
-        console.log('✅ Loaded localized product:', productData);
+
       } catch (err) {
         console.error('❌ Failed to load product:', err);
         

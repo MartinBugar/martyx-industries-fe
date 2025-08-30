@@ -26,10 +26,8 @@ const Products: React.FC = () => {
             try {
                 setLoading(true);
                 setError(null);
-                console.log(`📦 Products: Loading products with language: ${i18n.language}`);
                 const productsList = await hybridProductService.getProducts();
                 setProducts(productsList);
-                console.log(`📦 Products: Loaded ${productsList.length} products`);
             } catch (err) {
                 console.error('Failed to load products:', err);
                 setError('Failed to load products. Please try again later.');

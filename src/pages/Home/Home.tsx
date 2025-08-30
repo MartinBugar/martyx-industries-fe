@@ -21,10 +21,8 @@ const Home: React.FC = () => {
   useEffect(() => {
     const loadProducts = async () => {
       try {
-        console.log(`🏠 Home: Loading products with language: ${i18n.language}`);
         const productsList = await hybridProductService.getProducts();
         setProducts(productsList);
-        console.log(`🏠 Home: Loaded ${productsList.length} products`);
       } catch (error) {
         console.error('Failed to load products for home page:', error);
         // Continue with empty array - don't show error on home page
