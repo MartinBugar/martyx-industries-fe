@@ -1,5 +1,6 @@
 import React from 'react';
 import {useParams} from 'react-router-dom';
+import {useTranslation} from 'react-i18next';
 import {type Product, type ProductTab, type ProductTabId} from '../../data/productData';
 import {hybridProductService} from '../../services/hybridProductService';
 import ProductView from '../../components/ProductView/ProductView';
@@ -14,6 +15,7 @@ interface ProductDetailsProps {
 
 const ProductDetails: React.FC<ProductDetailsProps> = ({product}) => {
     const {addToCart} = useCart();
+    const {t} = useTranslation('products');
 
     const [popup, setPopup] = React.useState<{ visible: boolean; message: string; variant: 'success' | 'warning' }>({
         visible: false,
@@ -33,7 +35,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({product}) => {
     const handleAddToCart = () => {
         const status = addToCart(product);
         const isLimit = status === 'limit';
-        const message = isLimit ? 'Only 1 piece of this product is allowed in cart' : 'Product was added to cart';
+        const message = isLimit ? t('cart.add_limit') : t('cart.add_success');
         const variant = isLimit ? 'warning' : 'success';
 
         setPopup({visible: true, message, variant});
@@ -68,7 +70,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({product}) => {
                 disabled={popup.visible}
                 aria-live="polite"
             >
-                {popup.visible ? popup.message : 'Add to Cart'}
+                {popup.visible ? popup.message : t('cart.add_to_cart')}
             </button>
         </div>
     );

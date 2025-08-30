@@ -239,7 +239,7 @@ const Products: React.FC = () => {
                               <path
                                   d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57L20.6 7H6"></path>
                             </svg>
-                            Add to Cart
+                            {t('cart.add_to_cart')}
                           </span>
                                                 )}
                                             </button>

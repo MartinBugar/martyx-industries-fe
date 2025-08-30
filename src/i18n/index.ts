@@ -4,6 +4,10 @@ import Backend from 'i18next-http-backend';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import ICU from 'i18next-icu';
 
+// Export types for better TypeScript support
+export type SupportedLanguage = 'en' | 'sk' | 'de';
+export type Namespace = 'common' | 'nav' | 'checkout' | 'home' | 'products' | 'auth' | 'about';
+
 i18n
   // Load translations using http backend
   .use(Backend)
@@ -33,9 +37,7 @@ i18n
       // Cache user language preference
       caches: ['localStorage'],
       // Local storage key
-      lookupLocalStorage: 'i18nextLng',
-      // Fallback to 'en' if no detection method works
-      checkWhitelist: true
+      lookupLocalStorage: 'i18nextLng'
     },
     
     // Backend options for loading translation files
@@ -171,9 +173,5 @@ if (import.meta.env.MODE === 'development' && typeof window !== 'undefined') {
   
   console.info('🌐 i18n Debug tools available via window.__i18nDebug');
 }
-
-// Export types for better TypeScript support
-export type SupportedLanguage = 'en' | 'sk' | 'de';
-export type Namespace = 'common' | 'nav' | 'checkout';
 
 export default i18n;

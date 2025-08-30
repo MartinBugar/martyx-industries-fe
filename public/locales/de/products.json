@@ -11,6 +11,7 @@
     "price": "Preis niedrig-hoch"
   },
   "cart": {
+    "add_to_cart": "In den Warenkorb",
     "add_success": "Produkt wurde zum Warenkorb hinzugefügt",
     "add_limit": "Nur 1 Stück dieses Produkts ist im Warenkorb erlaubt"
   },

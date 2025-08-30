@@ -11,6 +11,7 @@
     "price": "Cena nízka-vysoká"
   },
   "cart": {
+    "add_to_cart": "Pridať do košíka",
     "add_success": "Produkt bol pridaný do košíka",
     "add_limit": "Len 1 kus tohto produktu je povolený v košíku"
   },
