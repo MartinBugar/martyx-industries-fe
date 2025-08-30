@@ -3,6 +3,7 @@ import type { ProductDto } from '../types/api';
 import { hardcodedProductsData, type HardcodedProductData, type Product } from '../data/productData';
 import { getCurrentLanguage } from './apiUtils';
 import { getLocalizedHardcodedProductDataForService } from '../utils/productTranslationUtils';
+import i18n from '../i18n';
 
 /**
  * Hybrid Product Service
@@ -15,6 +16,14 @@ export class HybridProductService {
   private lastCacheTime = 0;
   private lastCacheLanguage = '';
   private readonly CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+  constructor() {
+    // Listen for language changes and clear cache
+    i18n.on('languageChanged', () => {
+      console.log('🌐 Language changed, clearing product cache');
+      this.clearCache();
+    });
+  }
 
   /**
    * Get hardcoded data for a product by its ID with localization

@@ -120,6 +120,7 @@ const buildTabs = (p: Product): ProductTab[] => {
 
 const ProductDetail: React.FC = () => {
     const {id} = useParams<{ id: string }>();
+    const { i18n } = useTranslation('products');
     const [product, setProduct] = React.useState<Product | null>(null);
     const [loading, setLoading] = React.useState(true);
     const [error, setError] = React.useState<string | null>(null);
@@ -161,7 +162,7 @@ const ProductDetail: React.FC = () => {
         };
 
         loadProduct();
-    }, [id]);
+    }, [id, i18n.language]); // Re-load product when language changes
 
     React.useEffect(() => {
         setActive(tabs[0]?.id ?? 'Details');

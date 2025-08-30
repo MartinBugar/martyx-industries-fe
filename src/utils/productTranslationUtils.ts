@@ -124,8 +124,13 @@ export const getLocalizedTabs = (productId: string, t: TFunction): ProductTab[] 
  * This function can be used in services without requiring a component context
  */
 export const getLocalizedHardcodedProductDataForService = (productId: string): Partial<HardcodedProductData> => {
-  // Get translation function for products namespace
-  const t = i18n.getFixedT(i18n.language, 'products');
+  // Get current language and translation function for products namespace
+  const currentLanguage = i18n.language || 'en';
+  const t = i18n.getFixedT(currentLanguage, 'products');
+  
+  if (import.meta.env.MODE === 'development') {
+    console.log(`🌐 Getting localized product data for ${productId} in language: ${currentLanguage}`);
+  }
   
   const features = getLocalizedFeatures(productId, t);
   const tabs = getLocalizedTabs(productId, t);
