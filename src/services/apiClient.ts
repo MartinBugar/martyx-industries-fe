@@ -9,7 +9,7 @@
  * - Caching capabilities
  */
 
-import { API_BASE_URL, defaultHeaders, handleResponse } from './apiUtils';
+import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
 
 interface RequestConfig {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
@@ -64,11 +64,11 @@ class ApiClient {
       return this.pendingRequests.get(requestKey)!;
     }
 
-    const requestPromise = this.executeRequest<T>(url, {
+    const requestPromise = this.executeRequest<T>(url, withLangHeaders({
       method,
       headers: { ...defaultHeaders, ...headers } as HeadersInit,
       body: body ? JSON.stringify(body) : undefined
-    }, retry, retryAttempts, retryDelay);
+    }), retry, retryAttempts, retryDelay);
 
     // Store pending request
     this.pendingRequests.set(requestKey, requestPromise);

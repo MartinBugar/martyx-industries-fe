@@ -22,10 +22,22 @@ export class ProductService {
       url.searchParams.set('lang', language);
     }
 
-    const response = await fetch(url.toString(), withLangHeaders({
+    const requestOptions = withLangHeaders({
       method: 'GET',
       headers: defaultHeaders as HeadersInit,
-    }));
+    });
+
+    // Debug logging in development
+    if (import.meta.env.MODE === 'development') {
+      console.log('🛒 ProductService.getProducts request:', {
+        url: url.toString(),
+        headers: Object.fromEntries(requestOptions.headers as Headers),
+        category,
+        language
+      });
+    }
+
+    const response = await fetch(url.toString(), requestOptions);
 
     return handleResponse(response);
   }
@@ -43,10 +55,22 @@ export class ProductService {
       url.searchParams.set('lang', language);
     }
 
-    const response = await fetch(url.toString(), withLangHeaders({
+    const requestOptions = withLangHeaders({
       method: 'GET',
       headers: defaultHeaders as HeadersInit,
-    }));
+    });
+
+    // Debug logging in development
+    if (import.meta.env.MODE === 'development') {
+      console.log('🛒 ProductService.getProduct request:', {
+        url: url.toString(),
+        headers: Object.fromEntries(requestOptions.headers as Headers),
+        productId: id,
+        language
+      });
+    }
+
+    const response = await fetch(url.toString(), requestOptions);
 
     return handleResponse(response);
   }

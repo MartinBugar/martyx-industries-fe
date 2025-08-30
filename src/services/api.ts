@@ -1,5 +1,5 @@
 // Import common API utilities
-import { API_BASE_URL, defaultHeaders, handleResponse } from './apiUtils';
+import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
 import type {
   AuthResponse,
   ResetPasswordResponse
@@ -10,11 +10,11 @@ export const authApi = {
   // Login endpoint
   login: async (email: string, password: string): Promise<AuthResponse> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, withLangHeaders({
         method: 'POST',
         headers: defaultHeaders as HeadersInit,
         body: JSON.stringify({ email, password }),
-      });
+      }));
       
       return await handleResponse(response) as AuthResponse;
     } catch (error) {
@@ -26,13 +26,13 @@ export const authApi = {
   // Logout endpoint (if needed)
   logout: async (token: string) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/logout`, {
+      const response = await fetch(`${API_BASE_URL}/auth/logout`, withLangHeaders({
         method: 'POST',
         headers: {
           ...defaultHeaders,
           'Authorization': `Bearer ${token}`,
         } as HeadersInit,
-      });
+      }));
       
       return handleResponse(response);
     } catch (error) {
@@ -44,11 +44,11 @@ export const authApi = {
   // Request password reset (forgot password)
   forgotPassword: async (email: string): Promise<ResetPasswordResponse> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/forgot-password`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/forgot-password`, withLangHeaders({
         method: 'POST',
         headers: defaultHeaders as HeadersInit,
         body: JSON.stringify({ email }),
-      });
+      }));
       
       return await handleResponse(response) as ResetPasswordResponse;
     } catch (error) {
@@ -60,11 +60,11 @@ export const authApi = {
   // Reset password with token
   resetPassword: async (token: string, password: string): Promise<ResetPasswordResponse> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/reset-password`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/reset-password`, withLangHeaders({
         method: 'POST',
         headers: defaultHeaders as HeadersInit,
         body: JSON.stringify({ token, password }),
-      });
+      }));
       
       return await handleResponse(response) as ResetPasswordResponse;
     } catch (error) {

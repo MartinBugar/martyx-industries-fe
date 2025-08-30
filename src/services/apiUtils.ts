@@ -103,9 +103,19 @@ export const API_BASE_URL = computeApiBaseUrl();
 export const withLangHeaders = (init?: RequestInit): RequestInit => {
   const headers = new Headers(init?.headers);
   
-  // Set Accept-Language header from current i18n language
-  if (i18n.language) {
-    headers.set('Accept-Language', i18n.language);
+  // Get current language and format it properly for Spring Boot Locale parsing
+  const currentLang = i18n.language || 'en';
+  
+  // Spring Boot expects standard language tags (ISO 639-1)
+  // Examples: "en", "sk", "de", "en-US", "sk-SK"
+  const formattedLang = formatLanguageForBackend(currentLang);
+  
+  headers.set('Accept-Language', formattedLang);
+  
+  // Debug log in development - always show for debugging
+  if (import.meta.env.MODE === 'development') {
+    console.log(`🌐 withLangHeaders: i18n.language="${i18n.language}", formatted="${formattedLang}"`);
+    console.log('🌐 Request headers:', Object.fromEntries(headers));
   }
   
   return {
@@ -114,22 +124,34 @@ export const withLangHeaders = (init?: RequestInit): RequestInit => {
   };
 };
 
+// Format language tag for Spring Boot Locale parsing
+const formatLanguageForBackend = (lang: string): string => {
+  // Ensure we send clean language codes that Spring Boot can parse
+  switch (lang) {
+    case 'en':
+    case 'english':
+      return 'en';
+    case 'sk':
+    case 'slovak':
+    case 'slovensky':
+      return 'sk';
+    case 'de':
+    case 'german':
+    case 'deutsch':
+      return 'de';
+    default:
+      // For any other language, ensure it's lowercase and clean
+      return lang.toLowerCase().split('-')[0];
+  }
+};
+
 // Default headers for API requests
 export const defaultHeaders: ApiHeaders = {
   'Content-Type': 'application/json',
 };
 
-// Update Accept-Language header when language changes
-if (typeof window !== 'undefined') {
-  i18n.on('languageChanged', (lng) => {
-    defaultHeaders['Accept-Language'] = lng;
-  });
-  
-  // Set initial Accept-Language if i18n is already initialized
-  if (i18n.language) {
-    defaultHeaders['Accept-Language'] = i18n.language;
-  }
-}
+// Note: Accept-Language header is now handled dynamically by withLangHeaders()
+// This ensures fresh language detection on each request and proper formatting
 
 // Bootstrap Authorization header from stored token on module load to survive refreshes
 try {

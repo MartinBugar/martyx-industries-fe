@@ -1,4 +1,4 @@
-import { API_BASE_URL, defaultHeaders, handleResponse } from './apiUtils';
+import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
 import { removeAuthToken } from './api';
 import type { Order } from '../context/authTypes';
 
@@ -118,10 +118,10 @@ export const mapOrderDTOToOrder = (dto: OrderDTO): Order => {
 export const ordersService = {
   // Fetch current user's orders from backend
   fetchMyOrders: async (): Promise<Order[]> => {
-    const response = await fetch(`${API_BASE_URL}/api/orders/me`, {
+    const response = await fetch(`${API_BASE_URL}/api/orders/me`, withLangHeaders({
       method: 'GET',
       headers: defaultHeaders as HeadersInit,
-    });
+    }));
     const data = await handleResponse(response) as OrderDTO[];
     // Map DTOs to frontend Order shape
     return Array.isArray(data) ? data.map(mapOrderDTOToOrder) : [];
@@ -138,10 +138,10 @@ export const ordersService = {
       });
       delete headers['Content-Type'];
 
-      const response = await fetch(url, {
+      const response = await fetch(url, withLangHeaders({
         method: 'GET',
         headers: headers as HeadersInit,
-      });
+      }));
 
       if (!response.ok) {
         // Attempt to read error message as text
@@ -285,11 +285,11 @@ export const ordersService = {
     Object.entries(defaultHeaders).forEach(([key, value]) => {
       if (value !== undefined) headers[key] = value as string;
     });
-    const response = await fetch(url, {
+    const response = await fetch(url, withLangHeaders({
       method: 'POST',
       headers: headers as HeadersInit,
       body: JSON.stringify(email ? { email } : {}),
-    });
+    }));
     await handleResponse(response);
   },
 };

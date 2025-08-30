@@ -1,4 +1,4 @@
-import { API_BASE_URL, defaultHeaders, handleResponse } from './apiUtils';
+import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
 
 export interface ReviewUser {
   id?: string | number;
@@ -52,10 +52,10 @@ const toReviewDisplay = (r: Review) => {
 
 export const reviewsService = {
   async getReviews(productId: string | number): Promise<Array<Review & { displayName: string; createdAt: string }>> {
-    const resp = await fetch(`${API_BASE_URL}/api/products/${productId}/reviews`, {
+    const resp = await fetch(`${API_BASE_URL}/api/products/${productId}/reviews`, withLangHeaders({
       method: 'GET',
       headers: defaultHeaders as HeadersInit,
-    });
+    }));
     const data = await handleResponse(resp) as Review[];
     return Array.isArray(data) ? data.map(toReviewDisplay) : [];
   },
@@ -63,20 +63,20 @@ export const reviewsService = {
   async addReview(productId: string | number, payload: ReviewCreateRequest): Promise<Review & { displayName: string; createdAt: string }> {
     // be generous with keys to match backend
     const body = { ...payload, comment: payload.comment ?? payload.text };
-    const resp = await fetch(`${API_BASE_URL}/api/products/${productId}/reviews`, {
+    const resp = await fetch(`${API_BASE_URL}/api/products/${productId}/reviews`, withLangHeaders({
       method: 'POST',
       headers: defaultHeaders as HeadersInit,
       body: JSON.stringify(body),
-    });
+    }));
     const data = await handleResponse(resp) as Review;
     return toReviewDisplay(data);
   },
 
   async deleteReview(productId: string | number, reviewId: string | number): Promise<void> {
-    const resp = await fetch(`${API_BASE_URL}/api/products/${productId}/reviews/${reviewId}`, {
+    const resp = await fetch(`${API_BASE_URL}/api/products/${productId}/reviews/${reviewId}`, withLangHeaders({
       method: 'DELETE',
       headers: defaultHeaders as HeadersInit,
-    });
+    }));
     // Handle 204 No Content explicitly to avoid JSON parsing errors
     if (resp.status === 204) {
       return;

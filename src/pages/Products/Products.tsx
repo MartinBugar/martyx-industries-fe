@@ -1,5 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Link, useSearchParams} from 'react-router-dom';
+import {useTranslation} from 'react-i18next';
 import {type Product} from '../../data/productData';
 import {hybridProductService} from '../../services/hybridProductService';
 import {useCart} from '../../context/useCart';
@@ -7,6 +8,7 @@ import './Products.css';
 
 const Products: React.FC = () => {
     const {addToCart} = useCart();
+    const {t, i18n} = useTranslation('common');
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -24,8 +26,10 @@ const Products: React.FC = () => {
             try {
                 setLoading(true);
                 setError(null);
+                console.log(`📦 Products: Loading products with language: ${i18n.language}`);
                 const productsList = await hybridProductService.getProducts();
                 setProducts(productsList);
+                console.log(`📦 Products: Loaded ${productsList.length} products`);
             } catch (err) {
                 console.error('Failed to load products:', err);
                 setError('Failed to load products. Please try again later.');
@@ -35,7 +39,7 @@ const Products: React.FC = () => {
         };
 
         loadProducts();
-    }, []);
+    }, [i18n.language]); // Reload products when language changes
 
     // Update search term when URL search param changes
     useEffect(() => {

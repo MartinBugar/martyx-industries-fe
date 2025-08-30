@@ -1,4 +1,4 @@
-import { API_BASE_URL, defaultHeaders, handleResponse } from './apiUtils';
+import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
 import type { SupportedLocales } from '../types/api';
 
 /**
@@ -10,10 +10,10 @@ export class MetaService {
    * @returns Promise<string[]> - Array of supported locale codes
    */
   async getSupportedLocales(): Promise<SupportedLocales> {
-    const response = await fetch(`${API_BASE_URL}/api/meta/locales`, {
+    const response = await fetch(`${API_BASE_URL}/api/meta/locales`, withLangHeaders({
       method: 'GET',
       headers: defaultHeaders as HeadersInit,
-    });
+    }));
 
     return handleResponse(response);
   }

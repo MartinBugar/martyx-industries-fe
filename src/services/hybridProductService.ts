@@ -1,6 +1,7 @@
 import { productService } from './productService';
 import type { ProductDto } from '../types/api';
 import { hardcodedProductsData, type HardcodedProductData, type Product } from '../data/productData';
+import i18n from '../i18n';
 
 /**
  * Hybrid Product Service
@@ -11,6 +12,7 @@ export class HybridProductService {
   private productCache = new Map<number, Product>();
   private allProductsCache: Product[] | null = null;
   private lastCacheTime = 0;
+  private lastCacheLanguage = '';
   private readonly CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
   /**
@@ -55,10 +57,18 @@ export class HybridProductService {
   }
 
   /**
-   * Check if cache is still valid
+   * Check if cache is still valid (considering time and language changes)
    */
   private isCacheValid(): boolean {
-    return Date.now() - this.lastCacheTime < this.CACHE_DURATION;
+    const currentLanguage = i18n.language || 'en';
+    const isTimeValid = Date.now() - this.lastCacheTime < this.CACHE_DURATION;
+    const isLanguageValid = this.lastCacheLanguage === currentLanguage;
+    
+    if (!isLanguageValid) {
+      console.log(`🗄️ Cache invalidated due to language change: ${this.lastCacheLanguage} → ${currentLanguage}`);
+    }
+    
+    return isTimeValid && isLanguageValid;
   }
 
   /**
@@ -80,8 +90,12 @@ export class HybridProductService {
         return this.allProductsCache;
       }
 
-      // Fetch from backend
-      const backendProducts = await productService.getProducts(category);
+      // Get current language for backend call
+      const currentLanguage = i18n.language || 'en';
+      console.log(`🔄 HybridProductService: Fetching products with language: ${currentLanguage}, category: ${category || 'all'}`);
+
+      // Fetch from backend with current language
+      const backendProducts = await productService.getProducts(category, currentLanguage);
       
       // Filter only active products and merge with hardcoded data
       const hybridProducts = backendProducts
@@ -100,6 +114,7 @@ export class HybridProductService {
       if (!category) {
         this.allProductsCache = hybridProducts;
         this.lastCacheTime = Date.now();
+        this.lastCacheLanguage = currentLanguage;
       }
 
       return hybridProducts;
@@ -146,8 +161,12 @@ export class HybridProductService {
         return this.productCache.get(id)!;
       }
 
-      // Fetch from backend
-      const backendProduct = await productService.getProduct(id);
+      // Get current language for backend call
+      const currentLanguage = i18n.language || 'en';
+      console.log(`🔄 HybridProductService: Fetching product ${id} with language: ${currentLanguage}`);
+
+      // Fetch from backend with current language
+      const backendProduct = await productService.getProduct(id, currentLanguage);
       
       // Check if product is active - throw a special error type
       if (!backendProduct.active) {

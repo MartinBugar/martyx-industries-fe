@@ -1,4 +1,4 @@
-import { API_BASE_URL, defaultHeaders, handleResponse } from './apiUtils';
+import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
 import { authApi } from './api';
 
 export const adminService = {
@@ -25,10 +25,10 @@ export const adminService = {
         }
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/admin/check`, {
+      const response = await fetch(`${API_BASE_URL}/api/admin/check`, withLangHeaders({
         method: 'GET',
         headers: defaultHeaders as HeadersInit,
-      });
+      }));
 
       if (response.ok) {
         // Backend now returns a boolean body: true if admin, false otherwise

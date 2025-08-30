@@ -1,4 +1,4 @@
-import { API_BASE_URL, defaultHeaders, handleResponse } from './apiUtils';
+import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
 
 export interface PaymentOrderItemDTO {
   product: { id: string; name: string };
@@ -79,11 +79,11 @@ export const paymentService = {
     // Extend payload with redirect URLs (backend can choose to use these)
     const payload: PaymentOrderDTO & { successUrl: string; cancelUrl: string } = { ...order, successUrl, cancelUrl };
 
-    const response = await fetch(`${API_BASE_URL}/api/payments/paypal/create`, {
+    const response = await fetch(`${API_BASE_URL}/api/payments/paypal/create`, withLangHeaders({
       method: 'POST',
       headers: defaultHeaders as HeadersInit,
       body: JSON.stringify(payload),
-    });
+    }));
     return (await handleResponse(response)) as PaymentDTO;
   },
 
@@ -92,10 +92,10 @@ export const paymentService = {
     url.searchParams.set('paymentId', paymentId);
     url.searchParams.set('PayerEmail', payerEmail);
 
-    const response = await fetch(url.toString(), {
+    const response = await fetch(url.toString(), withLangHeaders({
       method: 'GET',
       headers: defaultHeaders as HeadersInit,
-    });
+    }));
     return (await handleResponse(response)) as PaymentDTO;
   },
 
@@ -111,10 +111,10 @@ export const paymentService = {
   },
 
   getPaymentDetails: async (paymentId: string): Promise<PaymentDTO> => {
-    const response = await fetch(`${API_BASE_URL}/api/payments/${paymentId}`, {
+    const response = await fetch(`${API_BASE_URL}/api/payments/${paymentId}`, withLangHeaders({
       method: 'GET',
       headers: defaultHeaders as HeadersInit,
-    });
+    }));
     return (await handleResponse(response)) as PaymentDTO;
   },
 };

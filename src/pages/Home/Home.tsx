@@ -6,7 +6,7 @@ import { hybridProductService } from '../../services/hybridProductService';
 import './Home.css';
 
 const Home: React.FC = () => {
-  const { t } = useTranslation('common');
+  const { t, i18n } = useTranslation('common');
   const [products, setProducts] = useState<Product[]>([]);
   const featured = useMemo(() => products.slice(0, 6), [products]);
 
@@ -21,8 +21,10 @@ const Home: React.FC = () => {
   useEffect(() => {
     const loadProducts = async () => {
       try {
+        console.log(`🏠 Home: Loading products with language: ${i18n.language}`);
         const productsList = await hybridProductService.getProducts();
         setProducts(productsList);
+        console.log(`🏠 Home: Loaded ${productsList.length} products`);
       } catch (error) {
         console.error('Failed to load products for home page:', error);
         // Continue with empty array - don't show error on home page
@@ -30,7 +32,7 @@ const Home: React.FC = () => {
     };
 
     loadProducts();
-  }, []);
+  }, [i18n.language]); // Reload products when language changes
 
   // Preload hero image for better LCP when available
   useEffect(() => {

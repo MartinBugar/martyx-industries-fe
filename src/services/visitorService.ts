@@ -1,4 +1,4 @@
-import { API_BASE_URL, defaultHeaders, handleResponse } from './apiUtils';
+import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
 
 export interface VisitorCountResponse {
   totalCount: number;
@@ -35,10 +35,10 @@ export const visitorService = {
   // Track a visit via admin-protected endpoint. Swallow auth errors to avoid affecting user session.
   async trackVisit(): Promise<VisitorCountResponse | null> {
     try {
-      const resp = await fetch(`${API_BASE_URL}/api/admin/visits/track`, {
+      const resp = await fetch(`${API_BASE_URL}/api/admin/visits/track`, withLangHeaders({
         method: 'POST',
         headers: defaultHeaders as HeadersInit,
-      });
+      }));
       if (!resp.ok) {
         // Do not use global handleResponse here to avoid clearing tokens on 401 from this endpoint
         return null;
@@ -54,10 +54,10 @@ export const visitorService = {
 
   // Admin endpoint: returns current total count
   async getVisitorCount(): Promise<VisitorCountResponse> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/visitors/count`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/visitors/count`, withLangHeaders({
       method: 'GET',
       headers: defaultHeaders as HeadersInit,
-    });
+    }));
     return await handleResponse(resp) as VisitorCountResponse;
   },
 
@@ -122,20 +122,20 @@ export const visitorService = {
 
   // Admin endpoint: returns all Visit records
   async getAllVisits(): Promise<Visit[]> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/visits`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/visits`, withLangHeaders({
       method: 'GET',
       headers: defaultHeaders as HeadersInit,
-    });
+    }));
     const data = await handleResponse(resp);
     return Array.isArray(data) ? (data as Visit[]) : [];
   },
 
   // Legacy: Admin endpoint returning generic visitors (kept for compatibility if used elsewhere)
   async getAllVisitors(): Promise<Visitor[]> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/visitors`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/visitors`, withLangHeaders({
       method: 'GET',
       headers: defaultHeaders as HeadersInit,
-    });
+    }));
     const data = await handleResponse(resp);
     return Array.isArray(data) ? (data as Visitor[]) : [];
   }
