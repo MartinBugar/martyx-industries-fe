@@ -93,6 +93,7 @@ export class HybridProductService {
     this.productCache.clear();
     this.allProductsCache = null;
     this.lastCacheTime = 0;
+    this.lastCacheLanguage = '';
   }
 
   /**
@@ -173,12 +174,19 @@ export class HybridProductService {
    */
   async getProductById(id: number): Promise<Product> {
     try {
+      const currentLanguage = getCurrentLanguage();
+      
       // Check cache first
       if (this.productCache.has(id) && this.isCacheValid()) {
+        if (import.meta.env.MODE === 'development') {
+          console.log(`📦 Using cached product ${id} for language: ${currentLanguage}`);
+        }
         return this.productCache.get(id)!;
       }
 
-      const currentLanguage = getCurrentLanguage();
+      if (import.meta.env.MODE === 'development') {
+        console.log(`🔄 Fetching product ${id} from backend for language: ${currentLanguage}`);
+      }
       
       // Fetch from backend with current language
       const backendProduct = await productService.getProduct(id, currentLanguage);
@@ -193,8 +201,10 @@ export class HybridProductService {
       const hardcodedData = this.getHardcodedDataById(backendProduct.id.toString());
       const mergedProduct = this.mergeProductData(backendProduct, hardcodedData);
 
-      // Cache the result
+      // Cache the result with language info
       this.productCache.set(id, mergedProduct);
+      this.lastCacheTime = Date.now();
+      this.lastCacheLanguage = currentLanguage;
 
       return mergedProduct;
     } catch (error) {
