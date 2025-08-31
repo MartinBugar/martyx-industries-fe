@@ -12,6 +12,12 @@ interface CheckoutFormData {
   cardNumber: string;
   cardExpiry: string;
   cardCvc: string;
+  // Billing Address fields
+  billingStreet: string;
+  billingCity: string;
+  billingState: string;
+  billingPostalCode: string;
+  billingCountry: string;
 }
 
 const Checkout: React.FC = () => {
@@ -26,7 +32,13 @@ const Checkout: React.FC = () => {
     email: user?.email || '',
     cardNumber: '',
     cardExpiry: '',
-    cardCvc: ''
+    cardCvc: '',
+    // Initialize billing address fields
+    billingStreet: '',
+    billingCity: '',
+    billingState: '',
+    billingPostalCode: '',
+    billingCountry: ''
   });
 
   // Compute cartHash that changes when cart total or items change
@@ -316,6 +328,86 @@ const Checkout: React.FC = () => {
                 />
               </div>
             </div>
+
+            {/* Billing Address Section */}
+            <div className="form-section">
+              <h3 className="section-title">Billing Address</h3>
+              <p className="section-subtitle">This information will be used for your invoice</p>
+              
+              <div className="form-field">
+                <label htmlFor="billingStreet">Street Address</label>
+                <input
+                  type="text"
+                  id="billingStreet"
+                  name="billingStreet"
+                  autoComplete="street-address"
+                  value={formData.billingStreet}
+                  onChange={handleInputChange}
+                  required
+                  placeholder="Enter your street address"
+                />
+              </div>
+              
+              <div className="form-row">
+                <div className="form-field">
+                  <label htmlFor="billingCity">City</label>
+                  <input
+                    type="text"
+                    id="billingCity"
+                    name="billingCity"
+                    autoComplete="address-level2"
+                    value={formData.billingCity}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="Enter your city"
+                  />
+                </div>
+                
+                <div className="form-field">
+                  <label htmlFor="billingState">State/Province</label>
+                  <input
+                    type="text"
+                    id="billingState"
+                    name="billingState"
+                    autoComplete="address-level1"
+                    value={formData.billingState}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="Enter your state"
+                  />
+                </div>
+              </div>
+              
+              <div className="form-row">
+                <div className="form-field">
+                  <label htmlFor="billingPostalCode">Postal Code</label>
+                  <input
+                    type="text"
+                    id="billingPostalCode"
+                    name="billingPostalCode"
+                    autoComplete="postal-code"
+                    value={formData.billingPostalCode}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="Enter postal code"
+                  />
+                </div>
+                
+                <div className="form-field">
+                  <label htmlFor="billingCountry">Country</label>
+                  <input
+                    type="text"
+                    id="billingCountry"
+                    name="billingCountry"
+                    autoComplete="country-name"
+                    value={formData.billingCountry}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="Enter your country"
+                  />
+                </div>
+              </div>
+            </div>
             
             {/* Payment Section */}
             <div className="payment-section">
@@ -335,6 +427,13 @@ const Checkout: React.FC = () => {
                     currency={derivedCurrency}
                     email={formData.email}
                     cartHash={cartHash}
+                    billingAddress={{
+                      street: formData.billingStreet,
+                      city: formData.billingCity,
+                      state: formData.billingState,
+                      postalCode: formData.billingPostalCode,
+                      country: formData.billingCountry
+                    }}
                     onSuccess={handlePayPalSuccess}
                     onError={handlePayPalError}
                   />

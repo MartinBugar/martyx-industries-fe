@@ -22,6 +22,20 @@
     "express_shipping": "Express Shipping",
     "overnight_shipping": "Overnight Shipping"
   },
+  "billing": {
+    "title": "Billing Address",
+    "subtitle": "This information will be used for your invoice",
+    "street": "Street Address",
+    "city": "City",
+    "state": "State/Province",
+    "postal_code": "Postal Code",
+    "country": "Country",
+    "street_placeholder": "Enter your street address",
+    "city_placeholder": "Enter your city",
+    "state_placeholder": "Enter your state",
+    "postal_code_placeholder": "Enter postal code",
+    "country_placeholder": "Enter your country"
+  },
   "payment": {
     "title": "Payment Information",
     "method": "Payment Method",

@@ -22,6 +22,20 @@
     "express_shipping": "Expresné doručenie",
     "overnight_shipping": "Doručenie do druhého dňa"
   },
+  "billing": {
+    "title": "Fakturačná adresa",
+    "subtitle": "Tieto informácie budú použité pre vašu faktúru",
+    "street": "Adresa",
+    "city": "Mesto",
+    "state": "Kraj/Štát",
+    "postal_code": "PSČ",
+    "country": "Krajina",
+    "street_placeholder": "Zadajte vašu adresu",
+    "city_placeholder": "Zadajte vaše mesto",
+    "state_placeholder": "Zadajte váš kraj",
+    "postal_code_placeholder": "Zadajte PSČ",
+    "country_placeholder": "Zadajte vašu krajinu"
+  },
   "payment": {
     "title": "Platobné informácie",
     "method": "Spôsob platby",

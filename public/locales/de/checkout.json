@@ -22,6 +22,20 @@
     "express_shipping": "Expressversand",
     "overnight_shipping": "Über-Nacht-Versand"
   },
+  "billing": {
+    "title": "Rechnungsadresse",
+    "subtitle": "Diese Informationen werden für Ihre Rechnung verwendet",
+    "street": "Straße und Hausnummer",
+    "city": "Stadt",
+    "state": "Bundesland",
+    "postal_code": "Postleitzahl",
+    "country": "Land",
+    "street_placeholder": "Geben Sie Ihre Adresse ein",
+    "city_placeholder": "Geben Sie Ihre Stadt ein",
+    "state_placeholder": "Geben Sie Ihr Bundesland ein",
+    "postal_code_placeholder": "Geben Sie Ihre PLZ ein",
+    "country_placeholder": "Geben Sie Ihr Land ein"
+  },
   "payment": {
     "title": "Zahlungsinformationen",
     "method": "Zahlungsmethode",
