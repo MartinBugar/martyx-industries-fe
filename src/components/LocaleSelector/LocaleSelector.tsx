@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { metaService } from '../../services/metaService';
 import { translateApiError } from '../../utils/translateApiError';
+import { changeLanguageWithPersistence } from '../../utils/languageUtils';
 import type { SupportedLocales } from '../../types/api';
+import type { SupportedLanguage } from '../../i18n';
 
 /**
  * Component that loads supported locales from backend and displays them
@@ -43,7 +45,7 @@ const LocaleSelector: React.FC = () => {
 
   const handleLanguageChange = async (locale: string) => {
     try {
-      await i18n.changeLanguage(locale);
+      await changeLanguageWithPersistence(locale as SupportedLanguage);
     } catch (err) {
       console.error('Failed to change language:', err);
       const errorMessage = translateApiError(err, t);

@@ -5,9 +5,13 @@ import './styles/ios-forms.css'
 import './i18n'
 import App from './App.tsx'
 import { initializeModelViewerConfig } from './utils/modelViewerConfig'
+import { initializeLanguage } from './utils/languageUtils'
 
 // Initialize model-viewer configuration for production optimization
 initializeModelViewerConfig();
+
+// Initialize language from localStorage
+initializeLanguage();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

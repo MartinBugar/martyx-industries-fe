@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { SupportedLanguage } from '../i18n';
+import { changeLanguageWithPersistence } from '../utils/languageUtils';
 import './LanguageSwitcher.css';
 
 interface LanguageOption {
@@ -25,7 +26,7 @@ const LanguageSwitcher: React.FC = () => {
 
   const handleLanguageChange = async (languageCode: SupportedLanguage) => {
     try {
-      await i18n.changeLanguage(languageCode);
+      await changeLanguageWithPersistence(languageCode);
       setIsOpen(false);
     } catch (error) {
       console.error('Failed to change language:', error);
