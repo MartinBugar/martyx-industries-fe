@@ -1,61 +1,87 @@
-/* Contact Page Styles - Dark Theme Design System */
+/* Contact Page Styles - Fully Responsive Dark Theme */
 
 .contact-page {
   margin: 0 auto;
-  padding: 0;
+  padding: clamp(1rem, 3vw, 2rem) 0;
   background: var(--background);
   color: var(--text-primary);
   min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
 }
 
-.contact-header {
-  text-align: center;
-  margin-bottom: 4rem;
-  padding: 4rem 0 2rem;
-  background: linear-gradient(135deg, var(--surface) 0%, rgba(255, 255, 255, 0.02) 100%);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+/* Main container with responsive grid */
+.contact-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  align-items: start;
+  max-width: var(--max-content-width);
+  margin: 0 auto;
+  padding: 0 clamp(1rem, 4vw, 2rem);
+  width: 100%;
 }
 
-.contact-header h1 {
-  font-size: clamp(2.5rem, 4vw + 1rem, 4rem);
+/* Desktop: Two columns side by side */
+@media (min-width: 1024px) {
+  .contact-container {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  /* Desktop: Move title to span both columns */
+  .page-title,
+  .page-subtitle {
+    grid-column: 1 / -1;
+    text-align: center;
+  }
+  
+  .page-subtitle {
+    margin-bottom: clamp(2rem, 3vw, 3rem);
+  }
+}
+
+/* Large desktop: Slightly more spacing */
+@media (min-width: 1400px) {
+  .contact-container {
+    gap: 4rem;
+    padding: 0 clamp(2rem, 5vw, 3rem);
+  }
+}
+
+/* Page Title and Subtitle */
+.page-title {
+  font-size: clamp(2rem, 5vw, 3rem);
   font-weight: 700;
-  margin-bottom: 1rem;
+  margin-bottom: clamp(0.5rem, 1.5vw, 1rem);
   background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   line-height: 1.2;
+  text-align: center;
 }
 
-.contact-subtitle {
-  font-size: 1.2rem;
+.page-subtitle {
+  font-size: clamp(1rem, 2.5vw, 1.2rem);
   color: var(--text-muted);
-  margin: 0;
-  max-width: 600px;
-  margin: 0 auto;
+  margin-bottom: clamp(2rem, 4vw, 3rem);
   line-height: 1.6;
+  text-align: center;
+  word-wrap: break-word;
 }
 
-.contact-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 3rem;
-  align-items: start;
-  max-width: var(--max-content-width);
-  margin: 0 auto;
-  padding: 0 clamp(1rem, 4vw, 2rem);
-}
-
-/* Company Information Section */
+/* Company Information Section - Fully Responsive */
 .company-info {
   background: var(--surface);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-lg);
-  padding: 2rem;
+  padding: clamp(1.25rem, 4vw, 2rem);
   backdrop-filter: blur(20px);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
   position: relative;
   overflow: hidden;
+  width: 100%;
+  min-width: 0; /* Prevent grid overflow */
 }
 
 .company-info::before {
@@ -69,20 +95,22 @@
 }
 
 .company-info h2 {
-  font-size: 1.8rem;
+  font-size: clamp(1.25rem, 3.5vw, 1.8rem);
   font-weight: 700;
-  margin-bottom: 2rem;
+  margin-bottom: clamp(1rem, 3vw, 2rem);
   color: var(--text-primary);
   position: relative;
+  line-height: 1.3;
 }
 
 .company-card {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 2rem;
-  margin-bottom: 2rem;
+  border-radius: clamp(8px, 2vw, 12px);
+  padding: clamp(1.25rem, 4vw, 2rem);
+  margin-bottom: clamp(1.5rem, 3vw, 2rem);
   transition: all 0.3s ease;
+  width: 100%;
 }
 
 .company-card:hover {
@@ -92,22 +120,25 @@
 }
 
 .company-name {
-  font-size: 1.5rem;
+  font-size: clamp(1.1rem, 3vw, 1.5rem);
   font-weight: 700;
   color: var(--accent);
-  margin-bottom: 1rem;
+  margin-bottom: clamp(0.75rem, 2vw, 1rem);
   text-shadow: 0 0 20px rgba(40, 193, 255, 0.3);
+  line-height: 1.3;
+  word-wrap: break-word;
 }
 
 .company-description {
   color: var(--text-muted);
   line-height: 1.7;
   margin: 0;
-  font-size: 1rem;
+  font-size: clamp(0.9rem, 2.5vw, 1rem);
+  word-wrap: break-word;
 }
 
 .info-section {
-  margin-bottom: 2rem;
+  margin-bottom: clamp(1.5rem, 3vw, 2rem);
 }
 
 .info-section:last-child {
@@ -115,20 +146,22 @@
 }
 
 .info-section h4 {
-  font-size: 1.2rem;
+  font-size: clamp(1rem, 2.8vw, 1.2rem);
   font-weight: 600;
   color: var(--text-primary);
-  margin-bottom: 1.5rem;
+  margin-bottom: clamp(1rem, 2.5vw, 1.5rem);
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: clamp(0.5rem, 1.5vw, 0.75rem);
+  line-height: 1.4;
 }
 
 .info-content {
   display: flex;
   align-items: flex-start;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
+  gap: clamp(0.5rem, 2vw, 0.75rem);
+  margin-bottom: clamp(0.75rem, 2vw, 1rem);
+  width: 100%;
 }
 
 .info-content:last-child {
@@ -139,13 +172,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
+  width: clamp(36px, 8vw, 48px);
+  height: clamp(36px, 8vw, 48px);
   background: var(--accent-soft);
-  border-radius: 12px;
+  border-radius: clamp(8px, 2vw, 12px);
   color: var(--accent);
   flex-shrink: 0;
   transition: all 0.3s ease;
+}
+
+/* Responsive icon sizes */
+.info-icon svg {
+  width: clamp(16px, 4vw, 20px);
+  height: clamp(16px, 4vw, 20px);
 }
 
 .info-content:hover .info-icon {
@@ -158,7 +197,9 @@
   margin: 0;
   color: var(--text-muted);
   line-height: 1.6;
-  font-size: 0.95rem;
+  font-size: clamp(0.85rem, 2.2vw, 0.95rem);
+  word-wrap: break-word;
+  min-width: 0; /* Allow text to wrap */
 }
 
 .contact-link {
@@ -189,16 +230,18 @@
   width: 100%;
 }
 
-/* Contact Form Section */
+/* Contact Form Section - Fully Responsive */
 .contact-form-section {
   background: var(--surface);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-lg);
-  padding: 2rem;
+  padding: clamp(1.25rem, 4vw, 2rem);
   backdrop-filter: blur(20px);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
   position: relative;
   overflow: hidden;
+  width: 100%;
+  min-width: 0; /* Prevent grid overflow */
 }
 
 .contact-form-section::before {
@@ -212,48 +255,55 @@
 }
 
 .contact-form-section h2 {
-  font-size: 1.8rem;
+  font-size: clamp(1.25rem, 3.5vw, 1.8rem);
   font-weight: 700;
-  margin-bottom: 0.75rem;
+  margin-bottom: clamp(0.5rem, 1.5vw, 0.75rem);
   color: var(--text-primary);
+  line-height: 1.3;
 }
 
 .form-subtitle {
   color: var(--text-muted);
-  margin-bottom: 2rem;
+  margin-bottom: clamp(1.5rem, 3vw, 2rem);
   line-height: 1.6;
-  font-size: 1rem;
+  font-size: clamp(0.9rem, 2.2vw, 1rem);
+  word-wrap: break-word;
 }
 
 .contact-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: clamp(1rem, 3vw, 1.5rem);
+  width: 100%;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: clamp(0.375rem, 1vw, 0.5rem);
+  width: 100%;
 }
 
 .form-group label {
   font-weight: 600;
   color: var(--text-primary);
-  font-size: 1rem;
-  margin-bottom: 0.5rem;
+  font-size: clamp(0.9rem, 2.2vw, 1rem);
+  margin-bottom: clamp(0.375rem, 1vw, 0.5rem);
+  line-height: 1.4;
 }
 
 .form-group input,
 .form-group textarea {
-  padding: 1rem;
+  padding: clamp(0.75rem, 2.5vw, 1rem);
   border: 2px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  font-size: 1rem;
+  border-radius: clamp(8px, 2vw, 12px);
+  font-size: clamp(0.9rem, 2.2vw, 1rem);
   transition: all 0.3s ease;
   background: rgba(0, 0, 0, 0.2);
   color: var(--text-primary);
   backdrop-filter: blur(10px);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .form-group input::placeholder,
@@ -280,7 +330,8 @@
 
 .form-group textarea {
   resize: vertical;
-  min-height: 120px;
+  min-height: clamp(100px, 20vw, 120px);
+  max-height: 300px;
   font-family: inherit;
 }
 
@@ -288,9 +339,9 @@
   background: var(--accent);
   color: #06212b;
   border: none;
-  padding: 1rem 2.5rem;
-  border-radius: 12px;
-  font-size: 1rem;
+  padding: clamp(0.875rem, 2.5vw, 1rem) clamp(1.5rem, 4vw, 2.5rem);
+  border-radius: clamp(8px, 2vw, 12px);
+  font-size: clamp(0.9rem, 2.2vw, 1rem);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -299,6 +350,17 @@
   overflow: hidden;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  min-width: fit-content;
+  white-space: nowrap;
+}
+
+/* Mobile: Full width button */
+@media (max-width: 768px) {
+  .submit-btn {
+    width: 100%;
+    align-self: stretch;
+    padding: clamp(1rem, 3vw, 1.25rem) clamp(1.5rem, 4vw, 2rem);
+  }
 }
 
 .submit-btn::before {
@@ -332,10 +394,13 @@
 }
 
 .form-message {
-  padding: 0.75rem 1rem;
-  border-radius: 6px;
+  padding: clamp(0.625rem, 2vw, 0.75rem) clamp(0.875rem, 2.5vw, 1rem);
+  border-radius: clamp(6px, 1.5vw, 8px);
   font-weight: 500;
-  margin-top: 1rem;
+  margin-top: clamp(0.75rem, 2vw, 1rem);
+  font-size: clamp(0.85rem, 2vw, 0.95rem);
+  line-height: 1.5;
+  word-wrap: break-word;
 }
 
 .form-message.success {
@@ -352,86 +417,103 @@
   backdrop-filter: blur(10px);
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
+/* Enhanced Responsive Breakpoints */
+
+/* Extra small devices (phones, 360px and up) */
+@media (max-width: 360px) {
   .contact-page {
-    padding: 0;
+    padding: clamp(0.5rem, 2vw, 1rem) 0;
   }
-
+  
   .contact-container {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-    padding: 0 1rem;
+    padding: 0 clamp(0.75rem, 3vw, 1rem);
+    gap: clamp(1rem, 3vw, 1.5rem);
   }
-
-  .contact-header {
-    margin-bottom: 2rem;
-    padding: 3rem 1rem 1.5rem;
-  }
-
-  .contact-header h1 {
-    font-size: clamp(2rem, 6vw, 2.5rem);
-  }
-
+  
   .company-info,
   .contact-form-section {
-    padding: 1.5rem;
+    padding: clamp(1rem, 3vw, 1.25rem);
   }
-
+  
   .company-card {
-    padding: 1.5rem;
+    padding: clamp(1rem, 3vw, 1.25rem);
   }
-
+  
   .info-content {
-    gap: 0.75rem;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.5rem;
   }
-
+  
   .info-icon {
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
   }
-
-  .submit-btn {
-    width: 100%;
-    align-self: stretch;
-    padding: 1.25rem 2rem;
+  
+  .info-icon svg {
+    width: 14px;
+    height: 14px;
   }
 }
 
-@media (max-width: 480px) {
-  .contact-container {
-    padding: 0 0.75rem;
+/* Small devices (landscape phones, 480px and up) */
+@media (min-width: 361px) and (max-width: 480px) {
+  .info-content {
+    flex-direction: row;
+    align-items: flex-start;
   }
+}
 
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 481px) and (max-width: 768px) {
+  .contact-container {
+    gap: clamp(1.5rem, 3vw, 2rem);
+  }
+  
+  .info-content {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
+/* Large devices (desktops, 1024px and up) */
+@media (min-width: 1024px) {
+  .contact-page {
+    padding: clamp(2rem, 3vw, 3rem) 0;
+  }
+  
+  /* Ensure proper two-column layout */
+  .contact-container {
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(2rem, 4vw, 3rem);
+  }
+  
+  /* Prevent buttons from being too wide on desktop */
+  .submit-btn {
+    max-width: 300px;
+    align-self: flex-start;
+  }
+}
+
+/* Extra large devices (large desktops, 1400px and up) */
+@media (min-width: 1400px) {
+  .contact-container {
+    max-width: 1200px;
+    gap: 4rem;
+  }
+  
   .company-info,
   .contact-form-section {
-    padding: 1.25rem;
+    padding: 2.5rem;
   }
+}
 
-  .contact-header {
-    padding: 2rem 0.75rem 1rem;
-  }
-
-  .contact-header h1 {
-    font-size: clamp(1.75rem, 8vw, 2rem);
-  }
-
-  .contact-subtitle {
-    font-size: 1rem;
-  }
-
-  .form-group input,
-  .form-group textarea {
-    padding: 0.875rem;
-  }
-
-  .company-card {
-    padding: 1.25rem;
-  }
-
-  .info-icon {
-    width: 36px;
-    height: 36px;
+/* Ultra-wide screens (1920px and up) */
+@media (min-width: 1920px) {
+  .contact-container {
+    max-width: 1400px;
+    gap: 5rem;
   }
 }
 
@@ -486,15 +568,51 @@
   animation: slideInUp 0.4s ease-out;
 }
 
-/* Hover effects for better interactivity */
+/* Enhanced hover effects with responsive considerations */
 .info-content {
   transition: all 0.3s ease;
-  border-radius: 8px;
-  padding: 0.5rem;
-  margin: -0.5rem;
+  border-radius: clamp(6px, 1.5vw, 8px);
+  padding: clamp(0.375rem, 1vw, 0.5rem);
+  margin: clamp(-0.375rem, -1vw, -0.5rem);
 }
 
-.info-content:hover {
-  background: rgba(255, 255, 255, 0.03);
-  transform: translateX(4px);
+/* Only apply hover effects on devices that support hover */
+@media (hover: hover) and (pointer: fine) {
+  .info-content:hover {
+    background: rgba(255, 255, 255, 0.03);
+    transform: translateX(clamp(2px, 1vw, 4px));
+  }
+  
+  .company-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+  
+  .info-content:hover .info-icon {
+    background: rgba(40, 193, 255, 0.25);
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(40, 193, 255, 0.3);
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .company-card,
+  .info-content,
+  .info-icon {
+    /* Remove hover transforms on touch devices to prevent sticky states */
+    transform: none !important;
+  }
+  
+  /* Increase touch targets */
+  .contact-link {
+    padding: 0.25rem;
+    margin: -0.25rem;
+    border-radius: 4px;
+  }
+  
+  .submit-btn {
+    min-height: 48px; /* Minimum touch target size */
+  }
 }
