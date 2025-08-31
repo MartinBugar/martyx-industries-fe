@@ -1,0 +1,47 @@
+{
+  "title": "Kontakt",
+  "subtitle": "Nehmen Sie Kontakt mit uns auf",
+  "company_info": {
+    "title": "Firmeninformationen",
+    "name": "MARTYX INDUSTRIES",
+    "description": "Wir sind Spezialisten für RC-Modelle und Komponenten. Unser Unternehmen konzentriert sich darauf, Qualitätsprodukte und Dienstleistungen für RC-Modellbau-Enthusiasten anzubieten.",
+    "address": {
+      "title": "Adresse",
+      "street": "Hauptstraße 123",
+      "city": "Bratislava 811 01",
+      "country": "Slowakei"
+    },
+    "contact": {
+      "title": "Kontaktdaten",
+      "phone": "+421 123 456 789",
+      "email": "info@martyx-industries.sk",
+      "business_hours": "Mo - Fr: 9:00 - 17:00"
+    }
+  },
+  "form": {
+    "title": "Kontaktformular",
+    "subtitle": "Senden Sie uns eine Nachricht und wir melden uns so schnell wie möglich bei Ihnen",
+    "fields": {
+      "name": {
+        "label": "Vollständiger Name",
+        "placeholder": "Ihr Name"
+      },
+      "email": {
+        "label": "E-Mail-Adresse",
+        "placeholder": "ihre@email.de"
+      },
+      "subject": {
+        "label": "Betreff",
+        "placeholder": "Nachrichtenbetreff"
+      },
+      "message": {
+        "label": "Nachricht",
+        "placeholder": "Schreiben Sie hier Ihre Nachricht..."
+      }
+    },
+    "submit": "Nachricht senden",
+    "sending": "Wird gesendet...",
+    "success": "Nachricht erfolgreich gesendet!",
+    "error": "Beim Senden der Nachricht ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut."
+  }
+}

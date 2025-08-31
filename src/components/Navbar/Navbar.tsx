@@ -24,6 +24,7 @@ const LINKS: NavItem[] = [
     {labelKey: "nav:home", href: "/"},
     {labelKey: "nav:products", href: "/products"},
     {labelKey: "nav:about", href: "/about"},
+    {labelKey: "nav:contact", href: "/contact"},
 ];
 
 export default function Navbar({cartCount = 0, onSearchSubmit, user, onLogout}: Props) {
