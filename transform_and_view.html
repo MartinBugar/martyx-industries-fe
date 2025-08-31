@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XSLT Transformácia a PDF náhľad</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .method {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-left: 4px solid #2196f3;
+        }
+        .code-block {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            border: 1px solid #e9ecef;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        .button {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .button:hover {
+            background: #45a049;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .demo-section {
+            border: 2px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            background: white;
+        }
+    </style>
+    <script>
+        function transformXML() {
+            try {
+                // Načítame XML a XSLT
+                const xmlStr = `<?xml version="1.0" encoding="UTF-8"?>
+<invoice>
+  <header>
+    <invoice_number>029/23</invoice_number>
+    <issue_date>24.4.2023</issue_date>
+    <delivery_date>24.4.2023</delivery_date>
+    <due_date>13.5.2023</due_date>
+  </header>
+  
+  <supplier>
+    <company_name>Global Vision Consulting a.s.</company_name>
+    <address>
+      <street>Dunajská 12</street>
+      <postal_code>811 08</postal_code>
+      <city>Bratislava</city>
+      <country>Slovakia</country>
+    </address>
+    <registration_info>
+      <text>Company registered in the Commercial Register of the District Court Bratislava I, Section: Sro., File No. 118</text>
+    </registration_info>
+    <company_id>56789012</company_id>
+    <vat_id>SK2345678901</vat_id>
+    <vat_payer>VAT payer</vat_payer>
+    <contact>
+      <email>gvc@gvc-consulting.sk</email>
+      <website>gvc-consulting.sk</website>
+    </contact>
+    <bank_details>
+      <iban>SK1811000000291755968</iban>
+      <swift>TATRSKBX</swift>
+      <bank>Tatra banka a.s.</bank>
+      <account_no>291755968/1100</account_no>
+    </bank_details>
+  </supplier>
+  
+  <customer>
+    <company_name>La Baguette Innovante</company_name>
+    <address>
+      <street>2 Rue des Fleurs</street>
+      <postal_code>75006</postal_code>
+      <city>Paris</city>
+      <country>France</country>
+    </address>
+    <company_id>123 456 789 000</company_id>
+    <vat_id>FR 12 123456789</vat_id>
+  </customer>
+  
+  <payment_info>
+    <payment_type>bank transfer</payment_type>
+    <payment_symbol>02923</payment_symbol>
+  </payment_info>
+  
+  <items>
+    <item>
+      <description>Providing expert advice and guidance on international business operations and compliance with local and international legal regulations.</description>
+      <quantity>5</quantity>
+      <unit>h</unit>
+      <price_per_unit>165.00</price_per_unit>
+      <total_excl_vat>825.00</total_excl_vat>
+      <vat_rate>0</vat_rate>
+      <total_incl_vat>825.00</total_incl_vat>
+    </item>
+    <item>
+      <description>Assistance in navigating complex tax and legal requirements, ensuring compliance with all relevant regulations and obligations in the target market.</description>
+      <quantity>2.5</quantity>
+      <unit>h</unit>
+      <price_per_unit>165.00</price_per_unit>
+      <total_excl_vat>412.50</total_excl_vat>
+      <vat_rate>0</vat_rate>
+      <total_incl_vat>412.50</total_incl_vat>
+    </item>
+    <item>
+      <description>Translation and adaptation of marketing materials, legal documents, and other content to meet the language and cultural requirements of the target market.</description>
+      <quantity>5</quantity>
+      <unit>h</unit>
+      <price_per_unit>75.00</price_per_unit>
+      <total_excl_vat>375.00</total_excl_vat>
+      <vat_rate>0</vat_rate>
+      <total_incl_vat>375.00</total_incl_vat>
+    </item>
+    <item>
+      <description>Discount 5%</description>
+      <quantity>1</quantity>
+      <unit>pcs</unit>
+      <price_per_unit>-80.63</price_per_unit>
+      <total_excl_vat>-80.63</total_excl_vat>
+      <vat_rate>0</vat_rate>
+      <total_incl_vat>-80.63</total_incl_vat>
+    </item>
+  </items>
+  
+  <totals>
+    <subtotal>1531.87</subtotal>
+    <vat_amount>0.00</vat_amount>
+    <total>1531.87</total>
+    <discount_percent>5</discount_percent>
+    <total_amount_excl_vat>1531.87</total_amount_excl_vat>
+    <vat_total>0.00</vat_total>
+    <total_amount_incl_vat>1531.87</total_amount_incl_vat>
+    <advance_paid>0.00</advance_paid>
+    <total_due>1531.87</total_due>
+    <currency>EUR</currency>
+    <amount_in_words>one thousand five hundred and thirty-one euros and eighty-seven cents</amount_in_words>
+  </totals>
+  
+  <notes>
+    <vat_note>* VAT reverse charge. Tax is paid by the customer.</vat_note>
+  </notes>
+  
+  <issued_by>
+    <name>Miroslav Peterpiez MBA</name>
+    <signature_image>signature.png</signature_image>
+  </issued_by>
+</invoice>`;
+
+                // Jednoduchá transformácia do HTML (bez XSLT procesora)
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(xmlStr, "text/xml");
+                
+                // Vytvoríme HTML faktúru priamo
+                const invoiceHTML = generateInvoiceHTML(xmlDoc);
+                
+                // Zobrazíme výsledok
+                document.getElementById('result').innerHTML = invoiceHTML;
+                document.getElementById('result').style.display = 'block';
+                
+            } catch (error) {
+                document.getElementById('result').innerHTML = `<p style="color: red;">Chyba: ${error.message}</p>`;
+                document.getElementById('result').style.display = 'block';
+            }
+        }
+
+        function generateInvoiceHTML(xmlDoc) {
+            // Extrahujeme dáta z XML
+            const invoice = xmlDoc.documentElement;
+            const getElementText = (xpath) => {
+                const element = xmlDoc.querySelector(xpath);
+                return element ? element.textContent : '';
+            };
+
+            return `
+                <div style="font-family: Arial, sans-serif; font-size: 12px; max-width: 800px; margin: 0 auto; border: 2px solid #000; background: white;">
+                    <!-- Header -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; border-bottom: 1px solid #000;">
+                        <div style="display: flex; align-items: center;">
+                            <div style="width: 60px; height: 60px; background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4); margin-right: 15px; border-radius: 8px;"></div>
+                        </div>
+                        <div style="font-size: 24px; font-weight: bold;">
+                            INVOICE ${getElementText('invoice_number')}
+                        </div>
+                    </div>
+                    
+                    <!-- Company Information -->
+                    <div style="display: flex; justify-content: space-between; padding: 20px; border-bottom: 1px solid #000;">
+                        <div style="width: 48%;">
+                            <h3 style="margin: 0 0 10px 0; font-size: 14px; font-weight: bold;">${getElementText('supplier company_name')}</h3>
+                            <p style="margin: 2px 0;">${getElementText('supplier address street')}</p>
+                            <p style="margin: 2px 0;">${getElementText('supplier address postal_code')} ${getElementText('supplier address city')}</p>
+                            <p style="margin: 2px 0;">${getElementText('supplier address country')}</p>
+                            <br/>
+                            <p style="margin: 2px 0;"><strong>Company ID:</strong> ${getElementText('supplier company_id')}</p>
+                            <p style="margin: 2px 0;"><strong>VAT ID:</strong> ${getElementText('supplier vat_id')}</p>
+                            <p style="margin: 2px 0;">${getElementText('supplier vat_payer')}</p>
+                            <br/>
+                            <p style="margin: 2px 0;"><strong>EMAIL:</strong> ${getElementText('supplier contact email')}</p>
+                            <p style="margin: 2px 0;"><strong>WEBSITE:</strong> ${getElementText('supplier contact website')}</p>
+                        </div>
+                        
+                        <div style="width: 48%;">
+                            <h3 style="margin: 0 0 10px 0; font-size: 14px; font-weight: bold;">Purchaser</h3>
+                            <p style="margin: 2px 0;"><strong>${getElementText('customer company_name')}</strong></p>
+                            <p style="margin: 2px 0;">${getElementText('customer address street')}</p>
+                            <p style="margin: 2px 0;">${getElementText('customer address postal_code')} ${getElementText('customer address city')}</p>
+                            <p style="margin: 2px 0;">${getElementText('customer address country')}</p>
+                            <br/>
+                            <p style="margin: 2px 0;"><strong>Company ID:</strong> ${getElementText('customer company_id')}</p>
+                            <p style="margin: 2px 0;"><strong>VAT ID:</strong> ${getElementText('customer vat_id')}</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Payment and Date Information -->
+                    <div style="display: flex; justify-content: space-between; padding: 15px 20px; border-bottom: 1px solid #000; background: #f8f8f8;">
+                        <div style="width: 48%;">
+                            <table style="width: 100%;">
+                                <tr><td style="font-weight: bold;">Payment type:</td><td>${getElementText('payment_info payment_type')}</td></tr>
+                                <tr><td style="font-weight: bold;">Payment symbol:</td><td>${getElementText('payment_info payment_symbol')}</td></tr>
+                            </table>
+                        </div>
+                        <div style="width: 48%;">
+                            <table style="width: 100%;">
+                                <tr><td style="font-weight: bold;">Issue date</td><td style="font-weight: bold;">Delivery date</td><td style="font-weight: bold;">Due date</td></tr>
+                                <tr><td>${getElementText('header issue_date')}</td><td>${getElementText('header delivery_date')}</td><td>${getElementText('header due_date')}</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Items Table -->
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr>
+                                <th style="background: #e0e0e0; padding: 8px 5px; border: 1px solid #000; font-weight: bold; font-size: 11px;">Item description</th>
+                                <th style="background: #e0e0e0; padding: 8px 5px; border: 1px solid #000; font-weight: bold; font-size: 11px;">QTY</th>
+                                <th style="background: #e0e0e0; padding: 8px 5px; border: 1px solid #000; font-weight: bold; font-size: 11px;">Unit</th>
+                                <th style="background: #e0e0e0; padding: 8px 5px; border: 1px solid #000; font-weight: bold; font-size: 11px;">Price per unit</th>
+                                <th style="background: #e0e0e0; padding: 8px 5px; border: 1px solid #000; font-weight: bold; font-size: 11px;">Total excl. VAT</th>
+                                <th style="background: #e0e0e0; padding: 8px 5px; border: 1px solid #000; font-weight: bold; font-size: 11px;">VAT</th>
+                                <th style="background: #e0e0e0; padding: 8px 5px; border: 1px solid #000; font-weight: bold; font-size: 11px;">Total incl. VAT</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${Array.from(xmlDoc.querySelectorAll('item')).map(item => `
+                                <tr>
+                                    <td style="padding: 6px 5px; border: 1px solid #000; font-size: 11px;">${item.querySelector('description').textContent}</td>
+                                    <td style="padding: 6px 5px; border: 1px solid #000; font-size: 11px; text-align: center;">${item.querySelector('quantity').textContent}</td>
+                                    <td style="padding: 6px 5px; border: 1px solid #000; font-size: 11px; text-align: center;">${item.querySelector('unit').textContent}</td>
+                                    <td style="padding: 6px 5px; border: 1px solid #000; font-size: 11px; text-align: right;">${item.querySelector('price_per_unit').textContent}</td>
+                                    <td style="padding: 6px 5px; border: 1px solid #000; font-size: 11px; text-align: right;">${item.querySelector('total_excl_vat').textContent}</td>
+                                    <td style="padding: 6px 5px; border: 1px solid #000; font-size: 11px; text-align: center;">${item.querySelector('vat_rate').textContent}%</td>
+                                    <td style="padding: 6px 5px; border: 1px solid #000; font-size: 11px; text-align: right;">${item.querySelector('total_incl_vat').textContent}</td>
+                                </tr>
+                            `).join('')}
+                            <tr>
+                                <td colspan="6" style="padding: 6px 5px; border: 1px solid #000; font-size: 11px; text-align: right; font-weight: bold;">Total:</td>
+                                <td style="padding: 6px 5px; border: 1px solid #000; font-size: 11px; text-align: right; font-weight: bold;">${getElementText('totals subtotal')}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <!-- Totals -->
+                    <div style="display: flex; justify-content: flex-end; padding: 20px;">
+                        <table style="border-collapse: collapse; width: 300px;">
+                            <tr><td style="padding: 5px 10px; border: 1px solid #000; font-weight: bold; background: #f0f0f0;">Discount:</td><td style="padding: 5px 10px; border: 1px solid #000; text-align: right;">${getElementText('totals discount_percent')}%</td></tr>
+                            <tr><td style="padding: 5px 10px; border: 1px solid #000; font-weight: bold; background: #f0f0f0;">Total amount excl. VAT:</td><td style="padding: 5px 10px; border: 1px solid #000; text-align: right;">${getElementText('totals total_amount_excl_vat')} ${getElementText('totals currency')}</td></tr>
+                            <tr><td style="padding: 5px 10px; border: 1px solid #000; font-weight: bold; background: #f0f0f0;">VAT*:</td><td style="padding: 5px 10px; border: 1px solid #000; text-align: right;">${getElementText('totals vat_total')} ${getElementText('totals currency')}</td></tr>
+                            <tr><td style="padding: 5px 10px; border: 1px solid #000; font-weight: bold; background: #f0f0f0;">Total amount incl. VAT:</td><td style="padding: 5px 10px; border: 1px solid #000; text-align: right;">${getElementText('totals total_amount_incl_vat')} ${getElementText('totals currency')}</td></tr>
+                            <tr><td style="padding: 5px 10px; border: 1px solid #000; font-weight: bold; background: #f0f0f0;">Advance paid:</td><td style="padding: 5px 10px; border: 1px solid #000; text-align: right;">${getElementText('totals advance_paid')} ${getElementText('totals currency')}</td></tr>
+                            <tr style="background: #d0d0d0; font-weight: bold; font-size: 14px;"><td style="padding: 5px 10px; border: 1px solid #000;">Total due:</td><td style="padding: 5px 10px; border: 1px solid #000; text-align: right;">${getElementText('totals total_due')} ${getElementText('totals currency')}</td></tr>
+                        </table>
+                    </div>
+                    
+                    <!-- Footer -->
+                    <div style="padding: 20px; border-top: 1px solid #000; display: flex; justify-content: space-between;">
+                        <div style="font-size: 10px;">
+                            <p>${getElementText('notes vat_note')}</p>
+                            <br/>
+                            <p><strong>Issued by:</strong></p>
+                            <div style="width: 150px; height: 40px; border-bottom: 1px solid #000; margin: 10px 0;"></div>
+                            <p>${getElementText('issued_by name')}</p>
+                        </div>
+                        <div style="text-align: center; font-size: 11px;">
+                            <p style="font-size: 14px; font-weight: bold; background: #d0d0d0; padding: 5px;">
+                                ${getElementText('totals total_due')} ${getElementText('totals currency')}
+                            </p>
+                            <p style="font-size: 10px; margin-top: 5px;">
+                                ${getElementText('totals amount_in_words')}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function printToPDF() {
+            const resultDiv = document.getElementById('result');
+            if (resultDiv.style.display === 'none') {
+                alert('Najprv vygenerujte faktúru!');
+                return;
+            }
+
+            // Otvoríme nové okno iba s faktúrou
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Faktúra PDF</title>
+                    <style>
+                        @media print {
+                            body { margin: 0; padding: 0; }
+                            * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                        }
+                        body { font-family: Arial, sans-serif; margin: 20px; }
+                    </style>
+                </head>
+                <body>
+                    ${resultDiv.innerHTML}
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            
+            // Automaticky otvoríme tlačový dialog
+            setTimeout(() => {
+                printWindow.print();
+            }, 500);
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>🖥️ Vizualizácia XSLT faktúry v HTML/PDF</h1>
+        
+        <div class="method">
+            <h3>📋 Metóda 1: Priama transformácia v prehliadači</h3>
+            <p>Najjednoduchší sposob - použite JavaScript na transformáciu a zobrazenie:</p>
+            <button class="button" onclick="transformXML()">🔄 Vygenerovať faktúru</button>
+            <button class="button" onclick="printToPDF()">📄 Tlačiť ako PDF</button>
+        </div>
+
+        <div id="result" style="display: none; margin: 20px 0; border: 2px solid #ddd; padding: 20px; background: white;">
+            <!-- Tu sa zobrazí vygenerovaná faktúra -->
+        </div>
+
+        <div class="method">
+            <h3>🌐 Metóda 2: Online XSLT procesory</h3>
+            <p>Použite online nástroje pre XSLT transformáciu:</p>
+            <a href="https://www.freeformatter.com/xsl-transformer.html" target="_blank" class="button">FreeFormatter XSL</a>
+            <a href="https://xslttest.appspot.com/" target="_blank" class="button">XSLT Test Tool</a>
+            <p><strong>Kroky:</strong></p>
+            <ol>
+                <li>Skopírujte obsah súboru <code>invoice_data.xml</code> do XML poľa</li>
+                <li>Skopírujte obsah súboru <code>invoice_template_simple.xslt</code> do XSLT poľa</li>
+                <li>Stlačte "Transform"</li>
+                <li>Skopírujte výsledok do nového HTML súboru</li>
+                <li>Otvorte v prehliadači a tlačte do PDF (Ctrl+P)</li>
+            </ol>
+        </div>
+
+        <div class="method">
+            <h3>💻 Metóda 3: Lokálny príkazový riadok</h3>
+            <p>Ak máte nainštalovaný <code>xsltproc</code> alebo podobný nástroj:</p>
+            <div class="code-block">
+# Transformácia XML na HTML
+xsltproc invoice_template_simple.xslt invoice_data.xml > faktúra.html
+
+# Otvorenie v prehliadači
+start faktúra.html (Windows)
+open faktúra.html (macOS)
+xdg-open faktúra.html (Linux)
+
+# Konverzia do PDF pomocou wkhtmltopdf
+wkhtmltopdf faktúra.html faktúra.pdf
+            </div>
+        </div>
+
+        <div class="method">
+            <h3>🛠️ Metóda 4: Node.js script</h3>
+            <p>Pre automatizované generovanie:</p>
+            <div class="code-block">
+npm install xslt-processor puppeteer
+
+# Vytvorte súbor generate-pdf.js
+const fs = require('fs');
+const puppeteer = require('puppeteer');
+const { transform } = require('xslt-processor');
+
+async function generatePDF() {
+  const xml = fs.readFileSync('invoice_data.xml', 'utf8');
+  const xslt = fs.readFileSync('invoice_template_simple.xslt', 'utf8');
+  
+  const html = transform(xml, xslt);
+  
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.setContent(html);
+  
+  await page.pdf({ 
+    path: 'faktúra.pdf', 
+    format: 'A4',
+    printBackground: true 
+  });
+  
+  await browser.close();
+}
+
+generatePDF();
+            </div>
+        </div>
+
+        <div class="warning">
+            <h4>⚠️ Dôležité poznámky:</h4>
+            <ul>
+                <li><strong>Print CSS:</strong> XSLT šablóna obsahuje <code>@media print</code> štýly pre optimálnu tlač</li>
+                <li><strong>Farby:</strong> V nastaveniach tlače zapnite "Tlačiť pozadie" pre farebné logo</li>
+                <li><strong>Veľkosť papiera:</strong> Šablóna je optimalizovaná pre A4 formát</li>
+                <li><strong>Kompatibilita:</strong> Testované v Chrome, Firefox, Edge</li>
+            </ul>
+        </div>
+
+        <div class="method">
+            <h3>🎯 Odporúčaný postup:</h3>
+            <ol>
+                <li><strong>Vygenerujte HTML</strong> - stlačte tlačidlo "Vygenerovať faktúru" vyššie</li>
+                <li><strong>Skontrolujte vzhľad</strong> - uistite sa, že faktúra vyzerá správne</li>
+                <li><strong>Tlačte do PDF</strong> - stlačte "Tlačiť ako PDF" alebo Ctrl+P v prehliadači</li>
+                <li><strong>Uložte PDF</strong> - vyberte "Uložiť ako PDF" v tlačovom dialógu</li>
+            </ol>
+        </div>
+    </div>
+</body>
+</html>

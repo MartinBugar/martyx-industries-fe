@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test faktúry XSLT</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .instructions {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196f3;
+        }
+        .file-info {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .note {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Test XSLT faktúry</h1>
+        
+        <div class="instructions">
+            <h3>Inštrukcie na testovanie:</h3>
+            <p>Pre testovanie XSLT transformácie faktúry boli vytvorené nasledujúce súbory:</p>
+        </div>
+        
+        <div class="file-info">
+            <strong>1. invoice_data.xml</strong> - XML súbor s namockovanými dátami faktúry
+        </div>
+        
+        <div class="file-info">
+            <strong>2. invoice_template.xslt</strong> - XSLT šablóna pre transformáciu XML na HTML
+        </div>
+        
+        <div class="note">
+            <h4>Ako testovať transformáciu:</h4>
+            <ol>
+                <li><strong>Online XSLT procesory:</strong>
+                    <ul>
+                        <li><a href="https://www.freeformatter.com/xsl-transformer.html" target="_blank">FreeFormatter XSL Transformer</a></li>
+                        <li><a href="https://xslttest.appspot.com/" target="_blank">XSLT Test Tool</a></li>
+                    </ul>
+                </li>
+                <li><strong>Príkazový riadok (ak máte nainštalovaný xsltproc):</strong>
+                    <code style="display: block; background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 3px;">
+                        xsltproc invoice_template.xslt invoice_data.xml > output.html
+                    </code>
+                </li>
+                <li><strong>Programovo (JavaScript/Node.js):</strong>
+                    <p>Môžete použiť knižnice ako <code>xslt-processor</code> alebo <code>saxon-js</code></p>
+                </li>
+            </ol>
+        </div>
+        
+        <div class="note">
+            <h4>Funkcionalita XSLT šablóny:</h4>
+            <ul>
+                <li>✅ Presná reprodukcia vzhľadu faktúry z obrázka</li>
+                <li>✅ Responsive dizajn pre rôzne veľkosti obrazovky</li>
+                <li>✅ Podpora tlače (@media print)</li>
+                <li>✅ Automatické formátovanie čísel a dátumov</li>
+                <li>✅ Dynamické tabuľky položiek</li>
+                <li>✅ Automatické výpočty súčtov</li>
+                <li>✅ Farebné logo (CSS gradient)</li>
+                <li>✅ Profesionálny vzhľad s hranicami a štýlmi</li>
+            </ul>
+        </div>
+        
+        <div class="note">
+            <h4>Prispôsobenie:</h4>
+            <p>Pre zmenu dát faktúry jednoducho upravte súbor <code>invoice_data.xml</code>. 
+            Pre zmenu vzhľadu upravte CSS štýly v súbore <code>invoice_template.xslt</code>.</p>
+        </div>
+        
+        <div class="note">
+            <h4>Podpora PDF:</h4>
+            <p>Pre generovanie PDF môžete použiť:</p>
+            <ul>
+                <li>Webový prehliadač (Ctrl+P → Uložiť ako PDF)</li>
+                <li>Nástroje ako wkhtmltopdf, Puppeteer, alebo Prince XML</li>
+                <li>FO procesory ako Apache FOP (vyžaduje konverziu na XSL-FO)</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
