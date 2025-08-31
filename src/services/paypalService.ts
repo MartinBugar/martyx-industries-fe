@@ -75,12 +75,22 @@ export class PayPalService {
    * @param cartItems - Shopping cart items
    * @param userEmail - Customer email
    * @param currency - Payment currency (default: USD)
+   * @param userInfo - Additional user information (optional)
    * @returns Complete payment request
    */
   createPaymentRequest(
     cartItems: Array<{ id: number; quantity: number; price: number; currency?: string }>,
     userEmail: string,
-    currency: string = 'USD'
+    currency: string = 'USD',
+    userInfo?: {
+      firstName?: string;
+      lastName?: string;
+      street?: string;
+      city?: string;
+      state?: string;
+      zipCode?: string;
+      country?: string;
+    }
   ): CreatePaymentRequest {
     const orderItems = this.createOrderItems(cartItems);
     const totalAmount = this.calculateTotal(orderItems);
@@ -89,7 +99,16 @@ export class PayPalService {
       orderItems,
       totalAmount,
       currency,
-      user: { email: userEmail }
+      user: { 
+        email: userEmail,
+        firstName: userInfo?.firstName || '',
+        lastName: userInfo?.lastName || '',
+        street: userInfo?.street || '',
+        city: userInfo?.city || '',
+        state: userInfo?.state || '',
+        zipCode: userInfo?.zipCode || '',
+        country: userInfo?.country || ''
+      }
     };
   }
 }

@@ -34,7 +34,16 @@ export interface CreatePaymentRequest {
   }>;
   totalAmount: number;
   currency: string;
-  user: { email: string };
+  user: { 
+    email: string;
+    firstName: string;
+    lastName: string;
+    street: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+  };
 }
 
 export interface CreateOrderResponse {

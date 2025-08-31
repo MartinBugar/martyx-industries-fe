@@ -426,6 +426,8 @@ const Checkout: React.FC = () => {
                     totalAmount={getTotalPrice()}
                     currency={derivedCurrency}
                     email={formData.email}
+                    firstName={formData.firstName}
+                    lastName={formData.lastName}
                     cartHash={cartHash}
                     billingAddress={{
                       street: formData.billingStreet,

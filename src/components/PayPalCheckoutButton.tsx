@@ -8,6 +8,8 @@ type Props = {
   totalAmount: number;
   currency?: string; // e.g., "EUR"
   email?: string; // guest or logged-in user's email
+  firstName?: string;
+  lastName?: string;
   cartHash: string | number; // changes whenever cart content/total changes
   billingAddress?: {
     street: string;
@@ -20,7 +22,7 @@ type Props = {
   onError: (err: unknown) => void;
 };
 
-export default function PayPalCheckoutButton({ items, totalAmount, currency = "EUR", email, cartHash, billingAddress, onSuccess, onError }: Props) {
+export default function PayPalCheckoutButton({ items, totalAmount, currency = "EUR", email, firstName, lastName, cartHash, billingAddress, onSuccess, onError }: Props) {
 
   // Create order on server
   const createOrder = useCallback(async () => {
@@ -38,7 +40,16 @@ export default function PayPalCheckoutButton({ items, totalAmount, currency = "E
       })),
       totalAmount: Number(totalAmount.toFixed(2)),
       currency: currency.toUpperCase(),
-      user: email && email.trim() ? { email } : null,
+      user: email && email.trim() ? { 
+        email,
+        firstName: firstName || '',
+        lastName: lastName || '',
+        street: billingAddress?.street || '',
+        city: billingAddress?.city || '',
+        state: billingAddress?.state || '',
+        zipCode: billingAddress?.postalCode || '',
+        country: billingAddress?.country || ''
+      } : null,
       billingAddress: billingAddressString
     };
 
@@ -58,7 +69,7 @@ export default function PayPalCheckoutButton({ items, totalAmount, currency = "E
     const data = await res.json();
     if (!data?.id) throw new Error("Server did not return order id.");
     return data.id as string;
-  }, [items, totalAmount, currency, email, billingAddress]);
+  }, [items, totalAmount, currency, email, firstName, lastName, billingAddress]);
 
   // Capture on server after approval
   const onApprove = useCallback(async (data: { orderID: string }) => {
