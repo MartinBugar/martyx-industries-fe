@@ -42,12 +42,7 @@ const Contact: React.FC = () => {
   };
 
   return (
-    <main className="page-container contact-page" role="main">
-      <div className="contact-header">
-        <h1>{t('title')}</h1>
-        <p className="contact-subtitle">{t('subtitle')}</p>
-      </div>
-
+    <div className="contact-page" role="main">
       <div className="contact-container">
         {/* Company Information - Left Side */}
         <section className="company-info" aria-labelledby="company-info-title">
@@ -203,7 +198,7 @@ const Contact: React.FC = () => {
           </form>
         </section>
       </div>
-    </main>
+    </div>
   );
 };
 
