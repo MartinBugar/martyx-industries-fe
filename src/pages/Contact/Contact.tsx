@@ -46,8 +46,8 @@ const Contact: React.FC = () => {
       <div className="contact-container">
         {/* Company Information - Left Side */}
         <section className="company-info" aria-labelledby="company-info-title">
-          <h1 className="page-title">{t('title')}</h1>
-          <p className="page-subtitle">{t('subtitle')}</p>
+        
+        
           <h2 id="company-info-title">{t('company_info.title')}</h2>
           
           <div className="company-card">
