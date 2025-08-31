@@ -209,121 +209,190 @@
             };
 
             return `
-                <div style="font-family: Arial, sans-serif; font-size: 12px; max-width: 800px; margin: 0 auto; border: 2px solid #000; background: white;">
-                    <!-- Header -->
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; border-bottom: 1px solid #000;">
-                        <div style="display: flex; align-items: center;">
-                            <div style="width: 60px; height: 60px; background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4); margin-right: 15px; border-radius: 8px;"></div>
+                <div style="font-family: Arial, sans-serif; font-size: 11px; max-width: 800px; margin: 0 auto; border: 1px solid #000; background: white;">
+                    <!-- Header s čiarovým kódom a logom -->
+                    <div style="padding: 8px 15px; border-bottom: 1px solid #000; position: relative; height: 60px;">
+                        <!-- Čiarový kód hore -->
+                        <div style="position: absolute; top: 3px; left: 15px; font-family: 'Courier New', monospace; font-size: 7px; letter-spacing: 0.5px;">|||||||||||||||||||</div>
+                        
+                        <!-- Logo vľavo -->
+                        <div style="position: absolute; top: 15px; left: 15px; width: 50px; height: 45px; background: linear-gradient(135deg, #e74c3c 0%, #f39c12 25%, #2ecc71 50%, #3498db 75%, #9b59b6 100%); border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                            <div style="width: 25px; height: 25px; background: rgba(255,255,255,0.9); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <div style="width: 12px; height: 12px; background: linear-gradient(45deg, #3498db, #e74c3c); border-radius: 2px;"></div>
+                            </div>
                         </div>
-                        <div style="font-size: 24px; font-weight: bold;">
-                            INVOICE ${getElementText('invoice_number')}
+                        
+                        <!-- INVOICE centrované -->
+                        <div style="text-align: center; font-size: 20px; font-weight: bold; margin-top: 20px;">
+                            INVOICE
+                        </div>
+                        
+                        <!-- Číslo faktúry vpravo -->
+                        <div style="position: absolute; top: 20px; right: 15px; font-size: 18px; font-weight: bold;">
+                            ${getElementText('header invoice_number')}
                         </div>
                     </div>
                     
                     <!-- Company Information -->
-                    <div style="display: flex; justify-content: space-between; padding: 20px; border-bottom: 1px solid #000;">
-                        <div style="width: 48%;">
-                            <h3 style="margin: 0 0 10px 0; font-size: 14px; font-weight: bold;">${getElementText('supplier company_name')}</h3>
-                            <p style="margin: 2px 0;">${getElementText('supplier address street')}</p>
-                            <p style="margin: 2px 0;">${getElementText('supplier address postal_code')} ${getElementText('supplier address city')}</p>
-                            <p style="margin: 2px 0;">${getElementText('supplier address country')}</p>
-                            <br/>
-                            <p style="margin: 2px 0;"><strong>Company ID:</strong> ${getElementText('supplier company_id')}</p>
-                            <p style="margin: 2px 0;"><strong>VAT ID:</strong> ${getElementText('supplier vat_id')}</p>
-                            <p style="margin: 2px 0;">${getElementText('supplier vat_payer')}</p>
-                            <br/>
-                            <p style="margin: 2px 0;"><strong>EMAIL:</strong> ${getElementText('supplier contact email')}</p>
-                            <p style="margin: 2px 0;"><strong>WEBSITE:</strong> ${getElementText('supplier contact website')}</p>
+                    <div style="display: flex; padding: 12px 15px; border-bottom: 1px solid #000;">
+                        <!-- Left side - Supplier -->
+                        <div style="width: 50%; padding-right: 15px; font-size: 10px;">
+                            <div style="font-weight: bold; font-size: 12px; margin-bottom: 3px;">${getElementText('supplier company_name')}</div>
+                            <div style="margin-bottom: 1px;">${getElementText('supplier address street')}</div>
+                            <div style="margin-bottom: 1px;">${getElementText('supplier address postal_code')} ${getElementText('supplier address city')}</div>
+                            <div style="margin-bottom: 6px;">${getElementText('supplier address country')}</div>
+                            
+                            <div style="font-size: 9px; margin-bottom: 6px; line-height: 1.2;">
+                                ${getElementText('supplier registration_info text')}
+                            </div>
+                            
+                            <div style="margin-bottom: 1px;"><strong>Company ID:</strong> ${getElementText('supplier company_id')}</div>
+                            <div style="margin-bottom: 1px;"><strong>VAT ID:</strong> ${getElementText('supplier vat_id')}</div>
+                            <div style="margin-bottom: 6px;">${getElementText('supplier vat_payer')}</div>
+                            
+                            <div style="margin-bottom: 1px;"><strong>EMAIL:</strong> ${getElementText('supplier contact email')}</div>
+                            <div style="margin-bottom: 6px;"><strong>WEBSITE:</strong> ${getElementText('supplier contact website')}</div>
+                            
+                            <div style="margin-bottom: 1px;"><strong>IBAN:</strong> ${getElementText('supplier bank_details iban')}</div>
+                            <div style="margin-bottom: 1px;"><strong>SWIFT:</strong> ${getElementText('supplier bank_details swift')}</div>
+                            <div style="margin-bottom: 1px;"><strong>BANK:</strong> ${getElementText('supplier bank_details bank')}</div>
+                            <div style="margin-bottom: 1px;"><strong>ACCOUNT NO.:</strong> ${getElementText('supplier bank_details account_no')}</div>
                         </div>
                         
-                        <div style="width: 48%;">
-                            <h3 style="margin: 0 0 10px 0; font-size: 14px; font-weight: bold;">Purchaser</h3>
-                            <p style="margin: 2px 0;"><strong>${getElementText('customer company_name')}</strong></p>
-                            <p style="margin: 2px 0;">${getElementText('customer address street')}</p>
-                            <p style="margin: 2px 0;">${getElementText('customer address postal_code')} ${getElementText('customer address city')}</p>
-                            <p style="margin: 2px 0;">${getElementText('customer address country')}</p>
-                            <br/>
-                            <p style="margin: 2px 0;"><strong>Company ID:</strong> ${getElementText('customer company_id')}</p>
-                            <p style="margin: 2px 0;"><strong>VAT ID:</strong> ${getElementText('customer vat_id')}</p>
+                        <!-- Right side - Purchaser (S border-left) -->
+                        <div style="width: 50%; padding-left: 15px; font-size: 10px; border-left: 1px solid #000;">
+                            <!-- Payment info table hore -->
+                            <table style="width: 100%; border-collapse: collapse; font-size: 10px; margin-bottom: 12px;">
+                                <tr>
+                                    <td style="padding: 2px 4px; font-weight: bold; background: #f8f8f8; border: 1px solid #ddd;">Payment type:</td>
+                                    <td style="padding: 2px 4px; border: 1px solid #ddd;">bank transfer</td>
+                                    <td style="padding: 2px 4px; font-weight: bold; background: #f8f8f8; border: 1px solid #ddd;">Payment symbol:</td>
+                                    <td style="padding: 2px 4px; border: 1px solid #ddd;">${getElementText('payment_info payment_symbol')}</td>
+                                </tr>
+                            </table>
+                            
+                            <!-- Purchaser info -->
+                            <div>
+                                <div style="font-weight: bold; margin-bottom: 3px;">Purchaser</div>
+                                <div style="font-weight: bold; margin-bottom: 1px;">${getElementText('customer company_name')}</div>
+                                <div style="margin-bottom: 1px;">${getElementText('customer address street')}</div>
+                                <div style="margin-bottom: 1px;">${getElementText('customer address postal_code')} ${getElementText('customer address city')}</div>
+                                <div style="margin-bottom: 6px;">${getElementText('customer address country')}</div>
+                                
+                                <div style="margin-bottom: 1px;"><strong>Company ID:</strong> ${getElementText('customer company_id')}</div>
+                                <div style="margin-bottom: 1px;"><strong>VAT ID:</strong> ${getElementText('customer vat_id')}</div>
+                            </div>
                         </div>
                     </div>
                     
-                    <!-- Payment and Date Information -->
-                    <div style="display: flex; justify-content: space-between; padding: 15px 20px; border-bottom: 1px solid #000; background: #f8f8f8;">
-                        <div style="width: 48%;">
-                            <table style="width: 100%;">
-                                <tr><td style="font-weight: bold;">Payment type:</td><td>${getElementText('payment_info payment_type')}</td></tr>
-                                <tr><td style="font-weight: bold;">Payment symbol:</td><td>${getElementText('payment_info payment_symbol')}</td></tr>
-                            </table>
-                        </div>
-                        <div style="width: 48%;">
-                            <table style="width: 100%;">
-                                <tr><td style="font-weight: bold;">Issue date</td><td style="font-weight: bold;">Delivery date</td><td style="font-weight: bold;">Due date</td></tr>
-                                <tr><td>${getElementText('header issue_date')}</td><td>${getElementText('header delivery_date')}</td><td>${getElementText('header due_date')}</td></tr>
-                            </table>
-                        </div>
+                    <!-- Date Information -->
+                    <div style="padding: 8px 15px; border-bottom: 1px solid #000;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 10px;">
+                            <tr>
+                                <td style="padding: 2px 3px; font-weight: bold; width: 15%;">Issue date</td>
+                                <td style="padding: 2px 3px; font-weight: bold; width: 15%;">Delivery date</td>
+                                <td style="padding: 2px 3px; font-weight: bold; width: 15%;">Due date</td>
+                                <td style="width: 55%;"></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 2px 3px;">${getElementText('header issue_date')}</td>
+                                <td style="padding: 2px 3px;">${getElementText('header delivery_date')}</td>
+                                <td style="padding: 2px 3px;">${getElementText('header due_date')}</td>
+                                <td></td>
+                            </tr>
+                        </table>
                     </div>
                     
                     <!-- Items Table -->
-                    <table style="width: 100%; border-collapse: collapse;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 9px;">
                         <thead>
-                            <tr>
-                                <th style="background: #e0e0e0; padding: 8px 5px; border: 1px solid #000; font-weight: bold; font-size: 11px;">Item description</th>
-                                <th style="background: #e0e0e0; padding: 8px 5px; border: 1px solid #000; font-weight: bold; font-size: 11px;">QTY</th>
-                                <th style="background: #e0e0e0; padding: 8px 5px; border: 1px solid #000; font-weight: bold; font-size: 11px;">Unit</th>
-                                <th style="background: #e0e0e0; padding: 8px 5px; border: 1px solid #000; font-weight: bold; font-size: 11px;">Price per unit</th>
-                                <th style="background: #e0e0e0; padding: 8px 5px; border: 1px solid #000; font-weight: bold; font-size: 11px;">Total excl. VAT</th>
-                                <th style="background: #e0e0e0; padding: 8px 5px; border: 1px solid #000; font-weight: bold; font-size: 11px;">VAT</th>
-                                <th style="background: #e0e0e0; padding: 8px 5px; border: 1px solid #000; font-weight: bold; font-size: 11px;">Total incl. VAT</th>
+                            <tr style="background: #f5f5f5;">
+                                <th style="padding: 6px 3px; border: 1px solid #000; font-weight: bold; text-align: left; width: 45%;">Item description</th>
+                                <th style="padding: 6px 3px; border: 1px solid #000; font-weight: bold; text-align: center; width: 6%;">QTY</th>
+                                <th style="padding: 6px 3px; border: 1px solid #000; font-weight: bold; text-align: center; width: 6%;">Unit</th>
+                                <th style="padding: 6px 3px; border: 1px solid #000; font-weight: bold; text-align: right; width: 12%;">Price per unit</th>
+                                <th style="padding: 6px 3px; border: 1px solid #000; font-weight: bold; text-align: right; width: 12%;">Total excl. VAT</th>
+                                <th style="padding: 6px 3px; border: 1px solid #000; font-weight: bold; text-align: center; width: 6%;">VAT</th>
+                                <th style="padding: 6px 3px; border: 1px solid #000; font-weight: bold; text-align: right; width: 13%;">Total incl. VAT</th>
                             </tr>
                         </thead>
                         <tbody>
                             ${Array.from(xmlDoc.querySelectorAll('item')).map(item => `
                                 <tr>
-                                    <td style="padding: 6px 5px; border: 1px solid #000; font-size: 11px;">${item.querySelector('description').textContent}</td>
-                                    <td style="padding: 6px 5px; border: 1px solid #000; font-size: 11px; text-align: center;">${item.querySelector('quantity').textContent}</td>
-                                    <td style="padding: 6px 5px; border: 1px solid #000; font-size: 11px; text-align: center;">${item.querySelector('unit').textContent}</td>
-                                    <td style="padding: 6px 5px; border: 1px solid #000; font-size: 11px; text-align: right;">${item.querySelector('price_per_unit').textContent}</td>
-                                    <td style="padding: 6px 5px; border: 1px solid #000; font-size: 11px; text-align: right;">${item.querySelector('total_excl_vat').textContent}</td>
-                                    <td style="padding: 6px 5px; border: 1px solid #000; font-size: 11px; text-align: center;">${item.querySelector('vat_rate').textContent}%</td>
-                                    <td style="padding: 6px 5px; border: 1px solid #000; font-size: 11px; text-align: right;">${item.querySelector('total_incl_vat').textContent}</td>
+                                    <td style="padding: 4px 3px; border: 1px solid #000; vertical-align: top; line-height: 1.2; font-size: 9px;">${item.querySelector('description').textContent}</td>
+                                    <td style="padding: 4px 3px; border: 1px solid #000; text-align: center; vertical-align: top;">${item.querySelector('quantity').textContent}</td>
+                                    <td style="padding: 4px 3px; border: 1px solid #000; text-align: center; vertical-align: top;">${item.querySelector('unit').textContent}</td>
+                                    <td style="padding: 4px 3px; border: 1px solid #000; text-align: right; vertical-align: top;">${parseFloat(item.querySelector('price_per_unit').textContent).toFixed(2)}</td>
+                                    <td style="padding: 4px 3px; border: 1px solid #000; text-align: right; vertical-align: top;">${parseFloat(item.querySelector('total_excl_vat').textContent).toFixed(2)}</td>
+                                    <td style="padding: 4px 3px; border: 1px solid #000; text-align: center; vertical-align: top;">${item.querySelector('vat_rate').textContent}%</td>
+                                    <td style="padding: 4px 3px; border: 1px solid #000; text-align: right; vertical-align: top;">${parseFloat(item.querySelector('total_incl_vat').textContent).toFixed(2)}</td>
                                 </tr>
                             `).join('')}
                             <tr>
-                                <td colspan="6" style="padding: 6px 5px; border: 1px solid #000; font-size: 11px; text-align: right; font-weight: bold;">Total:</td>
-                                <td style="padding: 6px 5px; border: 1px solid #000; font-size: 11px; text-align: right; font-weight: bold;">${getElementText('totals subtotal')}</td>
+                                <td colspan="6" style="padding: 5px 3px; border: 1px solid #000; text-align: right; font-weight: bold;">Total:</td>
+                                <td style="padding: 5px 3px; border: 1px solid #000; text-align: right; font-weight: bold;">${parseFloat(getElementText('totals subtotal')).toFixed(2)}</td>
                             </tr>
                         </tbody>
                     </table>
                     
-                    <!-- Totals -->
-                    <div style="display: flex; justify-content: flex-end; padding: 20px;">
-                        <table style="border-collapse: collapse; width: 300px;">
-                            <tr><td style="padding: 5px 10px; border: 1px solid #000; font-weight: bold; background: #f0f0f0;">Discount:</td><td style="padding: 5px 10px; border: 1px solid #000; text-align: right;">${getElementText('totals discount_percent')}%</td></tr>
-                            <tr><td style="padding: 5px 10px; border: 1px solid #000; font-weight: bold; background: #f0f0f0;">Total amount excl. VAT:</td><td style="padding: 5px 10px; border: 1px solid #000; text-align: right;">${getElementText('totals total_amount_excl_vat')} ${getElementText('totals currency')}</td></tr>
-                            <tr><td style="padding: 5px 10px; border: 1px solid #000; font-weight: bold; background: #f0f0f0;">VAT*:</td><td style="padding: 5px 10px; border: 1px solid #000; text-align: right;">${getElementText('totals vat_total')} ${getElementText('totals currency')}</td></tr>
-                            <tr><td style="padding: 5px 10px; border: 1px solid #000; font-weight: bold; background: #f0f0f0;">Total amount incl. VAT:</td><td style="padding: 5px 10px; border: 1px solid #000; text-align: right;">${getElementText('totals total_amount_incl_vat')} ${getElementText('totals currency')}</td></tr>
-                            <tr><td style="padding: 5px 10px; border: 1px solid #000; font-weight: bold; background: #f0f0f0;">Advance paid:</td><td style="padding: 5px 10px; border: 1px solid #000; text-align: right;">${getElementText('totals advance_paid')} ${getElementText('totals currency')}</td></tr>
-                            <tr style="background: #d0d0d0; font-weight: bold; font-size: 14px;"><td style="padding: 5px 10px; border: 1px solid #000;">Total due:</td><td style="padding: 5px 10px; border: 1px solid #000; text-align: right;">${getElementText('totals total_due')} ${getElementText('totals currency')}</td></tr>
-                        </table>
-                    </div>
-                    
-                    <!-- Footer -->
-                    <div style="padding: 20px; border-top: 1px solid #000; display: flex; justify-content: space-between;">
-                        <div style="font-size: 10px;">
-                            <p>${getElementText('notes vat_note')}</p>
-                            <br/>
-                            <p><strong>Issued by:</strong></p>
-                            <div style="width: 150px; height: 40px; border-bottom: 1px solid #000; margin: 10px 0;"></div>
-                            <p>${getElementText('issued_by name')}</p>
+                    <!-- Bottom section with totals and footer -->
+                    <div style="display: flex; min-height: 160px;">
+                        <!-- Left side - Footer info -->
+                        <div style="width: 50%; padding: 12px 15px; font-size: 9px;">
+                            <div style="margin-bottom: 12px;">
+                                <strong>* VAT reverse charge. Tax is paid by the customer.</strong>
+                            </div>
+                            <div style="margin-bottom: 8px;">
+                                <strong>Issued by:</strong>
+                            </div>
+                            <div style="margin: 15px 0 8px 0;">
+                                <div style="width: 160px; height: 1px; border-bottom: 1px solid #000;"></div>
+                            </div>
+                            <div style="font-weight: bold;">
+                                ${getElementText('issued_by name')}
+                            </div>
                         </div>
-                        <div style="text-align: center; font-size: 11px;">
-                            <p style="font-size: 14px; font-weight: bold; background: #d0d0d0; padding: 5px;">
-                                ${getElementText('totals total_due')} ${getElementText('totals currency')}
-                            </p>
-                            <p style="font-size: 10px; margin-top: 5px;">
+                        
+                        <!-- Right side - Totals table -->
+                        <div style="width: 50%; padding: 12px 15px;">
+                            <table style="border-collapse: collapse; width: 100%; font-size: 10px; margin-left: auto;">
+                                <tr>
+                                    <td style="padding: 3px 6px; border: 1px solid #000; font-weight: bold; background: #f8f8f8; width: 65%;">Received by:</td>
+                                    <td style="padding: 3px 6px; border: 1px solid #000; text-align: right; width: 35%;"></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 3px 6px; border: 1px solid #000; font-weight: bold; background: #f8f8f8;">Discount:</td>
+                                    <td style="padding: 3px 6px; border: 1px solid #000; text-align: right;">${getElementText('totals discount_percent')}%</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 3px 6px; border: 1px solid #000; font-weight: bold; background: #f8f8f8;">Total amount excl. VAT:</td>
+                                    <td style="padding: 3px 6px; border: 1px solid #000; text-align: right;">${parseFloat(getElementText('totals total_amount_excl_vat')).toFixed(2)} ${getElementText('totals currency')}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 3px 6px; border: 1px solid #000; font-weight: bold; background: #f8f8f8;">VAT*:</td>
+                                    <td style="padding: 3px 6px; border: 1px solid #000; text-align: right;">${parseFloat(getElementText('totals vat_total')).toFixed(2)} ${getElementText('totals currency')}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 3px 6px; border: 1px solid #000; font-weight: bold; background: #f8f8f8;">Total amount incl. VAT:</td>
+                                    <td style="padding: 3px 6px; border: 1px solid #000; text-align: right;">${parseFloat(getElementText('totals total_amount_incl_vat')).toFixed(2)} ${getElementText('totals currency')}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 3px 6px; border: 1px solid #000; font-weight: bold; background: #f8f8f8;">Advance paid:</td>
+                                    <td style="padding: 3px 6px; border: 1px solid #000; text-align: right;">${parseFloat(getElementText('totals advance_paid')).toFixed(2)} ${getElementText('totals currency')}</td>
+                                </tr>
+                                <tr style="background: #d0d0d0;">
+                                    <td style="padding: 4px 6px; border: 1px solid #000; font-weight: bold; font-size: 11px;">Total due:</td>
+                                    <td style="padding: 4px 6px; border: 1px solid #000; text-align: right; font-weight: bold; font-size: 11px;">${parseFloat(getElementText('totals total_due')).toFixed(2)} ${getElementText('totals currency')}</td>
+                                </tr>
+                            </table>
+                            
+                            <!-- Large total amount -->
+                            <div style="text-align: center; margin-top: 12px; padding: 6px; background: #e8e8e8; font-weight: bold; font-size: 14px; border: 1px solid #ccc;">
+                                ${parseFloat(getElementText('totals total_due')).toFixed(2)} ${getElementText('totals currency')}
+                            </div>
+                            <div style="text-align: center; font-size: 8px; margin-top: 4px; font-style: italic; line-height: 1.2;">
                                 ${getElementText('totals amount_in_words')}
-                            </p>
+                            </div>
                         </div>
                     </div>
                 </div>
