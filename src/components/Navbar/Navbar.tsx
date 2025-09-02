@@ -4,6 +4,7 @@ import "./Navbar.css";
 import {Link, NavLink, useNavigate, useLocation} from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "../LanguageSwitcher";
+const miLogo = "/logo/logo.png";
 
 /**
  * MARTYX "Metal" Navbar – fully responsive with hamburger mobile drawer.
@@ -229,9 +230,9 @@ export default function Navbar({cartCount = 0, onSearchSubmit, user, onLogout}: 
                     <div className="mi-nav__bar">
                         {/* Brand */}
                         <Link to="/" className="mi-brand" aria-label="Martyx Industries">
-                            <MILogo/>
+                            <img src={miLogo} alt="Martyx Industries logo" className="mi-brand__logo" />
                             <span className="mi-brand__text">
-                                <span className="mi-brand__line">MARTYX</span>
+                                <span className="mi-brand__line">MARTYX </span>
                                 <span className="mi-brand__line">INDUSTRIES</span>
                             </span>
                         </Link>
@@ -319,20 +320,6 @@ export default function Navbar({cartCount = 0, onSearchSubmit, user, onLogout}: 
 }
 
 /* ===== Inline SVG icons ===== */
-const MILogo = React.memo(function MILogo() {
-    return (
-        <svg width="34" height="34" viewBox="0 0 32 32" aria-hidden="true">
-            <rect x="1.5" y="1.5" width="29" height="29" rx="8" fill="url(#g-mi)" stroke="rgba(255,255,255,.12)"/>
-            <path d="M8 23V9h4l4 7 4-7h4v14h-4v-8l-4 7-4-7v8H8z" fill="var(--accent)"/>
-            <defs>
-                <linearGradient id="g-mi" x1="0" y1="0" x2="0" y2="32">
-                    <stop stopColor="#1b232b"/>
-                    <stop offset="1" stopColor="#12181f"/>
-                </linearGradient>
-            </defs>
-        </svg>
-    );
-});
 
 function SearchIcon() {
     return (

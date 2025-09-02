@@ -701,6 +701,12 @@
     text-decoration: none;
 }
 
+.mi-brand__logo {
+    width: 34px;
+    height: 34px;
+    display: block;
+}
+
 .mi-brand__text {
     color: var(--text);
     font-weight: 700;
@@ -906,7 +912,7 @@
     }
     
     .mi-brand__line:first-child {
-        margin-bottom: -2px;
+        margin-bottom: 2px;
     }
 }
 
