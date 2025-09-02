@@ -708,10 +708,14 @@
 }
 
 .mi-brand__text {
-    color: var(--text);
+    color: #ffc500;
     font-weight: 700;
     letter-spacing: .06em;
     white-space: nowrap;
+    display: flex;
+    flex-direction: column;
+    line-height: 1;
+    row-gap: 2px;
 }
 
 /* "Brushed metal" panel */
@@ -885,7 +889,10 @@
     }
 
     .mi-brand__text {
-        display: inline;
+        display: flex;
+        flex-direction: column;
+        line-height: 1;
+        row-gap: 2px;
     }
 }
 
@@ -899,21 +906,11 @@
         margin-left: 16px;
     }
     
-    /* Stack logo text vertically on mobile */
-    .mi-brand__text {
-        display: flex;
-        flex-direction: column;
-        line-height: 1;
-    }
-    
     .mi-brand__line {
         display: block;
         font-size: 0.85em;
     }
     
-    .mi-brand__line:first-child {
-        margin-bottom: 2px;
-    }
 }
 
 /* Mobile drawer (overlay + slide-in panel) */
