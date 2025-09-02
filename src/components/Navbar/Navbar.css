@@ -883,6 +883,33 @@
     }
 }
 
+/* Mobile icon button spacing fix */
+@media (max-width: 1023px) {
+    .mi-iconbtn.mi-mobile {
+        margin-right: 16px;
+    }
+
+    .mi-brand {
+        margin-left: 16px;
+    }
+    
+    /* Stack logo text vertically on mobile */
+    .mi-brand__text {
+        display: flex;
+        flex-direction: column;
+        line-height: 1;
+    }
+    
+    .mi-brand__line {
+        display: block;
+        font-size: 0.85em;
+    }
+    
+    .mi-brand__line:first-child {
+        margin-bottom: -2px;
+    }
+}
+
 /* Mobile drawer (overlay + slide-in panel) */
 .mi-drawer {
     position: fixed; /* critical */

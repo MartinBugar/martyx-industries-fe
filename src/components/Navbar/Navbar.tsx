@@ -230,7 +230,10 @@ export default function Navbar({cartCount = 0, onSearchSubmit, user, onLogout}: 
                         {/* Brand */}
                         <Link to="/" className="mi-brand" aria-label="Martyx Industries">
                             <MILogo/>
-                            <span className="mi-brand__text">MARTYX INDUSTRIES</span>
+                            <span className="mi-brand__text">
+                                <span className="mi-brand__line">MARTYX</span>
+                                <span className="mi-brand__line">INDUSTRIES</span>
+                            </span>
                         </Link>
 
                         {/* Primary links (desktop) */}
