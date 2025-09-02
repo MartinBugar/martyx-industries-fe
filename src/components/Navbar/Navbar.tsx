@@ -192,10 +192,6 @@ export default function Navbar({cartCount = 0, onSearchSubmit, user, onLogout}: 
                     </NavLink>
                 ))}
 
-                {/* Language Switcher (mobile drawer) */}
-                <div style={{ padding: "10px 0", borderTop: "1px solid rgba(255,255,255,0.1)", marginTop: 10 }}>
-                  <LanguageSwitcher />
-                </div>
 
                 {/* Auth / User actions (mobile drawer) */}
                 <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
