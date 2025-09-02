@@ -1,19 +1,92 @@
 /* PayPal Success - modern minimal light theme aligned with site */
 
-/* Minimal dropdown styles (component trigger reuses .download-button) */
-.dropdown { position: relative; display: inline-block; }
-.dropdown-trigger { display:inline-flex; align-items:center; gap:8px; }
+/* Modern dropdown styles matching website design */
+.dropdown { 
+  position: relative; 
+  display: inline-block; 
+}
+
+.dropdown-trigger { 
+  display: inline-flex; 
+  align-items: center; 
+  gap: 8px; 
+}
+
 .dropdown-menu {
-  position: absolute; top: calc(100% + 8px); left: 0; z-index: 50;
-  min-width: 280px; padding: 8px;
-  background: var(--card, #141a20); border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0,0,0,.35);
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 9999;
+  min-width: 100px;
+  background: linear-gradient(135deg, var(--accent, #28c1ff) 0%, rgba(40, 193, 255, 0.9) 100%);
+  border: 1px solid rgba(40, 193, 255, 0.3);
+  border-radius: 16px;
+  backdrop-filter: blur(15px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
 }
+
 .dropdown-item {
-  display: block; width: 100%; text-align: left;
-  padding: 10px 14px; border-radius: 10px; background: transparent;
+  display: block; 
+  width: 100%; 
+  text-align: left;
+  border-radius: 12px; 
+  background: transparent;
+  border: none;
+  color: #000000;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
 }
-.dropdown-item:hover { background: rgba(255,255,255,.06); }
+
+.dropdown-item:hover {
+  color: #ffffff;
+  transform: translateX(4px);
+}
+
+.dropdown-item:focus {
+  outline: 2px solid var(--accent, #28c1ff);
+  outline-offset: 2px;
+}
+
+.dropdown-item:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.dropdown-item:disabled:hover {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.6);
+  transform: none;
+  box-shadow: none;
+}
+
+/* Download button styling - same height as other action buttons */
+.download-button.dropdown-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: var(--accent, #28c1ff);
+  color: #0B0F14;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(40, 193, 255, 0.2);
+}
+
+.download-button.dropdown-trigger:hover {
+  filter: brightness(0.9);
+  transform: translateY(-1px);
+}
 
 .order-container {
   max-width: 1000px;
@@ -150,24 +223,31 @@
 }
 
 .actions button {
-  background: var(--secondary-color, #4caf50);
-  color: #ffffff;
-  border: 1px solid var(--secondary-color, #4caf50);
-  border-radius: 8px;
-  padding: 10px 14px;
+  background: var(--accent, #28c1ff);
+  color: #0B0F14;
+  border: 1px solid var(--accent, #28c1ff);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(40, 193, 255, 0.2);
 }
 
 .actions button:hover {
-  filter: brightness(0.95);
+  filter: brightness(0.9);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(40, 193, 255, 0.3);
 }
 
 .actions button[disabled] {
-  background: #b9e6c9;
-  border-color: #b9e6c9;
-  color: #134e1d;
+  background: rgba(40, 193, 255, 0.3);
+  border-color: rgba(40, 193, 255, 0.3);
+  color: rgba(11, 15, 20, 0.6);
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 .msg-error {
@@ -186,9 +266,9 @@
 
 /* Accessibility: visible focus state for action buttons */
 .actions button:focus-visible {
-  outline: 2px solid var(--secondary-color, #4caf50);
+  outline: 2px solid var(--accent, #28c1ff);
   outline-offset: 2px;
-  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+  box-shadow: 0 0 0 3px rgba(40, 193, 255, 0.2);
 }
 
 /* Modal overlay for non-completed payment statuses */

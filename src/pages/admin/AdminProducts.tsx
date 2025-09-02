@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
@@ -22,35 +22,18 @@ const AdminProducts: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Filters
-  const [category, setCategory] = useState<string>('');
-  const [activeOnly, setActiveOnly] = useState<boolean>(false);
 
   // Create form state
   const [createData, setCreateData] = useState<typeof initialCreate>({ ...initialCreate });
   const [creating, setCreating] = useState<boolean>(false);
   const [showCreateForm, setShowCreateForm] = useState<boolean>(false);
 
-  const filteredProducts = useMemo(() => {
-    let data = products;
-    if (category.trim()) {
-      const q = category.toLowerCase();
-      data = data.filter(p => String(p.category ?? '').toLowerCase().includes(q));
-    }
-    if (activeOnly) {
-      data = data.filter(p => p.active === true);
-    }
-    return data;
-  }, [products, category, activeOnly]);
 
   const loadProducts = async () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await adminProductsService.getProducts({
-        category: category.trim() || undefined,
-        active: activeOnly || undefined,
-      });
+      const data = await adminProductsService.getProducts({});
       setProducts(data);
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Failed to load products';
@@ -123,23 +106,11 @@ const AdminProducts: React.FC = () => {
       <div className="admin-page">
         <div className="admin-container">
           <div className="admin-header">
-            <div>
+            <div className="admin-header-content">
               <h2 className="admin-title">Product Management</h2>
-              <p className="admin-subtitle">List, create, edit and delete products.</p>
+              <p className="admin-subtitle">Manage your product inventory with ease. Create, edit, and organize all your products in one place.</p>
             </div>
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <input
-                type="text"
-                className="form-input"
-                placeholder="Filter by category..."
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-              />
-              <label style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <input type="checkbox" checked={activeOnly} onChange={(e) => setActiveOnly(e.target.checked)} /> Active only
-              </label>
-              <button className="btn btn-outline" onClick={loadProducts} disabled={loading}>Apply</button>
-              <button className="btn btn-outline" onClick={() => { setCategory(''); setActiveOnly(false); }} disabled={loading}>Clear</button>
+            <div className="admin-header-actions">
               <button className="btn btn-primary" onClick={() => { if (!showCreateForm) resetCreate(); setShowCreateForm(!showCreateForm); }}>
                 {showCreateForm ? 'Hide Create Form' : 'Create New Product'}
               </button>
@@ -262,10 +233,10 @@ const AdminProducts: React.FC = () => {
               <tbody>
                 {loading ? (
                   <tr><td colSpan={8} className="table-empty">Loading products...</td></tr>
-                ) : filteredProducts.length === 0 ? (
+                ) : products.length === 0 ? (
                   <tr><td colSpan={8} className="table-empty">No products found.</td></tr>
                 ) : (
-                  filteredProducts.map(p => (
+                  products.map(p => (
                     <tr key={p.id as React.Key}>
                       <td>{p.id}</td>
                       <td>{p.name}</td>
