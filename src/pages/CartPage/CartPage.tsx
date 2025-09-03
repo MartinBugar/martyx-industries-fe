@@ -4,271 +4,198 @@ import { useCart } from '../../context/useCart';
 import './CartPage.css';
 
 const CartPage: React.FC = () => {
-  const { items, removeFromCart, updateQuantity, getTotalItems, getTotalPrice, clearCart } = useCart();
+  const { items, removeFromCart, updateQuantity, getTotalItems, getTotalPrice } = useCart();
   const navigate = useNavigate();
 
-  const handleCheckout = () => {
-    navigate('/checkout');
-  };
+  const handleCheckout = () => navigate('/checkout');
+  const handleBackToShopping = () => navigate('/products');
 
-  const handleBackToShopping = () => {
-    navigate('/products');
-  };
-
-  const handleGoHome = () => {
-    navigate('/');
-  };
-
-  const handleQuantityChange = (productId: string, newQuantity: number) => {
-    if (newQuantity < 1) {
-      removeFromCart(productId);
-    } else {
-      updateQuantity(productId, newQuantity);
+  // Robustna mena (default EUR)
+  const formatPrice = (amount: number, currency?: string) => {
+    const code = currency || (items[0]?.product?.currency ?? 'EUR');
+    try {
+      return new Intl.NumberFormat('sk-SK', { style: 'currency', currency: code }).format(amount);
+    } catch {
+      // fallback ak pride custom mena
+      const suffix = code === 'EUR' ? '€' : code;
+      return `${amount.toFixed(2)} ${suffix}`;
     }
   };
 
-  // Helper function to format currency
-  const formatPrice = (amount: number, currency?: string) => {
-    const cur = currency || (items.length > 0 ? items[0].product.currency : 'USD');
-    return `${amount.toFixed(2)} ${cur === 'EUR' ? '€' : cur}`;
-  };
+  // Slovenske pluraly
+  const skItemWord = (count: number) => (count === 1 ? 'položka' : (count >= 2 && count <= 4) ? 'položky' : 'položiek');
+  const skPreparedWord = (count: number) => (count === 1 ? 'pripravená na objednanie' : 'pripravené na objednanie');
 
   const subtotal = getTotalPrice();
-  // Check if all items are digital products (no shipping needed for digital products)
-  const hasPhysicalProducts = items.some(item => item.product.productType === 'PHYSICAL');
+  const hasPhysicalProducts = items.some(i => i.product.productType === 'PHYSICAL');
   const shipping = items.length > 0 && hasPhysicalProducts ? 5.99 : 0;
   const total = subtotal + shipping;
   const isEmpty = items.length === 0;
 
+  const onQty = (productId: string, next: number, isDigital: boolean) => {
+    if (next < 1) return removeFromCart(productId);
+    if (isDigital && next > 1) return; // digital max 1 ks
+    updateQuantity(productId, next);
+  };
+
   return (
     <div className="cart-page-container">
-      <div className="cart-page-header">
-        <h1>Shopping Cart</h1>
-        <p className="cart-page-subtitle">
-          {isEmpty ? 'Your cart is waiting for some amazing products!' : `${getTotalItems()} ${getTotalItems() === 1 ? 'item' : 'items'} ready for checkout`}
-        </p>
-      </div>
-      
-      {isEmpty ? (
-        <section className="empty-cart" role="region" aria-labelledby="empty-cart-title">
-          <div className="empty-cart-icon" aria-hidden="true">
-            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m0 0h9m-9 0a2 2 0 100 4 2 2 0 000-4zm9 0a2 2 0 100 4 2 2 0 000-4z"/>
-            </svg>
-          </div>
-          <h2 id="empty-cart-title">Your cart is empty</h2>
-          <p>Discover amazing products and start building your collection today!</p>
-          <div className="empty-cart-actions">
-            <button className="primary-btn" onClick={handleBackToShopping}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m0 0h9m-9 0a2 2 0 100 4 2 2 0 000-4zm9 0a2 2 0 100 4 2 2 0 000-4z"/>
+      <div className="container">
+        <header className="header">
+          <h1>Nákupný košík</h1>
+          <p>
+            {isEmpty
+              ? 'Váš košík čaká na skvelé produkty!'
+              : `${getTotalItems()} ${skItemWord(getTotalItems())} ${skPreparedWord(getTotalItems())}`}
+          </p>
+        </header>
+
+        {isEmpty ? (
+          <section className="cart-items" role="region" aria-labelledby="empty">
+            <div className="empty-cart">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+                <circle cx="9" cy="21" r="1"/>
+                <circle cx="20" cy="21" r="1"/>
+                <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
               </svg>
-              Start Shopping
-            </button>
-            <button className="secondary-btn" onClick={handleGoHome}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
-                <polyline points="9,22 9,12 15,12 15,22"/>
-              </svg>
-              Go to Home
-            </button>
-          </div>
-        </section>
-      ) : (
-        <div className="cart-layout">
-          <div className="cart-main">
-            <div className="cart-items-header">
-              <h2>Cart Items</h2>
-              <button 
-                className="clear-cart-btn"
-                onClick={clearCart}
-                aria-label="Clear all items from cart"
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="3,6 5,6 21,6"/>
-                  <path d="m19,6v14a2,2 0 0,1-2,2H7a2,2 0 0,1-2-2V6m3,0V4a2,2 0 0,1,2-2h4a2,2 0 0,1,2,2v2"/>
-                  <line x1="10" y1="11" x2="10" y2="17"/>
-                  <line x1="14" y1="11" x2="14" y2="17"/>
+              <h3 id="empty">Váš košík je prázdny</h3>
+              <p>Objavte skvelé produkty a začnite nakupovať ešte dnes.</p>
+              <a className="continue-shopping" onClick={handleBackToShopping} href="#stay"
+                 aria-label="Pokračovať v nákupe">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M19 12H5M5 12l7 7m-7-7l7-7"/>
                 </svg>
-                Clear Cart
-              </button>
+                Pokračovať v nákupe
+              </a>
             </div>
-            
-            <div className="cart-items">
+          </section>
+        ) : (
+          <div className="cart-layout">
+            {/* ITEMS */}
+            <section className="cart-items" aria-label="Položky v košíku">
               {items.map(item => {
-                const thumb = item.product.gallery?.[0];
                 const isDigital = item.product.productType === 'DIGITAL';
+                const thumb = item.product.gallery?.[0];
+
                 return (
-                <div key={item.product.id} className="cart-item">
-                  <div className="cart-item-image">
-                    {thumb ? (
-                      <img src={thumb} alt={item.product.name} />
-                    ) : (
-                      <div aria-hidden="true" style={{width: '100%', height: '100%', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8'}}>
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                          <circle cx="9" cy="9" r="2"/>
-                          <path d="m21 15-3.086-3.086a2 2 0 00-2.828 0L6 21"/>
+                  <div key={item.product.id} className="cart-item">
+                    <div className="item-image" aria-hidden="true">
+                      {thumb ? (
+                        <img src={thumb} alt={item.product.name}/>
+                      ) : (
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <rect x="3" y="3" width="18" height="18" rx="2"/>
+                          <path d="M3 9h18"/>
+                          <path d="M9 21V9"/>
                         </svg>
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="cart-item-details">
-                    <div className="cart-item-info">
-                      <h3 className="cart-item-name">{item.product.name}</h3>
-                      <div className="cart-item-type">
-                        {isDigital ? (
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
-                            <polyline points="3.27,6.96 12,12.01 20.73,6.96"/>
-                            <line x1="12" y1="22.08" x2="12" y2="12"/>
-                          </svg>
-                        ) : (
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8z"/>
-                            <path d="m3.3 7 8.7 5 8.7-5"/>
-                            <path d="M12 22V12"/>
-                          </svg>
-                        )}
-                        {item.product.productType}
-                      </div>
-                      <div className="cart-item-price">
-                        <span className="price-amount">{formatPrice(item.product.price, item.product.currency)}</span>
-                        {item.quantity > 1 && (
-                          <span className="price-per-item">each</span>
-                        )}
+                      )}
+                    </div>
+
+                    <div className="item-details">
+                      <div className="item-name">{item.product.name}</div>
+
+                      <div className="item-type" aria-label={isDigital ? 'Digitálny produkt' : 'Fyzický produkt'}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M5 12.5L10 17.5L20 6.5"/>
+                        </svg>
+                        {isDigital ? 'DIGITAL' : 'PHYSICAL'}
                       </div>
                     </div>
-                    
-                    <div className="cart-item-actions">
-                      <div className="quantity-controls" aria-label={`Quantity controls for ${item.product.name}`}>
-                        <button 
-                          onClick={() => handleQuantityChange(item.product.id, item.quantity - 1)}
+
+                    <div className="item-price-section">
+                      <div className="quantity-control" aria-label={`Upraviť množstvo pre ${item.product.name}`}>
+                        <button
                           className="quantity-btn"
-                          aria-label={`Decrease quantity of ${item.product.name}`}
+                          aria-label="Znížiť množstvo"
+                          onClick={() => onQty(item.product.id, item.quantity - 1, isDigital)}
                           disabled={item.quantity <= 1}
-                        >
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                            <line x1="5" y1="12" x2="19" y2="12"/>
-                          </svg>
-                        </button>
-                        <span className="quantity-display" aria-live="polite" aria-atomic="true">{item.quantity}</span>
-                        <button 
-                          onClick={() => handleQuantityChange(item.product.id, item.quantity + 1)}
+                        >−</button>
+                        <span className="quantity" aria-live="polite">{item.quantity}</span>
+                        <button
                           className="quantity-btn"
-                          aria-label={`Increase quantity of ${item.product.name}`}
+                          aria-label="Zvýšiť množstvo"
+                          onClick={() => onQty(item.product.id, item.quantity + 1, isDigital)}
                           disabled={isDigital && item.quantity >= 1}
-                        >
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                            <line x1="12" y1="5" x2="12" y2="19"/>
-                            <line x1="5" y1="12" x2="19" y2="12"/>
-                          </svg>
-                        </button>
+                        >+</button>
                       </div>
-                      
-                      <div className="cart-item-total">
-                        <span className="total-label">Total</span>
-                        <span className="total-amount">{formatPrice(item.product.price * item.quantity, item.product.currency)}</span>
+
+                      <div className="item-price">
+                        {formatPrice(item.product.price * item.quantity, item.product.currency)}
                       </div>
-                      
-                      <button 
-                        onClick={() => removeFromCart(item.product.id)}
+
+                      <button
                         className="remove-btn"
-                        aria-label={`Remove ${item.product.name} from cart`}
+                        aria-label={`Odstrániť ${item.product.name}`}
+                        onClick={() => removeFromCart(item.product.id)}
+                        title="Odstrániť"
                       >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <polyline points="3,6 5,6 21,6"/>
-                          <path d="m19,6v14a2,2 0 0,1-2,2H7a2,2 0 0,1-2-2V6m3,0V4a2,2 0 0,1,2-2h4a2,2 0 0,1,2,2v2"/>
-                          <line x1="10" y1="11" x2="10" y2="17"/>
-                          <line x1="14" y1="11" x2="14" y2="17"/>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M18 6L6 18M6 6l12 12"/>
                         </svg>
-                        <span className="remove-btn-text">Remove</span>
                       </button>
                     </div>
                   </div>
-                </div>
                 );
               })}
-            </div>
-            
-            <div className="cart-continue-shopping">
-              <button className="secondary-btn" onClick={handleBackToShopping}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M19 12H5"/>
-                  <path d="m12 19-7-7 7-7"/>
+
+              <a className="continue-shopping" onClick={handleBackToShopping} href="#stay" aria-label="Pokračovať v nákupe">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M19 12H5M5 12l7 7m-7-7l7-7"/>
                 </svg>
-                Continue Shopping
-              </button>
-            </div>
-          </div>
-          
-          <div className="cart-summary">
-            <div className="summary-header">
-              <h2>Order Summary</h2>
-            </div>
-            
-            <div className="summary-details">
+                Pokračovať v nákupe
+              </a>
+            </section>
+
+            {/* SUMMARY */}
+            <aside className="order-summary" aria-label="Súhrn objednávky">
+              <h2 className="summary-title">Súhrn objednávky</h2>
+
               <div className="summary-row">
-                <span>Subtotal ({getTotalItems()} item{getTotalItems() !== 1 ? 's' : ''})</span>
+                <span>Medzisúčet ({getTotalItems()} {skItemWord(getTotalItems())})</span>
                 <span>{formatPrice(subtotal)}</span>
               </div>
-              {hasPhysicalProducts && (
-                <>
-                  <div className="summary-row">
-                    <span>Shipping</span>
-                    <span>{shipping > 0 ? formatPrice(shipping) : 'Free'}</span>
-                  </div>
-                  {shipping > 0 && (
-                    <div className="free-shipping-notice">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                      Free shipping on orders over $50
-                    </div>
-                  )}
-                </>
-              )}
-              {!hasPhysicalProducts && items.length > 0 && (
-                <div className="digital-products-notice">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
-                    <polyline points="3.27,6.96 12,12.01 20.73,6.96"/>
-                    <line x1="12" y1="22.08" x2="12" y2="12"/>
+
+              {hasPhysicalProducts ? (
+                <div className="summary-row">
+                  <span>Doprava</span>
+                  <span>{shipping > 0 ? formatPrice(shipping) : 'Zdarma'}</span>
+                </div>
+              ) : (
+                <div className="delivery-info">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="1" y="3" width="15" height="13"/>
+                    <path d="M16 8h4l3 3v5h-7V8z"/>
+                    <circle cx="5.5" cy="18.5" r="2.5"/>
+                    <circle cx="18.5" cy="18.5" r="2.5"/>
                   </svg>
-                  Digital products - delivered via email
+                  <span>Digitálny produkt - doručený emailom</span>
                 </div>
               )}
+
               <div className="summary-row total">
-                <span>Total</span>
+                <span>Celkom</span>
                 <span>{formatPrice(total)}</span>
               </div>
-            </div>
-            
-            <div className="summary-actions">
-              <button className="primary-btn checkout-btn" onClick={handleCheckout}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="1" y="3" width="15" height="13"/>
-                  <path d="m16 8 2 2-2 2"/>
-                  <path d="M21 12H18"/>
+
+              <button className="checkout-btn" onClick={handleCheckout}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M9 11l3 3L22 4"/>
+                  <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
                 </svg>
-                Proceed to Checkout
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 12h14"/>
-                  <path d="m12 5 7 7-7 7"/>
-                </svg>
+                Prejsť k platbe
               </button>
-              
-              <div className="secure-checkout">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+
+              <div className="secure-text">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="5" y="11" width="14" height="10" rx="2"/>
+                  <path d="M12 11V7a5 5 0 010-10"/>
                 </svg>
-                Secure checkout
+                Zabezpečená platba
               </div>
-            </div>
+            </aside>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
