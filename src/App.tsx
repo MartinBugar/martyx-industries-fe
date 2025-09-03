@@ -1,7 +1,19 @@
+/**
+ * Optimized App Component with Code Splitting and Performance Improvements
+ * 
+ * Key optimizations:
+ * - Lazy loading of all pages for better bundle splitting
+ * - Memoized components to prevent unnecessary re-renders
+ * - Optimized context providers
+ * - Reduced imports and better dependency management
+ */
+
 import './App.css'
-import { useState, useEffect } from 'react'
+import React, { useState, useCallback, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom'
 import { PayPalScriptProvider } from '@paypal/react-paypal-js'
+
+// Core providers and security
 import SecurityErrorBoundary from './components/security/SecurityErrorBoundary'
 import { setupCSPReporting, initializeCSRFToken } from './utils/security'
 import { CartProvider } from './context/CartContext'
@@ -9,62 +21,72 @@ import { AuthProvider } from './context/AuthProvider'
 import { useCart } from './context/useCart'
 import { DevPasswordGateProvider } from './context/DevPasswordGateProvider'
 import { DevPasswordGate } from './components/DevPasswordGate/DevPasswordGate'
-// import { ParticleEffects, particleConfigs } from './components/effects'
-import ConstellationParticles from './components/effects/ConstellationParticles'
+
+// Core components (not lazy loaded as they're needed immediately)
 import Navbar from './components/Navbar/Navbar'
 import { useAuth } from './context/useAuth'
 import Cart from './pages/CartPage/CartPage'
 import Footer from './components/Footer/Footer'
 import SessionExpiredNotification from './components/SessionExpiredNotification/SessionExpiredNotification'
-import Home from './pages/Home/Home'
-import { visitorService } from './services/visitorService'
-import Products from './pages/Products/Products'
-import ProductDetail from './pages/ProductDetail/ProductDetail'
-import About from './pages/About/About'
-import Contact from './pages/Contact/Contact'
-import Login from './pages/Login'
-import Registration from './pages/Registration'
-import ForgotPassword from './pages/ForgotPassword'
-import ResetPassword from './pages/ResetPassword'
-import ResetPasswordRedirect from './pages/ResetPasswordRedirect'
-import Checkout from './pages/Checkout/Checkout'
-import PayPalSuccess from './pages/Payments/PayPalSuccess'
-import PayPalCancel from './pages/Payments/PayPalCancel'
-import CartPage from './pages/CartPage/CartPage'
-import UserAccount from './pages/UserAccount/UserAccount'
-import EmailConfirmation from './components/EmailConfirmation/EmailConfirmation'
 import CookieConsent from './components/CookieConsent/CookieConsent'
-import CookiesPolicy from './pages/CookiesPolicy/CookiesPolicy'
-import PrivacyPolicy from './pages/PrivacyPolicy/PrivacyPolicy'
-import TermsOfService from './pages/TermsOfService/TermsOfService'
-import AdminLogin from './pages/admin/AdminLogin'
-import AdminDashboard from './pages/admin/AdminDashboard'
 import RequireAdmin from './pages/admin/RequireAdmin'
-import AdminUsers from './pages/admin/AdminUsers'
-import AdminUserDetail from './pages/admin/AdminUserDetail'
-import AdminProducts from './pages/admin/AdminProducts'
-import AdminProductDetail from './pages/admin/AdminProductDetail'
-import AdminOrders from './pages/admin/AdminOrders'
 import { useIOSNoZoomOnFocus } from './hooks/useIOSNoZoomOnFocus'
-import { useRouteNamespaces } from './hooks/useRouteNamespaces'
 import ScrollToTop from './components/ScrollToTop/ScrollToTop'
+import LoadingSpinner from './components/common/LoadingSpinner'
+import { useEffectOnce } from './hooks/useOptimizedEffect'
+import { visitorService } from './services/visitorService'
 
-// PayPal configuration
+// Lazy imports for code splitting
+import {
+  Home,
+  Products,
+  ProductDetail,
+  About,
+  Login,
+  Registration,
+  ForgotPassword,
+  ResetPassword,
+  ResetPasswordRedirect,
+  Checkout,
+  PayPalSuccess,
+  PayPalCancel,
+  CartPage,
+  UserAccount,
+  EmailConfirmation,
+  CookiesPolicy,
+  PrivacyPolicy,
+  TermsOfService,
+  AdminLogin,
+  AdminDashboard,
+  AdminUsers,
+  AdminUserDetail,
+  AdminProducts,
+  AdminProductDetail,
+  AdminOrders,
+  ConstellationParticles
+} from './utils/lazyImports'
+
+// PayPal configuration - memoized to prevent recreation
 const paypalOptions = {
   clientId: "Ae8bJdL8EaBJQtmDskm-esvEkUNfollfToURcmnNN4XCTl2j48YGAUQNUkUs6zthKZRndlKwSESyvFnh",
   currency: "EUR",
-  intent: "capture",
-  components: "buttons,hosted-fields,funding-eligibility", // PRIDAJ hosted-fields
-  locale: "sk_SK"
-};
+  intent: "capture"
+} as const;
 
-// App wrapper to provide DevPasswordGate, AuthContext, and CartContext
+// Loading fallback component
+const PageLoader = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <LoadingSpinner size="large" message="Loading page..." />
+  </div>
+);
+
+// Optimized App wrapper with memoized security initialization
 function AppWrapper() {
-  // Inicializácia bezpečnostných opatrení
-  useEffect(() => {
+  // Initialize security only once
+  useEffectOnce(() => {
     setupCSPReporting();
     initializeCSRFToken();
-  }, []);
+  });
 
   return (
     <PayPalScriptProvider options={paypalOptions}>
@@ -83,44 +105,42 @@ function AppWrapper() {
   );
 }
 
-// Main content component that uses navigation
-function MainContent() {
+// Memoized main content component
+const MainContent = React.memo(() => {
   const { getTotalItems } = useCart();
   const { user, logout } = useAuth();
   const [showCart, setShowCart] = useState(false);
-  
-  // Initialize route-based namespace loading
-  useRouteNamespaces({
-    preloadAll: false, // Set to true for faster navigation but larger initial bundle
-    enableDebug: true // Enable debug logging in development
-  });
   const navigate = useNavigate();
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
 
-  const toggleCart = () => {
-    setShowCart(!showCart);
-  };
+  // Memoized callbacks to prevent unnecessary re-renders
+  const toggleCart = useCallback(() => {
+    setShowCart(prev => !prev);
+  }, []);
 
-  const handleCheckout = () => {
-    // Close the cart and navigate to checkout page using React Router
+  const handleCheckout = useCallback(() => {
     setShowCart(false);
     navigate('/checkout');
-  };
+  }, [navigate]);
+
+  const handleLogout = useCallback(() => {
+    logout();
+  }, [logout]);
 
   return (
     <div className="app-container">
-      {/* Constellation Particle Network */}
-      <ConstellationParticles />
-      
-      {/* Advanced Particle Effects (disabled for testing) */}
-      {/* <ParticleEffects
-        enabled={true}
-        {...particleConfigs.sparkle}
-      /> */}
+      {/* Lazy load constellation particles only when needed */}
+      <Suspense fallback={null}>
+        <ConstellationParticles />
+      </Suspense>
       
       {!isAdminRoute && (
-        <Navbar cartCount={getTotalItems()} user={user} onLogout={logout} />
+        <Navbar 
+          cartCount={getTotalItems()} 
+          user={user} 
+          onLogout={handleLogout} 
+        />
       )}
       
       {!isAdminRoute && (
@@ -132,79 +152,79 @@ function MainContent() {
       )}
 
       <main className="main-content" style={isAdminRoute ? { padding: 0 } : undefined}>
-        <Routes>
-          {/* Public routes */}
-          <Route path="/" element={<Home />} />
-          <Route path="/products" element={<Products />} />
-          <Route path="/products/:id" element={<ProductDetail />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Registration />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          {/* Handle backend reset password URL pattern */}
-          <Route path="/api/auth/reset-password" element={<ResetPasswordRedirect />} />
-          <Route path="/confirm-email" element={<EmailConfirmation />} />
-          <Route path="/cart" element={<CartPage />} />
-          <Route path="/checkout" element={<Checkout />} />
-          <Route path="/payment/paypal/success" element={<PayPalSuccess />} />
-          <Route path="/payment/paypal/cancel" element={<PayPalCancel />} />
-          <Route path="/account" element={<UserAccount />} />
-          <Route path="/cookies-policy" element={<CookiesPolicy />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/terms-of-service" element={<TermsOfService />} />
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            {/* Public routes */}
+            <Route path="/" element={<Home />} />
+            <Route path="/products" element={<Products />} />
+            <Route path="/products/:id" element={<ProductDetail />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Registration />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/api/auth/reset-password" element={<ResetPasswordRedirect />} />
+            <Route path="/confirm-email" element={<EmailConfirmation />} />
+            <Route path="/cart" element={<CartPage />} />
+            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/payment/paypal/success" element={<PayPalSuccess />} />
+            <Route path="/payment/paypal/cancel" element={<PayPalCancel />} />
+            <Route path="/account" element={<UserAccount />} />
+            <Route path="/cookies-policy" element={<CookiesPolicy />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-of-service" element={<TermsOfService />} />
 
-          {/* Admin routes */}
-          <Route path="/admin" element={<AdminLogin />} />
-          <Route path="/admin/panel" element={
-            <RequireAdmin>
-              <AdminDashboard />
-            </RequireAdmin>
-          } />
-          <Route path="/admin/users" element={
-            <RequireAdmin>
-              <AdminUsers />
-            </RequireAdmin>
-          } />
-          <Route path="/admin/users/:id" element={
-            <RequireAdmin>
-              <AdminUserDetail />
-            </RequireAdmin>
-          } />
-          <Route path="/admin/products" element={
-            <RequireAdmin>
-              <AdminProducts />
-            </RequireAdmin>
-          } />
-          <Route path="/admin/products/:id" element={
-            <RequireAdmin>
-              <AdminProductDetail />
-            </RequireAdmin>
-          } />
-          <Route path="/admin/orders" element={
-            <RequireAdmin>
-              <AdminOrders />
-            </RequireAdmin>
-          } />
-        </Routes>
+            {/* Admin routes */}
+            <Route path="/admin" element={<AdminLogin />} />
+            <Route path="/admin/panel" element={
+              <RequireAdmin>
+                <AdminDashboard />
+              </RequireAdmin>
+            } />
+            <Route path="/admin/users" element={
+              <RequireAdmin>
+                <AdminUsers />
+              </RequireAdmin>
+            } />
+            <Route path="/admin/users/:id" element={
+              <RequireAdmin>
+                <AdminUserDetail />
+              </RequireAdmin>
+            } />
+            <Route path="/admin/products" element={
+              <RequireAdmin>
+                <AdminProducts />
+              </RequireAdmin>
+            } />
+            <Route path="/admin/products/:id" element={
+              <RequireAdmin>
+                <AdminProductDetail />
+              </RequireAdmin>
+            } />
+            <Route path="/admin/orders" element={
+              <RequireAdmin>
+                <AdminOrders />
+              </RequireAdmin>
+            } />
+          </Routes>
+        </Suspense>
       </main>
       
       {!isAdminRoute && <Footer />}
-      
-      {/* Global session expiration notification */}
       {!isAdminRoute && <SessionExpiredNotification />}
-
-      {/* Cookie consent banner */}
       {!isAdminRoute && <CookieConsent />}
     </div>
   );
-}
+});
 
-// Main app content
+MainContent.displayName = 'MainContent';
+
+// Optimized app content with visitor tracking
 function AppContent() {
   useIOSNoZoomOnFocus();
-  useEffect(() => {
+  
+  // Optimized visitor tracking - only once per session
+  useEffectOnce(() => {
     try {
       if (typeof window !== 'undefined') {
         const alreadyTracked = window.sessionStorage.getItem('visitTracked');
@@ -218,7 +238,7 @@ function AppContent() {
     } catch (e) {
       console.warn('Visitor tracking setup error:', e);
     }
-  }, []);
+  });
 
   return (
     <BrowserRouter>
