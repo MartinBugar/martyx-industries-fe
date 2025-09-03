@@ -81,15 +81,8 @@
     "proceed_to_payment": "Prejsť k platbe",
     "secure_payment": "Zabezpečená platba",
     "free": "Zdarma",
-    "item_prepared": {
-      "one": "pripravená na objednanie",
-      "other": "pripravené na objednanie"
-    },
-    "item_count": {
-      "one": "položka",
-      "few": "položky", 
-      "many": "položiek"
-    }
+    "item_prepared": "{count, plural, =1 {pripravená na objednanie} other {pripravené na objednanie}}",
+    "item_count": "{count, plural, =1 {položka} few {položky} many {položiek} other {položiek}}"
   },
   "pay_amount": "Zaplatiť {amount, number, currency}",
   "delivery_eta": "Doručenie do {date, date, long}",

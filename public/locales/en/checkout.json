@@ -81,14 +81,8 @@
     "proceed_to_payment": "Proceed to Payment",
     "secure_payment": "Secure Payment",
     "free": "Free",
-    "item_prepared": {
-      "one": "ready to order",
-      "other": "ready to order"
-    },
-    "item_count": {
-      "one": "item",
-      "other": "items"
-    }
+    "item_prepared": "{count, plural, =1 {ready to order} other {ready to order}}",
+    "item_count": "{count, plural, =1 {item} other {items}}"
   },
   "pay_amount": "Pay {amount, number, currency}",
   "delivery_eta": "Delivery by {date, date, long}",

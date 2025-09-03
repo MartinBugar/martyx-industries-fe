@@ -1,15 +1,60 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useCart } from '../../context/useCart';
 import './CartPage.css';
 
-const CartPage: React.FC = () => {
+interface CartPageProps {
+  // Modal props - when provided, renders as modal
+  isOpen?: boolean;
+  onClose?: () => void;
+  onCheckout?: () => void;
+}
+
+const CartPage: React.FC<CartPageProps> = ({ 
+  isOpen, 
+  onClose, 
+  onCheckout 
+}) => {
   const { items, removeFromCart, updateQuantity, getTotalItems, getTotalPrice } = useCart();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation(['checkout', 'common']);
+  const modalRef = useRef<HTMLDivElement>(null);
 
-  const handleCheckout = () => navigate('/checkout');
+  // Modal mode vs Page mode
+  const isModal = Boolean(isOpen !== undefined);
+  
+  const handleCheckout = () => {
+    if (isModal && onCheckout) {
+      onCheckout();
+    } else {
+      navigate('/checkout');
+    }
+  };
+
+  // Modal-specific functionality
+  useEffect(() => {
+    if (!isModal || !isOpen) return;
+    
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && onClose) onClose();
+    };
+    
+    document.addEventListener('keydown', onKeyDown);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => modalRef.current?.focus(), 0);
+    
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [isModal, isOpen, onClose]);
+
+  const handleViewFullCart = () => {
+    if (onClose) onClose();
+    navigate('/cart');
+  };
   const handleBackToShopping = () => navigate('/products');
 
   // Robust currency formatting with i18n locale
@@ -36,17 +81,34 @@ const CartPage: React.FC = () => {
     updateQuantity(productId, next);
   };
 
-  return (
-    <div className="cart-page-container">
+  // Don't render modal when closed
+  if (isModal && !isOpen) return null;
+
+  const content = (
+    <div className={isModal ? "cart-modal-content" : "cart-page-container"}>
       <div className="container">
-        <header className="header">
-          <h1>{t('cart.title')}</h1>
-          <p>
-            {isEmpty
-              ? t('cart.empty_message')
-              : `${getTotalItems()} ${t('cart.item_count', { count: getTotalItems() })} ${t('cart.item_prepared', { count: getTotalItems() })}`}
-          </p>
-        </header>
+        {isModal && (
+          <div className="modal-header">
+            <h2>Your Cart ({getTotalItems()})</h2>
+            <button className="close-icon-btn" aria-label="Close cart" onClick={onClose}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+        )}
+        
+        {!isModal && (
+          <header className="header">
+            <h1>{t('cart.title')}</h1>
+            <p>
+              {isEmpty
+                ? t('cart.empty_message')
+                : `${getTotalItems()} ${t('cart.item_count', { count: getTotalItems() })} ${t('cart.item_prepared', { count: getTotalItems() })}`}
+            </p>
+          </header>
+        )}
 
         {isEmpty ? (
           <section className="cart-items" role="region" aria-labelledby="empty">
@@ -176,12 +238,22 @@ const CartPage: React.FC = () => {
                 <span>{formatPrice(total)}</span>
               </div>
 
+              {isModal && (
+                <button className="view-cart-btn" onClick={handleViewFullCart}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"/>
+                  </svg>
+                  View Full Cart
+                </button>
+              )}
+
               <button className="checkout-btn" onClick={handleCheckout}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M9 11l3 3L22 4"/>
                   <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
                 </svg>
-                {t('cart.proceed_to_payment')}
+                {isModal ? 'Secure Checkout' : t('cart.proceed_to_payment')}
               </button>
 
               <div className="secure-text">
@@ -197,6 +269,28 @@ const CartPage: React.FC = () => {
       </div>
     </div>
   );
+
+  // Return modal wrapper if in modal mode
+  if (isModal) {
+    return (
+      <div className="cart-modal" aria-hidden={!isOpen} onClick={onClose}>
+        <div
+          className="cart-content"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="cart-modal-title"
+          onClick={(e) => e.stopPropagation()}
+          ref={modalRef}
+          tabIndex={-1}
+        >
+          {content}
+        </div>
+      </div>
+    );
+  }
+
+  // Return page content directly
+  return content;
 };
 
 export default CartPage;

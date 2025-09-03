@@ -81,14 +81,8 @@
     "proceed_to_payment": "Zur Zahlung",
     "secure_payment": "Sichere Zahlung",
     "free": "Kostenlos",
-    "item_prepared": {
-      "one": "bereit zur Bestellung",
-      "other": "bereit zur Bestellung"
-    },
-    "item_count": {
-      "one": "Artikel",
-      "other": "Artikel"
-    }
+    "item_prepared": "{count, plural, =1 {bereit zur Bestellung} other {bereit zur Bestellung}}",
+    "item_count": "{count, plural, =1 {Artikel} other {Artikel}}"
   },
   "pay_amount": "{amount, number, currency} bezahlen",
   "delivery_eta": "Lieferung bis {date, date, long}",

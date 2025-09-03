@@ -1,5 +1,133 @@
-/* === CartPage.css (FINAL) === */
+/* === CartPage.css (FINAL - with Modal Support) === */
 * { margin:0; padding:0; box-sizing:border-box; }
+
+/* Modal Overlay */
+.cart-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-end;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+}
+
+/* Modal Content Container */
+.cart-content {
+  position: relative;
+  width: min(420px, 100vw);
+  height: 100vh;
+  background: rgba(30, 41, 59, 0.95);
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-left: 1px solid rgba(148, 163, 184, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Modal Header */
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.modal-header h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.close-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.close-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+}
+
+/* View Full Cart Button */
+.view-cart-btn {
+  width: 100%;
+  padding: 12px;
+  background: rgba(139, 92, 246, 0.1);
+  color: #8b5cf6;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.view-cart-btn:hover {
+  background: rgba(139, 92, 246, 0.2);
+  transform: translateY(-1px);
+}
+
+/* Modal Content Adjustments */
+.cart-modal-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.cart-modal-content .container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  max-width: none;
+}
+
+.cart-modal-content .cart-layout {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  grid-template-columns: none;
+  overflow: hidden;
+}
+
+.cart-modal-content .cart-items {
+  flex: 1;
+  overflow-y: auto;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 1rem;
+  margin: 0;
+}
+
+.cart-modal-content .order-summary {
+  position: static;
+  background: rgba(51, 65, 85, 0.5);
+  border-top: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 0;
+  padding: 1.5rem;
+}
 
 /* Page */
 .cart-page-container {

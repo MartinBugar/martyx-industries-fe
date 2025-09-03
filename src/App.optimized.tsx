@@ -25,7 +25,7 @@ import { DevPasswordGate } from './components/DevPasswordGate/DevPasswordGate'
 // Core components (not lazy loaded as they're needed immediately)
 import Navbar from './components/Navbar/Navbar'
 import { useAuth } from './context/useAuth'
-import Cart from './components/Cart/Cart'
+import Cart from './pages/CartPage/CartPage'
 import Footer from './components/Footer/Footer'
 import SessionExpiredNotification from './components/SessionExpiredNotification/SessionExpiredNotification'
 import CookieConsent from './components/CookieConsent/CookieConsent'
