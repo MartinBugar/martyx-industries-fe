@@ -22,10 +22,6 @@
     "title": "Kontaktformular",
     "subtitle": "Senden Sie uns eine Nachricht und wir melden uns so schnell wie möglich bei Ihnen",
     "fields": {
-      "name": {
-        "label": "Vollständiger Name",
-        "placeholder": "Ihr Name"
-      },
       "email": {
         "label": "E-Mail-Adresse",
         "placeholder": "ihre@email.de"
@@ -34,7 +30,7 @@
         "label": "Betreff",
         "placeholder": "Nachrichtenbetreff"
       },
-      "message": {
+      "text": {
         "label": "Nachricht",
         "placeholder": "Schreiben Sie hier Ihre Nachricht..."
       }
@@ -42,6 +38,14 @@
     "submit": "Nachricht senden",
     "sending": "Wird gesendet...",
     "success": "Nachricht erfolgreich gesendet!",
-    "error": "Beim Senden der Nachricht ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut."
+    "error": "Beim Senden der Nachricht ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
+    "validation": {
+      "email_required": "E-Mail ist erforderlich",
+      "email_invalid": "E-Mail muss ein gültiges Format haben",
+      "subject_required": "Betreff ist erforderlich",
+      "subject_max_length": "Betreff kann maximal 255 Zeichen haben",
+      "text_required": "Nachrichtentext ist erforderlich",
+      "text_max_length": "Nachrichtentext kann maximal 5000 Zeichen haben"
+    }
   }
 }

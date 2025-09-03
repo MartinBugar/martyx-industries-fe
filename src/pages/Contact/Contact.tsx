@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { contactService } from '../../services/contactService';
+import type { ContactFormRequest } from '../../types/api';
 import './Contact.css';
 
 const Contact: React.FC = () => {
   const { t } = useTranslation('contact');
   const [formData, setFormData] = useState({
-    name: '',
     email: '',
     subject: '',
-    message: ''
+    text: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const [apiError, setApiError] = useState<string | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -25,17 +28,34 @@ const Contact: React.FC = () => {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitStatus('idle');
+    setValidationErrors([]);
+    setApiError(null);
 
     try {
-      // TODO: Implement actual form submission to backend
-      // For now, simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Frontend validation
+      const errors = contactService.validateContactForm(formData as ContactFormRequest);
+      if (errors.length > 0) {
+        setValidationErrors(errors);
+        setSubmitStatus('error');
+        return;
+      }
+
+      // Submit to backend
+      await contactService.sendMessage(formData as ContactFormRequest);
       
-      // Simulate success
+      // Success
       setSubmitStatus('success');
-      setFormData({ name: '', email: '', subject: '', message: '' });
-    } catch (error) {
+      setFormData({ email: '', subject: '', text: '' });
+    } catch (error: any) {
+      console.error('Contact form submission error:', error);
       setSubmitStatus('error');
+      
+      // Handle API error with message from backend
+      if (error.errorData && error.errorData.message) {
+        setApiError(error.errorData.message);
+      } else {
+        setApiError(t('form.error'));
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -123,20 +143,6 @@ const Contact: React.FC = () => {
 
           <form className="contact-form" onSubmit={handleSubmit}>
             <div className="form-group">
-              <label htmlFor="name">{t('form.fields.name.label')}</label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                placeholder={t('form.fields.name.placeholder')}
-                required
-                disabled={isSubmitting}
-              />
-            </div>
-
-            <div className="form-group">
               <label htmlFor="email">{t('form.fields.email.label')}</label>
               <input
                 type="email"
@@ -165,13 +171,13 @@ const Contact: React.FC = () => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="message">{t('form.fields.message.label')}</label>
+              <label htmlFor="text">{t('form.fields.text.label')}</label>
               <textarea
-                id="message"
-                name="message"
-                value={formData.message}
+                id="text"
+                name="text"
+                value={formData.text}
                 onChange={handleInputChange}
-                placeholder={t('form.fields.message.placeholder')}
+                placeholder={t('form.fields.text.placeholder')}
                 rows={6}
                 required
                 disabled={isSubmitting}
@@ -194,7 +200,26 @@ const Contact: React.FC = () => {
 
             {submitStatus === 'error' && (
               <div className="form-message error" role="alert">
-                {t('form.error')}
+                {/* Show validation errors */}
+                {validationErrors.length > 0 && (
+                  <ul className="validation-errors">
+                    {validationErrors.map((error, index) => (
+                      <li key={index}>{t(`form.${error}`)}</li>
+                    ))}
+                  </ul>
+                )}
+                
+                {/* Show API error */}
+                {apiError && (
+                  <div className="api-error">
+                    {apiError}
+                  </div>
+                )}
+                
+                {/* Show generic error if no specific errors */}
+                {validationErrors.length === 0 && !apiError && (
+                  <div>{t('form.error')}</div>
+                )}
               </div>
             )}
           </form>

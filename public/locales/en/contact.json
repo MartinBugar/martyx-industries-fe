@@ -22,10 +22,6 @@
     "title": "Contact Form",
     "subtitle": "Send us a message and we'll get back to you as soon as possible",
     "fields": {
-      "name": {
-        "label": "Full Name",
-        "placeholder": "Your name"
-      },
       "email": {
         "label": "Email Address",
         "placeholder": "your@email.com"
@@ -34,7 +30,7 @@
         "label": "Subject",
         "placeholder": "Message subject"
       },
-      "message": {
+      "text": {
         "label": "Message",
         "placeholder": "Write your message here..."
       }
@@ -42,6 +38,14 @@
     "submit": "Send Message",
     "sending": "Sending...",
     "success": "Message sent successfully!",
-    "error": "An error occurred while sending the message. Please try again."
+    "error": "An error occurred while sending the message. Please try again.",
+    "validation": {
+      "email_required": "Email is required",
+      "email_invalid": "Email must have a valid format",
+      "subject_required": "Subject is required",
+      "subject_max_length": "Subject can have maximum 255 characters",
+      "text_required": "Message text is required",
+      "text_max_length": "Message text can have maximum 5000 characters"
+    }
   }
 }

@@ -89,3 +89,14 @@ export const API_ERROR_CODES = {
 } as const;
 
 export type ApiErrorCode = keyof typeof API_ERROR_CODES;
+
+// Contact Form Types
+export interface ContactFormRequest {
+  email: string;
+  subject: string;
+  text: string;
+}
+
+export interface ContactFormResponse {
+  message: string;
+}

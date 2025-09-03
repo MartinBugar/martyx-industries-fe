@@ -616,3 +616,29 @@
     min-height: 48px; /* Minimum touch target size */
   }
 }
+
+/* Validation Error Styles */
+.validation-errors {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.validation-errors li {
+  padding: clamp(0.25rem, 1vw, 0.375rem) 0;
+  font-size: clamp(0.8rem, 1.8vw, 0.9rem);
+  line-height: 1.4;
+}
+
+.validation-errors li:before {
+  content: "• ";
+  color: #ef4444;
+  font-weight: bold;
+  margin-right: 0.5rem;
+}
+
+.api-error {
+  margin-top: clamp(0.5rem, 1.5vw, 0.75rem);
+  font-size: clamp(0.85rem, 2vw, 0.95rem);
+  line-height: 1.5;
+}
