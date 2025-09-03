@@ -62,12 +62,33 @@
   "cart": {
     "title": "Warenkorb",
     "empty": "Ihr Warenkorb ist leer",
+    "empty_message": "Ihr Warenkorb wartet auf tolle Produkte!",
+    "empty_description": "Entdecken Sie tolle Produkte und fangen Sie heute an zu kaufen.",
     "quantity": "Anzahl",
     "price": "Preis",
     "remove": "Entfernen",
     "update": "Warenkorb aktualisieren",
     "continue_shopping": "Weiter einkaufen",
-    "proceed_to_checkout": "Zur Kasse gehen"
+    "proceed_to_checkout": "Zur Kasse gehen",
+    "items_in_cart": "Artikel im Warenkorb",
+    "digital_product": "Digitales Produkt",
+    "physical_product": "Physisches Produkt",
+    "adjust_quantity": "Menge für {product} anpassen",
+    "decrease_quantity": "Menge verringern",
+    "increase_quantity": "Menge erhöhen",
+    "remove_item": "{product} entfernen",
+    "digital_delivery": "Digitales Produkt - per E-Mail geliefert",
+    "proceed_to_payment": "Zur Zahlung",
+    "secure_payment": "Sichere Zahlung",
+    "free": "Kostenlos",
+    "item_prepared": {
+      "one": "bereit zur Bestellung",
+      "other": "bereit zur Bestellung"
+    },
+    "item_count": {
+      "one": "Artikel",
+      "other": "Artikel"
+    }
   },
   "pay_amount": "{amount, number, currency} bezahlen",
   "delivery_eta": "Lieferung bis {date, date, long}",

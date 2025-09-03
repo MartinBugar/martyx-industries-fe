@@ -62,12 +62,33 @@
   "cart": {
     "title": "Shopping Cart",
     "empty": "Your cart is empty",
+    "empty_message": "Your cart is waiting for great products!",
+    "empty_description": "Discover great products and start shopping today.",
     "quantity": "Quantity",
     "price": "Price",
     "remove": "Remove",
     "update": "Update Cart",
     "continue_shopping": "Continue Shopping",
-    "proceed_to_checkout": "Proceed to Checkout"
+    "proceed_to_checkout": "Proceed to Checkout",
+    "items_in_cart": "Items in cart",
+    "digital_product": "Digital Product",
+    "physical_product": "Physical Product",
+    "adjust_quantity": "Adjust quantity for {product}",
+    "decrease_quantity": "Decrease quantity",
+    "increase_quantity": "Increase quantity",
+    "remove_item": "Remove {product}",
+    "digital_delivery": "Digital product - delivered by email",
+    "proceed_to_payment": "Proceed to Payment",
+    "secure_payment": "Secure Payment",
+    "free": "Free",
+    "item_prepared": {
+      "one": "ready to order",
+      "other": "ready to order"
+    },
+    "item_count": {
+      "one": "item",
+      "other": "items"
+    }
   },
   "pay_amount": "Pay {amount, number, currency}",
   "delivery_eta": "Delivery by {date, date, long}",
