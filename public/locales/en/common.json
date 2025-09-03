@@ -62,5 +62,33 @@
   "date_format": "MM/DD/YYYY",
   "items_count": "{count, plural, =0 {No items} =1 {1 item} other {# items}}",
   "selected_count": "{count, plural, =0 {None selected} =1 {1 selected} other {# selected}}",
-  "languages_available": "{count, plural, =0 {No languages} =1 {1 language available} other {# languages available}}"
+  "languages_available": "{count, plural, =0 {No languages} =1 {1 language available} other {# languages available}}",
+  "download": {
+    "download_product": "Download product",
+    "download_all_products": "Download all products (ZIP)",
+    "downloading": "Downloading…",
+    "download_invoice": "Download invoice (PDF)",
+    "download_failed": "Download failed. Please try again."
+  },
+  "admin": {
+    "confirm_delete_product": "Are you sure you want to delete this product?",
+    "confirm_delete_user": "Are you sure you want to delete this user?",
+    "confirm_delete_review": "Are you sure you want to delete this review?",
+    "failed_create_product": "Failed to create product",
+    "failed_delete_product": "Failed to delete product",
+    "failed_delete_user": "Failed to delete user",
+    "failed_download_product": "Failed to download product",
+    "failed_download_invoice": "Failed to download invoice",
+    "name_required": "Name is required",
+    "last_updated": "Last updated"
+  },
+  "aria": {
+    "order_details": "Order details",
+    "write_review_form": "Write a review form",
+    "delete_review": "Delete review",
+    "download_invoice": "Download Invoice"
+  },
+  "placeholders": {
+    "review_placeholder": "Share your thoughts about this product..."
+  }
 }

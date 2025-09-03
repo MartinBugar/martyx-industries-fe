@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { type TabContent } from '../../data/productData';
 import { reviewsService, type Review as ReviewModel } from '../../services/reviewsService';
 import { useAuth } from '../../context/useAuth';
@@ -111,6 +112,7 @@ const StarRating: React.FC<{ value: number; onChange: (v: number) => void; id?: 
 };
 
 const ReviewsTab: React.FC<ReviewsTabProps> = ({ content, productId }) => {
+  const { t } = useTranslation('common');
   const { isAuthenticated } = useAuth();
   const [reviews, setReviews] = useState<Array<ReviewModel & { displayName: string; createdAt: string }>>([]);
   const [loading, setLoading] = useState(false);
@@ -185,7 +187,7 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ content, productId }) => {
 
   const handleDelete = async (reviewId: string | number) => {
     if (!isAdmin) return;
-    const confirmed = window.confirm('Are you sure you want to delete this review?');
+    const confirmed = window.confirm(t('admin.confirm_delete_review'));
     if (!confirmed) return;
     try {
       setDeletingId(reviewId);
@@ -246,7 +248,7 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ content, productId }) => {
         </div>
 
         {formOpen && isAuthenticated && (
-          <form id="write-review-form" onSubmit={handleSubmit} className="review-form" aria-label="Write a review form">
+          <form id="write-review-form" onSubmit={handleSubmit} className="review-form" aria-label={t('aria.write_review_form')}>
             <div className="form-field">
               <label id="rating-label" htmlFor="rating-stars">Rating</label>
               <StarRating id="rating-stars" value={rating} onChange={setRating} />
@@ -254,7 +256,7 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ content, productId }) => {
             </div>
             <div className="form-field">
               <label htmlFor="review-text">Your review</label>
-              <textarea id="review-text" value={text} onChange={(e) => setText(e.target.value)} rows={5} required placeholder="Share your thoughts about this product..." />
+              <textarea id="review-text" value={text} onChange={(e) => setText(e.target.value)} rows={5} required placeholder={t('placeholders.review_placeholder')} />
             </div>
             <div className="form-actions">
               <button type="submit" className="primary-btn" disabled={submitting || !text.trim()}>{submitting ? 'Submitting...' : 'Submit Review'}</button>
@@ -284,8 +286,8 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ content, productId }) => {
                         className="review-delete-btn"
                         onClick={() => handleDelete(r.id as string | number)}
                         disabled={deletingId === r.id}
-                        aria-label="Delete review"
-                        title="Delete review"
+                        aria-label={t('aria.delete_review')}
+                        title={t('aria.delete_review')}
                       >
                         ×
                       </button>

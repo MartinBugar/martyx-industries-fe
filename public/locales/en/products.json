@@ -70,5 +70,11 @@
   },
   "features": {
     "unavailable": "Content unavailable for Features."
+  },
+  "downloads": {
+    "download_product": "Download product",
+    "download_all_products": "Download all products (ZIP)",
+    "downloading": "Downloading…",
+    "download_failed": "Download failed. Please try again."
   }
 }

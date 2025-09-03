@@ -61,5 +61,34 @@
   "currency": "Währung",
   "date_format": "DD.MM.YYYY",
   "items_count": "{count, plural, =0 {Keine Artikel} =1 {1 Artikel} other {# Artikel}}",
-  "selected_count": "{count, plural, =0 {Keine ausgewählt} =1 {1 ausgewählt} other {# ausgewählt}}"
+  "selected_count": "{count, plural, =0 {Keine ausgewählt} =1 {1 ausgewählt} other {# ausgewählt}}",
+  "languages_available": "{count, plural, =0 {Keine Sprachen} =1 {1 Sprache verfügbar} other {# Sprachen verfügbar}}",
+  "download": {
+    "download_product": "Produkt herunterladen",
+    "download_all_products": "Alle Produkte herunterladen (ZIP)",
+    "downloading": "Wird heruntergeladen…",
+    "download_invoice": "Rechnung herunterladen (PDF)",
+    "download_failed": "Download fehlgeschlagen. Bitte versuchen Sie es erneut."
+  },
+  "admin": {
+    "confirm_delete_product": "Sind Sie sicher, dass Sie dieses Produkt löschen möchten?",
+    "confirm_delete_user": "Sind Sie sicher, dass Sie diesen Benutzer löschen möchten?",
+    "confirm_delete_review": "Sind Sie sicher, dass Sie diese Bewertung löschen möchten?",
+    "failed_create_product": "Produkt konnte nicht erstellt werden",
+    "failed_delete_product": "Produkt konnte nicht gelöscht werden",
+    "failed_delete_user": "Benutzer konnte nicht gelöscht werden",
+    "failed_download_product": "Produkt konnte nicht heruntergeladen werden",
+    "failed_download_invoice": "Rechnung konnte nicht heruntergeladen werden",
+    "name_required": "Name ist erforderlich",
+    "last_updated": "Zuletzt aktualisiert"
+  },
+  "aria": {
+    "order_details": "Bestelldetails",
+    "write_review_form": "Bewertung schreiben Formular",
+    "delete_review": "Bewertung löschen",
+    "download_invoice": "Rechnung herunterladen"
+  },
+  "placeholders": {
+    "review_placeholder": "Teilen Sie Ihre Gedanken zu diesem Produkt..."
+  }
 }

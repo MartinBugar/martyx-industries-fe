@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import '../../../pages/Pages.css';
 
 interface PolicySection {
@@ -15,6 +16,7 @@ interface PolicyPageProps {
 }
 
 const PolicyPage: React.FC<PolicyPageProps> = ({ title, lastUpdated, sections }) => {
+  const { t } = useTranslation('common');
   const renderContent = (content: string | string[], links?: Array<{ text: string; to: string; }>) => {
     if (Array.isArray(content)) {
       return (
@@ -55,7 +57,7 @@ const PolicyPage: React.FC<PolicyPageProps> = ({ title, lastUpdated, sections })
   return (
     <div className="page-container">
       <h1>{title}</h1>
-      <p style={{ color: '#666' }}>Last updated: {lastUpdated}</p>
+      <p style={{ color: '#666' }}>{t('admin.last_updated')}: {lastUpdated}</p>
 
       {sections.map((section, index) => (
         <section key={index} className="about-section">

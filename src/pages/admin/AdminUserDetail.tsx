@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
 import { adminUsersService, type AdminUser } from '../../services/adminUsersService';
 
 const AdminUserDetail: React.FC = () => {
+  const { t } = useTranslation('common');
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -120,13 +122,13 @@ const AdminUserDetail: React.FC = () => {
 
   const handleDelete = async () => {
     if (!id) return;
-    if (!window.confirm('Are you sure you want to delete this user?')) return;
+    if (!window.confirm(t('admin.confirm_delete_user'))) return;
     setError(null);
     try {
       await adminUsersService.deleteUser(id);
       navigate('/admin/users');
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : 'Failed to delete user';
+      const msg = e instanceof Error ? e.message : t('admin.failed_delete_user');
       setError(msg);
     }
   };

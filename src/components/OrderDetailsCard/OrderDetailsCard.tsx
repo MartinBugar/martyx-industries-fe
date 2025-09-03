@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Order } from '../../context/authTypes';
 import { orderService } from '../../services/orderService';
 import './OrderDetailsCard.css';
@@ -12,6 +13,7 @@ const OrderDetailsCard: React.FC<OrderDetailsCardProps> = ({
   order,
   onError
 }) => {
+  const { t } = useTranslation('common');
   const [invoiceDownloadingId, setInvoiceDownloadingId] = useState<string | null>(null);
   const [downloadingItemId, setDownloadingItemId] = useState<string | null>(null);
 
@@ -58,7 +60,7 @@ const OrderDetailsCard: React.FC<OrderDetailsCardProps> = ({
       setInvoiceDownloadingId(order.id);
       await orderService.downloadInvoice(apiOrderId);
     } catch (e) {
-      const msg = e instanceof Error ? e.message : 'Failed to download invoice';
+      const msg = e instanceof Error ? e.message : t('admin.failed_download_invoice');
       onError?.(msg);
     } finally {
       setInvoiceDownloadingId(null);
@@ -72,7 +74,7 @@ const OrderDetailsCard: React.FC<OrderDetailsCardProps> = ({
       setDownloadingItemId(productId);
       await orderService.downloadProduct(apiOrderId, productId, productName);
     } catch (e) {
-      const msg = e instanceof Error ? e.message : 'Failed to download product';
+      const msg = e instanceof Error ? e.message : t('admin.failed_download_product');
       onError?.(msg);
     } finally {
       setDownloadingItemId(null);
@@ -88,7 +90,7 @@ const OrderDetailsCard: React.FC<OrderDetailsCardProps> = ({
   const allowsDownloads = ['completed', 'paid'].includes(order.status.toLowerCase());
 
   return (
-    <div className="order-details-card" id={`order-details-${order.id}`} role="region" aria-label="Order details">
+    <div className="order-details-card" id={`order-details-${order.id}`} role="region" aria-label={t('aria.order_details')}>
       <div className="order-details-header">
         <div className="order-info">
           <div className="order-meta">
@@ -137,7 +139,7 @@ const OrderDetailsCard: React.FC<OrderDetailsCardProps> = ({
                 className="small-download-btn invoice-btn" 
                 onClick={() => void handleInvoiceDownload(order)} 
                 disabled={invoiceDownloadingId === order.id}
-                title="Download Invoice"
+                title={t('aria.download_invoice')}
               >
                 <svg className="download-icon-small" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -146,7 +148,7 @@ const OrderDetailsCard: React.FC<OrderDetailsCardProps> = ({
                   <line x1="16" y1="17" x2="8" y2="17"/>
                   <polyline points="10,9 9,9 8,9"/>
                 </svg>
-                <span>{invoiceDownloadingId === order.id ? 'Downloading…' : 'Download'}</span>
+                <span>{invoiceDownloadingId === order.id ? t('download.downloading') : t('actions.download')}</span>
               </button>
             </div>
           )}
@@ -249,7 +251,7 @@ const OrderDetailsCard: React.FC<OrderDetailsCardProps> = ({
                               <line x1="12" y1="15" x2="12" y2="3"/>
                             </svg>
                             <span>
-                              {downloadingItemId === item.productId ? 'Downloading…' : 'Download'}
+                              {downloadingItemId === item.productId ? t('download.downloading') : t('actions.download')}
                             </span>
                           </button>
                         ) : (

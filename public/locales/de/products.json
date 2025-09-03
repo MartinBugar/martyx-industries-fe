@@ -70,5 +70,11 @@
   },
   "features": {
     "unavailable": "Inhalt für Eigenschaften nicht verfügbar."
+  },
+  "downloads": {
+    "download_product": "Produkt herunterladen",
+    "download_all_products": "Alle Produkte herunterladen (ZIP)",
+    "downloading": "Wird heruntergeladen…",
+    "download_failed": "Download fehlgeschlagen. Bitte versuchen Sie es erneut."
   }
 }

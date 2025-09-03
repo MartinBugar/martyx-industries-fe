@@ -23,5 +23,34 @@
   "cta": {
     "shop_products": "Nakupovať produkty",
     "contact_us": "Kontaktujte nás"
+  },
+  "stats": {
+    "models": "Unikátnych modelov",
+    "customers": "Spokojných zákazníkov",
+    "monthly": "Nových modelov mesačne",
+    "download": "Okamžité stiahnutie"
+  },
+  "mission": {
+    "title": "Naša misia",
+    "description": "Spájame vášeň pre RC modelárstvo s najmodernejšou technológiou 3D tlače. Naše STL súbory sú navrhnuté s maximálnou pozornosťou k detailom, optimalizované pre jednoduchú tlač a perfektný výsledok."
+  },
+  "why": {
+    "title": "Prečo si vybrať nás?",
+    "description": "S viac ako 5 rokmi skúseností v oblasti 3D modelovania a RC modelárstva vám prinášame overené riešenia, ktoré fungujú. Každý model testujeme na rôznych typoch tlačiarní a materiálov."
+  },
+  "features": {
+    "professional": "Profesionálne navrhnuté modely",
+    "optimized": "Optimalizované pre všetky typy tlačiarní",
+    "guides": "Detailné návody a podpory",
+    "community": "Komunita nadšencov",
+    "tested": "Testované na reálnych projektoch",
+    "updates": "Pravidelné aktualizácie modelov",
+    "support_sk": "Zákaznícka podpora v slovenčine",
+    "guarantee": "Garancia kompatibility"
+  },
+  "cta": {
+    "title": "Pripravení začať váš projekt?",
+    "description": "Preskúmajte našu kolekciu prémiových STL modelov a začnite tvoriť úžasné RC modely už dnes!",
+    "button": "Prezrieť katalóg"
   }
 }

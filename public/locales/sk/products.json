@@ -70,5 +70,11 @@
   },
   "features": {
     "unavailable": "Obsah pre vlastnosti nie je dostupný."
+  },
+  "downloads": {
+    "download_product": "Stiahnuť produkt",
+    "download_all_products": "Stiahnuť všetky produkty (ZIP)",
+    "downloading": "Sťahujem…",
+    "download_failed": "Sťahovanie zlyhalo. Skúste to znovu."
   }
 }

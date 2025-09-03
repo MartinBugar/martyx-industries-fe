@@ -23,5 +23,34 @@
   "cta": {
     "shop_products": "Produkte kaufen",
     "contact_us": "Kontaktieren Sie uns"
+  },
+  "stats": {
+    "models": "Einzigartige Modelle",
+    "customers": "Zufriedene Kunden",
+    "monthly": "Neue Modelle monatlich",
+    "download": "Sofortiger Download"
+  },
+  "mission": {
+    "title": "Unsere Mission",
+    "description": "Wir verbinden die Leidenschaft für RC-Modellbau mit modernster 3D-Drucktechnologie. Unsere STL-Dateien sind mit maximaler Detailgenauigkeit entworfen, optimiert für einfachen Druck und perfekte Ergebnisse."
+  },
+  "why": {
+    "title": "Warum uns wählen?",
+    "description": "Mit mehr als 5 Jahren Erfahrung in der 3D-Modellierung und dem RC-Modellbau bringen wir Ihnen bewährte Lösungen, die funktionieren. Wir testen jedes Modell auf verschiedenen Druckertypen und Materialien."
+  },
+  "features": {
+    "professional": "Professionell gestaltete Modelle",
+    "optimized": "Optimiert für alle Druckertypen",
+    "guides": "Detaillierte Anleitungen und Support",
+    "community": "Gemeinschaft von Enthusiasten",
+    "tested": "Getestet an realen Projekten",
+    "updates": "Regelmäßige Modell-Updates",
+    "support_sk": "Kundensupport auf Slowakisch",
+    "guarantee": "Kompatibilitätsgarantie"
+  },
+  "cta": {
+    "title": "Bereit, Ihr Projekt zu starten?",
+    "description": "Erkunden Sie unsere Sammlung von Premium-STL-Modellen und beginnen Sie noch heute mit der Erstellung erstaunlicher RC-Modelle!",
+    "button": "Katalog durchsuchen"
   }
 }

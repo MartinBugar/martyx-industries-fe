@@ -62,5 +62,33 @@
   "date_format": "DD.MM.YYYY",
   "items_count": "{count, plural, =0 {Žiadne položky} =1 {1 položka} few {# položky} many {# položiek} other {# položiek}}",
   "selected_count": "{count, plural, =0 {Nič vybrané} =1 {1 vybraná} few {# vybrané} many {# vybraných} other {# vybraných}}",
-  "languages_available": "{count, plural, =0 {Žiadne jazyky} =1 {1 jazyk dostupný} few {# jazyky dostupné} many {# jazykov dostupných} other {# jazykov dostupných}}"
+  "languages_available": "{count, plural, =0 {Žiadne jazyky} =1 {1 jazyk dostupný} few {# jazyky dostupné} many {# jazykov dostupných} other {# jazykov dostupných}}",
+  "download": {
+    "download_product": "Stiahnuť produkt",
+    "download_all_products": "Stiahnuť všetky produkty (ZIP)",
+    "downloading": "Sťahujem…",
+    "download_invoice": "Stiahnuť faktúru (PDF)",
+    "download_failed": "Sťahovanie zlyhalo. Skúste to znovu."
+  },
+  "admin": {
+    "confirm_delete_product": "Ste si istí, že chcete odstrániť tento produkt?",
+    "confirm_delete_user": "Ste si istí, že chcete odstrániť tohto používateľa?",
+    "confirm_delete_review": "Ste si istí, že chcete odstrániť túto recenziu?",
+    "failed_create_product": "Nepodarilo sa vytvoriť produkt",
+    "failed_delete_product": "Nepodarilo sa odstrániť produkt",
+    "failed_delete_user": "Nepodarilo sa odstrániť používateľa",
+    "failed_download_product": "Nepodarilo sa stiahnuť produkt",
+    "failed_download_invoice": "Nepodarilo sa stiahnuť faktúru",
+    "name_required": "Názov je povinný",
+    "last_updated": "Naposledy aktualizované"
+  },
+  "aria": {
+    "order_details": "Detaily objednávky",
+    "write_review_form": "Formulár pre napísanie recenzie",
+    "delete_review": "Zmazať recenziu",
+    "download_invoice": "Stiahnuť faktúru"
+  },
+  "placeholders": {
+    "review_placeholder": "Podeľte sa o svoje myšlienky o tomto produkte..."
+  }
 }

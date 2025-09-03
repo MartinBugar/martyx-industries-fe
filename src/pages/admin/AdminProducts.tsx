@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
 import { adminProductsService, type BaseProduct, type DigitalProduct, type PhysicalProduct } from '../../services/adminProductsService';
@@ -18,6 +19,7 @@ const initialCreate: CreateProduct = {
 };
 
 const AdminProducts: React.FC = () => {
+  const { t } = useTranslation('common');
   const [products, setProducts] = useState<BaseProduct[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -55,7 +57,7 @@ const AdminProducts: React.FC = () => {
     setError(null);
 
     if (!createData.name?.trim()) {
-      setError('Name is required');
+      setError(t('common:admin.name_required'));
       return;
     }
 
@@ -77,7 +79,7 @@ const AdminProducts: React.FC = () => {
       resetCreate();
       setShowCreateForm(false);
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : 'Failed to create product';
+      const msg = e instanceof Error ? e.message : t('common:admin.failed_create_product');
       setError(msg);
     } finally {
       setCreating(false);
@@ -85,13 +87,13 @@ const AdminProducts: React.FC = () => {
   };
 
   const handleDelete = async (id: string | number) => {
-    if (!window.confirm('Are you sure you want to delete this product?')) return;
+    if (!window.confirm(t('common:admin.confirm_delete_product'))) return;
     setError(null);
     try {
       await adminProductsService.deleteProduct(id);
       setProducts(prev => prev.filter(p => p.id !== id));
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : 'Failed to delete product';
+      const msg = e instanceof Error ? e.message : t('common:admin.failed_delete_product');
       setError(msg);
     }
   };

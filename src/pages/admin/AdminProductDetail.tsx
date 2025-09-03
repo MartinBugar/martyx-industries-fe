@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
 import { adminProductsService, type BaseProduct, type DigitalProduct, type PhysicalProduct } from '../../services/adminProductsService';
 
 const AdminProductDetail: React.FC = () => {
+  const { t } = useTranslation('common');
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
@@ -91,13 +93,13 @@ const AdminProductDetail: React.FC = () => {
 
   const handleDelete = async () => {
     if (!id) return;
-    if (!window.confirm('Are you sure you want to delete this product?')) return;
+    if (!window.confirm(t('admin.confirm_delete_product'))) return;
     setError(null);
     try {
       await adminProductsService.deleteProduct(id);
       navigate('/admin/products');
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : 'Failed to delete product';
+      const msg = e instanceof Error ? e.message : t('admin.failed_delete_product');
       setError(msg);
     }
   };

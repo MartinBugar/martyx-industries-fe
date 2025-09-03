@@ -1,5 +1,6 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
 import { ordersService } from "../services/ordersService";
 import { mapDownloadError } from "../utils/downloadErrors";
 import type { ProductLink } from "../helpers/downloads";
@@ -11,6 +12,7 @@ type Props = {
 };
 
 export const DownloadDropdown: React.FC<Props> = ({ links, allUrl, onError }) => {
+  const { t } = useTranslation(['common', 'products']);
   const [open, setOpen] = useState(false);
   const [busyKey, setBusyKey] = useState<string | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -85,7 +87,7 @@ export const DownloadDropdown: React.FC<Props> = ({ links, allUrl, onError }) =>
     }
   };
 
-  const triggerLabel = "Download product";
+  const triggerLabel = t('common:download.download_product');
 
   const Menu = (
     <div
@@ -102,7 +104,7 @@ export const DownloadDropdown: React.FC<Props> = ({ links, allUrl, onError }) =>
           onClick={() => handleClick(allUrl, "all-products", "all")}
           disabled={busyKey === "all"}
         >
-          {busyKey === "all" ? "Downloading…" : "Download all products (ZIP)"}
+          {busyKey === "all" ? t('common:download.downloading') : t('common:download.download_all_products')}
         </button>
       )}
 
@@ -118,7 +120,7 @@ export const DownloadDropdown: React.FC<Props> = ({ links, allUrl, onError }) =>
             onClick={() => handleClick(pl.url, analyticsLabel, String(idx))}
             disabled={busyKey === String(idx)}
           >
-            {busyKey === String(idx) ? "Downloading…" : displayName}
+            {busyKey === String(idx) ? t('common:download.downloading') : displayName}
           </button>
         );
       })}
