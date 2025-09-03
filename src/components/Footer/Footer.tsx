@@ -14,65 +14,97 @@ const Footer: React.FC = () => {
             <Link to="/" className="brand-logo" aria-label="Martyx Industries">
               <img src={logoImg} alt="Martyx Industries" className="brand-logo-img" />
             </Link>
-            <p className="brand-tagline">Advanced 3D solutions for modern creators.</p>
+            <p className="brand-tagline">Špecialisti na RC modely a 3D tlač. Kvalitné STL súbory a kity pre RC nadšencov.</p>
+            
+            <div className="company-highlights">
+              <div className="highlight-item">
+                <div className="highlight-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                  </svg>
+                </div>
+                <span>500+ modelov</span>
+              </div>
+              <div className="highlight-item">
+                <div className="highlight-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                  </svg>
+                </div>
+                <span>10k+ spokojných zákazníkov</span>
+              </div>
+              <div className="highlight-item">
+                <div className="highlight-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                  </svg>
+                </div>
+                <span>Okamžité stiahnutie</span>
+              </div>
+            </div>
+            
             <div className="social-links" aria-label="Social media">
-              <a href="#" aria-label="Twitter" className="social-link" title="Twitter">
+              <a href="#" aria-label="YouTube" className="social-link" title="YouTube - RC modely a návody">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                  <path d="M4 4L20 20M20 4L4 20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                  <path d="M23 6.5s-.2-1.4-.8-2c-.8-.8-1.6-.8-2-.9C17.3 3.5 12 3.5 12 3.5s-5.3 0-8.2.1c-.4.1-1.2.1-2 .9-.6.6-.8 2-.8 2S.8 8.1.8 9.7v1.5c0 1.6.2 3.2.2 3.2s.2 1.4.8 2c.8.8 1.8.8 2.2.9 1.6.1 8 .1 8 .1s5.3 0 8.2-.1c.4-.1 1.2-.1 2-.9.6-.6.8-2 .8-2s.2-1.6.2-3.2V9.7c0-1.6-.2-3.2-.2-3.2zM9.5 15.5v-7l6.8 3.5-6.8 3.5z" fill="currentColor"/>
                 </svg>
-                <span className="sr-only">Twitter</span>
+                <span className="sr-only">YouTube</span>
               </a>
-              <a href="#" aria-label="LinkedIn" className="social-link" title="LinkedIn">
+              <a href="#" aria-label="Instagram" className="social-link" title="Instagram - RC galéria">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                  <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="2" />
-                  <circle cx="8" cy="10" r="1" fill="currentColor" />
-                  <path d="M7 16V12M11 16V13.5C11 12.1193 12.1193 11 13.5 11C14.8807 11 16 12.1193 16 13.5V16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5" stroke="currentColor" strokeWidth="2"/>
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" stroke="currentColor" strokeWidth="2"/>
+                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" stroke="currentColor" strokeWidth="2"/>
                 </svg>
-                <span className="sr-only">LinkedIn</span>
+                <span className="sr-only">Instagram</span>
               </a>
-              <a href="#" aria-label="GitHub" className="social-link" title="GitHub">
+              <a href="#" aria-label="Facebook" className="social-link" title="Facebook - RC komunita">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                  <path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.483 0-.237-.009-.866-.014-1.699-2.782.604-3.369-1.341-3.369-1.341-.454-1.154-1.109-1.463-1.109-1.463-.907-.62.069-.607.069-.607 1.003.07 1.53 1.03 1.53 1.03.892 1.528 2.341 1.087 2.91.832.091-.646.35-1.087.636-1.337-2.221-.253-4.555-1.11-4.555-4.942 0-1.09.39-1.983 1.029-2.682-.103-.253-.446-1.272.098-2.65 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0 1 12 6.844a9.56 9.56 0 0 1 2.504.337c1.909-1.294 2.748-1.025 2.748-1.025.546 1.379.202 2.398.099 2.65.64.699 1.028 1.592 1.028 2.682 0 3.842-2.337 4.687-4.565 4.936.359.309.679.919.679 1.852 0 1.336-.012 2.415-.012 2.741 0 .268.18.579.688.48A10.003 10.003 0 0 0 22 12c0-5.523-4.477-10-10-10Z" fill="currentColor" />
+                  <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
-                <span className="sr-only">GitHub</span>
+                <span className="sr-only">Facebook</span>
               </a>
             </div>
           </div>
 
           <div className="links-section">
             <div className="links-column">
-              <span className="section-title">Company</span>
+              <span className="section-title">Spoločnosť</span>
               <ul className="footer-links">
-                <li><Link to="/about">About</Link></li>
-                <li><Link to="/about">Careers</Link></li>
+                <li><Link to="/about">O nás</Link></li>
+                <li><Link to="/contact">Kontakt</Link></li>
+                <li><Link to="/products">Katalóg</Link></li>
               </ul>
             </div>
 
             <div className="links-column">
-              <span className="section-title">Support</span>
+              <span className="section-title">Produkty</span>
               <ul className="footer-links">
-                <li><Link to="/about">Contact</Link></li>
-                <li><Link to="/about">FAQ</Link></li>
-                <li><Link to="/products">Shipping & Returns</Link></li>
+                <li><Link to="/products">RC Tank Kity</Link></li>
+                <li><Link to="/products">STL Súbory</Link></li>
+                <li><Link to="/products">Komponenty</Link></li>
               </ul>
             </div>
 
             <div className="links-column">
-              <span className="section-title">Legal</span>
+              <span className="section-title">Podpora</span>
               <ul className="footer-links">
-                <li><Link to="/terms-of-service">Terms of Service</Link></li>
-                <li><Link to="/privacy-policy">Privacy Policy</Link></li>
-                <li><Link to="/cookies-policy">Cookie Policy</Link></li>
+                <li><Link to="/contact">Kontakt & FAQ</Link></li>
+                <li><Link to="/terms-of-service">Obchodné podmienky</Link></li>
+                <li><Link to="/privacy-policy">Ochrana súkromia</Link></li>
               </ul>
             </div>
           </div>
         </div>
 
         <div className="footer-bottom">
-          <p className="copyright">&copy; {currentYear} Martyx Industries. All rights reserved.</p>
+          <p className="copyright">&copy; {currentYear} Martyx Industries. Všetky práva vyhradené. RC modely a 3D tlač.</p>
           
           <div className="payment-methods" aria-label="Accepted payment methods">
-            <span className="payment-label">We accept:</span>
+            <span className="payment-label">Akceptujeme:</span>
             <div className="payment-logos">
               <div className="payment-logo" title="Visa">
                 <svg viewBox="0 0 48 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -102,8 +134,8 @@ const Footer: React.FC = () => {
           </div>
           
           <nav className="bottom-nav" aria-label="Legal links">
-            <Link to="/privacy-policy">Privacy</Link>
-            <Link to="/terms-of-service">Terms</Link>
+            <Link to="/privacy-policy">Súkromie</Link>
+            <Link to="/terms-of-service">Podmienky</Link>
             <Link to="/cookies-policy">Cookies</Link>
           </nav>
         </div>
