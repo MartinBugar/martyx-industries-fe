@@ -1,13 +1,27 @@
 {
-  "title": "About MartyX Industries",
+  "title": "About Martyx Industries",
   "lead": "We engineer 3D‑printed RC platforms and parts that are easy to build, maintain, and upgrade. Designed, tested, and refined so you can spend more time driving and less time troubleshooting.",
-  "highlights": {
-    "title": "What to expect",
-    "rc_ready": "RC‑ready designs with standard hardware fitment",
-    "modular": "Modular parts for quick repairs and upgrades", 
-    "documentation": "Clear build docs, BOMs, and slicer presets"
+  "features": {
+    "title": "What We Do",
+    "precision": {
+      "title": "Engineering Precision",
+      "description": "CAD-designed components with perfect hardware compatibility and optimal performance."
+    },
+    "quality": {
+      "title": "Tested Quality",
+      "description": "Every design is stress-tested and refined through real-world testing and feedback."
+    },
+    "support": {
+      "title": "Complete Support",
+      "description": "Comprehensive documentation, BOMs, and community support for all your builds."
+    }
+  },
+  "story": {
+    "title": "Our Story",
+    "description": "Born from a passion for RC engineering, we combine modern 3D printing technology with precision design to democratize high-quality RC vehicle construction for enthusiasts worldwide."
   },
   "cta": {
-    "shop_products": "Shop Products"
+    "shop_products": "Shop Products",
+    "contact_us": "Contact Us"
   }
 }

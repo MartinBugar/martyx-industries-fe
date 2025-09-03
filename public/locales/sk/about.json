@@ -1,13 +1,27 @@
 {
-  "title": "O MartyX Industries",
+  "title": "O Martyx Industries",
   "lead": "Navrhujeme 3D tlačené RC platformy a diely, ktoré sú jednoduché na zostavenie, údržbu a upgrade. Navrhnuté, testované a zdokonalené, aby ste mohli tráviť viac času jazdením a menej času riešením problémov.",
-  "highlights": {
-    "title": "Čo očakávať",
-    "rc_ready": "RC‑ready dizajny so štandardným hardvérovým osadením",
-    "modular": "Modulárne diely pre rýchle opravy a upgrady",
-    "documentation": "Jasné návody na zostavenie, BOM a nastavenia slicera"
+  "features": {
+    "title": "Čo robíme",
+    "precision": {
+      "title": "Inžinierska presnosť",
+      "description": "CAD-navrhnuté komponenty s dokonalou kompatibilitou hardvéru a optimálnym výkonom."
+    },
+    "quality": {
+      "title": "Testovaná kvalita",
+      "description": "Každý dizajn je testovaný a zdokonalený prostredníctvom reálneho testovania a spätnej väzby."
+    },
+    "support": {
+      "title": "Kompletná podpora",
+      "description": "Komplexná dokumentácia, BOM a komunitná podpora pre všetky vaše zostavy."
+    }
+  },
+  "story": {
+    "title": "Náš príbeh",
+    "description": "Zrodení z vášne pre RC inžinierstvo, kombinujeme modernú 3D tlačovú technológiu s presným dizajnom na demokratizáciu vysokokvalitnej konštrukcie RC vozidiel pre nadšencov po celom svete."
   },
   "cta": {
-    "shop_products": "Nakupovať Produkty"
+    "shop_products": "Nakupovať produkty",
+    "contact_us": "Kontaktujte nás"
   }
 }
