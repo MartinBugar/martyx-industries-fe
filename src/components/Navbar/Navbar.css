@@ -799,7 +799,10 @@
 }
 
 .mi-btn--primary:hover {
-    filter: brightness(.95);
+    background: var(--accent-hover, #e6b82d);
+    color: #0B0F14;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(246, 200, 69, 0.3);
 }
 
 .mi-iconbtn {
