@@ -68,8 +68,8 @@
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--accent) 0%, #3b82f6 100%);
-  color: white;
+  background: linear-gradient(135deg, var(--accent) 0%, #E6B82D 100%);
+  color: #0B0F14;
 }
 
 .btn-primary:hover {

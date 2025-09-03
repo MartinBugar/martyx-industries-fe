@@ -11,7 +11,7 @@ export const particleConfigs = {
   sparkle: {
     type: 'sparkle' as const,
     particleCount: 12,
-    colors: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'],
+    colors: ['#F6C845', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'],
     minSize: 4,
     maxSize: 8,
     lifetime: 1000,
@@ -55,7 +55,7 @@ export const particleConfigs = {
   ripple: {
     type: 'ripple' as const,
     particleCount: 5,
-    colors: ['#3b82f6', '#06b6d4', '#8b5cf6'],
+    colors: ['#F6C845', '#06b6d4', '#8b5cf6'],
     minSize: 20,
     maxSize: 40,
     lifetime: 800,

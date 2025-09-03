@@ -33,7 +33,7 @@ interface ClickParticlesProps {
 const ClickParticles: React.FC<ClickParticlesProps> = ({
   enabled = true,
   particleCount = 12,
-  colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'],
+  colors = ['#F6C845', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'],
   minSize = 4,
   maxSize = 8,
   minSpeed = 2,

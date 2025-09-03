@@ -212,7 +212,7 @@
 
 .item-type {
   display:inline-flex; align-items:center; gap:6px;
-  font-size:12px; color:#60a5fa;
+  font-size:12px; color:var(--products-accent, #F6C845);
   background: rgba(96,165,250,0.1);
   padding:4px 10px; border-radius:20px; width:fit-content;
 }
@@ -285,7 +285,7 @@
   background: rgba(96,165,250,0.1);
   border:1px solid rgba(96,165,250,0.2);
   border-radius:12px; padding:16px; margin:20px 0;
-  display:flex; align-items:center; gap:12px; font-size:14px; color:#60a5fa;
+  display:flex; align-items:center; gap:12px; font-size:14px; color:var(--products-accent, #F6C845);
 }
 
 .checkout-btn {

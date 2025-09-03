@@ -24,7 +24,7 @@
 }
 
 .language-switcher__trigger:focus {
-  outline: 2px solid #0ea5e9;
+  outline: 2px solid var(--products-accent, #F6C845);
   outline-offset: 2px;
 }
 
@@ -81,11 +81,11 @@
 
 .language-switcher__option--active {
   background: #eff6ff;
-  color: #1d4ed8;
+  color: var(--products-accent, #F6C845);
 }
 
 .language-switcher__option:focus {
-  outline: 2px solid #0ea5e9;
+  outline: 2px solid var(--products-accent, #F6C845);
   outline-offset: -2px;
 }
 
@@ -113,11 +113,11 @@
 }
 
 .language-switcher__option--active .language-switcher__option-native {
-  color: #1d4ed8;
+  color: var(--products-accent, #F6C845);
 }
 
 .language-switcher__option--active .language-switcher__option-english {
-  color: #3b82f6;
+  color: var(--products-accent, #F6C845);
 }
 
 .language-switcher__check {
@@ -138,7 +138,7 @@
 
   .language-switcher__option--active {
     background: #1e3a8a;
-    color: #60a5fa;
+    color: var(--products-accent, #F6C845);
   }
 
   .language-switcher__option-native {
@@ -150,11 +150,11 @@
   }
 
   .language-switcher__option--active .language-switcher__option-native {
-    color: #60a5fa;
+    color: var(--products-accent, #F6C845);
   }
 
   .language-switcher__option--active .language-switcher__option-english {
-    color: #93c5fd;
+    color: var(--products-accent, #F6C845);
   }
 }
 

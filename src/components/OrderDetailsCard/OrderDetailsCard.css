@@ -3,7 +3,7 @@
 :root {
   --oh-success: #22c55e;
   --oh-warning: #f59e0b;
-  --oh-info: #3b82f6;
+  --oh-info: var(--products-accent, #F6C845);
   --oh-danger: #ef4444;
   --oh-processing: #8b5cf6;
 }

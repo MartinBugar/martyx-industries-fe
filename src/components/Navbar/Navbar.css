@@ -76,7 +76,7 @@
     left: 0;
     width: 100%;
     height: 2px;
-    background-color: #60a5fa; /* accent underline on dark */
+    background-color: var(--products-accent); /* accent underline on dark */
 }
 
 /* Header actions container */
@@ -118,7 +118,7 @@
     left: 0;
     width: 100%;
     height: 2px;
-    background-color: #60a5fa;
+    background-color: var(--products-accent);
 }
 
 /* User menu styles */

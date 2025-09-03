@@ -87,9 +87,9 @@
   justify-content: center;
   width: 64px;
   height: 64px;
-  background: linear-gradient(135deg, var(--accent) 0%, #3b82f6 100%);
+  background: linear-gradient(135deg, var(--accent) 0%, #E6B82D 100%);
   border-radius: 16px;
-  color: white;
+  color: #0B0F14;
   box-shadow: 0 8px 25px rgba(40, 193, 255, 0.3);
 }
 
@@ -280,7 +280,7 @@
 .modern-error.activation-error {
   background: rgba(59, 130, 246, 0.1);
   border-color: rgba(59, 130, 246, 0.2);
-  color: #3b82f6;
+  color: #E6B82D;
 }
 
 .error-icon {
@@ -331,7 +331,7 @@
 
 .resend-btn {
   background: var(--accent);
-  color: white;
+  color: #0B0F14;
   border: none;
   border-radius: 8px;
   padding: 0.5rem 1rem;
@@ -380,8 +380,8 @@
   width: 100%;
   height: var(--btn-height);
   padding: 0.875rem 1.5rem;
-  background: linear-gradient(135deg, var(--accent) 0%, #3b82f6 100%);
-  color: white;
+  background: linear-gradient(135deg, var(--accent) 0%, #E6B82D 100%);
+  color: #0B0F14;
   border: none;
   border-radius: var(--btn-border-radius);
   font-size: 1rem;

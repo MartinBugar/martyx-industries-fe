@@ -18,8 +18,8 @@
   left: 0;
   z-index: 9999;
   min-width: 100px;
-  background: linear-gradient(135deg, var(--accent, #28c1ff) 0%, rgba(40, 193, 255, 0.9) 100%);
-  border: 1px solid rgba(40, 193, 255, 0.3);
+  background: linear-gradient(135deg, var(--products-accent, #F6C845) 0%, rgba(246, 200, 69, 0.9) 100%);
+  border: 1px solid rgba(246, 200, 69, 0.3);
   border-radius: 16px;
   backdrop-filter: blur(15px);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
@@ -49,7 +49,7 @@
 }
 
 .dropdown-item:focus {
-  outline: 2px solid var(--accent, #28c1ff);
+  outline: 2px solid var(--products-accent, #F6C845);
   outline-offset: 2px;
 }
 
@@ -72,7 +72,7 @@
   align-items: center;
   gap: 6px;
   padding: 8px 12px;
-  background: var(--accent, #28c1ff);
+  background: var(--products-accent, #F6C845);
   color: #0B0F14;
   border: none;
   border-radius: 6px;
@@ -223,9 +223,9 @@
 }
 
 .actions button {
-  background: var(--accent, #28c1ff);
+  background: var(--products-accent, #F6C845);
   color: #0B0F14;
-  border: 1px solid var(--accent, #28c1ff);
+  border: 1px solid var(--products-accent, #F6C845);
   border-radius: 6px;
   padding: 8px 12px;
   font-size: 0.875rem;
@@ -238,12 +238,12 @@
 .actions button:hover {
   filter: brightness(0.9);
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(40, 193, 255, 0.3);
+  box-shadow: 0 4px 8px rgba(246, 200, 69, 0.3);
 }
 
 .actions button[disabled] {
-  background: rgba(40, 193, 255, 0.3);
-  border-color: rgba(40, 193, 255, 0.3);
+  background: rgba(246, 200, 69, 0.3);
+  border-color: rgba(246, 200, 69, 0.3);
   color: rgba(11, 15, 20, 0.6);
   cursor: not-allowed;
   transform: none;
@@ -266,7 +266,7 @@
 
 /* Accessibility: visible focus state for action buttons */
 .actions button:focus-visible {
-  outline: 2px solid var(--accent, #28c1ff);
+  outline: 2px solid var(--products-accent, #F6C845);
   outline-offset: 2px;
   box-shadow: 0 0 0 3px rgba(40, 193, 255, 0.2);
 }

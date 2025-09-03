@@ -35,7 +35,7 @@
     margin: 0;
     line-height: 1.2;
     font-weight: 800;
-    background: linear-gradient(135deg, var(--text-primary, #e7eef5) 0%, var(--accent, #28c1ff) 100%);
+    background: linear-gradient(135deg, var(--text-primary, #e7eef5) 0%, var(--products-accent, #F6C845) 100%);
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -70,14 +70,14 @@
 }
 
 .hero-cta .btn-primary {
-    background: linear-gradient(135deg, var(--accent, #28c1ff) 0%, #2563eb 100%);
-    color: white;
+    background: linear-gradient(135deg, var(--products-accent, #F6C845) 0%, #E6B82D 100%);
+    color: #0B0F14;
     border: none;
 }
 
 .hero-cta .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(40, 193, 255, 0.4);
+    box-shadow: 0 8px 20px rgba(246, 200, 69, 0.4);
 }
 
 .hero-cta .btn-secondary {
@@ -88,7 +88,7 @@
 
 .hero-cta .btn-secondary:hover {
     background: rgba(231, 238, 245, 0.1);
-    border-color: var(--accent, #28c1ff);
+    border-color: var(--products-accent, #F6C845);
 }
 
 .hero-kpis {
@@ -129,7 +129,7 @@
     aspect-ratio: 16 / 10;
     background-color: var(--card, #141a20);
     border-radius: var(--radius-lg, 16px);
-    box-shadow: 0 0 0 1px var(--accent-soft, rgba(40, 193, 255, 0.15)) inset,
+    box-shadow: 0 0 0 1px var(--accent-soft, rgba(246, 200, 69, 0.15)) inset,
                 0 8px 24px rgba(0, 0, 0, 0.3);
     overflow: hidden;
     display: flex;
@@ -318,7 +318,7 @@
 /* High DPI displays */
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
     .hero-img-wrap {
-        box-shadow: 0 0 0 1px var(--accent-soft, rgba(40, 193, 255, 0.15)) inset,
+        box-shadow: 0 0 0 1px var(--accent-soft, rgba(246, 200, 69, 0.15)) inset,
                     0 4px 12px rgba(0, 0, 0, 0.2);
     }
 }

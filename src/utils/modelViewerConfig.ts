@@ -25,7 +25,7 @@ export const initializeModelViewerConfig = (): void => {
     style.textContent = `
       model-viewer {
         --poster-color: transparent;
-        --progress-bar-color: #3b82f6;
+        --progress-bar-color: #F6C845;
         --progress-bar-height: 2px;
       }
       

@@ -309,27 +309,27 @@
   justify-content: center;
   gap: 0.5rem;
   margin-top: 0.5rem;
-  box-shadow: 0 4px 12px rgba(40, 193, 255, 0.2);
+  box-shadow: 0 4px 12px rgba(246, 200, 69, 0.2);
 }
 
 .auth-container--login .submit-btn {
-  background: linear-gradient(135deg, var(--accent) 0%, #3b82f6 100%);
-  color: white;
+  background: linear-gradient(135deg, var(--products-accent) 0%, #E6B82D 100%);
+  color: #0B0F14;
 }
 
 .auth-container--registration .submit-btn {
-  background: linear-gradient(135deg, var(--accent) 0%, #10b981 100%);
-  color: white;
+  background: linear-gradient(135deg, var(--products-accent) 0%, #10b981 100%);
+  color: #0B0F14;
 }
 
 .auth-container--forgot .submit-btn {
-  background: linear-gradient(135deg, var(--accent) 0%, #3b82f6 100%);
-  color: white;
+  background: linear-gradient(135deg, var(--products-accent) 0%, #E6B82D 100%);
+  color: #0B0F14;
 }
 
 .submit-btn:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 8px 25px rgba(40, 193, 255, 0.3);
+  box-shadow: 0 8px 25px rgba(246, 200, 69, 0.3);
 }
 
 .submit-btn:active:not(:disabled) {

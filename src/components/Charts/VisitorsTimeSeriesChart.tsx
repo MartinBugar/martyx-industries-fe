@@ -28,8 +28,8 @@ const VisitorsTimeSeriesChart: React.FC<Props> = ({
   data,
   width = 560,
   height = 200,
-  stroke = '#3b82f6', // blue-500
-  fill = 'rgba(59, 130, 246, 0.15)', // blue-500 @ 15%
+  stroke = '#F6C845', // yellow accent
+  fill = 'rgba(246, 200, 69, 0.15)', // yellow accent @ 15%
   ariaLabel = 'Time series chart',
   showAxes = true,
   showValueLabels = true,

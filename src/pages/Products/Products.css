@@ -214,7 +214,7 @@
   top: 1rem;
   right: 1rem;
   background: var(--products-accent);
-  color: var(--products-bg);
+  color: #0B0F14;
   padding: 0.375rem 0.75rem;
   border-radius: 6px;
   font-size: 0.75rem;
@@ -274,7 +274,7 @@
   width: 100%;
   padding: 0.875rem 1rem;
   background: var(--products-accent);
-  color: var(--products-bg);
+  color: #0B0F14;
   border: none;
   border-radius: var(--products-radius);
   font-size: 0.9rem;
