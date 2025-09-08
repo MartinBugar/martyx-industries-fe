@@ -189,10 +189,7 @@ const CartPage: React.FC<CartPageProps> = ({
                         onClick={() => removeFromCart(item.product.id)}
                         title={t('cart.remove')}
                       >
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                          <line x1="6" y1="6" x2="18" y2="18" />
-                          <line x1="6" y1="18" x2="18" y2="6" />
-                        </svg>
+                        ×
                       </button>
                     </div>
                   </div>
