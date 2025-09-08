@@ -276,13 +276,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 20px;
+  width: 120px;
+  height: 50px;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--footer-border);
   border-radius: 4px;
   transition: var(--footer-transition);
-  padding: 0.25rem;
+  padding: 0.5rem;
 }
 
 .payment-logo:hover {
@@ -295,6 +295,15 @@
   height: 100%;
   max-width: 24px;
   max-height: 12px;
+}
+
+.payment-logo-img {
+  width: 100%;
+  height: auto;
+  max-width: 120px;
+  max-height: 50px;
+  object-fit: contain;
+  filter: brightness(1.1) contrast(1.2);
 }
 
 .copyright {
@@ -484,8 +493,8 @@
   }
   
   .payment-logo {
-    width: 28px;
-    height: 18px;
+    width: 120px;
+    height: 50px;
   }
 }
 

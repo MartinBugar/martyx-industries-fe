@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './Footer.css';
 import logoImg from '../../assets/logo/logo.png';
+import paypalImg from '../../assets/logo/paypal.png';
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
@@ -106,29 +107,8 @@ const Footer: React.FC = () => {
           <div className="payment-methods" aria-label="Accepted payment methods">
             <span className="payment-label">Akceptujeme:</span>
             <div className="payment-logos">
-              <div className="payment-logo" title="Visa">
-                <svg viewBox="0 0 48 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M20.5 2.5h-7.5l-1.5 11h7.5l1.5-11z" fill="#1A1F71"/>
-                  <path d="M15.5 8c0-2.5 1.5-4.5 3.5-4.5s3.5 2 3.5 4.5-1.5 4.5-3.5 4.5-3.5-2-3.5-4.5z" fill="#1A1F71"/>
-                  <path d="M25.5 2.5h-2.5l-1.5 11h2.5l1.5-11z" fill="#1A1F71"/>
-                  <path d="M30.5 2.5h-2.5l-1.5 11h2.5l1.5-11z" fill="#1A1F71"/>
-                  <path d="M35.5 2.5h-2.5l-1.5 11h2.5l1.5-11z" fill="#1A1F71"/>
-                  <path d="M40.5 2.5h-2.5l-1.5 11h2.5l1.5-11z" fill="#1A1F71"/>
-                  <path d="M45.5 2.5h-2.5l-1.5 11h2.5l1.5-11z" fill="#1A1F71"/>
-                </svg>
-              </div>
-              <div className="payment-logo" title="Mastercard">
-                <svg viewBox="0 0 48 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="12" cy="8" r="6" fill="#EB001B"/>
-                  <circle cx="16" cy="8" r="6" fill="#F79E1B"/>
-                  <path d="M14 5.5c1.5 1.5 1.5 3.5 0 5" stroke="#FF5F00" strokeWidth="2" fill="none"/>
-                </svg>
-              </div>
               <div className="payment-logo" title="PayPal">
-                <svg viewBox="0 0 48 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M8 4.5c0-1.5 1-2.5 2.5-2.5h4c2 0 3.5 1.5 3.5 3.5v1c0 2-1.5 3.5-3.5 3.5h-2l-1 4h-2l1-4h-2.5c-1 0-2-1-2-2v-1z" fill="#003087"/>
-                  <path d="M20 4.5c0-1.5 1-2.5 2.5-2.5h2c1.5 0 2.5 1 2.5 2.5v1c0 1.5-1 2.5-2.5 2.5h-2l-1 4h-2l1-4h-1.5c-1 0-2-1-2-2v-1z" fill="#009CDE"/>
-                </svg>
+                <img src={paypalImg} alt="PayPal" className="payment-logo-img" />
               </div>
             </div>
           </div>
