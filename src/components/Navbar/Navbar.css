@@ -1,5 +1,66 @@
 /* Navbar Component Styles */
 
+/* Prevent browser autofill yellow backgrounds */
+.shop-header input:-webkit-autofill,
+.shop-header input:-webkit-autofill:hover,
+.shop-header input:-webkit-autofill:focus,
+.shop-header textarea:-webkit-autofill,
+.shop-header select:-webkit-autofill {
+    -webkit-text-fill-color: #e5e7eb; /* match navbar light text */
+    -webkit-box-shadow: 0 0 0 1000px #111827 inset; /* match navbar bg */
+    box-shadow: 0 0 0 1000px #111827 inset;
+    transition: background-color 0s, color 0s;
+    caret-color: #e5e7eb;
+    background-clip: padding-box;
+}
+
+/* Remove mobile tap highlight that can appear yellow-ish */
+.shop-header a, 
+.shop-header button, 
+.shop-header input, 
+.shop-header label {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Prevent color/background FOUC by disabling transitions until hydration */
+.shop-header,
+.shop-header a,
+.shop-header .nav-links a,
+.shop-header .auth-links a,
+.shop-header .account-icon,
+.shop-header .menu-toggle,
+.shop-header .cart-icon {
+    transition: none; /* Avoid color/bg animation before hydration */
+}
+
+/* After hydration, re-enable smooth transitions */
+html.hydrated .shop-header,
+html.hydrated .shop-header a,
+html.hydrated .shop-header .nav-links a,
+html.hydrated .shop-header .auth-links a,
+html.hydrated .shop-header .account-icon,
+html.hydrated .shop-header .menu-toggle,
+html.hydrated .shop-header .cart-icon {
+    transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease, transform 150ms ease;
+}
+
+/* Explicitly set all link states to prevent default browser colors */
+.shop-header a:link,
+.shop-header a:visited,
+.shop-header a:hover,
+.shop-header a:active {
+    color: #e5e7eb; /* unify link states to avoid default browser colors */
+    text-decoration: none;
+}
+
+/* Consistent focus outline colors */
+.shop-header a:focus-visible,
+.shop-header button:focus-visible,
+.shop-header input:focus-visible {
+    outline: 2px solid #60a5fa; /* blue accent */
+    outline-offset: 2px;
+}
+
 .shop-header {
     display: flex;
     justify-content: space-between;

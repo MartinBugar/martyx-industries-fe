@@ -39,6 +39,11 @@ export default function Navbar({cartCount = 0, onSearchSubmit, user, onLogout}: 
     const searchInputRef = useRef<HTMLInputElement>(null);
     const prevBodyPrRef = useRef<string | undefined>(undefined);
 
+    /** Add hydrated class to enable transitions after React hydration */
+    useEffect(() => {
+        document.documentElement.classList.add("hydrated");
+        return () => document.documentElement.classList.remove("hydrated");
+    }, []);
 
     /** Lock body scroll when drawer open with visual compensation for scrollbar width */
     useEffect(() => {

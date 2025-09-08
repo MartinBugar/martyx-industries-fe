@@ -9,7 +9,7 @@
  */
 
 import './App.css'
-import React, { useState, useCallback, Suspense } from 'react'
+import React, { useState, useCallback, Suspense, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom'
 import { PayPalScriptProvider } from '@paypal/react-paypal-js'
 
@@ -88,6 +88,12 @@ function AppWrapper() {
     setupCSPReporting();
     initializeCSRFToken();
   });
+
+  // Add hydrated class to enable transitions after React hydration
+  useEffect(() => {
+    document.documentElement.classList.add("hydrated");
+    return () => document.documentElement.classList.remove("hydrated");
+  }, []);
 
   return (
     <PayPalScriptProvider options={paypalOptions}>
