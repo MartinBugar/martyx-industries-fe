@@ -148,36 +148,46 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
         const handleModelLoad = () => {
             if (import.meta.env.DEV) {
                 console.log('Model loaded successfully');
-                // Auto-adjust to desired zoom radius
-                setTimeout(() => {
+            }
+
+            // Auto-adjust to desired zoom radius (works in both dev and production)
+            setTimeout(() => {
                     const modelElementWithOrbit = modelElement as ModelViewerElement & { getCameraOrbit?: () => { radius: number } };
                     if (modelElementWithOrbit.getCameraOrbit) {
                         const cameraOrbit = modelElementWithOrbit.getCameraOrbit();
                         const currentRadius = cameraOrbit.radius;
                         const targetRadius = 1.3369;
 
-                        console.log('Initial zoom radius:', currentRadius.toFixed(4));
+                        if (import.meta.env.DEV) {
+                            console.log('Initial zoom radius:', currentRadius.toFixed(4));
+                        }
 
                         if (Math.abs(currentRadius - targetRadius) > 0.01) {
                             // Calculate how many scroll steps we need (zoom in)
                             const radiusDiff = currentRadius - targetRadius;
                             const steps = Math.round(radiusDiff / 0.02); // Approximate step size
 
-                            console.log(`Auto-scrolling ${steps} steps to reach target radius ${targetRadius.toFixed(4)}`);
+                            if (import.meta.env.DEV) {
+                                console.log(`Auto-scrolling ${steps} steps to reach target radius ${targetRadius.toFixed(4)}`);
+                            }
 
                             // Try accessing model-viewer's internal zoom methods
                             const modelViewer = modelElement as ModelViewerElement & { zoom?: (factor: number) => void };
 
-                            // Look for internal zoom/camera methods
-                            console.log('Available methods:', Object.getOwnPropertyNames(modelViewer).filter(name =>
-                                name.toLowerCase().includes('zoom') ||
-                                name.toLowerCase().includes('camera') ||
-                                name.toLowerCase().includes('orbit')
-                            ));
+                            if (import.meta.env.DEV) {
+                                // Look for internal zoom/camera methods
+                                console.log('Available methods:', Object.getOwnPropertyNames(modelViewer).filter(name =>
+                                    name.toLowerCase().includes('zoom') ||
+                                    name.toLowerCase().includes('camera') ||
+                                    name.toLowerCase().includes('orbit')
+                                ));
+                            }
 
                             // Use the zoom method we know works
                             if (typeof modelViewer.zoom === 'function') {
-                                console.log('Using zoom method');
+                                if (import.meta.env.DEV) {
+                                    console.log('Using zoom method');
+                                }
 
                                 // Calculate zoom factor based on radius difference
                                 // Current: 1.4938 → Target: 1.3369
@@ -185,30 +195,38 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
                                 const currentToTarget = targetRadius / currentRadius;
                                 const zoomFactor = currentToTarget * 7; // 3x more zoom than before (was 2x, now 6x)
 
-                                console.log(`Zoom factor: ${zoomFactor.toFixed(4)}`);
+                                if (import.meta.env.DEV) {
+                                    console.log(`Zoom factor: ${zoomFactor.toFixed(4)}`);
+                                }
 
                                 try {
                                     modelViewer.zoom(zoomFactor);
-                                    console.log('Zoom method executed successfully');
+                                    if (import.meta.env.DEV) {
+                                        console.log('Zoom method executed successfully');
+                                    }
                                 } catch (e) {
-                                    console.log('Zoom method failed:', (e as Error).message);
+                                    if (import.meta.env.DEV) {
+                                        console.log('Zoom method failed:', (e as Error).message);
+                                    }
                                 }
                             } else {
-                                console.log('Zoom method not available');
+                                if (import.meta.env.DEV) {
+                                    console.log('Zoom method not available');
+                                }
                             }
 
 
                             // Always verify final result
                             setTimeout(() => {
                                 const finalOrbit = modelElementWithOrbit.getCameraOrbit?.();
-                                if (finalOrbit) {
+                                if (finalOrbit && import.meta.env.DEV) {
                                     console.log('Final zoom radius after method attempt:', finalOrbit.radius.toFixed(4));
                                 }
                             }, 200);
                         }
                     }
                 }, 500); // Longer delay to ensure model is fully loaded
-            }
+
             // Apply metalness and roughness when model is loaded with a slight delay
             setTimeout(() => {
                 updateMaterialProps(metalness, roughness);
