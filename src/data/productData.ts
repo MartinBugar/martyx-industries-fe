@@ -80,7 +80,7 @@ export const defaultModelViewerSettings: ModelViewerSettings = {
     environmentImage: "legacy",
     shadowSoftness: "1",
     toneMapping: "neutral",
-    metallicFactor: "0.28",
+    metallicFactor: "0.41",
     roughnessFactor: "0.36",
     height: "500px"
 };

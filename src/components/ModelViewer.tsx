@@ -65,7 +65,7 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
                                                      fieldOfView = 'auto',
                                                      backgroundColor = 'white',
                                                      toneMapping = 'neutral',
-                                                     metallicFactor = '0.28',
+                                                     metallicFactor = '0.41',
                                                      roughnessFactor = '0.36',
                                                      fullscreen = false,
                                                      onFullscreenChange,
