@@ -69,7 +69,7 @@ export type ModelViewerSettings = {
 // Default model viewer settings for product id "1"
 export const defaultModelViewerSettings: ModelViewerSettings = {
     poster: undefined,
-    cameraOrbit: "3.953671009374416rad 1.3734740705980852red 55deg 4m",
+    cameraOrbit: "3.953671009374416rad 1.3734740705980852rad 55deg 1m",
     touchAction: "pan-y",
     alt: "A 3D model of an axis coordinate system",
     cameraControls: true,

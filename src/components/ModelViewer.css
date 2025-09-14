@@ -17,8 +17,8 @@
 
 .controls-container {
   position: absolute;
-  bottom: 10px;
-  left: 10px;
+  top: 10px;
+  right: 10px;
   z-index: 999;
   padding: 10px;
   background-color: rgba(52, 52, 52, 0.5);
@@ -65,7 +65,7 @@
   }
 }
 
-/* Temporarily hide all controls (sliders) */
-.controls-container {
-  display: none !important;
-}
+/*!* Temporarily hide all controls (sliders) *!*/
+/*.controls-container {*/
+/*  display: none !important;*/
+/*}*/

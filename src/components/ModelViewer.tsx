@@ -17,7 +17,7 @@ declare global {
                 }
             }>;
         };
-        getCameraOrbit?: () => string;
+        getCameraOrbit?: () => { radius: number; theta: number; phi: number };
     }
 }
 
@@ -80,18 +80,28 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
     // Function to update both metalness and roughness directly on the model materials
     const updateMaterialProps = (m: number, r: number) => {
         const el = modelViewerRef.current;
+        console.log('updateMaterialProps called:', { m, r, el: !!el, model: !!el?.model });
+
         if (el && el.model) {
+            console.log('Materials count:', el.model.materials?.length);
             el.model.materials.forEach((mat: {
                 pbrMetallicRoughness: {
                     setMetallicFactor: (value: number) => void;
                     setRoughnessFactor: (value: number) => void;
                 }
-            }) => {
-                // Set metalness
-                mat.pbrMetallicRoughness.setMetallicFactor(m);
-                // Set roughness
-                mat.pbrMetallicRoughness.setRoughnessFactor(r);
+            }, index: number) => {
+                console.log(`Setting material ${index}: metalness=${m}, roughness=${r}`);
+                try {
+                    // Set metalness
+                    mat.pbrMetallicRoughness.setMetallicFactor(m);
+                    // Set roughness
+                    mat.pbrMetallicRoughness.setRoughnessFactor(r);
+                } catch (error) {
+                    console.error(`Failed to set material ${index} properties:`, error);
+                }
             });
+        } else {
+            console.log('Element or model not available');
         }
     };
     
@@ -99,13 +109,27 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
     const handleMetalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const v = parseFloat(e.target.value);
         setMetalness(v);
+
+        // Set via HTML attribute as backup
+        const el = modelViewerRef.current;
+        if (el) {
+            el.setAttribute('metallic-factor', v.toString());
+        }
+
         updateMaterialProps(v, roughness);
     };
-    
+
     // Handle roughness slider change
     const handleRoughChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const v = parseFloat(e.target.value);
         setRoughness(v);
+
+        // Set via HTML attribute as backup
+        const el = modelViewerRef.current;
+        if (el) {
+            el.setAttribute('roughness-factor', v.toString());
+        }
+
         updateMaterialProps(metalness, v);
     };
     
@@ -124,6 +148,66 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
         const handleModelLoad = () => {
             if (import.meta.env.DEV) {
                 console.log('Model loaded successfully');
+                // Auto-adjust to desired zoom radius
+                setTimeout(() => {
+                    const modelElementWithOrbit = modelElement as ModelViewerElement & { getCameraOrbit?: () => { radius: number } };
+                    if (modelElementWithOrbit.getCameraOrbit) {
+                        const cameraOrbit = modelElementWithOrbit.getCameraOrbit();
+                        const currentRadius = cameraOrbit.radius;
+                        const targetRadius = 1.3369;
+
+                        console.log('Initial zoom radius:', currentRadius.toFixed(4));
+
+                        if (Math.abs(currentRadius - targetRadius) > 0.01) {
+                            // Calculate how many scroll steps we need (zoom in)
+                            const radiusDiff = currentRadius - targetRadius;
+                            const steps = Math.round(radiusDiff / 0.02); // Approximate step size
+
+                            console.log(`Auto-scrolling ${steps} steps to reach target radius ${targetRadius.toFixed(4)}`);
+
+                            // Try accessing model-viewer's internal zoom methods
+                            const modelViewer = modelElement as ModelViewerElement & { zoom?: (factor: number) => void };
+
+                            // Look for internal zoom/camera methods
+                            console.log('Available methods:', Object.getOwnPropertyNames(modelViewer).filter(name =>
+                                name.toLowerCase().includes('zoom') ||
+                                name.toLowerCase().includes('camera') ||
+                                name.toLowerCase().includes('orbit')
+                            ));
+
+                            // Use the zoom method we know works
+                            if (typeof modelViewer.zoom === 'function') {
+                                console.log('Using zoom method');
+
+                                // Calculate zoom factor based on radius difference
+                                // Current: 1.4938 → Target: 1.3369
+                                // zoom(targetRadius) gave 1.4587, so we need more zoom
+                                const currentToTarget = targetRadius / currentRadius;
+                                const zoomFactor = currentToTarget * 7; // 3x more zoom than before (was 2x, now 6x)
+
+                                console.log(`Zoom factor: ${zoomFactor.toFixed(4)}`);
+
+                                try {
+                                    modelViewer.zoom(zoomFactor);
+                                    console.log('Zoom method executed successfully');
+                                } catch (e) {
+                                    console.log('Zoom method failed:', (e as Error).message);
+                                }
+                            } else {
+                                console.log('Zoom method not available');
+                            }
+
+
+                            // Always verify final result
+                            setTimeout(() => {
+                                const finalOrbit = modelElementWithOrbit.getCameraOrbit?.();
+                                if (finalOrbit) {
+                                    console.log('Final zoom radius after method attempt:', finalOrbit.radius.toFixed(4));
+                                }
+                            }, 200);
+                        }
+                    }
+                }, 500); // Longer delay to ensure model is fully loaded
             }
             // Apply metalness and roughness when model is loaded with a slight delay
             setTimeout(() => {
@@ -140,9 +224,28 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
                 }
             }
         };
+
+        // Add event listener for wheel/scroll to log zoom changes
+        const handleWheel = (event: WheelEvent) => {
+            // Use setTimeout to log after the zoom change has been applied
+            setTimeout(() => {
+                // Use getCameraOrbit method to get actual current zoom radius
+                const modelElementWithOrbit = modelElement as ModelViewerElement & { getCameraOrbit?: () => { radius: number } };
+                if (modelElementWithOrbit.getCameraOrbit) {
+                    const cameraOrbit = modelElementWithOrbit.getCameraOrbit();
+                    const radius = cameraOrbit.radius;
+                    const direction = event.deltaY > 0 ? 'zoom out' : 'zoom in';
+
+                    console.log(`Current zoom radius: ${radius.toFixed(4)} (${direction})`);
+                } else {
+                    console.log('getCameraOrbit method not available');
+                }
+            }, 50);
+        };
         
         // Add event listeners
         modelElement.addEventListener('load', handleModelLoad);
+        modelElement.addEventListener('wheel', handleWheel);
         document.addEventListener('keydown', handleEscKey);
 
         if (import.meta.env.DEV) {
@@ -154,6 +257,7 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
         return () => {
             // Cleanup event listeners using the same function references
             modelElement.removeEventListener('load', handleModelLoad);
+            modelElement.removeEventListener('wheel', handleWheel);
             document.removeEventListener('keydown', handleEscKey);
         };
     }, [isFullscreen]); // Reduced dependencies to prevent unnecessary re-runs
