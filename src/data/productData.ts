@@ -109,7 +109,7 @@ export const hardcodedProductsData: HardcodedProductData[] = [
             "Compatible with all major 3D software"
         ],
         modelPath: endeavourModel,
-        gallery: makeGallery("1", 6),
+        gallery: makeGallery("1", 16),
         interactionInstructions: baseInteractionInstructions,
         modelViewerSettings: defaultModelViewerSettings,
         videoUrl: 'https://youtu.be/b5QAer6Q8lY',
@@ -158,7 +158,7 @@ export const hardcodedProductsData: HardcodedProductData[] = [
             "DDDDDDDDDDDDDDDDDDDDDDDDDDD"
         ],
         modelPath: raketaModel,
-        gallery: makeGallery("2", 6),
+        gallery: makeGallery("2", 5),
         interactionInstructions: baseInteractionInstructions,
         modelViewerSettings: defaultModelViewerSettings,
         videoUrl: 'https://www.youtube-nocookie.com/embed/bXxOCo0VL1Y',
