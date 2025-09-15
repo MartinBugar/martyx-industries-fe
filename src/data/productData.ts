@@ -112,7 +112,7 @@ export const hardcodedProductsData: HardcodedProductData[] = [
         gallery: makeGallery("1", 6),
         interactionInstructions: baseInteractionInstructions,
         modelViewerSettings: defaultModelViewerSettings,
-        videoUrl: 'https://www.youtube-nocookie.com/embed/bXxOCo0VL1Y',
+        videoUrl: 'https://youtu.be/b5QAer6Q8lY',
         tabs: [
             {
                 id: 'Details',
