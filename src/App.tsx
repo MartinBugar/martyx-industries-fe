@@ -34,7 +34,6 @@ import { useIOSNoZoomOnFocus } from './hooks/useIOSNoZoomOnFocus'
 import ScrollToTop from './components/ScrollToTop/ScrollToTop'
 import LoadingSpinner from './components/common/LoadingSpinner'
 import { useEffectOnce } from './hooks/useOptimizedEffect'
-import { visitorService } from './services/visitorService'
 
 // Lazy imports for code splitting
 import {
@@ -227,26 +226,9 @@ const MainContent = React.memo(() => {
 
 MainContent.displayName = 'MainContent';
 
-// Optimized app content with visitor tracking
+// Optimized app content
 function AppContent() {
   useIOSNoZoomOnFocus();
-  
-  // Optimized visitor tracking - only once per session
-  useEffectOnce(() => {
-    try {
-      if (typeof window !== 'undefined') {
-        const alreadyTracked = window.sessionStorage.getItem('visitTracked');
-        if (!alreadyTracked) {
-          visitorService.trackVisit().catch((err) => {
-            console.warn('Visitor tracking failed:', err);
-          });
-          window.sessionStorage.setItem('visitTracked', 'true');
-        }
-      }
-    } catch (e) {
-      console.warn('Visitor tracking setup error:', e);
-    }
-  });
 
   return (
     <BrowserRouter>
