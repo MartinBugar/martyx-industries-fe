@@ -1,9 +1,10 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useCart } from '../../context/useCart';
 import { useAuth } from '../../context/useAuth';
 import './Checkout.css';
 import PayPalCheckoutButton from '../../components/PayPalCheckoutButton';
+import { trackEvent } from '../../services/visitorService';
 
 interface CheckoutFormData {
   firstName: string;
@@ -26,6 +27,7 @@ const Checkout: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [payStatus, setPayStatus] = useState<"idle"|"processing"|"success"|"error">("idle");
+
   const [formData, setFormData] = useState<CheckoutFormData>({
     firstName: user?.firstName || '',
     lastName: user?.lastName || '',
@@ -61,6 +63,23 @@ const Checkout: React.FC = () => {
     }
     return first;
   }, [items]);
+
+  // Track checkout start
+  useEffect(() => {
+    if (items.length > 0) {
+      trackEvent('checkout_start', {
+        cartValue: getTotalPrice(),
+        itemCount: items.length,
+        currency: derivedCurrency,
+        items: items.map(item => ({
+          productId: item.product.id,
+          productName: item.product.name,
+          quantity: item.quantity,
+          price: item.product.price
+        }))
+      });
+    }
+  }, []); // Only track once when component mounts
 
   // Handle form input changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -167,6 +186,21 @@ const Checkout: React.FC = () => {
     } catch (err) {
       console.warn('[Checkout] Failed to persist raw PayPal capture response', err);
     }
+
+    // Track successful purchase
+    trackEvent('purchase', {
+      transactionId: txId,
+      orderId,
+      amount,
+      currency,
+      paymentMethod: 'PAYPAL',
+      items: items.map(item => ({
+        productId: item.product.id,
+        productName: item.product.name,
+        quantity: item.quantity,
+        price: item.product.price
+      }))
+    });
 
     setPayStatus('success');
 

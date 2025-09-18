@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { Product } from '../data/productData';
 import { CartContext, type CartItem } from './cartContextTypes';
+import { trackEvent } from '../services/visitorService';
 
 // Props for the CartProvider component
 interface CartProviderProps {
@@ -70,6 +71,18 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         return [...prevItems, { product, quantity: 1 }];
       }
     });
+
+    // Track cart add event
+    if (result === 'added') {
+      trackEvent('cart_add', {
+        productId: product.id,
+        productName: product.name,
+        productPrice: product.price,
+        productType: product.productType,
+        currency: product.currency
+      });
+    }
+
     return result;
   };
 

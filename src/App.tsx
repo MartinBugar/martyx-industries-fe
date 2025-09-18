@@ -34,7 +34,7 @@ import { useIOSNoZoomOnFocus } from './hooks/useIOSNoZoomOnFocus'
 import ScrollToTop from './components/ScrollToTop/ScrollToTop'
 import LoadingSpinner from './components/common/LoadingSpinner'
 import { useEffectOnce } from './hooks/useOptimizedEffect'
-import { visitorService } from './services/visitorService'
+import { visitorService, initializeVisitorTracking, trackEvent } from './services/visitorService'
 
 // Lazy imports for code splitting
 import {
@@ -231,14 +231,18 @@ MainContent.displayName = 'MainContent';
 function AppContent() {
   useIOSNoZoomOnFocus();
   
-  // Optimized visitor tracking - only once per session
+  // Enhanced visitor tracking - initialize once per session
   useEffectOnce(() => {
     try {
       if (typeof window !== 'undefined') {
+        // Initialize advanced visitor tracking
+        initializeVisitorTracking();
+
+        // Legacy visitor tracking for backward compatibility
         const alreadyTracked = window.sessionStorage.getItem('visitTracked');
         if (!alreadyTracked) {
           visitorService.trackVisit().catch((err) => {
-            console.warn('Visitor tracking failed:', err);
+            console.warn('Legacy visitor tracking failed:', err);
           });
           window.sessionStorage.setItem('visitTracked', 'true');
         }

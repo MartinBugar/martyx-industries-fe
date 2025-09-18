@@ -4,6 +4,8 @@ import { visitorService, type VisitorTimeSeriesPoint } from '../../services/visi
 import VisitorsTimeSeriesChart from '../../components/Charts/VisitorsTimeSeriesChart';
 import { doMetricsService } from '../../services/doMetricsService';
 import { salesService, type SalesTimeSeriesPoint, type SalesSummary } from '../../services/salesService';
+import VisitorAnalyticsComponent from '../../components/Analytics/VisitorAnalytics';
+import RealTimeVisitors from '../../components/Analytics/RealTimeVisitors';
 import './AdminDashboard.css';
 
 const AdminDashboard: React.FC = () => {
@@ -97,25 +99,66 @@ const AdminDashboard: React.FC = () => {
   return (
     <AdminLayout title="Dashboard">
       <div className="admin-dashboard">
-        {/* Visit Management */}
+        {/* Real-Time Overview */}
         <section>
-          <h2 className="admin-section-title">Visit Management</h2>
-          <div className="admin-cards-grid-280">
-            {/* Total visitors */}
-            <div className="admin-card admin-card--compact">
-              <div className="admin-card-label">Total Visitors</div>
-              {loading ? (
-                <div>Loading…</div>
-              ) : error ? (
-                <div className="admin-error">{error}</div>
-              ) : (
-                <div className="admin-big-number">{count ?? 0}</div>
-              )}
+          <h2 className="admin-section-title">Real-Time Overview</h2>
+          <div className="admin-cards-grid-wide">
+            {/* Real-time visitors */}
+            <div className="admin-card admin-card--realtime">
+              <RealTimeVisitors refreshInterval={5} autoRefresh={true} />
             </div>
 
+            {/* Quick stats */}
+            <div className="admin-card admin-card--stats">
+              <div className="stats-grid">
+                <div className="stat-item">
+                  <div className="stat-label">Total Visitors</div>
+                  {loading ? (
+                    <div className="stat-loading">Loading…</div>
+                  ) : error ? (
+                    <div className="stat-error">{error}</div>
+                  ) : (
+                    <div className="stat-value">{count?.toLocaleString() ?? 0}</div>
+                  )}
+                </div>
+
+                {salesSummary && (
+                  <>
+                    <div className="stat-item">
+                      <div className="stat-label">Orders (30d)</div>
+                      <div className="stat-value">{salesSummary.ordersCount.toLocaleString()}</div>
+                    </div>
+                    <div className="stat-item">
+                      <div className="stat-label">Revenue (30d)</div>
+                      <div className="stat-value">
+                        {Number(salesSummary.totalAmount || 0).toLocaleString(undefined, {
+                          style: 'currency',
+                          currency: salesSummary.currency || 'EUR'
+                        })}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Detailed Analytics */}
+        <section>
+          <h2 className="admin-section-title">Visitor Analytics</h2>
+          <div className="admin-card admin-card--full-width">
+            <VisitorAnalyticsComponent days={30} autoRefresh={false} />
+          </div>
+        </section>
+
+        {/* Charts Section */}
+        <section>
+          <h2 className="admin-section-title">Trends & Performance</h2>
+          <div className="admin-cards-grid-280">
             {/* Visitors over time */}
             <div className="admin-card">
-              <div className="admin-card-label">Visitors Over Time</div>
+              <div className="admin-card-label">Visitors Over Time (30 days)</div>
               {seriesLoading ? (
                 <div>Loading…</div>
               ) : seriesError ? (
@@ -126,31 +169,10 @@ const AdminDashboard: React.FC = () => {
                 </div>
               )}
             </div>
-          </div>
-        </section>
-
-        {/* Sales */}
-        <section>
-          <h2 className="admin-section-title">Sales</h2>
-          <div className="admin-cards-grid-280">
-            {/* Sales summary (last 30 days) */}
-            <div className="admin-card admin-card--compact">
-              <div className="admin-card-label">Sales (30 days)</div>
-              {salesSummary ? (
-                <div>
-                  <div className="admin-number">{salesSummary.ordersCount} orders</div>
-                  <div className="admin-secondary-text">
-                    Revenue: {Number(salesSummary.totalAmount || 0).toLocaleString(undefined, { style: 'currency', currency: salesSummary.currency || 'USD' })}
-                  </div>
-                </div>
-              ) : (
-                <div>Loading…</div>
-              )}
-            </div>
 
             {/* Sales over time */}
             <div className="admin-card">
-              <div className="admin-card-label">Sales Over Time (Last 30 days)</div>
+              <div className="admin-card-label">Sales Over Time (30 days)</div>
               {salesLoading ? (
                 <div>Loading…</div>
               ) : salesError ? (
@@ -163,6 +185,7 @@ const AdminDashboard: React.FC = () => {
             </div>
           </div>
         </section>
+
 
         {/* System (optional) */}
         <section>
