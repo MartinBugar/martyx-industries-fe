@@ -238,17 +238,21 @@ function AppContent() {
         const alreadyTracked = window.sessionStorage.getItem('visitTracked');
         if (!alreadyTracked) {
           visitorService.trackVisit().then((result) => {
-            if (result) {
+            if (result && import.meta.env.DEV) {
               console.log('Visit tracked successfully. Total visits:', result.totalCount);
             }
           }).catch((err) => {
-            console.warn('Visitor tracking failed:', err);
+            if (import.meta.env.DEV) {
+              console.warn('Visitor tracking failed:', err);
+            }
           });
           window.sessionStorage.setItem('visitTracked', 'true');
         }
       }
     } catch (e) {
-      console.warn('Visitor tracking setup error:', e);
+      if (import.meta.env.DEV) {
+        console.warn('Visitor tracking setup error:', e);
+      }
     }
   });
 

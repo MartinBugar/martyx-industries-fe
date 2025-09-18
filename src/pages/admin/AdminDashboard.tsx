@@ -40,7 +40,9 @@ const AdminDashboard: React.FC = () => {
           localStorage.setItem(CACHE_KEY_TIMESTAMP, Date.now().toString());
         }
       } catch (err) {
-        console.error('Failed to load visitor analytics:', err);
+        if (import.meta.env.DEV) {
+          console.error('Failed to load visitor analytics:', err);
+        }
         if (mounted) {
           setVisitorError('Failed to load visitor data');
         }
@@ -51,36 +53,29 @@ const AdminDashboard: React.FC = () => {
       }
     };
 
-    // TEMPORARILY DISABLE CACHE FOR DEBUGGING
-    console.log('🚨 Cache temporarily disabled for debugging');
-    console.log('Fetching fresh visitor analytics data');
-    loadVisitorAnalytics();
-
     // Check if we have cached data that's less than 3 hours old
-    // const lastFetch = localStorage.getItem(CACHE_KEY_TIMESTAMP);
-    // const cachedData = localStorage.getItem(CACHE_KEY_VISITOR);
-    // const now = Date.now();
-    // const shouldFetch = !lastFetch || (now - parseInt(lastFetch)) > CACHE_DURATION;
+    const lastFetch = localStorage.getItem(CACHE_KEY_TIMESTAMP);
+    const cachedData = localStorage.getItem(CACHE_KEY_VISITOR);
+    const now = Date.now();
+    const shouldFetch = !lastFetch || (now - parseInt(lastFetch)) > CACHE_DURATION;
 
-    // if (!shouldFetch && cachedData) {
-    //   // Use cached data
-    //   try {
-    //     const analytics = JSON.parse(cachedData) as VisitorAnalytics;
-    //     if (mounted) {
-    //       setVisitorAnalytics(analytics);
-    //       setVisitorLoading(false);
-    //       setVisitorError(null);
-    //     }
-    //     console.log('Using cached visitor analytics (last fetch:', new Date(parseInt(lastFetch)).toLocaleString(), ')');
-    //   } catch (_) {
-    //     console.warn('Failed to parse cached visitor data, fetching fresh data');
-    //     loadVisitorAnalytics();
-    //   }
-    // } else {
-    //   // Fetch fresh data
-    //   console.log('Fetching fresh visitor analytics data');
-    //   loadVisitorAnalytics();
-    // }
+    if (!shouldFetch && cachedData) {
+      // Use cached data
+      try {
+        const analytics = JSON.parse(cachedData) as VisitorAnalytics;
+        if (mounted) {
+          setVisitorAnalytics(analytics);
+          setVisitorLoading(false);
+          setVisitorError(null);
+        }
+      } catch (_) {
+        // If cached data is corrupted, fetch fresh data
+        loadVisitorAnalytics();
+      }
+    } else {
+      // Fetch fresh data
+      loadVisitorAnalytics();
+    }
 
     // Load daily bandwidth (today)
     (async () => {
@@ -88,7 +83,9 @@ const AdminDashboard: React.FC = () => {
         const data = await doMetricsService.getBandwidthDaily();
         if (mounted) setBandwidth(data);
       } catch (e) {
-        console.error('Failed to fetch daily bandwidth', e);
+        if (import.meta.env.DEV) {
+          console.error('Failed to fetch daily bandwidth', e);
+        }
         if (mounted) setBandwidthError('Failed to load daily bandwidth');
       } finally {
         if (mounted) setBandwidthLoading(false);
