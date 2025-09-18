@@ -51,31 +51,36 @@ const AdminDashboard: React.FC = () => {
       }
     };
 
-    // Check if we have cached data that's less than 3 hours old
-    const lastFetch = localStorage.getItem(CACHE_KEY_TIMESTAMP);
-    const cachedData = localStorage.getItem(CACHE_KEY_VISITOR);
-    const now = Date.now();
-    const shouldFetch = !lastFetch || (now - parseInt(lastFetch)) > CACHE_DURATION;
+    // TEMPORARILY DISABLE CACHE FOR DEBUGGING
+    console.log('🚨 Cache temporarily disabled for debugging');
+    console.log('Fetching fresh visitor analytics data');
+    loadVisitorAnalytics();
 
-    if (!shouldFetch && cachedData) {
-      // Use cached data
-      try {
-        const analytics = JSON.parse(cachedData) as VisitorAnalytics;
-        if (mounted) {
-          setVisitorAnalytics(analytics);
-          setVisitorLoading(false);
-          setVisitorError(null);
-        }
-        console.log('Using cached visitor analytics (last fetch:', new Date(parseInt(lastFetch)).toLocaleString(), ')');
-      } catch (_) {
-        console.warn('Failed to parse cached visitor data, fetching fresh data');
-        loadVisitorAnalytics();
-      }
-    } else {
-      // Fetch fresh data
-      console.log('Fetching fresh visitor analytics data');
-      loadVisitorAnalytics();
-    }
+    // Check if we have cached data that's less than 3 hours old
+    // const lastFetch = localStorage.getItem(CACHE_KEY_TIMESTAMP);
+    // const cachedData = localStorage.getItem(CACHE_KEY_VISITOR);
+    // const now = Date.now();
+    // const shouldFetch = !lastFetch || (now - parseInt(lastFetch)) > CACHE_DURATION;
+
+    // if (!shouldFetch && cachedData) {
+    //   // Use cached data
+    //   try {
+    //     const analytics = JSON.parse(cachedData) as VisitorAnalytics;
+    //     if (mounted) {
+    //       setVisitorAnalytics(analytics);
+    //       setVisitorLoading(false);
+    //       setVisitorError(null);
+    //     }
+    //     console.log('Using cached visitor analytics (last fetch:', new Date(parseInt(lastFetch)).toLocaleString(), ')');
+    //   } catch (_) {
+    //     console.warn('Failed to parse cached visitor data, fetching fresh data');
+    //     loadVisitorAnalytics();
+    //   }
+    // } else {
+    //   // Fetch fresh data
+    //   console.log('Fetching fresh visitor analytics data');
+    //   loadVisitorAnalytics();
+    // }
 
     // Load daily bandwidth (today)
     (async () => {

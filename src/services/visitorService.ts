@@ -74,17 +74,23 @@ export const visitorService = {
   // Get current visitor statistics
   async getVisitorCount(): Promise<VisitorCountResponse> {
     try {
+      console.log('🔍 getVisitorCount: Authorization header =', defaultHeaders['Authorization'] ? 'Present' : 'Missing');
+      
       const resp = await fetch(`${API_BASE_URL}/api/admin/visits/count`, withLangHeaders({
         method: 'GET',
         headers: defaultHeaders as HeadersInit,
       }));
 
+      console.log('🔍 getVisitorCount: Response status =', resp.status);
+
       if (!resp.ok) {
-        console.warn('Failed to fetch visitor count:', resp.status, resp.statusText);
+        const errorText = await resp.text();
+        console.warn('Failed to fetch visitor count:', resp.status, resp.statusText, 'Response:', errorText);
         return { totalCount: 0, todayCount: 0 };
       }
 
       const data = await resp.json();
+      console.log('🔍 getVisitorCount: Success data =', data);
       return data as VisitorCountResponse;
     } catch (e) {
       console.warn('Visitor count failed:', e);
