@@ -49,14 +49,14 @@ export const visitorService = {
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
       };
 
-      const resp = await fetch(`${API_BASE_URL}/api/admin/visits/track`, withLangHeaders({
+      const resp = await fetch(`${API_BASE_URL}/api/meta/visits/track`, {
         method: 'POST',
         headers: {
-          ...defaultHeaders,
-          'Content-Type': 'application/json'
-        } as HeadersInit,
+          'Content-Type': 'application/json',
+          'Accept-Language': navigator.language || 'en'
+        },
         body: JSON.stringify(trackData)
-      }));
+      });
 
       if (!resp.ok) {
         console.warn('Visit tracking failed:', resp.status, resp.statusText);
