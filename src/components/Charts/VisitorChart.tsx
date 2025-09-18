@@ -204,7 +204,7 @@ const VisitorChart: React.FC<Props> = ({
       <path d={path} fill="none" stroke={stroke} strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
 
       {/* Data points and value labels */}
-      {validData.map((d, i) => {
+      {validData.map((_, i) => {
         const cx = xAt(i);
         const cy = yAt(values[i]);
         return (
