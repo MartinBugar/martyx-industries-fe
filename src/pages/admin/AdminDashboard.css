@@ -321,11 +321,11 @@
     flex-shrink: 0;
 }
 
-/* Bottom Row */
+/* Bottom Row - Mobile-first stacked design */
 .bottom-row {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
+    grid-template-columns: 1fr;
+    gap: 16px;
     align-items: start;
 }
 
@@ -333,20 +333,27 @@
 .system-bandwidth {
     background: linear-gradient(135deg, #1F2538 0%, #1B2030 100%);
     border-radius: 14px;
-    padding: 24px;
+    padding: 16px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    min-height: 200px;
+    min-height: auto;
     overflow: hidden;
 }
 
 .status-info {
     display: grid;
-    gap: 8px;
+    gap: 12px;
 }
 
 .status-text {
-    font-size: 14px;
+    font-size: 13px;
     color: #9CA3AF;
+    line-height: 1.4;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(55, 65, 81, 0.3);
+}
+
+.status-text:last-child {
+    border-bottom: none;
 }
 
 .status-pill {
@@ -376,13 +383,16 @@
 
 .bandwidth-content {
     color: #9CA3AF;
-    font-size: 14px;
+    font-size: 13px;
+    line-height: 1.4;
 }
 
 .bandwidth-unavailable,
 .bandwidth-placeholder {
     color: #6B7280;
     font-style: italic;
+    padding: 16px 0;
+    text-align: center;
 }
 
 /* API Endpoints List */
@@ -395,9 +405,10 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 0;
-    border-bottom: 1px solid #374151;
-    min-height: 32px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(55, 65, 81, 0.3);
+    min-height: 36px;
+    gap: 8px;
 }
 
 .endpoint-row:last-child {
@@ -405,28 +416,34 @@
 }
 
 .endpoint-name {
-    font-size: 12px;
+    font-size: 11px;
     color: #ffffff;
     font-family: monospace;
     flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .endpoint-time {
-    font-size: 12px;
+    font-size: 11px;
     color: #9CA3AF;
-    min-width: 50px;
+    min-width: 40px;
     text-align: right;
-    margin-right: 12px;
+    flex-shrink: 0;
 }
 
 .endpoint-status {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
-    padding: 2px 8px;
-    border-radius: 12px;
+    padding: 2px 6px;
+    border-radius: 8px;
     text-transform: uppercase;
-    min-width: 60px;
+    min-width: 50px;
+    max-width: 50px;
     text-align: center;
+    flex-shrink: 0;
 }
 
 .endpoint-status.healthy {
@@ -518,6 +535,44 @@
     .section-header {
         margin-bottom: 18px;
     }
+
+    .bottom-row {
+        gap: 18px;
+    }
+
+    .data-status,
+    .system-bandwidth {
+        padding: 18px;
+    }
+
+    .status-text {
+        font-size: 14px;
+        padding: 10px 0;
+    }
+
+    .bandwidth-content {
+        font-size: 14px;
+    }
+
+    .endpoint-row {
+        padding: 10px 0;
+        min-height: 40px;
+    }
+
+    .endpoint-name {
+        font-size: 12px;
+    }
+
+    .endpoint-time {
+        font-size: 12px;
+        min-width: 45px;
+    }
+
+    .endpoint-status {
+        font-size: 11px;
+        min-width: 55px;
+        max-width: 55px;
+    }
 }
 
 @media (min-width: 1024px) {
@@ -549,7 +604,37 @@
 
     .bottom-row {
         grid-template-columns: 1fr 1fr;
-        gap: 24px;
+        gap: 20px;
+    }
+
+    .data-status,
+    .system-bandwidth {
+        padding: 20px;
+        min-height: 200px;
+    }
+
+    .status-text {
+        font-size: 14px;
+    }
+
+    .bandwidth-content {
+        font-size: 14px;
+    }
+
+    .endpoint-name {
+        font-size: 12px;
+    }
+
+    .endpoint-time {
+        font-size: 12px;
+        min-width: 50px;
+    }
+
+    .endpoint-status {
+        font-size: 11px;
+        min-width: 60px;
+        max-width: 60px;
+        padding: 2px 8px;
     }
 
     .kpi-card {
@@ -600,6 +685,16 @@
     .chart-wrapper {
         padding: 20px;
         min-height: 260px;
+    }
+
+    .bottom-row {
+        gap: 24px;
+    }
+
+    .data-status,
+    .system-bandwidth {
+        padding: 24px;
+        min-height: 220px;
     }
 }
 
