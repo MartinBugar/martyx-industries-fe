@@ -24,11 +24,12 @@ const AdminProducts: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Tab navigation state
+  const [activeTab, setActiveTab] = useState<'all-products' | 'create-product'>('all-products');
 
   // Create form state
   const [createData, setCreateData] = useState<typeof initialCreate>({ ...initialCreate });
   const [creating, setCreating] = useState<boolean>(false);
-  const [showCreateForm, setShowCreateForm] = useState<boolean>(false);
 
 
   const loadProducts = async () => {
@@ -77,7 +78,7 @@ const AdminProducts: React.FC = () => {
       }
       setProducts(prev => [created, ...prev]);
       resetCreate();
-      setShowCreateForm(false);
+      setActiveTab('all-products');
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : t('common:admin.failed_create_product');
       setError(msg);
@@ -103,26 +104,38 @@ const AdminProducts: React.FC = () => {
     return typeof t === 'string' && t.trim() ? t : '—';
   };
 
+  const navTabs = (
+    <nav className="dashboard-tabs">
+      <button
+        className={`dashboard-tab ${activeTab === 'all-products' ? 'active' : ''}`}
+        onClick={() => setActiveTab('all-products')}
+      >
+        All Products
+      </button>
+      <button
+        className={`dashboard-tab ${activeTab === 'create-product' ? 'active' : ''}`}
+        onClick={() => setActiveTab('create-product')}
+      >
+        Create New Product
+      </button>
+    </nav>
+  );
+
   return (
-    <AdminLayout title="Products">
+    <AdminLayout title="Products" navTabs={navTabs}>
       <div className="admin-page">
         <div className="admin-container">
           <div className="admin-header">
-            <div className="admin-header-content">
+            <div>
               <h2 className="admin-title">Product Management</h2>
               <p className="admin-subtitle">Manage your product inventory with ease. Create, edit, and organize all your products in one place.</p>
-            </div>
-            <div className="admin-header-actions">
-              <button className="btn btn-primary" onClick={() => { if (!showCreateForm) resetCreate(); setShowCreateForm(!showCreateForm); }}>
-                {showCreateForm ? 'Hide Create Form' : 'Create New Product'}
-              </button>
             </div>
           </div>
 
           {error && <div className="alert alert-error">{error}</div>}
 
-          {/* Create Product */}
-          {showCreateForm && (
+          {/* Create Product Tab */}
+          {activeTab === 'create-product' && (
           <div className="admin-card">
             <h3 className="section-title">Create New Product</h3>
             <form onSubmit={handleCreate} className="form-grid">
@@ -211,13 +224,13 @@ const AdminProducts: React.FC = () => {
                   {creating ? 'Creating...' : 'Create Product'}
                 </button>
                 <button type="button" className="btn btn-outline" onClick={resetCreate} disabled={creating}>Clear</button>
-                <button type="button" className="btn" onClick={() => { resetCreate(); setShowCreateForm(false); }} disabled={creating}>Cancel</button>
               </div>
             </form>
           </div>
           )}
 
-          {/* Products Table */}
+          {/* All Products Tab */}
+          {activeTab === 'all-products' && (
           <div className="table-wrapper">
             <table className="admin-table">
               <thead>
@@ -248,8 +261,17 @@ const AdminProducts: React.FC = () => {
                       <td>{typeof p.price === 'number' ? `${p.price} ${p.currency ?? ''}` : '—'}</td>
                       <td>{p.active ? 'Yes' : 'No'}</td>
                       <td className="text-right">
-                        <Link to={`/admin/products/${p.id}`} className="btn btn-outline btn-sm mr-8">View / Edit</Link>
-                        <button className="btn btn-danger btn-sm" onClick={() => handleDelete(p.id!)}>Delete</button>
+                        <div className="action-buttons">
+                          <Link to={`/admin/products/${p.id}/view`} className="btn btn-outline btn-sm" title="View product details">
+                            👁️
+                          </Link>
+                          <Link to={`/admin/products/${p.id}/edit`} className="btn btn-outline btn-sm" title="Edit product">
+                            ✏️
+                          </Link>
+                          <button className="btn btn-danger btn-sm" onClick={() => handleDelete(p.id!)} title="Delete product">
+                            🗑️
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))
@@ -257,6 +279,7 @@ const AdminProducts: React.FC = () => {
               </tbody>
             </table>
           </div>
+          )}
         </div>
       </div>
     </AdminLayout>
