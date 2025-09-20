@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import AdminLayout from './AdminLayout';
+import './AdminUsers.css';
 import { adminOrdersService, type AdminOrderDTO, type AdminOrderItem } from '../../services/adminOrdersService';
 
 const fieldInputStyle: React.CSSProperties = { width: '100%', padding: '6px 8px', border: '1px solid #e5e7eb', borderRadius: 6 };
@@ -9,6 +10,9 @@ const AdminOrders: React.FC = () => {
   const [orders, setOrders] = useState<AdminOrderDTO[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Tab navigation state
+  const [activeTab, setActiveTab] = useState<'all-orders' | 'create-order'>('all-orders');
 
   // Create form
   const [creating, setCreating] = useState<boolean>(false);
@@ -102,6 +106,7 @@ const AdminOrders: React.FC = () => {
       setOrders(prev => [created, ...prev]);
       setCreating(false);
       setCreateData({ status: 'PENDING' });
+      setActiveTab('all-orders');
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Create failed';
       setError(msg);
@@ -182,18 +187,40 @@ const AdminOrders: React.FC = () => {
     }
   };
 
+  const navTabs = (
+    <nav className="dashboard-tabs">
+      <button
+        className={`dashboard-tab ${activeTab === 'all-orders' ? 'active' : ''}`}
+        onClick={() => setActiveTab('all-orders')}
+      >
+        All Orders
+      </button>
+      <button
+        className={`dashboard-tab ${activeTab === 'create-order' ? 'active' : ''}`}
+        onClick={() => setActiveTab('create-order')}
+      >
+        Create New Order
+      </button>
+    </nav>
+  );
+
   return (
-    <AdminLayout title="Orders">
-      <div>
-        {error && <div style={{ background: '#fee2e2', color: '#991b1b', padding: 10, borderRadius: 6, marginBottom: 12 }}>{error}</div>}
+    <AdminLayout title="Orders" navTabs={navTabs}>
+      <div className="admin-page">
+        <div className="admin-container">
+          <div className="admin-header">
+            <div>
+              <h2 className="admin-title">Order Management</h2>
+              <p className="admin-subtitle">Manage customer orders, track status, and process payments efficiently.</p>
+            </div>
+          </div>
 
-        <div style={{ display: 'flex', gap: 12, marginBottom: 12 }}>
-          <input placeholder="Search by order number, email, or status" value={query} onChange={(e) => setQuery(e.target.value)} style={{ ...fieldInputStyle, maxWidth: 360 }} />
-          <button onClick={loadOrders} style={{ ...smallBtn, background: '#111827', color: '#fff' }}>Refresh</button>
-          <button onClick={startCreate} style={{ ...smallBtn, background: '#2563eb', color: '#fff' }}>Create Order</button>
-        </div>
+          {error && <div className="alert alert-error">{error}</div>}
 
-        {creating && (
+          {/* Create Order Tab */}
+          {activeTab === 'create-order' && (
+            <div className="admin-card">
+              <h3 className="section-title">Create New Order</h3>
           <form onSubmit={handleCreate} style={{ background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: 8, padding: 12, marginBottom: 12 }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
               <div>
@@ -232,29 +259,47 @@ const AdminOrders: React.FC = () => {
           </form>
         )}
 
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', background: '#fff', border: '1px solid #e5e7eb' }}>
-            <thead>
-              <tr style={{ background: '#f1f5f9' }}>
-                <th style={{ textAlign: 'left', padding: 10, borderBottom: '1px solid #e5e7eb' }}>ID</th>
-                <th style={{ textAlign: 'left', padding: 10, borderBottom: '1px solid #e5e7eb' }}>Order #</th>
-                <th style={{ textAlign: 'left', padding: 10, borderBottom: '1px solid #e5e7eb' }}>Email</th>
-                <th style={{ textAlign: 'left', padding: 10, borderBottom: '1px solid #e5e7eb' }}>Status</th>
-                <th style={{ textAlign: 'left', padding: 10, borderBottom: '1px solid #e5e7eb' }}>Order Date</th>
-                <th style={{ textAlign: 'left', padding: 10, borderBottom: '1px solid #e5e7eb' }}>Items</th>
-                <th style={{ textAlign: 'left', padding: 10, borderBottom: '1px solid #e5e7eb' }}>Total</th>
-                <th style={{ textAlign: 'left', padding: 10, borderBottom: '1px solid #e5e7eb' }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr>
-                  <td colSpan={8} style={{ padding: 16 }}>Loading…</td>
-                </tr>
-              ) : filtered.length === 0 ? (
-                <tr>
-                  <td colSpan={8} style={{ padding: 16 }}>No orders found.</td>
-                </tr>
+          {/* All Orders Tab */}
+          {activeTab === 'all-orders' && (
+            <>
+              <div className="admin-header-actions">
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="Search by order number, email, or status..."
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                />
+                <button onClick={loadOrders} className="btn btn-outline">
+                  Refresh
+                </button>
+              </div>
+
+              <div className="table-wrapper">
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th style={{ width: 70 }}>ID</th>
+                      <th>Order #</th>
+                      <th>Email</th>
+                      <th>Status</th>
+                      <th>Order Date</th>
+                      <th>Items</th>
+                      <th>Total</th>
+                      <th style={{ width: 170 }} className="text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {loading ? (
+                      <tr>
+                        <td colSpan={8} className="table-empty">
+                          <div className="loading-spinner"></div> Loading orders...
+                        </td>
+                      </tr>
+                    ) : filtered.length === 0 ? (
+                      <tr>
+                        <td colSpan={8} className="table-empty">No orders found.</td>
+                      </tr>
               ) : (
                 filtered.map((o) => {
                   const id = o.id ?? o.orderNumber ?? '';
@@ -378,17 +423,29 @@ const AdminOrders: React.FC = () => {
                   return (
                     <>
                       <tr key={String(id)}>
-                        <td style={{ padding: 8 }}>{String(o.id ?? '—')}</td>
-                        <td style={{ padding: 8 }}>{o.orderNumber ?? '—'}</td>
-                        <td style={{ padding: 8 }}>{o.userEmail ?? '—'}</td>
-                        <td style={{ padding: 8 }}>{o.status ?? '—'}</td>
-                        <td style={{ padding: 8 }}>{formatDateTime(o.orderDate)}</td>
-                        <td style={{ padding: 8 }}>{getItemsCount(o)}</td>
-                        <td style={{ padding: 8 }}>{getTotalAmount(o).toFixed(2)} {o.currency ?? ''}</td>
-                        <td style={{ padding: 8, display: 'flex', gap: 6 }}>
-                          <button onClick={() => toggleExpanded(id as string | number)} style={{ ...smallBtn, background: '#2563eb', color: '#fff' }}>{String(expandedId) === String(id) ? 'Hide' : 'Details'}</button>
-                          <button onClick={() => startEdit(o)} style={{ ...smallBtn, background: '#111827', color: '#fff' }}>Edit</button>
-                          <button onClick={() => handleDelete(o)} style={{ ...smallBtn, background: '#ef4444', color: '#fff' }}>Delete</button>
+                        <td>{String(o.id ?? '—')}</td>
+                        <td>{o.orderNumber ?? '—'}</td>
+                        <td>{o.userEmail ?? '—'}</td>
+                        <td>
+                          <span className={`user-status ${o.status === 'COMPLETED' ? 'confirmed' : 'unconfirmed'}`}>
+                            {o.status ?? '—'}
+                          </span>
+                        </td>
+                        <td>{formatDateTime(o.orderDate)}</td>
+                        <td>{getItemsCount(o)}</td>
+                        <td>{getTotalAmount(o).toFixed(2)} {o.currency ?? ''}</td>
+                        <td className="text-right">
+                          <div className="action-buttons">
+                            <button onClick={() => toggleExpanded(id as string | number)} className="btn btn-outline btn-sm" title={String(expandedId) === String(id) ? 'Hide details' : 'View details'}>
+                              👁️
+                            </button>
+                            <button onClick={() => startEdit(o)} className="btn btn-outline btn-sm" title="Edit order">
+                              ✏️
+                            </button>
+                            <button onClick={() => handleDelete(o)} className="btn btn-danger btn-sm" title="Delete order">
+                              🗑️
+                            </button>
+                          </div>
                         </td>
                       </tr>
                       {String(expandedId) === String(id) && (
@@ -463,9 +520,12 @@ const AdminOrders: React.FC = () => {
                     </>
                   );
                 })
-              )}
-            </tbody>
-          </table>
+                  )}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </AdminLayout>
