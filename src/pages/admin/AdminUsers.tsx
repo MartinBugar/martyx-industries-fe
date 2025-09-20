@@ -276,7 +276,9 @@ const AdminUsers: React.FC = () => {
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan={7} className="table-empty">Loading users...</td></tr>
+                  <tr><td colSpan={7} className="table-empty">
+                    <div className="loading-spinner"></div> Loading users...
+                  </td></tr>
                 ) : filteredUsers.length === 0 ? (
                   <tr><td colSpan={7} className="table-empty">No users found.</td></tr>
                 ) : (
@@ -327,8 +329,14 @@ const AdminUsers: React.FC = () => {
                           user.email
                         )}
                       </td>
-                      <td>{getConfirmed(user)}</td>
-                      <td>{getRoles(user)}</td>
+                      <td>
+                        <span className={`user-status ${getConfirmed(user) === 'Yes' ? 'confirmed' : 'unconfirmed'}`}>
+                          {getConfirmed(user) === 'Yes' ? 'Confirmed' : 'Unconfirmed'}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="user-roles">{getRoles(user)}</span>
+                      </td>
                       <td>{getCreatedAt(user)}</td>
                       <td className="text-right">
                         {editingId === user.id ? (
