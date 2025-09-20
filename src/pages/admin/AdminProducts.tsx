@@ -108,13 +108,17 @@ const AdminProducts: React.FC = () => {
     <nav className="dashboard-tabs">
       <button
         className={`dashboard-tab ${activeTab === 'all-products' ? 'active' : ''}`}
+        data-tab="all-products"
         onClick={() => setActiveTab('all-products')}
+        aria-label="View all products in inventory"
       >
         All Products
       </button>
       <button
         className={`dashboard-tab ${activeTab === 'create-product' ? 'active' : ''}`}
+        data-tab="create-product"
         onClick={() => setActiveTab('create-product')}
+        aria-label="Create new product"
       >
         Create New Product
       </button>

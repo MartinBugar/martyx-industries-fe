@@ -189,13 +189,17 @@ const AdminOrders: React.FC = () => {
         <nav className="dashboard-tabs">
             <button
                 className={`dashboard-tab ${activeTab === 'all-orders' ? 'active' : ''}`}
+                data-tab="all-orders"
                 onClick={() => setActiveTab('all-orders')}
+                aria-label="View all customer orders"
             >
                 All Orders
             </button>
             <button
                 className={`dashboard-tab ${activeTab === 'create-order' ? 'active' : ''}`}
+                data-tab="create-order"
                 onClick={() => setActiveTab('create-order')}
+                aria-label="Create new order"
             >
                 Create New Order
             </button>

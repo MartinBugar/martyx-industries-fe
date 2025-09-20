@@ -182,13 +182,17 @@ const AdminUsers: React.FC = () => {
     <nav className="dashboard-tabs">
       <button
         className={`dashboard-tab ${activeTab === 'all-users' ? 'active' : ''}`}
+        data-tab="all-users"
         onClick={() => setActiveTab('all-users')}
+        aria-label="View all registered users"
       >
         All Users
       </button>
       <button
         className={`dashboard-tab ${activeTab === 'create-user' ? 'active' : ''}`}
+        data-tab="create-user"
         onClick={() => setActiveTab('create-user')}
+        aria-label="Create new user account"
       >
         Create New User
       </button>
