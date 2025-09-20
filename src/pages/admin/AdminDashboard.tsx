@@ -271,21 +271,23 @@ const AdminDashboard: React.FC = () => {
     // Load system health metrics
     (async () => {
       try {
+        console.log('🚀 AdminDashboard: Starting system health data loading...');
         const healthData = await systemHealthService.getSystemHealth();
+        console.log('📊 AdminDashboard: Received health data:', healthData);
         if (mounted) {
           setSystemHealth(healthData);
           setSystemHealthError(null);
+          console.log('✅ AdminDashboard: System health state updated');
         }
       } catch (e) {
-        if (import.meta.env.DEV) {
-          console.error('Failed to fetch system health:', e);
-        }
+        console.error('❌ AdminDashboard: Failed to fetch system health:', e);
         if (mounted) {
           setSystemHealthError('Failed to load system health');
         }
       } finally {
         if (mounted) {
           setSystemHealthLoading(false);
+          console.log('🏁 AdminDashboard: System health loading finished');
         }
       }
     })();
