@@ -308,19 +308,25 @@ const AdminDashboard: React.FC = () => {
         <nav className="dashboard-tabs">
             <button
                 className={`dashboard-tab ${activeSection === 'status' ? 'active' : ''}`}
+                data-tab="status"
                 onClick={() => setActiveSection('status')}
+                aria-label="System status and health monitoring"
             >
                 Status
             </button>
             <button
                 className={`dashboard-tab ${activeSection === 'visitors' ? 'active' : ''}`}
+                data-tab="visitors"
                 onClick={() => setActiveSection('visitors')}
+                aria-label="Visitor analytics and statistics"
             >
                 Visitors
             </button>
             <button
                 className={`dashboard-tab ${activeSection === 'revenue' ? 'active' : ''}`}
+                data-tab="revenue"
                 onClick={() => setActiveSection('revenue')}
+                aria-label="Revenue analytics and top products"
             >
                 Revenue
             </button>
