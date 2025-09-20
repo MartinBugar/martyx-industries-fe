@@ -15,31 +15,32 @@
 .kpi-row {
   display: grid;
   grid-template-columns: repeat(2, auto);
-  gap: 24px;
+  gap: 2px;
   justify-content: start;
 }
 
 .kpi-card {
   background: linear-gradient(135deg, #1F2538 0%, #1B2030 100%);
   border-radius: 14px;
-  padding: 20px 24px;
+  padding: 12px 18px;
   position: relative;
   min-width: 180px;
+    max-height: 100px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .kpi-label {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   color: #9CA3AF;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .kpi-value {
-  font-size: 32px;
+  font-size: 24px;
   font-weight: 700;
   color: #ffffff;
-  line-height: 1.2;
+  line-height: 1.1;
 }
 
 .kpi-loading {
@@ -55,7 +56,7 @@
 .kpi-accent {
   position: absolute;
   bottom: 0;
-  left: 20px;
+  left: 18px;
   width: 120px;
   height: 3px;
   border-radius: 2px;
@@ -336,6 +337,16 @@
   color: #ffffff;
 }
 
+.status-pill.degraded {
+  background: #F59E0B;
+  color: #ffffff;
+}
+
+.status-pill.critical {
+  background: #EF4444;
+  color: #ffffff;
+}
+
 .bandwidth-content {
   color: #9CA3AF;
   font-size: 14px;
@@ -345,6 +356,64 @@
 .bandwidth-placeholder {
   color: #6B7280;
   font-style: italic;
+}
+
+/* API Endpoints List */
+.endpoints-list {
+  display: grid;
+  gap: 8px;
+}
+
+.endpoint-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #374151;
+}
+
+.endpoint-row:last-child {
+  border-bottom: none;
+}
+
+.endpoint-name {
+  font-size: 12px;
+  color: #ffffff;
+  font-family: monospace;
+  flex: 1;
+}
+
+.endpoint-time {
+  font-size: 12px;
+  color: #9CA3AF;
+  min-width: 50px;
+  text-align: right;
+  margin-right: 12px;
+}
+
+.endpoint-status {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  min-width: 60px;
+  text-align: center;
+}
+
+.endpoint-status.healthy {
+  background: #10B981;
+  color: #ffffff;
+}
+
+.endpoint-status.degraded {
+  background: #F59E0B;
+  color: #ffffff;
+}
+
+.endpoint-status.down {
+  background: #EF4444;
+  color: #ffffff;
 }
 
 .no-data {
@@ -393,11 +462,11 @@
 
   .kpi-card {
     min-width: auto;
-    padding: 16px 20px;
+    padding: 10px 16px;
   }
 
   .kpi-value {
-    font-size: 28px;
+    font-size: 20px;
   }
 
   .visitors-content,
@@ -448,7 +517,7 @@
   }
 
   .kpi-value {
-    font-size: 24px;
+    font-size: 18px;
   }
 
   .card-title,

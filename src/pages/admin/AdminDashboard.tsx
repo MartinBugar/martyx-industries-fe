@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import AdminLayout from './AdminLayout';
 
-type DashboardSection = 'visitors' | 'revenue';
+type DashboardSection = 'status' | 'visitors' | 'revenue';
 import { doMetricsService } from '../../services/doMetricsService';
 import { salesService, type SalesSummary } from '../../services/salesService';
 import { visitorService, type VisitorAnalytics } from '../../services/visitorService';
 import { adminOrdersService } from '../../services/adminOrdersService';
+import { systemHealthService, type SystemHealthResponse, type DatabaseStatus } from '../../services/systemHealthService';
 import VisitorChart from '../../components/Charts/VisitorChart';
 import './AdminDashboard.css';
 
@@ -154,7 +155,7 @@ const AreaLineChart: React.FC<AreaLineChartProps> = ({ data, title, subtitle, co
 
 const AdminDashboard: React.FC = () => {
   // Active section state
-  const [activeSection, setActiveSection] = useState<DashboardSection>('visitors');
+  const [activeSection, setActiveSection] = useState<DashboardSection>('status');
 
   // Visitor analytics state
   const [visitorAnalytics, setVisitorAnalytics] = useState<VisitorAnalytics | null>(null);
@@ -170,6 +171,11 @@ const AdminDashboard: React.FC = () => {
   const [bandwidth, setBandwidth] = useState<unknown | null>(null);
   const [bandwidthLoading, setBandwidthLoading] = useState<boolean>(true);
   const [bandwidthError, setBandwidthError] = useState<string | null>(null);
+
+  // System health state
+  const [systemHealth, setSystemHealth] = useState<SystemHealthResponse | null>(null);
+  const [systemHealthLoading, setSystemHealthLoading] = useState<boolean>(true);
+  const [systemHealthError, setSystemHealthError] = useState<string | null>(null);
 
   // Calculate chart statistics
   const calculateVisitorStats = (): ChartStats => {
@@ -259,6 +265,28 @@ const AdminDashboard: React.FC = () => {
         if (mounted) setBandwidthError('Failed to load daily bandwidth');
       } finally {
         if (mounted) setBandwidthLoading(false);
+      }
+    })();
+
+    // Load system health metrics
+    (async () => {
+      try {
+        const healthData = await systemHealthService.getSystemHealth();
+        if (mounted) {
+          setSystemHealth(healthData);
+          setSystemHealthError(null);
+        }
+      } catch (e) {
+        if (import.meta.env.DEV) {
+          console.error('Failed to fetch system health:', e);
+        }
+        if (mounted) {
+          setSystemHealthError('Failed to load system health');
+        }
+      } finally {
+        if (mounted) {
+          setSystemHealthLoading(false);
+        }
       }
     })();
 
@@ -365,6 +393,12 @@ const AdminDashboard: React.FC = () => {
   // Navigation tabs component
   const NavTabs = (
     <nav className="dashboard-tabs">
+      <button
+        className={`dashboard-tab ${activeSection === 'status' ? 'active' : ''}`}
+        onClick={() => setActiveSection('status')}
+      >
+        Status
+      </button>
       <button
         className={`dashboard-tab ${activeSection === 'visitors' ? 'active' : ''}`}
         onClick={() => setActiveSection('visitors')}
@@ -515,38 +549,103 @@ const AdminDashboard: React.FC = () => {
           </div>
         )}
 
-        {/* Bottom Row */}
-        <div className="bottom-row">
-          <div className="data-status">
-            <div className="card">
-              <h3 className="card-title">Data Status</h3>
-              <div className="status-info">
-                <div className="status-text">
-                  Last updated: {visitorAnalytics?.lastUpdated
-                    ? new Date(visitorAnalytics.lastUpdated).toLocaleString('sk-SK')
-                    : '20. 9. 2025 13:51:49'
-                  }
+        {/* STATUS Section */}
+        {activeSection === 'status' && (
+          <div className="dashboard-section">
+            <SectionPill label="STATUS" color="blue" />
+
+            {/* System Health KPIs */}
+            <div className="kpi-row">
+              <KPICard
+                label="Database"
+                value={systemHealthLoading ? "Loading..." : systemHealth?.database.connected ? "Connected" : "Disconnected"}
+                loading={systemHealthLoading}
+                error={systemHealthError || undefined}
+                accent={systemHealth?.database.connected ? "green" : "blue"}
+              />
+              <KPICard
+                label="DB Response Time"
+                value={systemHealthLoading ? "Loading..." : systemHealth?.database.connected ? `${systemHealth.database.connectionTime}ms` : "N/A"}
+                loading={systemHealthLoading}
+                error={systemHealthError || undefined}
+                accent="blue"
+              />
+              <KPICard
+                label="System Uptime"
+                value={systemHealthLoading ? "Loading..." : systemHealth ? systemHealthService.formatUptime(Date.now() / 1000 - systemHealth.system.uptime) : "N/A"}
+                loading={systemHealthLoading}
+                error={systemHealthError || undefined}
+                accent="green"
+              />
+              <KPICard
+                label="CPU Usage"
+                value={systemHealthLoading ? "Loading..." : systemHealth ? `${systemHealth.system.cpuUsage}%` : "N/A"}
+                loading={systemHealthLoading}
+                error={systemHealthError || undefined}
+                accent={systemHealth && systemHealth.system.cpuUsage > 80 ? "blue" : "green"}
+              />
+            </div>
+
+            {/* System Details */}
+            <div className="bottom-row">
+              <div className="data-status">
+                <div className="card">
+                  <h3 className="card-title">System Health</h3>
+                  <div className="status-info">
+                    {systemHealthLoading ? (
+                      <div className="status-text">Loading system metrics...</div>
+                    ) : systemHealthError ? (
+                      <div className="status-text" style={{ color: '#EF4444' }}>Error loading system health</div>
+                    ) : systemHealth ? (
+                      <>
+                        <div className="status-text">
+                          Memory: {systemHealthService.formatBytes(systemHealth.system.memoryUsage.used * 1024 * 1024)} / {systemHealthService.formatBytes(systemHealth.system.memoryUsage.total * 1024 * 1024)} ({systemHealth.system.memoryUsage.percentage.toFixed(1)}%)
+                        </div>
+                        <div className="status-text">
+                          Disk: {systemHealthService.formatBytes(systemHealth.system.diskSpace.used * 1024 * 1024)} / {systemHealthService.formatBytes(systemHealth.system.diskSpace.total * 1024 * 1024)} ({systemHealth.system.diskSpace.percentage.toFixed(1)}%)
+                        </div>
+                        <div className="status-text">
+                          Database: {systemHealth.database.database}
+                        </div>
+                        <div className={`status-pill ${systemHealth.overallStatus === 'healthy' ? 'healthy' : systemHealth.overallStatus === 'degraded' ? 'degraded' : 'critical'}`}>
+                          {systemHealth.overallStatus.charAt(0).toUpperCase() + systemHealth.overallStatus.slice(1)}
+                        </div>
+                      </>
+                    ) : (
+                      <div className="status-text">No system data available</div>
+                    )}
+                  </div>
                 </div>
-                <div className="status-text">Auto-refresh: every 3 hours</div>
-                <div className="status-pill healthy">Healthy</div>
+              </div>
+              <div className="system-bandwidth">
+                <div className="card">
+                  <h3 className="card-title">API Endpoints</h3>
+                  <div className="bandwidth-content">
+                    {systemHealthLoading ? (
+                      <div>Loading endpoints...</div>
+                    ) : systemHealthError ? (
+                      <div className="bandwidth-unavailable">Failed to load endpoint status</div>
+                    ) : systemHealth?.apiEndpoints ? (
+                      <div className="endpoints-list">
+                        {systemHealth.apiEndpoints.map((endpoint, index) => (
+                          <div key={index} className="endpoint-row">
+                            <div className="endpoint-name">{endpoint.endpoint}</div>
+                            <div className="endpoint-time">{endpoint.responseTime}ms</div>
+                            <div className={`endpoint-status ${endpoint.status}`}>
+                              {endpoint.status}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="bandwidth-placeholder">No endpoint data available</div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-          <div className="system-bandwidth">
-            <div className="card">
-              <h3 className="card-title">System — Daily Bandwidth</h3>
-              <div className="bandwidth-content">
-                {bandwidthLoading ? (
-                  <div>Loading...</div>
-                ) : bandwidthError || typeof bandwidth === 'string' ? (
-                  <div className="bandwidth-unavailable">Metrics not available</div>
-                ) : (
-                  <div className="bandwidth-placeholder">Metrics not available</div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
+        )}
       </div>
     </AdminLayout>
   );
