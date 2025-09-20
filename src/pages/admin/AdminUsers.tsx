@@ -311,14 +311,14 @@ const AdminUsers: React.FC = () => {
                                 </>
                               ) : (
                                 <>
-                                  <Link to={`/admin/users/${user.id}`} className="btn btn-outline btn-sm">
-                                    View
+                                  <Link to={`/admin/users/${user.id}`} className="btn btn-outline btn-sm" title="View user details">
+                                    👁️
                                   </Link>
-                                  <button className="btn btn-outline btn-sm" onClick={() => startEdit(user)}>
-                                    Edit
+                                  <button className="btn btn-outline btn-sm" onClick={() => startEdit(user)} title="Edit user">
+                                    ✏️
                                   </button>
-                                  <button className="btn btn-danger btn-sm" onClick={() => handleDelete(user.id)}>
-                                    Delete
+                                  <button className="btn btn-danger btn-sm" onClick={() => handleDelete(user.id)} title="Delete user">
+                                    🗑️
                                   </button>
                                 </>
                               )}
