@@ -160,7 +160,7 @@ const AdminDashboard: React.FC = () => {
   // Calculate chart statistics
   const calculateVisitorStats = (): ChartStats => {
     if (!visitorAnalytics?.dailyData) return { peak: 0, avg: 0 };
-    const values = visitorAnalytics.dailyData.map(d => d.count);
+    const values = visitorAnalytics.dailyData.map(d => d.uniqueCount);
     const peak = Math.max(...values, 0);
     const avg = Math.round(values.reduce((sum, val) => sum + val, 0) / values.length);
     return { peak, avg };
@@ -341,7 +341,7 @@ const AdminDashboard: React.FC = () => {
                 <div className="chart-error">Failed to load data. Retry</div>
               ) : visitorAnalytics?.dailyData ? (
                 <AreaLineChart
-                  data={visitorAnalytics.dailyData.map(d => ({ date: d.date, value: d.count }))}
+                  data={visitorAnalytics.dailyData.map(d => ({ date: d.date, value: d.uniqueCount }))}
                   title="Visitors — Last 30 days"
                   subtitle="Unique sessions"
                   color="blue"
