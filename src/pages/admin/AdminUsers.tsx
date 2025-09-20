@@ -299,20 +299,30 @@ const AdminUsers: React.FC = () => {
                           </td>
                           <td>{getCreatedAt(user)}</td>
                           <td className="text-right">
-                            {editingId === user.id ? (
-                              <>
-                                <button className="btn btn-primary btn-sm mr-8" onClick={saveEdit} disabled={saving}>
-                                  {saving ? 'Saving...' : 'Save'}
-                                </button>
-                                <button className="btn btn-outline btn-sm mr-8" onClick={cancelEdit} disabled={saving}>Cancel</button>
-                              </>
-                            ) : (
-                              <>
-                                <Link to={`/admin/users/${user.id}`} className="btn btn-outline btn-sm mr-8">View</Link>
-                                <button className="btn btn-outline btn-sm mr-8" onClick={() => startEdit(user)}>Edit</button>
-                                <button className="btn btn-danger btn-sm" onClick={() => handleDelete(user.id)}>Delete</button>
-                              </>
-                            )}
+                            <div className="action-buttons">
+                              {editingId === user.id ? (
+                                <>
+                                  <button className="btn btn-primary btn-sm" onClick={saveEdit} disabled={saving}>
+                                    {saving ? 'Saving...' : 'Save'}
+                                  </button>
+                                  <button className="btn btn-outline btn-sm" onClick={cancelEdit} disabled={saving}>
+                                    Cancel
+                                  </button>
+                                </>
+                              ) : (
+                                <>
+                                  <Link to={`/admin/users/${user.id}`} className="btn btn-outline btn-sm">
+                                    View
+                                  </Link>
+                                  <button className="btn btn-outline btn-sm" onClick={() => startEdit(user)}>
+                                    Edit
+                                  </button>
+                                  <button className="btn btn-danger btn-sm" onClick={() => handleDelete(user.id)}>
+                                    Delete
+                                  </button>
+                                </>
+                              )}
+                            </div>
                           </td>
                         </tr>
                       ))
