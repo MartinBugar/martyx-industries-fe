@@ -3,13 +3,13 @@
 .admin-shell {
   display: flex;
   min-height: 100vh;
-  background: #0f172a; /* slate-900 */
+  background: #0F1115; /* dashboard background */
 }
 
 .admin-sidebar {
   width: 240px;
-  background: #111827; /* gray-900 */
-  color: #e5e7eb; /* gray-200 */
+  background: #14171E; /* dashboard sidebar */
+  color: #ffffff;
   padding: 16px;
   position: relative;
 }
@@ -37,15 +37,15 @@
 .admin-content {
   flex: 1;
   min-width: 0;
-  background: #f8fafc; /* slate-50 */
-  color: #0f172a;      /* slate-900 */
+  background: #0F1115; /* dashboard background */
+  color: #ffffff;
   display: flex;
   flex-direction: column;
 }
 
 .admin-topbar {
-  background: #ffffff;
-  border-bottom: 1px solid #e5e7eb;
+  background: #1F2538;
+  border-bottom: 1px solid #374151;
   padding: 12px 16px;
   display: flex;
   align-items: center;
@@ -55,13 +55,14 @@
 .admin-topbar-title {
   margin: 0;
   font-size: 20px;
+  color: #ffffff;
 }
 
 .admin-burger {
   display: none;
-  background: #ffffff;
-  color: #0f172a;
-  border: 1px solid #cbd5e1;
+  background: #1F2538;
+  color: #ffffff;
+  border: 1px solid #374151;
   padding: 8px;
   border-radius: 8px;
   cursor: pointer;
@@ -71,7 +72,7 @@
 .admin-sidebar button:focus-visible,
 .admin-content button:focus-visible,
 .admin-content a:focus-visible {
-  outline: 2px solid #2563eb; /* blue-600 */
+  outline: 2px solid #3B82F6; /* dashboard blue */
   outline-offset: 2px;
 }
 
@@ -84,7 +85,7 @@
 
 /* Active link helper (inline style still sets background for active) */
 .admin-link-active {
-  background: #334155; /* slate-700 */
+  background: #3B82F6; /* dashboard blue */
 }
 
 /* Mobile behavior */
