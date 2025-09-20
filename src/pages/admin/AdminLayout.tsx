@@ -5,6 +5,7 @@ import './AdminLayout.css';
 interface AdminLayoutProps {
   title?: string;
   children?: React.ReactNode;
+  navTabs?: React.ReactNode;
 }
 
 const sidebarLinkStyle: React.CSSProperties = {
@@ -20,7 +21,7 @@ const activeLinkStyle: React.CSSProperties = {
   background: '#334155',
 };
 
-const AdminLayout: React.FC<AdminLayoutProps> = ({ title, children }) => {
+const AdminLayout: React.FC<AdminLayoutProps> = ({ title, children, navTabs }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const isAuthed = typeof window !== 'undefined' && window.localStorage.getItem('adminAuthed') === 'true';
@@ -81,6 +82,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ title, children }) => {
             ☰
           </button>
           <h1 className="admin-topbar-title">{title ?? 'Admin'}</h1>
+          {navTabs && navTabs}
         </header>
         <section className="admin-main">
           {children}

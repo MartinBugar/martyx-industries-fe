@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import AdminLayout from './AdminLayout';
+
+type DashboardSection = 'visitors' | 'revenue';
 import { doMetricsService } from '../../services/doMetricsService';
 import { salesService, type SalesSummary } from '../../services/salesService';
 import { visitorService, type VisitorAnalytics } from '../../services/visitorService';
@@ -151,6 +153,9 @@ const AreaLineChart: React.FC<AreaLineChartProps> = ({ data, title, subtitle, co
 };
 
 const AdminDashboard: React.FC = () => {
+  // Active section state
+  const [activeSection, setActiveSection] = useState<DashboardSection>('visitors');
+
   // Visitor analytics state
   const [visitorAnalytics, setVisitorAnalytics] = useState<VisitorAnalytics | null>(null);
   const [visitorLoading, setVisitorLoading] = useState<boolean>(true);
@@ -357,115 +362,158 @@ const AdminDashboard: React.FC = () => {
   const visitorStats = calculateVisitorStats();
   const revenueStats = calculateRevenueStats();
 
+  // Navigation tabs component
+  const NavTabs = (
+    <nav className="dashboard-tabs">
+      <button
+        className={`dashboard-tab ${activeSection === 'visitors' ? 'active' : ''}`}
+        onClick={() => setActiveSection('visitors')}
+      >
+        Visitors
+      </button>
+      <button
+        className={`dashboard-tab ${activeSection === 'revenue' ? 'active' : ''}`}
+        onClick={() => setActiveSection('revenue')}
+      >
+        Revenue
+      </button>
+    </nav>
+  );
+
   return (
-    <AdminLayout title="Dashboard">
+    <AdminLayout title="Dashboard" navTabs={NavTabs}>
       <div className="dashboard-v3">
         {/* Top KPI Row */}
-        <div className="kpi-row">
-          <KPICard
-            label="Total Visitors"
-            value={visitorAnalytics?.totalVisits ?? 0}
-            loading={visitorLoading}
-            error={visitorError || undefined}
-            accent="blue"
-          />
-          <KPICard
-            label="Today's Visitors"
-            value={visitorAnalytics?.todayVisits ?? 0}
-            loading={visitorLoading}
-            error={visitorError || undefined}
-            accent="blue"
-          />
-        </div>
+        {activeSection === 'visitors' && (
+          <div className="kpi-row">
+            <KPICard
+              label="Total Visitors"
+              value={visitorAnalytics?.totalVisits ?? 0}
+              loading={visitorLoading}
+              error={visitorError || undefined}
+              accent="blue"
+            />
+            <KPICard
+              label="Today's Visitors"
+              value={visitorAnalytics?.todayVisits ?? 0}
+              loading={visitorLoading}
+              error={visitorError || undefined}
+              accent="blue"
+            />
+          </div>
+        )}
+
+        {activeSection === 'revenue' && (
+          <div className="kpi-row">
+            <KPICard
+              label="Total Revenue"
+              value={`€${(salesSummary?.totalAmount ?? 0).toLocaleString()}`}
+              loading={salesLoading}
+              error={salesSummary ? undefined : 'Failed to load'}
+              accent="green"
+            />
+            <KPICard
+              label="Avg Daily Revenue"
+              value={`€${revenueStats.avg.toLocaleString()}`}
+              loading={salesLoading}
+              error={salesSummary ? undefined : 'Failed to load'}
+              accent="green"
+            />
+          </div>
+        )}
 
         {/* VISITORS Section */}
-        <div className="dashboard-section">
-          <SectionPill label="VISITORS" color="blue" />
-          <div className="visitors-content">
-            <div className="visitors-chart">
-              {visitorLoading ? (
-                <div className="chart-loading">Loading chart...</div>
-              ) : visitorError ? (
-                <div className="chart-error">Failed to load data. Retry</div>
-              ) : visitorAnalytics?.dailyData ? (
-                <AreaLineChart
-                  data={visitorAnalytics.dailyData.map(d => ({ date: d.date, value: d.uniqueCount }))}
-                  title="Visitors — Last 30 days"
-                  subtitle="Unique sessions"
-                  color="blue"
-                  peak={visitorStats.peak}
-                  avg={visitorStats.avg}
-                  unit="/day"
-                />
-              ) : (
-                <div className="chart-error">No data for selected period</div>
-              )}
-            </div>
-            <div className="visitors-countries">
-              <div className="card">
-                <h3 className="card-title">Top Countries</h3>
-                {visitorAnalytics?.topCountries && visitorAnalytics.topCountries.length > 0 ? (
-                  <div className="countries-list">
-                    {visitorAnalytics.topCountries.slice(0, 2).map((country) => (
-                      <ProgressRow
-                        key={country.countryCode}
-                        code={country.countryCode}
-                        name={country.country}
-                        percentage={country.percentage}
-                      />
-                    ))}
-                  </div>
+        {activeSection === 'visitors' && (
+          <div className="dashboard-section">
+            <SectionPill label="VISITORS" color="blue" />
+            <div className="visitors-content">
+              <div className="visitors-chart">
+                {visitorLoading ? (
+                  <div className="chart-loading">Loading chart...</div>
+                ) : visitorError ? (
+                  <div className="chart-error">Failed to load data. Retry</div>
+                ) : visitorAnalytics?.dailyData ? (
+                  <AreaLineChart
+                    data={visitorAnalytics.dailyData.map(d => ({ date: d.date, value: d.uniqueCount }))}
+                    title="Visitors — Last 30 days"
+                    subtitle="Unique sessions"
+                    color="blue"
+                    peak={visitorStats.peak}
+                    avg={visitorStats.avg}
+                    unit="/day"
+                  />
                 ) : (
-                  <div className="no-data">No country data available</div>
+                  <div className="chart-error">No data for selected period</div>
                 )}
+              </div>
+              <div className="visitors-countries">
+                <div className="card">
+                  <h3 className="card-title">Top Countries</h3>
+                  {visitorAnalytics?.topCountries && visitorAnalytics.topCountries.length > 0 ? (
+                    <div className="countries-list">
+                      {visitorAnalytics.topCountries.slice(0, 2).map((country) => (
+                        <ProgressRow
+                          key={country.countryCode}
+                          code={country.countryCode}
+                          name={country.country}
+                          percentage={country.percentage}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="no-data">No country data available</div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* REVENUE Section */}
-        <div className="dashboard-section">
-          <SectionPill label="REVENUE" color="green" />
-          <div className="revenue-content">
-            <div className="revenue-chart">
-              {salesLoading ? (
-                <div className="chart-loading">Loading chart...</div>
-              ) : !salesSummary ? (
-                <div className="chart-error">Failed to load data. Retry</div>
-              ) : (
-                <AreaLineChart
-                  data={revenueTimeSeries.map(d => ({ date: d.date, value: d.amount }))}
-                  title="Revenue — Last 30 days"
-                  subtitle={`Total: ${(salesSummary?.totalAmount ?? 0).toLocaleString()} €`}
-                  color="green"
-                  peak={revenueStats.peak}
-                  avg={revenueStats.avg}
-                  unit=" €/day"
-                />
-              )}
-            </div>
-            <div className="revenue-products">
-              <div className="card">
-                <h3 className="card-title">Top Products</h3>
+        {activeSection === 'revenue' && (
+          <div className="dashboard-section">
+            <SectionPill label="REVENUE" color="green" />
+            <div className="revenue-content">
+              <div className="revenue-chart">
                 {salesLoading ? (
-                  <div className="loading-products">Loading products...</div>
-                ) : topProducts.length > 0 ? (
-                  <div className="products-list">
-                    {topProducts.map((product, index) => (
-                      <ProductRevenueRow
-                        key={`${product.productName}-${index}`}
-                        productName={product.productName}
-                        revenue={product.revenue}
-                      />
-                    ))}
-                  </div>
+                  <div className="chart-loading">Loading chart...</div>
+                ) : !salesSummary ? (
+                  <div className="chart-error">Failed to load data. Retry</div>
                 ) : (
-                  <div className="no-data">No product data available</div>
+                  <AreaLineChart
+                    data={revenueTimeSeries.map(d => ({ date: d.date, value: d.amount }))}
+                    title="Revenue — Last 30 days"
+                    subtitle={`Total: ${(salesSummary?.totalAmount ?? 0).toLocaleString()} €`}
+                    color="green"
+                    peak={revenueStats.peak}
+                    avg={revenueStats.avg}
+                    unit=" €/day"
+                  />
                 )}
+              </div>
+              <div className="revenue-products">
+                <div className="card">
+                  <h3 className="card-title">Top Products</h3>
+                  {salesLoading ? (
+                    <div className="loading-products">Loading products...</div>
+                  ) : topProducts.length > 0 ? (
+                    <div className="products-list">
+                      {topProducts.map((product, index) => (
+                        <ProductRevenueRow
+                          key={`${product.productName}-${index}`}
+                          productName={product.productName}
+                          revenue={product.revenue}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="no-data">No product data available</div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Bottom Row */}
         <div className="bottom-row">
