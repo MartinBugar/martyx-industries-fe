@@ -15,6 +15,8 @@ interface Props {
   ariaLabel?: string;
   showValueLabels?: boolean;
   showUniqueVisitors?: boolean;
+  tooltipUnit?: string;
+  tooltipLabel?: string;
 }
 
 const VisitorChart: React.FC<Props> = ({
@@ -25,7 +27,9 @@ const VisitorChart: React.FC<Props> = ({
   fill = 'rgba(59, 130, 246, 0.15)',
   ariaLabel = 'Visitor chart',
   showValueLabels = true,
-  showUniqueVisitors = false
+  showUniqueVisitors = false,
+  tooltipUnit = '',
+  tooltipLabel = 'visitors'
 }) => {
   const PAD_LEFT = 40;
   const PAD_RIGHT = 12;
@@ -225,7 +229,7 @@ const VisitorChart: React.FC<Props> = ({
         const hx = xAt(i);
         const hy = yAt(values[i]);
         const data = validData[i];
-        const tip = `${formatDate(data.date)}: ${values[i]} ${showUniqueVisitors ? 'unique' : 'total'} visitors`;
+        const tip = `${formatDate(data.date)}: ${tooltipUnit}${values[i]} ${showUniqueVisitors ? 'unique' : ''} ${tooltipLabel}`;
         const tipWidth = Math.max(80, tip.length * 6);
         const tx = Math.min(PAD_LEFT + iw - tipWidth - 8, Math.max(PAD_LEFT + 8, hx + 8));
         const ty = Math.max(PAD_TOP + 12, hy - 20);
