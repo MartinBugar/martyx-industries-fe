@@ -283,9 +283,64 @@
   font-size: 13px;
 }
 
+/* Tab Navigation - Dashboard Style */
+.dashboard-tabs {
+  display: flex;
+  gap: 8px;
+  margin-left: 16px;
+}
+
+.dashboard-tab {
+  background: transparent;
+  border: 1px solid #374151;
+  color: #9CA3AF;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dashboard-tab:hover {
+  background: #374151;
+  color: #ffffff;
+  border-color: #4B5563;
+}
+
+.dashboard-tab.active {
+  background: #3B82F6;
+  color: #ffffff;
+  border-color: #3B82F6;
+}
+
+.admin-header-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
+.admin-header-actions .form-input {
+  background: #1F2538;
+  border: 1px solid #374151;
+  color: #ffffff;
+  padding: 10px 16px;
+  border-radius: 8px;
+  min-width: 250px;
+}
+
+.admin-header-actions .form-input:focus {
+  border-color: #3B82F6;
+}
+
+.admin-header-actions .form-input::placeholder {
+  color: #6B7280;
+}
+
 /* Focus states for accessibility */
 .form-input:focus-visible,
-.btn:focus-visible {
+.btn:focus-visible,
+.dashboard-tab:focus-visible {
   outline: 2px solid #3B82F6;
   outline-offset: 2px;
 }

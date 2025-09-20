@@ -19,6 +19,9 @@ const AdminUsers: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Tab navigation state
+  const [activeTab, setActiveTab] = useState<'all-users' | 'create-user'>('all-users');
+
   // Create form state
   const [createData, setCreateData] = useState<typeof initialCreate>({ ...initialCreate });
   const [creating, setCreating] = useState<boolean>(false);
@@ -124,6 +127,7 @@ const AdminUsers: React.FC = () => {
       const created = await adminUsersService.createUser(payload);
       setUsers(prev => [created, ...prev]);
       setCreateData({ ...initialCreate });
+      setActiveTab('all-users');
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Failed to create user';
       setError(msg);
@@ -174,8 +178,25 @@ const AdminUsers: React.FC = () => {
     }
   };
 
+  const navTabs = (
+    <nav className="dashboard-tabs">
+      <button
+        className={`dashboard-tab ${activeTab === 'all-users' ? 'active' : ''}`}
+        onClick={() => setActiveTab('all-users')}
+      >
+        All Users
+      </button>
+      <button
+        className={`dashboard-tab ${activeTab === 'create-user' ? 'active' : ''}`}
+        onClick={() => setActiveTab('create-user')}
+      >
+        Create New User
+      </button>
+    </nav>
+  );
+
   return (
-    <AdminLayout title="Users">
+    <AdminLayout title="Users" navTabs={navTabs}>
       <div className="admin-page">
         <div className="admin-container">
           <div className="admin-header">
@@ -183,183 +204,190 @@ const AdminUsers: React.FC = () => {
               <h2 className="admin-title">User Management</h2>
               <p className="admin-subtitle">Manage application users. Create, edit, view and delete.</p>
             </div>
-            <div>
-              <input
-                type="text"
-                className="form-input"
-                placeholder="Search users..."
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-              />
-            </div>
           </div>
 
           {error && <div className="alert alert-error">{error}</div>}
 
-          {/* Create User */}
-          <div className="admin-card">
-            <h3 className="section-title">Create New User</h3>
-            <form onSubmit={handleCreate} className="form-grid">
-              <div>
-                <label className="form-label">First Name</label>
+          {/* All Users Tab */}
+          {activeTab === 'all-users' && (
+            <>
+              <div className="admin-header-actions">
                 <input
+                  type="text"
                   className="form-input"
-                  value={createData.firstName}
-                  onChange={(e) => setCreateData({ ...createData, firstName: e.target.value })}
-                  placeholder="John"
+                  placeholder="Search users..."
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
                 />
               </div>
-              <div>
-                <label className="form-label">Last Name</label>
-                <input
-                  className="form-input"
-                  value={createData.lastName}
-                  onChange={(e) => setCreateData({ ...createData, lastName: e.target.value })}
-                  placeholder="Doe"
-                />
-              </div>
-              <div>
-                <label className="form-label">Email</label>
-                <input
-                  type="email"
-                  className="form-input"
-                  value={createData.email}
-                  onChange={(e) => setCreateData({ ...createData, email: e.target.value })}
-                  placeholder="john.doe@example.com"
-                  required
-                />
-              </div>
-              <div>
-                <label className="form-label">Password</label>
-                <input
-                  type="password"
-                  className="form-input"
-                  value={createData.password}
-                  onChange={(e) => setCreateData({ ...createData, password: e.target.value })}
-                  placeholder="••••••••"
-                  required
-                />
-              </div>
-              <div>
-                <label className="form-label">Confirm Password</label>
-                <input
-                  type="password"
-                  className="form-input"
-                  value={createData.confirmPassword}
-                  onChange={(e) => setCreateData({ ...createData, confirmPassword: e.target.value })}
-                  placeholder="••••••••"
-                  required
-                />
-              </div>
-              <div className="form-actions">
-                <button className="btn btn-primary" type="submit" disabled={creating}>
-                  {creating ? 'Creating...' : 'Create User'}
-                </button>
-                <button type="button" className="btn btn-outline" onClick={() => setCreateData({ ...initialCreate })} disabled={creating}>Clear</button>
-              </div>
-            </form>
-          </div>
 
-          {/* Users Table */}
-          <div className="table-wrapper">
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th style={{ width: 70 }}>ID</th>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Confirmed</th>
-                  <th>Roles</th>
-                  <th>Created At</th>
-                  <th style={{ width: 240 }} className="text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {loading ? (
-                  <tr><td colSpan={7} className="table-empty">
-                    <div className="loading-spinner"></div> Loading users...
-                  </td></tr>
-                ) : filteredUsers.length === 0 ? (
-                  <tr><td colSpan={7} className="table-empty">No users found.</td></tr>
-                ) : (
-                  filteredUsers.map(user => (
-                    <tr key={user.id}>
-                      <td>{user.id}</td>
-                      <td>
-                        {editingId === user.id ? (
-                          <div className="form-grid" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
-                            <input
-                              className="form-input"
-                              placeholder="First name"
-                              value={editData.firstName ?? ''}
-                              onChange={(e) => setEditData(prev => ({ ...prev, firstName: e.target.value }))}
-                            />
-                            <input
-                              className="form-input"
-                              placeholder="Last name"
-                              value={editData.lastName ?? ''}
-                              onChange={(e) => setEditData(prev => ({ ...prev, lastName: e.target.value }))}
-                            />
-                          </div>
-                        ) : (
-                          <>
-                            {user.name || `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || '-'}
-                          </>
-                        )}
-                      </td>
-                      <td>
-                        {editingId === user.id ? (
-                          <div className="form-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
-                            <input
-                              className="form-input"
-                              type="email"
-                              placeholder="Email"
-                              value={editData.email ?? ''}
-                              onChange={(e) => setEditData(prev => ({ ...prev, email: e.target.value }))}
-                            />
-                            <input
-                              className="form-input"
-                              type="password"
-                              placeholder="New Password (optional)"
-                              value={editData.password ?? ''}
-                              onChange={(e) => setEditData(prev => ({ ...prev, password: e.target.value }))}
-                            />
-                          </div>
-                        ) : (
-                          user.email
-                        )}
-                      </td>
-                      <td>
-                        <span className={`user-status ${getConfirmed(user) === 'Yes' ? 'confirmed' : 'unconfirmed'}`}>
-                          {getConfirmed(user) === 'Yes' ? 'Confirmed' : 'Unconfirmed'}
-                        </span>
-                      </td>
-                      <td>
-                        <span className="user-roles">{getRoles(user)}</span>
-                      </td>
-                      <td>{getCreatedAt(user)}</td>
-                      <td className="text-right">
-                        {editingId === user.id ? (
-                          <>
-                            <button className="btn btn-primary btn-sm mr-8" onClick={saveEdit} disabled={saving}>
-                              {saving ? 'Saving...' : 'Save'}
-                            </button>
-                            <button className="btn btn-outline btn-sm mr-8" onClick={cancelEdit} disabled={saving}>Cancel</button>
-                          </>
-                        ) : (
-                          <>
-                            <Link to={`/admin/users/${user.id}`} className="btn btn-outline btn-sm mr-8">View</Link>
-                            <button className="btn btn-outline btn-sm mr-8" onClick={() => startEdit(user)}>Edit</button>
-                            <button className="btn btn-danger btn-sm" onClick={() => handleDelete(user.id)}>Delete</button>
-                          </>
-                        )}
-                      </td>
+              <div className="table-wrapper">
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th style={{ width: 70 }}>ID</th>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Confirmed</th>
+                      <th>Roles</th>
+                      <th>Created At</th>
+                      <th style={{ width: 240 }} className="text-right">Actions</th>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                  </thead>
+                  <tbody>
+                    {loading ? (
+                      <tr><td colSpan={7} className="table-empty">
+                        <div className="loading-spinner"></div> Loading users...
+                      </td></tr>
+                    ) : filteredUsers.length === 0 ? (
+                      <tr><td colSpan={7} className="table-empty">No users found.</td></tr>
+                    ) : (
+                      filteredUsers.map(user => (
+                        <tr key={user.id}>
+                          <td>{user.id}</td>
+                          <td>
+                            {editingId === user.id ? (
+                              <div className="form-grid" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
+                                <input
+                                  className="form-input"
+                                  placeholder="First name"
+                                  value={editData.firstName ?? ''}
+                                  onChange={(e) => setEditData(prev => ({ ...prev, firstName: e.target.value }))}
+                                />
+                                <input
+                                  className="form-input"
+                                  placeholder="Last name"
+                                  value={editData.lastName ?? ''}
+                                  onChange={(e) => setEditData(prev => ({ ...prev, lastName: e.target.value }))}
+                                />
+                              </div>
+                            ) : (
+                              <>
+                                {user.name || `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || '-'}
+                              </>
+                            )}
+                          </td>
+                          <td>
+                            {editingId === user.id ? (
+                              <div className="form-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
+                                <input
+                                  className="form-input"
+                                  type="email"
+                                  placeholder="Email"
+                                  value={editData.email ?? ''}
+                                  onChange={(e) => setEditData(prev => ({ ...prev, email: e.target.value }))}
+                                />
+                                <input
+                                  className="form-input"
+                                  type="password"
+                                  placeholder="New Password (optional)"
+                                  value={editData.password ?? ''}
+                                  onChange={(e) => setEditData(prev => ({ ...prev, password: e.target.value }))}
+                                />
+                              </div>
+                            ) : (
+                              user.email
+                            )}
+                          </td>
+                          <td>
+                            <span className={`user-status ${getConfirmed(user) === 'Yes' ? 'confirmed' : 'unconfirmed'}`}>
+                              {getConfirmed(user) === 'Yes' ? 'Confirmed' : 'Unconfirmed'}
+                            </span>
+                          </td>
+                          <td>
+                            <span className="user-roles">{getRoles(user)}</span>
+                          </td>
+                          <td>{getCreatedAt(user)}</td>
+                          <td className="text-right">
+                            {editingId === user.id ? (
+                              <>
+                                <button className="btn btn-primary btn-sm mr-8" onClick={saveEdit} disabled={saving}>
+                                  {saving ? 'Saving...' : 'Save'}
+                                </button>
+                                <button className="btn btn-outline btn-sm mr-8" onClick={cancelEdit} disabled={saving}>Cancel</button>
+                              </>
+                            ) : (
+                              <>
+                                <Link to={`/admin/users/${user.id}`} className="btn btn-outline btn-sm mr-8">View</Link>
+                                <button className="btn btn-outline btn-sm mr-8" onClick={() => startEdit(user)}>Edit</button>
+                                <button className="btn btn-danger btn-sm" onClick={() => handleDelete(user.id)}>Delete</button>
+                              </>
+                            )}
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
+
+          {/* Create New User Tab */}
+          {activeTab === 'create-user' && (
+            <div className="admin-card">
+              <h3 className="section-title">Create New User</h3>
+              <form onSubmit={handleCreate} className="form-grid">
+                <div>
+                  <label className="form-label">First Name</label>
+                  <input
+                    className="form-input"
+                    value={createData.firstName}
+                    onChange={(e) => setCreateData({ ...createData, firstName: e.target.value })}
+                    placeholder="John"
+                  />
+                </div>
+                <div>
+                  <label className="form-label">Last Name</label>
+                  <input
+                    className="form-input"
+                    value={createData.lastName}
+                    onChange={(e) => setCreateData({ ...createData, lastName: e.target.value })}
+                    placeholder="Doe"
+                  />
+                </div>
+                <div>
+                  <label className="form-label">Email</label>
+                  <input
+                    type="email"
+                    className="form-input"
+                    value={createData.email}
+                    onChange={(e) => setCreateData({ ...createData, email: e.target.value })}
+                    placeholder="john.doe@example.com"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="form-label">Password</label>
+                  <input
+                    type="password"
+                    className="form-input"
+                    value={createData.password}
+                    onChange={(e) => setCreateData({ ...createData, password: e.target.value })}
+                    placeholder="••••••••"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="form-label">Confirm Password</label>
+                  <input
+                    type="password"
+                    className="form-input"
+                    value={createData.confirmPassword}
+                    onChange={(e) => setCreateData({ ...createData, confirmPassword: e.target.value })}
+                    placeholder="••••••••"
+                    required
+                  />
+                </div>
+                <div className="form-actions">
+                  <button className="btn btn-primary" type="submit" disabled={creating}>
+                    {creating ? 'Creating...' : 'Create User'}
+                  </button>
+                  <button type="button" className="btn btn-outline" onClick={() => setCreateData({ ...initialCreate })} disabled={creating}>Clear</button>
+                </div>
+              </form>
+            </div>
+          )}
         </div>
       </div>
     </AdminLayout>
