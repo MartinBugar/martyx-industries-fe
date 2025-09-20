@@ -201,6 +201,10 @@
   color: #6B7280;
 }
 
+.form-field-full {
+  grid-column: 1 / -1;
+}
+
 .form-actions {
   margin-top: 16px;
   display: flex;
@@ -736,6 +740,29 @@
   .btn {
     min-height: 44px;
     font-size: 14px;
+  }
+
+  /* Form adjustments for mobile */
+  .form-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px;
+    margin-top: 16px;
+  }
+
+  .form-field-full {
+    grid-column: 1;
+  }
+
+  .form-input,
+  .form-input select,
+  .form-input textarea {
+    font-size: 16px; /* Prevents zoom on iOS */
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .form-input[type="datetime-local"] {
+    font-size: 16px;
   }
 }
 

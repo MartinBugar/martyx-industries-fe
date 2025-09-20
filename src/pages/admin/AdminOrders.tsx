@@ -246,6 +246,7 @@ const AdminOrders: React.FC = () => {
                                         className="form-input"
                                         value={createData.orderNumber ?? ''}
                                         onChange={(e) => setCreateData({...createData, orderNumber: e.target.value})}
+                                        placeholder="ORD-001"
                                     />
                                 </div>
                                 <div>
@@ -255,15 +256,37 @@ const AdminOrders: React.FC = () => {
                                         className="form-input"
                                         value={createData.userEmail ?? ''}
                                         onChange={(e) => setCreateData({...createData, userEmail: e.target.value})}
+                                        placeholder="user@example.com"
                                     />
                                 </div>
                                 <div>
                                     <label className="form-label">Status</label>
-                                    <input
+                                    <select
                                         className="form-input"
-                                        value={createData.status as string ?? ''}
+                                        value={createData.status as string ?? 'PENDING'}
                                         onChange={(e) => setCreateData({...createData, status: e.target.value})}
-                                    />
+                                    >
+                                        <option value="PENDING">Pending</option>
+                                        <option value="CONFIRMED">Confirmed</option>
+                                        <option value="PROCESSING">Processing</option>
+                                        <option value="SHIPPED">Shipped</option>
+                                        <option value="DELIVERED">Delivered</option>
+                                        <option value="CANCELLED">Cancelled</option>
+                                        <option value="REFUNDED">Refunded</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="form-label">Currency</label>
+                                    <select
+                                        className="form-input"
+                                        value={createData.currency ?? 'USD'}
+                                        onChange={(e) => setCreateData({...createData, currency: e.target.value})}
+                                    >
+                                        <option value="USD">USD</option>
+                                        <option value="EUR">EUR</option>
+                                        <option value="GBP">GBP</option>
+                                        <option value="CAD">CAD</option>
+                                    </select>
                                 </div>
                                 <div>
                                     <label className="form-label">Order Date</label>
@@ -283,20 +306,14 @@ const AdminOrders: React.FC = () => {
                                         onChange={(e) => setCreateData({...createData, paymentDate: e.target.value})}
                                     />
                                 </div>
-                                <div>
-                                    <label className="form-label">Currency</label>
-                                    <input
-                                        className="form-input"
-                                        value={createData.currency ?? ''}
-                                        onChange={(e) => setCreateData({...createData, currency: e.target.value})}
-                                    />
-                                </div>
-                                <div style={{gridColumn: 'span 3'}}>
+                                <div className="form-field-full">
                                     <label className="form-label">Notes</label>
-                                    <input
+                                    <textarea
                                         className="form-input"
+                                        rows={3}
                                         value={createData.notes ?? ''}
                                         onChange={(e) => setCreateData({...createData, notes: e.target.value})}
+                                        placeholder="Optional order notes..."
                                     />
                                 </div>
                                 <div className="form-actions">
