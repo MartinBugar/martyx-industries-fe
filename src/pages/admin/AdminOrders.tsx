@@ -1,4 +1,5 @@
 import React, {useEffect, useMemo, useState} from 'react';
+import { Link } from 'react-router-dom';
 import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
 import {adminOrdersService, type AdminOrderDTO, type AdminOrderItem} from '../../services/adminOrdersService';
@@ -10,6 +11,21 @@ const fieldInputStyle: React.CSSProperties = {
     borderRadius: 6
 };
 const smallBtn: React.CSSProperties = {padding: '6px 10px', borderRadius: 6, border: 'none', cursor: 'pointer'};
+
+// Helper functions
+const formatDatetime = (value: unknown): string => {
+    if (!value) return '—';
+    const d = new Date(String(value));
+    if (isNaN(d.getTime())) return '—';
+    return d.toLocaleString();
+};
+
+const formatPrice = (amount: unknown, currency?: string): string => {
+    if (amount == null || amount === '') return '—';
+    const num = typeof amount === 'number' ? amount : Number(amount);
+    if (isNaN(num)) return '—';
+    return `${num.toLocaleString()} ${currency || 'USD'}`;
+};
 
 const AdminOrders: React.FC = () => {
     const [orders, setOrders] = useState<AdminOrderDTO[]>([]);
@@ -171,8 +187,7 @@ const AdminOrders: React.FC = () => {
         return items.reduce((s, it) => s + computeSubtotal(it), 0);
     };
 
-    const handleDelete = async (o: AdminOrderDTO) => {
-        const id = o.id;
+    const handleDelete = async (id: string | number) => {
         if (id == null) return;
         if (!confirm('Delete this order?')) return;
         setError(null);
@@ -361,7 +376,7 @@ const AdminOrders: React.FC = () => {
                                                 </div>
                                                 <div className="mobile-field">
                                                     <span className="mobile-field-label">Items:</span>
-                                                    <span className="mobile-field-value">{(order.items ?? []).length}</span>
+                                                    <span className="mobile-field-value">{(order.orderItems ?? []).length}</span>
                                                 </div>
                                                 <div className="mobile-field">
                                                     <span className="mobile-field-label">Total:</span>
@@ -683,7 +698,7 @@ const AdminOrders: React.FC = () => {
                                                                         title="Edit order">
                                                                     ✏️
                                                                 </button>
-                                                                <button onClick={() => handleDelete(o)}
+                                                                <button onClick={() => handleDelete(o.id!)}
                                                                         className="btn btn-danger btn-sm"
                                                                         title="Delete order">
                                                                     🗑️
