@@ -998,9 +998,9 @@
         background: transparent;
         border: none;
         color: #9CA3AF;
-        padding: 8px 4px;
+        padding: 6px 2px;
         border-radius: 8px;
-        font-size: 12px;
+        font-size: 10px;
         font-weight: 500;
         cursor: pointer;
         transition: all 0.2s ease;
@@ -1008,11 +1008,15 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 4px;
+        justify-content: center;
+        gap: 2px;
         min-height: 48px;
-        max-width: 80px;
+        max-width: none;
         position: relative;
-        white-space: nowrap;
+        white-space: normal;
+        text-align: center;
+        line-height: 1.1;
+        overflow: hidden;
     }
 
     .dashboard-tab::before {
