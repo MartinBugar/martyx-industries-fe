@@ -231,7 +231,69 @@ const AdminProducts: React.FC = () => {
 
           {/* All Products Tab */}
           {activeTab === 'all-products' && (
-          <div className="table-wrapper">
+          <>
+            {/* Mobile Card Layout */}
+            <div className="mobile-table-cards">
+              {loading ? (
+                <div className="mobile-table-card">
+                  <div className="table-empty">Loading products...</div>
+                </div>
+              ) : products.length === 0 ? (
+                <div className="mobile-table-card">
+                  <div className="table-empty">No products found.</div>
+                </div>
+              ) : (
+                products.map(p => (
+                  <div key={`mobile-${p.id}`} className="mobile-table-card">
+                    <div className="mobile-card-header">
+                      <div>
+                        <h4 className="mobile-card-title">{p.name}</h4>
+                        <p className="mobile-card-subtitle">ID: {p.id}</p>
+                      </div>
+                      <div className="mobile-card-actions">
+                        <Link to={`/admin/products/${p.id}/view`} className="btn btn-outline btn-sm" title="View product details">
+                          👁️
+                        </Link>
+                        <Link to={`/admin/products/${p.id}/edit`} className="btn btn-outline btn-sm" title="Edit product">
+                          ✏️
+                        </Link>
+                        <button className="btn btn-danger btn-sm" onClick={() => handleDelete(p.id!)} title="Delete product">
+                          🗑️
+                        </button>
+                      </div>
+                    </div>
+                    <div className="mobile-card-body">
+                      <div className="mobile-field">
+                        <span className="mobile-field-label">SKU:</span>
+                        <span className="mobile-field-value">{p.sku || '—'}</span>
+                      </div>
+                      <div className="mobile-field">
+                        <span className="mobile-field-label">Category:</span>
+                        <span className="mobile-field-value">{p.category || '—'}</span>
+                      </div>
+                      <div className="mobile-field">
+                        <span className="mobile-field-label">Type:</span>
+                        <span className="mobile-field-value">{getProductType(p)}</span>
+                      </div>
+                      <div className="mobile-field">
+                        <span className="mobile-field-label">Price:</span>
+                        <span className="mobile-field-value">{typeof p.price === 'number' ? `${p.price} ${p.currency ?? ''}` : '—'}</span>
+                      </div>
+                      <div className="mobile-field">
+                        <span className="mobile-field-label">Active:</span>
+                        <span className="mobile-field-value">
+                          <span className={`user-status ${p.active ? 'confirmed' : 'unconfirmed'}`}>
+                            {p.active ? 'Yes' : 'No'}
+                          </span>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div className="table-wrapper">
             <table className="admin-table">
               <thead>
                 <tr>
@@ -279,6 +341,7 @@ const AdminProducts: React.FC = () => {
               </tbody>
             </table>
           </div>
+          </>
           )}
         </div>
       </div>

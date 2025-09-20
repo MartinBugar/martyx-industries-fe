@@ -221,6 +221,131 @@ const AdminUsers: React.FC = () => {
                 />
               </div>
 
+              {/* Mobile Card Layout */}
+              <div className="mobile-table-cards">
+                {loading ? (
+                  <div className="mobile-table-card">
+                    <div className="table-empty">
+                      <div className="loading-spinner"></div> Loading users...
+                    </div>
+                  </div>
+                ) : filteredUsers.length === 0 ? (
+                  <div className="mobile-table-card">
+                    <div className="table-empty">No users found.</div>
+                  </div>
+                ) : (
+                  filteredUsers.map(user => (
+                    <div key={`mobile-${user.id}`} className="mobile-table-card">
+                      <div className="mobile-card-header">
+                        <div>
+                          <h4 className="mobile-card-title">
+                            {user.name || `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || '-'}
+                          </h4>
+                          <p className="mobile-card-subtitle">ID: {user.id}</p>
+                        </div>
+                        <div className="mobile-card-actions">
+                          {editingId === user.id ? (
+                            <>
+                              <button className="btn btn-primary btn-sm" onClick={saveEdit} disabled={saving}>
+                                {saving ? '💾' : '💾'}
+                              </button>
+                              <button className="btn btn-outline btn-sm" onClick={cancelEdit} disabled={saving}>
+                                ❌
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <Link to={`/admin/users/${user.id}`} className="btn btn-outline btn-sm" title="View user details">
+                                👁️
+                              </Link>
+                              <button className="btn btn-outline btn-sm" onClick={() => startEdit(user)} title="Edit user">
+                                ✏️
+                              </button>
+                              <button className="btn btn-danger btn-sm" onClick={() => handleDelete(user.id)} title="Delete user">
+                                🗑️
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                      <div className="mobile-card-body">
+                        {editingId === user.id ? (
+                          <>
+                            <div className="mobile-field">
+                              <span className="mobile-field-label">First Name:</span>
+                              <input
+                                className="form-input"
+                                style={{ height: '32px', fontSize: '14px', flex: 1, marginLeft: '8px' }}
+                                placeholder="First name"
+                                value={editData.firstName ?? ''}
+                                onChange={(e) => setEditData(prev => ({ ...prev, firstName: e.target.value }))}
+                              />
+                            </div>
+                            <div className="mobile-field">
+                              <span className="mobile-field-label">Last Name:</span>
+                              <input
+                                className="form-input"
+                                style={{ height: '32px', fontSize: '14px', flex: 1, marginLeft: '8px' }}
+                                placeholder="Last name"
+                                value={editData.lastName ?? ''}
+                                onChange={(e) => setEditData(prev => ({ ...prev, lastName: e.target.value }))}
+                              />
+                            </div>
+                            <div className="mobile-field">
+                              <span className="mobile-field-label">Email:</span>
+                              <input
+                                className="form-input"
+                                style={{ height: '32px', fontSize: '14px', flex: 1, marginLeft: '8px' }}
+                                type="email"
+                                placeholder="Email"
+                                value={editData.email ?? ''}
+                                onChange={(e) => setEditData(prev => ({ ...prev, email: e.target.value }))}
+                              />
+                            </div>
+                            <div className="mobile-field">
+                              <span className="mobile-field-label">Password:</span>
+                              <input
+                                className="form-input"
+                                style={{ height: '32px', fontSize: '14px', flex: 1, marginLeft: '8px' }}
+                                type="password"
+                                placeholder="New Password (optional)"
+                                value={editData.password ?? ''}
+                                onChange={(e) => setEditData(prev => ({ ...prev, password: e.target.value }))}
+                              />
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <div className="mobile-field">
+                              <span className="mobile-field-label">Email:</span>
+                              <span className="mobile-field-value">{user.email}</span>
+                            </div>
+                            <div className="mobile-field">
+                              <span className="mobile-field-label">Status:</span>
+                              <span className="mobile-field-value">
+                                <span className={`user-status ${getConfirmed(user) === 'Yes' ? 'confirmed' : 'unconfirmed'}`}>
+                                  {getConfirmed(user) === 'Yes' ? 'Confirmed' : 'Unconfirmed'}
+                                </span>
+                              </span>
+                            </div>
+                            <div className="mobile-field">
+                              <span className="mobile-field-label">Roles:</span>
+                              <span className="mobile-field-value">
+                                <span className="user-roles">{getRoles(user)}</span>
+                              </span>
+                            </div>
+                            <div className="mobile-field">
+                              <span className="mobile-field-label">Created:</span>
+                              <span className="mobile-field-value">{getCreatedAt(user)}</span>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+
               <div className="table-wrapper">
                 <table className="admin-table">
                   <thead>

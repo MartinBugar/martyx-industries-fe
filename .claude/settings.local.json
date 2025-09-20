@@ -3,7 +3,12 @@
     "allow": [
       "Bash(npm run dev:*)",
       "Bash(npm run typecheck:*)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "WebSearch",
+      "WebFetch(domain:uxmovement.medium.com)",
+      "WebFetch(domain:medium.com)",
+      "WebFetch(domain:www.nngroup.com)",
+      "WebFetch(domain:www.toptal.com)"
     ],
     "deny": [],
     "ask": []

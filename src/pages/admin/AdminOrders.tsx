@@ -306,6 +306,69 @@ const AdminOrders: React.FC = () => {
                                 </button>
                             </div>
 
+                            {/* Mobile Card Layout */}
+                            <div className="mobile-table-cards">
+                                {loading ? (
+                                    <div className="mobile-table-card">
+                                        <div className="table-empty">
+                                            <div className="loading-spinner"></div> Loading orders...
+                                        </div>
+                                    </div>
+                                ) : filtered.length === 0 ? (
+                                    <div className="mobile-table-card">
+                                        <div className="table-empty">No orders found.</div>
+                                    </div>
+                                ) : (
+                                    filtered.map(order => (
+                                        <div key={`mobile-${order.id}`} className="mobile-table-card">
+                                            <div className="mobile-card-header">
+                                                <div>
+                                                    <h4 className="mobile-card-title">Order #{order.orderNumber ?? order.id}</h4>
+                                                    <p className="mobile-card-subtitle">ID: {order.id}</p>
+                                                </div>
+                                                <div className="mobile-card-actions">
+                                                    <Link to={`/admin/orders/${order.id}/view`} className="btn btn-outline btn-sm" title="View order details">
+                                                        👁️
+                                                    </Link>
+                                                    <Link to={`/admin/orders/${order.id}/edit`} className="btn btn-outline btn-sm" title="Edit order">
+                                                        ✏️
+                                                    </Link>
+                                                    <button className="btn btn-danger btn-sm" onClick={() => handleDelete(order.id!)} title="Delete order">
+                                                        🗑️
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div className="mobile-card-body">
+                                                <div className="mobile-field">
+                                                    <span className="mobile-field-label">Email:</span>
+                                                    <span className="mobile-field-value">{order.userEmail ?? '—'}</span>
+                                                </div>
+                                                <div className="mobile-field">
+                                                    <span className="mobile-field-label">Status:</span>
+                                                    <span className="mobile-field-value">
+                                                        <span className={`user-status ${order.status === 'completed' || order.status === 'paid' ? 'confirmed' : 'unconfirmed'}`}>
+                                                            {order.status ?? '—'}
+                                                        </span>
+                                                    </span>
+                                                </div>
+                                                <div className="mobile-field">
+                                                    <span className="mobile-field-label">Order Date:</span>
+                                                    <span className="mobile-field-value">{formatDatetime(order.orderDate)}</span>
+                                                </div>
+                                                <div className="mobile-field">
+                                                    <span className="mobile-field-label">Items:</span>
+                                                    <span className="mobile-field-value">{(order.items ?? []).length}</span>
+                                                </div>
+                                                <div className="mobile-field">
+                                                    <span className="mobile-field-label">Total:</span>
+                                                    <span className="mobile-field-value">{formatPrice(order.totalAmount, order.currency)}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+
                             <div className="table-wrapper">
                                 <table className="admin-table">
                                     <thead>
