@@ -869,49 +869,48 @@
     outline-offset: 2px;
 }
 
-/* Dashboard Navigation Tabs - Mobile-first bottom navigation */
+/* Dashboard Navigation Tabs - Default desktop style */
 .dashboard-tabs {
     display: flex;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: linear-gradient(135deg, #1F2538 0%, #1B2030 100%);
-    border-top: 1px solid #374151;
-    padding: 8px 16px 12px;
-    gap: 0;
-    z-index: 100;
-    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.15);
-    backdrop-filter: blur(10px);
+    gap: 8px;
+    margin-left: 16px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    position: static;
+    z-index: auto;
+    box-shadow: none;
+    backdrop-filter: none;
 }
 
 .dashboard-tab {
     background: transparent;
-    border: none;
+    border: 1px solid #374151;
     color: #9CA3AF;
-    padding: 8px 4px;
-    border-radius: 12px;
-    font-size: 11px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+    flex: none;
+    display: inline-flex;
+    flex-direction: row;
     align-items: center;
-    gap: 4px;
-    min-height: 44px;
+    gap: 6px;
+    min-height: auto;
     position: relative;
+    white-space: nowrap;
 }
 
 .dashboard-tab::before {
     content: '';
-    width: 24px;
-    height: 24px;
+    width: 16px;
+    height: 16px;
     background-size: 16px 16px;
     background-repeat: no-repeat;
     background-position: center;
-    opacity: 0.6;
+    opacity: 0.7;
     transition: opacity 0.2s ease;
 }
 
@@ -928,23 +927,26 @@
 }
 
 .dashboard-tab:hover {
-    background: rgba(59, 130, 246, 0.1);
-    color: #E5E7EB;
+    background: #374151;
+    color: #ffffff;
+    border-color: #4B5563;
 }
 
 .dashboard-tab:hover::before {
-    opacity: 0.8;
+    opacity: 0.9;
+    filter: brightness(0) saturate(100%) invert(100%);
 }
 
 .dashboard-tab.active {
-    background: rgba(59, 130, 246, 0.15);
-    color: #3B82F6;
+    background: #3B82F6;
+    color: #ffffff;
+    border-color: #3B82F6;
     font-weight: 600;
 }
 
 .dashboard-tab.active::before {
     opacity: 1;
-    filter: brightness(0) saturate(100%) invert(54%) sepia(78%) saturate(2659%) hue-rotate(212deg) brightness(96%) contrast(91%);
+    filter: brightness(0) saturate(100%) invert(100%);
 }
 
 .dashboard-tab:focus-visible {
@@ -969,6 +971,80 @@
         width: 20px;
         height: 20px;
         background-size: 14px 14px;
+    }
+}
+
+/* Mobile navigation override - fixed bottom navigation */
+@media (max-width: 767px) {
+    .dashboard-tabs {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(180deg, rgba(15, 17, 21, 0.8) 0%, rgba(15, 17, 21, 0.95) 100%);
+        backdrop-filter: blur(12px);
+        border: none;
+        padding: 8px 16px 24px;
+        margin: 0;
+        gap: 0;
+        z-index: 100;
+        box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.2);
+        display: flex;
+        justify-content: space-around;
+        width: 100%;
+    }
+
+    .dashboard-tab {
+        background: transparent;
+        border: none;
+        color: #9CA3AF;
+        padding: 8px 4px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        min-height: 48px;
+        max-width: 80px;
+        position: relative;
+        white-space: nowrap;
+    }
+
+    .dashboard-tab::before {
+        content: '';
+        width: 20px;
+        height: 20px;
+        background-size: 18px 18px;
+        background-repeat: no-repeat;
+        background-position: center;
+        opacity: 0.7;
+        transition: opacity 0.2s ease;
+    }
+
+    .dashboard-tab:hover {
+        background: transparent;
+        color: #ffffff;
+    }
+
+    .dashboard-tab:hover::before {
+        opacity: 1;
+        filter: brightness(0) saturate(100%) invert(100%);
+    }
+
+    .dashboard-tab.active {
+        background: transparent;
+        color: #3B82F6;
+        font-weight: 600;
+    }
+
+    .dashboard-tab.active::before {
+        opacity: 1;
+        filter: brightness(0) saturate(100%) invert(44%) sepia(84%) saturate(2012%) hue-rotate(214deg) brightness(100%) contrast(89%);
     }
 }
 
