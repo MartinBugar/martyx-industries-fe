@@ -18,6 +18,11 @@ interface ChartStats {
   avg: number;
 }
 
+interface ProductRevenue {
+  productName: string;
+  revenue: number;
+}
+
 // Components
 interface KPICardProps {
   label: string;
@@ -84,16 +89,19 @@ const ProgressRow: React.FC<ProgressRowProps> = ({ code, name, percentage }) => 
   );
 };
 
-interface MiniStatCardProps {
-  label: string;
-  value: string;
+
+interface ProductRevenueRowProps {
+  productName: string;
+  revenue: number;
 }
 
-const MiniStatCard: React.FC<MiniStatCardProps> = ({ label, value }) => {
+const ProductRevenueRow: React.FC<ProductRevenueRowProps> = ({ productName, revenue }) => {
   return (
-    <div className="mini-stat-card">
-      <div className="mini-stat-label">{label}</div>
-      <div className="mini-stat-value">{value}</div>
+    <div className="product-revenue-row">
+      <div className="product-info">
+        <span className="product-name">{productName}</span>
+      </div>
+      <div className="product-revenue-amount">€{revenue.toLocaleString()}</div>
     </div>
   );
 };
@@ -152,6 +160,7 @@ const AdminDashboard: React.FC = () => {
   const [salesSummary, setSalesSummary] = useState<SalesSummary | null>(null);
   const [salesLoading, setSalesLoading] = useState<boolean>(true);
   const [revenueTimeSeries, setRevenueTimeSeries] = useState<RevenueSeriesPoint[]>([]);
+  const [topProducts, setTopProducts] = useState<ProductRevenue[]>([]);
 
   const [bandwidth, setBandwidth] = useState<unknown | null>(null);
   const [bandwidthLoading, setBandwidthLoading] = useState<boolean>(true);
@@ -295,6 +304,45 @@ const AdminDashboard: React.FC = () => {
           });
 
           setRevenueTimeSeries(revenueData);
+
+          // Calculate top products revenue (last 30 days)
+          const now = new Date();
+          const thirtyDaysAgo = new Date(now);
+          thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+          const productRevenueMap = new Map<string, number>();
+
+          orders
+            .filter(order => {
+              const dateStr = order.paymentDate || order.orderDate;
+              if (!dateStr) return false;
+              const orderDate = new Date(dateStr);
+              return orderDate >= thirtyDaysAgo && orderDate <= now;
+            })
+            .forEach(order => {
+              order.orderItems?.forEach(item => {
+                const productName = item.productName || item.name || item.title || 'Unknown Product';
+                const qty = typeof item.quantity === 'number' ? item.quantity : 1;
+                const price = typeof item.unitPrice === 'number'
+                  ? item.unitPrice
+                  : (typeof item.price === 'number' ? item.price : 0);
+                const itemRevenue = qty * price;
+
+                const currentRevenue = productRevenueMap.get(productName) || 0;
+                productRevenueMap.set(productName, currentRevenue + itemRevenue);
+              });
+            });
+
+          // Convert to array and sort by revenue
+          const productRevenueArray: ProductRevenue[] = Array.from(productRevenueMap.entries())
+            .map(([productName, revenue]) => ({
+              productName,
+              revenue: Math.round(revenue)
+            }))
+            .sort((a, b) => b.revenue - a.revenue)
+            .slice(0, 5); // Top 5 products
+
+          setTopProducts(productRevenueArray);
           setSalesLoading(false);
         }
       } catch {
@@ -379,36 +427,40 @@ const AdminDashboard: React.FC = () => {
         <div className="dashboard-section">
           <SectionPill label="REVENUE" color="green" />
           <div className="revenue-content">
-            <div className="card revenue-card">
-              <div className="revenue-header">
-                <div className="revenue-title-area">
-                  <h3 className="card-title">Revenue — Last 30 days</h3>
-                </div>
-                <div className="mini-stats">
-                  <MiniStatCard
-                    label="Sales (30d)"
-                    value={salesLoading ? "Loading..." : `${salesSummary?.ordersCount ?? 0} orders`}
-                  />
-                  <MiniStatCard
-                    label="Revenue (30d)"
-                    value={salesLoading ? "Loading..." : `${(salesSummary?.totalAmount ?? 0).toLocaleString()} €`}
-                  />
-                </div>
-              </div>
-              <div className="revenue-chart">
+            <div className="revenue-chart">
+              {salesLoading ? (
+                <div className="chart-loading">Loading chart...</div>
+              ) : !salesSummary ? (
+                <div className="chart-error">Failed to load data. Retry</div>
+              ) : (
+                <AreaLineChart
+                  data={revenueTimeSeries.map(d => ({ date: d.date, value: d.amount }))}
+                  title="Revenue — Last 30 days"
+                  subtitle={`Total: ${(salesSummary?.totalAmount ?? 0).toLocaleString()} €`}
+                  color="green"
+                  peak={revenueStats.peak}
+                  avg={revenueStats.avg}
+                  unit=" €/day"
+                />
+              )}
+            </div>
+            <div className="revenue-products">
+              <div className="card">
+                <h3 className="card-title">Top Products</h3>
                 {salesLoading ? (
-                  <div className="chart-loading">Loading chart...</div>
-                ) : !salesSummary ? (
-                  <div className="chart-error">Failed to load data. Retry</div>
+                  <div className="loading-products">Loading products...</div>
+                ) : topProducts.length > 0 ? (
+                  <div className="products-list">
+                    {topProducts.map((product, index) => (
+                      <ProductRevenueRow
+                        key={`${product.productName}-${index}`}
+                        productName={product.productName}
+                        revenue={product.revenue}
+                      />
+                    ))}
+                  </div>
                 ) : (
-                  <AreaLineChart
-                    data={revenueTimeSeries.map(d => ({ date: d.date, value: d.amount }))}
-                    title=""
-                    color="green"
-                    peak={revenueStats.peak}
-                    avg={revenueStats.avg}
-                    unit=" €/day"
-                  />
+                  <div className="no-data">No product data available</div>
                 )}
               </div>
             </div>
