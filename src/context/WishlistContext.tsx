@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react';
 import { wishlistService } from '../services/wishlistService';
+import { hybridProductService } from '../services/hybridProductService';
 import { useAuth } from './useAuth';
 import type { WishlistContextType, WishlistItem, WishlistStats } from '../types/wishlist';
 
@@ -35,7 +36,27 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
       setIsLoading(true);
       setError(null);
       const wishlistData = await wishlistService.getWishlist();
-      setItems(wishlistData.items);
+      
+      // Automatically fix availability status by checking actual product status
+      const correctedItems = await Promise.all(
+        wishlistData.items.map(async (item) => {
+          try {
+            // Try to fetch the product to check if it's actually active
+            await hybridProductService.getProductById(item.productId);
+            // If we can fetch the product successfully, it means it's active
+            return { ...item, isAvailable: true };
+          } catch (error) {
+            // If we can't fetch the product (inactive or not found), mark as unavailable
+            if ((error as any).code === 'PRODUCT_INACTIVE') {
+              return { ...item, isAvailable: false };
+            }
+            // For other errors (network, etc.), keep original status
+            return item;
+          }
+        })
+      );
+      
+      setItems(correctedItems);
       setTotalCount(wishlistData.totalCount);
       setLastUpdated(wishlistData.lastUpdated);
     } catch (err: any) {
@@ -88,7 +109,22 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
     try {
       setError(null);
       const newItem = await wishlistService.addToWishlist(productId);
-      setItems(prev => [newItem, ...prev]);
+      
+      // Fix availability status immediately by checking actual product status
+      let correctedItem = newItem;
+      try {
+        await hybridProductService.getProductById(newItem.productId);
+        // If we can fetch the product successfully, it means it's active
+        correctedItem = { ...newItem, isAvailable: true };
+      } catch (error) {
+        // If we can't fetch the product (inactive or not found), mark as unavailable
+        if ((error as any).code === 'PRODUCT_INACTIVE') {
+          correctedItem = { ...newItem, isAvailable: false };
+        }
+        // For other errors (network, etc.), keep original status
+      }
+      
+      setItems(prev => [correctedItem, ...prev]);
       setTotalCount(prev => prev + 1);
       setLastUpdated(new Date().toISOString());
 
@@ -97,9 +133,9 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
         setStats(prev => prev ? {
           ...prev,
           totalItems: prev.totalItems + 1,
-          availableItems: newItem.isAvailable ? prev.availableItems + 1 : prev.availableItems,
-          unavailableItems: !newItem.isAvailable ? prev.unavailableItems + 1 : prev.unavailableItems,
-          totalValue: newItem.isAvailable ? prev.totalValue + newItem.productPrice : prev.totalValue
+          availableItems: correctedItem.isAvailable ? prev.availableItems + 1 : prev.availableItems,
+          unavailableItems: !correctedItem.isAvailable ? prev.unavailableItems + 1 : prev.unavailableItems,
+          totalValue: correctedItem.isAvailable ? prev.totalValue + correctedItem.productPrice : prev.totalValue
         } : null);
       }
 
@@ -258,6 +294,7 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
       throw err;
     }
   }, [isAuthenticated, loadWishlist, loadStats]);
+
 
   // Helper method to refresh both wishlist and stats
   const refreshWishlist = useCallback(async (): Promise<void> => {

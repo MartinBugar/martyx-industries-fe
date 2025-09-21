@@ -15,7 +15,7 @@ import '../Products/Products.css';
 const Wishlist: React.FC = () => {
   const { t } = useTranslation('wishlist');
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
   const {
     items,
     stats,
@@ -37,10 +37,11 @@ const Wishlist: React.FC = () => {
   const [productsData, setProductsData] = useState<Map<number, Product>>(new Map());
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    // Only redirect to login if auth is not loading and user is not authenticated
+    if (!authLoading && !isAuthenticated) {
       navigate('/login?redirect=/wishlist');
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, authLoading, navigate]);
 
   useEffect(() => {
     if (error) {
@@ -117,6 +118,7 @@ const Wishlist: React.FC = () => {
     }
   };
 
+
   const handleAddToCart = (item: WishlistItem) => {
     const product = {
       id: String(item.productId),
@@ -136,6 +138,17 @@ const Wishlist: React.FC = () => {
 
   const availableItems = items.filter(item => item.isAvailable);
   const unavailableItems = items.filter(item => !item.isAvailable);
+
+  // Show loading while auth is being checked
+  if (authLoading) {
+    return (
+      <div className="wishlist-page">
+        <div className="wishlist-container">
+          <LoadingSpinner size="large" message="Loading..." />
+        </div>
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
     return null; // Will redirect in useEffect
