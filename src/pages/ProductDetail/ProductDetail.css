@@ -46,6 +46,33 @@
   overflow: hidden;
 }
 
+/* Product Actions */
+.product-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.product-actions .wishlist-button {
+  flex-shrink: 0;
+}
+
+.product-actions .add-to-cart-btn {
+  flex: 1;
+  min-width: 200px;
+}
+
+@media (max-width: 768px) {
+  .product-actions {
+    flex-direction: column;
+  }
+
+  .product-actions .add-to-cart-btn {
+    min-width: auto;
+  }
+}
+
 /* Desktop Layout */
 @media (min-width: 768px) {
   .product-container {

@@ -7,6 +7,7 @@ import ProductView from '../../components/ProductView/ProductView';
 import './ProductDetail.css';
 import {DetailsTab, DownloadTab, FeaturesTab, ReviewsTab} from '../../components/ProductTabs';
 import {useCart} from '../../context/useCart';
+import WishlistButton from '../../components/WishlistButton';
 
 // Local inlined ProductDetails component (previously in components/ProductDetails/ProductDetails.tsx)
 interface ProductDetailsProps {
@@ -64,14 +65,21 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({product}) => {
             </ul>
 
 
-            <button
-                className={`add-to-cart-btn${popup.visible ? ` is-popup ${popup.variant}` : ''}`}
-                onClick={handleAddToCart}
-                disabled={popup.visible}
-                aria-live="polite"
-            >
-                {popup.visible ? popup.message : t('cart.add_to_cart')}
-            </button>
+            <div className="product-actions">
+                <WishlistButton
+                    productId={product.id}
+                    variant="button"
+                    size="large"
+                />
+                <button
+                    className={`add-to-cart-btn${popup.visible ? ` is-popup ${popup.variant}` : ''}`}
+                    onClick={handleAddToCart}
+                    disabled={popup.visible}
+                    aria-live="polite"
+                >
+                    {popup.visible ? popup.message : t('cart.add_to_cart')}
+                </button>
+            </div>
         </div>
     );
 };

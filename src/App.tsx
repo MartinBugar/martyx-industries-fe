@@ -18,6 +18,7 @@ import SecurityErrorBoundary from './components/security/SecurityErrorBoundary'
 import { setupCSPReporting, initializeCSRFToken } from './utils/security'
 import { CartProvider } from './context/CartContext'
 import { AuthProvider } from './context/AuthProvider'
+import { WishlistProvider } from './context/WishlistContext'
 import { useCart } from './context/useCart'
 import { DevPasswordGateProvider } from './context/DevPasswordGateProvider'
 import { DevPasswordGate } from './components/DevPasswordGate/DevPasswordGate'
@@ -52,6 +53,7 @@ import {
   PayPalSuccess,
   PayPalCancel,
   CartPage,
+  Wishlist,
   UserAccount,
   EmailConfirmation,
   CookiesPolicy,
@@ -102,7 +104,9 @@ function AppWrapper() {
           <DevPasswordGate>
             <AuthProvider>
               <CartProvider>
-                <AppContent />
+                <WishlistProvider>
+                  <AppContent />
+                </WishlistProvider>
               </CartProvider>
             </AuthProvider>
           </DevPasswordGate>
@@ -174,6 +178,7 @@ const MainContent = React.memo(() => {
             <Route path="/api/auth/reset-password" element={<ResetPasswordRedirect />} />
             <Route path="/confirm-email" element={<EmailConfirmation />} />
             <Route path="/cart" element={<CartPage />} />
+            <Route path="/wishlist" element={<Wishlist />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/payment/paypal/success" element={<PayPalSuccess />} />
             <Route path="/payment/paypal/cancel" element={<PayPalCancel />} />

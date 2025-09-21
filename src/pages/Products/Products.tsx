@@ -4,6 +4,7 @@ import {useTranslation} from 'react-i18next';
 import {type Product} from '../../data/productData';
 import {hybridProductService} from '../../services/hybridProductService';
 import {useCart} from '../../context/useCart';
+import WishlistButton from '../../components/WishlistButton';
 import './Products.css';
 
 const Products: React.FC = () => {
@@ -201,6 +202,13 @@ const Products: React.FC = () => {
                                                         Digital
                                                     </div>
                                                 )}
+                                                <div className="product-card-wishlist">
+                                                    <WishlistButton
+                                                        productId={p.id}
+                                                        size="small"
+                                                        variant="icon"
+                                                    />
+                                                </div>
                                             </div>
 
                                             <div className="product-card-content">

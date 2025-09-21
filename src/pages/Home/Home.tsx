@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { type Product } from '../../data/productData';
 import { hybridProductService } from '../../services/hybridProductService';
+import WishlistButton from '../../components/WishlistButton';
 import './Home.css';
 
 const Home: React.FC = () => {
@@ -126,13 +127,24 @@ const Home: React.FC = () => {
           <div className="featured-grid">
             {featured.map((p) => (
               <article key={p.id} className="product-card">
+                <div className="product-card-image-container">
+                  <Link to={`/products/${p.id}`} className="product-card-link">
+                    <img
+                      src={p.gallery?.[0] || '/assets/kit-01.png'}
+                      alt={p.name}
+                      className="product-image"
+                      loading="lazy"
+                    />
+                  </Link>
+                  <div className="product-card-wishlist">
+                    <WishlistButton
+                      productId={p.id}
+                      size="small"
+                      variant="icon"
+                    />
+                  </div>
+                </div>
                 <Link to={`/products/${p.id}`} className="product-card-link">
-                  <img 
-                    src={p.gallery?.[0] || '/assets/kit-01.png'} 
-                    alt={p.name}
-                    className="product-image"
-                    loading="lazy"
-                  />
                   <div className="product-info">
                     <h3 className="product-title">{p.name}</h3>
                     <div className="product-price">{p.currency} {p.price.toFixed(2)}</div>

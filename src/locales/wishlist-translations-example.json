@@ -1,0 +1,62 @@
+{
+  "en": {
+    "nav": {
+      "wishlist": "Wishlist"
+    },
+    "wishlist": {
+      "title": "My Wishlist",
+      "subtitle": "Keep track of products you love",
+      "show_stats": "Show Stats",
+      "hide_stats": "Hide Stats",
+      "stats": {
+        "total_items": "Total Items",
+        "available": "Available",
+        "unavailable": "Unavailable",
+        "total_value": "Total Value"
+      },
+      "empty": {
+        "title": "Your wishlist is empty",
+        "description": "Start adding products you love to keep track of them",
+        "browse_products": "Browse Products"
+      },
+      "select_all": "Select All",
+      "remove_selected": "Remove Selected",
+      "cleanup": "Cleanup",
+      "add_to_cart": "Add to Cart",
+      "added_on": "Added on",
+      "unavailable_items": "Unavailable Items",
+      "unavailable_description": "These items are no longer available",
+      "unavailable": "Unavailable"
+    }
+  },
+  "sk": {
+    "nav": {
+      "wishlist": "Zoznam želaní"
+    },
+    "wishlist": {
+      "title": "Môj zoznam želaní",
+      "subtitle": "Sledujte produkty, ktoré máte radi",
+      "show_stats": "Zobraziť štatistiky",
+      "hide_stats": "Skryť štatistiky",
+      "stats": {
+        "total_items": "Celkový počet položiek",
+        "available": "Dostupné",
+        "unavailable": "Nedostupné",
+        "total_value": "Celková hodnota"
+      },
+      "empty": {
+        "title": "Váš zoznam želaní je prázdny",
+        "description": "Začnite pridávať produkty, ktoré máte radi",
+        "browse_products": "Prehliadať produkty"
+      },
+      "select_all": "Vybrať všetko",
+      "remove_selected": "Odstrániť vybrané",
+      "cleanup": "Vyčistiť",
+      "add_to_cart": "Pridať do košíka",
+      "added_on": "Pridané dňa",
+      "unavailable_items": "Nedostupné položky",
+      "unavailable_description": "Tieto položky už nie sú dostupné",
+      "unavailable": "Nedostupné"
+    }
+  }
+}

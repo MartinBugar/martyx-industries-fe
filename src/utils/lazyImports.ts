@@ -20,6 +20,7 @@ export const Checkout = lazy(() => import('../pages/Checkout/Checkout'));
 export const PayPalSuccess = lazy(() => import('../pages/Payments/PayPalSuccess'));
 export const PayPalCancel = lazy(() => import('../pages/Payments/PayPalCancel'));
 export const CartPage = lazy(() => import('../pages/CartPage/CartPage'));
+export const Wishlist = lazy(() => import('../pages/Wishlist/Wishlist'));
 export const UserAccount = lazy(() => import('../pages/UserAccount/UserAccount'));
 export const CookiesPolicy = lazy(() => import('../pages/CookiesPolicy/CookiesPolicy'));
 export const PrivacyPolicy = lazy(() => import('../pages/PrivacyPolicy/PrivacyPolicy'));

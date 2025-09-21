@@ -78,30 +78,43 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
     const [exposureValue, setExposureValue] = useState(typeof exposure === 'string' ? parseFloat(exposure) : exposure);
     
     // Function to update both metalness and roughness directly on the model materials
-    const updateMaterialProps = (m: number, r: number) => {
+    const updateMaterialProps = async (m: number, r: number) => {
         const el = modelViewerRef.current;
-        console.log('updateMaterialProps called:', { m, r, el: !!el, model: !!el?.model });
 
         if (el && el.model) {
-            console.log('Materials count:', el.model.materials?.length);
-            el.model.materials.forEach((mat: {
-                pbrMetallicRoughness: {
-                    setMetallicFactor: (value: number) => void;
-                    setRoughnessFactor: (value: number) => void;
-                }
-            }, index: number) => {
-                console.log(`Setting material ${index}: metalness=${m}, roughness=${r}`);
+            const materials = el.model.materials;
+            if (!materials || materials.length === 0) {
+                return;
+            }
+
+            // Process materials with proper error handling
+            for (let index = 0; index < materials.length; index++) {
+                const mat = materials[index];
                 try {
-                    // Set metalness
-                    mat.pbrMetallicRoughness.setMetallicFactor(m);
-                    // Set roughness
-                    mat.pbrMetallicRoughness.setRoughnessFactor(r);
+                    // Ensure material is loaded before setting properties
+                    if (mat && typeof mat.ensureLoaded === 'function') {
+                        await mat.ensureLoaded();
+                    }
+
+                    // Check if material has PBR properties
+                    if (mat && mat.pbrMetallicRoughness) {
+                        // Set metalness if method exists
+                        if (typeof mat.pbrMetallicRoughness.setMetallicFactor === 'function') {
+                            mat.pbrMetallicRoughness.setMetallicFactor(m);
+                        }
+                        // Set roughness if method exists
+                        if (typeof mat.pbrMetallicRoughness.setRoughnessFactor === 'function') {
+                            mat.pbrMetallicRoughness.setRoughnessFactor(r);
+                        }
+                    }
                 } catch (error) {
-                    console.error(`Failed to set material ${index} properties:`, error);
+                    // Silently skip materials that can't be loaded or configured
+                    // This prevents console spam while allowing other materials to work
+                    if (import.meta.env.DEV) {
+                        console.warn(`Skipping material ${index}: not loaded or incompatible`);
+                    }
                 }
-            });
-        } else {
-            console.log('Element or model not available');
+            }
         }
     };
     
@@ -116,7 +129,9 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
             el.setAttribute('metallic-factor', v.toString());
         }
 
-        updateMaterialProps(v, roughness);
+        updateMaterialProps(v, roughness).catch(() => {
+            // Ignore errors - already handled in updateMaterialProps
+        });
     };
 
     // Handle roughness slider change
@@ -130,7 +145,9 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
             el.setAttribute('roughness-factor', v.toString());
         }
 
-        updateMaterialProps(metalness, v);
+        updateMaterialProps(metalness, v).catch(() => {
+            // Ignore errors - already handled in updateMaterialProps
+        });
     };
     
     // Handle exposure slider change
@@ -229,7 +246,9 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
 
             // Apply metalness and roughness when model is loaded with a slight delay
             setTimeout(() => {
-                updateMaterialProps(metalness, roughness);
+                updateMaterialProps(metalness, roughness).catch(() => {
+                    // Ignore errors - already handled in updateMaterialProps
+                });
             }, 100);
         };
         
@@ -292,7 +311,9 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
         
         // Update material properties with debouncing to avoid rapid updates
         const timeoutId = setTimeout(() => {
-            updateMaterialProps(newMetalness, newRoughness);
+            updateMaterialProps(newMetalness, newRoughness).catch(() => {
+                // Ignore errors - already handled in updateMaterialProps
+            });
         }, 50);
         
         return () => clearTimeout(timeoutId);

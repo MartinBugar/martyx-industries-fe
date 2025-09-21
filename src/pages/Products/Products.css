@@ -24,6 +24,32 @@
   background: var(--products-bg);
 }
 
+/* Product Card Wishlist Positioning */
+.product-card-image-container {
+  position: relative;
+}
+
+.product-card-wishlist {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 2;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  border-radius: 50%;
+  padding: 0.25rem;
+  transition: all 0.2s ease;
+}
+
+.product-card-wishlist:hover {
+  background: rgba(0, 0, 0, 0.8);
+  transform: scale(1.1);
+}
+
+.product-card:hover .product-card-wishlist {
+  opacity: 1;
+}
+
 
 
 /* Main Container */
