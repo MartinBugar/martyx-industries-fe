@@ -92,8 +92,8 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
                 const mat = materials[index];
                 try {
                     // Ensure material is loaded before setting properties
-                    if (mat && typeof mat.ensureLoaded === 'function') {
-                        await mat.ensureLoaded();
+                    if (mat && typeof (mat as any).ensureLoaded === 'function') {
+                        await (mat as any).ensureLoaded();
                     }
 
                     // Check if material has PBR properties
