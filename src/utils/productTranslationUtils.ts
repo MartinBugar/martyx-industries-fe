@@ -1,6 +1,6 @@
 import type { TFunction } from 'i18next';
 import i18n from '../i18n';
-import { type ProductTab, type TabContent, type HardcodedProductData } from '../data/productData';
+import { type ProductTab, type TabContent, type HardcodedProductData, hardcodedProductsData } from '../data/productData';
 import endeavourBuildPdf from '../assets/buildguide/1/endeavourBuild.pdf';
 
 /**
@@ -86,12 +86,28 @@ export const getLocalizedTabs = (productId: string, t: TFunction): ProductTab[] 
   const features = getLocalizedFeatures(productId, t);
   const detailsContent = getLocalizedDetailsContent(productId, t);
   
+  // Get the original hardcoded data to preserve PrintInfo
+  const originalData = hardcodedProductsData.find(data => data.id === productId);
+  const originalPrintInfoTab = originalData?.tabs?.find(tab => tab.id === 'PrintInfo');
+  
   const tabs: ProductTab[] = [
     {
       id: 'Details',
       label: t('tabs.details'),
       content: detailsContent
-    },
+    }
+  ];
+
+  // Add PrintInfo tab if it exists in original data (preserve the printInfo content)
+  if (originalPrintInfoTab) {
+    tabs.push({
+      id: 'PrintInfo',
+      label: t('tabs.printInfo', 'Print Info'),
+      content: originalPrintInfoTab.content // Preserve original printInfo data
+    });
+  }
+
+  tabs.push(
     {
       id: 'Download',
       label: t('tabs.download'),
@@ -114,7 +130,7 @@ export const getLocalizedTabs = (productId: string, t: TFunction): ProductTab[] 
         items: features
       }
     }
-  ];
+  );
   
   return tabs;
 };
