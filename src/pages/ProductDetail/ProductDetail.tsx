@@ -286,6 +286,7 @@ const ProductDetail: React.FC = () => {
     const [error, setError] = React.useState<string | null>(null);
     const [isProductInactive, setIsProductInactive] = React.useState(false);
     const [galleryImages, setGalleryImages] = React.useState<string[]>([]);
+    const [hasLoadedGallery, setHasLoadedGallery] = React.useState(false);
     const [active, setActive] = React.useState<ProductTabId>('Details');
 
     const tabs = React.useMemo(() => {
@@ -297,6 +298,12 @@ const ProductDetail: React.FC = () => {
         }
         return [];
     }, [product]);
+
+    // Reset gallery loading flag when product ID changes (not language)
+    React.useEffect(() => {
+        setHasLoadedGallery(false);
+        setGalleryImages([]); // Also clear gallery images for new product
+    }, [id]);
 
     // Load product from hybrid service
     React.useEffect(() => {
@@ -333,10 +340,10 @@ const ProductDetail: React.FC = () => {
         loadProduct();
     }, [id, i18n.language]); // Re-load product when language changes
 
-    // Load gallery images from database (with metadata and proper ordering)
+    // Load gallery images from database (with metadata and proper ordering) - ONCE per product
     React.useEffect(() => {
         const loadGalleryImages = async () => {
-            if (!product || !id) return;
+            if (!product || !id || hasLoadedGallery) return;
 
             try {
                 console.log(`🖼️ Loading gallery images from database for product: ${id}`);
@@ -364,26 +371,30 @@ const ProductDetail: React.FC = () => {
 
                     setGalleryImages(imageUrls);
                     
-                    // Update product with the loaded gallery images
+                    // Update product with the loaded gallery images (without triggering infinite loop)
                     setProduct(prev => prev ? { ...prev, gallery: imageUrls } : null);
                 } else {
-                    console.log('📁 No gallery images found in database, using fallback');
-                    // Fallback to hardcoded product gallery if no database images
-                    const fallbackImages = product.gallery || [];
-                    setGalleryImages(fallbackImages);
+                    console.log('📁 No gallery images found in database - no gallery will be shown');
+                    // No fallback - if no database images, show empty gallery
+                    setGalleryImages([]);
                 }
+
+                // Mark gallery as loaded to prevent infinite loop
+                setHasLoadedGallery(true);
 
             } catch (error) {
                 console.error('❌ Failed to load gallery images from database:', error);
-                // Fallback to original product gallery
-                const fallbackImages = product.gallery || [];
-                setGalleryImages(fallbackImages);
-                console.log(`🔄 Using fallback gallery with ${fallbackImages.length} images`);
+                // No fallback - if database fails, show empty gallery
+                setGalleryImages([]);
+                console.log('🔄 Database gallery loading failed - showing empty gallery');
+                
+                // Mark as loaded even on error to prevent infinite retries
+                setHasLoadedGallery(true);
             }
         };
 
         loadGalleryImages();
-    }, [product, id]);
+    }, [product, id, hasLoadedGallery]);
 
     React.useEffect(() => {
         const firstTabId = tabs[0]?.id ?? 'Details';
@@ -428,14 +439,24 @@ const ProductDetail: React.FC = () => {
         console.log('📋 Active tab:', active, 'content kind:', activeTab.content.kind);
     }
 
-    // Create an updated product object with the loaded gallery images (must be before early returns)
+    // Create an updated product object with database gallery images ONLY
     const productWithGallery = React.useMemo(() => {
         if (!product) return null;
+        
+        if (import.meta.env.DEV) {
+            console.log('🔄 productWithGallery updated (database-only):', {
+                productId: product.id,
+                galleryImagesCount: galleryImages.length,
+                hasLoadedGallery: hasLoadedGallery,
+                galleryImages: galleryImages.slice(0, 3) // First 3 for debugging
+            });
+        }
+        
         return {
             ...product,
-            gallery: galleryImages.length > 0 ? galleryImages : product.gallery
+            gallery: galleryImages // Use ONLY database images, no fallback to hardcoded
         };
-    }, [product, galleryImages]);
+    }, [product, galleryImages, hasLoadedGallery]);
 
     // Show loading state
     if (loading) {

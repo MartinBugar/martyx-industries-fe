@@ -5,6 +5,7 @@ import { type Product } from '../../data/productData';
 import { hybridProductService } from '../../services/hybridProductService';
 import WishlistButton from '../../components/WishlistButton';
 import { getImageSrcSet, getBestImageUrl, getBaseNameFromPath, isCDNEnabled } from '../../utils/cdnImages';
+import { productGalleryService } from '../../services/productGalleryService';
 import './Home.css';
 
 const Home: React.FC = () => {
@@ -19,19 +20,56 @@ const Home: React.FC = () => {
   const heroMap = import.meta.glob('../../assets/home/tank.png', { eager: true, as: 'url' });
   const heroSrc = (heroMap['../../assets/home/tank.png'] as string) || '/assets/hero-tank.png';
 
-  // Load products from hybrid service
+  // Load products with database gallery from hybrid service
   useEffect(() => {
-    const loadProducts = async () => {
+    const loadProductsWithGallery = async () => {
       try {
         const productsList = await hybridProductService.getProducts();
-        setProducts(productsList);
+        
+        // Load gallery for each product from database
+        const productsWithGallery = await Promise.all(
+          productsList.map(async (product) => {
+            try {
+              const galleryData = await productGalleryService.getProductImages(product.id.toString());
+              
+              // Sort by order and get URLs (prefer CDN URLs)
+              const sortedGallery = galleryData.sort((a, b) => (a.order || 0) - (b.order || 0));
+              const galleryUrls = sortedGallery.map(img => img.cdnUrl || img.url).filter(Boolean);
+              
+              if (import.meta.env.DEV) {
+                console.log(`🏠 Product ${product.id} gallery loaded:`, {
+                  productName: product.name,
+                  galleryCount: galleryUrls.length,
+                  mainImage: galleryUrls[0] || 'none',
+                  orderInfo: sortedGallery.slice(0, 3).map(img => ({ 
+                    fileName: img.fileName, 
+                    order: img.order 
+                  }))
+                });
+              }
+              
+              return {
+                ...product,
+                gallery: galleryUrls // Replace empty gallery with database gallery
+              };
+            } catch (galleryError) {
+              console.warn(`Failed to load gallery for product ${product.id}:`, galleryError);
+              return {
+                ...product,
+                gallery: [] // Keep empty gallery if loading fails
+              };
+            }
+          })
+        );
+        
+        setProducts(productsWithGallery);
       } catch (error) {
         console.error('Failed to load products for home page:', error);
         // Continue with empty array - don't show error on home page
       }
     };
 
-    loadProducts();
+    loadProductsWithGallery();
   }, [i18n.language]); // Reload products when language changes
 
   // Preload hero image for better LCP when available

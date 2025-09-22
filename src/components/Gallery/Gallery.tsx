@@ -12,7 +12,23 @@ const Gallery: React.FC<GalleryProps> = ({ productName, images }) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [loaded, setLoaded] = useState<boolean[]>(() => images.map(() => false));
+  const [isNavigating, setIsNavigating] = useState(false);
   const imgRefs = React.useRef<(HTMLImageElement | null)[]>([]);
+  const navigationTimeoutRef = React.useRef<number | null>(null);
+
+  // Pre-compute optimized image URLs to avoid expensive calculations during navigation
+  const optimizedImages = React.useMemo(() => {
+    return images.map((image) => {
+      const isCDNUrl = image.includes('digitaloceanspaces.com') || image.includes(import.meta.env.VITE_CDN_BASE || '');
+      
+      return {
+        thumbnailSrc: isCDNUrl ? image : (isCDNEnabled() ? getBestImageUrl(getBaseNameFromPath(image), 800) : image),
+        fullscreenSrc: isCDNUrl ? image : (isCDNEnabled() ? getBestImageUrl(getBaseNameFromPath(image), 1600) : image),
+        srcSet: !isCDNUrl && isCDNEnabled() ? getImageSrcSet(getBaseNameFromPath(image)) : undefined,
+        isCDNUrl
+      };
+    });
+  }, [images]);
 
   // Debug: log received images
   React.useEffect(() => {
@@ -21,6 +37,15 @@ const Gallery: React.FC<GalleryProps> = ({ productName, images }) => {
       console.log('🔍 First 3 image URLs:', images.slice(0, 3));
     }
   }, [images, productName]);
+
+  // Cleanup timeout on unmount
+  React.useEffect(() => {
+    return () => {
+      if (navigationTimeoutRef.current) {
+        clearTimeout(navigationTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // After mount, mark cached images as loaded (in case onLoad doesn't fire)
   React.useEffect(() => {
@@ -50,17 +75,29 @@ const Gallery: React.FC<GalleryProps> = ({ productName, images }) => {
     document.body.style.overflow = 'auto';
   };
 
-  const navigateGallery = (direction: 'prev' | 'next') => {
-    if (direction === 'prev') {
-      setCurrentImageIndex((prevIndex) => 
-        prevIndex === 0 ? images.length - 1 : prevIndex - 1
-      );
-    } else {
-      setCurrentImageIndex((prevIndex) => 
-        prevIndex === images.length - 1 ? 0 : prevIndex + 1
-      );
+  const navigateGallery = React.useCallback((direction: 'prev' | 'next') => {
+    if (isNavigating || images.length <= 1) return;
+    
+    setIsNavigating(true);
+    
+    setCurrentImageIndex((prevIndex) => {
+      if (direction === 'prev') {
+        return prevIndex === 0 ? images.length - 1 : prevIndex - 1;
+      } else {
+        return prevIndex === images.length - 1 ? 0 : prevIndex + 1;
+      }
+    });
+
+    // Clear previous timeout
+    if (navigationTimeoutRef.current) {
+      clearTimeout(navigationTimeoutRef.current);
     }
-  };
+
+    // Reset navigation lock after a short delay
+    navigationTimeoutRef.current = window.setTimeout(() => {
+      setIsNavigating(false);
+    }, 150);
+  }, [images.length, isNavigating]);
 
   // Handle keyboard navigation
   React.useEffect(() => {
@@ -100,19 +137,8 @@ const Gallery: React.FC<GalleryProps> = ({ productName, images }) => {
             )}
             <img
               ref={(el) => { imgRefs.current[index] = el; }}
-              src={(() => {
-                // If the image URL is already a CDN URL, use it directly
-                const isCDNUrl = image.includes('digitaloceanspaces.com') || image.includes(import.meta.env.VITE_CDN_BASE || '');
-                const finalSrc = isCDNUrl ? image : (isCDNEnabled() ? getBestImageUrl(getBaseNameFromPath(image), 400) : image);
-                if (import.meta.env.DEV && index < 3) {
-                  console.log(`🎯 Image ${index + 1} - Original:`, image, '→ Final:', finalSrc, '(CDN URL detected:', isCDNUrl, ')');
-                }
-                return finalSrc;
-              })()}
-              srcSet={(() => {
-                const isCDNUrl = image.includes('digitaloceanspaces.com') || image.includes(import.meta.env.VITE_CDN_BASE || '');
-                return !isCDNUrl && isCDNEnabled() ? getImageSrcSet(getBaseNameFromPath(image)) : undefined;
-              })()}
+              src={optimizedImages[index]?.thumbnailSrc || image}
+              srcSet={optimizedImages[index]?.srcSet}
               sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 200px"
               alt={`${productName} - Image ${index + 1}`}
               decoding="async"
@@ -156,34 +182,22 @@ const Gallery: React.FC<GalleryProps> = ({ productName, images }) => {
               &times;
             </button>
             <button 
-              className="gallery-nav-btn prev-btn" 
+              className={`gallery-nav-btn prev-btn ${isNavigating ? 'disabled' : ''}`}
               onClick={() => navigateGallery('prev')}
+              disabled={isNavigating || images.length <= 1}
               aria-label="Previous image"
             >
               &#10094;
             </button>
             <div className="fullscreen-image-container">
               <img
-                src={(() => {
-                  const currentImage = images[currentImageIndex];
-                  // If the image URL is already a CDN URL, use it directly
-                  const isCDNUrl = currentImage.includes('digitaloceanspaces.com') || currentImage.includes(import.meta.env.VITE_CDN_BASE || '');
-                  const finalSrc = isCDNUrl ? currentImage : (isCDNEnabled() ? getBestImageUrl(getBaseNameFromPath(currentImage), 1600) : currentImage);
-                  if (import.meta.env.DEV) {
-                    console.log(`🖼️ Fullscreen image ${currentImageIndex + 1} - Original:`, currentImage, '→ Final:', finalSrc, '(CDN URL detected:', isCDNUrl, ')');
-                  }
-                  return finalSrc;
-                })()}
-                srcSet={(() => {
-                  const currentImage = images[currentImageIndex];
-                  const isCDNUrl = currentImage.includes('digitaloceanspaces.com') || currentImage.includes(import.meta.env.VITE_CDN_BASE || '');
-                  return !isCDNUrl && isCDNEnabled() ? getImageSrcSet(getBaseNameFromPath(currentImage)) : undefined;
-                })()}
+                src={optimizedImages[currentImageIndex]?.fullscreenSrc || images[currentImageIndex]}
+                srcSet={optimizedImages[currentImageIndex]?.srcSet}
                 sizes="100vw"
                 alt={`${productName} - Image ${currentImageIndex + 1}`}
                 className="fullscreen-image"
                 onLoad={() => {
-                  if (import.meta.env.DEV) {
+                  if (import.meta.env.DEV && currentImageIndex === 0) {
                     console.log(`✅ Fullscreen image ${currentImageIndex + 1} loaded successfully`);
                   }
                 }}
@@ -198,8 +212,9 @@ const Gallery: React.FC<GalleryProps> = ({ productName, images }) => {
               </div>
             </div>
             <button 
-              className="gallery-nav-btn next-btn" 
+              className={`gallery-nav-btn next-btn ${isNavigating ? 'disabled' : ''}`}
               onClick={() => navigateGallery('next')}
+              disabled={isNavigating || images.length <= 1}
               aria-label="Next image"
             >
               &#10095;

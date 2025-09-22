@@ -98,21 +98,23 @@ function AppWrapper() {
   }, []);
 
   return (
-    <PayPalScriptProvider options={paypalOptions}>
-      <SecurityErrorBoundary>
-        <DevPasswordGateProvider>
-          <DevPasswordGate>
-            <AuthProvider>
-              <CartProvider>
-                <WishlistProvider>
-                  <AppContent />
-                </WishlistProvider>
-              </CartProvider>
-            </AuthProvider>
-          </DevPasswordGate>
-        </DevPasswordGateProvider>
-      </SecurityErrorBoundary>
-    </PayPalScriptProvider>
+    <BrowserRouter>
+      <PayPalScriptProvider options={paypalOptions}>
+        <SecurityErrorBoundary>
+          <DevPasswordGateProvider>
+            <DevPasswordGate>
+              <AuthProvider>
+                <CartProvider>
+                  <WishlistProvider>
+                    <AppContent />
+                  </WishlistProvider>
+                </CartProvider>
+              </AuthProvider>
+            </DevPasswordGate>
+          </DevPasswordGateProvider>
+        </SecurityErrorBoundary>
+      </PayPalScriptProvider>
+    </BrowserRouter>
   );
 }
 
@@ -274,10 +276,10 @@ function AppContent() {
   });
 
   return (
-    <BrowserRouter>
+    <>
       <ScrollToTop />
       <MainContent />
-    </BrowserRouter>
+    </>
   );
 }
 
