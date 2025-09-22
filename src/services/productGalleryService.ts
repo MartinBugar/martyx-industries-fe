@@ -146,18 +146,15 @@ export class ProductGalleryService {
 
     console.log(`🔍 Looking for images in folder: ${folderName}`);
 
-    // Try simpler approach first - attempt to list via HTTP
-    try {
-      const result = await this.loadImagesViaHttp(folderName);
-      if (result.length > 0) {
-        console.log(`📸 Loaded ${result.length} images via HTTP:`, result);
-        return result;
-      }
-    } catch (error) {
-      console.log('HTTP approach failed, trying AWS SDK:', error);
-    }
+    // For now, return empty array to prevent infinite loading
+    // The AWS SDK approach requires special bucket permissions that may not be available
+    console.log('ℹ️ Spaces image loading temporarily disabled to prevent infinite loading');
+    console.log('💡 To enable: configure proper bucket permissions for ListObjects operation');
+    
+    return [];
 
-    // Use AWS SDK approach
+    // The following AWS SDK approach is commented out to prevent infinite loading:
+    /*
     try {
       const bucket = import.meta.env.VITE_DO_SPACES_BUCKET || 'mi-gallery';
 
@@ -165,13 +162,27 @@ export class ProductGalleryService {
       const listParams: AWS.S3.ListObjectsV2Request = {
         Bucket: bucket,
         Prefix: `${folderName}/`,
-        MaxKeys: 50 // Reduce limit to 50 images per product
+        MaxKeys: 50
       };
 
       console.log('🔄 Attempting AWS SDK listObjectsV2...', listParams);
+      console.log('🔧 AWS SDK Configuration check:', {
+        hasAccessKey: !!import.meta.env.VITE_DO_SPACES_ACCESS_KEY,
+        hasSecretKey: !!import.meta.env.VITE_DO_SPACES_SECRET_KEY,
+        endpoint: import.meta.env.VITE_DO_SPACES_ENDPOINT,
+        bucket
+      });
 
-      // Direct call without timeout race condition
-      const result = await s3.listObjectsV2(listParams).promise();
+      // Add timeout to prevent infinite loading
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error('AWS SDK timeout after 10 seconds')), 10000);
+      });
+
+      // Race between the actual request and timeout
+      const result = await Promise.race([
+        s3.listObjectsV2(listParams).promise(),
+        timeoutPromise
+      ]);
 
       if (!result.Contents || result.Contents.length === 0) {
         console.log(`📁 No images found in folder: ${folderName}`);
@@ -186,27 +197,23 @@ export class ProductGalleryService {
           const fileName = obj.Key?.split('/').pop();
           if (!fileName) return false;
 
-          // Check if it's an image file (by extension)
           const imageExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
           const extension = fileName.split('.').pop()?.toLowerCase();
           return extension && imageExtensions.includes(extension);
         })
         .sort((a, b) => {
-          // Sort by last modified date (newest first) or by filename if dates are same
           const dateA = a.LastModified?.getTime() || 0;
           const dateB = b.LastModified?.getTime() || 0;
 
           if (dateA !== dateB) {
-            return dateA - dateB; // Oldest first (upload order)
+            return dateA - dateB;
           }
 
-          // If dates are same, sort by filename alphabetically
           const fileNameA = a.Key?.split('/').pop() || '';
           const fileNameB = b.Key?.split('/').pop() || '';
           return fileNameA.localeCompare(fileNameB);
         })
         .map(obj => {
-          // Construct the public URL for the image
           const endpoint = import.meta.env.VITE_DO_SPACES_ENDPOINT || 'fra1.digitaloceanspaces.com';
           return `https://${bucket}.${endpoint}/${obj.Key}`;
         });
@@ -216,14 +223,9 @@ export class ProductGalleryService {
 
     } catch (error) {
       console.warn(`⚠️ Failed to load images for folder "${folderName}" from Spaces:`, error instanceof Error ? error.message : error);
-
-      // If it's a timeout, the folder probably doesn't exist - this is normal
-      if (error instanceof Error && error.message.includes('timeout')) {
-        console.log(`📁 Folder "${folderName}" doesn't exist or is empty - this is normal for new products`);
-      }
-
       return [];
     }
+    */
   }
 
   /**
@@ -234,54 +236,13 @@ export class ProductGalleryService {
       const bucket = import.meta.env.VITE_DO_SPACES_BUCKET || 'mi-gallery';
       const endpoint = import.meta.env.VITE_DO_SPACES_ENDPOINT || 'fra1.digitaloceanspaces.com';
 
-      // Try to list bucket contents via HTTP XML API
-      const url = `https://${bucket}.${endpoint}/?list-type=2&prefix=${folderName}/&max-keys=50`;
+      // CORS won't allow direct listing of bucket contents via HTTP
+      // This approach is not feasible for browser-based apps
+      console.log('🚫 HTTP XML API approach not supported due to CORS restrictions');
+      throw new Error('HTTP XML API not supported from browser due to CORS');
 
-      console.log('🌐 Trying HTTP XML API:', url);
-
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/xml'
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      const xmlText = await response.text();
-      console.log('📄 XML Response received:', xmlText.substring(0, 200) + '...');
-
-      // Parse XML to extract image URLs
-      const parser = new DOMParser();
-      const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
-
-      // Look for <Contents> elements which contain <Key> elements
-      const contents = xmlDoc.getElementsByTagName('Contents');
-      const imageUrls: string[] = [];
-
-      for (let i = 0; i < contents.length; i++) {
-        const keyElement = contents[i].getElementsByTagName('Key')[0];
-        if (keyElement) {
-          const key = keyElement.textContent;
-          if (key && key.startsWith(`${folderName}/`)) {
-            const fileName = key.split('/').pop();
-            if (fileName) {
-              // Check if it's an image file
-              const imageExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
-              const extension = fileName.split('.').pop()?.toLowerCase();
-              if (extension && imageExtensions.includes(extension)) {
-                const imageUrl = `https://${bucket}.${endpoint}/${key}`;
-                imageUrls.push(imageUrl);
-              }
-            }
-          }
-        }
-      }
-
-      console.log(`📸 Found ${imageUrls.length} images via HTTP:`, imageUrls);
-      return imageUrls;
+      // HTTP approach is not feasible from browser due to CORS restrictions
+      return [];
 
     } catch (error) {
       console.warn('⚠️ HTTP approach failed:', error);
