@@ -271,10 +271,14 @@ const AdminProductDetail: React.FC = () => {
               <div className="admin-card" style={{ marginTop: 16 }}>
                 <ProductGalleryUpload
                   productId={id || ''}
-                  existingImages={[]} // TODO: Load existing images from backend
+                  productName={product?.name || product?.stringId || id}
+                  existingImages={product?.gallery || []}
                   onImagesChange={(images) => {
                     console.log('Gallery images updated:', images);
-                    // TODO: Save gallery images to backend
+                    // Update local product state to reflect gallery changes
+                    if (product) {
+                      setProduct(prev => prev ? { ...prev, gallery: images } : null);
+                    }
                   }}
                 />
               </div>

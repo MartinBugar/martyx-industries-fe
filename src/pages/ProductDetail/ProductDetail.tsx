@@ -10,6 +10,7 @@ import {useCart} from '../../context/useCart';
 import WishlistButton from '../../components/WishlistButton';
 import {reviewsService, type Review} from '../../services/reviewsService';
 import { getLCPPreloadAttributes, getBaseNameFromPath, isCDNEnabled } from '../../utils/cdnImages';
+import { productGalleryService } from '../../services/productGalleryService';
 
 // StarRating component for displaying average rating
 interface StarRatingProps {
@@ -284,6 +285,7 @@ const ProductDetail: React.FC = () => {
     const [loading, setLoading] = React.useState(true);
     const [error, setError] = React.useState<string | null>(null);
     const [isProductInactive, setIsProductInactive] = React.useState(false);
+    const [galleryImages, setGalleryImages] = React.useState<string[]>([]);
 
     const tabs = React.useMemo(() => {
         if (product) {
@@ -331,6 +333,46 @@ const ProductDetail: React.FC = () => {
         loadProduct();
     }, [id, i18n.language]); // Re-load product when language changes
 
+    // Load gallery images from DigitalOcean Spaces
+    React.useEffect(() => {
+        const loadGalleryImages = async () => {
+            if (!product || !id) return;
+
+            try {
+                console.log(`🖼️ Loading gallery images for product: ${id}`);
+
+                // Try to load from DigitalOcean Spaces first
+                let spacesImages: string[] = [];
+
+                // Temporarily disable Spaces loading to debug infinite loading issue
+                const enableSpacesLoading = false;
+
+                if (enableSpacesLoading && productGalleryService.isSpacesConfigured()) {
+                    spacesImages = await productGalleryService.loadProductImagesFromSpaces(id);
+                } else {
+                    console.log('🚫 Spaces loading disabled for ProductDetail');
+                }
+
+                // Use Spaces images if available, otherwise fallback to product.gallery
+                const finalImages = spacesImages.length > 0 ? spacesImages : (product.gallery || []);
+
+                setGalleryImages(finalImages);
+                console.log(`✅ Loaded ${finalImages.length} gallery images:`, finalImages);
+
+                // Update product with the loaded gallery images
+                if (spacesImages.length > 0) {
+                    setProduct(prev => prev ? { ...prev, gallery: spacesImages } : null);
+                }
+            } catch (error) {
+                console.error('❌ Failed to load gallery images from Spaces:', error);
+                // Fallback to original product gallery
+                setGalleryImages(product.gallery || []);
+            }
+        };
+
+        loadGalleryImages();
+    }, [product, id]);
+
     React.useEffect(() => {
         const firstTabId = tabs[0]?.id ?? 'Details';
         if (import.meta.env.DEV) {
@@ -341,9 +383,9 @@ const ProductDetail: React.FC = () => {
 
     // LCP preloading for hero image
     React.useEffect(() => {
-        if (!product?.gallery?.[0] || !isCDNEnabled()) return;
+        const heroImage = galleryImages[0] || product?.gallery?.[0];
+        if (!heroImage || !isCDNEnabled()) return;
 
-        const heroImage = product.gallery[0];
         const baseName = getBaseNameFromPath(heroImage);
         const preloadAttrs = getLCPPreloadAttributes(baseName);
 
@@ -367,7 +409,7 @@ const ProductDetail: React.FC = () => {
                 document.head.removeChild(link);
             }
         };
-    }, [product]);
+    }, [galleryImages, product]);
 
     const activeTab = tabs.find(t => t.id === active) ?? tabs[0];
     if (import.meta.env.DEV && activeTab) {
@@ -441,10 +483,19 @@ const ProductDetail: React.FC = () => {
         );
     }
 
+    // Create an updated product object with the loaded gallery images
+    const productWithGallery = React.useMemo(() => {
+        if (!product) return null;
+        return {
+            ...product,
+            gallery: galleryImages.length > 0 ? galleryImages : product.gallery
+        };
+    }, [product, galleryImages]);
+
     return (
         <div className="product-detail-page">
             <div className="product-container">
-                <ProductView product={product}/>
+                <ProductView product={productWithGallery}/>
                 <ProductDetails product={product}/>
 
                 <nav className="product-bookmarks" aria-label="Product sections" role="tablist">
