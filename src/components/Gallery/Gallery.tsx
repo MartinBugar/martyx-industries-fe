@@ -101,13 +101,18 @@ const Gallery: React.FC<GalleryProps> = ({ productName, images }) => {
             <img
               ref={(el) => { imgRefs.current[index] = el; }}
               src={(() => {
-                const finalSrc = isCDNEnabled() ? getBestImageUrl(getBaseNameFromPath(image), 400) : image;
+                // If the image URL is already a CDN URL, use it directly
+                const isCDNUrl = image.includes('digitaloceanspaces.com') || image.includes(import.meta.env.VITE_CDN_BASE || '');
+                const finalSrc = isCDNUrl ? image : (isCDNEnabled() ? getBestImageUrl(getBaseNameFromPath(image), 400) : image);
                 if (import.meta.env.DEV && index < 3) {
-                  console.log(`🎯 Image ${index + 1} - Original:`, image, '→ Final:', finalSrc);
+                  console.log(`🎯 Image ${index + 1} - Original:`, image, '→ Final:', finalSrc, '(CDN URL detected:', isCDNUrl, ')');
                 }
                 return finalSrc;
               })()}
-              srcSet={isCDNEnabled() ? getImageSrcSet(getBaseNameFromPath(image)) : undefined}
+              srcSet={(() => {
+                const isCDNUrl = image.includes('digitaloceanspaces.com') || image.includes(import.meta.env.VITE_CDN_BASE || '');
+                return !isCDNUrl && isCDNEnabled() ? getImageSrcSet(getBaseNameFromPath(image)) : undefined;
+              })()}
               sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 200px"
               alt={`${productName} - Image ${index + 1}`}
               decoding="async"
