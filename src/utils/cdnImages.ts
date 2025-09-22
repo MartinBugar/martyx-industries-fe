@@ -22,7 +22,7 @@ export interface ImageVariants {
 /**
  * Generate CDN URL for a given image
  */
-export function getCDNImageUrl(baseName: string, size?: ImageSize, format?: 'webp' | 'avif' | 'jpg' | 'png'): string {
+export function getCDNImageUrl(baseName: string, size?: ImageSize, format?: 'webp' | 'avif' | 'jpg' | 'png', customFolder?: string): string {
   if (!USE_CDN_IMAGES || !CDN_BASE) {
     // Fallback to local assets
     if (import.meta.env.DEV) {
@@ -31,14 +31,16 @@ export function getCDNImageUrl(baseName: string, size?: ImageSize, format?: 'web
     return getLocalImageUrl(baseName, size, format);
   }
 
-  const baseUrl = `${CDN_BASE}/${CDN_FOLDER}`;
+  // Use custom folder if provided, otherwise use default CDN_FOLDER
+  const folder = customFolder || CDN_FOLDER;
+  const baseUrl = `${CDN_BASE}/${folder}`;
 
   if (!size || size === 'original') {
     // Return original file with optional format
     const extension = format || 'png';
     const finalUrl = `${baseUrl}/${baseName}.${extension}`;
     if (import.meta.env.DEV) {
-      console.log('🌐 CDN URL generated:', finalUrl);
+      console.log('🌐 CDN URL generated:', finalUrl, 'for folder:', folder);
     }
     return finalUrl;
   }
@@ -194,6 +196,25 @@ export function getCDNConfig() {
     folder: CDN_FOLDER,
     fullBaseUrl: USE_CDN_IMAGES ? `${CDN_BASE}/${CDN_FOLDER}` : null
   };
+}
+
+/**
+ * Generate CDN URL for a product image
+ */
+export function getProductImageUrl(productId: string, imageNumber: number, format?: 'webp' | 'avif' | 'jpg' | 'png'): string {
+  // Map product IDs to folder names
+  const productFolderMap: Record<string, string> = {
+    '1': 'ENDEAVOUR',
+    'endeavour': 'ENDEAVOUR',
+    '2': 'RAKETA',
+    'raketa': 'RAKETA',
+    // Add more products as needed
+  };
+
+  const folder = productFolderMap[productId.toLowerCase()] || productId.toUpperCase();
+  const baseName = imageNumber.toString();
+
+  return getCDNImageUrl(baseName, 'original', format || 'png', folder);
 }
 
 /**

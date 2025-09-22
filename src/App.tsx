@@ -26,7 +26,7 @@ import { DevPasswordGate } from './components/DevPasswordGate/DevPasswordGate'
 // Core components (not lazy loaded as they're needed immediately)
 import Navbar from './components/Navbar/Navbar'
 import { useAuth } from './context/useAuth'
-import Cart from './pages/CartPage/CartPage'
+// Cart component will be loaded via lazy import
 import Footer from './components/Footer/Footer'
 import SessionExpiredNotification from './components/SessionExpiredNotification/SessionExpiredNotification'
 import CookieConsent from './components/CookieConsent/CookieConsent'
@@ -154,12 +154,14 @@ const MainContent = React.memo(() => {
         />
       )}
       
-      {!isAdminRoute && (
-        <Cart 
-          isOpen={showCart} 
-          onClose={toggleCart} 
-          onCheckout={handleCheckout} 
-        />
+      {!isAdminRoute && showCart && (
+        <Suspense fallback={<div className="cart-loading">Loading cart...</div>}>
+          <CartPage
+            isOpen={showCart}
+            onClose={toggleCart}
+            onCheckout={handleCheckout}
+          />
+        </Suspense>
       )}
 
       <main className="main-content" style={isAdminRoute ? { padding: 0 } : undefined}>
@@ -207,6 +209,16 @@ const MainContent = React.memo(() => {
             <Route path="/admin/products" element={
               <RequireAdmin>
                 <AdminProducts />
+              </RequireAdmin>
+            } />
+            <Route path="/admin/products/:id/view" element={
+              <RequireAdmin>
+                <AdminProductDetail />
+              </RequireAdmin>
+            } />
+            <Route path="/admin/products/:id/edit" element={
+              <RequireAdmin>
+                <AdminProductDetail />
               </RequireAdmin>
             } />
             <Route path="/admin/products/:id" element={

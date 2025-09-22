@@ -131,12 +131,42 @@ const Home: React.FC = () => {
                 <div className="product-card-image-container">
                   <Link to={`/products/${p.id}`} className="product-card-link">
                     <img
-                      src={p.gallery?.[0] ? (isCDNEnabled() ? getBestImageUrl(getBaseNameFromPath(p.gallery[0]), 800) : p.gallery[0]) : '/assets/kit-01.png'}
-                      srcSet={p.gallery?.[0] && isCDNEnabled() ? getImageSrcSet(getBaseNameFromPath(p.gallery[0])) : undefined}
+                      src={(() => {
+                        if (!p.gallery?.[0]) return '/assets/kit-01.png';
+                        const mainImage = p.gallery[0];
+                        // If the image URL is already a CDN URL, use it directly
+                        const isCDNUrl = mainImage.includes('digitaloceanspaces.com') || mainImage.includes(import.meta.env.VITE_CDN_BASE || '');
+                        const finalSrc = isCDNUrl ? mainImage : (isCDNEnabled() ? getBestImageUrl(getBaseNameFromPath(mainImage), 800) : mainImage);
+                        if (import.meta.env.DEV && p.id === "1") {
+                          console.log(`🏠 Homepage card for ${p.name} - Original:`, mainImage, '→ Final:', finalSrc, '(CDN URL detected:', isCDNUrl, ')');
+                        }
+                        return finalSrc;
+                      })()}
+                      srcSet={(() => {
+                        if (!p.gallery?.[0]) return undefined;
+                        const mainImage = p.gallery[0];
+                        const isCDNUrl = mainImage.includes('digitaloceanspaces.com') || mainImage.includes(import.meta.env.VITE_CDN_BASE || '');
+                        return !isCDNUrl && isCDNEnabled() ? getImageSrcSet(getBaseNameFromPath(mainImage)) : undefined;
+                      })()}
                       sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
                       alt={p.name}
                       className="product-image"
                       loading="lazy"
+                      onLoad={() => {
+                        if (import.meta.env.DEV && p.id === "1") {
+                          console.log(`✅ Homepage card image for ${p.name} loaded successfully`);
+                        }
+                      }}
+                      onError={(e) => {
+                        if (import.meta.env.DEV) {
+                          console.error(`❌ Homepage card image for ${p.name} failed to load:`, e.currentTarget.src);
+                        }
+                        // Fallback to local image if CDN fails
+                        const fallbackSrc = `/productsGallery/${p.id}/1.png`;
+                        if (e.currentTarget.src !== window.location.origin + fallbackSrc) {
+                          e.currentTarget.src = fallbackSrc;
+                        }
+                      }}
                     />
                   </Link>
                   <div className="product-card-wishlist">

@@ -4,11 +4,20 @@ import { useTranslation } from 'react-i18next';
 import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
 import { adminProductsService, type BaseProduct, type DigitalProduct, type PhysicalProduct } from '../../services/adminProductsService';
+import ProductGalleryUpload from '../../components/ProductGalleryUpload/ProductGalleryUpload';
 
 const AdminProductDetail: React.FC = () => {
   const { t } = useTranslation('common');
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+
+  // Debug: Log when component mounts
+  React.useEffect(() => {
+    if (import.meta.env.DEV) {
+      console.log('🔧 AdminProductDetail mounted with ID:', id);
+      console.log('🔧 Current URL:', window.location.pathname);
+    }
+  }, [id]);
 
   const [product, setProduct] = useState<BaseProduct | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -257,6 +266,18 @@ const AdminProductDetail: React.FC = () => {
                   </div>
                 </div>
               )}
+
+              {/* Product Gallery Upload Section */}
+              <div className="admin-card" style={{ marginTop: 16 }}>
+                <ProductGalleryUpload
+                  productId={id || ''}
+                  existingImages={[]} // TODO: Load existing images from backend
+                  onImagesChange={(images) => {
+                    console.log('Gallery images updated:', images);
+                    // TODO: Save gallery images to backend
+                  }}
+                />
+              </div>
 
               <div className="form-actions" style={{ marginTop: 16 }}>
                 <button className="btn btn-primary" onClick={handleSave} disabled={saving}>{saving ? 'Saving...' : 'Save Changes'}</button>

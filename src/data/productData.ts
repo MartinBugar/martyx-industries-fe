@@ -2,36 +2,30 @@
 import endeavourModel from '../assets/3dModels/endeavour.glb';
 import raketaModel from '../assets/3dModels/raketa.glb';
 import endeavourBuildPdf from '../assets/buildguide/1/endeavourBuild.pdf';
-import { getCDNImageUrl, isCDNEnabled } from '../utils/cdnImages';
+import { isCDNEnabled, getProductImageUrl } from '../utils/cdnImages';
 
 const basePath = import.meta.env.BASE_URL ?? '/';
 
-// Updated makeGallery function to use CDN
+// Updated makeGallery function to use CDN with dynamic product support
 const makeGallery = (productId: string, count: number) => {
   const images = Array.from({length: count}, (_, i) => {
     const imageNumber = i + 1;
 
     if (isCDNEnabled()) {
-      // Use CDN with simple numeric naming: 1.png, 2.png, etc.
-      // For now, only product "1" (Endeavour) uses CDN from ENDEAVOUR folder
-      if (productId === "1") {
-        const cdnUrl = getCDNImageUrl(imageNumber.toString(), 'original', 'png');
-        if (import.meta.env.DEV) {
-          console.log(`📸 CDN Image ${imageNumber} for product ${productId}:`, cdnUrl);
-        }
-        return cdnUrl;
-      } else {
-        // Other products fall back to local assets for now
-        return `${basePath}productsGallery/${productId}/${imageNumber}.png`;
+      // Use new getProductImageUrl for dynamic product support
+      const cdnUrl = getProductImageUrl(productId, imageNumber, 'png');
+      if (import.meta.env.DEV) {
+        console.log(`📸 CDN Image ${imageNumber} for product ${productId}:`, cdnUrl);
       }
+      return cdnUrl;
     } else {
       // Fallback to local assets
       return `${basePath}productsGallery/${productId}/${imageNumber}.png`;
     }
   });
 
-  if (import.meta.env.DEV && productId === "1") {
-    console.log(`🎯 Generated ${images.length} CDN URLs for Endeavour product`);
+  if (import.meta.env.DEV) {
+    console.log(`🎯 Generated ${images.length} URLs for product ${productId} (CDN: ${isCDNEnabled()})`);
   }
 
   return images;

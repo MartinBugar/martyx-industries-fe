@@ -176,13 +176,39 @@ const Products: React.FC = () => {
                                             <div className="product-card-image-container">
                                                 {mainImage ? (
                                                     <img
-                                                        src={isCDNEnabled() ? getBestImageUrl(getBaseNameFromPath(mainImage), 800) : mainImage}
-                                                        srcSet={isCDNEnabled() ? getImageSrcSet(getBaseNameFromPath(mainImage)) : undefined}
+                                                        src={(() => {
+                                                            // If the image URL is already a CDN URL, use it directly
+                                                            const isCDNUrl = mainImage.includes('digitaloceanspaces.com') || mainImage.includes(import.meta.env.VITE_CDN_BASE || '');
+                                                            const finalSrc = isCDNUrl ? mainImage : (isCDNEnabled() ? getBestImageUrl(getBaseNameFromPath(mainImage), 800) : mainImage);
+                                                            if (import.meta.env.DEV && p.id === "1") {
+                                                                console.log(`🏷️ Product card for ${p.name} - Original:`, mainImage, '→ Final:', finalSrc, '(CDN URL detected:', isCDNUrl, ')');
+                                                            }
+                                                            return finalSrc;
+                                                        })()}
+                                                        srcSet={(() => {
+                                                            const isCDNUrl = mainImage.includes('digitaloceanspaces.com') || mainImage.includes(import.meta.env.VITE_CDN_BASE || '');
+                                                            return !isCDNUrl && isCDNEnabled() ? getImageSrcSet(getBaseNameFromPath(mainImage)) : undefined;
+                                                        })()}
                                                         sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
                                                         alt={`${p.name} - main image`}
                                                         className="product-card-image"
                                                         loading="lazy"
                                                         decoding="async"
+                                                        onLoad={() => {
+                                                            if (import.meta.env.DEV && p.id === "1") {
+                                                                console.log(`✅ Product card image for ${p.name} loaded successfully`);
+                                                            }
+                                                        }}
+                                                        onError={(e) => {
+                                                            if (import.meta.env.DEV) {
+                                                                console.error(`❌ Product card image for ${p.name} failed to load:`, e.currentTarget.src);
+                                                            }
+                                                            // Fallback to local image if CDN fails
+                                                            const fallbackSrc = `/productsGallery/${p.id}/1.png`;
+                                                            if (e.currentTarget.src !== window.location.origin + fallbackSrc) {
+                                                                e.currentTarget.src = fallbackSrc;
+                                                            }
+                                                        }}
                                                     />
                                                 ) : (
                                                     <div className="product-card-placeholder">

@@ -4,8 +4,6 @@ import { useAuth } from '../../context/useAuth';
 import UserProfile from '../../components/UserProfile/UserProfile';
 import OrderHistory from '../../components/OrderHistory/OrderHistory';
 import TokenExpirationTimer from '../../components/TokenExpirationTimer/TokenExpirationTimer';
-import BuildProgressTracker from '../../components/BuildProgressTracker/BuildProgressTracker';
-import CommunityFeatures from '../../components/CommunityFeatures/CommunityFeatures';
 import './UserAccount.css';
 
 const UserAccount: React.FC = () => {
@@ -220,7 +218,15 @@ const UserAccount: React.FC = () => {
               role="tabpanel"
               aria-labelledby="builds-tab"
             >
-              {activeTab === 'builds' && <BuildProgressTracker />}
+              {activeTab === 'builds' && (
+                <div className="builds-content">
+                  <div className="builds-card">
+                    <h2>Build Progress Tracker</h2>
+                    <p>Track your 3D printing projects and build progress...</p>
+                    <p><em>Feature coming soon!</em></p>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div
@@ -229,7 +235,15 @@ const UserAccount: React.FC = () => {
               role="tabpanel"
               aria-labelledby="community-tab"
             >
-              {activeTab === 'community' && <CommunityFeatures />}
+              {activeTab === 'community' && (
+                <div className="community-content">
+                  <div className="community-card">
+                    <h2>Community Features</h2>
+                    <p>Connect with other makers, share your builds, and get inspired...</p>
+                    <p><em>Feature coming soon!</em></p>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div

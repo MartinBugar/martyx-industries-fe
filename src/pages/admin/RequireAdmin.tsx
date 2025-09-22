@@ -15,7 +15,21 @@ const RequireAdmin: React.FC<Props> = ({ children }) => {
   const validToken = !!token && !isTokenExpired(token!);
   const isAuthed = adminFlag && validToken;
 
+  // Debug authentication status
+  if (import.meta.env.DEV) {
+    console.log('🔐 Admin auth check:', {
+      path: location.pathname,
+      hasToken: !!token,
+      adminFlag,
+      validToken,
+      isAuthed
+    });
+  }
+
   if (!isAuthed) {
+    if (import.meta.env.DEV) {
+      console.log('❌ Admin access denied, redirecting to /admin');
+    }
     return <Navigate to="/admin" replace state={{ from: location }} />;
   }
 
