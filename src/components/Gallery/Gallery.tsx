@@ -164,11 +164,34 @@ const Gallery: React.FC<GalleryProps> = ({ productName, images }) => {
             </button>
             <div className="fullscreen-image-container">
               <img
-                src={isCDNEnabled() ? getBestImageUrl(getBaseNameFromPath(images[currentImageIndex]), 1600) : images[currentImageIndex]}
-                srcSet={isCDNEnabled() ? getImageSrcSet(getBaseNameFromPath(images[currentImageIndex])) : undefined}
+                src={(() => {
+                  const currentImage = images[currentImageIndex];
+                  // If the image URL is already a CDN URL, use it directly
+                  const isCDNUrl = currentImage.includes('digitaloceanspaces.com') || currentImage.includes(import.meta.env.VITE_CDN_BASE || '');
+                  const finalSrc = isCDNUrl ? currentImage : (isCDNEnabled() ? getBestImageUrl(getBaseNameFromPath(currentImage), 1600) : currentImage);
+                  if (import.meta.env.DEV) {
+                    console.log(`🖼️ Fullscreen image ${currentImageIndex + 1} - Original:`, currentImage, '→ Final:', finalSrc, '(CDN URL detected:', isCDNUrl, ')');
+                  }
+                  return finalSrc;
+                })()}
+                srcSet={(() => {
+                  const currentImage = images[currentImageIndex];
+                  const isCDNUrl = currentImage.includes('digitaloceanspaces.com') || currentImage.includes(import.meta.env.VITE_CDN_BASE || '');
+                  return !isCDNUrl && isCDNEnabled() ? getImageSrcSet(getBaseNameFromPath(currentImage)) : undefined;
+                })()}
                 sizes="100vw"
                 alt={`${productName} - Image ${currentImageIndex + 1}`}
                 className="fullscreen-image"
+                onLoad={() => {
+                  if (import.meta.env.DEV) {
+                    console.log(`✅ Fullscreen image ${currentImageIndex + 1} loaded successfully`);
+                  }
+                }}
+                onError={(e) => {
+                  if (import.meta.env.DEV) {
+                    console.error(`❌ Fullscreen image ${currentImageIndex + 1} failed to load:`, e.currentTarget.src);
+                  }
+                }}
               />
               <div className="image-counter">
                 {currentImageIndex + 1} / {images.length}
