@@ -35,13 +35,13 @@ const DownloadTab: React.FC<DownloadTabProps> = ({ content }) => {
                   <div className="download-title-row">
                     <div className="download-label">{d.label}</div>
                     <a
-                      className="secondary-btn download-btn"
+                      className="download-btn"
                       href={d.url}
                       download
                       rel="noopener noreferrer"
                       aria-label={`Download ${d.label}${d.format ? ` (${d.format})` : ''}${d.size ? `, size ${d.size}` : ''}`}
                     >
-                      {t('downloads.download_button')}
+                      {t('downloads.download_button', 'Download')}
                     </a>
                   </div>
                   {(d.size || d.format) && (
