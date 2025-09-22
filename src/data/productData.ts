@@ -6,17 +6,42 @@ import endeavourBuildPdf from '../assets/buildguide/1/endeavourBuild.pdf';
 const basePath = import.meta.env.BASE_URL ?? '/';
 const makeGallery = (productId: string, count: number) => Array.from({length: count}, (_, i) => `${basePath}productsGallery/${productId}/${i + 1}.png`);
 
-export type ProductTabId = 'Details' | 'Download' | 'Features' | 'Reviews';
+export type ProductTabId = 'Details' | 'Download' | 'Features' | 'Reviews' | 'PrintInfo';
 
 export type TabImage = { src: string; alt?: string; caption?: string };
 export type TabDownloadItem = { label: string; url: string; size?: string; format?: string };
+
+// Print info types
+export interface PrintSettings {
+  printTime: string;
+  layerHeight: string;
+  infill: string;
+  supports: boolean;
+  materials: string[];
+  estimatedCost?: string;
+}
+
+export interface RCComponent {
+  name: string;
+  quantity: number;
+  specifications?: string;
+  estimatedPrice?: string;
+  required: boolean;
+}
+
+export interface PrintInfoData {
+  printSettings: PrintSettings;
+  rcComponents: RCComponent[];
+  additionalNotes?: string[];
+}
 
 export type TabContent =
     | { kind: 'text'; text: string }
     | { kind: 'list'; items: string[] }
     | { kind: 'image'; image: TabImage }
     | { kind: 'gallery'; images: TabImage[] }
-    | { kind: 'downloads'; items: TabDownloadItem[] };
+    | { kind: 'downloads'; items: TabDownloadItem[] }
+    | { kind: 'printInfo'; data: PrintInfoData };
 
 export interface ProductTab {
     id: ProductTabId;
@@ -128,6 +153,89 @@ export const hardcodedProductsData: HardcodedProductData[] = [
                 }
             },
             {
+                id: 'PrintInfo',
+                label: 'Print Info',
+                content: {
+                    kind: 'printInfo',
+                    data: {
+                        printSettings: {
+                            printTime: '58-62 hours',
+                            layerHeight: '0.2mm',
+                            infill: '20-30%',
+                            supports: true,
+                            materials: ['PLA', 'PETG', 'ABS'],
+                            estimatedCost: '€25-35'
+                        },
+                        rcComponents: [
+                            {
+                                name: 'Arduino Mega 2560',
+                                quantity: 1,
+                                specifications: 'Microcontroller board with 54 digital pins',
+                                estimatedPrice: '€15-25',
+                                required: true
+                            },
+                            {
+                                name: 'DC Gear Motors',
+                                quantity: 4,
+                                specifications: '6V 200RPM with metal gearbox',
+                                estimatedPrice: '€8-12 each',
+                                required: true
+                            },
+                            {
+                                name: 'Motor Driver Shield',
+                                quantity: 1,
+                                specifications: 'L298N dual motor driver',
+                                estimatedPrice: '€5-8',
+                                required: true
+                            },
+                            {
+                                name: 'LiPo Battery',
+                                quantity: 2,
+                                specifications: '7.4V 2200mAh with XT60 connector',
+                                estimatedPrice: '€20-30 each',
+                                required: true
+                            },
+                            {
+                                name: '2.4GHz RC Transmitter/Receiver',
+                                quantity: 1,
+                                specifications: 'FlySky FS-i6X or similar 6-channel system',
+                                estimatedPrice: '€45-65',
+                                required: true
+                            },
+                            {
+                                name: 'Servo Motors',
+                                quantity: 2,
+                                specifications: 'SG90 micro servos for turret control',
+                                estimatedPrice: '€3-5 each',
+                                required: false
+                            },
+                            {
+                                name: 'LED Strip',
+                                quantity: 1,
+                                specifications: 'WS2812B addressable LED strip (1m)',
+                                estimatedPrice: '€8-12',
+                                required: false
+                            },
+                            {
+                                name: 'Ball Bearings',
+                                quantity: 8,
+                                specifications: '608ZZ skateboard bearings for wheels',
+                                estimatedPrice: '€10-15',
+                                required: true
+                            }
+                        ],
+                        additionalNotes: [
+                            'Print all parts with 0.2mm layer height for best fit and finish',
+                            'Use supports for overhangs greater than 45 degrees',
+                            'Post-process bearing holes with 8mm drill bit for smooth fit',
+                            'Assembly requires basic soldering skills for electronics',
+                            'Estimated total build cost: €150-220 (excluding 3D printer filament)',
+                            'Build time: 2-3 weekends for experienced makers'
+                        ]
+                    }
+                }
+            },
+            {
                 id: 'Download',
                 label: 'Download',
                 content: {
@@ -199,6 +307,14 @@ export const hardcodedProductsData: HardcodedProductData[] = [
         ]
     }
 ];
+
+// Debug: log hardcoded data in development
+console.log('🔥 ProductData.ts LOADED - Version 2!');
+console.log('📊 HardcodedProductsData loaded:', hardcodedProductsData.map(p => ({
+    id: p.id,
+    tabsCount: p.tabs?.length || 0,
+    tabIds: p.tabs?.map(t => t.id) || []
+})));
 
 // Legacy exports will be replaced by the hybrid product service
 // These are kept temporarily for backward compatibility during migration

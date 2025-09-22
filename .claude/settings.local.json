@@ -11,7 +11,8 @@
       "WebFetch(domain:www.toptal.com)",
       "Bash(find:*)",
       "Bash(cat:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(node:*)"
     ],
     "deny": [],
     "ask": []

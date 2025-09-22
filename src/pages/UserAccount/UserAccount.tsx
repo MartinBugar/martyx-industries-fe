@@ -4,11 +4,13 @@ import { useAuth } from '../../context/useAuth';
 import UserProfile from '../../components/UserProfile/UserProfile';
 import OrderHistory from '../../components/OrderHistory/OrderHistory';
 import TokenExpirationTimer from '../../components/TokenExpirationTimer/TokenExpirationTimer';
+import BuildProgressTracker from '../../components/BuildProgressTracker/BuildProgressTracker';
+import CommunityFeatures from '../../components/CommunityFeatures/CommunityFeatures';
 import './UserAccount.css';
 
 const UserAccount: React.FC = () => {
   const { user, isAuthenticated, isLoading } = useAuth();
-  const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'settings'>('profile');
+  const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'builds' | 'community' | 'settings'>('profile');
   
   // Show loading while authentication state is being restored
   if (isLoading) {
@@ -85,7 +87,7 @@ const UserAccount: React.FC = () => {
                 <span className="tab-label">Profile</span>
               </button>
               
-              <button 
+              <button
                 className={`nav-tab ${activeTab === 'orders' ? 'active' : ''}`}
                 onClick={() => setActiveTab('orders')}
                 role="tab"
@@ -101,7 +103,40 @@ const UserAccount: React.FC = () => {
                 <span className="tab-label">Orders</span>
               </button>
 
-              <button 
+              <button
+                className={`nav-tab ${activeTab === 'builds' ? 'active' : ''}`}
+                onClick={() => setActiveTab('builds')}
+                role="tab"
+                aria-selected={activeTab === 'builds'}
+                aria-controls="builds-panel"
+              >
+                <div className="tab-icon">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2L13.09 8.26L22 9L13.09 15.74L12 22L10.91 15.74L2 9L10.91 8.26L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+                <span className="tab-label">Build Tracker</span>
+              </button>
+
+              <button
+                className={`nav-tab ${activeTab === 'community' ? 'active' : ''}`}
+                onClick={() => setActiveTab('community')}
+                role="tab"
+                aria-selected={activeTab === 'community'}
+                aria-controls="community-panel"
+              >
+                <div className="tab-icon">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+                <span className="tab-label">Community</span>
+              </button>
+
+              <button
                 className={`nav-tab ${activeTab === 'settings' ? 'active' : ''}`}
                 onClick={() => setActiveTab('settings')}
                 role="tab"
@@ -170,7 +205,7 @@ const UserAccount: React.FC = () => {
               {activeTab === 'profile' && <UserProfile />}
             </div>
             
-            <div 
+            <div
               className={`content-panel ${activeTab === 'orders' ? 'active' : ''}`}
               id="orders-panel"
               role="tabpanel"
@@ -179,7 +214,25 @@ const UserAccount: React.FC = () => {
               {activeTab === 'orders' && <OrderHistory />}
             </div>
 
-            <div 
+            <div
+              className={`content-panel ${activeTab === 'builds' ? 'active' : ''}`}
+              id="builds-panel"
+              role="tabpanel"
+              aria-labelledby="builds-tab"
+            >
+              {activeTab === 'builds' && <BuildProgressTracker />}
+            </div>
+
+            <div
+              className={`content-panel ${activeTab === 'community' ? 'active' : ''}`}
+              id="community-panel"
+              role="tabpanel"
+              aria-labelledby="community-tab"
+            >
+              {activeTab === 'community' && <CommunityFeatures />}
+            </div>
+
+            <div
               className={`content-panel ${activeTab === 'settings' ? 'active' : ''}`}
               id="settings-panel"
               role="tabpanel"

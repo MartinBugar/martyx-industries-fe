@@ -23,6 +23,12 @@ export class HybridProductService {
       console.log('🌐 Language changed, clearing product cache');
       this.clearCache();
     });
+
+    // Force clear cache in development to ensure fresh data
+    if (import.meta.env.DEV) {
+      console.log('🧹 DEV: Force clearing product cache for fresh data');
+      this.clearCache();
+    }
   }
 
   /**
@@ -34,17 +40,27 @@ export class HybridProductService {
 
     // Get localized data and merge with base data
     const localizedData = getLocalizedHardcodedProductDataForService(id);
-    
-    return {
+
+    const result = {
       ...baseData,
       ...localizedData
     };
+
+    if (import.meta.env.DEV) {
+      console.log('🔧 HybridService: getHardcodedDataById for', id, 'tabs count:', result.tabs?.length, 'tab ids:', result.tabs?.map(t => t.id));
+    }
+
+    return result;
   }
 
   /**
    * Merge ProductDto from backend with hardcoded frontend data
    */
   private mergeProductData(backendProduct: ProductDto, hardcodedData: HardcodedProductData | null): Product {
+    console.log('🔀 HybridService: mergeProductData called for product', backendProduct.id);
+    console.log('🔀 Backend product:', backendProduct);
+    console.log('🔀 Hardcoded data:', hardcodedData);
+
     // Default values for missing hardcoded data
     const defaultHardcodedData: Partial<HardcodedProductData> = {
       features: [],
@@ -57,8 +73,9 @@ export class HybridProductService {
     };
 
     const mergedHardcodedData = { ...defaultHardcodedData, ...hardcodedData };
+    console.log('🔀 Merged hardcoded data tabs:', mergedHardcodedData.tabs?.map(t => `${t.id}(${t.content.kind})`));
 
-    return {
+    const result = {
       id: backendProduct.id.toString(),
       name: backendProduct.name,
       price: backendProduct.price,
@@ -73,6 +90,10 @@ export class HybridProductService {
       tabs: mergedHardcodedData.tabs,
       videoUrl: mergedHardcodedData.videoUrl
     };
+
+    console.log('🔀 HybridService: final result tabs:', result.tabs?.map(t => `${t.id}(${t.content.kind})`));
+
+    return result;
   }
 
   /**
@@ -94,6 +115,9 @@ export class HybridProductService {
     this.allProductsCache = null;
     this.lastCacheTime = 0;
     this.lastCacheLanguage = '';
+    if (import.meta.env.DEV) {
+      console.log('🧹 HybridService: Cache cleared');
+    }
   }
 
   /**

@@ -5,7 +5,7 @@ import {type Product, type ProductTab, type ProductTabId} from '../../data/produ
 import {hybridProductService} from '../../services/hybridProductService';
 import ProductView from '../../components/ProductView/ProductView';
 import './ProductDetail.css';
-import {DetailsTab, DownloadTab, FeaturesTab, ReviewsTab} from '../../components/ProductTabs';
+import {DetailsTab, DownloadTab, FeaturesTab, ReviewsTab, PrintInfoTab} from '../../components/ProductTabs';
 import {useCart} from '../../context/useCart';
 import WishlistButton from '../../components/WishlistButton';
 
@@ -103,25 +103,83 @@ const toYouTubeEmbedUrl = (url: string): string => {
 };
 
 const buildTabs = (p: Product): ProductTab[] => {
+    if (import.meta.env.DEV) {
+        console.log('🔧 Building tabs for product:', p.id, 'has custom tabs:', p.tabs?.length);
+    }
     let tabs: ProductTab[];
     if (p.tabs && p.tabs.length > 0) {
+        // Use product's custom tabs as-is
         tabs = [...p.tabs];
+        if (import.meta.env.DEV) {
+            console.log('✅ Using custom tabs:', tabs.map(t => `${t.id}(${t.content.kind})`));
+            // Debug: check if PrintInfo tab exists and what content it has
+            const printInfoTab = tabs.find(t => t.id === 'PrintInfo');
+            if (printInfoTab) {
+                console.log('🔍 PrintInfo tab found in custom tabs:', printInfoTab.content.kind);
+                if (printInfoTab.content.kind === 'printInfo') {
+                    console.log('🎉 PrintInfo has correct data type!');
+                } else {
+                    console.log('❌ PrintInfo has wrong content type:', printInfoTab.content);
+                }
+            } else {
+                console.log('❌ PrintInfo tab NOT found in custom tabs!');
+            }
+        }
     } else {
+        // Create default tabs for products without custom tabs
         tabs = [
             {id: 'Details', label: 'Details', content: {kind: 'text', text: p.description}},
+            {id: 'PrintInfo', label: 'Print Info', content: {kind: 'text', text: 'Print information not available for this product.'}},
             {id: 'Features', label: 'Features', content: {kind: 'list', items: p.features}}
         ];
+
         if (p.productType === 'DIGITAL') {
-            tabs.splice(1, 0, {
+            tabs.splice(2, 0, {
                 id: 'Download',
                 label: 'Download',
                 content: {kind: 'text', text: 'Files available for download after purchase.'}
             });
         }
     }
+
+    // ALWAYS ensure PrintInfo tab exists - add it if missing (but only add fallback if no custom data exists)
+    if (!tabs.some(t => t.id === 'PrintInfo')) {
+        if (import.meta.env.DEV) {
+            console.log('⚠️ PrintInfo tab missing, adding fallback for product', p.id);
+        }
+        // Find the index of Details tab and insert PrintInfo right after it
+        const detailsIndex = tabs.findIndex(t => t.id === 'Details');
+        if (detailsIndex !== -1) {
+            tabs.splice(detailsIndex + 1, 0, {
+                id: 'PrintInfo',
+                label: 'Print Info',
+                content: {kind: 'text', text: 'Print information not available for this product.'}
+            });
+        } else {
+            // If no Details tab, add PrintInfo at the beginning
+            tabs.unshift({
+                id: 'PrintInfo',
+                label: 'Print Info',
+                content: {kind: 'text', text: 'Print information not available for this product.'}
+            });
+        }
+    } else {
+        if (import.meta.env.DEV) {
+            const printInfoTab = tabs.find(t => t.id === 'PrintInfo');
+            console.log('✅ PrintInfo tab exists with content kind:', printInfoTab?.content.kind);
+            if (printInfoTab?.content.kind === 'printInfo') {
+                console.log('🎉 PrintInfo tab has real data!', printInfoTab.content.data);
+            }
+        }
+    }
+
     // Ensure Reviews tab exists but do not source its content from static data
     if (!tabs.some(t => t.id === 'Reviews')) {
         tabs.push({id: 'Reviews', label: 'Reviews', content: {kind: 'text', text: ''}});
+    }
+
+    if (import.meta.env.DEV) {
+        console.log('🎯 Final tabs built:', tabs.map(t => `${t.id}(${t.content.kind})`));
     }
     return tabs;
 };
@@ -134,7 +192,15 @@ const ProductDetail: React.FC = () => {
     const [error, setError] = React.useState<string | null>(null);
     const [isProductInactive, setIsProductInactive] = React.useState(false);
 
-    const tabs = React.useMemo(() => product ? buildTabs(product) : [], [product]);
+    const tabs = React.useMemo(() => {
+        if (product) {
+            if (import.meta.env.DEV) {
+                console.log('🔍 Product loaded:', product.id, 'has tabs:', !!product.tabs);
+            }
+            return buildTabs(product);
+        }
+        return [];
+    }, [product]);
     const [active, setActive] = React.useState<ProductTabId>(tabs[0]?.id ?? 'Details');
 
     // Load product from hybrid service
@@ -173,10 +239,17 @@ const ProductDetail: React.FC = () => {
     }, [id, i18n.language]); // Re-load product when language changes
 
     React.useEffect(() => {
-        setActive(tabs[0]?.id ?? 'Details');
+        const firstTabId = tabs[0]?.id ?? 'Details';
+        if (import.meta.env.DEV) {
+            console.log('🎯 Setting active tab to:', firstTabId, 'available tabs:', tabs.map(t => t.id));
+        }
+        setActive(firstTabId);
     }, [tabs]);
 
     const activeTab = tabs.find(t => t.id === active) ?? tabs[0];
+    if (import.meta.env.DEV && activeTab) {
+        console.log('📋 Active tab:', active, 'content kind:', activeTab.content.kind);
+    }
 
     // Show loading state
     if (loading) {
@@ -252,6 +325,15 @@ const ProductDetail: React.FC = () => {
                 <ProductDetails product={product}/>
 
                 <nav className="product-bookmarks" aria-label="Product sections" role="tablist">
+                    {import.meta.env.DEV && (() => {
+                        console.log('🗂️ Rendering tabs:', tabs.map(t => `${t.id}:${t.label}`));
+                        return null;
+                    })()}
+                    {tabs.length === 0 && import.meta.env.DEV && (
+                        <div style={{color: 'red', padding: '1rem'}}>
+                            ⚠️ No tabs found! Product: {product?.id}
+                        </div>
+                    )}
                     {tabs.map((t) => (
                         <button
                             key={t.id}
@@ -276,6 +358,7 @@ const ProductDetail: React.FC = () => {
                         className="product-tab-panel"
                     >
                         {activeTab.id === 'Details' && <DetailsTab content={activeTab.content}/>}
+                        {activeTab.id === 'PrintInfo' && <PrintInfoTab content={activeTab.content}/>}
                         {activeTab.id === 'Download' && <DownloadTab content={activeTab.content}/>}
                         {activeTab.id === 'Features' && <FeaturesTab content={activeTab.content}/>}
                         {activeTab.id === 'Reviews' && <ReviewsTab content={activeTab.content} productId={product.id}/>}
