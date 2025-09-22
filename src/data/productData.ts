@@ -241,7 +241,30 @@ export const hardcodedProductsData: HardcodedProductData[] = [
                 content: {
                     kind: 'downloads',
                     items: [
-                        {label: 'Endeavour Build Guide (PDF)', url: endeavourBuildPdf, format: 'PDF'}
+                        {
+                            label: 'Complete Build Guide', 
+                            url: endeavourBuildPdf, 
+                            format: 'PDF', 
+                            size: '2.4 MB'
+                        },
+                        {
+                            label: 'STL Files Package', 
+                            url: '#', 
+                            format: 'ZIP', 
+                            size: '45.2 MB'
+                        },
+                        {
+                            label: 'Arduino Code & Wiring Diagrams', 
+                            url: '#', 
+                            format: 'ZIP', 
+                            size: '1.8 MB'
+                        },
+                        {
+                            label: 'Parts List & Shopping Guide', 
+                            url: '#', 
+                            format: 'PDF', 
+                            size: '650 KB'
+                        }
                     ]
                 }
             },
