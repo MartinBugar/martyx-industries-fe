@@ -133,15 +133,18 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({product}) => {
     return (
         <div id="details" className="product-details">
             <h2>{product.name}</h2>
-            {!reviewsLoading && reviews.length > 0 && (
-                <StarRating 
-                    rating={averageRating} 
-                    totalReviews={reviews.length}
-                    size="medium"
-                />
-            )}
-            <div
-                className="product-type">{product.productType === 'DIGITAL' ? 'DIGITAL PRODUCT' : (product.productType === 'PHYSICAL' ? 'PHYSICAL PRODUCT' : product.productType)}</div>
+            <div className="product-meta-row">
+                {!reviewsLoading && reviews.length > 0 && (
+                    <StarRating 
+                        rating={averageRating} 
+                        totalReviews={reviews.length}
+                        size="small"
+                    />
+                )}
+                <div className="product-type-compact">
+                    {product.productType === 'DIGITAL' ? 'DIGITAL' : (product.productType === 'PHYSICAL' ? 'PHYSICAL' : product.productType)}
+                </div>
+            </div>
             <div
                 className="price">{product.price.toFixed(2)} {product.currency === 'EUR' ? '€' : product.currency}</div>
             <p className="description">{product.description}</p>
