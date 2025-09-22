@@ -57,6 +57,7 @@ export interface UploadImageResponse {
   success: boolean;
   image: GalleryImage;
   cdnUrl: string;
+  message?: string; // Optional error message
 }
 
 export interface ReorderImagesRequest {
@@ -80,22 +81,7 @@ export class ProductGalleryService {
     return handleResponse(response);
   }
 
-  /**
-   * Convert File to base64 string
-   */
-  private async fileToBase64(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const base64 = reader.result as string;
-        // Remove data:image/jpeg;base64, prefix
-        const base64Data = base64.split(',')[1];
-        resolve(base64Data);
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  }
+  // fileToBase64 removed - not used in frontend-first upload approach
 
   /**
    * Upload image using frontend-first approach:

@@ -528,7 +528,7 @@ const ProductDetail: React.FC = () => {
     return (
         <div className="product-detail-page">
             <div className="product-container">
-                <ProductView product={productWithGallery}/>
+                {productWithGallery && <ProductView product={productWithGallery}/>}
                 <ProductDetails product={product}/>
 
                 <nav className="product-bookmarks" aria-label="Product sections" role="tablist">

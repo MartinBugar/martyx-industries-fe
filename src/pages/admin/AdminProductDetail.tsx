@@ -277,14 +277,11 @@ const AdminProductDetail: React.FC = () => {
                 </div>
                 <ProductGalleryUpload
                   productId={id || ''}
-                  productName={product?.name || product?.stringId || id}
-                  existingImages={product?.gallery || []}
+                  productName={product?.name || id || ''}
+                  existingImages={[]}
                   onImagesChange={(images) => {
                     console.log('Gallery images updated:', images);
-                    // Update local product state to reflect gallery changes
-                    if (product) {
-                      setProduct(prev => prev ? { ...prev, gallery: images } : null);
-                    }
+                    // Gallery images are now managed separately from product data
                   }}
                 />
               </div>
