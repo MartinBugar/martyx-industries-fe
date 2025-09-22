@@ -2,25 +2,48 @@ import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from '.
 import { uploadImageToSpaces } from './digitalOceanUpload';
 import AWS from 'aws-sdk';
 
-// Configure DigitalOcean Spaces (S3-compatible) 
-// Use the full bucket endpoint to avoid incorrect URL construction
-const bucket = import.meta.env.VITE_DO_SPACES_BUCKET || 'mi-gallery';
-const baseEndpoint = import.meta.env.VITE_DO_SPACES_ENDPOINT || 'fra1.digitaloceanspaces.com';
-const spacesEndpoint = new AWS.Endpoint(`https://${bucket}.${baseEndpoint}`);
+// DigitalOcean Spaces configuration for S3-compatible operations
+const SPACES_CONFIG = {
+  bucket: import.meta.env.VITE_DO_SPACES_BUCKET || 'mi-gallery',
+  endpoint: import.meta.env.VITE_DO_SPACES_ENDPOINT || 'fra1.digitaloceanspaces.com',
+  region: 'fra1'
+} as const;
 
-const s3 = new AWS.S3({
-  endpoint: spacesEndpoint,
-  accessKeyId: import.meta.env.VITE_DO_SPACES_ACCESS_KEY,
-  secretAccessKey: import.meta.env.VITE_DO_SPACES_SECRET_KEY,
-  region: 'fra1',
-  signatureVersion: 'v4',
-  s3ForcePathStyle: false, // Use virtual hosted style for DigitalOcean Spaces
-  s3BucketEndpoint: true, // Important for DigitalOcean Spaces
-  httpOptions: {
-    timeout: 5000, // Reduced timeout to 5 seconds
-    connectTimeout: 3000 // Reduced connection timeout to 3 seconds
+// Lazy initialization of S3 client to avoid unnecessary setup
+let s3Client: AWS.S3 | null = null;
+
+const getS3Client = (): AWS.S3 => {
+  if (!s3Client) {
+    // Validate configuration before creating client
+    const accessKey = import.meta.env.VITE_DO_SPACES_ACCESS_KEY;
+    const secretKey = import.meta.env.VITE_DO_SPACES_SECRET_KEY;
+    
+    if (!accessKey || !secretKey || !SPACES_CONFIG.bucket || !SPACES_CONFIG.endpoint) {
+      throw new Error('DigitalOcean Spaces configuration is incomplete');
+    }
+
+    try {
+      const spacesEndpoint = new AWS.Endpoint(`https://${SPACES_CONFIG.bucket}.${SPACES_CONFIG.endpoint}`);
+      
+      s3Client = new AWS.S3({
+        endpoint: spacesEndpoint,
+        accessKeyId: accessKey,
+        secretAccessKey: secretKey,
+        region: SPACES_CONFIG.region,
+        signatureVersion: 'v4',
+        s3ForcePathStyle: false,
+        s3BucketEndpoint: true,
+        httpOptions: {
+          timeout: 5000,
+          connectTimeout: 3000
+        }
+      });
+    } catch (error) {
+      throw new Error(`Failed to initialize S3 client: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   }
-});
+  return s3Client;
+};
 
 export interface GalleryImage {
   id: string;
@@ -90,11 +113,11 @@ export class ProductGalleryService {
    * 1. Frontend uploads image directly to DigitalOcean Spaces
    * 2. Frontend sends only metadata to backend database
    */
+  /**
+   * Upload image using frontend-first approach with optimized logging
+   */
   async uploadImageJson(request: UploadImageRequest): Promise<UploadImageResponse> {
     try {
-      // Step 1: Upload image directly to DigitalOcean Spaces
-      console.log('🚀 Step 1: Uploading image to DigitalOcean Spaces...');
-      
       // Generate unique filename to avoid conflicts
       const timestamp = Date.now();
       const extension = request.file.name.split('.').pop() || 'png';
@@ -102,11 +125,11 @@ export class ProductGalleryService {
       const generatedFileName = `${timestamp}_${baseName}.${extension}`;
       const folderName = request.productId.toUpperCase();
       
-      // Upload to DigitalOcean Spaces using existing service
+      // Step 1: Upload to DigitalOcean Spaces
       const spacesResult = await uploadImageToSpaces({
         productId: request.productId,
         file: request.file,
-        preserveOriginalName: false, // Use generated filename
+        preserveOriginalName: false,
         customFileName: generatedFileName
       });
 
@@ -114,11 +137,7 @@ export class ProductGalleryService {
         throw new Error(`DigitalOcean Spaces upload failed: ${spacesResult.error}`);
       }
 
-      console.log('✅ Step 1 complete: Image uploaded to Spaces:', spacesResult.url);
-
-      // Step 2: Send metadata to backend database
-      console.log('🗃️ Step 2: Saving metadata to backend database...');
-      
+      // Step 2: Send metadata to backend
       const metadata: UploadImageJsonRequest = {
         fileName: generatedFileName,
         originalName: request.file.name,
@@ -128,19 +147,12 @@ export class ProductGalleryService {
         folderName: folderName
       };
 
-      console.log('📤 Sending metadata to backend:', {
-        url: `${API_BASE_URL}/api/products/${request.productId}/gallery/metadata`,
-        metadata: metadata,
-        spacesUrl: spacesResult.url
-      });
-
       const headers = { ...defaultHeaders };
       const token = localStorage.getItem('token');
       if (token) {
         headers['Authorization'] = `Bearer ${token}`;
       }
 
-      // Send metadata + Spaces URL to backend
       const metadataPayload = {
         ...metadata,
         url: spacesResult.url,
@@ -154,20 +166,11 @@ export class ProductGalleryService {
       });
 
       if (!response.ok) {
-        // If metadata save fails, we should ideally clean up the Spaces upload
-        console.warn('⚠️ Metadata save failed, but image is already in Spaces:', spacesResult.url);
-        
         let errorDetails;
         try {
           const errorText = await response.text();
           errorDetails = JSON.parse(errorText);
-          console.error('❌ Backend metadata save failed:', {
-            status: response.status,
-            statusText: response.statusText,
-            errorDetails: errorDetails
-          });
-        } catch (parseError) {
-          console.error('❌ Failed to parse error response:', parseError);
+        } catch {
           errorDetails = { message: 'Failed to parse error response' };
         }
         
@@ -175,12 +178,17 @@ export class ProductGalleryService {
       }
 
       const result = await handleResponse(response);
-      console.log('✅ Step 2 complete: Metadata saved to database');
+      
+      if (import.meta.env.DEV) {
+        console.log('✅ Image upload completed successfully');
+      }
       
       return result;
 
     } catch (error) {
-      console.error('❌ Frontend-first upload error:', error);
+      if (import.meta.env.DEV) {
+        console.error('❌ Image upload failed:', error);
+      }
       throw error;
     }
   }
@@ -188,48 +196,26 @@ export class ProductGalleryService {
   /**
    * Upload a new image for a product (legacy multipart approach)
    */
+  /**
+   * Upload image using legacy multipart approach (optimized logging)
+   */
   async uploadImage(request: UploadImageRequest): Promise<UploadImageResponse> {
     const formData = new FormData();
     formData.append('file', request.file);
-    // Don't send productId in FormData - backend gets it from path parameter
+    
     if (request.order !== undefined) {
       formData.append('order', request.order.toString());
     }
 
-    // For FormData, don't set Content-Type header - browser will set it with boundary
     const headers = { ...defaultHeaders };
-    delete (headers as any)['Content-Type'];
+    delete (headers as any)['Content-Type']; // Browser sets boundary for FormData
     
-    // Add authorization if available
     const token = localStorage.getItem('token');
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const fullUrl = `${API_BASE_URL}/api/products/${request.productId}/gallery/upload`;
-    
-    console.log('📤 Uploading to backend:', {
-      fullUrl: fullUrl,
-      method: 'POST',
-      fileName: request.file.name,
-      fileSize: request.file.size,
-      fileType: request.file.type,
-      order: request.order,
-      headers: headers,
-      API_BASE_URL: API_BASE_URL
-    });
-
-    // Log FormData contents
-    console.log('📦 FormData contents:');
-    for (let [key, value] of formData.entries()) {
-      if (value instanceof File) {
-        console.log(`${key}: File(${value.name}, ${value.size} bytes, ${value.type})`);
-      } else {
-        console.log(`${key}: ${value}`);
-      }
-    }
-
-    const response = await fetch(fullUrl, withLangHeaders({
+    const response = await fetch(`${API_BASE_URL}/api/products/${request.productId}/gallery/upload`, withLangHeaders({
       method: 'POST',
       headers: headers as HeadersInit,
       body: formData,
@@ -240,13 +226,7 @@ export class ProductGalleryService {
       try {
         const errorText = await response.text();
         errorDetails = JSON.parse(errorText);
-        console.error('❌ Backend upload failed:', {
-          status: response.status,
-          statusText: response.statusText,
-          errorDetails: errorDetails
-        });
-      } catch (parseError) {
-        console.error('❌ Failed to parse error response:', parseError);
+      } catch {
         errorDetails = { message: 'Failed to parse error response' };
       }
       
@@ -282,7 +262,7 @@ export class ProductGalleryService {
   }
 
   /**
-   * Get CDN URL for product gallery (for frontend-only use)
+   * Generate CDN URL for product gallery with validation
    */
   generateCDNUrl(productId: string, fileName: string): string {
     const cdnBase = import.meta.env.VITE_CDN_BASE;
@@ -290,34 +270,45 @@ export class ProductGalleryService {
       throw new Error('CDN base URL not configured');
     }
 
-    // Use product ID or name as folder
+    if (!productId || !fileName) {
+      throw new Error('Product ID and filename are required');
+    }
+
     const folderName = productId.toUpperCase();
     return `${cdnBase}/${folderName}/${fileName}`;
   }
 
   /**
-   * Generate filename with timestamp to avoid conflicts
+   * Generate secure filename with timestamp to avoid conflicts
    */
   generateFileName(_productId: string, originalName: string): string {
+    if (!originalName) {
+      throw new Error('Original filename is required');
+    }
+
     const timestamp = Date.now();
     const extension = originalName.split('.').pop() || 'png';
-    const baseName = originalName.replace(/\.[^/.]+$/, ''); // Remove extension
+    // Sanitize filename to prevent path traversal and other security issues
+    const baseName = originalName
+      .replace(/\.[^/.]+$/, '') // Remove extension
+      .replace(/[^a-zA-Z0-9_-]/g, '_') // Replace special chars with underscore
+      .substring(0, 50); // Limit length
+    
     return `${timestamp}_${baseName}.${extension}`;
   }
 
   /**
    * Load images from database for a product (sorted by order)
    */
+  /**
+   * Load images from database for a product (sorted by order)
+   * Optimized version with better error handling and reduced logging
+   */
   async loadProductImagesFromSpaces(productId: string): Promise<string[]> {
-
-    console.log(`🔍 Loading gallery images from database for product: ${productId}`);
-
     try {
-      // Use the existing database-based getProductImages method
       const galleryImages = await this.getProductImages(productId);
       
       if (galleryImages.length === 0) {
-        console.log(`📁 No gallery images found in database for product: ${productId}`);
         return [];
       }
       
@@ -325,106 +316,69 @@ export class ProductGalleryService {
       const sortedImages = galleryImages.sort((a, b) => (a.order || 0) - (b.order || 0));
       const imageUrls = sortedImages.map(img => img.cdnUrl || img.url).filter(Boolean);
       
-      console.log(`📸 Loaded ${imageUrls.length} images from database (sorted by order):`, {
-        totalImages: imageUrls.length,
-        imageUrls: imageUrls,
-        orderInfo: sortedImages.map(img => ({ 
-          fileName: img.fileName, 
-          order: img.order,
-          url: img.cdnUrl || img.url 
-        }))
-      });
-      
-      return imageUrls;
-    } catch (error) {
-      console.warn('⚠️ Failed to load images from database:', error);
-      return [];
-    }
-
-    /* AWS SDK approach commented out due to CSP and infinite loading issues:
-    try {
-      const listParams: AWS.S3.ListObjectsV2Request = {
-        Bucket: bucket,
-        Prefix: `${folderName}/`,
-        MaxKeys: 50
-      };
-
-      console.log('🔄 Attempting AWS SDK listObjectsV2...', listParams);
-      
-      const timeoutPromise = new Promise<never>((_, reject) => {
-        setTimeout(() => reject(new Error('Request timeout after 5 seconds')), 5000);
-      });
-
-      const result = await Promise.race([
-        s3.listObjectsV2(listParams).promise(),
-        timeoutPromise
-      ]);
-
-      if (!result.Contents || result.Contents.length === 0) {
-        console.log(`📁 No images found in folder: ${folderName}`);
-        return [];
+      if (import.meta.env.DEV && imageUrls.length > 0) {
+        console.log(`📸 Loaded ${imageUrls.length} images for product ${productId}`);
       }
-
-      const imageUrls = result.Contents
-        .filter(obj => {
-          const fileName = obj.Key?.split('/').pop();
-          if (!fileName) return false;
-          const imageExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
-          const extension = fileName.split('.').pop()?.toLowerCase();
-          return extension && imageExtensions.includes(extension);
-        })
-        .sort((a, b) => {
-          const dateA = a.LastModified?.getTime() || 0;
-          const dateB = b.LastModified?.getTime() || 0;
-          if (dateA !== dateB) return dateA - dateB;
-          const fileNameA = a.Key?.split('/').pop() || '';
-          const fileNameB = b.Key?.split('/').pop() || '';
-          return fileNameA.localeCompare(fileNameB);
-        })
-        .map(obj => `https://${bucket}.${baseEndpoint}/${obj.Key}`);
-
-      console.log(`📸 Loaded ${imageUrls.length} images for product ${productId} from Spaces:`, imageUrls);
+      
       return imageUrls;
-
     } catch (error) {
-      console.warn(`⚠️ Failed to load images for folder "${folderName}" from Spaces:`, error instanceof Error ? error.message : error);
+      if (import.meta.env.DEV) {
+        console.warn(`Failed to load images for product ${productId}:`, error);
+      }
       return [];
     }
-    */
   }
 
 
 
 
   /**
-   * Delete image from DigitalOcean Spaces by URL
+   * Delete image from DigitalOcean Spaces by URL with improved error handling
    */
   async deleteImageFromSpaces(imageUrl: string): Promise<boolean> {
     try {
-      // Extract key from URL
-      // URL format: https://bucket.endpoint/folder/filename
+      if (!imageUrl) {
+        throw new Error('Image URL is required');
+      }
+
+      // Check if Spaces is properly configured before attempting operation
+      if (!this.isSpacesConfigured()) {
+        if (import.meta.env.DEV) {
+          console.warn('DigitalOcean Spaces not configured, skipping delete operation');
+        }
+        return false;
+      }
+
       const url = new URL(imageUrl);
       const key = url.pathname.substring(1); // Remove leading slash
-
-      const bucket = import.meta.env.VITE_DO_SPACES_BUCKET || 'mi-gallery';
+      
+      if (!key) {
+        throw new Error('Invalid image URL - no key found');
+      }
 
       const deleteParams: AWS.S3.DeleteObjectRequest = {
-        Bucket: bucket,
+        Bucket: SPACES_CONFIG.bucket,
         Key: key
       };
 
-      await s3.deleteObject(deleteParams).promise();
-      console.log('✅ Deleted image from Spaces:', key);
+      await getS3Client().deleteObject(deleteParams).promise();
+      
+      if (import.meta.env.DEV) {
+        console.log('✅ Deleted image from Spaces:', key);
+      }
+      
       return true;
 
     } catch (error) {
-      console.error('❌ Failed to delete image from Spaces:', error);
+      if (import.meta.env.DEV) {
+        console.error('❌ Failed to delete image from Spaces:', error);
+      }
       return false;
     }
   }
 
   /**
-   * Check if DigitalOcean Spaces is properly configured
+   * Check if DigitalOcean Spaces is properly configured with enhanced validation
    */
   isSpacesConfigured(): boolean {
     const accessKey = import.meta.env.VITE_DO_SPACES_ACCESS_KEY;
@@ -432,10 +386,38 @@ export class ProductGalleryService {
     const bucket = import.meta.env.VITE_DO_SPACES_BUCKET;
 
     return !!(
-      accessKey && secretKey && bucket &&
+      accessKey && 
+      secretKey && 
+      bucket &&
+      accessKey.length > 10 && // Basic length validation
+      secretKey.length > 20 && // Basic length validation
       accessKey !== 'YOUR_ACCESS_KEY_HERE' &&
-      secretKey !== 'YOUR_SECRET_KEY_HERE'
+      secretKey !== 'YOUR_SECRET_KEY_HERE' &&
+      !accessKey.includes('example') &&
+      !secretKey.includes('example')
     );
+  }
+
+  /**
+   * Get configuration status for debugging
+   */
+  getConfigurationStatus(): { configured: boolean; details: Record<string, boolean> } {
+    const accessKey = import.meta.env.VITE_DO_SPACES_ACCESS_KEY;
+    const secretKey = import.meta.env.VITE_DO_SPACES_SECRET_KEY;
+    const bucket = import.meta.env.VITE_DO_SPACES_BUCKET;
+    const endpoint = import.meta.env.VITE_DO_SPACES_ENDPOINT;
+
+    return {
+      configured: this.isSpacesConfigured(),
+      details: {
+        hasAccessKey: !!accessKey,
+        hasSecretKey: !!secretKey,
+        hasBucket: !!bucket,
+        hasEndpoint: !!endpoint,
+        validAccessKeyLength: !!(accessKey && accessKey.length > 10),
+        validSecretKeyLength: !!(secretKey && secretKey.length > 20)
+      }
+    };
   }
 }
 

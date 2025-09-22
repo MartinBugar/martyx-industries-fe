@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useWishlist } from '../../context/WishlistContext';
@@ -9,6 +9,7 @@ import { type Product } from '../../data/productData';
 import { type WishlistItem } from '../../types/wishlist';
 import WishlistButton from '../../components/WishlistButton';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import WishlistProductImage from '../../components/WishlistProductImage';
 import './Wishlist.css';
 import '../Products/Products.css';
 
@@ -35,6 +36,7 @@ const Wishlist: React.FC = () => {
   const [isCleaningUp, setIsCleaningUp] = useState(false);
   const [showStats, setShowStats] = useState(false);
   const [productsData, setProductsData] = useState<Map<number, Product>>(new Map());
+  const [loadingProducts, setLoadingProducts] = useState(false);
 
   useEffect(() => {
     // Only redirect to login if auth is not loading and user is not authenticated
@@ -50,29 +52,53 @@ const Wishlist: React.FC = () => {
     }
   }, [error, clearError]);
 
-  // Fetch full product data for each wishlist item to get gallery images
+  // Optimized parallel fetching of product data
   useEffect(() => {
     const fetchProductsData = async () => {
-      const newProductsData = new Map<number, Product>();
-
-      for (const item of items) {
-        try {
-          const product = await hybridProductService.getProductById(item.productId);
-          newProductsData.set(item.productId, product);
-        } catch (err) {
-          console.error(`Failed to fetch product data for ${item.productId}:`, err);
-        }
+      if (items.length === 0) {
+        setProductsData(new Map());
+        return;
       }
 
-      setProductsData(newProductsData);
+      setLoadingProducts(true);
+      const newProductsData = new Map<number, Product>();
+
+      try {
+        // Parallel fetching instead of sequential
+        const productPromises = items.map(async (item) => {
+          try {
+            const product = await hybridProductService.getProductById(item.productId);
+            return { productId: item.productId, product };
+          } catch (err) {
+            if (import.meta.env.DEV) {
+              console.error(`Failed to fetch product data for ${item.productId}:`, err);
+            }
+            return null;
+          }
+        });
+
+        const results = await Promise.all(productPromises);
+        
+        results.forEach(result => {
+          if (result) {
+            newProductsData.set(result.productId, result.product);
+          }
+        });
+
+        setProductsData(newProductsData);
+      } catch (err) {
+        if (import.meta.env.DEV) {
+          console.error('Failed to fetch products data:', err);
+        }
+      } finally {
+        setLoadingProducts(false);
+      }
     };
 
-    if (items.length > 0) {
-      fetchProductsData();
-    }
+    fetchProductsData();
   }, [items]);
 
-  const handleSelectItem = (productId: number) => {
+  const handleSelectItem = useCallback((productId: number) => {
     setSelectedItems(prev => {
       const newSet = new Set(prev);
       if (newSet.has(productId)) {
@@ -82,26 +108,28 @@ const Wishlist: React.FC = () => {
       }
       return newSet;
     });
-  };
+  }, []);
 
-  const handleSelectAll = () => {
+  const handleSelectAll = useCallback(() => {
     if (selectedItems.size === items.length) {
       setSelectedItems(new Set());
     } else {
       setSelectedItems(new Set(items.map(item => item.productId)));
     }
-  };
+  }, [selectedItems.size, items]);
 
-  const handleRemoveSelected = async () => {
+  const handleRemoveSelected = useCallback(async () => {
     if (selectedItems.size === 0) return;
 
     try {
       await removeMultiple(Array.from(selectedItems));
       setSelectedItems(new Set());
     } catch (err) {
-      console.error('Failed to remove selected items:', err);
+      if (import.meta.env.DEV) {
+        console.error('Failed to remove selected items:', err);
+      }
     }
-  };
+  }, [selectedItems, removeMultiple]);
 
   const handleCleanup = async () => {
     setIsCleaningUp(true);
@@ -119,25 +147,28 @@ const Wishlist: React.FC = () => {
   };
 
 
-  const handleAddToCart = (item: WishlistItem) => {
+  const handleAddToCart = useCallback((item: WishlistItem) => {
     const product = {
       id: String(item.productId),
       name: item.productName,
       price: item.productPrice,
       currency: item.productCurrency,
       description: item.productDescription,
-      features: [], // Default empty features
-      modelPath: '', // Default empty model path
+      features: [],
+      modelPath: '',
       gallery: item.productImageUrl ? [item.productImageUrl] : [],
-      interactionInstructions: [], // Default empty instructions
+      interactionInstructions: [],
       productType: item.productType as 'DIGITAL' | 'PHYSICAL'
     };
     addToCart(product);
-  };
+  }, [addToCart]);
 
 
-  const availableItems = items.filter(item => item.isAvailable);
-  const unavailableItems = items.filter(item => !item.isAvailable);
+  // Memoize filtered items to prevent unnecessary recalculations
+  const { availableItems, unavailableItems } = useMemo(() => ({
+    availableItems: items.filter(item => item.isAvailable),
+    unavailableItems: items.filter(item => !item.isAvailable)
+  }), [items]);
 
   // Show loading while auth is being checked
   if (authLoading) {
@@ -375,26 +406,11 @@ const Wishlist: React.FC = () => {
 
                   <Link to={`/products/${item.productId}`} className="product-card-link">
                     <div className="product-card-image-container">
-                      {(() => {
-                        const product = productsData.get(item.productId);
-                        const mainImage = product?.gallery && product.gallery.length > 0 ? product.gallery[0] : item.productImageUrl;
-                        return mainImage ? (
-                          <img
-                            src={mainImage}
-                            alt={`${item.productName} - main image`}
-                            className="product-card-image"
-                            loading="lazy"
-                            decoding="async"
-                          />
-                        ) : (
-                          <div className="product-card-placeholder">
-                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                              <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/>
-                              <circle cx="12" cy="13" r="3"/>
-                            </svg>
-                          </div>
-                        );
-                      })()}
+                      <WishlistProductImage 
+                        item={item}
+                        product={productsData.get(item.productId)}
+                        loading={loadingProducts}
+                      />
 
                       <div className="product-card-wishlist">
                         <WishlistButton
@@ -468,26 +484,11 @@ const Wishlist: React.FC = () => {
 
                       <Link to={`/products/${item.productId}`} className="product-card-link">
                         <div className="product-card-image-container">
-                          {(() => {
-                            const product = productsData.get(item.productId);
-                            const mainImage = product?.gallery && product.gallery.length > 0 ? product.gallery[0] : item.productImageUrl;
-                            return mainImage ? (
-                              <img
-                                src={mainImage}
-                                alt={`${item.productName} - main image`}
-                                className="product-card-image"
-                                loading="lazy"
-                                decoding="async"
-                              />
-                            ) : (
-                              <div className="product-card-placeholder">
-                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                  <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/>
-                                  <circle cx="12" cy="13" r="3"/>
-                                </svg>
-                              </div>
-                            );
-                          })()}
+                          <WishlistProductImage 
+                            item={item}
+                            product={productsData.get(item.productId)}
+                            loading={loadingProducts}
+                          />
 
                           <div className="unavailable-overlay">
                             <span>Unavailable</span>
