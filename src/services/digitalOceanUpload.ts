@@ -15,6 +15,7 @@ export interface UploadOptions {
   productId: string;
   file: File;
   preserveOriginalName?: boolean;
+  customFileName?: string; // Custom filename to use instead of auto-generated
 }
 
 export interface UploadResult {
@@ -28,7 +29,7 @@ export interface UploadResult {
  * Upload image directly to DigitalOcean Spaces
  */
 export async function uploadImageToSpaces(options: UploadOptions): Promise<UploadResult> {
-  const { productId, file, preserveOriginalName = true } = options;
+  const { productId, file, preserveOriginalName = true, customFileName } = options;
 
   // Validate environment variables
   const accessKey = import.meta.env.VITE_DO_SPACES_ACCESS_KEY;
@@ -41,9 +42,9 @@ export async function uploadImageToSpaces(options: UploadOptions): Promise<Uploa
   }
 
   try {
-    // Generate file name - preserve original name or use numbered naming
+    // Generate file name - use custom name, preserve original, or use numbered naming
     const folderName = productId.toUpperCase();
-    const fileName = preserveOriginalName ? file.name : `${Date.now()}_${file.name}`;
+    const fileName = customFileName || (preserveOriginalName ? file.name : `${Date.now()}_${file.name}`);
     const key = `${folderName}/${fileName}`;
 
     console.log('🔄 Uploading to DigitalOcean Spaces:', key);

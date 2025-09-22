@@ -70,12 +70,14 @@ export interface ReorderImagesRequest {
  */
 export class ProductGalleryService {
   /**
-   * Get all images for a product
+   * Get all images for a product (public endpoint - no authentication required)
    */
   async getProductImages(productId: string): Promise<GalleryImage[]> {
     const response = await fetch(`${API_BASE_URL}/api/products/${productId}/gallery`, withLangHeaders({
       method: 'GET',
-      headers: defaultHeaders as HeadersInit,
+      headers: {
+        'Content-Type': 'application/json',
+      } as HeadersInit,
     }));
 
     return handleResponse(response);
@@ -392,7 +394,7 @@ export class ProductGalleryService {
   }
 
   /**
-   * Load images via backend API endpoint
+   * Load images via backend API endpoint (public endpoint - no authentication required)
    */
   private async loadImagesViaBackendAPI(productId: string): Promise<string[]> {
     try {
@@ -403,7 +405,9 @@ export class ProductGalleryService {
 
       const response = await fetch(`${API_BASE_URL}/api/products/${productId}/gallery/list`, {
         method: 'GET',
-        headers: defaultHeaders as HeadersInit,
+        headers: {
+          'Content-Type': 'application/json',
+        } as HeadersInit,
         signal: controller.signal
       });
 
