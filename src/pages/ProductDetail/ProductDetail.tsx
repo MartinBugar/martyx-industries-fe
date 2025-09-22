@@ -286,6 +286,7 @@ const ProductDetail: React.FC = () => {
     const [error, setError] = React.useState<string | null>(null);
     const [isProductInactive, setIsProductInactive] = React.useState(false);
     const [galleryImages, setGalleryImages] = React.useState<string[]>([]);
+    const [active, setActive] = React.useState<ProductTabId>('Details');
 
     const tabs = React.useMemo(() => {
         if (product) {
@@ -296,7 +297,6 @@ const ProductDetail: React.FC = () => {
         }
         return [];
     }, [product]);
-    const [active, setActive] = React.useState<ProductTabId>(tabs[0]?.id ?? 'Details');
 
     // Load product from hybrid service
     React.useEffect(() => {
@@ -416,6 +416,15 @@ const ProductDetail: React.FC = () => {
         console.log('📋 Active tab:', active, 'content kind:', activeTab.content.kind);
     }
 
+    // Create an updated product object with the loaded gallery images (must be before early returns)
+    const productWithGallery = React.useMemo(() => {
+        if (!product) return null;
+        return {
+            ...product,
+            gallery: galleryImages.length > 0 ? galleryImages : product.gallery
+        };
+    }, [product, galleryImages]);
+
     // Show loading state
     if (loading) {
         return (
@@ -482,15 +491,6 @@ const ProductDetail: React.FC = () => {
             </div>
         );
     }
-
-    // Create an updated product object with the loaded gallery images
-    const productWithGallery = React.useMemo(() => {
-        if (!product) return null;
-        return {
-            ...product,
-            gallery: galleryImages.length > 0 ? galleryImages : product.gallery
-        };
-    }, [product, galleryImages]);
 
     return (
         <div className="product-detail-page">
