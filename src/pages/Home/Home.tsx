@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { type Product } from '../../data/productData';
 import { hybridProductService } from '../../services/hybridProductService';
 import WishlistButton from '../../components/WishlistButton';
+import { getImageSrcSet, getBestImageUrl, getBaseNameFromPath, isCDNEnabled } from '../../utils/cdnImages';
 import './Home.css';
 
 const Home: React.FC = () => {
@@ -130,7 +131,9 @@ const Home: React.FC = () => {
                 <div className="product-card-image-container">
                   <Link to={`/products/${p.id}`} className="product-card-link">
                     <img
-                      src={p.gallery?.[0] || '/assets/kit-01.png'}
+                      src={p.gallery?.[0] ? (isCDNEnabled() ? getBestImageUrl(getBaseNameFromPath(p.gallery[0]), 800) : p.gallery[0]) : '/assets/kit-01.png'}
+                      srcSet={p.gallery?.[0] && isCDNEnabled() ? getImageSrcSet(getBaseNameFromPath(p.gallery[0])) : undefined}
+                      sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
                       alt={p.name}
                       className="product-image"
                       loading="lazy"

@@ -5,6 +5,7 @@ import {type Product} from '../../data/productData';
 import {hybridProductService} from '../../services/hybridProductService';
 import {useCart} from '../../context/useCart';
 import WishlistButton from '../../components/WishlistButton';
+import { getImageSrcSet, getBestImageUrl, getBaseNameFromPath, isCDNEnabled } from '../../utils/cdnImages';
 import './Products.css';
 
 const Products: React.FC = () => {
@@ -175,7 +176,9 @@ const Products: React.FC = () => {
                                             <div className="product-card-image-container">
                                                 {mainImage ? (
                                                     <img
-                                                        src={mainImage}
+                                                        src={isCDNEnabled() ? getBestImageUrl(getBaseNameFromPath(mainImage), 800) : mainImage}
+                                                        srcSet={isCDNEnabled() ? getImageSrcSet(getBaseNameFromPath(mainImage)) : undefined}
+                                                        sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
                                                         alt={`${p.name} - main image`}
                                                         className="product-card-image"
                                                         loading="lazy"

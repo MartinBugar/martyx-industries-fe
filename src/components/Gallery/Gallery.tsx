@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './Gallery.css';
 import Skeleton from '../Skeleton/Skeleton';
+import { getImageSrcSet, getBestImageUrl, getBaseNameFromPath, isCDNEnabled } from '../../utils/cdnImages';
 
 interface GalleryProps {
   productName: string;
@@ -12,6 +13,14 @@ const Gallery: React.FC<GalleryProps> = ({ productName, images }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [loaded, setLoaded] = useState<boolean[]>(() => images.map(() => false));
   const imgRefs = React.useRef<(HTMLImageElement | null)[]>([]);
+
+  // Debug: log received images
+  React.useEffect(() => {
+    if (import.meta.env.DEV) {
+      console.log('🖼️ Gallery received images for', productName, ':', images);
+      console.log('🔍 First 3 image URLs:', images.slice(0, 3));
+    }
+  }, [images, productName]);
 
   // After mount, mark cached images as loaded (in case onLoad doesn't fire)
   React.useEffect(() => {
@@ -91,19 +100,33 @@ const Gallery: React.FC<GalleryProps> = ({ productName, images }) => {
             )}
             <img
               ref={(el) => { imgRefs.current[index] = el; }}
-              src={image}
+              src={(() => {
+                const finalSrc = isCDNEnabled() ? getBestImageUrl(getBaseNameFromPath(image), 400) : image;
+                if (import.meta.env.DEV && index < 3) {
+                  console.log(`🎯 Image ${index + 1} - Original:`, image, '→ Final:', finalSrc);
+                }
+                return finalSrc;
+              })()}
+              srcSet={isCDNEnabled() ? getImageSrcSet(getBaseNameFromPath(image)) : undefined}
+              sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 200px"
               alt={`${productName} - Image ${index + 1}`}
               decoding="async"
-              loading="eager"
+              loading={index < 6 ? "eager" : "lazy"}
               style={{ visibility: loaded[index] ? 'visible' : 'hidden' }}
               onLoad={() => {
+                if (import.meta.env.DEV && index < 3) {
+                  console.log(`✅ Image ${index + 1} loaded successfully`);
+                }
                 setLoaded(prev => {
                   const next = [...prev];
                   next[index] = true;
                   return next;
                 });
               }}
-              onError={() => {
+              onError={(e) => {
+                if (import.meta.env.DEV) {
+                  console.error(`❌ Image ${index + 1} failed to load:`, e.currentTarget.src);
+                }
                 // Keep skeleton visible if there is an error
                 setLoaded(prev => {
                   const next = [...prev];
@@ -135,9 +158,11 @@ const Gallery: React.FC<GalleryProps> = ({ productName, images }) => {
               &#10094;
             </button>
             <div className="fullscreen-image-container">
-              <img 
-                src={images[currentImageIndex]} 
-                alt={`${productName} - Image ${currentImageIndex + 1}`} 
+              <img
+                src={isCDNEnabled() ? getBestImageUrl(getBaseNameFromPath(images[currentImageIndex]), 1600) : images[currentImageIndex]}
+                srcSet={isCDNEnabled() ? getImageSrcSet(getBaseNameFromPath(images[currentImageIndex])) : undefined}
+                sizes="100vw"
+                alt={`${productName} - Image ${currentImageIndex + 1}`}
                 className="fullscreen-image"
               />
               <div className="image-counter">

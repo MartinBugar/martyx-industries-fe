@@ -9,6 +9,7 @@ import {DetailsTab, DownloadTab, FeaturesTab, ReviewsTab, PrintInfoTab} from '..
 import {useCart} from '../../context/useCart';
 import WishlistButton from '../../components/WishlistButton';
 import {reviewsService, type Review} from '../../services/reviewsService';
+import { getLCPPreloadAttributes, getBaseNameFromPath, isCDNEnabled } from '../../utils/cdnImages';
 
 // StarRating component for displaying average rating
 interface StarRatingProps {
@@ -337,6 +338,36 @@ const ProductDetail: React.FC = () => {
         }
         setActive(firstTabId);
     }, [tabs]);
+
+    // LCP preloading for hero image
+    React.useEffect(() => {
+        if (!product?.gallery?.[0] || !isCDNEnabled()) return;
+
+        const heroImage = product.gallery[0];
+        const baseName = getBaseNameFromPath(heroImage);
+        const preloadAttrs = getLCPPreloadAttributes(baseName);
+
+        // Create and inject preload link
+        const link = document.createElement('link');
+        Object.entries(preloadAttrs).forEach(([key, value]) => {
+            if (key === 'imageSrcset') {
+                link.setAttribute('imagesrcset', value as string);
+            } else if (key === 'imageSizes') {
+                link.setAttribute('imagesizes', value as string);
+            } else {
+                link.setAttribute(key, value as string);
+            }
+        });
+
+        document.head.appendChild(link);
+
+        // Cleanup on unmount or product change
+        return () => {
+            if (link.parentNode) {
+                document.head.removeChild(link);
+            }
+        };
+    }, [product]);
 
     const activeTab = tabs.find(t => t.id === active) ?? tabs[0];
     if (import.meta.env.DEV && activeTab) {
