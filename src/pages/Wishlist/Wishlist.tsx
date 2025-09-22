@@ -5,7 +5,6 @@ import { useWishlist } from '../../context/WishlistContext';
 import { useAuth } from '../../context/useAuth';
 import { useCart } from '../../context/useCart';
 import { hybridProductService } from '../../services/hybridProductService';
-import { productGalleryService } from '../../services/productGalleryService';
 import { type Product } from '../../data/productData';
 import { type WishlistItem } from '../../types/wishlist';
 import WishlistButton from '../../components/WishlistButton';
