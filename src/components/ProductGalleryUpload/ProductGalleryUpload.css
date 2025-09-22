@@ -6,6 +6,22 @@
   margin-bottom: 16px;
 }
 
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.header-info {
+  flex: 1;
+}
+
+.header-actions {
+  flex-shrink: 0;
+}
+
 .upload-header h3 {
   margin: 0 0 4px 0;
   font-size: 18px;
@@ -15,6 +31,92 @@
 
 .upload-header p {
   margin: 0;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.refresh-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  font-size: 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #f9fafb;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.refresh-btn:hover:not(:disabled) {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.refresh-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn {
+  border: none;
+  font-family: inherit;
+}
+
+.btn-secondary {
+  background: #6b7280;
+  color: white;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #4b5563;
+}
+
+.upload-header code {
+  background: #f3f4f6;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Monaco', 'Menlo', monospace;
+  font-size: 13px;
+  color: #1f2937;
+}
+
+/* Section Styles */
+.existing-gallery-section {
+  margin-bottom: 32px;
+  padding: 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.existing-gallery-section h4 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.upload-section {
+  margin-top: 24px;
+}
+
+.upload-section h4 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.upload-section p {
+  margin: 0 0 16px 0;
   font-size: 14px;
   color: #6b7280;
 }
@@ -210,4 +312,72 @@
   .upload-text p:first-child {
     font-size: 14px;
   }
+}
+
+/* Drag and Drop Styles */
+.image-item[draggable="true"] {
+  cursor: move;
+}
+
+.image-item.dragging {
+  opacity: 0.5;
+  transform: rotate(5deg);
+  z-index: 10;
+}
+
+.image-item.reordering {
+  pointer-events: none;
+}
+
+.drag-handle {
+  cursor: grab;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 6px;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.drag-handle:hover {
+  background: rgba(0, 0, 0, 0.9);
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.btn-secondary {
+  background: rgba(107, 114, 128, 0.7);
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: rgba(107, 114, 128, 0.9);
+}
+
+.image-overlay.reordering {
+  background: rgba(59, 130, 246, 0.9);
+  color: white;
+}
+
+.db-badge {
+  background: #10b981;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 500;
+  margin-left: 4px;
+}
+
+.main-badge {
+  background: #f59e0b;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 500;
+  margin-left: 4px;
 }

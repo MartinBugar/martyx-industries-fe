@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import './ProductGalleryUpload.css';
-import { uploadImageToSpaces, isSpacesConfigured, getSpacesConfig } from '../../services/digitalOceanUpload';
+import { isSpacesConfigured, getSpacesConfig } from '../../services/digitalOceanUpload';
 import { productGalleryService } from '../../services/productGalleryService';
 
 interface ProductGalleryUploadProps {
@@ -16,6 +16,8 @@ interface UploadedImage {
   file?: File;
   uploading?: boolean;
   error?: string;
+  order?: number;
+  galleryImageId?: string; // Database ID for reordering
 }
 
 const ProductGalleryUpload: React.FC<ProductGalleryUploadProps> = ({
@@ -27,64 +29,93 @@ const ProductGalleryUpload: React.FC<ProductGalleryUploadProps> = ({
   const [images, setImages] = useState<UploadedImage[]>([]);
   const [loading, setLoading] = useState(true);
   const [dragActive, setDragActive] = useState(false);
+  const [reordering, setReordering] = useState(false);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Load existing images from DigitalOcean Spaces
-  React.useEffect(() => {
-    const loadExistingImages = async () => {
-      try {
-        setLoading(true);
-        console.log(`🔍 Loading existing images for product: ${productId}`);
+  // Function to load gallery images
+  const loadGalleryImages = async (isRefresh = false) => {
+    try {
+      const loadingState = isRefresh ? setRefreshing : setLoading;
+      loadingState(true);
+      
+      console.log(`🔍 ${isRefresh ? 'Refreshing' : 'Loading'} gallery images for product: ${productId}`);
 
-        // First try to load from DigitalOcean Spaces
-        let loadedImages: string[] = [];
+      // Load gallery images from database (with metadata)
+      let galleryImages: any[] = [];
 
-        // Enable Spaces loading with HTTP approach (not AWS SDK)
-        const enableSpacesLoading = true;
-
-        if (enableSpacesLoading && productGalleryService.isSpacesConfigured()) {
-          try {
-            console.log('🔄 Attempting to load images from Spaces...');
-            loadedImages = await productGalleryService.loadProductImagesFromSpaces(productId);
-            console.log('✅ Successfully loaded from Spaces:', loadedImages);
-          } catch (error) {
-            console.error('❌ Failed to load from Spaces:', error);
+      if (productGalleryService.isSpacesConfigured()) {
+        try {
+          console.log('🔄 Loading gallery images from database...');
+          galleryImages = await productGalleryService.getProductImages(productId);
+          console.log('✅ Successfully loaded gallery images:', galleryImages);
+        } catch (error) {
+          console.error('❌ Failed to load gallery images:', error);
+          
+          // If it's the first load and we get an error, don't try again automatically
+          if (!isRefresh && !hasLoadedOnce) {
+            console.log('🚫 First load failed - will not auto-retry. Use refresh button to try again.');
           }
-        } else {
-          console.log('🚫 Spaces loading disabled or not configured');
         }
+      } else {
+        console.log('🚫 Gallery loading disabled or not configured');
+      }
 
-        // Fallback to existingImages prop if Spaces loading fails or is empty
-        if (loadedImages.length === 0 && existingImages.length > 0) {
-          loadedImages = existingImages;
-          console.log(`📷 Using fallback images from props: ${loadedImages.length} images`);
-        }
-
-        const imageObjects = loadedImages.map((url, index) => ({
-          id: `existing-${index}`,
-          url
+      // Convert to UploadedImage format with database IDs
+      const imageObjects = galleryImages
+        .sort((a, b) => (a.order || 0) - (b.order || 0))
+        .map((galleryImg, index) => ({
+          id: `gallery-${galleryImg.id}`,
+          url: galleryImg.cdnUrl || galleryImg.url,
+          order: galleryImg.order || index,
+          galleryImageId: galleryImg.id
         }));
 
+      // Fallback to existingImages prop if database loading fails (only on first load)
+      if (imageObjects.length === 0 && !hasLoadedOnce && existingImages.length > 0) {
+        const fallbackImages = existingImages.map((url, index) => ({
+          id: `existing-${index}`,
+          url,
+          order: index
+        }));
+        setImages(fallbackImages);
+        onImagesChange?.(existingImages);
+      } else {
         setImages(imageObjects);
-        onImagesChange?.(loadedImages);
+        const urls = imageObjects.map(img => img.url);
+        onImagesChange?.(urls);
+      }
 
-        console.log(`✅ Loaded ${imageObjects.length} existing images for product ${productId}`);
-      } catch (error) {
-        console.error('❌ Failed to load existing images:', error);
-        // Fallback to existingImages prop
+      setHasLoadedOnce(true);
+      console.log(`✅ ${isRefresh ? 'Refreshed' : 'Loaded'} ${imageObjects.length} gallery images for product ${productId}`);
+    } catch (error) {
+      console.error('❌ Failed to load gallery images:', error);
+      
+      // Only use fallback on first load
+      if (!hasLoadedOnce && existingImages.length > 0) {
         const fallbackImages = existingImages.map((url, index) => ({
           id: `existing-${index}`,
           url
         }));
         setImages(fallbackImages);
         onImagesChange?.(existingImages);
-      } finally {
-        setLoading(false);
       }
-    };
+      
+      setHasLoadedOnce(true);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
 
-    loadExistingImages();
-  }, [productId, existingImages, onImagesChange]);
+  // Load images on mount (only once)
+  React.useEffect(() => {
+    if (!hasLoadedOnce) {
+      loadGalleryImages(false);
+    }
+  }, [productId, hasLoadedOnce]);
 
   // Check configuration on component mount
   React.useEffect(() => {
@@ -145,46 +176,79 @@ const ProductGalleryUpload: React.FC<ProductGalleryUploadProps> = ({
         throw new Error('DigitalOcean Spaces credentials not configured. Please check .env.local file.');
       }
 
-      console.log('🚀 Starting upload to DigitalOcean Spaces...', {
+      console.log('🚀 Starting upload via backend API...', {
         productId,
         fileName: file.name,
-        fileSize: file.size
+        fileSize: file.size,
+        fileType: file.type
       });
 
-      // Upload to DigitalOcean Spaces with original filename
-      const result = await uploadImageToSpaces({
+      // Calculate order (next available order number)
+      const currentOrder = images.length;
+      
+      console.log('📊 Upload parameters:', {
+        productId,
+        order: currentOrder,
+        expectedURL: `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'}/api/products/${productId}/gallery/upload`
+      });
+      
+      // Upload via backend API using JSON approach (handles Spaces upload and database metadata save)
+      const uploadResponse = await productGalleryService.uploadImageJson({
         productId,
         file,
-        preserveOriginalName: true
+        order: currentOrder
       });
 
-      if (!result.success) {
-        throw new Error(result.error || 'Upload failed');
+      console.log('✅ Backend response:', uploadResponse);
+
+      if (!uploadResponse.success) {
+        throw new Error(`Backend upload failed: ${uploadResponse.message || 'Unknown error'}`);
       }
 
-      console.log('✅ Upload successful!', result.url);
-
-      // Update the image with the CDN URL
+      console.log('✅ Upload successful via backend API:', uploadResponse.image);
+      
+      // Update the image with the database response
       setImages(prev => prev.map(img =>
         img.id === id
-          ? { ...img, url: result.url, uploading: false, file: undefined }
+          ? { 
+              ...img, 
+              url: uploadResponse.cdnUrl || uploadResponse.image.url, 
+              uploading: false,
+              file: undefined,
+              order: uploadResponse.image.order,
+              galleryImageId: uploadResponse.image.id
+            }
           : img
       ));
 
-      // Notify parent component
+      // Update the parent component with CDN URL
       const updatedImages = images.map(img =>
-        img.id === id ? result.url : img.url
+        img.id === id ? (uploadResponse.cdnUrl || uploadResponse.image.url) : img.url
       );
       onImagesChange?.(updatedImages);
 
     } catch (error) {
       console.error('❌ Upload failed:', error);
+      
+      let errorMessage = 'Upload failed';
+      if (error instanceof Error) {
+        if (error.message.includes('Backend upload failed (500)')) {
+          errorMessage = '🔧 Server error - check backend logs. Possible causes: database connection, DigitalOcean Spaces config, or missing product.';
+        } else if (error.message.includes('Backend upload failed (400)')) {
+          errorMessage = '❌ Invalid file or request data';
+        } else if (error.message.includes('Backend upload failed (404)')) {
+          errorMessage = '🔍 Product not found or upload endpoint missing';
+        } else {
+          errorMessage = error.message;
+        }
+      }
+      
       setImages(prev => prev.map(img =>
         img.id === id
           ? {
               ...img,
               uploading: false,
-              error: error instanceof Error ? error.message : 'Upload failed'
+              error: errorMessage
             }
           : img
       ));
@@ -196,12 +260,18 @@ const ProductGalleryUpload: React.FC<ProductGalleryUploadProps> = ({
     if (!imageToRemove) return;
 
     try {
-      // If it's a DigitalOcean Spaces URL, delete it from Spaces
-      if (imageToRemove.url.includes('digitaloceanspaces.com') && productGalleryService.isSpacesConfigured()) {
-        console.log('🗑️ Deleting image from Spaces:', imageToRemove.url);
-        const deleted = await productGalleryService.deleteImageFromSpaces(imageToRemove.url);
-        if (!deleted) {
-          console.warn('⚠️ Failed to delete image from Spaces, but will remove from UI');
+      console.log('🗑️ Removing image:', imageToRemove.url);
+
+      // If it has a galleryImageId, delete via backend API
+      if (imageToRemove.galleryImageId) {
+        try {
+          console.log('🗑️ Deleting image via backend API:', imageToRemove.galleryImageId);
+          const deleteResponse = await productGalleryService.deleteImage(productId, imageToRemove.galleryImageId);
+          if (!deleteResponse.success) {
+            console.warn('⚠️ Backend deletion failed, but will remove from UI');
+          }
+        } catch (apiError) {
+          console.warn('⚠️ Failed to delete via backend API:', apiError);
         }
       }
 
@@ -215,7 +285,7 @@ const ProductGalleryUpload: React.FC<ProductGalleryUploadProps> = ({
       console.log('✅ Image removed successfully');
     } catch (error) {
       console.error('❌ Failed to remove image:', error);
-      // Still remove from UI even if Spaces deletion fails
+      // Still remove from UI even if deletion fails
       setImages(prev => {
         const updated = prev.filter(img => img.id !== id);
         onImagesChange?.(updated.map(img => img.url));
@@ -224,89 +294,200 @@ const ProductGalleryUpload: React.FC<ProductGalleryUploadProps> = ({
     }
   };
 
+  // Drag and drop reordering functions
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleReorderDrop = async (e: React.DragEvent, dropIndex: number) => {
+    e.preventDefault();
+    
+    if (draggedIndex === null || draggedIndex === dropIndex) {
+      setDraggedIndex(null);
+      return;
+    }
+
+    try {
+      setReordering(true);
+      
+      // Reorder images locally
+      const newImages = [...images];
+      const draggedImage = newImages[draggedIndex];
+      newImages.splice(draggedIndex, 1);
+      newImages.splice(dropIndex, 0, draggedImage);
+      
+      // Update order values
+      const reorderedImages = newImages.map((img, index) => ({
+        ...img,
+        order: index
+      }));
+      
+      setImages(reorderedImages);
+      
+      // Update backend if we have gallery IDs
+      const imageOrders = reorderedImages
+        .filter(img => img.galleryImageId)
+        .map((img, index) => ({
+          imageId: img.galleryImageId!,
+          order: index
+        }));
+
+      if (imageOrders.length > 0) {
+        try {
+          await productGalleryService.reorderImages({
+            productId,
+            imageOrders
+          });
+          console.log('✅ Images reordered successfully');
+        } catch (error) {
+          console.error('❌ Failed to update order on backend:', error);
+        }
+      }
+      
+      // Update parent component
+      onImagesChange?.(reorderedImages.map(img => img.url));
+      
+    } catch (error) {
+      console.error('❌ Failed to reorder images:', error);
+    } finally {
+      setReordering(false);
+      setDraggedIndex(null);
+    }
+  };
+
 
   return (
     <div className="product-gallery-upload">
       <div className="upload-header">
-        <h3>Product Gallery - {productName}</h3>
-        <p>Upload images for your product gallery. First image will be used as the main product image.</p>
-        {loading && <p className="loading-text">📸 Loading existing images...</p>}
-      </div>
-
-      {/* Upload Area */}
-      <div
-        className={`upload-area ${dragActive ? 'drag-active' : ''}`}
-        onDragEnter={handleDrag}
-        onDragLeave={handleDrag}
-        onDragOver={handleDrag}
-        onDrop={handleDrop}
-        onClick={() => fileInputRef.current?.click()}
-      >
-        <div className="upload-content">
-          <div className="upload-icon">📷</div>
-          <div className="upload-text">
-            <p><strong>Click to upload</strong> or drag and drop</p>
-            <p>PNG, JPG, WebP up to 10MB each</p>
+        <div className="header-row">
+          <div className="header-info">
+            <h3>Product Gallery - {productName}</h3>
+            <p>Images are loaded from database for folder: <code>{productId.toUpperCase()}</code></p>
+          </div>
+          <div className="header-actions">
+            <button 
+              className="btn btn-secondary refresh-btn"
+              onClick={() => loadGalleryImages(true)}
+              disabled={loading || refreshing}
+              title="Refresh gallery images from database"
+            >
+              {refreshing ? '🔄' : '↻'} {refreshing ? 'Refreshing...' : 'Refresh'}
+            </button>
           </div>
         </div>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          multiple
-          onChange={handleFileInput}
-          style={{ display: 'none' }}
-        />
+        {loading && <p className="loading-text">📸 Loading gallery images from database...</p>}
+        {refreshing && <p className="loading-text">🔄 Refreshing gallery images...</p>}
       </div>
 
-      {/* Image Grid */}
-      {images.length > 0 && (
-        <div className="images-grid">
-          {images.map((image, index) => (
-            <div key={image.id} className="image-item">
-              <div className="image-container">
-                <img src={image.url} alt={`Product image ${index + 1}`} />
+      {/* Existing Images Gallery */}
+      {!loading && images.length > 0 && (
+        <div className="existing-gallery-section">
+          <h4>📁 Current Images ({images.length})</h4>
+          <div className="images-grid">
+            {images.map((image, index) => (
+              <div 
+                key={image.id} 
+                className={`image-item ${draggedIndex === index ? 'dragging' : ''} ${reordering ? 'reordering' : ''}`}
+                draggable={!image.uploading && !reordering}
+                onDragStart={(e) => handleDragStart(e, index)}
+                onDragOver={handleDragOver}
+                onDrop={(e) => handleReorderDrop(e, index)}
+              >
+                <div className="image-container">
+                  <img src={image.url} alt={`Product image ${index + 1}`} />
 
-                {image.uploading && (
-                  <div className="image-overlay">
-                    <div className="upload-progress">
-                      <div className="spinner"></div>
-                      <span>Uploading...</span>
+                  {image.uploading && (
+                    <div className="image-overlay">
+                      <div className="upload-progress">
+                        <div className="spinner"></div>
+                        <span>Uploading...</span>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {image.error && (
-                  <div className="image-overlay error">
-                    <span>❌ {image.error}</span>
-                  </div>
-                )}
+                  {image.error && (
+                    <div className="image-overlay error">
+                      <span>❌ {image.error}</span>
+                    </div>
+                  )}
 
-                {!image.uploading && !image.error && (
-                  <div className="image-actions">
-                    <button
-                      className="btn-icon btn-danger"
-                      onClick={() => handleRemoveImage(image.id)}
-                      title="Remove image"
-                    >
-                      🗑️
-                    </button>
-                  </div>
-                )}
+                  {reordering && (
+                    <div className="image-overlay reordering">
+                      <span>🔄 Reordering...</span>
+                    </div>
+                  )}
+
+                  {!image.uploading && !image.error && !reordering && (
+                    <div className="image-actions">
+                      <button
+                        className="btn-icon btn-secondary drag-handle"
+                        title="Drag to reorder"
+                      >
+                        ⋮⋮
+                      </button>
+                      <button
+                        className="btn-icon btn-danger"
+                        onClick={() => handleRemoveImage(image.id)}
+                        title="Remove image"
+                      >
+                        🗑️
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                <div className="image-info">
+                  <span className="image-order">#{index + 1}</span>
+                  {index === 0 && <span className="main-badge">Main</span>}
+                  {image.galleryImageId && <span className="db-badge">DB</span>}
+                </div>
               </div>
-
-              <div className="image-info">
-                <span className="image-order">#{index + 1}</span>
-                {index === 0 && <span className="main-badge">Main</span>}
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
 
-      {images.length === 0 && (
+      {/* Upload New Images Section */}
+      <div className="upload-section">
+        <h4>📤 Upload New Images</h4>
+        <p>Upload additional images for your product gallery. First image will be used as the main product image.</p>
+        <div
+          className={`upload-area ${dragActive ? 'drag-active' : ''}`}
+          onDragEnter={handleDrag}
+          onDragLeave={handleDrag}
+          onDragOver={handleDrag}
+          onDrop={handleDrop}
+          onClick={() => fileInputRef.current?.click()}
+        >
+          <div className="upload-content">
+            <div className="upload-icon">📷</div>
+            <div className="upload-text">
+              <p><strong>Click to upload</strong> or drag and drop</p>
+              <p>PNG, JPG, WebP up to 10MB each</p>
+            </div>
+          </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={handleFileInput}
+            style={{ display: 'none' }}
+          />
+        </div>
+      </div>
+
+      {/* Empty State */}
+      {!loading && images.length === 0 && (
         <div className="empty-state">
-          <p>No images uploaded yet. Add some images to create your product gallery.</p>
+          <p>📁 No images found in DigitalOcean Spaces folder: <code>{productId.toUpperCase()}</code></p>
+          <p>Upload some images to create your product gallery.</p>
         </div>
       )}
     </div>

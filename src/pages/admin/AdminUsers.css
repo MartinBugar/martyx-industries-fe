@@ -777,3 +777,48 @@
   }
 }
 
+/* Gallery Management Section */
+.gallery-management-section {
+  border: 2px solid #374151;
+  border-radius: 8px;
+  padding: 24px;
+  background: #1f2937;
+}
+
+.section-header {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #374151;
+}
+
+.section-title {
+  margin: 0 0 8px 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #f9fafb;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-description {
+  margin: 0;
+  font-size: 14px;
+  color: #9ca3af;
+  line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  .gallery-management-section {
+    padding: 16px;
+  }
+  
+  .section-title {
+    font-size: 18px;
+  }
+  
+  .section-description {
+    font-size: 13px;
+  }
+}
+

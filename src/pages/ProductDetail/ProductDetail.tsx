@@ -333,40 +333,52 @@ const ProductDetail: React.FC = () => {
         loadProduct();
     }, [id, i18n.language]); // Re-load product when language changes
 
-    // Load gallery images from DigitalOcean Spaces
+    // Load gallery images from database (with metadata and proper ordering)
     React.useEffect(() => {
         const loadGalleryImages = async () => {
             if (!product || !id) return;
 
             try {
-                console.log(`🖼️ Loading gallery images for product: ${id}`);
+                console.log(`🖼️ Loading gallery images from database for product: ${id}`);
 
-                // Try to load from DigitalOcean Spaces first
-                let spacesImages: string[] = [];
+                // Load gallery images with metadata from database
+                const galleryData = await productGalleryService.getProductImages(id);
+                console.log(`📊 Loaded ${galleryData.length} gallery records from database:`, galleryData);
 
-                // Temporarily disable Spaces loading to debug infinite loading issue
-                const enableSpacesLoading = false;
+                if (galleryData.length > 0) {
+                    // Sort by order field (ascending)
+                    const sortedGallery = galleryData.sort((a, b) => (a.order || 0) - (b.order || 0));
+                    
+                    // Extract URLs (prefer CDN URLs)
+                    const imageUrls = sortedGallery.map(img => img.cdnUrl || img.url).filter(Boolean);
+                    
+                    console.log(`✅ Gallery images sorted by order:`, {
+                        totalImages: imageUrls.length,
+                        imageUrls: imageUrls,
+                        orderInfo: sortedGallery.map(img => ({ 
+                            fileName: img.fileName, 
+                            order: img.order,
+                            url: img.cdnUrl || img.url 
+                        }))
+                    });
 
-                if (enableSpacesLoading && productGalleryService.isSpacesConfigured()) {
-                    spacesImages = await productGalleryService.loadProductImagesFromSpaces(id);
+                    setGalleryImages(imageUrls);
+                    
+                    // Update product with the loaded gallery images
+                    setProduct(prev => prev ? { ...prev, gallery: imageUrls } : null);
                 } else {
-                    console.log('🚫 Spaces loading disabled for ProductDetail');
+                    console.log('📁 No gallery images found in database, using fallback');
+                    // Fallback to hardcoded product gallery if no database images
+                    const fallbackImages = product.gallery || [];
+                    setGalleryImages(fallbackImages);
                 }
 
-                // Use Spaces images if available, otherwise fallback to product.gallery
-                const finalImages = spacesImages.length > 0 ? spacesImages : (product.gallery || []);
-
-                setGalleryImages(finalImages);
-                console.log(`✅ Loaded ${finalImages.length} gallery images:`, finalImages);
-
-                // Update product with the loaded gallery images
-                if (spacesImages.length > 0) {
-                    setProduct(prev => prev ? { ...prev, gallery: spacesImages } : null);
-                }
             } catch (error) {
-                console.error('❌ Failed to load gallery images from Spaces:', error);
+                console.error('❌ Failed to load gallery images from database:', error);
                 // Fallback to original product gallery
-                setGalleryImages(product.gallery || []);
+                const fallbackImages = product.gallery || [];
+                setGalleryImages(fallbackImages);
+                console.log(`🔄 Using fallback gallery with ${fallbackImages.length} images`);
             }
         };
 

@@ -267,8 +267,14 @@ const AdminProductDetail: React.FC = () => {
                 </div>
               )}
 
-              {/* Product Gallery Upload Section */}
-              <div className="admin-card" style={{ marginTop: 16 }}>
+              {/* Product Gallery Management Section */}
+              <div className="admin-card gallery-management-section" style={{ marginTop: 32 }}>
+                <div className="section-header">
+                  <h2 className="section-title">📸 Product Gallery Management</h2>
+                  <p className="section-description">
+                    Manage product images stored in DigitalOcean Spaces. Images are automatically organized by product ID and saved to database.
+                  </p>
+                </div>
                 <ProductGalleryUpload
                   productId={id || ''}
                   productName={product?.name || product?.stringId || id}
