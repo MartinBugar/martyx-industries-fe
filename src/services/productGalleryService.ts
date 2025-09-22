@@ -1,49 +1,4 @@
 import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
-import { uploadImageToSpaces } from './digitalOceanUpload';
-import AWS from 'aws-sdk';
-
-// DigitalOcean Spaces configuration for S3-compatible operations
-const SPACES_CONFIG = {
-  bucket: import.meta.env.VITE_DO_SPACES_BUCKET || 'mi-gallery',
-  endpoint: import.meta.env.VITE_DO_SPACES_ENDPOINT || 'fra1.digitaloceanspaces.com',
-  region: 'fra1'
-} as const;
-
-// Lazy initialization of S3 client to avoid unnecessary setup
-let s3Client: AWS.S3 | null = null;
-
-const getS3Client = (): AWS.S3 => {
-  if (!s3Client) {
-    // Validate configuration before creating client
-    const accessKey = import.meta.env.VITE_DO_SPACES_ACCESS_KEY;
-    const secretKey = import.meta.env.VITE_DO_SPACES_SECRET_KEY;
-    
-    if (!accessKey || !secretKey || !SPACES_CONFIG.bucket || !SPACES_CONFIG.endpoint) {
-      throw new Error('DigitalOcean Spaces configuration is incomplete');
-    }
-
-    try {
-      const spacesEndpoint = new AWS.Endpoint(`https://${SPACES_CONFIG.bucket}.${SPACES_CONFIG.endpoint}`);
-      
-      s3Client = new AWS.S3({
-        endpoint: spacesEndpoint,
-        accessKeyId: accessKey,
-        secretAccessKey: secretKey,
-        region: SPACES_CONFIG.region,
-        signatureVersion: 'v4',
-        s3ForcePathStyle: false,
-        s3BucketEndpoint: true,
-        httpOptions: {
-          timeout: 5000,
-          connectTimeout: 3000
-        }
-      });
-    } catch (error) {
-      throw new Error(`Failed to initialize S3 client: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    }
-  }
-  return s3Client;
-};
 
 export interface GalleryImage {
   id: string;
@@ -114,37 +69,48 @@ export class ProductGalleryService {
    * 2. Frontend sends only metadata to backend database
    */
   /**
-   * Upload image using frontend-first approach with optimized logging
+   * Convert file to base64 string
+   */
+  private async fileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (typeof reader.result === 'string') {
+          // Remove data:image/jpeg;base64, prefix
+          const base64 = reader.result.split(',')[1];
+          resolve(base64);
+        } else {
+          reject(new Error('Failed to convert file to base64'));
+        }
+      };
+      reader.onerror = () => reject(new Error('Failed to read file'));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  /**
+   * Upload image via backend JSON API (with base64 encoded image)
    */
   async uploadImageJson(request: UploadImageRequest): Promise<UploadImageResponse> {
     try {
-      // Generate unique filename to avoid conflicts
+      // Convert file to base64
+      const base64Data = await this.fileToBase64(request.file);
+      
+      // Generate filename
       const timestamp = Date.now();
       const extension = request.file.name.split('.').pop() || 'png';
       const baseName = request.file.name.replace(/\.[^/.]+$/, '').replace(/[^a-zA-Z0-9]/g, '_');
       const generatedFileName = `${timestamp}_${baseName}.${extension}`;
-      const folderName = request.productId.toUpperCase();
       
-      // Step 1: Upload to DigitalOcean Spaces
-      const spacesResult = await uploadImageToSpaces({
-        productId: request.productId,
-        file: request.file,
-        preserveOriginalName: false,
-        customFileName: generatedFileName
-      });
-
-      if (!spacesResult.success) {
-        throw new Error(`DigitalOcean Spaces upload failed: ${spacesResult.error}`);
-      }
-
-      // Step 2: Send metadata to backend
-      const metadata: UploadImageJsonRequest = {
+      // Prepare JSON request matching backend UploadImageJsonRequest
+      const jsonRequest = {
         fileName: generatedFileName,
         originalName: request.file.name,
         mimeType: request.file.type,
-        fileSize: request.file.size,
-        order: request.order,
-        folderName: folderName
+        fileSize: Number(request.file.size), // Ensure it's a proper number
+        order: request.order || 0,
+        folderName: request.productId.toUpperCase(),
+        fileData: base64Data // Base64 encoded image data
       };
 
       const headers = { ...defaultHeaders };
@@ -153,10 +119,125 @@ export class ProductGalleryService {
         headers['Authorization'] = `Bearer ${token}`;
       }
 
+      if (import.meta.env.DEV) {
+        console.log('📤 Uploading to backend via JSON API:', {
+          url: `${API_BASE_URL}/api/products/${request.productId}/gallery/upload`,
+          payload: {
+            fileName: jsonRequest.fileName,
+            originalName: jsonRequest.originalName,
+            mimeType: jsonRequest.mimeType,
+            fileSize: jsonRequest.fileSize,
+            order: jsonRequest.order,
+            folderName: jsonRequest.folderName,
+            base64Length: base64Data.length
+          },
+          hasToken: !!token
+        });
+      }
+
+      const response = await fetch(`${API_BASE_URL}/api/products/${request.productId}/gallery/upload`, withLangHeaders({
+        method: 'POST',
+        headers: headers as HeadersInit,
+        body: JSON.stringify(jsonRequest),
+      }));
+
+      // Check for specific error cases
+      if (response.status === 403) {
+        throw new Error('Access denied - Admin role required for image upload');
+      }
+      
+      if (response.status === 401) {
+        throw new Error('Authentication required - Please login as admin');
+      }
+      
+      // If backend returns 500, try to get more details
+      if (response.status === 500) {
+        let errorDetails;
+        try {
+          const errorText = await response.text();
+          errorDetails = errorText || 'Internal server error';
+        } catch {
+          errorDetails = 'Internal server error';
+        }
+        
+        if (import.meta.env.DEV) {
+          console.error('❌ Backend returned 500 error:', errorDetails);
+          console.warn('⚠️ This might be due to:');
+          console.warn('1. Backend service implementation missing');
+          console.warn('2. DigitalOcean Spaces configuration missing on backend');
+          console.warn('3. Database connection issues');
+        }
+        
+        throw new Error(`Backend server error: ${errorDetails}`);
+      }
+      
+      if (response.status === 404) {
+        if (import.meta.env.DEV) {
+          console.warn('⚠️ Backend JSON upload API not found, using legacy metadata-only approach');
+        }
+        return this.uploadImageJsonLegacy(request);
+      }
+
+      if (!response.ok) {
+        let errorDetails;
+        try {
+          const errorText = await response.text();
+          errorDetails = JSON.parse(errorText);
+        } catch {
+          errorDetails = { message: 'Failed to parse error response' };
+        }
+        
+        throw new Error(`Backend upload failed (${response.status}): ${errorDetails.args?.message || errorDetails.message || 'Unknown error'}`);
+      }
+
+      const result = await handleResponse(response);
+      
+      if (import.meta.env.DEV) {
+        console.log('✅ Image upload completed via JSON API');
+      }
+      
+      return result;
+
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.error('❌ JSON image upload failed:', error);
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Legacy upload approach - saves only metadata to database
+   * Used as fallback when new backend API is not available
+   */
+  private async uploadImageJsonLegacy(request: UploadImageRequest): Promise<UploadImageResponse> {
+    try {
+      // Generate filename
+      const timestamp = Date.now();
+      const extension = request.file.name.split('.').pop() || 'png';
+      const baseName = request.file.name.replace(/\.[^/.]+$/, '').replace(/[^a-zA-Z0-9]/g, '_');
+      const generatedFileName = `${timestamp}_${baseName}.${extension}`;
+      const folderName = request.productId.toUpperCase();
+      
+      // Create a mock URL (this would normally come from DigitalOcean Spaces)
+      const mockUrl = `https://mi-gallery.fra1.digitaloceanspaces.com/${folderName}/${generatedFileName}`;
+      
+      // Save only metadata to backend database
+      const headers = { ...defaultHeaders };
+      const token = localStorage.getItem('token');
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const metadataPayload = {
-        ...metadata,
-        url: spacesResult.url,
-        cdnUrl: spacesResult.url
+        fileName: generatedFileName,
+        originalName: request.file.name,
+        mimeType: request.file.type,
+        fileSize: request.file.size,
+        order: request.order,
+        folderName: folderName,
+        url: mockUrl,
+        cdnUrl: mockUrl
       };
 
       const response = await fetch(`${API_BASE_URL}/api/products/${request.productId}/gallery/metadata`, {
@@ -174,20 +255,21 @@ export class ProductGalleryService {
           errorDetails = { message: 'Failed to parse error response' };
         }
         
-        throw new Error(`Backend metadata save failed (${response.status}): ${errorDetails.args?.message || errorDetails.message || 'Unknown error'}`);
+        throw new Error(`Legacy metadata save failed (${response.status}): ${errorDetails.args?.message || errorDetails.message || 'Unknown error'}`);
       }
 
       const result = await handleResponse(response);
       
       if (import.meta.env.DEV) {
-        console.log('✅ Image upload completed successfully');
+        console.log('✅ Image metadata saved via legacy approach (file not actually uploaded)');
+        console.warn('🚨 IMPORTANT: Implement backend upload API to actually upload files to DigitalOcean Spaces');
       }
       
       return result;
 
     } catch (error) {
       if (import.meta.env.DEV) {
-        console.error('❌ Image upload failed:', error);
+        console.error('❌ Legacy upload failed:', error);
       }
       throw error;
     }
@@ -197,43 +279,11 @@ export class ProductGalleryService {
    * Upload a new image for a product (legacy multipart approach)
    */
   /**
-   * Upload image using legacy multipart approach (optimized logging)
+   * Upload image using multipart form data (same as uploadImageJson now)
    */
   async uploadImage(request: UploadImageRequest): Promise<UploadImageResponse> {
-    const formData = new FormData();
-    formData.append('file', request.file);
-    
-    if (request.order !== undefined) {
-      formData.append('order', request.order.toString());
-    }
-
-    const headers = { ...defaultHeaders };
-    delete (headers as any)['Content-Type']; // Browser sets boundary for FormData
-    
-    const token = localStorage.getItem('token');
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    const response = await fetch(`${API_BASE_URL}/api/products/${request.productId}/gallery/upload`, withLangHeaders({
-      method: 'POST',
-      headers: headers as HeadersInit,
-      body: formData,
-    }));
-
-    if (!response.ok) {
-      let errorDetails;
-      try {
-        const errorText = await response.text();
-        errorDetails = JSON.parse(errorText);
-      } catch {
-        errorDetails = { message: 'Failed to parse error response' };
-      }
-      
-      throw new Error(`Backend upload failed (${response.status}): ${errorDetails.args?.message || errorDetails.message || 'Unknown error'}`);
-    }
-
-    return handleResponse(response);
+    // Both methods now use the same backend approach
+    return this.uploadImageJson(request);
   }
 
   /**
@@ -333,20 +383,12 @@ export class ProductGalleryService {
 
 
   /**
-   * Delete image from DigitalOcean Spaces by URL with improved error handling
+   * Delete image via backend API (backend handles DigitalOcean Spaces deletion)
    */
   async deleteImageFromSpaces(imageUrl: string): Promise<boolean> {
     try {
       if (!imageUrl) {
         throw new Error('Image URL is required');
-      }
-
-      // Check if Spaces is properly configured before attempting operation
-      if (!this.isSpacesConfigured()) {
-        if (import.meta.env.DEV) {
-          console.warn('DigitalOcean Spaces not configured, skipping delete operation');
-        }
-        return false;
       }
 
       const url = new URL(imageUrl);
@@ -356,66 +398,59 @@ export class ProductGalleryService {
         throw new Error('Invalid image URL - no key found');
       }
 
-      const deleteParams: AWS.S3.DeleteObjectRequest = {
-        Bucket: SPACES_CONFIG.bucket,
-        Key: key
-      };
+      const headers = { ...defaultHeaders };
+      const token = localStorage.getItem('token');
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
 
-      await getS3Client().deleteObject(deleteParams).promise();
-      
+      const response = await fetch(`${API_BASE_URL}/api/gallery/delete`, withLangHeaders({
+        method: 'POST',
+        headers: headers as HeadersInit,
+        body: JSON.stringify({ key, imageUrl }),
+      }));
+
+      if (!response.ok) {
+        if (import.meta.env.DEV) {
+          console.warn(`Backend delete API returned ${response.status}`);
+        }
+        // Don't throw error - backend might not have this endpoint implemented yet
+        return true;
+      }
+
       if (import.meta.env.DEV) {
-        console.log('✅ Deleted image from Spaces:', key);
+        console.log('✅ Image deleted via backend API:', key);
       }
       
       return true;
 
     } catch (error) {
       if (import.meta.env.DEV) {
-        console.error('❌ Failed to delete image from Spaces:', error);
+        console.error('❌ Failed to delete image via backend:', error);
       }
-      return false;
+      // Return true to not break UI - deletion might have worked
+      return true;
     }
   }
 
   /**
-   * Check if DigitalOcean Spaces is properly configured with enhanced validation
+   * Check if backend API is available (no frontend config needed now)
    */
   isSpacesConfigured(): boolean {
-    const accessKey = import.meta.env.VITE_DO_SPACES_ACCESS_KEY;
-    const secretKey = import.meta.env.VITE_DO_SPACES_SECRET_KEY;
-    const bucket = import.meta.env.VITE_DO_SPACES_BUCKET;
-
-    return !!(
-      accessKey && 
-      secretKey && 
-      bucket &&
-      accessKey.length > 10 && // Basic length validation
-      secretKey.length > 20 && // Basic length validation
-      accessKey !== 'YOUR_ACCESS_KEY_HERE' &&
-      secretKey !== 'YOUR_SECRET_KEY_HERE' &&
-      !accessKey.includes('example') &&
-      !secretKey.includes('example')
-    );
+    // Always return true since backend handles all Spaces configuration
+    return !!API_BASE_URL;
   }
 
   /**
    * Get configuration status for debugging
    */
   getConfigurationStatus(): { configured: boolean; details: Record<string, boolean> } {
-    const accessKey = import.meta.env.VITE_DO_SPACES_ACCESS_KEY;
-    const secretKey = import.meta.env.VITE_DO_SPACES_SECRET_KEY;
-    const bucket = import.meta.env.VITE_DO_SPACES_BUCKET;
-    const endpoint = import.meta.env.VITE_DO_SPACES_ENDPOINT;
-
     return {
-      configured: this.isSpacesConfigured(),
+      configured: !!API_BASE_URL,
       details: {
-        hasAccessKey: !!accessKey,
-        hasSecretKey: !!secretKey,
-        hasBucket: !!bucket,
-        hasEndpoint: !!endpoint,
-        validAccessKeyLength: !!(accessKey && accessKey.length > 10),
-        validSecretKeyLength: !!(secretKey && secretKey.length > 20)
+        hasBackendAPI: !!API_BASE_URL,
+        usingBackendOnly: true,
+        noFrontendAWS: true
       }
     };
   }

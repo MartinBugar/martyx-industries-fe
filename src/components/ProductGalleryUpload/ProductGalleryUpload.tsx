@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import './ProductGalleryUpload.css';
-import { isSpacesConfigured, getSpacesConfig } from '../../services/digitalOceanUpload';
+// Removed digitalOceanUpload import - now using backend API only
 import { productGalleryService } from '../../services/productGalleryService';
 
 interface ProductGalleryUploadProps {
@@ -120,7 +120,7 @@ const ProductGalleryUpload: React.FC<ProductGalleryUploadProps> = ({
   // Check configuration on component mount
   React.useEffect(() => {
     if (import.meta.env.DEV) {
-      console.log('🔧 DigitalOcean Spaces configuration:', getSpacesConfig());
+      console.log('🔧 Backend API configuration:', productGalleryService.getConfigurationStatus());
     }
   }, []);
 
@@ -171,8 +171,8 @@ const ProductGalleryUpload: React.FC<ProductGalleryUploadProps> = ({
   const handleActualUpload = async (id: string, file: File) => {
     try {
       // Check if DigitalOcean Spaces is configured
-      if (!isSpacesConfigured()) {
-        console.error('❌ DigitalOcean Spaces not configured:', getSpacesConfig());
+      if (!productGalleryService.isSpacesConfigured()) {
+        console.error('❌ Backend API not configured:', productGalleryService.getConfigurationStatus());
         throw new Error('DigitalOcean Spaces credentials not configured. Please check .env.local file.');
       }
 
