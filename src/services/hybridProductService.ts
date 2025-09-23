@@ -133,8 +133,21 @@ export class HybridProductService {
       const currentLanguage = getCurrentLanguage();
       
       // Fetch from backend with current language
-      const backendProducts = await productService.getProducts(category, currentLanguage);
-      
+      const backendResponse = await productService.getProducts(category, currentLanguage);
+
+      // Handle paginated response format - extract products from content property
+      let backendProducts: any[];
+      if (Array.isArray(backendResponse)) {
+        // Direct array response (legacy format)
+        backendProducts = backendResponse;
+      } else if (backendResponse && Array.isArray(backendResponse.content)) {
+        // Paginated response format
+        backendProducts = backendResponse.content;
+      } else {
+        console.error('Backend returned unexpected response format:', backendResponse);
+        throw new Error('Invalid response format from backend: expected array or paginated response');
+      }
+
       // Filter only active products and merge with hardcoded data
       const hybridProducts = backendProducts
         .filter(backendProduct => backendProduct.active) // Only include active products
