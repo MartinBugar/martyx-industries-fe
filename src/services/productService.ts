@@ -65,15 +65,6 @@ export class ProductService {
     return handleResponse(response);
   }
 
-  /**
-   * Get products by category with localized content
-   * @param category - Product category
-   * @param language - Optional language override
-   * @returns Promise<ProductDto[]>
-   */
-  async getProductsByCategory(category: string, language?: string): Promise<ProductDto[]> {
-    return this.getProducts(category, language);
-  }
 }
 
 export const productService = new ProductService();
