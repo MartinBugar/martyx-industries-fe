@@ -7,7 +7,7 @@ import { adminProductsService, type BaseProduct } from '../../services/adminProd
 import ProductGalleryUpload from '../../components/ProductGalleryUpload/ProductGalleryUpload';
 
 const AdminProductGallery: React.FC = () => {
-  const { t } = useTranslation('common');
+    useTranslation('common');
   const { id } = useParams<{ id: string }>();
 
   // Debug: Log when component mounts
