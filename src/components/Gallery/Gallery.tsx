@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import './Gallery.css';
-import Skeleton from '../Skeleton/Skeleton';
 import { getImageSrcSet, getBestImageUrl, getBaseNameFromPath, isCDNEnabled } from '../../utils/cdnImages';
 
 interface GalleryProps {
@@ -11,7 +10,7 @@ interface GalleryProps {
 const Gallery: React.FC<GalleryProps> = ({ productName, images }) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [loaded, setLoaded] = useState<boolean[]>(() => images.map(() => false));
+  // Removed loaded state to prevent loading issues
   const [isNavigating, setIsNavigating] = useState(false);
   const imgRefs = React.useRef<(HTMLImageElement | null)[]>([]);
   const navigationTimeoutRef = React.useRef<number | null>(null);
@@ -47,20 +46,7 @@ const Gallery: React.FC<GalleryProps> = ({ productName, images }) => {
     };
   }, []);
 
-  // After mount, mark cached images as loaded (in case onLoad doesn't fire)
-  React.useEffect(() => {
-    setLoaded((prev) => {
-      const next = [...prev];
-      let changed = false;
-      imgRefs.current.forEach((img, i) => {
-        if (img && !next[i] && img.complete && img.naturalWidth > 0) {
-          next[i] = true;
-          changed = true;
-        }
-      });
-      return changed ? next : prev;
-    });
-  }, []);
+  // Removed loaded state management
 
   const openFullscreenGallery = (index: number) => {
     setCurrentImageIndex(index);
@@ -127,14 +113,11 @@ const Gallery: React.FC<GalleryProps> = ({ productName, images }) => {
     <div className="product-gallery">
       <div className="gallery-thumbnails">
         {images.map((image, index) => (
-          <div 
-            key={index} 
+          <div
+            key={index}
             className="gallery-thumbnail"
             onClick={() => openFullscreenGallery(index)}
           >
-            {!loaded[index] && (
-              <Skeleton variant="rect" />
-            )}
             <img
               ref={(el) => { imgRefs.current[index] = el; }}
               src={optimizedImages[index]?.thumbnailSrc || image}
@@ -142,29 +125,7 @@ const Gallery: React.FC<GalleryProps> = ({ productName, images }) => {
               sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 200px"
               alt={`${productName} - Image ${index + 1}`}
               decoding="async"
-              loading={index < 6 ? "eager" : "lazy"}
-              style={{ visibility: loaded[index] ? 'visible' : 'hidden' }}
-              onLoad={() => {
-                if (import.meta.env.DEV && index < 3) {
-                  console.log(`✅ Image ${index + 1} loaded successfully`);
-                }
-                setLoaded(prev => {
-                  const next = [...prev];
-                  next[index] = true;
-                  return next;
-                });
-              }}
-              onError={(e) => {
-                if (import.meta.env.DEV) {
-                  console.error(`❌ Image ${index + 1} failed to load:`, e.currentTarget.src);
-                }
-                // Keep skeleton visible if there is an error
-                setLoaded(prev => {
-                  const next = [...prev];
-                  next[index] = false;
-                  return next;
-                });
-              }}
+              loading="eager"
             />
           </div>
         ))}
