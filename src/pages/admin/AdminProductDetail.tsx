@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
 import { adminProductsService, type BaseProduct, type DigitalProduct, type PhysicalProduct } from '../../services/adminProductsService';
-import ProductGalleryUpload from '../../components/ProductGalleryUpload/ProductGalleryUpload';
 
 const AdminProductDetail: React.FC = () => {
   const { t } = useTranslation('common');
@@ -113,8 +112,26 @@ const AdminProductDetail: React.FC = () => {
     }
   };
 
+  // Navigation tabs
+  const navTabs = (
+    <div className="admin-nav-tabs">
+      <Link
+        to={`/admin/products/${id}`}
+        className="admin-nav-tab active"
+      >
+        📝 Product Detail
+      </Link>
+      <Link
+        to={`/admin/products/${id}/gallery`}
+        className="admin-nav-tab"
+      >
+        📸 Gallery
+      </Link>
+    </div>
+  );
+
   return (
-    <AdminLayout title={`Product Detail`}>
+    <AdminLayout title={`Product Detail`} navTabs={navTabs}>
       <div className="admin-page">
         <div className="admin-container">
           <div className="admin-header">
@@ -267,26 +284,7 @@ const AdminProductDetail: React.FC = () => {
                 </div>
               )}
 
-              {/* Product Gallery Management Section */}
-              <div className="admin-card gallery-management-section" style={{ marginTop: 32 }}>
-                <div className="section-header">
-                  <h2 className="section-title">📸 Product Gallery Management</h2>
-                  <p className="section-description">
-                    Manage product images stored in DigitalOcean Spaces. Images are automatically organized by product ID and saved to database.
-                  </p>
-                </div>
-                <ProductGalleryUpload
-                  productId={id || ''}
-                  productName={product?.name || id || ''}
-                  existingImages={[]}
-                  onImagesChange={(images) => {
-                    console.log('Gallery images updated:', images);
-                    // Gallery images are now managed separately from product data
-                  }}
-                />
-              </div>
-
-              <div className="form-actions" style={{ marginTop: 16 }}>
+              <div className="form-actions" style={{ marginTop: 24 }}>
                 <button className="btn btn-primary" onClick={handleSave} disabled={saving}>{saving ? 'Saving...' : 'Save Changes'}</button>
                 <button className="btn btn-danger" onClick={handleDelete} disabled={saving}>Delete</button>
               </div>
