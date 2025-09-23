@@ -5,6 +5,10 @@ import { getCurrentLanguage } from './apiUtils';
 import { getLocalizedHardcodedProductDataForService } from '../utils/productTranslationUtils';
 import i18n from '../i18n';
 
+interface ProductError extends Error {
+  code?: string;
+}
+
 /**
  * Hybrid Product Service
  * Combines backend ProductDto data with hardcoded frontend-specific data
@@ -230,8 +234,8 @@ export class HybridProductService {
       
       // Check if product is active - throw a special error type
       if (!backendProduct.active) {
-        const inactiveError = new Error(`Product ${id} is not active`);
-        (inactiveError as any).code = 'PRODUCT_INACTIVE';
+        const inactiveError: ProductError = new Error(`Product ${id} is not active`);
+        inactiveError.code = 'PRODUCT_INACTIVE';
         throw inactiveError;
       }
       
@@ -246,7 +250,7 @@ export class HybridProductService {
       return mergedProduct;
     } catch (error) {
       // If the error is specifically about inactive product, don't use fallback
-      if ((error as any).code === 'PRODUCT_INACTIVE') {
+      if ((error as ProductError).code === 'PRODUCT_INACTIVE') {
         throw error;
       }
       
