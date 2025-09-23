@@ -1,5 +1,5 @@
 import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
-import type { ProductDto } from '../types/api';
+import type { ProductDto, PaginatedResponse } from '../types/api';
 
 /**
  * Service for product-related API calls with i18n support
@@ -11,7 +11,7 @@ export class ProductService {
    * @param language - Optional language override (defaults to current i18n language)
    * @returns Promise<ProductDto[]>
    */
-  async getProducts(category?: string, language?: string): Promise<ProductDto[]> {
+  async getProducts(category?: string, language?: string): Promise<ProductDto[] | PaginatedResponse<ProductDto>> {
     const url = new URL(`${API_BASE_URL}/api/products`);
     
     if (category) {

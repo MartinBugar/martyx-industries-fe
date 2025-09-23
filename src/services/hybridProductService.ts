@@ -1,5 +1,5 @@
 import { productService } from './productService';
-import type { ProductDto } from '../types/api';
+import type { ProductDto, PaginatedResponse } from '../types/api';
 import { hardcodedProductsData, type HardcodedProductData, type Product } from '../data/productData';
 import { getCurrentLanguage } from './apiUtils';
 import { getLocalizedHardcodedProductDataForService } from '../utils/productTranslationUtils';
@@ -136,13 +136,13 @@ export class HybridProductService {
       const backendResponse = await productService.getProducts(category, currentLanguage);
 
       // Handle paginated response format - extract products from content property
-      let backendProducts: any[];
+      let backendProducts: ProductDto[];
       if (Array.isArray(backendResponse)) {
         // Direct array response (legacy format)
         backendProducts = backendResponse;
-      } else if (backendResponse && Array.isArray(backendResponse.content)) {
+      } else if (backendResponse && 'content' in backendResponse && Array.isArray(backendResponse.content)) {
         // Paginated response format
-        backendProducts = backendResponse.content;
+        backendProducts = (backendResponse as PaginatedResponse<ProductDto>).content;
       } else {
         console.error('Backend returned unexpected response format:', backendResponse);
         throw new Error('Invalid response format from backend: expected array or paginated response');
