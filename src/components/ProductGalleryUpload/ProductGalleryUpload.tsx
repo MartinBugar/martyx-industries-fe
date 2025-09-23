@@ -33,6 +33,8 @@ const ProductGalleryUpload: React.FC<ProductGalleryUploadProps> = ({
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0, uploading: false });
+  const [uploadSummary, setUploadSummary] = useState<{ show: boolean; successful: number; failed: number; total: number } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Function to load gallery images
@@ -149,23 +151,83 @@ const ProductGalleryUpload: React.FC<ProductGalleryUploadProps> = ({
     }
   };
 
-  const handleFiles = (files: File[]) => {
+  const handleFiles = async (files: File[]) => {
     const imageFiles = files.filter(file => file.type.startsWith('image/'));
 
-    imageFiles.forEach(file => {
-      const id = `upload-${Date.now()}-${Math.random()}`;
-      const newImage: UploadedImage = {
-        id,
-        url: URL.createObjectURL(file),
-        file,
-        uploading: true
-      };
+    if (imageFiles.length === 0) return;
 
-      setImages(prev => [...prev, newImage]);
+    // Set up progress tracking
+    setUploadProgress({ current: 0, total: imageFiles.length, uploading: true });
 
-      // Upload to DigitalOcean Spaces
-      handleActualUpload(id, file);
+    // Create all image entries first (with preview URLs)
+    const newImages: UploadedImage[] = imageFiles.map(file => ({
+      id: `upload-${Date.now()}-${Math.random()}`,
+      url: URL.createObjectURL(file),
+      file,
+      uploading: true
+    }));
+
+    // Add all images to the UI at once
+    setImages(prev => [...prev, ...newImages]);
+
+    // Sequential upload with delay
+    const results: { success: boolean; id: string; error?: string }[] = [];
+
+    for (let i = 0; i < imageFiles.length; i++) {
+      const file = imageFiles[i];
+      const imageData = newImages[i];
+
+      try {
+        // Update progress
+        setUploadProgress({ current: i + 1, total: imageFiles.length, uploading: true });
+
+        console.log(`🚀 Sequential upload ${i + 1}/${imageFiles.length}: ${file.name}`);
+
+        // Upload single file
+        await handleActualUpload(imageData.id, file);
+        results.push({ success: true, id: imageData.id });
+
+        console.log(`✅ Upload ${i + 1}/${imageFiles.length} completed successfully`);
+
+        // Add delay between uploads (except for the last one)
+        if (i < imageFiles.length - 1) {
+          console.log('⏱️ Waiting 200ms before next upload...');
+          await new Promise(resolve => setTimeout(resolve, 200));
+        }
+
+      } catch (error) {
+        console.error(`❌ Upload ${i + 1}/${imageFiles.length} failed:`, error);
+        results.push({
+          success: false,
+          id: imageData.id,
+          error: error instanceof Error ? error.message : 'Upload failed'
+        });
+      }
+    }
+
+    // Reset progress
+    setUploadProgress({ current: 0, total: 0, uploading: false });
+
+    // Show summary
+    const successful = results.filter(r => r.success).length;
+    const failed = results.filter(r => !r.success).length;
+
+    if (import.meta.env.DEV) {
+      console.log(`📊 Upload Summary: ${successful}/${imageFiles.length} uploaded successfully, ${failed} failed`);
+    }
+
+    // Show user-friendly summary
+    setUploadSummary({
+      show: true,
+      successful,
+      failed,
+      total: imageFiles.length
     });
+
+    // Auto-hide summary after 5 seconds
+    setTimeout(() => {
+      setUploadSummary(null);
+    }, 5000);
   };
 
   const handleActualUpload = async (id: string, file: File) => {
@@ -383,6 +445,46 @@ const ProductGalleryUpload: React.FC<ProductGalleryUploadProps> = ({
         </div>
         {loading && <p className="loading-text">📸 Loading gallery images from database...</p>}
         {refreshing && <p className="loading-text">🔄 Refreshing gallery images...</p>}
+        {uploadProgress.uploading && (
+          <div className="upload-progress-section">
+            <p className="upload-progress-text">
+              📤 Uploading {uploadProgress.current}/{uploadProgress.total} images...
+            </p>
+            <div className="upload-progress-bar">
+              <div
+                className="upload-progress-fill"
+                style={{ width: `${(uploadProgress.current / uploadProgress.total) * 100}%` }}
+              />
+            </div>
+            <span className="upload-progress-percent">
+              {Math.round((uploadProgress.current / uploadProgress.total) * 100)}%
+            </span>
+          </div>
+        )}
+        {uploadSummary?.show && (
+          <div className={`upload-summary ${uploadSummary.failed > 0 ? 'has-errors' : 'success'}`}>
+            <div className="upload-summary-content">
+              {uploadSummary.failed === 0 ? (
+                <span className="upload-summary-icon">🎉</span>
+              ) : (
+                <span className="upload-summary-icon">⚠️</span>
+              )}
+              <span className="upload-summary-text">
+                {uploadSummary.failed === 0
+                  ? `All ${uploadSummary.successful} images uploaded successfully!`
+                  : `${uploadSummary.successful}/${uploadSummary.total} images uploaded successfully. ${uploadSummary.failed} failed.`
+                }
+              </span>
+              <button
+                className="upload-summary-close"
+                onClick={() => setUploadSummary(null)}
+                aria-label="Close summary"
+              >
+                ×
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Existing Images Gallery */}
@@ -458,18 +560,27 @@ const ProductGalleryUpload: React.FC<ProductGalleryUploadProps> = ({
         <h4>📤 Upload New Images</h4>
         <p>Upload additional images for your product gallery. First image will be used as the main product image.</p>
         <div
-          className={`upload-area ${dragActive ? 'drag-active' : ''}`}
-          onDragEnter={handleDrag}
-          onDragLeave={handleDrag}
-          onDragOver={handleDrag}
-          onDrop={handleDrop}
-          onClick={() => fileInputRef.current?.click()}
+          className={`upload-area ${dragActive ? 'drag-active' : ''} ${uploadProgress.uploading ? 'disabled' : ''}`}
+          onDragEnter={uploadProgress.uploading ? undefined : handleDrag}
+          onDragLeave={uploadProgress.uploading ? undefined : handleDrag}
+          onDragOver={uploadProgress.uploading ? undefined : handleDrag}
+          onDrop={uploadProgress.uploading ? undefined : handleDrop}
+          onClick={uploadProgress.uploading ? undefined : () => fileInputRef.current?.click()}
         >
           <div className="upload-content">
             <div className="upload-icon">📷</div>
             <div className="upload-text">
-              <p><strong>Click to upload</strong> or drag and drop</p>
-              <p>PNG, JPG, WebP up to 10MB each</p>
+              {uploadProgress.uploading ? (
+                <>
+                  <p><strong>Upload in progress...</strong></p>
+                  <p>Please wait for current upload to complete</p>
+                </>
+              ) : (
+                <>
+                  <p><strong>Click to upload</strong> or drag and drop</p>
+                  <p>PNG, JPG, WebP up to 10MB each</p>
+                </>
+              )}
             </div>
           </div>
           <input

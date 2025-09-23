@@ -10,6 +10,7 @@ import { type WishlistItem } from '../../types/wishlist';
 import WishlistButton from '../../components/WishlistButton';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import WishlistProductImage from '../../components/WishlistProductImage';
+import { productGalleryService } from '../../services/productGalleryService';
 import './Wishlist.css';
 import '../Products/Products.css';
 
@@ -64,11 +65,40 @@ const Wishlist: React.FC = () => {
       const newProductsData = new Map<number, Product>();
 
       try {
-        // Parallel fetching instead of sequential
+        // Parallel fetching instead of sequential - with database gallery
         const productPromises = items.map(async (item) => {
           try {
             const product = await hybridProductService.getProductById(item.productId);
-            return { productId: item.productId, product };
+
+            // Load gallery for this product from database (same as Products page)
+            try {
+              const galleryData = await productGalleryService.getProductImages(product.id.toString());
+
+              // Sort by order and get URLs (prefer CDN URLs) - image with order 0 will be first
+              const sortedGallery = galleryData.sort((a, b) => (a.order || 0) - (b.order || 0));
+              const galleryUrls = sortedGallery.map(img => img.cdnUrl || img.url).filter(Boolean);
+
+              if (import.meta.env.DEV) {
+                console.log(`🏷️ Wishlist: Product ${product.id} (${product.name}) gallery loaded:`, {
+                  galleryCount: galleryUrls.length,
+                  mainImage: galleryUrls[0] || 'none'
+                });
+              }
+
+              // Update product with database gallery
+              const productWithGallery = {
+                ...product,
+                gallery: galleryUrls // Replace hardcoded gallery with database gallery
+              };
+
+              return { productId: item.productId, product: productWithGallery };
+            } catch (galleryError) {
+              if (import.meta.env.DEV) {
+                console.log(`🏷️ Wishlist: No gallery found for product ${product.id}, using fallback`);
+              }
+              // Return product without database gallery (keeps hardcoded or empty gallery)
+              return { productId: item.productId, product };
+            }
           } catch (err) {
             if (import.meta.env.DEV) {
               console.error(`Failed to fetch product data for ${item.productId}:`, err);
