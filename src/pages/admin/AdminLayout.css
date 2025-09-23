@@ -177,60 +177,76 @@
   }
 }
 
-/* Admin Navigation Tabs */
+/* Admin Navigation Tabs - using same style as dashboard-tabs */
 .admin-nav-tabs {
   display: flex;
-  gap: 2px;
-  margin-left: auto;
-  background: #f1f5f9;
-  border-radius: 8px;
-  padding: 4px;
+  gap: 4px;
+  margin-left: 8px;
+  flex-wrap: wrap;
 }
 
 .admin-nav-tab {
-  padding: 8px 16px;
-  border-radius: 6px;
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 500;
-  color: #64748b;
-  transition: all 0.2s ease;
-  border: none;
   background: transparent;
+  border: 1px solid #374151;
+  color: #9CA3AF;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
+  transition: all 0.2s ease;
   white-space: nowrap;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  position: relative;
 }
 
 .admin-nav-tab:hover {
-  color: #334155;
-  background: #e2e8f0;
+  background: #374151;
+  color: #ffffff;
+  border-color: #4B5563;
 }
 
 .admin-nav-tab.active {
-  color: #0f172a;
-  background: #ffffff;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  background: #3B82F6;
+  color: #ffffff;
+  border-color: #3B82F6;
+}
+
+/* Focus states for accessibility */
+.admin-nav-tab:focus-visible {
+  outline: 2px solid #3B82F6;
+  outline-offset: 2px;
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .admin-nav-tabs {
-    margin-left: 0;
-    margin-top: 8px;
-    flex: 1;
+    gap: 8px;
+    margin-left: 16px;
   }
 
   .admin-nav-tab {
-    flex: 1;
-    text-align: center;
-    padding: 6px 8px;
-    font-size: 12px;
+    padding: 8px 16px;
+    font-size: 14px;
   }
 }
 
 @media (max-width: 480px) {
+  .admin-nav-tabs {
+    gap: 4px;
+    margin-left: 4px;
+    flex-wrap: wrap;
+  }
+
   .admin-nav-tab {
-    padding: 6px 4px;
-    font-size: 11px;
+    padding: 6px 12px;
+    font-size: 12px;
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
   }
 }
