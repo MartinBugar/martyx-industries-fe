@@ -71,25 +71,41 @@
   word-wrap: break-word;
 }
 
-/* Mascot - Left Side */
+/* Mascot and Info Container - Left Side */
+.mascot-and-info-left {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 2vw, 1.5rem);
+}
+
+/* Mascot */
 .mascot-left {
   display: flex;
   justify-content: center;
-  align-items: flex-start; /* Changed from center to flex-start */
+  align-items: center;
 }
 
-/* Contact Info Section - In Form */
-.contact-info-section {
+/* Contact Info Section - Left Side (compact) */
+.contact-info-section-left {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  margin-top: 2rem;
-  padding-top: 2rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  gap: clamp(0.5rem, 1.5vw, 0.75rem);
+  padding: clamp(0.75rem, 2vw, 1rem);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(10px);
+}
+
+.contact-info-section-left h4 {
+  font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 clamp(0.25rem, 1vw, 0.5rem) 0;
 }
 
 .contact-mascot-image {
-  width: 280px;
+  width: clamp(180px, 25vw, 250px);
   height: auto;
   object-fit: contain;
   transition: transform 0.3s ease;
@@ -98,6 +114,28 @@
 
 .contact-mascot-image:hover {
   transform: scale(1.05);
+}
+
+/* Compact info items for left side */
+.contact-info-section-left .info-content {
+  gap: clamp(0.4rem, 1.5vw, 0.6rem);
+  margin-bottom: clamp(0.4rem, 1.5vw, 0.6rem);
+}
+
+.contact-info-section-left .info-icon {
+  width: clamp(28px, 6vw, 36px);
+  height: clamp(28px, 6vw, 36px);
+}
+
+.contact-info-section-left .info-icon svg {
+  width: clamp(14px, 3.5vw, 18px);
+  height: clamp(14px, 3.5vw, 18px);
+}
+
+.contact-info-section-left p,
+.contact-info-section-left .contact-link {
+  font-size: clamp(0.75rem, 2vw, 0.85rem);
+  line-height: 1.4;
 }
 
 
@@ -120,15 +158,19 @@
     grid-template-columns: 1fr; /* Single column on smaller screens */
     gap: 2rem;
   }
-  
-  .mascot-left {
+
+  .mascot-and-info-left {
     order: -1;
   }
-  
-  .contact-info-section {
+
+  .contact-info-section-left {
     text-align: center;
   }
-  
+
+  .contact-info-section-left .info-content {
+    justify-content: center;
+  }
+
   .contact-mascot-image {
     width: 240px;
   }
