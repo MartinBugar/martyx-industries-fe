@@ -1,0 +1,12 @@
+.how-it-works h2 {
+  margin-bottom: 12px;
+}
+
+.how-it-works-item {
+  background: var(--surface);
+}
+
+.how-it-works-title {
+  font-weight: 700;
+  margin: 6px 0;
+}

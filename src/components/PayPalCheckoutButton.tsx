@@ -2,6 +2,7 @@ import { useCallback, useMemo } from "react";
 import { PayPalButtons } from "@paypal/react-paypal-js";
 import type { CartItem } from "../context/cartContextTypes";
 import { API_BASE_URL } from "../services/apiUtils";
+import "./PayPalCheckoutButton.css";
 
 type Props = {
   items: CartItem[];
@@ -130,7 +131,7 @@ export default function PayPalCheckoutButton({ items, totalAmount, currency = "E
   );
 
   return (
-    <div className="grid gap-3" style={{ minHeight: CARD_HEIGHT }}>
+    <div className="grid gap-3 paypal-checkout-container">
       {/* PAYPAL WALLET BUTTON */}
       <PayPalButtons
         fundingSource="paypal"

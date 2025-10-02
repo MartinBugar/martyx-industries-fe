@@ -812,13 +812,275 @@
   .gallery-management-section {
     padding: 16px;
   }
-  
+
   .section-title {
     font-size: 18px;
   }
-  
+
   .section-description {
     font-size: 13px;
   }
+}
+
+/* AdminProductDetail specific styles */
+.product-image-preview {
+  display: block;
+  max-width: 180px;
+  max-height: 120px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+}
+
+.form-grid-full {
+  grid-column: 1 / -1;
+}
+
+.admin-card-nested {
+  margin-top: 16px;
+}
+
+.form-actions-top {
+  margin-top: 24px;
+}
+
+/* Table column widths */
+.table-col-id {
+  width: 70px;
+}
+
+.table-col-actions {
+  width: 240px;
+}
+
+.table-col-actions-narrow {
+  width: 170px;
+}
+
+/* Edit mode inline inputs */
+.edit-input-inline {
+  height: 32px;
+  font-size: 14px;
+  flex: 1;
+  margin-left: 8px;
+}
+
+.edit-grid-inline {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.edit-grid-email {
+  grid-template-columns: 1fr 1fr;
+}
+
+/* AdminUserDetail specific styles */
+.user-detail-actions {
+  margin-top: 16px;
+}
+
+.user-detail-section {
+  margin-top: 16px;
+}
+
+.user-detail-table-wrapper {
+  margin-top: 8px;
+}
+
+.table-col-field {
+  width: 240px;
+}
+
+.table-cell-top-align {
+  vertical-align: top;
+}
+
+.user-detail-pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.user-detail-password-label {
+  color: #888;
+}
+
+/* AdminProductGallery specific styles */
+.product-info-summary {
+  margin-bottom: 24px;
+  padding: 16px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.product-info-flex {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.product-thumbnail {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.product-info-content h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.product-info-meta {
+  margin: 0;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.product-description-text {
+  margin: 8px 0 0 0;
+  font-size: 14px;
+  color: #374151;
+  max-width: 500px;
+}
+
+.gallery-section-header {
+  margin-bottom: 16px;
+}
+
+.gallery-section-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.gallery-section-description {
+  margin: 4px 0 0 0;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* AdminOrders specific styles */
+.orders-field-input {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+}
+
+.orders-small-btn {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.orders-btn-save {
+  background: #16a34a;
+  color: #fff;
+}
+
+.orders-btn-cancel {
+  background: #6b7280;
+  color: #fff;
+}
+
+.orders-btn-remove {
+  background: #ef4444;
+  color: #fff;
+}
+
+.orders-btn-add {
+  background: #2563eb;
+  color: #fff;
+}
+
+.orders-table-cell-padding {
+  padding: 8px;
+}
+
+.orders-table-cell-flex {
+  padding: 8px;
+  display: flex;
+  gap: 6px;
+}
+
+.orders-details-row {
+  padding: 12px;
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+}
+
+.orders-details-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.orders-details-full-span {
+  grid-column: span 3;
+}
+
+.orders-textarea-resize {
+  resize: vertical;
+}
+
+.orders-items-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.orders-items-th-left {
+  text-align: left;
+  padding: 8px;
+}
+
+.orders-items-header-row {
+  background: #eef2f7;
+}
+
+.orders-items-td {
+  padding: 6px;
+}
+
+.orders-items-td-text-gray {
+  color: #6b7280;
+  font-size: 12px;
+}
+
+.orders-items-tfoot-td-right {
+  padding: 8px;
+  text-align: right;
+}
+
+.orders-view-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.orders-view-section-title {
+  margin: 4px 0;
+}
+
+.orders-edit-row-padding {
+  padding: 8px;
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+}
+
+.orders-table-overflow {
+  overflow-x: auto;
+}
+
+.table-col-orders-id {
+  width: 70px;
+}
+
+.table-col-orders-actions {
+  width: 170px;
 }
 

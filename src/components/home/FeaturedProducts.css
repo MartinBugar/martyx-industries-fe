@@ -1,5 +1,26 @@
 /* FeaturedProducts Component Styles */
 
+.featured-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.featured-heading {
+  margin: 0;
+  font-size: clamp(20px, 3vw, 28px);
+}
+
+.featured-product-info {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.featured-product-name {
+  font-weight: 700;
+}
+
 .cards {
     display: grid;
     grid-template-columns: 1fr;

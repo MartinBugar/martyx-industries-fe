@@ -9,6 +9,7 @@
 
 import React, { useEffect, useRef, useCallback } from 'react';
 import { useStableCallback } from '../../hooks/useOptimizedEffect';
+import './ConstellationParticles.css';
 
 interface Particle {
   x: number;
@@ -212,16 +213,7 @@ const ConstellationParticles: React.FC<ConstellationParticlesProps> = React.memo
   return (
     <canvas
       ref={canvasRef}
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        pointerEvents: 'none',
-        zIndex: -1,
-        background: 'transparent'
-      }}
+      className="constellation-canvas-optimized"
       aria-hidden="true"
     />
   );

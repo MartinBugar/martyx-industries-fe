@@ -41,7 +41,7 @@ const KPICard: React.FC<KPICardProps> = ({label, value, loading, error, accent =
             ) : (
                 <div className="kpi-value">{typeof value === 'number' ? value.toLocaleString() : value}</div>
             )}
-            <div className="kpi-accent" style={{backgroundColor: accentColor}}></div>
+            <div className="kpi-accent" style={{ backgroundColor: accentColor }}></div>
         </div>
     );
 };
@@ -517,8 +517,7 @@ const AdminDashboard: React.FC = () => {
                                         {systemHealthLoading ? (
                                             <div className="status-text">Loading system metrics...</div>
                                         ) : systemHealthError ? (
-                                            <div className="status-text" style={{color: '#EF4444'}}>Error loading system
-                                                health</div>
+                                            <div className="status-text status-text-error">Error loading system health</div>
                                         ) : systemHealth ? (
                                             <>
                                                 <div className="status-text">

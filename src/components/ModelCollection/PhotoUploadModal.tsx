@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getAuthToken, debugToken } from '../../utils/tokenUtils';
+import { API_BASE_URL } from '../../services/apiUtils';
 
 interface PurchasedModel {
   order_id: string;
@@ -138,7 +139,7 @@ const PhotoUploadModal: React.FC<PhotoUploadModalProps> = ({ model, onClose, onS
       // Test if backend is reachable first
       try {
         console.log('🧪 Testing backend connectivity...');
-        const testResponse = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8080'}/api/health`, {
+        const testResponse = await fetch(`${API_BASE_URL}/api/health`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -150,12 +151,11 @@ const PhotoUploadModal: React.FC<PhotoUploadModalProps> = ({ model, onClose, onS
       }
 
       // Try different possible endpoints
-      const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
       const possibleEndpoints = [
-        `${baseUrl}/api/user-photos/upload`,
-        `${baseUrl}/api/photos/upload`,
-        `${baseUrl}/api/upload/user-photos`,
-        `${baseUrl}/api/user/photos/upload`
+        `${API_BASE_URL}/api/user-photos/upload`,
+        `${API_BASE_URL}/api/photos/upload`,
+        `${API_BASE_URL}/api/upload/user-photos`,
+        `${API_BASE_URL}/api/user/photos/upload`
       ];
       
       let apiUrl = possibleEndpoints[0]; // Default to first endpoint
@@ -320,7 +320,6 @@ const PhotoUploadModal: React.FC<PhotoUploadModalProps> = ({ model, onClose, onS
             multiple
             accept="image/jpeg,image/jpg,image/png,image/webp"
             onChange={handleFileSelect}
-            style={{ display: 'none' }}
           />
 
           {selectedFiles.length > 0 && (
@@ -364,8 +363,8 @@ const PhotoUploadModal: React.FC<PhotoUploadModalProps> = ({ model, onClose, onS
           {uploading && (
             <div className="upload-progress">
               <div className="progress-bar">
-                <div 
-                  className="progress-fill" 
+                <div
+                  className="progress-fill"
                   style={{ width: `${uploadProgress}%` }}
                 ></div>
               </div>

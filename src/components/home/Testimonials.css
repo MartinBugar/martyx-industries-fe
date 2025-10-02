@@ -1,0 +1,20 @@
+.testimonials-heading {
+  margin: 0;
+  margin-bottom: 8px;
+  font-size: clamp(20px, 3vw, 28px);
+}
+
+.testimonials-card {
+  margin: 0;
+  padding: 16px;
+}
+
+.testimonials-quote {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.testimonials-author {
+  margin-top: 8px;
+}

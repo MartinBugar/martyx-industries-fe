@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import './VisitorChart.css';
 
 export interface VisitorChartDataPoint {
   date: string; // YYYY-MM-DD format
@@ -164,7 +165,7 @@ const VisitorChart: React.FC<Props> = ({
       viewBox={`0 0 ${width} ${height}`}
       role="img"
       aria-label={ariaLabel}
-      style={{ display: 'block' }}
+      className="visitor-chart"
     >
       {/* Background */}
       <rect x={0} y={0} width={width} height={height} fill="#ffffff" />

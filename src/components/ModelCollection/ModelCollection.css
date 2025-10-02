@@ -1,4 +1,14 @@
 /* Model Collection Styles */
+
+/* PhotoUploadModal inline styles */
+.upload-modal input[type="file"] {
+  display: none;
+}
+
+.upload-modal .progress-fill {
+  transition: width 0.3s ease;
+}
+
 .collection-content {
   padding: 2rem;
   max-width: 1200px;

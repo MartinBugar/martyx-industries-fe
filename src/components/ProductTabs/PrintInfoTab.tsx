@@ -32,7 +32,7 @@ const PrintInfoTab: React.FC<PrintInfoTabProps> = ({ content }) => {
       <div className="print-info-unavailable">
         <p>{t('printInfo.unavailable', 'Print information not available for this product.')}</p>
         {import.meta.env.DEV && (
-          <div style={{marginTop: '1rem', padding: '1rem', background: '#f0f0f0', fontSize: '12px'}}>
+          <div className="print-info-debug">
             <strong>Debug info:</strong><br/>
             Content kind: {content.kind}<br/>
             Content: {JSON.stringify(content, null, 2)}

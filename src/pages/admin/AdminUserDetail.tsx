@@ -189,28 +189,28 @@ const AdminUserDetail: React.FC = () => {
                   <p><strong>ID:</strong> {user.id}</p>
                   <p><strong>Name:</strong> {user.firstName || ''} {user.lastName || ''}</p>
                   <p><strong>Email:</strong> {user.email}</p>
-                  <div className="form-actions">
+                  <div className="form-actions user-detail-actions">
                     <button className="btn btn-outline" onClick={() => setEditing(true)}>Edit</button>
                     <button className="btn btn-danger" onClick={handleDelete}>Delete</button>
                   </div>
 
-                  <div style={{ marginTop: 16 }}>
+                  <div className="user-detail-section">
                     <h3 className="section-title">All User Data</h3>
-                    <div className="table-wrapper" style={{ marginTop: 8 }}>
+                    <div className="table-wrapper user-detail-table-wrapper">
                       <table className="admin-table">
                         <thead>
                           <tr>
-                            <th style={{ width: 240 }}>Field</th>
+                            <th className="table-col-field">Field</th>
                             <th>Value</th>
                           </tr>
                         </thead>
                         <tbody>
                           {getSortedEntries(user as unknown as Record<string, unknown>).map(([key, val]) => (
                             <tr key={key}>
-                              <td style={{ verticalAlign: 'top' }}><code>{key}</code></td>
+                              <td className="table-cell-top-align"><code>{key}</code></td>
                               <td>
                                 {typeof val === 'object' && val !== null ? (
-                                  <pre style={{ margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{formatValue(val)}</pre>
+                                  <pre className="user-detail-pre">{formatValue(val)}</pre>
                                 ) : (
                                   <span>{formatValue(val)}</span>
                                 )}
@@ -224,13 +224,13 @@ const AdminUserDetail: React.FC = () => {
                 </div>
               ) : (
                 <div>
-                  <div style={{ marginTop: 8 }}>
+                  <div className="user-detail-section">
                     <h3 className="section-title">Edit All Fields</h3>
-                    <div className="table-wrapper" style={{ marginTop: 8 }}>
+                    <div className="table-wrapper user-detail-table-wrapper">
                       <table className="admin-table">
                         <thead>
                           <tr>
-                            <th style={{ width: 240 }}>Field</th>
+                            <th className="table-col-field">Field</th>
                             <th>Value</th>
                           </tr>
                         </thead>
@@ -241,7 +241,7 @@ const AdminUserDetail: React.FC = () => {
                             const val = (form as Record<string, unknown>)[key];
                             return (
                               <tr key={key}>
-                                <td style={{ verticalAlign: 'top' }}><code>{key}</code></td>
+                                <td className="table-cell-top-align"><code>{key}</code></td>
                                 <td>
                                   {t === 'boolean' ? (
                                     <input
@@ -288,7 +288,7 @@ const AdminUserDetail: React.FC = () => {
                             );
                           })}
                           <tr>
-                            <td><code>password</code> <span style={{ color: '#888' }}>(optional)</span></td>
+                            <td><code>password</code> <span className="user-detail-password-label">(optional)</span></td>
                             <td>
                               <input
                                 type="password"

@@ -4,6 +4,7 @@
  */
 
 import React, { useEffect, useRef } from 'react';
+import './ConstellationParticles.css';
 
 interface Particle {
   x: number;
@@ -197,16 +198,7 @@ const ConstellationParticles: React.FC = () => {
   return (
     <canvas
       ref={canvasRef}
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        pointerEvents: 'none',
-        zIndex: 1000,
-        background: 'transparent'
-      }}
+      className="constellation-canvas"
     />
   );
 };

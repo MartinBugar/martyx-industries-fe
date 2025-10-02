@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "./Newsletter.css";
 
 export default function Newsletter() {
   const [email, setEmail] = useState("");
@@ -13,7 +14,7 @@ export default function Newsletter() {
   if (submitted) {
     return (
       <div className="card newsletter" role="status" aria-live="polite">
-        <h2 style={{ marginTop: 0 }}>Thanks for subscribing!</h2>
+        <h2>Thanks for subscribing!</h2>
         <p className="muted">We'll send occasional updates on kits and STL releases.</p>
       </div>
     );
@@ -21,7 +22,7 @@ export default function Newsletter() {
 
   return (
     <form className="card newsletter" onSubmit={onSubmit} aria-label="Newsletter signup">
-      <h2 style={{ marginTop: 0 }}>Stay in the loop</h2>
+      <h2>Stay in the loop</h2>
       <p className="muted">Get product drops and build tips. No spam.</p>
       <div className="news-form">
         <label htmlFor="nl-email" className="visually-hidden">Email address</label>

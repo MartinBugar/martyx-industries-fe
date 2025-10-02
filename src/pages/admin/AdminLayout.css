@@ -250,3 +250,133 @@
     white-space: nowrap;
   }
 }
+
+/* AdminLogin specific styles */
+.login-error-message {
+  color: #b91c1c;
+  margin-bottom: 12px;
+}
+
+.login-form-group {
+  margin-bottom: 12px;
+}
+
+.login-form-group-spacing {
+  margin-bottom: 16px;
+}
+
+.login-form-label {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.login-form-input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+}
+
+.login-submit-button {
+  width: 100%;
+  background: #111827;
+  color: #fff;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.login-submit-button:disabled {
+  opacity: 0.8;
+}
+
+.access-denied-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.access-denied-modal-content {
+  background: #fff;
+  padding: 32px 28px;
+  border-radius: 12px;
+  max-width: 520px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.access-denied-title {
+  font-size: 32px;
+  margin: 0 0 16px;
+  color: #111827;
+  letter-spacing: 1px;
+}
+
+.access-denied-message {
+  font-size: 16px;
+  margin-bottom: 24px;
+  color: #374151;
+}
+
+.access-denied-button {
+  background: #111827;
+  color: #fff;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* Sidebar link styles */
+.sidebar-link {
+  display: block;
+  padding: 10px 12px;
+  color: #f0f0f0;
+  text-decoration: none;
+  border-radius: 6px;
+  margin-bottom: 6px;
+}
+
+.sidebar-link-active {
+  background: #334155;
+}
+
+.logout-button {
+  background: #ef4444;
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* Public login container */
+.public-login-container {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.public-login-card {
+  width: 100%;
+  max-width: 420px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 24px;
+}
+
+.public-login-title {
+  margin: 0;
+  margin-bottom: 16px;
+  font-size: 20px;
+}

@@ -202,7 +202,7 @@ const AdminProducts: React.FC = () => {
                   placeholder="USD"
                 />
               </div>
-              <div style={{ gridColumn: '1 / -1' }}>
+              <div className="form-grid-full">
                 <label className="form-label">Description</label>
                 <textarea
                   className="form-input"
@@ -301,14 +301,14 @@ const AdminProducts: React.FC = () => {
             <table className="admin-table">
               <thead>
                 <tr>
-                  <th style={{ width: 70 }}>ID</th>
+                  <th className="table-col-id">ID</th>
                   <th>Name</th>
                   <th>SKU</th>
                   <th>Category</th>
                   <th>Type</th>
                   <th>Price</th>
                   <th>Active</th>
-                  <th style={{ width: 240 }} className="text-right">Actions</th>
+                  <th className="table-col-actions text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>

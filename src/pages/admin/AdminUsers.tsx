@@ -278,8 +278,7 @@ const AdminUsers: React.FC = () => {
                             <div className="mobile-field">
                               <span className="mobile-field-label">First Name:</span>
                               <input
-                                className="form-input"
-                                style={{ height: '32px', fontSize: '14px', flex: 1, marginLeft: '8px' }}
+                                className="form-input edit-input-inline"
                                 placeholder="First name"
                                 value={editData.firstName ?? ''}
                                 onChange={(e) => setEditData(prev => ({ ...prev, firstName: e.target.value }))}
@@ -288,8 +287,7 @@ const AdminUsers: React.FC = () => {
                             <div className="mobile-field">
                               <span className="mobile-field-label">Last Name:</span>
                               <input
-                                className="form-input"
-                                style={{ height: '32px', fontSize: '14px', flex: 1, marginLeft: '8px' }}
+                                className="form-input edit-input-inline"
                                 placeholder="Last name"
                                 value={editData.lastName ?? ''}
                                 onChange={(e) => setEditData(prev => ({ ...prev, lastName: e.target.value }))}
@@ -298,8 +296,7 @@ const AdminUsers: React.FC = () => {
                             <div className="mobile-field">
                               <span className="mobile-field-label">Email:</span>
                               <input
-                                className="form-input"
-                                style={{ height: '32px', fontSize: '14px', flex: 1, marginLeft: '8px' }}
+                                className="form-input edit-input-inline"
                                 type="email"
                                 placeholder="Email"
                                 value={editData.email ?? ''}
@@ -309,8 +306,7 @@ const AdminUsers: React.FC = () => {
                             <div className="mobile-field">
                               <span className="mobile-field-label">Password:</span>
                               <input
-                                className="form-input"
-                                style={{ height: '32px', fontSize: '14px', flex: 1, marginLeft: '8px' }}
+                                className="form-input edit-input-inline"
                                 type="password"
                                 placeholder="New Password (optional)"
                                 value={editData.password ?? ''}
@@ -354,13 +350,13 @@ const AdminUsers: React.FC = () => {
                 <table className="admin-table">
                   <thead>
                     <tr>
-                      <th style={{ width: 70 }}>ID</th>
+                      <th className="table-col-id">ID</th>
                       <th>Name</th>
                       <th>Email</th>
                       <th>Confirmed</th>
                       <th>Roles</th>
                       <th>Created At</th>
-                      <th style={{ width: 240 }} className="text-right">Actions</th>
+                      <th className="table-col-actions text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -376,7 +372,7 @@ const AdminUsers: React.FC = () => {
                           <td>{user.id}</td>
                           <td>
                             {editingId === user.id ? (
-                              <div className="form-grid" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
+                              <div className="form-grid edit-grid-inline">
                                 <input
                                   className="form-input"
                                   placeholder="First name"
@@ -398,7 +394,7 @@ const AdminUsers: React.FC = () => {
                           </td>
                           <td>
                             {editingId === user.id ? (
-                              <div className="form-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
+                              <div className="form-grid edit-grid-email">
                                 <input
                                   className="form-input"
                                   type="email"

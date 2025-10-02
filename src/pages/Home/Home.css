@@ -1,5 +1,23 @@
 /* Home Page Styles */
 
+/* Hero image styles */
+.hero-content img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: var(--radius-lg);
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Featured section header */
+.featured-section .view-all-container {
+  text-align: center;
+  margin-top: 1rem;
+}
+
 /* Import component styles used in this page */
 @import url('../../components/home/Hero.css');
 @import url('../../components/home/FeaturedProducts.css');
