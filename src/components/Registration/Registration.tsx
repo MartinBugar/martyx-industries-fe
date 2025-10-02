@@ -10,12 +10,6 @@ import './Registration.css';
 
 // Zdieľané komponenty a utility
 import {
-    AuthContainer,
-    AuthHeader,
-    FormField,
-    ErrorMessage,
-    SuccessMessage,
-    SubmitButton,
     EmailIcon,
     PasswordIcon,
     ConfirmPasswordIcon,

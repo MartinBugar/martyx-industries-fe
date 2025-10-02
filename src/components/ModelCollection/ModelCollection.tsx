@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/useAuth';
-import type { Order } from '../../context/authTypes';
 import PhotoUploadModal from './PhotoUploadModal';
 import ModelPhotoGallery from './ModelPhotoGallery';
 import { getAuthToken } from '../../utils/tokenUtils';

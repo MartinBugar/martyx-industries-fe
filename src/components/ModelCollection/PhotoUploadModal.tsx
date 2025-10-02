@@ -270,7 +270,7 @@ const PhotoUploadModal: React.FC<PhotoUploadModalProps> = ({ model, onClose, onS
     const files = Array.from(e.dataTransfer.files);
     const mockEvent = {
       target: { files }
-    } as React.ChangeEvent<HTMLInputElement>;
+    } as unknown as React.ChangeEvent<HTMLInputElement>;
     
     handleFileSelect(mockEvent);
   };

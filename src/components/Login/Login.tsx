@@ -12,11 +12,6 @@ import './Login.css';
 
 // Zdieľané komponenty a utility
 import {
-  AuthContainer,
-  AuthHeader,
-  FormField,
-  ErrorMessage,
-  SubmitButton,
   LoadingSpinner,
   EmailIcon,
   PasswordIcon,
