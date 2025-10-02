@@ -11,9 +11,24 @@ const About: React.FC = () => {
       {/* Hero Section */}
       <section className="hero-section">
         <div className="hero-background"></div>
-        <div className="hero-content">
-          <h1 className="hero-title">{t('title')}</h1>
-          <p className="hero-subtitle">{t('lead')}</p>
+        <div className="hero-container">
+          <div className="hero-content">
+            <h1 className="hero-title">{t('title')}</h1>
+            <p className="hero-subtitle">{t('lead')}</p>
+            <div className="hero-cta">
+              <Link to="/products" className="hero-button">
+                {t('cta.button', { defaultValue: 'Prezrieť katalóg' })}
+              </Link>
+            </div>
+          </div>
+          <div className="hero-mascot">
+            <img
+              src="/cassandra/1.png"
+              alt="Martyx Industries Mascot"
+              className="mascot-image"
+            />
+            <div className="mascot-glow"></div>
+          </div>
         </div>
       </section>
 
