@@ -21,10 +21,9 @@
     display: flex;
     align-items: center;
     padding: 2rem 0;
-    background: 
-        radial-gradient(circle at 20% 30%, rgba(246, 200, 69, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 80% 70%, rgba(230, 184, 45, 0.08) 0%, transparent 50%),
-        linear-gradient(135deg, #0B0F14 0%, #141A20 50%, #1A1612 100%);
+    background: radial-gradient(circle at 20% 30%, rgba(246, 200, 69, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(230, 184, 45, 0.08) 0%, transparent 50%),
+    linear-gradient(135deg, #0B0F14 0%, #141A20 50%, #1A1612 100%);
     overflow: hidden;
 }
 
@@ -253,7 +252,7 @@
     align-items: center;
     justify-content: center;
     min-height: 600px;
-    transform: translateY(-50px);
+    transform: translateY(-100px);
 }
 
 .mascot-background {
@@ -311,11 +310,35 @@
     animation: float 6s ease-in-out infinite;
 }
 
-.particle-1 { top: 20%; left: 20%; animation-delay: 0s; }
-.particle-2 { top: 30%; right: 25%; animation-delay: 1s; }
-.particle-3 { bottom: 30%; left: 30%; animation-delay: 2s; }
-.particle-4 { bottom: 40%; right: 20%; animation-delay: 3s; }
-.particle-5 { top: 60%; left: 60%; animation-delay: 4s; }
+.particle-1 {
+    top: 20%;
+    left: 20%;
+    animation-delay: 0s;
+}
+
+.particle-2 {
+    top: 30%;
+    right: 25%;
+    animation-delay: 1s;
+}
+
+.particle-3 {
+    bottom: 30%;
+    left: 30%;
+    animation-delay: 2s;
+}
+
+.particle-4 {
+    bottom: 40%;
+    right: 20%;
+    animation-delay: 3s;
+}
+
+.particle-5 {
+    top: 60%;
+    left: 60%;
+    animation-delay: 4s;
+}
 
 .mascot-container {
     position: relative;
@@ -382,7 +405,6 @@
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 16px;
-    padding: 1.5rem;
     transition: all 0.3s ease;
 }
 
@@ -393,19 +415,21 @@
 }
 
 .mascot-name {
-    font-size: 1.4rem;
-    font-weight: 600;
+    font-size: 1.6rem;
+    font-weight: 700;
     background: linear-gradient(135deg, #F6C845, #E6B82D);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     margin-bottom: 0.3rem;
+    margin-top: 0.3rem;
 }
 
 .mascot-role {
     font-size: 1rem;
     color: rgba(255, 255, 255, 0.8);
     font-weight: 500;
+    margin-bottom: 0.5rem;
 }
 
 
@@ -1111,11 +1135,35 @@
     animation: twinkle 3s ease-in-out infinite;
 }
 
-.pattern-dot:nth-child(1) { top: 20%; left: 20%; animation-delay: 0s; }
-.pattern-dot:nth-child(2) { top: 30%; right: 25%; animation-delay: 0.6s; }
-.pattern-dot:nth-child(3) { bottom: 30%; left: 30%; animation-delay: 1.2s; }
-.pattern-dot:nth-child(4) { bottom: 40%; right: 20%; animation-delay: 1.8s; }
-.pattern-dot:nth-child(5) { top: 60%; left: 60%; animation-delay: 2.4s; }
+.pattern-dot:nth-child(1) {
+    top: 20%;
+    left: 20%;
+    animation-delay: 0s;
+}
+
+.pattern-dot:nth-child(2) {
+    top: 30%;
+    right: 25%;
+    animation-delay: 0.6s;
+}
+
+.pattern-dot:nth-child(3) {
+    bottom: 30%;
+    left: 30%;
+    animation-delay: 1.2s;
+}
+
+.pattern-dot:nth-child(4) {
+    bottom: 40%;
+    right: 20%;
+    animation-delay: 1.8s;
+}
+
+.pattern-dot:nth-child(5) {
+    top: 60%;
+    left: 60%;
+    animation-delay: 2.4s;
+}
 
 /* Animations */
 @keyframes fadeInLeft {
@@ -1197,11 +1245,11 @@
     .hero-container {
         gap: 3rem;
     }
-    
+
     .hero-title {
         font-size: 3.5rem;
     }
-    
+
     .mascot-image {
         width: 350px;
     }
@@ -1213,27 +1261,27 @@
         gap: 4rem;
         text-align: center;
     }
-    
+
     .hero-content {
         order: 1;
     }
-    
+
     .mascot-showcase {
         order: 2;
         min-height: 500px;
     }
-    
+
     .content-section {
         grid-template-columns: 1fr;
         gap: 4rem;
         text-align: center;
     }
-    
+
     .creator-content {
         grid-template-columns: 1fr;
         gap: 3rem;
     }
-    
+
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -1243,69 +1291,69 @@
     .hero-title {
         font-size: 2.8rem;
     }
-    
+
     .title-highlight {
         font-size: 2rem;
     }
-    
+
     .hero-subtitle {
         font-size: 1.1rem;
         max-width: 100%;
     }
-    
+
     .mascot-image {
         width: 280px;
     }
-    
+
     .hero-features-grid {
         gap: 1rem;
     }
-    
+
     .feature-card {
         padding: 1rem;
     }
-    
+
     .hero-stats {
         flex-direction: column;
         gap: 1rem;
     }
-    
+
     .stat-divider {
         width: 40px;
         height: 2px;
     }
-    
+
     .stats-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .stats-title {
         font-size: 2.5rem;
     }
-    
+
     .section-title {
         font-size: 2.2rem;
     }
-    
+
     .cta-title {
         font-size: 2.8rem;
     }
-    
+
     .cta-features {
         flex-direction: column;
         gap: 1.5rem;
     }
-    
+
     .visual-elements {
         flex-direction: column;
         gap: 1rem;
     }
-    
+
     .mission-visual {
         grid-template-columns: 1fr;
         gap: 1rem;
     }
-    
+
     .quality-indicators {
         flex-direction: column;
         gap: 1rem;
@@ -1316,51 +1364,51 @@
     .modern-hero-section {
         padding: 1rem 0;
     }
-    
+
     .hero-container {
         padding: 0 1rem;
         gap: 3rem;
     }
-    
+
     .hero-title {
         font-size: 2.2rem;
     }
-    
+
     .title-highlight {
         font-size: 1.6rem;
     }
-    
+
     .hero-subtitle {
         font-size: 1rem;
     }
-    
+
     .mascot-image {
         width: 220px;
     }
-    
+
     .hero-button.primary {
         padding: 1.2rem 2.5rem;
         font-size: 1.1rem;
     }
-    
+
     .stats-title {
         font-size: 2rem;
     }
-    
+
     .section-title {
         font-size: 1.8rem;
     }
-    
+
     .cta-title {
         font-size: 2.2rem;
     }
-    
+
     .cta-button.primary {
         padding: 1.5rem 3rem;
         font-size: 1.1rem;
     }
-    
-    
+
+
     .bg-particles {
         display: none;
     }
@@ -1395,7 +1443,7 @@
     .cta-background {
         display: none;
     }
-    
+
     .about-page {
         background: white;
         color: black;
