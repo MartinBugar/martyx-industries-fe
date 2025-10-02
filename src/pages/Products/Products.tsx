@@ -340,6 +340,8 @@ const Products: React.FC = () => {
             <div className="products-floating-mascot">
                 <img 
                     src="/cassandra/Products-Cass.png" 
+                    srcSet="/cassandra/Products-Cass.png 1x, /cassandra/Products-Cass.png 2x"
+                    sizes="(max-width: 360px) 160px, (max-width: 480px) 200px, (max-width: 768px) 260px, 320px"
                     alt="Cassandra - váš sprievodca produktmi"
                     className="floating-mascot-image-products"
                     loading="eager"

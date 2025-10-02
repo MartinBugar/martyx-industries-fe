@@ -610,20 +610,8 @@ html {
 
 .floating-mascot-image-products {
   width: 320px;
-  max-width: 320px;
   height: auto;
-  object-fit: contain;
-  /* filter: drop-shadow(0 4px 12px rgba(246, 200, 69, 0.2)); */
-  opacity: 1;
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: high-quality;
-  image-rendering: smooth;
-  -webkit-backface-visibility: hidden;
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
-  will-change: auto;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  display: block;
 }
 
 /* Responsive Design for Floating Mascot */
