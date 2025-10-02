@@ -28,7 +28,7 @@
   /* Button Design */
   --btn-height: 52px;
   --btn-border-radius: 12px;
-  --btn-gradient: linear-gradient(135deg, var(--accent) 0%, #10b981 100%);
+  --btn-gradient: linear-gradient(135deg, var(--accent) 0%, #e6b82d 100%);
   --btn-shadow: 0 8px 25px rgba(246, 200, 69, 0.3);
   --btn-hover-shadow: 0 12px 35px rgba(246, 200, 69, 0.4);
   
@@ -122,8 +122,8 @@
 }
 
 .form-icon.success {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+  background: linear-gradient(135deg, var(--accent) 0%, #e6b82d 100%);
+  box-shadow: 0 8px 25px rgba(246, 200, 69, 0.3);
 }
 
 .form-icon:hover {
@@ -310,12 +310,12 @@
 }
 
 .form-submit-btn.success {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+  background: linear-gradient(135deg, var(--accent) 0%, #e6b82d 100%);
+  box-shadow: 0 8px 25px rgba(246, 200, 69, 0.3);
 }
 
 .form-submit-btn.success:hover {
-  box-shadow: 0 12px 35px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 12px 35px rgba(246, 200, 69, 0.4);
 }
 
 .btn-arrow {
@@ -371,15 +371,15 @@
 
 /* ===== SUCCESS MESSAGE ===== */
 .success-message {
-  background: rgba(16, 185, 129, 0.1);
-  border: 1px solid rgba(16, 185, 129, 0.2);
+  background: rgba(246, 200, 69, 0.1);
+  border: 1px solid rgba(246, 200, 69, 0.2);
   border-radius: 12px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
 }
 
 .success-content h3 {
-  color: #10b981;
+  color: var(--accent);
   font-size: 1.1rem;
   font-weight: 600;
   margin: 0 0 0.5rem 0;

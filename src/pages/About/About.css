@@ -401,16 +401,9 @@
     border: 2px solid rgba(246, 200, 69, 0.3);
     border-radius: 30px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    transition: all 0.5s ease;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-}
-
-.mascot-frame:hover {
-    transform: translateY(-10px) scale(1.02);
-    border-color: rgba(246, 200, 69, 0.6);
-    box-shadow: 0 30px 80px rgba(246, 200, 69, 0.2);
 }
 
 
@@ -420,7 +413,6 @@
     object-fit: contain;
     position: relative;
     z-index: 2;
-    transition: transform 0.3s ease;
     padding: 2rem;
 }
 
@@ -449,13 +441,6 @@
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 16px;
-    transition: all 0.3s ease;
-}
-
-.mascot-info-card:hover {
-    background: rgba(246, 200, 69, 0.1);
-    border-color: rgba(246, 200, 69, 0.3);
-    transform: translateY(-2px);
 }
 
 .mascot-name {
