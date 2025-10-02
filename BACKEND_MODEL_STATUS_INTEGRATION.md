@@ -37,7 +37,50 @@ CREATE INDEX idx_user_model_status_completed ON user_model_status(is_completed);
 
 ## API Endpoints
 
-### 1. Update Model Status
+### 1. Get Model Status
+
+**Endpoint:** `GET /api/user-models/{productId}/status?order_id={orderId}`
+
+**Headers:**
+```
+Authorization: Bearer {jwt-token}
+```
+
+**Query Parameters:**
+- `order_id` (number, REQUIRED) - Order ID to identify specific model instance
+
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "data": {
+    "product_id": "123",
+    "order_id": "456",
+    "is_completed": true,
+    "is_public": false,
+    "created_at": "2024-01-15T10:30:00Z",
+    "updated_at": "2024-01-15T10:30:00Z"
+  }
+}
+```
+
+**Response (404 Not Found) - No status record exists:**
+```json
+{
+  "success": false,
+  "message": "Model status not found",
+  "error_code": "MODEL_STATUS_NOT_FOUND"
+}
+```
+
+**Error Responses:**
+- `400 Bad Request` - Missing or invalid order_id parameter
+- `401 Unauthorized` - Invalid/missing JWT token
+- `403 Forbidden` - User doesn't own this product in given order
+- `404 Not Found` - No status record exists (use defaults)
+- `500 Internal Server Error` - Database/server error
+
+### 2. Update Model Status
 
 **Endpoint:** `PATCH /api/user-models/{productId}/status`
 
@@ -50,10 +93,16 @@ Content-Type: application/json
 **Request Body:**
 ```json
 {
+  "order_id": 123,
   "is_completed": true,
   "is_public": false
 }
 ```
+
+**Required Fields:**
+- `order_id` (number, REQUIRED) - Order ID (not orderNumber!)
+- `is_completed` (boolean, optional) - Whether model is completed
+- `is_public` (boolean, optional) - Whether model should be public
 
 **Response (200 OK):**
 ```json
@@ -70,11 +119,16 @@ Content-Type: application/json
 ```
 
 **Error Responses:**
+- `400 Bad Request` - Missing order_id or invalid data
 - `401 Unauthorized` - Invalid/missing JWT token
-- `403 Forbidden` - User doesn't own this product
+- `403 Forbidden` - User doesn't own this product in given order
 - `404 Not Found` - Product not found in user's orders
-- `400 Bad Request` - Invalid request body
 - `500 Internal Server Error` - Database/server error
+
+**Important Notes:**
+- `order_id` must be numeric ID (Long), NOT orderNumber string
+- Product must be part of the given order
+- Order must belong to the authenticated user
 
 ### 2. Get User Collection (Enhanced)
 
@@ -129,7 +183,51 @@ Authorization: Bearer {jwt-token}
 
 ## Backend Implementation
 
-### 1. Controller Method
+### 1. Get Model Status Controller
+
+```java
+@GetMapping("/user-models/{productId}/status")
+@PreAuthorize("hasRole('USER')")
+public ResponseEntity<?> getModelStatus(
+    @PathVariable String productId,
+    @RequestParam Long orderId,
+    Authentication authentication
+) {
+    try {
+        Long userId = getUserIdFromAuth(authentication);
+        
+        // Validate that user owns this product in the given order
+        if (!userOwnsProductInOrder(userId, Long.parseLong(productId), orderId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(new ErrorResponse("You don't own this product in the specified order"));
+        }
+        
+        // Get status record
+        Optional<UserModelStatus> statusOpt = userModelStatusService.getStatus(
+            userId, 
+            Long.parseLong(productId),
+            orderId
+        );
+        
+        if (statusOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse("Model status not found", "MODEL_STATUS_NOT_FOUND"));
+        }
+        
+        return ResponseEntity.ok(new SuccessResponse(
+            "Model status retrieved successfully", 
+            statusOpt.get()
+        ));
+        
+    } catch (Exception e) {
+        logger.error("Error retrieving model status", e);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(new ErrorResponse("Failed to retrieve model status"));
+    }
+}
+```
+
+### 2. Update Model Status Controller
 
 ```java
 @PatchMapping("/user-models/{productId}/status")
@@ -178,11 +276,15 @@ public class UserModelStatusService {
     @Autowired
     private UserModelStatusRepository repository;
     
+    public Optional<UserModelStatus> getStatus(Long userId, Long productId, Long orderId) {
+        return repository.findByUserIdAndProductIdAndOrderId(userId, productId, orderId);
+    }
+    
     @Transactional
-    public UserModelStatus updateStatus(Long userId, Long productId, Boolean isCompleted, Boolean isPublic) {
+    public UserModelStatus updateStatus(Long userId, Long productId, Long orderId, Boolean isCompleted, Boolean isPublic) {
         // Find existing record or create new one
-        UserModelStatus status = repository.findByUserIdAndProductId(userId, productId)
-            .orElse(new UserModelStatus(userId, productId));
+        UserModelStatus status = repository.findByUserIdAndProductIdAndOrderId(userId, productId, orderId)
+            .orElse(new UserModelStatus(userId, productId, orderId));
         
         // Update fields if provided
         if (isCompleted != null) {
@@ -216,7 +318,7 @@ public class UserModelStatusService {
 @Repository
 public interface UserModelStatusRepository extends JpaRepository<UserModelStatus, Long> {
     
-    Optional<UserModelStatus> findByUserIdAndProductId(Long userId, Long productId);
+    Optional<UserModelStatus> findByUserIdAndProductIdAndOrderId(Long userId, Long productId, Long orderId);
     
     List<UserModelStatus> findByUserIdAndProductIdIn(Long userId, List<Long> productIds);
     

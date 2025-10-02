@@ -52,6 +52,81 @@ const ModelCollection: React.FC = () => {
   const [deletingPhotoId, setDeletingPhotoId] = useState<number | null>(null);
   const [updatingModel, setUpdatingModel] = useState<string | null>(null);
 
+  // Helper function to recalculate stats
+  const recalculateStats = (models: PurchasedModel[]): CollectionData => {
+    const completedModels = models.filter(model => model.is_completed).length;
+    
+    console.log('📊 Stats recalculated:', {
+      totalModels: models.length,
+      completedModels,
+      remainingModels: models.length - completedModels,
+      completedModelNames: models.filter(m => m.is_completed).map(m => m.product_name)
+    });
+    
+    return {
+      models,
+      total_models: models.length,
+      completed_models: completedModels
+    };
+  };
+
+  // Load model status from backend
+  const loadModelStatus = async (productId: string, orderId: string): Promise<{ is_completed: boolean; is_public: boolean }> => {
+    try {
+      const token = getAuthToken();
+      if (!token) {
+        console.warn('No auth token for loading model status');
+        return { is_completed: false, is_public: false };
+      }
+
+      const url = `${import.meta.env.VITE_API_URL || 'http://localhost:8080'}/api/user-models/${productId}/status?order_id=${orderId}`;
+      console.log(`🔍 Loading model status from: ${url}`);
+      
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      console.log(`📡 Response status: ${response.status} for product ${productId}, order ${orderId}`);
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          // No status record exists yet, return defaults
+          console.log(`No status record found for product ${productId}, order ${orderId} - using defaults`);
+          return { is_completed: false, is_public: false };
+        }
+        
+        if (response.status === 500) {
+          console.warn(`Backend endpoint GET /api/user-models/${productId}/status not implemented yet`);
+          return { is_completed: false, is_public: false };
+        }
+        
+        // Log error response for debugging
+        const errorText = await response.text();
+        console.error(`❌ Error response ${response.status}:`, errorText);
+        throw new Error(`Failed to load model status: ${response.status} - ${errorText}`);
+      }
+
+      const data = await response.json();
+      console.log(`✅ Raw response data for ${productId}:`, data);
+      
+      // Handle different response formats
+      const statusData = data.data || data; // Backend might wrap in "data" field
+      console.log(`📦 Extracted status data:`, statusData);
+      
+      return {
+        is_completed: statusData.is_completed || false,
+        is_public: statusData.is_public || false
+      };
+    } catch (error) {
+      console.error(`Error loading model status for ${productId}:`, error);
+      return { is_completed: false, is_public: false };
+    }
+  };
+
   // Load photos for a specific model/product
   const loadPhotosForModel = async (productId: string): Promise<ModelPhoto[]> => {
     try {
@@ -123,9 +198,17 @@ const ModelCollection: React.FC = () => {
         const models: PurchasedModel[] = [];
         
         completedOrders.forEach(order => {
+          // Debug logging for order IDs
+          console.log('🔍 Order mapping:', {
+            displayId: order.id,
+            backendId: order.backendId,
+            orderNumber: order.orderNumber,
+            finalOrderId: order.backendId || order.id
+          });
+          
           order.items.forEach(item => {
             models.push({
-              order_id: order.id,
+              order_id: order.backendId || order.id, // Use backendId for API calls
               order_number: order.orderNumber || order.id,
               product_id: item.productId,
               product_name: item.productName,
@@ -143,27 +226,40 @@ const ModelCollection: React.FC = () => {
           });
         });
 
-        // Load photos for each model
+        // Load photos and status for each model
+        console.log(`🚀 Starting to load data for ${models.length} models`);
+        
         await Promise.all(models.map(async (model) => {
           try {
-            const photos = await loadPhotosForModel(model.product_id);
+            console.log(`⏳ Loading data for model: ${model.product_name} (ID: ${model.product_id}, Order: ${model.order_id})`);
+            
+            // Load photos and status in parallel
+            const [photos, status] = await Promise.all([
+              loadPhotosForModel(model.product_id),
+              loadModelStatus(model.product_id, model.order_id)
+            ]);
+            
             model.photos = photos;
+            model.is_completed = status.is_completed;
+            model.is_public = status.is_public;
+            
+            console.log(`📦 Model ${model.product_name} loaded:`, {
+              productId: model.product_id,
+              orderId: model.order_id,
+              photos: photos.length,
+              statusFromAPI: status,
+              finalIsCompleted: status.is_completed,
+              finalIsPublic: status.is_public
+            });
           } catch (error) {
-            console.error(`Failed to load photos for ${model.product_name}:`, error);
+            console.error(`Failed to load data for ${model.product_name}:`, error);
             model.photos = [];
+            // Keep default values for status if loading fails
           }
         }));
 
-        // Calculate stats
-        const completedModels = models.filter(model => 
-          model.photos.some(photo => photo.verificationStatus === 'approved')
-        ).length;
-
-        const collectionData: CollectionData = {
-          models,
-          total_models: models.length,
-          completed_models: completedModels
-        };
+        // Calculate stats using helper function
+        const collectionData = recalculateStats(models);
 
         setCollectionData(collectionData);
         setError(null);
@@ -298,13 +394,28 @@ const ModelCollection: React.FC = () => {
     }
   };
 
-  const updateModelStatus = async (productId: string, field: 'is_completed' | 'is_public', value: boolean) => {
+  const updateModelStatus = async (productId: string, orderId: string, field: 'is_completed' | 'is_public', value: boolean) => {
+    console.log('🔄 Updating model status:', {
+      productId,
+      orderId,
+      orderIdType: typeof orderId,
+      orderIdParsed: parseInt(orderId, 10),
+      field,
+      value
+    });
+    
     setUpdatingModel(productId);
     
     try {
       const token = getAuthToken();
       if (!token) {
         throw new Error('Nie ste prihlásený');
+      }
+
+      // Validate order_id
+      const orderIdNumber = parseInt(orderId, 10);
+      if (isNaN(orderIdNumber) || orderIdNumber <= 0) {
+        throw new Error(`Neplatné order_id: ${orderId}. Musí byť kladné číslo.`);
       }
 
       const response = await fetch(
@@ -316,6 +427,7 @@ const ModelCollection: React.FC = () => {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
+            order_id: orderIdNumber, // Use validated number
             [field]: value
           })
         }
@@ -327,20 +439,19 @@ const ModelCollection: React.FC = () => {
           
           // Mock update for testing
           if (import.meta.env.VITE_MOCK_UPDATES === 'true') {
-            console.log(`🎭 Mock mode - simulating ${field} update to ${value}`);
+            console.log(`🎭 Mock mode - simulating ${field} update to ${value} for product ${productId}, order ${orderId}`);
             
-            // Update local state
+            // Update local state and recalculate stats
             setCollectionData(prev => {
               if (!prev) return prev;
               
-              return {
-                ...prev,
-                models: prev.models.map(model => 
-                  model.product_id === productId 
-                    ? { ...model, [field]: value }
-                    : model
-                )
-              };
+              const updatedModels = prev.models.map(model => 
+                model.product_id === productId && model.order_id === orderId
+                  ? { ...model, [field]: value }
+                  : model
+              );
+              
+              return recalculateStats(updatedModels);
             });
             
             return;
@@ -351,21 +462,20 @@ const ModelCollection: React.FC = () => {
         throw new Error(`Nepodarilo sa aktualizovať model: ${response.status} ${errorData}`);
       }
 
-      // Update the collection data locally
+      // Update the collection data locally and recalculate stats
       setCollectionData(prev => {
         if (!prev) return prev;
         
-        return {
-          ...prev,
-          models: prev.models.map(model => 
-            model.product_id === productId 
-              ? { ...model, [field]: value }
-              : model
-          )
-        };
+        const updatedModels = prev.models.map(model => 
+          model.product_id === productId && model.order_id === orderId
+            ? { ...model, [field]: value }
+            : model
+        );
+        
+        return recalculateStats(updatedModels);
       });
 
-      console.log(`Model ${field} updated successfully to ${value}`);
+      console.log(`Model ${field} updated successfully to ${value} for product ${productId}, order ${orderId}`);
     } catch (err: any) {
       console.error(`Error updating model ${field}:`, err);
       alert(err.message || `Nepodarilo sa aktualizovať ${field === 'is_completed' ? 'stav dokončenia' : 'verejnosť'}`);
@@ -480,7 +590,7 @@ const ModelCollection: React.FC = () => {
                         <input
                           type="checkbox"
                           checked={model.is_completed}
-                          onChange={(e) => updateModelStatus(model.product_id, 'is_completed', e.target.checked)}
+                          onChange={(e) => updateModelStatus(model.product_id, model.order_id, 'is_completed', e.target.checked)}
                           disabled={updatingModel === model.product_id}
                           className="toggle-checkbox"
                         />
@@ -493,7 +603,7 @@ const ModelCollection: React.FC = () => {
                         <input
                           type="checkbox"
                           checked={model.is_public}
-                          onChange={(e) => updateModelStatus(model.product_id, 'is_public', e.target.checked)}
+                          onChange={(e) => updateModelStatus(model.product_id, model.order_id, 'is_public', e.target.checked)}
                           disabled={updatingModel === model.product_id}
                           className="toggle-checkbox"
                         />
