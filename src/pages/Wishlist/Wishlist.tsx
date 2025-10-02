@@ -290,7 +290,7 @@ const Wishlist: React.FC = () => {
           <div className="wishlist-empty">
             <div className="wishlist-mascot">
               <img 
-                src="/cassandra/Register-Cass.png" 
+                src="/cassandra/Empty-Cass.png" 
                 alt="Cassandra - váš sprievodca prázdnym wishlistom"
                 className="mascot-image-wishlist"
                 loading="eager"

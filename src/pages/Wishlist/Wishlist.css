@@ -46,12 +46,6 @@
   object-fit: contain;
   filter: drop-shadow(0 4px 12px rgba(246, 200, 69, 0.2));
   opacity: 0.9;
-  transition: all 0.3s ease;
-}
-
-.floating-mascot-image:hover {
-  opacity: 1;
-  transform: scale(1.05);
 }
 
 /* ========== HEADER ========== */
@@ -275,46 +269,45 @@
 /* ========== EMPTY STATE ========== */
 .wishlist-empty {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  text-align: center;
+  justify-content: center;
+  gap: 3rem;
   padding: 64px 32px;
   background: var(--wishlist-card);
   border-radius: var(--wishlist-radius);
   border: 1px solid var(--wishlist-border);
-  gap: 2rem;
 }
 
 .wishlist-mascot {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-shrink: 0;
 }
 
 .mascot-image-wishlist {
-  width: 100%;
-  max-width: 300px;
+  width: 200px;
   height: auto;
   object-fit: contain;
-  filter: drop-shadow(0 10px 25px rgba(246, 200, 69, 0.15));
+  filter: drop-shadow(0 4px 12px rgba(246, 200, 69, 0.2));
+  opacity: 0.95;
 }
 
 .empty-content {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: 1rem;
+  flex: 1;
+  max-width: 400px;
 }
 
 .empty-content h2 {
   font-size: 24px;
-  font-weight: 600;
-  color: #1a1a1a;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
   margin: 0;
 }
 
 .empty-content p {
-  color: #6b7280;
+  color: var(--text-muted, #475569);
   margin: 0;
   font-size: 16px;
   line-height: 1.5;
@@ -625,8 +618,14 @@
 /* ========== RESPONSIVE DESIGN ========== */
 @media (max-width: 768px) {
   .wishlist-empty {
+    flex-direction: column;
+    text-align: center;
     padding: 48px 24px;
     gap: 1.5rem;
+  }
+  
+  .empty-content {
+    align-items: center;
   }
   
   .mascot-image-wishlist {
@@ -707,6 +706,7 @@
 
 @media (max-width: 480px) {
   .wishlist-empty {
+    flex-direction: column;
     padding: 24px 12px;
     gap: 1rem;
   }
@@ -754,6 +754,7 @@
 
 @media (max-width: 360px) {
   .wishlist-empty {
+    flex-direction: column;
     padding: 20px 8px;
     gap: 0.75rem;
   }
@@ -839,8 +840,13 @@
   .wishlist-title,
   .item-title a,
   .stat-number,
-  .item-price {
-    color: #e5e5e5;
+  .item-price,
+  .empty-content h2 {
+    color: #f8fafc;
+  }
+
+  .empty-content p {
+    color: #cbd5e1;
   }
 
   .btn-outline {

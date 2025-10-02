@@ -262,8 +262,8 @@
 
 .product-card-title {
   font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--products-text);
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
   margin: 0 0 0.75rem 0;
   line-height: 1.4;
   display: -webkit-box;
@@ -273,7 +273,7 @@
 }
 
 .product-card-description {
-  color: var(--products-text-muted);
+  color: var(--text-muted, #475569);
   font-size: 0.875rem;
   line-height: 1.5;
   margin: 0 0 1.25rem 0;
@@ -287,7 +287,7 @@
 .product-card-price {
   font-size: 1.375rem;
   font-weight: 700;
-  color: var(--products-accent);
+  color: var(--accent, #f6c845);
   margin-top: auto;
 }
 
@@ -581,4 +581,19 @@
 /* Smooth Scroll */
 html {
   scroll-behavior: smooth;
+}
+
+/* ========== DARK MODE ========== */
+@media (prefers-color-scheme: dark) {
+  .product-card-title {
+    color: #f8fafc;
+  }
+
+  .product-card-description {
+    color: #cbd5e1;
+  }
+
+  .product-card-price {
+    color: #f6c845;
+  }
 }
