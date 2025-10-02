@@ -8,28 +8,60 @@ const About: React.FC = () => {
 
   return (
     <div className="about-page" aria-label="About Page">
-      {/* Hero Section */}
-      <section className="hero-section">
-        <div className="hero-background"></div>
-        <div className="hero-container">
+      {/* Main Hero Container */}
+      <div className="main-hero-wrapper">
+        {/* Hero Section */}
+        <section className="hero-section">
+          <div className="hero-background"></div>
           <div className="hero-content">
+            <div className="hero-badge">
+              <span className="badge-text">🚀 {t('badge', { defaultValue: 'Prémiové STL modely' })}</span>
+            </div>
             <h1 className="hero-title">{t('title')}</h1>
             <p className="hero-subtitle">{t('lead')}</p>
+            <div className="hero-features">
+              <div className="feature-item">
+                <span className="feature-icon">✓</span>
+                <span>{t('features.tested', { defaultValue: 'Testované modely' })}</span>
+              </div>
+              <div className="feature-item">
+                <span className="feature-icon">⚡</span>
+                <span>{t('features.instant', { defaultValue: 'Okamžité stiahnutie' })}</span>
+              </div>
+              <div className="feature-item">
+                <span className="feature-icon">🎯</span>
+                <span>{t('features.quality', { defaultValue: 'Vysoká kvalita' })}</span>
+              </div>
+            </div>
             <div className="hero-cta">
               <Link to="/products" className="hero-button">
                 {t('cta.button', { defaultValue: 'Prezrieť katalóg' })}
               </Link>
+              <div className="hero-stats">
+                <span className="stat">500+ modelov</span>
+                <span className="stat-separator">•</span>
+                <span className="stat">10k+ zákazníkov</span>
+              </div>
             </div>
           </div>
-          <div className="hero-mascot">
+        </section>
+
+        {/* Mascot Section */}
+        <div className="mascot-section">
+          <div className="mascot-container">
             <img
               src="/cassandra/1.png"
               alt="Martyx Industries Mascot"
               className="mascot-image"
             />
+            <div className="mascot-decoration">
+              <div className="decoration-circle circle-1"></div>
+              <div className="decoration-circle circle-2"></div>
+              <div className="decoration-circle circle-3"></div>
+            </div>
           </div>
         </div>
-      </section>
+      </div>
 
       {/* Stats Section */}
       <section className="stats-container">
