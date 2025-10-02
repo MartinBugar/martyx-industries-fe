@@ -708,6 +708,67 @@
     font-size: 12px;
     padding: 4px 8px;
   }
+  
+  .photos-grid {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.75rem;
+  }
+  
+  .photo-card {
+    aspect-ratio: 1;
+  }
+}
+
+@media (max-width: 360px) {
+  .photo-gallery-modal {
+    width: 100%;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+  
+  .gallery-header {
+    padding: 0.75rem;
+  }
+  
+  .gallery-title h3 {
+    font-size: 1.1rem;
+  }
+  
+  .gallery-title p {
+    font-size: 0.8rem;
+  }
+  
+  .photos-grid {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 0.5rem;
+    padding: 0.75rem;
+  }
+  
+  .gallery-nav-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 14px;
+  }
+  
+  .gallery-close-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+  }
+  
+  .image-counter {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+  
+  .delete-photo-btn {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .delete-cross {
+    font-size: 10px;
+  }
 }
 
 /* Animations */
