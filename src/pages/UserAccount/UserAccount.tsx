@@ -3,12 +3,13 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/useAuth';
 import UserProfile from '../../components/UserProfile/UserProfile';
 import OrderHistory from '../../components/OrderHistory/OrderHistory';
+import ModelCollection from '../../components/ModelCollection/ModelCollection';
 import TokenExpirationTimer from '../../components/TokenExpirationTimer/TokenExpirationTimer';
 import './UserAccount.css';
 
 const UserAccount: React.FC = () => {
   const { user, isAuthenticated, isLoading } = useAuth();
-  const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'settings'>('profile');
+  const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'collection' | 'cassandra' | 'settings'>('profile');
   
   // Show loading while authentication state is being restored
   if (isLoading) {
@@ -101,7 +102,40 @@ const UserAccount: React.FC = () => {
                 <span className="tab-label">Orders</span>
               </button>
 
+              <button
+                className={`nav-tab ${activeTab === 'collection' ? 'active' : ''}`}
+                onClick={() => setActiveTab('collection')}
+                role="tab"
+                aria-selected={activeTab === 'collection'}
+                aria-controls="collection-panel"
+              >
+                <div className="tab-icon">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2"/>
+                    <rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2"/>
+                    <rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2"/>
+                    <rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2"/>
+                  </svg>
+                </div>
+                <span className="tab-label">Moja zbierka</span>
+              </button>
 
+              <button
+                className={`nav-tab ${activeTab === 'cassandra' ? 'active' : ''}`}
+                onClick={() => setActiveTab('cassandra')}
+                role="tab"
+                aria-selected={activeTab === 'cassandra'}
+                aria-controls="cassandra-panel"
+              >
+                <div className="tab-icon">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M12 14l2-2m-2 2l-2-2m2 2v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+                <span className="tab-label">Moja Cassandra</span>
+              </button>
 
               <button
                 className={`nav-tab ${activeTab === 'settings' ? 'active' : ''}`}
@@ -179,6 +213,86 @@ const UserAccount: React.FC = () => {
               aria-labelledby="orders-tab"
             >
               {activeTab === 'orders' && <OrderHistory />}
+            </div>
+
+            <div
+              className={`content-panel ${activeTab === 'collection' ? 'active' : ''}`}
+              id="collection-panel"
+              role="tabpanel"
+              aria-labelledby="collection-tab"
+            >
+              {activeTab === 'collection' && <ModelCollection />}
+            </div>
+
+            <div
+              className={`content-panel ${activeTab === 'cassandra' ? 'active' : ''}`}
+              id="cassandra-panel"
+              role="tabpanel"
+              aria-labelledby="cassandra-tab"
+            >
+              {activeTab === 'cassandra' && (
+                <div className="cassandra-content">
+                  <div className="cassandra-header">
+                    <h2>Moja Cassandra</h2>
+                    <p>Personalizujte si svojho avatara na základe dokončených modelov</p>
+                  </div>
+                  
+                  <div className="cassandra-main">
+                    <div className="cassandra-preview">
+                      <div className="avatar-display">
+                        <img 
+                          src="/cassandra/Contact-Cass.png" 
+                          alt="Váš Cassandra avatar"
+                          className="cassandra-avatar"
+                        />
+                      </div>
+                      <div className="avatar-stats">
+                        <div className="stat-item">
+                          <span className="stat-label">Level:</span>
+                          <span className="stat-value">1</span>
+                        </div>
+                        <div className="stat-item">
+                          <span className="stat-label">Dokončené modely:</span>
+                          <span className="stat-value">0</span>
+                        </div>
+                        <div className="stat-item">
+                          <span className="stat-label">Odomknuté items:</span>
+                          <span className="stat-value">1</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="cassandra-customization">
+                      <h3>Dostupné oblečenie</h3>
+                      <div className="items-grid">
+                        <div className="item-slot locked">
+                          <div className="item-preview">🧢</div>
+                          <span className="item-name">Červená čiapka</span>
+                          <span className="item-level">Level 1</span>
+                        </div>
+                        <div className="item-slot locked">
+                          <div className="item-preview">👕</div>
+                          <span className="item-name">Modré tričko</span>
+                          <span className="item-level">Level 2</span>
+                        </div>
+                        <div className="item-slot locked">
+                          <div className="item-preview">👖</div>
+                          <span className="item-name">Čierne nohavice</span>
+                          <span className="item-level">Level 3</span>
+                        </div>
+                        <div className="item-slot locked">
+                          <div className="item-preview">👟</div>
+                          <span className="item-name">Biele tenisky</span>
+                          <span className="item-level">Level 4</span>
+                        </div>
+                      </div>
+                      <div className="customization-note">
+                        <p>💡 <strong>Tip:</strong> Dokončujte modely a uploadujte fotky, aby ste odomkli nové oblečenie pre Cassandru!</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div
