@@ -505,13 +505,6 @@ const ModelCollection: React.FC = () => {
     return <span className={`status-badge ${config.class}`}>{config.text}</span>;
   };
 
-  const getModelStatus = (model: PurchasedModel) => {
-    if (model.is_completed) {
-      return { text: 'Dokončený', class: 'model-status-completed' };
-    } else {
-      return { text: 'Nie je dokončený', class: 'model-status-incomplete' };
-    }
-  };
 
 
   if (loading || ordersLoading) {
@@ -577,8 +570,6 @@ const ModelCollection: React.FC = () => {
 
       <div className="models-grid">
         {collectionData.models.map((model) => {
-          const modelStatus = getModelStatus(model);
-          
           return (
             <div key={`${model.order_id}-${model.product_id}`} className="model-card">
               <div className="model-header">
