@@ -17,7 +17,12 @@ import {
   FormField,
   ErrorMessage,
   SubmitButton,
-  LoadingSpinner
+  LoadingSpinner,
+  EmailIcon,
+  PasswordIcon,
+  EyeIcon,
+  EyeOffIcon,
+  ErrorIcon,
 } from '../shared/FormComponents';
 import { useAuthForm } from '../../hooks/useAuthForm';
 
@@ -201,92 +206,137 @@ const Login: React.FC<LoginProps> = ({ confirmationStatus = null }) => {
   );
 
   return (
-    <AuthContainer variant="login">
-      {/* Confirmation bannery */}
-      {confirmationStatus && (
-        <ConfirmationBanner status={confirmationStatus} />
-      )}
-
-      {/* Header sekcia */}
-      <AuthHeader
-        icon={<LoginIcon />}
-        title="Vitajte späť"
-        subtitle="Prihláste sa do svojho účtu"
-      />
-
-      {/* Chybové správy */}
-      {generalError && (
-        <ErrorMessage 
-          error={generalError}
-          isActivationError={generalError.includes('Account not activated')}
-        />
-      )}
-      
-      {/* Resend confirmation sekcia */}
-      {showResendConfirmation && (
-        <ResendConfirmation
-          onResend={handleResendConfirmation}
-          isResending={isResending}
-        />
-      )}
-      
-      {/* Login formulár */}
-      <form className="modern-login-form" onSubmit={handleSubmit}>
-        <FormField
-          label="Emailová adresa"
-          id="email"
-          name="email"
-          type="email"
-          value={data.email}
-          onChange={handleInputChange}
-          placeholder="Zadajte váš email"
-          required
-          autoComplete="email"
-          inputMode="email"
-          icon=""
-        />
-        
-        <FormField
-          label="Heslo"
-          id="password"
-          name="password"
-          value={data.password}
-          onChange={handleInputChange}
-          placeholder="Zadajte vaše heslo"
-          required
-          autoComplete="current-password"
-          icon=""
-          showPasswordToggle
-          showPassword={showPassword}
-          onTogglePassword={togglePasswordVisibility}
-        />
-
-        {/* Zabudnuté heslo link */}
-        <div className="form-options">
-          <Link to="/forgot-password" className="forgot-link">
-            Zabudli ste heslo?
-          </Link>
+    <div className="login-page">
+      <div className="login-main-container">
+        {/* Cassandra sekcia */}
+        <div className="login-mascot-section">
+          <img 
+            src="/cassandra/Register-Cass.png" 
+            alt="Cassandra - váš sprievodca prihlásením"
+            className="mascot-image-login"
+            loading="eager"
+            decoding="sync"
+          />
         </div>
-        
-        {/* Submit tlačidlo */}
-        <SubmitButton
-          isLoading={isProcessing}
-          loadingText="Prihlasovanie..."
-          defaultText="Prihlásiť sa"
-          className="login-submit-btn"
-        />
-      </form>
-      
-      {/* Footer */}
-      <div className="auth-footer">
-        <div className="divider">
-          <span>Nemáte účet?</span>
+
+        {/* Formulár sekcia */}
+        <div className="login-form-container">
+          {/* Confirmation bannery */}
+          {confirmationStatus && (
+            <ConfirmationBanner status={confirmationStatus} />
+          )}
+
+          <div className="form-header">
+            <div className="form-icon">
+              <LoginIcon />
+            </div>
+            <h1 className="form-title">Vitajte späť</h1>
+            <p className="form-subtitle">Prihláste sa do svojho účtu</p>
+          </div>
+
+          {/* Chybové správy */}
+          {generalError && (
+            <div className="form-error">
+              <ErrorIcon />
+              <span>{generalError}</span>
+            </div>
+          )}
+          
+          {/* Resend confirmation sekcia */}
+          {showResendConfirmation && (
+            <ResendConfirmation
+              onResend={handleResendConfirmation}
+              isResending={isResending}
+            />
+          )}
+          
+          {/* Login formulár */}
+          <form className="login-form" onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label htmlFor="email" className="form-label">
+                <EmailIcon size={18} />
+                Emailová adresa
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={data.email}
+                onChange={handleInputChange}
+                placeholder="Zadajte váš email"
+                className="form-input"
+                required
+                autoComplete="email"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="password" className="form-label">
+                <PasswordIcon size={18} />
+                Heslo
+              </label>
+              <div className="input-with-toggle">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  id="password"
+                  name="password"
+                  value={data.password}
+                  onChange={handleInputChange}
+                  placeholder="Zadajte vaše heslo"
+                  className="form-input"
+                  required
+                  autoComplete="current-password"
+                />
+                <button
+                  type="button"
+                  className="password-toggle-btn"
+                  onClick={togglePasswordVisibility}
+                  aria-label={showPassword ? 'Skryť heslo' : 'Zobraziť heslo'}
+                >
+                  {showPassword ? <EyeOffIcon size={18} /> : <EyeIcon size={18} />}
+                </button>
+              </div>
+            </div>
+
+            {/* Zabudnuté heslo link */}
+            <div className="form-options">
+              <Link to="/forgot-password" className="forgot-link">
+                Zabudli ste heslo?
+              </Link>
+            </div>
+            
+            {/* Submit tlačidlo */}
+            <button 
+              type="submit" 
+              className="form-submit-btn"
+              disabled={isProcessing}
+            >
+              {isProcessing ? (
+                <>
+                  <div className="btn-spinner"></div>
+                  Prihlasovanie...
+                </>
+              ) : (
+                <>
+                  Prihlásiť sa
+                  <svg className="btn-arrow" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                </>
+              )}
+            </button>
+          </form>
+          
+          {/* Footer */}
+          <div className="form-footer">
+            <span className="footer-text">Nemáte účet?</span>
+            <Link to="/register" className="footer-link">
+              Vytvoriť účet
+            </Link>
+          </div>
         </div>
-        <Link to="/register" className="auth-link">
-          Vytvoriť účet
-        </Link>
       </div>
-    </AuthContainer>
+    </div>
   );
 };
 
