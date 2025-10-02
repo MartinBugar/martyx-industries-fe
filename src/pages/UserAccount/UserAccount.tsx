@@ -38,6 +38,17 @@ const UserAccount: React.FC = () => {
   
   return (
     <div className="account-page">
+      {/* Floating Account Cassandra */}
+      <div className="account-floating-mascot">
+        <img 
+          src="/cassandra/Account-Cass.png" 
+          alt="Cassandra - váš sprievodca účtom"
+          className="floating-mascot-image-account"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+      
       <div className="account-container">
         {/* Compact Header with User Info */}
         <header className="account-header">

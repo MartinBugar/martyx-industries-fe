@@ -5,6 +5,7 @@
   background: var(--background);
   color: var(--text-primary);
   padding: 1rem;
+  position: relative;
 }
 
 .account-container {
@@ -13,6 +14,29 @@
   display: grid;
   gap: 1rem;
   grid-template-rows: auto 1fr;
+}
+
+/* ========== FLOATING MASCOT ========== */
+.account-floating-mascot {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.floating-mascot-image-account {
+  width: 250px;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(246, 200, 69, 0.2));
+  opacity: 0.9;
+  transition: all 0.3s ease;
+}
+
+.floating-mascot-image-account:hover {
+  opacity: 1;
+  transform: scale(1.05);
 }
 
 /* Loading State */
@@ -543,6 +567,15 @@
     padding: 0.5rem;
   }
   
+  .account-floating-mascot {
+    bottom: 1.5rem;
+    right: 1.5rem;
+  }
+  
+  .floating-mascot-image-account {
+    width: 200px;
+  }
+  
   .account-container {
     gap: 1rem;
   }
@@ -601,6 +634,15 @@
 }
 
 @media (max-width: 480px) {
+  .account-floating-mascot {
+    bottom: 1rem;
+    right: 1rem;
+  }
+  
+  .floating-mascot-image-account {
+    width: 150px;
+  }
+  
   .account-header {
     padding: 0.75rem;
   }
@@ -726,5 +768,16 @@
 @media (max-width: 768px) {
   .collection-content {
     padding: 1rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .account-floating-mascot {
+    bottom: 0.75rem;
+    right: 0.75rem;
+  }
+  
+  .floating-mascot-image-account {
+    width: 120px;
   }
 }
