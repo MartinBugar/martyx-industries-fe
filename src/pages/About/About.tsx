@@ -50,11 +50,16 @@ const About: React.FC = () => {
                         </div>
 
                         <div className="hero-cta">
-                            <Link to="/products" className="hero-button primary">
-                                <span
-                                    className="button-text">{t('cta.button', {defaultValue: 'Prezrieť katalóg'})}</span>
-                                <span className="button-arrow">→</span>
-                            </Link>
+                            <div className="hero-button-container">
+                                <Link to="/products" className="hero-button modern">
+                                    <span className="button-content">
+                                        <span className="button-icon">🚀</span>
+                                        <span className="button-text">{t('cta.button', {defaultValue: 'Prezrieť katalóg'})}</span>
+                                        <span className="button-arrow">→</span>
+                                    </span>
+                                    <div className="button-shine"></div>
+                                </Link>
+                            </div>
                         </div>
                     </div>
 

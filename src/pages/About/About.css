@@ -162,53 +162,97 @@
     display: flex;
     flex-direction: column;
     gap: 2rem;
-    align-items: flex-start;
+    align-items: center;
+    width: 100%;
 }
 
-.hero-button.primary {
+.hero-button-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.hero-button.modern {
     display: inline-flex;
     align-items: center;
-    gap: 1rem;
-    padding: 1.5rem 3rem;
+    justify-content: center;
+    padding: 1rem 2.5rem;
     background: linear-gradient(135deg, #F6C845, #E6B82D);
     color: #0B0F14;
     text-decoration: none;
-    border-radius: 50px;
-    font-size: 1.2rem;
-    font-weight: 700;
-    transition: all 0.3s ease;
+    border-radius: 16px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    transition: all 0.4s ease;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 8px 30px rgba(246, 200, 69, 0.4);
+    box-shadow: 
+        0 4px 20px rgba(246, 200, 69, 0.3),
+        0 1px 3px rgba(0, 0, 0, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    min-width: 200px;
 }
 
-.hero-button.primary::before {
-    content: '';
+.button-content {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    position: relative;
+    z-index: 2;
+}
+
+.button-icon {
+    font-size: 1.2rem;
+    transition: transform 0.3s ease;
+}
+
+.button-text {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.button-arrow {
+    font-size: 1.2rem;
+    transition: transform 0.3s ease;
+    opacity: 0.8;
+}
+
+.button-shine {
     position: absolute;
     top: 0;
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-    transition: left 0.5s ease;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: left 0.6s ease;
+    z-index: 1;
 }
 
-.hero-button.primary:hover::before {
+.hero-button.modern:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 
+        0 8px 30px rgba(246, 200, 69, 0.5),
+        0 4px 15px rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.hero-button.modern:hover .button-shine {
     left: 100%;
 }
 
-.hero-button.primary:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 40px rgba(246, 200, 69, 0.5);
+.hero-button.modern:hover .button-icon {
+    transform: rotate(15deg) scale(1.1);
 }
 
-.button-arrow {
-    font-size: 1.5rem;
-    transition: transform 0.3s ease;
+.hero-button.modern:hover .button-arrow {
+    transform: translateX(3px);
+    opacity: 1;
 }
 
-.hero-button.primary:hover .button-arrow {
-    transform: translateX(5px);
+.hero-button.modern:active {
+    transform: translateY(0) scale(0.98);
+    transition: all 0.1s ease;
 }
 
 .hero-stats {
@@ -1386,9 +1430,10 @@
         width: 220px;
     }
 
-    .hero-button.primary {
-        padding: 1.2rem 2.5rem;
-        font-size: 1.1rem;
+    .hero-button.modern {
+        padding: 0.9rem 2rem;
+        font-size: 1rem;
+        min-width: 180px;
     }
 
     .stats-title {
