@@ -11,7 +11,7 @@
   --registration-gap: 4rem;
   
   /* Form Design */
-  --form-width: 420px;
+  --form-width: 520px;
   --form-padding: 2.5rem;
   --form-border-radius: 20px;
   --form-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
@@ -42,9 +42,9 @@
   min-height: 100vh;
   background: var(--background);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: 2rem 1rem;
+  padding: 1.5rem 1rem 2rem;
   position: relative;
   overflow: hidden;
 }
@@ -74,15 +74,8 @@
   height: auto;
   object-fit: contain;
   filter: drop-shadow(0 20px 40px rgba(246, 200, 69, 0.15));
-  animation: mascotFloat 6s ease-in-out infinite;
 }
 
-@keyframes mascotFloat {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  25% { transform: translateY(-10px) rotate(1deg); }
-  50% { transform: translateY(-5px) rotate(0deg); }
-  75% { transform: translateY(-15px) rotate(-1deg); }
-}
 
 /* ===== FORM CONTAINER ===== */
 .registration-form-container {
