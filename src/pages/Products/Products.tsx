@@ -335,6 +335,17 @@ const Products: React.FC = () => {
                     )}
                 </div>
             </div>
+            
+            {/* Floating Products Cassandra */}
+            <div className="products-floating-mascot">
+                <img 
+                    src="/cassandra/Products-Cass.png" 
+                    alt="Cassandra - váš sprievodca produktmi"
+                    className="floating-mascot-image-products"
+                    loading="eager"
+                    decoding="sync"
+                />
+            </div>
         </div>
     );
 };
