@@ -30,7 +30,7 @@ const Wishlist: React.FC = () => {
   } = useWishlist();
   const { addToCart } = useCart();
 
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [viewMode] = useState<'grid' | 'list'>('grid');
   const [showStats, setShowStats] = useState(false);
   const [productsData, setProductsData] = useState<Map<number, Product>>(new Map());
   const [loadingProducts, setLoadingProducts] = useState(false);

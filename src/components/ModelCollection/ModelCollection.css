@@ -27,7 +27,7 @@
 .stats-container {
   display: flex;
   justify-content: center;
-  margin-bottom: 2.5rem;
+  margin-bottom: 3rem;
 }
 
 .stats-card {
@@ -83,6 +83,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   gap: 2rem;
+  margin-top: 1rem;
 }
 
 .model-card {
@@ -833,9 +834,17 @@
     font-size: 0.95rem;
   }
   
+  .stats-container {
+    margin-bottom: 2rem;
+  }
+  
   .stats-card {
     gap: 1.5rem;
     padding: 1rem 1.5rem;
+  }
+  
+  .models-grid {
+    margin-top: 0.75rem;
   }
   
   .stat-number {
