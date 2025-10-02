@@ -145,6 +145,104 @@
   color: #EF4444;
 }
 
+/* Model Controls & Toggles */
+.model-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.model-toggles {
+  display: flex;
+  gap: 1rem;
+}
+
+.toggle-group {
+  display: flex;
+  align-items: center;
+}
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  transition: color 0.2s ease;
+}
+
+.toggle-label:hover {
+  color: var(--text-primary);
+}
+
+.toggle-checkbox {
+  display: none;
+}
+
+.toggle-slider {
+  position: relative;
+  width: 40px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.toggle-slider::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  background: #ffffff;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-checkbox:checked + .toggle-slider {
+  background: linear-gradient(135deg, #F6C845 0%, #E6B82D 100%);
+  border-color: #F6C845;
+}
+
+.toggle-checkbox:checked + .toggle-slider::before {
+  transform: translateX(20px);
+  background: #0f172a;
+}
+
+.toggle-checkbox:disabled + .toggle-slider {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.toggle-text {
+  font-weight: 500;
+  user-select: none;
+}
+
+.updating-indicator {
+  display: flex;
+  align-items: center;
+}
+
+.mini-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(246, 200, 69, 0.3);
+  border-top: 2px solid #F6C845;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 .model-info {
   margin-bottom: 1.5rem;
   padding: 1.25rem;
@@ -862,7 +960,34 @@
   .model-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.5rem;
+    gap: 0.75rem;
+  }
+  
+  .model-controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .model-toggles {
+    gap: 0.75rem;
+  }
+  
+  .toggle-label {
+    font-size: 0.8rem;
+  }
+  
+  .toggle-slider {
+    width: 36px;
+    height: 18px;
+  }
+  
+  .toggle-slider::before {
+    width: 12px;
+    height: 12px;
+  }
+  
+  .toggle-checkbox:checked + .toggle-slider::before {
+    transform: translateX(18px);
   }
   
   .model-info {

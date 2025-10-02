@@ -31,6 +31,8 @@ interface PurchasedModel {
   photos: ModelPhoto[];
   can_upload: boolean;
   max_photos: number;
+  is_completed: boolean;
+  is_public: boolean;
 }
 
 interface CollectionData {
@@ -48,6 +50,7 @@ const ModelCollection: React.FC = () => {
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [galleryModalOpen, setGalleryModalOpen] = useState(false);
   const [deletingPhotoId, setDeletingPhotoId] = useState<number | null>(null);
+  const [updatingModel, setUpdatingModel] = useState<string | null>(null);
 
   // Load photos for a specific model/product
   const loadPhotosForModel = async (productId: string): Promise<ModelPhoto[]> => {
@@ -133,7 +136,9 @@ const ModelCollection: React.FC = () => {
               currency: order.currency,
               photos: [], // Will be loaded below
               can_upload: true,
-              max_photos: 10
+              max_photos: 10,
+              is_completed: false, // Default to not completed
+              is_public: false // Default to private
             });
           });
         });
@@ -293,6 +298,82 @@ const ModelCollection: React.FC = () => {
     }
   };
 
+  const updateModelStatus = async (productId: string, field: 'is_completed' | 'is_public', value: boolean) => {
+    setUpdatingModel(productId);
+    
+    try {
+      const token = getAuthToken();
+      if (!token) {
+        throw new Error('Nie ste prihlásený');
+      }
+
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL || 'http://localhost:8080'}/api/user-models/${productId}/status`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            [field]: value
+          })
+        }
+      );
+
+      if (!response.ok) {
+        if (response.status === 500) {
+          console.warn(`Backend endpoint PATCH /api/user-models/${productId}/status not implemented yet`);
+          
+          // Mock update for testing
+          if (import.meta.env.VITE_MOCK_UPDATES === 'true') {
+            console.log(`🎭 Mock mode - simulating ${field} update to ${value}`);
+            
+            // Update local state
+            setCollectionData(prev => {
+              if (!prev) return prev;
+              
+              return {
+                ...prev,
+                models: prev.models.map(model => 
+                  model.product_id === productId 
+                    ? { ...model, [field]: value }
+                    : model
+                )
+              };
+            });
+            
+            return;
+          }
+        }
+        
+        const errorData = await response.text();
+        throw new Error(`Nepodarilo sa aktualizovať model: ${response.status} ${errorData}`);
+      }
+
+      // Update the collection data locally
+      setCollectionData(prev => {
+        if (!prev) return prev;
+        
+        return {
+          ...prev,
+          models: prev.models.map(model => 
+            model.product_id === productId 
+              ? { ...model, [field]: value }
+              : model
+          )
+        };
+      });
+
+      console.log(`Model ${field} updated successfully to ${value}`);
+    } catch (err: any) {
+      console.error(`Error updating model ${field}:`, err);
+      alert(err.message || `Nepodarilo sa aktualizovať ${field === 'is_completed' ? 'stav dokončenia' : 'verejnosť'}`);
+    } finally {
+      setUpdatingModel(null);
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     // Don't show badge for approved photos (default state)
     if (status === 'approved') {
@@ -315,32 +396,13 @@ const ModelCollection: React.FC = () => {
   };
 
   const getModelStatus = (model: PurchasedModel) => {
-    if (model.photos.length === 0) {
+    if (model.is_completed) {
+      return { text: 'Dokončený', class: 'model-status-completed' };
+    } else {
       return { text: 'Nie je dokončený', class: 'model-status-incomplete' };
     }
-    
-    const hasApproved = model.photos.some(photo => photo.verificationStatus === 'approved');
-    if (hasApproved) {
-      return { text: 'Dokončený', class: 'model-status-completed' };
-    }
-    
-    const hasPending = model.photos.some(photo => photo.verificationStatus === 'pending');
-    if (hasPending) {
-      return { text: 'Čaká na schválenie', class: 'model-status-pending' };
-    }
-    
-    return { text: 'Potrebuje nové fotky', class: 'model-status-needs-photos' };
   };
 
-  if (!user) {
-    return (
-      <div className="collection-error">
-        <div className="error-icon">🔒</div>
-        <h3>Prihlásenie potrebné</h3>
-        <p>Prosím, prihláste sa pre zobrazenie zbierky modelov.</p>
-      </div>
-    );
-  }
 
   if (loading || ordersLoading) {
     return (
@@ -411,9 +473,41 @@ const ModelCollection: React.FC = () => {
             <div key={`${model.order_id}-${model.product_id}`} className="model-card">
               <div className="model-header">
                 <h3 className="model-name">{model.product_name}</h3>
-                <span className={`model-status ${modelStatus.class}`}>
-                  {modelStatus.text}
-                </span>
+                <div className="model-controls">
+                  <div className="model-toggles">
+                    <div className="toggle-group">
+                      <label className="toggle-label">
+                        <input
+                          type="checkbox"
+                          checked={model.is_completed}
+                          onChange={(e) => updateModelStatus(model.product_id, 'is_completed', e.target.checked)}
+                          disabled={updatingModel === model.product_id}
+                          className="toggle-checkbox"
+                        />
+                        <span className="toggle-slider"></span>
+                        <span className="toggle-text">Dokončené</span>
+                      </label>
+                    </div>
+                    <div className="toggle-group">
+                      <label className="toggle-label">
+                        <input
+                          type="checkbox"
+                          checked={model.is_public}
+                          onChange={(e) => updateModelStatus(model.product_id, 'is_public', e.target.checked)}
+                          disabled={updatingModel === model.product_id}
+                          className="toggle-checkbox"
+                        />
+                        <span className="toggle-slider"></span>
+                        <span className="toggle-text">Verejné</span>
+                      </label>
+                    </div>
+                  </div>
+                  {updatingModel === model.product_id && (
+                    <div className="updating-indicator">
+                      <div className="mini-spinner"></div>
+                    </div>
+                  )}
+                </div>
               </div>
               
 
