@@ -556,13 +556,13 @@
   .contact-page {
     padding: clamp(2rem, 3vw, 3rem) 0;
   }
-  
+
   /* Ensure proper two-column layout */
   .contact-container {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 2fr;
     gap: clamp(2rem, 4vw, 3rem);
   }
-  
+
   /* Prevent buttons from being too wide on desktop */
   .submit-btn {
     max-width: 300px;
