@@ -25,16 +25,12 @@ const Wishlist: React.FC = () => {
     error,
     totalCount,
     lastUpdated,
-    cleanupWishlist,
-    removeMultiple,
     clearError,
     refreshWishlist
   } = useWishlist();
   const { addToCart } = useCart();
 
-  const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set());
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [isCleaningUp, setIsCleaningUp] = useState(false);
   const [showStats, setShowStats] = useState(false);
   const [productsData, setProductsData] = useState<Map<number, Product>>(new Map());
   const [loadingProducts, setLoadingProducts] = useState(false);
@@ -128,53 +124,6 @@ const Wishlist: React.FC = () => {
     fetchProductsData();
   }, [items]);
 
-  const handleSelectItem = useCallback((productId: number) => {
-    setSelectedItems(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(productId)) {
-        newSet.delete(productId);
-      } else {
-        newSet.add(productId);
-      }
-      return newSet;
-    });
-  }, []);
-
-  const handleSelectAll = useCallback(() => {
-    if (selectedItems.size === items.length) {
-      setSelectedItems(new Set());
-    } else {
-      setSelectedItems(new Set(items.map(item => item.productId)));
-    }
-  }, [selectedItems.size, items]);
-
-  const handleRemoveSelected = useCallback(async () => {
-    if (selectedItems.size === 0) return;
-
-    try {
-      await removeMultiple(Array.from(selectedItems));
-      setSelectedItems(new Set());
-    } catch (err) {
-      if (import.meta.env.DEV) {
-        console.error('Failed to remove selected items:', err);
-      }
-    }
-  }, [selectedItems, removeMultiple]);
-
-  const handleCleanup = async () => {
-    setIsCleaningUp(true);
-    try {
-      const removedCount = await cleanupWishlist();
-      if (removedCount > 0) {
-        // Show success message or toast
-        console.log(`Removed ${removedCount} unavailable items`);
-      }
-    } catch (err) {
-      console.error('Failed to cleanup wishlist:', err);
-    } finally {
-      setIsCleaningUp(false);
-    }
-  };
 
 
   const handleAddToCart = useCallback((item: WishlistItem) => {
@@ -341,98 +290,11 @@ const Wishlist: React.FC = () => {
           </div>
         ) : (
           <>
-            {/* Toolbar */}
-            <div className="wishlist-toolbar">
-              <div className="toolbar-left">
-                <label className="checkbox-container">
-                  <input
-                    type="checkbox"
-                    checked={selectedItems.size === items.length && items.length > 0}
-                    onChange={handleSelectAll}
-                    disabled={items.length === 0}
-                  />
-                  <span className="checkmark"></span>
-                  Select All ({items.length})
-                </label>
-
-                {selectedItems.size > 0 && (
-                  <button
-                    className="btn btn-danger"
-                    onClick={handleRemoveSelected}
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <polyline points="3,6 5,6 21,6"/>
-                      <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2v2"/>
-                    </svg>
-                    Remove Selected ({selectedItems.size})
-                  </button>
-                )}
-              </div>
-
-              <div className="toolbar-right">
-                {unavailableItems.length > 0 && (
-                  <button
-                    className="btn btn-outline"
-                    onClick={handleCleanup}
-                    disabled={isCleaningUp}
-                  >
-                    {isCleaningUp ? (
-                      <LoadingSpinner size="small" />
-                    ) : (
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M3 6h18l-2 13H5L3 6z"/>
-                        <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                      </svg>
-                    )}
-                    Clean up
-                  </button>
-                )}
-
-                <div className="view-mode-toggle">
-                  <button
-                    className={`view-mode-btn ${viewMode === 'grid' ? 'active' : ''}`}
-                    onClick={() => setViewMode('grid')}
-                    aria-label="Grid view"
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <rect x="3" y="3" width="7" height="7"/>
-                      <rect x="14" y="3" width="7" height="7"/>
-                      <rect x="14" y="14" width="7" height="7"/>
-                      <rect x="3" y="14" width="7" height="7"/>
-                    </svg>
-                  </button>
-                  <button
-                    className={`view-mode-btn ${viewMode === 'list' ? 'active' : ''}`}
-                    onClick={() => setViewMode('list')}
-                    aria-label="List view"
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <line x1="8" y1="6" x2="21" y2="6"/>
-                      <line x1="8" y1="12" x2="21" y2="12"/>
-                      <line x1="8" y1="18" x2="21" y2="18"/>
-                      <line x1="3" y1="6" x2="3.01" y2="6"/>
-                      <line x1="3" y1="12" x2="3.01" y2="12"/>
-                      <line x1="3" y1="18" x2="3.01" y2="18"/>
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            </div>
 
             {/* Wishlist Items */}
             <div className={`wishlist-items wishlist-items--${viewMode}`}>
               {availableItems.map((item) => (
                 <article key={item.id} className="product-card wishlist-product-card">
-                  <div className="product-card-checkbox">
-                    <label className="checkbox-container">
-                      <input
-                        type="checkbox"
-                        checked={selectedItems.has(item.productId)}
-                        onChange={() => handleSelectItem(item.productId)}
-                      />
-                      <span className="checkmark"></span>
-                    </label>
-                  </div>
 
                   <Link to={`/products/${item.productId}`} className="product-card-link">
                     <div className="product-card-image-container">
@@ -501,16 +363,6 @@ const Wishlist: React.FC = () => {
 
                   {unavailableItems.map((item) => (
                     <article key={item.id} className="product-card wishlist-product-card wishlist-product-card--unavailable">
-                      <div className="product-card-checkbox">
-                        <label className="checkbox-container">
-                          <input
-                            type="checkbox"
-                            checked={selectedItems.has(item.productId)}
-                            onChange={() => handleSelectItem(item.productId)}
-                          />
-                          <span className="checkmark"></span>
-                        </label>
-                      </div>
 
                       <Link to={`/products/${item.productId}`} className="product-card-link">
                         <div className="product-card-image-container">
