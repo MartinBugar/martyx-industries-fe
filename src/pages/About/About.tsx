@@ -90,23 +90,18 @@ const About: React.FC = () => {
                   className="mascot-image"
                   loading="eager"
                 />
+                <div className="mascot-footer">
+                  <div className="mascot-info-card">
+                    <h3 className="mascot-name">Cassandra</h3>
+                    <p className="mascot-role">Váš 3D sprievodca</p>
+                  </div>
+                </div>
                 <div className="mascot-glow"></div>
-              </div>
-              <div className="mascot-info">
-                <h3 className="mascot-name">Cassandra</h3>
-                <p className="mascot-role">Váš 3D sprievodca</p>
               </div>
             </div>
           </div>
         </div>
         
-        {/* Floating Elements */}
-        <div className="floating-elements">
-          <div className="float-element element-1">🔧</div>
-          <div className="float-element element-2">⚙️</div>
-          <div className="float-element element-3">🎯</div>
-          <div className="float-element element-4">✨</div>
-        </div>
       </section>
 
       {/* Enhanced Stats Section */}
