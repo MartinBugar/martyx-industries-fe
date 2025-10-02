@@ -90,17 +90,29 @@ const Home: React.FC = () => {
         <div className="container">
           <div className="hero-grid">
             <div className="hero-copy">
-              <h1 className="hero-title">{t('hero.title')}</h1>
-              <p className="hero-sub">{t('hero.subtitle')}</p>
-              <div className="hero-ctas">
-                <Link to="/products" className="btn btn-accent" onClick={() => console.log('hero_shop_kits_click')}>{t('hero.shop_kits')}</Link>
-                <Link to="/products" className="btn btn-outline" onClick={() => console.log('hero_download_stl_click')}>{t('hero.download_stl')}</Link>
+              <div className="hero-content-wrapper">
+                <div className="hero-mascot-container">
+                  <img
+                    src="/cassandra/2.png"
+                    alt="Cassandra - Váš 3D sprievodca"
+                    className="mascot-image-home"
+                    loading="eager"
+                  />
+                </div>
+                <div className="hero-text-content">
+                  <h1 className="hero-title">{t('hero.title')}</h1>
+                  <p className="hero-sub">{t('hero.subtitle')}</p>
+                  <div className="hero-ctas">
+                    <Link to="/products" className="btn btn-accent" onClick={() => console.log('hero_shop_kits_click')}>{t('hero.shop_kits')}</Link>
+                    <Link to="/products" className="btn btn-outline" onClick={() => console.log('hero_download_stl_click')}>{t('hero.download_stl')}</Link>
+                  </div>
+                  <ul className="hero-kpis" aria-label={t('hero.facts.assembly_time')}>
+                    <li>{t('hero.facts.assembly_time')}</li>
+                    <li>{t('hero.facts.layer_optimization')}</li>
+                    <li>{t('hero.facts.electronics_ready')}</li>
+                  </ul>
+                </div>
               </div>
-              <ul className="hero-kpis" aria-label={t('hero.facts.assembly_time')}>
-                <li>{t('hero.facts.assembly_time')}</li>
-                <li>{t('hero.facts.layer_optimization')}</li>
-                <li>{t('hero.facts.electronics_ready')}</li>
-              </ul>
             </div>
             <div className="hero-visual">
               {heroSrc ? (
