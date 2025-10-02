@@ -113,20 +113,26 @@ const CartPage: React.FC<CartPageProps> = ({
         {isEmpty ? (
           <section className="cart-items" role="region" aria-labelledby="empty">
             <div className="empty-cart">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
-                <circle cx="9" cy="21" r="1"/>
-                <circle cx="20" cy="21" r="1"/>
-                <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
-              </svg>
-              <h3 id="empty">{t('cart.empty')}</h3>
-              <p>{t('cart.empty_description')}</p>
-              <a className="continue-shopping" onClick={handleBackToShopping} href="#stay"
-                 aria-label={t('cart.continue_shopping')}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M19 12H5M5 12l7 7m-7-7l7-7"/>
-                </svg>
-                {t('cart.continue_shopping')}
-              </a>
+              <div className="empty-cart-mascot">
+                <img 
+                  src="/cassandra/Empty-Cass.png" 
+                  alt="Cassandra - váš sprievodca prázdnym košíkom"
+                  className="mascot-image-empty-cart"
+                  loading="eager"
+                  decoding="sync"
+                />
+              </div>
+              <div className="empty-cart-content">
+                <h3 id="empty">{t('cart.empty')}</h3>
+                <p>{t('cart.empty_description')}</p>
+                <button className="continue-shopping-btn" onClick={handleBackToShopping}
+                       aria-label={t('cart.continue_shopping')}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M19 12H5M5 12l7 7m-7-7l7-7"/>
+                  </svg>
+                  {t('cart.continue_shopping')}
+                </button>
+              </div>
             </div>
           </section>
         ) : (
