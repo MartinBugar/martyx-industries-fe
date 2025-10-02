@@ -67,8 +67,7 @@ const Contact: React.FC = () => {
         {/* Company Information - Left Side */}
         <section className="company-info" aria-labelledby="company-info-title">
         
-        
-          <h2 id="company-info-title">{t('company_info.title')}</h2>
+    
           
           <div className="company-info-content">
             {/* Top Section: Address and Contact Details */}
