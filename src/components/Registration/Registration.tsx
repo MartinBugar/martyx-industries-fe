@@ -128,111 +128,143 @@ const Registration: React.FC = () => {
      */
     if (successMessage) {
         return (
-            <AuthContainer variant="registration">
-                <AuthHeader
-                    icon={<RegistrationIcon/>}
-                    title="Skontrolujte svoj email"
-                    subtitle="Odoslali sme vám potvrdzovací link"
-                />
+            <div className="registration-container">
+                {/* Maskot sekcia */}
+                <div className="registration-mascot">
+                    <img 
+                        src="/cassandra/Register-Cass.png" 
+                        alt="Cassandra - váš sprievodca registráciou"
+                        className="mascot-image-register"
+                        loading="eager"
+                        decoding="sync"
+                    />
+                </div>
 
-                <SuccessMessage
-                    title="Registrácia úspešná!"
-                    message={successMessage}
-                    actionButton={
-                        <button
-                            ref={loginBtnRef}
-                            className="go-to-login-btn"
-                            onClick={handleGoToLogin}
-                            type="button"
-                        >
-                            Prejsť na prihlásenie
-                        </button>
-                    }
-                />
-            </AuthContainer>
+                {/* Success sekcia */}
+                <div className="registration-form-section">
+                    <AuthContainer variant="registration">
+                        <AuthHeader
+                            icon={<RegistrationIcon/>}
+                            title="Skontrolujte svoj email"
+                            subtitle="Odoslali sme vám potvrdzovací link"
+                        />
+
+                        <SuccessMessage
+                            title="Registrácia úspešná!"
+                            message={successMessage}
+                            actionButton={
+                                <button
+                                    ref={loginBtnRef}
+                                    className="go-to-login-btn"
+                                    onClick={handleGoToLogin}
+                                    type="button"
+                                >
+                                    Prejsť na prihlásenie
+                                </button>
+                            }
+                        />
+                    </AuthContainer>
+                </div>
+            </div>
         );
     }
 
     return (
-        <AuthContainer variant="registration">
-            {/* Header sekcia */}
-            <AuthHeader
-                icon={<RegistrationIcon/>}
-                title="Vytvoriť účet"
-                subtitle="Pridajte sa k nám a začnite svoju cestu"
-            />
-
-            {/* Chybové správy */}
-            {generalError && (
-                <ErrorMessage error={generalError}/>
-            )}
-
-            {/* Registračný formulár */}
-            <form className="modern-registration-form" onSubmit={handleSubmit}>
-                <FormField
-                    label="Emailová adresa"
-                    id="email"
-                    name="email"
-                    type="email"
-                    value={data.email}
-                    onChange={handleInputChange}
-                    placeholder="Zadajte váš email"
-                    required
-                    autoComplete="email"
-                    inputMode="email"
-                    icon=""
+        <div className="registration-container">
+            {/* Maskot sekcia */}
+            <div className="registration-mascot">
+                <img 
+                    src="/cassandra/Register-Cass.png" 
+                    alt="Cassandra - váš sprievodca registráciou"
+                    className="mascot-image-register"
+                    loading="eager"
+                    decoding="sync"
                 />
-
-                <FormField
-                    label="Heslo"
-                    id="password"
-                    name="password"
-                    value={data.password}
-                    onChange={handleInputChange}
-                    placeholder="Zadajte heslo (min. 6 znakov)"
-                    required
-                    minLength={6}
-                    autoComplete="new-password"
-                    icon=""
-                    showPasswordToggle
-                    showPassword={showPassword}
-                    onTogglePassword={togglePasswordVisibility}
-                />
-
-                <FormField
-                    label="Potvrdiť heslo"
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    value={data.confirmPassword || ''}
-                    onChange={handleInputChange}
-                    placeholder="Potvrďte vaše heslo"
-                    required
-                    autoComplete="new-password"
-                    icon=""
-                    showPasswordToggle
-                    showPassword={showConfirmPassword}
-                    onTogglePassword={toggleConfirmPasswordVisibility}
-                />
-
-                {/* Submit tlačidlo */}
-                <SubmitButton
-                    isLoading={isProcessing}
-                    loadingText="Vytváram účet..."
-                    defaultText="Vytvoriť účet"
-                    className="registration-submit-btn"
-                />
-            </form>
-
-            {/* Footer */}
-            <div className="auth-footer">
-                <div className="divider">
-                    <span>Máte už účet?</span>
-                </div>
-                <Link to="/login" className="auth-link">
-                    Prihlásiť sa
-                </Link>
             </div>
-        </AuthContainer>
+
+            {/* Formulár sekcia */}
+            <div className="registration-form-section">
+                <AuthContainer variant="registration">
+                    {/* Header sekcia */}
+                    <AuthHeader
+                        icon={<RegistrationIcon/>}
+                        title="Vytvoriť účet"
+                        subtitle="Pridajte sa k nám a začnite svoju cestu"
+                    />
+
+                    {/* Chybové správy */}
+                    {generalError && (
+                        <ErrorMessage error={generalError}/>
+                    )}
+
+                    {/* Registračný formulár */}
+                    <form className="modern-registration-form" onSubmit={handleSubmit}>
+                        <FormField
+                            label="Emailová adresa"
+                            id="email"
+                            name="email"
+                            type="email"
+                            value={data.email}
+                            onChange={handleInputChange}
+                            placeholder="Zadajte váš email"
+                            required
+                            autoComplete="email"
+                            inputMode="email"
+                            icon=""
+                        />
+
+                        <FormField
+                            label="Heslo"
+                            id="password"
+                            name="password"
+                            value={data.password}
+                            onChange={handleInputChange}
+                            placeholder="Zadajte heslo (min. 6 znakov)"
+                            required
+                            minLength={6}
+                            autoComplete="new-password"
+                            icon=""
+                            showPasswordToggle
+                            showPassword={showPassword}
+                            onTogglePassword={togglePasswordVisibility}
+                        />
+
+                        <FormField
+                            label="Potvrdiť heslo"
+                            id="confirmPassword"
+                            name="confirmPassword"
+                            value={data.confirmPassword || ''}
+                            onChange={handleInputChange}
+                            placeholder="Potvrďte vaše heslo"
+                            required
+                            autoComplete="new-password"
+                            icon=""
+                            showPasswordToggle
+                            showPassword={showConfirmPassword}
+                            onTogglePassword={toggleConfirmPasswordVisibility}
+                        />
+
+                        {/* Submit tlačidlo */}
+                        <SubmitButton
+                            isLoading={isProcessing}
+                            loadingText="Vytváram účet..."
+                            defaultText="Vytvoriť účet"
+                            className="registration-submit-btn"
+                        />
+                    </form>
+
+                    {/* Footer */}
+                    <div className="auth-footer">
+                        <div className="divider">
+                            <span>Máte už účet?</span>
+                        </div>
+                        <Link to="/login" className="auth-link">
+                            Prihlásiť sa
+                        </Link>
+                    </div>
+                </AuthContainer>
+            </div>
+        </div>
     );
 };
 
