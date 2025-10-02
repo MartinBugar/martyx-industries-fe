@@ -682,6 +682,21 @@
     .mascot-image-home {
         max-height: 150px;
     }
+    
+    .hero-content-wrapper {
+        min-height: 300px;
+    }
+}
+
+@media (max-width: 360px) {
+    .mascot-image-home {
+        max-height: 120px;
+    }
+    
+    .hero-content-wrapper {
+        min-height: 250px;
+        gap: 1rem;
+    }
 }
 
 /* Accessibility helpers */

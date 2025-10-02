@@ -186,6 +186,7 @@
 @media (max-width: 480px) {
   .contact-container {
     gap: 1.5rem;
+    padding: 0.75rem;
   }
   
   .contact-info-section {
@@ -196,6 +197,29 @@
   
   .contact-mascot-image {
     width: 160px;
+    max-width: 90vw;
+  }
+}
+
+@media (max-width: 360px) {
+  .contact-container {
+    gap: 1rem;
+    padding: 0.5rem;
+  }
+  
+  .contact-mascot-image {
+    width: 140px;
+    max-width: 85vw;
+  }
+  
+  .contact-form-section {
+    padding: 1rem 0.75rem;
+  }
+  
+  .contact-info-section {
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
   }
 }
 

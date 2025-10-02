@@ -707,25 +707,27 @@
 
 @media (max-width: 480px) {
   .wishlist-empty {
-    padding: 32px 16px;
+    padding: 24px 12px;
     gap: 1rem;
   }
   
   .mascot-image-wishlist {
-    max-width: 200px;
+    max-width: 180px;
   }
   
   .empty-content h2 {
     font-size: 18px;
+    line-height: 1.3;
   }
   
   .empty-content p {
     font-size: 14px;
+    line-height: 1.4;
   }
   
   .wishlist-floating-mascot {
-    bottom: 1rem;
-    right: 1rem;
+    bottom: 0.75rem;
+    right: 0.75rem;
   }
   
   .floating-mascot-image {
@@ -733,12 +735,63 @@
   }
   
   .wishlist-container {
-    padding: 12px;
+    padding: 8px;
   }
 
   .wishlist-title {
-    font-size: 20px;
+    font-size: 18px;
   }
+  
+  .wishlist-header {
+    margin-bottom: 20px;
+  }
+  
+  .btn {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 360px) {
+  .wishlist-empty {
+    padding: 20px 8px;
+    gap: 0.75rem;
+  }
+  
+  .mascot-image-wishlist {
+    max-width: 150px;
+  }
+  
+  .empty-content h2 {
+    font-size: 16px;
+  }
+  
+  .empty-content p {
+    font-size: 13px;
+  }
+  
+  .wishlist-floating-mascot {
+    bottom: 0.5rem;
+    right: 0.5rem;
+  }
+  
+  .floating-mascot-image {
+    width: 100px;
+  }
+  
+  .wishlist-container {
+    padding: 6px;
+  }
+  
+  .wishlist-title {
+    font-size: 16px;
+  }
+  
+  .btn {
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+}
 
   .stats-grid {
     grid-template-columns: 1fr;
