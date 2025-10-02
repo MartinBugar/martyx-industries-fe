@@ -93,5 +93,12 @@
   "confirmation_email": "A confirmation email has been sent to {email}",
   "terms_agreement": "I agree to the Terms of Service and Privacy Policy",
   "secure_checkout": "Secure Checkout",
-  "ssl_secured": "SSL Secured"
+  "ssl_secured": "SSL Secured",
+  "payment": {
+    "processing": "Processing your payment...",
+    "success": "Payment completed successfully!",
+    "error": "Payment failed. Please try again.",
+    "failed": "Payment failed. Please try again.",
+    "not_completed": "Payment not completed. Please try again or contact support."
+  }
 }

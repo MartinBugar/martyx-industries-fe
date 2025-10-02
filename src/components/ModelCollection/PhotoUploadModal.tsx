@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getAuthToken, debugToken } from '../../utils/tokenUtils';
 
 interface PurchasedModel {
@@ -29,6 +30,7 @@ interface SelectedFile {
 }
 
 const PhotoUploadModal: React.FC<PhotoUploadModalProps> = ({ model, onClose, onSuccess }) => {
+  const { t } = useTranslation('collection');
   const [selectedFiles, setSelectedFiles] = useState<SelectedFile[]>([]);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -279,7 +281,7 @@ const PhotoUploadModal: React.FC<PhotoUploadModalProps> = ({ model, onClose, onS
     <div className="modal-overlay" onClick={onClose}>
       <div className="upload-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h3>Upload fotiek</h3>
+          <h3>{t('upload.title')}</h3>
           <button className="close-button" onClick={onClose}>
             <svg viewBox="0 0 24 24" fill="none">
               <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
@@ -290,7 +292,7 @@ const PhotoUploadModal: React.FC<PhotoUploadModalProps> = ({ model, onClose, onS
         <div className="modal-content">
           <div className="model-info">
             <h4>{model.product_name}</h4>
-            <p>Aktuálne fotky: {model.photos.length} / {model.max_photos}</p>
+            <p>{t('model.photos_count')}: {model.photos.length} / {model.max_photos}</p>
           </div>
 
           <div 
@@ -307,10 +309,8 @@ const PhotoUploadModal: React.FC<PhotoUploadModalProps> = ({ model, onClose, onS
                   <line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                 </svg>
               </div>
-              <h4>Kliknite alebo pretiahnite súbory</h4>
-              <p>Podporované formáty: JPG, PNG, WebP</p>
-              <p>Maximálna veľkosť: 10MB na súbor</p>
-              <p>Maximum {maxFiles} súborov naraz</p>
+              <h4>{t('upload.drag_drop')}</h4>
+              <p>{t('upload.file_types')}</p>
             </div>
           </div>
 
@@ -380,14 +380,14 @@ const PhotoUploadModal: React.FC<PhotoUploadModalProps> = ({ model, onClose, onS
             onClick={onClose}
             disabled={uploading}
           >
-            Zrušiť
+            {t('upload.cancel')}
           </button>
           <button 
             className="upload-button"
             onClick={handleUpload}
             disabled={selectedFiles.length === 0 || uploading}
           >
-            {uploading ? 'Uploadujem...' : `Upload ${selectedFiles.length} ${selectedFiles.length === 1 ? 'súbor' : 'súborov'}`}
+            {uploading ? t('upload.uploading') : t('upload.upload_button')}
           </button>
         </div>
       </div>

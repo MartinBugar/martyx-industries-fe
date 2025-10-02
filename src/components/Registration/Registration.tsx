@@ -5,6 +5,7 @@
 
 import React, {useState, useCallback, useEffect, useRef} from 'react';
 import {useNavigate, Link} from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {registrationService} from '../../services/registrationService';
 import './Registration.css';
 
@@ -29,6 +30,7 @@ import {useAuthForm} from '../../hooks/useAuthForm';
  * Poskytuje registračné rozhranie s validáciou a email konfirmáciou
  */
 const Registration: React.FC = () => {
+    const { t } = useTranslation('auth');
     const navigate = useNavigate();
 
     // Lokálny stav pre špecifické registračné funkcie
@@ -65,14 +67,14 @@ const Registration: React.FC = () => {
             if (success) {
                 // Úspešná registrácia - zobrazenie potvrdzovacej správy
                 setSuccessMessage(
-                    `Registrácia úspešná! Odoslali sme potvrdzovací email na ${formData.email}. ` +
-                    'Skontrolujte svoj email a kliknite na potvrdzovací link pre aktiváciu účtu.'
+                    t('register.success') + ` ${formData.email}. ` +
+                    t('register.check_email', 'Skontrolujte svoj email a kliknite na potvrdzovací link pre aktiváciu účtu.')
                 );
 
                 // Vyčistenie formulára po úspešnej registrácii
                 resetForm();
             } else {
-                setGeneralError('Registrácia zlyhala. Skúste to znovu.');
+                setGeneralError(t('register.error', 'Registrácia zlyhala. Skúste to znovu.'));
             }
         } catch (error) {
             // Spracovanie rôznych typov chýb
@@ -147,13 +149,13 @@ const Registration: React.FC = () => {
                             <div className="form-icon success">
                                 <RegistrationIcon />
                             </div>
-                            <h1 className="form-title">Skontrolujte svoj email</h1>
-                            <p className="form-subtitle">Odoslali sme vám potvrdzovací link</p>
+                            <h1 className="form-title">{t('register.check_email_title', 'Skontrolujte svoj email')}</h1>
+                            <p className="form-subtitle">{t('register.check_email_subtitle', 'Odoslali sme vám potvrdzovací link')}</p>
                         </div>
 
                         <div className="success-message">
                             <div className="success-content">
-                                <h3>Registrácia úspešná!</h3>
+                                <h3>{t('register.success_title', 'Registrácia úspešná!')}</h3>
                                 <p>{successMessage}</p>
                             </div>
                             <button
@@ -194,8 +196,8 @@ const Registration: React.FC = () => {
                         <div className="form-icon">
                             <RegistrationIcon />
                         </div>
-                        <h1 className="form-title">Vytvoriť účet</h1>
-                        <p className="form-subtitle">Pridajte sa k nám a začnite svoju cestu</p>
+                        <h1 className="form-title">{t('register.title')}</h1>
+                        <p className="form-subtitle">{t('register.subtitle', 'Pridajte sa k nám a začnite svoju cestu')}</p>
                     </div>
 
                     {/* Chybové správy */}
@@ -229,7 +231,7 @@ const Registration: React.FC = () => {
                         <div className="form-group">
                             <label htmlFor="password" className="form-label">
                                 <PasswordIcon size={18} />
-                                Heslo
+                                {t('register.password_label')}
                             </label>
                             <div className="input-with-toggle">
                                 <input
@@ -258,7 +260,7 @@ const Registration: React.FC = () => {
                         <div className="form-group">
                             <label htmlFor="confirmPassword" className="form-label">
                                 <ConfirmPasswordIcon size={18} />
-                                Potvrdiť heslo
+                                {t('register.confirm_password_label')}
                             </label>
                             <div className="input-with-toggle">
                                 <input
@@ -292,11 +294,11 @@ const Registration: React.FC = () => {
                             {isProcessing ? (
                                 <>
                                     <div className="btn-spinner"></div>
-                                    Vytváram účet...
+                                    {t('register.loading')}
                                 </>
                             ) : (
                                 <>
-                                    Vytvoriť účet
+                                    {t('register.submit_button')}
                                     <svg className="btn-arrow" viewBox="0 0 20 20" fill="currentColor">
                                         <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
                                     </svg>
@@ -307,9 +309,9 @@ const Registration: React.FC = () => {
 
                     {/* Footer */}
                     <div className="form-footer">
-                        <span className="footer-text">Máte už účet?</span>
+                        <span className="footer-text">{t('register.have_account')}</span>
                         <Link to="/login" className="footer-link">
-                            Prihlásiť sa
+                            {t('register.login_link')}
                         </Link>
                     </div>
                 </div>

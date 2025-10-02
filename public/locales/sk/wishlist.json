@@ -1,0 +1,28 @@
+{
+  "title": "Wishlist",
+  "subtitle": "Sledujte produkty, ktoré milujete",
+  "stats": {
+    "total_items": "Celkom položiek",
+    "available": "Dostupné",
+    "total_value": "Celková hodnota",
+    "unavailable": "Nedostupné"
+  },
+  "empty": {
+    "title": "Váš wishlist je prázdny",
+    "description": "Objavte úžasné produkty a pridajte si ich do wishlistu, aby ste mali prehľad o svojich obľúbených",
+    "browse_products": "Prehliadať produkty"
+  },
+  "actions": {
+    "add_to_cart": "Pridať do košíka",
+    "remove_from_wishlist": "Odstrániť z wishlistu",
+    "view_product": "Zobraziť produkt",
+    "refresh": "Obnoviť"
+  },
+  "messages": {
+    "added_to_cart": "Produkt bol pridaný do košíka",
+    "removed_from_wishlist": "Produkt bol odstránený z wishlistu",
+    "loading": "Načítavam wishlist...",
+    "error": "Chyba pri načítavaní wishlistu",
+    "last_updated": "Naposledy aktualizované"
+  }
+}

@@ -93,5 +93,12 @@
   "confirmation_email": "Potvrdzujúci e-mail bol odoslaný na {email}",
   "terms_agreement": "Súhlasím s obchodnými podmienkami a zásadami ochrany osobných údajov",
   "secure_checkout": "Zabezpečená pokladňa",
-  "ssl_secured": "Zabezpečené SSL"
+  "ssl_secured": "Zabezpečené SSL",
+  "payment": {
+    "processing": "Spracovávame vašu platbu...",
+    "success": "Platba bola úspešne dokončená!",
+    "error": "Platba zlyhala. Skúste to znovu.",
+    "failed": "Platba zlyhala. Skúste to znovu.",
+    "not_completed": "Platba nebola dokončená. Skúste to znovu alebo kontaktujte podporu."
+  }
 }

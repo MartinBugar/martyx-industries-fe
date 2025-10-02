@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getAuthToken } from '../../utils/tokenUtils';
 import './ModelPhotoGallery.css';
 
@@ -36,6 +37,7 @@ interface ModelPhotoGalleryProps {
 }
 
 const ModelPhotoGallery: React.FC<ModelPhotoGalleryProps> = ({ model, onClose }) => {
+  const { t } = useTranslation('collection');
   const [photos, setPhotos] = useState<ModelPhoto[]>(model.photos || []);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -122,7 +124,7 @@ const ModelPhotoGallery: React.FC<ModelPhotoGalleryProps> = ({ model, onClose })
     
     // Fallback for unknown status (but not approved)
     if (!config) {
-      return <span className="status-badge status-unknown">{status || 'Neznámy stav'}</span>;
+      return <span className="status-badge status-unknown">{status || t('gallery.unknown_status', 'Neznámy stav')}</span>;
     }
     
     return <span className={`status-badge ${config.class}`}>{config.text}</span>;
@@ -278,7 +280,7 @@ const ModelPhotoGallery: React.FC<ModelPhotoGalleryProps> = ({ model, onClose })
           <div className="gallery-header">
             <div className="gallery-title">
               <h3>{model.product_name}</h3>
-              <p>Galéria uploadnutých fotiek</p>
+              <p>{t('gallery.title')}</p>
             </div>
             <button className="close-button" onClick={onClose}>
               <svg viewBox="0 0 24 24" fill="none">
@@ -291,17 +293,17 @@ const ModelPhotoGallery: React.FC<ModelPhotoGalleryProps> = ({ model, onClose })
             {loading && (
               <div className="gallery-loading">
                 <div className="loading-spinner"></div>
-                <p>Načítavam fotky...</p>
+                <p>{t('loading.photos')}</p>
               </div>
             )}
 
             {error && (
               <div className="gallery-error">
                 <div className="error-icon">⚠️</div>
-                <h4>Chyba pri načítaní</h4>
+                <h4>{t('gallery.load_error', 'Chyba pri načítaní')}</h4>
                 <p>{error}</p>
                 <button onClick={fetchPhotos} className="retry-button">
-                  Skúsiť znovu
+                  {t('actions.retry')}
                 </button>
               </div>
             )}
@@ -309,8 +311,8 @@ const ModelPhotoGallery: React.FC<ModelPhotoGalleryProps> = ({ model, onClose })
             {!loading && !error && photos.length === 0 && (
               <div className="gallery-empty">
                 <div className="empty-icon">📷</div>
-                <h4>Žiadne fotky</h4>
-                <p>Pre tento model ste ešte nenahrali žiadne fotky.</p>
+                <h4>{t('gallery.no_photos')}</h4>
+                <p>{t('gallery.no_photos_description', 'Pre tento model ste ešte nenahrali žiadne fotky.')}</p>
               </div>
             )}
 

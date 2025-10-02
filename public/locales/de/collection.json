@@ -1,0 +1,67 @@
+{
+  "title": "Meine Modellsammlung",
+  "subtitle": "Verfolgen Sie Ihren Fortschritt und laden Sie Fotos von fertigen Modellen hoch",
+  "stats": {
+    "total": "Gesamt",
+    "completed": "Abgeschlossen",
+    "remaining": "Verbleibend"
+  },
+  "model": {
+    "completed": "Abgeschlossen",
+    "public": "Öffentlich",
+    "photos_count": "Hochgeladene Fotos",
+    "upload_photos": "Fotos hochladen",
+    "open_gallery": "Galerie öffnen"
+  },
+  "upload": {
+    "title": "Modellfotos hochladen",
+    "description": "Laden Sie Fotos Ihres fertigen Modells hoch (maximal 10 Fotos)",
+    "drag_drop": "Dateien hierher ziehen oder klicken zum Auswählen",
+    "file_types": "Unterstützte Formate: JPG, PNG, GIF (max 10MB)",
+    "upload_button": "Fotos hochladen",
+    "cancel": "Abbrechen",
+    "uploading": "Wird hochgeladen...",
+    "success": "Fotos erfolgreich hochgeladen!",
+    "error": "Fehler beim Hochladen der Fotos"
+  },
+  "gallery": {
+    "title": "Fotogalerie",
+    "no_photos": "Keine Fotos",
+    "no_photos_description": "Für dieses Modell wurden noch keine Fotos hochgeladen.",
+    "load_error": "Fehler beim Laden der Fotos",
+    "unknown_status": "Unbekannter Status",
+    "delete_photo": "Foto löschen",
+    "delete_confirm": "Sind Sie sicher, dass Sie dieses Foto löschen möchten?",
+    "deleting": "Wird gelöscht...",
+    "delete_success": "Foto gelöscht",
+    "delete_error": "Fehler beim Löschen des Fotos"
+  },
+  "status": {
+    "updating": "Wird aktualisiert...",
+    "update_error": "Aktualisierungsfehler",
+    "completion_error": "Fehler beim Aktualisieren des Abschlussstatus",
+    "visibility_error": "Fehler beim Aktualisieren der Sichtbarkeit"
+  },
+  "empty": {
+    "title": "Keine Modelle in der Sammlung",
+    "description": "Sie haben noch keine abgeschlossenen Bestellungen mit Modellen.",
+    "subtitle": "Gehen Sie zum Shop und kaufen Sie Ihr erstes Modell!"
+  },
+  "loading": {
+    "title": "Ihre Sammlung wird geladen...",
+    "models": "Modelle werden geladen...",
+    "photos": "Fotos werden geladen..."
+  },
+  "errors": {
+    "load_failed": "Fehler beim Laden der Sammlung",
+    "no_auth": "Sie sind nicht angemeldet",
+    "invalid_order_id": "Ungültige order_id. Muss eine positive Zahl sein.",
+    "photo_delete_failed": "Foto konnte nicht gelöscht werden. Bitte versuchen Sie es erneut.",
+    "status_update_failed": "Modellstatus konnte nicht aktualisiert werden",
+    "completion_error": "Fehler beim Aktualisieren des Abschlussstatus",
+    "visibility_error": "Fehler beim Aktualisieren der Sichtbarkeit"
+  },
+  "actions": {
+    "retry": "Erneut versuchen"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "title": "Ihr Warenkorb",
+  "empty": "Ihr Warenkorb ist leer",
+  "empty_description": "Entdecken Sie großartige Produkte und fügen Sie sie zu Ihrem Warenkorb hinzu",
+  "empty_message": "Ihr Warenkorb ist leer",
+  "continue_shopping": "Weiter einkaufen",
+  "items_in_cart": "Artikel im Warenkorb",
+  "item_count": "Artikel",
+  "item_count_plural": "Artikel",
+  "item_prepared": "bereit zur Bestellung",
+  "item_prepared_plural": "bereit zur Bestellung",
+  "digital_product": "Digitales Produkt",
+  "physical_product": "Physisches Produkt",
+  "adjust_quantity": "Menge für {{product}} anpassen",
+  "decrease_quantity": "Menge verringern",
+  "increase_quantity": "Menge erhöhen",
+  "remove_item": "{{product}} aus Warenkorb entfernen",
+  "remove": "Entfernen",
+  "free": "Kostenlos",
+  "digital_delivery": "Sofortiger Download",
+  "proceed_to_payment": "Zur Zahlung",
+  "secure_payment": "Sichere Zahlung",
+  "order_summary": {
+    "title": "Bestellübersicht",
+    "subtotal": "Zwischensumme",
+    "shipping": "Versand",
+    "total": "Gesamt"
+  }
+}

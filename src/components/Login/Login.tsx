@@ -5,6 +5,7 @@
 
 import React, { useState, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/useAuth';
 import { registrationService } from '../../services/registrationService';
 import type { LoginErrorResponse } from '../../context/authTypes';
@@ -115,6 +116,7 @@ const ResendConfirmation: React.FC<ResendConfirmationProps> = ({
  * Poskytuje prihlasovacie rozhranie s podporou email konfirmácie
  */
 const Login: React.FC<LoginProps> = ({ confirmationStatus = null }) => {
+  const { t } = useTranslation('auth');
   const { login } = useAuth();
   const navigate = useNavigate();
   
@@ -225,8 +227,8 @@ const Login: React.FC<LoginProps> = ({ confirmationStatus = null }) => {
             <div className="form-icon">
               <LoginIcon />
             </div>
-            <h1 className="form-title">Vitajte späť</h1>
-            <p className="form-subtitle">Prihláste sa do svojho účtu</p>
+            <h1 className="form-title">{t('login.title')}</h1>
+            <p className="form-subtitle">{t('login.subtitle', 'Prihláste sa do svojho účtu')}</p>
           </div>
 
           {/* Chybové správy */}
@@ -268,7 +270,7 @@ const Login: React.FC<LoginProps> = ({ confirmationStatus = null }) => {
             <div className="form-group">
               <label htmlFor="password" className="form-label">
                 <PasswordIcon size={18} />
-                Heslo
+                {t('login.password_label')}
               </label>
               <div className="input-with-toggle">
                 <input
@@ -309,11 +311,11 @@ const Login: React.FC<LoginProps> = ({ confirmationStatus = null }) => {
               {isProcessing ? (
                 <>
                   <div className="btn-spinner"></div>
-                  Prihlasovanie...
+                  {t('login.loading')}
                 </>
               ) : (
                 <>
-                  Prihlásiť sa
+                  {t('login.submit_button')}
                   <svg className="btn-arrow" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
                   </svg>
@@ -324,9 +326,9 @@ const Login: React.FC<LoginProps> = ({ confirmationStatus = null }) => {
           
           {/* Footer */}
           <div className="form-footer">
-            <span className="footer-text">Nemáte účet?</span>
+            <span className="footer-text">{t('login.no_account')}</span>
             <Link to="/register" className="footer-link">
-              Vytvoriť účet
+              {t('login.register_link')}
             </Link>
           </div>
         </div>

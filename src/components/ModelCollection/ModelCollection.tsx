@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/useAuth';
 import PhotoUploadModal from './PhotoUploadModal';
 import ModelPhotoGallery from './ModelPhotoGallery';
@@ -42,6 +43,7 @@ interface CollectionData {
 }
 
 const ModelCollection: React.FC = () => {
+  const { t } = useTranslation('collection');
   const { user, getOrders, refreshOrders, ordersLoading, hasLoadedOrders } = useAuth();
   const [collectionData, setCollectionData] = useState<CollectionData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -317,7 +319,7 @@ const ModelCollection: React.FC = () => {
     try {
       const token = getAuthToken();
       if (!token) {
-        throw new Error('Nie ste prihlásený');
+        throw new Error(t('errors.no_auth'));
       }
 
       const response = await fetch(
@@ -388,7 +390,7 @@ const ModelCollection: React.FC = () => {
       console.log('Photo deleted successfully');
     } catch (err: any) {
       console.error('Error deleting photo:', err);
-      alert(err.message || 'Nepodarilo sa zmazať fotku. Skúste to znovu.');
+      alert(err.message || t('errors.photo_delete_failed'));
     } finally {
       setDeletingPhotoId(null);
     }
@@ -409,13 +411,13 @@ const ModelCollection: React.FC = () => {
     try {
       const token = getAuthToken();
       if (!token) {
-        throw new Error('Nie ste prihlásený');
+        throw new Error(t('errors.no_auth'));
       }
 
       // Validate order_id
       const orderIdNumber = parseInt(orderId, 10);
       if (isNaN(orderIdNumber) || orderIdNumber <= 0) {
-        throw new Error(`Neplatné order_id: ${orderId}. Musí byť kladné číslo.`);
+        throw new Error(t('errors.invalid_order_id'));
       }
 
       const response = await fetch(
@@ -478,7 +480,7 @@ const ModelCollection: React.FC = () => {
       console.log(`Model ${field} updated successfully to ${value} for product ${productId}, order ${orderId}`);
     } catch (err: any) {
       console.error(`Error updating model ${field}:`, err);
-      alert(err.message || `Nepodarilo sa aktualizovať ${field === 'is_completed' ? 'stav dokončenia' : 'verejnosť'}`);
+      alert(err.message || t(`errors.${field === 'is_completed' ? 'completion_error' : 'visibility_error'}`));
     } finally {
       setUpdatingModel(null);
     }
@@ -511,7 +513,7 @@ const ModelCollection: React.FC = () => {
     return (
       <div className="collection-loading">
         <div className="loading-spinner"></div>
-        <p>Načítavam vašu zbierku...</p>
+        <p>{t('loading.title')}</p>
       </div>
     );
   }
@@ -520,10 +522,10 @@ const ModelCollection: React.FC = () => {
     return (
       <div className="collection-error">
         <div className="error-icon">⚠️</div>
-        <h3>Chyba pri načítaní</h3>
+        <h3>{t('errors.load_failed')}</h3>
         <p>{error}</p>
         <button onClick={fetchCollection} className="retry-button">
-          Skúsiť znovu
+          {t('actions.retry', 'Skúsiť znovu')}
         </button>
       </div>
     );
@@ -533,9 +535,9 @@ const ModelCollection: React.FC = () => {
     return (
       <div className="collection-empty">
         <div className="empty-icon">📦</div>
-        <h3>Žiadne modely v zbierke</h3>
-        <p>Zatiaľ nemáte žiadne dokončené objednávky s modelmi.</p>
-        <p>Prejdite do obchodu a zakúpte si svoj prvý model!</p>
+        <h3>{t('empty.title')}</h3>
+        <p>{t('empty.description')}</p>
+        <p>{t('empty.subtitle')}</p>
       </div>
     );
   }
@@ -543,27 +545,27 @@ const ModelCollection: React.FC = () => {
   return (
     <div className="collection-content">
       <div className="collection-header">
-        <h2>Moja zbierka modelov</h2>
-        <p>Sledujte svoj pokrok a uploadujte fotky dokončených modelov</p>
+        <h2>{t('title')}</h2>
+        <p>{t('subtitle')}</p>
       </div>
 
       <div className="stats-container">
         <div className="stats-card">
           <div className="stat-item">
             <span className="stat-number">{collectionData.total_models}</span>
-            <span className="stat-label">Celkom</span>
+            <span className="stat-label">{t('stats.total')}</span>
           </div>
           <div className="stat-divider"></div>
           <div className="stat-item">
             <span className="stat-number">{collectionData.completed_models}</span>
-            <span className="stat-label">Dokončené</span>
+            <span className="stat-label">{t('stats.completed')}</span>
           </div>
           <div className="stat-divider"></div>
           <div className="stat-item">
             <span className="stat-number">
               {collectionData.total_models - collectionData.completed_models}
             </span>
-            <span className="stat-label">Zostáva</span>
+            <span className="stat-label">{t('stats.remaining')}</span>
           </div>
         </div>
       </div>
@@ -586,7 +588,7 @@ const ModelCollection: React.FC = () => {
                           className="toggle-checkbox"
                         />
                         <span className="toggle-slider"></span>
-                        <span className="toggle-text">Dokončené</span>
+                        <span className="toggle-text">{t('model.completed')}</span>
                       </label>
                     </div>
                     <div className="toggle-group">
@@ -599,7 +601,7 @@ const ModelCollection: React.FC = () => {
                           className="toggle-checkbox"
                         />
                         <span className="toggle-slider"></span>
-                        <span className="toggle-text">Verejné</span>
+                        <span className="toggle-text">{t('model.public')}</span>
                       </label>
                     </div>
                   </div>
@@ -614,7 +616,7 @@ const ModelCollection: React.FC = () => {
 
               {model.photos.length > 0 && (
                 <div className="model-photos">
-                  <h4>Uploadované fotky:  { model.photos.length} / 10</h4>
+                  <h4>{t('model.photos_count')}: {model.photos.length} / 10</h4>
                   <div className="photos-list">
                     {model.photos.map((photo) => (
                         <div key={photo.id} className="photo-item">
@@ -667,8 +669,8 @@ const ModelCollection: React.FC = () => {
                     <polyline points="21,15 16,10 5,21" stroke="currentColor" strokeWidth="2"/>
                   </svg>
                   {model.photos.length > 0 
-                    ? `Otvoriť galériu (${model.photos.length})` 
-                    : 'Otvoriť galériu'
+                    ? `${t('model.open_gallery')} (${model.photos.length})` 
+                    : t('model.open_gallery')
                   }
                 </button>
                 
@@ -683,7 +685,7 @@ const ModelCollection: React.FC = () => {
                       <polyline points="7,10 12,15 17,10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                       <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                     </svg>
-                    {model.photos.length === 0 ? 'Upload fotky' : 'Pridať fotky'}
+                    {t('model.upload_photos')}
                   </button>
                 )}
               </div>

@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useCart } from '../../context/useCart';
 import { useAuth } from '../../context/useAuth';
 import './Checkout.css';
@@ -21,6 +22,7 @@ interface CheckoutFormData {
 }
 
 const Checkout: React.FC = () => {
+  const { t } = useTranslation('checkout');
   const { items, getTotalPrice } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -123,7 +125,7 @@ const Checkout: React.FC = () => {
     if (backendStatus !== 'PAID' && backendStatus !== 'COMPLETED') {
       console.error('Capture not successful, aborting success navigation. Status:', c?.status);
       setPayStatus('error');
-      alert('Payment not completed. Please try again or contact support.');
+      alert(t('payment.not_completed'));
       return;
     }
 
@@ -178,7 +180,7 @@ const Checkout: React.FC = () => {
   const handlePayPalError = (err: unknown) => {
     console.error('PayPal payment error:', err);
     setPayStatus("error");
-    alert('Payment failed. Please try again.');
+    alert(t('payment.failed'));
   };
   
   // If redirected from PayPal with payment params, show processing instead of empty cart
@@ -452,19 +454,19 @@ const Checkout: React.FC = () => {
                 {payStatus === "processing" && (
                   <div className="status-content">
                     <div className="status-icon">⏳</div>
-                    <span>Processing your payment...</span>
+                    <span>{t('payment.processing')}</span>
                   </div>
                 )}
                 {payStatus === "success" && (
                   <div className="status-content">
                     <div className="status-icon">✅</div>
-                    <span>Payment completed successfully!</span>
+                    <span>{t('payment.success')}</span>
                   </div>
                 )}
                 {payStatus === "error" && (
                   <div className="status-content">
                     <div className="status-icon">❌</div>
-                    <span>Payment failed. Please try again.</span>
+                    <span>{t('payment.error')}</span>
                   </div>
                 )}
               </div>

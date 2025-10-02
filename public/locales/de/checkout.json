@@ -93,5 +93,12 @@
   "confirmation_email": "Eine Bestätigungs-E-Mail wurde an {email} gesendet",
   "terms_agreement": "Ich stimme den Allgemeinen Geschäftsbedingungen und der Datenschutzerklärung zu",
   "secure_checkout": "Sichere Kasse",
-  "ssl_secured": "SSL-gesichert"
+  "ssl_secured": "SSL-gesichert",
+  "payment": {
+    "processing": "Ihre Zahlung wird bearbeitet...",
+    "success": "Zahlung erfolgreich abgeschlossen!",
+    "error": "Zahlung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+    "failed": "Zahlung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+    "not_completed": "Zahlung nicht abgeschlossen. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support."
+  }
 }

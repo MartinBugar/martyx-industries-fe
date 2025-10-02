@@ -1,0 +1,29 @@
+{
+  "title": "Your Cart",
+  "empty": "Your cart is empty",
+  "empty_description": "Discover amazing products and add them to your cart",
+  "empty_message": "Your cart is empty",
+  "continue_shopping": "Continue Shopping",
+  "items_in_cart": "Items in cart",
+  "item_count": "item",
+  "item_count_plural": "items",
+  "item_prepared": "ready to order",
+  "item_prepared_plural": "ready to order",
+  "digital_product": "Digital Product",
+  "physical_product": "Physical Product",
+  "adjust_quantity": "Adjust quantity for {{product}}",
+  "decrease_quantity": "Decrease quantity",
+  "increase_quantity": "Increase quantity",
+  "remove_item": "Remove {{product}} from cart",
+  "remove": "Remove",
+  "free": "Free",
+  "digital_delivery": "Instant Download",
+  "proceed_to_payment": "Proceed to Payment",
+  "secure_payment": "Secure Payment",
+  "order_summary": {
+    "title": "Order Summary",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "total": "Total"
+  }
+}

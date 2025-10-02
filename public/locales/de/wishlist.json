@@ -1,0 +1,28 @@
+{
+  "title": "Wunschliste",
+  "subtitle": "Behalten Sie den Überblick über Produkte, die Sie lieben",
+  "stats": {
+    "total_items": "Gesamte Artikel",
+    "available": "Verfügbar",
+    "total_value": "Gesamtwert",
+    "unavailable": "Nicht verfügbar"
+  },
+  "empty": {
+    "title": "Ihre Wunschliste ist leer",
+    "description": "Entdecken Sie großartige Produkte und fügen Sie sie zu Ihrer Wunschliste hinzu, um Ihre Favoriten im Auge zu behalten",
+    "browse_products": "Produkte durchsuchen"
+  },
+  "actions": {
+    "add_to_cart": "In den Warenkorb",
+    "remove_from_wishlist": "Von Wunschliste entfernen",
+    "view_product": "Produkt anzeigen",
+    "refresh": "Aktualisieren"
+  },
+  "messages": {
+    "added_to_cart": "Produkt zum Warenkorb hinzugefügt",
+    "removed_from_wishlist": "Produkt von Wunschliste entfernt",
+    "loading": "Wunschliste wird geladen...",
+    "error": "Fehler beim Laden der Wunschliste",
+    "last_updated": "Zuletzt aktualisiert"
+  }
+}

@@ -6,7 +6,7 @@ import ICU from 'i18next-icu';
 
 // Export types for better TypeScript support
 export type SupportedLanguage = 'en' | 'sk' | 'de';
-export type Namespace = 'common' | 'nav' | 'checkout' | 'home' | 'products' | 'auth' | 'about';
+export type Namespace = 'common' | 'nav' | 'checkout' | 'home' | 'products' | 'auth' | 'about' | 'wishlist' | 'collection' | 'cart';
 
 i18n
   // Load translations using http backend

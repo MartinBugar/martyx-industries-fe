@@ -1,0 +1,67 @@
+{
+  "title": "Moja zbierka modelov",
+  "subtitle": "Sledujte svoj pokrok a uploadujte fotky dokončených modelov",
+  "stats": {
+    "total": "Celkom",
+    "completed": "Dokončené",
+    "remaining": "Zostáva"
+  },
+  "model": {
+    "completed": "Dokončené",
+    "public": "Verejné",
+    "photos_count": "Uploadované fotky",
+    "upload_photos": "Nahrať fotky",
+    "open_gallery": "Otvoriť galériu"
+  },
+  "upload": {
+    "title": "Nahrať fotky modelu",
+    "description": "Nahrajte fotky vašeho dokončeného modelu (maximálne 10 fotiek)",
+    "drag_drop": "Pretiahnite súbory sem alebo kliknite pre výber",
+    "file_types": "Podporované formáty: JPG, PNG, GIF (max 10MB)",
+    "upload_button": "Nahrať fotky",
+    "cancel": "Zrušiť",
+    "uploading": "Nahrávam...",
+    "success": "Fotky boli úspešne nahrané!",
+    "error": "Chyba pri nahrávaní fotiek"
+  },
+  "gallery": {
+    "title": "Galéria fotiek",
+    "no_photos": "Žiadne fotky",
+    "no_photos_description": "Pre tento model ste ešte nenahrali žiadne fotky.",
+    "load_error": "Chyba pri načítaní fotiek",
+    "unknown_status": "Neznámy stav",
+    "delete_photo": "Zmazať fotku",
+    "delete_confirm": "Naozaj chcete zmazať túto fotku?",
+    "deleting": "Mazanie...",
+    "delete_success": "Fotka bola zmazaná",
+    "delete_error": "Chyba pri mazaní fotky"
+  },
+  "status": {
+    "updating": "Aktualizujem...",
+    "update_error": "Chyba pri aktualizácii",
+    "completion_error": "Nepodarilo sa aktualizovať stav dokončenia",
+    "visibility_error": "Nepodarilo sa aktualizovať verejnosť"
+  },
+  "empty": {
+    "title": "Žiadne modely v zbierke",
+    "description": "Zatiaľ nemáte žiadne dokončené objednávky s modelmi.",
+    "subtitle": "Prejdite do obchodu a zakúpte si svoj prvý model!"
+  },
+  "loading": {
+    "title": "Načítavam vašu zbierku...",
+    "models": "Načítavam modely...",
+    "photos": "Načítavam fotky..."
+  },
+  "errors": {
+    "load_failed": "Chyba pri načítavaní zbierky",
+    "no_auth": "Nie ste prihlásený",
+    "invalid_order_id": "Neplatné order_id. Musí byť kladné číslo.",
+    "photo_delete_failed": "Nepodarilo sa zmazať fotku. Skúste to znovu.",
+    "status_update_failed": "Nepodarilo sa aktualizovať stav modelu",
+    "completion_error": "Nepodarilo sa aktualizovať stav dokončenia",
+    "visibility_error": "Nepodarilo sa aktualizovať verejnosť"
+  },
+  "actions": {
+    "retry": "Skúsiť znovu"
+  }
+}
