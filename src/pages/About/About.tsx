@@ -80,7 +80,7 @@ const About: React.FC = () => {
                         <div className="mascot-container">
                             <div className="mascot-frame">
                                 <img
-                                    src="/cassandra/1.png"
+                                    src="/cassandra/About-Cass.png"
                                     alt="Cassandra - Martyx Industries Mascot"
                                     className="mascot-image"
                                     loading="eager"

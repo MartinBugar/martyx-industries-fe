@@ -93,7 +93,7 @@ const Home: React.FC = () => {
               <div className="hero-content-wrapper">
                 <div className="hero-mascot-container">
                   <img
-                    src="/cassandra/2.png"
+                    src="/cassandra/Home-Cass.png"
                     alt="Cassandra - Váš 3D sprievodca"
                     className="mascot-image-home"
                     loading="eager"
