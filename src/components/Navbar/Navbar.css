@@ -45,32 +45,6 @@ html.hydrated .shop-header .cart-icon {
 }
 
 /* Explicitly set all link states to prevent default browser colors */
-/* Navbar inline styles */
-.mi-drawer__quick-actions {
-  display: flex;
-  gap: 8px;
-  margin-top: 16px;
-  margin-bottom: 8px;
-}
-
-.mi-drawer__quick-action-btn {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.mi-drawer__auth-actions {
-  display: flex;
-  gap: 8px;
-  margin-top: 10px;
-}
-
-.mi-drawer__auth-btn {
-  flex: 1;
-}
-
 .shop-header a:link,
 .shop-header a:visited,
 .shop-header a:hover,

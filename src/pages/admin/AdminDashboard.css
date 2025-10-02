@@ -357,10 +357,6 @@
     border-bottom: none;
 }
 
-.status-text-error {
-    color: #EF4444;
-}
-
 .status-pill {
     display: inline-block;
     padding: 4px 12px;

@@ -1,9 +1,0 @@
-.paypal-checkout-container {
-  min-height: 55px;
-}
-
-@media (max-width: 480px) {
-  .paypal-checkout-container {
-    min-height: 48px;
-  }
-}

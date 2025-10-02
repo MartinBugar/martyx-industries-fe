@@ -19,17 +19,17 @@ const items: Item[] = [
 export default function FeaturedProducts() {
   return (
     <div>
-      <div className="featured-header">
-        <h2 className="featured-heading">Featured</h2>
+      <div style={{display:"flex", justifyContent:"space-between", marginBottom:12}}>
+        <h2 style={{ margin: 0, fontSize: "clamp(20px,3vw,28px)" }}>Featured</h2>
         <Link className="btn" to="/shop">View all</Link>
       </div>
       <div className="cards" aria-label="Featured products">
         {items.map((p) => (
           <Link key={p.id} to={`/product/${p.id}`} className="card" aria-label={`${p.name} ${p.price}`}>
             <img className="img" src={p.image} alt={p.name} loading="lazy" decoding="async" />
-            <div className="featured-product-info">
+            <div style={{display:"flex", justifyContent:"space-between", marginTop:8}}>
               <div>
-                <div className="featured-product-name">{p.name}</div>
+                <div style={{ fontWeight: 700 }}>{p.name}</div>
                 <div className="muted">{p.price}</div>
               </div>
               {p.tag && <span className="muted">{p.tag}</span>}

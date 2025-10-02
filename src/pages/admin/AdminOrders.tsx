@@ -4,6 +4,13 @@ import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
 import {adminOrdersService, type AdminOrderDTO, type AdminOrderItem} from '../../services/adminOrdersService';
 
+const fieldInputStyle: React.CSSProperties = {
+    width: '100%',
+    padding: '6px 8px',
+    border: '1px solid #e5e7eb',
+    borderRadius: 6
+};
+const smallBtn: React.CSSProperties = {padding: '6px 10px', borderRadius: 6, border: 'none', cursor: 'pointer'};
 
 // Helper functions
 const formatDatetime = (value: unknown): string => {
@@ -402,14 +409,14 @@ const AdminOrders: React.FC = () => {
                                 <table className="admin-table">
                                     <thead>
                                     <tr>
-                                        <th className="table-col-orders-id">ID</th>
+                                        <th style={{width: 70}}>ID</th>
                                         <th>Order #</th>
                                         <th>Email</th>
                                         <th>Status</th>
                                         <th>Order Date</th>
                                         <th>Items</th>
                                         <th>Total</th>
-                                        <th className="table-col-orders-actions text-right">Actions</th>
+                                        <th style={{width: 170}} className="text-right">Actions</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -432,43 +439,51 @@ const AdminOrders: React.FC = () => {
                                                 return (
                                                     <>
                                                         <tr key={`edit-${id}`}>
-                                                            <td className="orders-table-cell-padding">{String(o.id ?? '—')}</td>
-                                                            <td className="orders-table-cell-padding">
+                                                            <td style={{padding: 8}}>{String(o.id ?? '—')}</td>
+                                                            <td style={{padding: 8}}>
                                                                 <input value={editData.orderNumber as string ?? ''}
                                                                        onChange={(e) => setEditData({
                                                                            ...editData,
                                                                            orderNumber: e.target.value
-                                                                       })} className="orders-field-input"/>
+                                                                       })} style={fieldInputStyle}/>
                                                             </td>
-                                                            <td className="orders-table-cell-padding">
+                                                            <td style={{padding: 8}}>
                                                                 <input value={editData.userEmail as string ?? ''}
                                                                        onChange={(e) => setEditData({
                                                                            ...editData,
                                                                            userEmail: e.target.value
-                                                                       })} className="orders-field-input"/>
+                                                                       })} style={fieldInputStyle}/>
                                                             </td>
-                                                            <td className="orders-table-cell-padding">
+                                                            <td style={{padding: 8}}>
                                                                 <input value={editData.status as string ?? ''}
                                                                        onChange={(e) => setEditData({
                                                                            ...editData,
                                                                            status: e.target.value
-                                                                       })} className="orders-field-input"/>
+                                                                       })} style={fieldInputStyle}/>
                                                             </td>
-                                                            <td className="orders-table-cell-padding">
+                                                            <td style={{padding: 8}}>
                                                                 <input type="datetime-local"
                                                                        value={toDateTimeLocalStr(editData.orderDate as string)}
                                                                        onChange={(e) => setEditData({
                                                                            ...editData,
                                                                            orderDate: e.target.value
-                                                                       })} className="orders-field-input"/>
+                                                                       })} style={fieldInputStyle}/>
                                                             </td>
-                                                            <td className="orders-table-cell-padding">{getItemsCount(o)}</td>
-                                                            <td className="orders-table-cell-padding">{getTotalAmount(o).toFixed(2)} {o.currency ?? ''}</td>
-                                                            <td className="orders-table-cell-flex">
+                                                            <td style={{padding: 8}}>{getItemsCount(o)}</td>
+                                                            <td style={{padding: 8}}>{getTotalAmount(o).toFixed(2)} {o.currency ?? ''}</td>
+                                                            <td style={{padding: 8, display: 'flex', gap: 6}}>
                                                                 <button disabled={saving}
                                                                         onClick={() => saveEdit(id as string | number)}
-                                                                        className="orders-small-btn orders-btn-save">{saving ? 'Saving…' : 'Save'}</button>
-                                                                <button disabled={saving} onClick={cancelEdit} className="orders-small-btn orders-btn-cancel">Cancel
+                                                                        style={{
+                                                                            ...smallBtn,
+                                                                            background: '#16a34a',
+                                                                            color: '#fff'
+                                                                        }}>{saving ? 'Saving…' : 'Save'}</button>
+                                                                <button disabled={saving} onClick={cancelEdit} style={{
+                                                                    ...smallBtn,
+                                                                    background: '#6b7280',
+                                                                    color: '#fff'
+                                                                }}>Cancel
                                                                 </button>
                                                             </td>
                                                         </tr>

@@ -123,6 +123,16 @@ const Home: React.FC = () => {
                   height={1000}
                   loading="eager"
                   decoding="sync"
+                  style={{ 
+                    width: '100%', 
+                    height: 'auto', 
+                    display: 'block', 
+                    borderRadius: 'var(--radius-lg)',
+                    userSelect: 'none',
+                    WebkitUserSelect: 'none',
+                    MozUserSelect: 'none',
+                    msUserSelect: 'none'
+                  }}
                 />
               ) : (
                 <div className="hero-image" role="img" aria-label={heroAlt} />
@@ -161,7 +171,7 @@ const Home: React.FC = () => {
         <div className="container">
           <div className="section-header">
             <h2>{t('featured.title')}</h2>
-            <div className="view-all-container">
+            <div style={{textAlign: 'center', marginTop: '1rem'}}>
               <Link className="btn primary" to="/products">{t('featured.view_all')}</Link>
             </div>
           </div>

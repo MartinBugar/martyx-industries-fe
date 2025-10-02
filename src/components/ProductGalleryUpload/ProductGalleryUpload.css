@@ -49,18 +49,6 @@
   transition: all 0.2s ease;
 }
 
-.upload-area input[type="file"] {
-  display: none;
-}
-
-.upload-progress-fill {
-  transition: width 0.3s ease;
-}
-
-.progress-fill {
-  transition: width 0.3s ease;
-}
-
 .refresh-btn:hover:not(:disabled) {
   background: #f3f4f6;
   border-color: #9ca3af;

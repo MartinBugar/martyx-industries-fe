@@ -85,24 +85,24 @@ const AdminProductGallery: React.FC = () => {
               {error && <div className="alert alert-error">{error}</div>}
 
               {/* Product Basic Info */}
-              <div className="product-info-summary">
-                <div className="product-info-flex">
+              <div className="product-info-summary" style={{ marginBottom: 24, padding: 16, background: '#f8fafc', borderRadius: 8, border: '1px solid #e2e8f0' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                   {product.imageUrl && (
                     <img
                       src={product.imageUrl}
                       alt={product.name}
-                      className="product-thumbnail"
+                      style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 8, border: '1px solid #e2e8f0' }}
                     />
                   )}
-                  <div className="product-info-content">
-                    <h3>
+                  <div>
+                    <h3 style={{ margin: 0, fontSize: 18, fontWeight: 600, color: '#1f2937' }}>
                       {product.name}
                     </h3>
-                    <p className="product-info-meta">
+                    <p style={{ margin: 0, fontSize: 14, color: '#6b7280' }}>
                       ID: {product.id} • Type: {product.productType} • Price: {product.price} {product.currency}
                     </p>
                     {product.description && (
-                      <p className="product-description-text">
+                      <p style={{ margin: '8px 0 0 0', fontSize: 14, color: '#374151', maxWidth: 500 }}>
                         {product.description.length > 100
                           ? `${product.description.substring(0, 100)}...`
                           : product.description
@@ -115,11 +115,11 @@ const AdminProductGallery: React.FC = () => {
 
               {/* Gallery Management Section */}
               <div className="gallery-management-section">
-                <div className="gallery-section-header">
-                  <h3 className="gallery-section-title">
+                <div className="section-header" style={{ marginBottom: 16 }}>
+                  <h3 className="section-title" style={{ margin: 0, fontSize: 16, fontWeight: 600, color: '#1f2937' }}>
                     Image Gallery
                   </h3>
-                  <p className="gallery-section-description">
+                  <p className="section-description" style={{ margin: '4px 0 0 0', fontSize: 14, color: '#6b7280' }}>
                     Upload and manage product images. Images are stored in DigitalOcean Spaces and organized by product ID.
                     The first image will be used as the main product image on the store.
                   </p>

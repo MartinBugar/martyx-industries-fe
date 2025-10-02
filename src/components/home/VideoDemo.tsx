@@ -1,12 +1,11 @@
 import React from 'react';
-import './VideoDemo.css';
 
 const VideoDemo: React.FC = () => {
   // Optional poster and video import (will be empty until assets exist)
 
 
   return (
-    <div className="video-demo-container">
+    <div style={{ position: 'relative', width: '100%', aspectRatio: '16 / 9', borderRadius: 'var(--radius-lg)', overflow: 'hidden', background: 'var(--card)' }}>
     </div>
   );
 };

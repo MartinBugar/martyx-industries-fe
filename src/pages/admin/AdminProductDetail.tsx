@@ -193,10 +193,10 @@ const AdminProductDetail: React.FC = () => {
                 {product.imageUrl ? (
                   <div>
                     <label className="form-label">Preview</label>
-                    <img src={String(product.imageUrl)} alt="Preview" className="product-image-preview" />
+                    <img src={String(product.imageUrl)} alt="Preview" style={{ display: 'block', maxWidth: 180, maxHeight: 120, borderRadius: 6, border: '1px solid #e5e7eb' }} />
                   </div>
                 ) : null}
-                <div className="form-grid-full">
+                <div style={{ gridColumn: '1 / -1' }}>
                   <label className="form-label">Description</label>
                   <textarea className="form-input" rows={4} value={String(product.description ?? '')} onChange={(e) => updateField('description', e.target.value)} />
                 </div>
@@ -219,7 +219,7 @@ const AdminProductDetail: React.FC = () => {
 
               {/* Conditional sections */}
               {productType === 'PHYSICAL' ? (
-                <div className="admin-card admin-card-nested">
+                <div className="admin-card" style={{ marginTop: 16 }}>
                   <h3 className="section-title">Physical Product Details</h3>
                   <div className="form-grid">
                     <div>
@@ -249,7 +249,7 @@ const AdminProductDetail: React.FC = () => {
                   </div>
                 </div>
               ) : (
-                <div className="admin-card admin-card-nested">
+                <div className="admin-card" style={{ marginTop: 16 }}>
                   <h3 className="section-title">Digital Product Details</h3>
                   <div className="form-grid">
                     <div>
@@ -284,7 +284,7 @@ const AdminProductDetail: React.FC = () => {
                 </div>
               )}
 
-              <div className="form-actions form-actions-top">
+              <div className="form-actions" style={{ marginTop: 24 }}>
                 <button className="btn btn-primary" onClick={handleSave} disabled={saving}>{saving ? 'Saving...' : 'Save Changes'}</button>
                 <button className="btn btn-danger" onClick={handleDelete} disabled={saving}>Delete</button>
               </div>

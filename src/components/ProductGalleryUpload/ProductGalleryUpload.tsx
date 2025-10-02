@@ -251,7 +251,7 @@ const ProductGalleryUpload: React.FC<ProductGalleryUploadProps> = ({
       console.log('📊 Upload parameters:', {
         productId,
         order: currentOrder,
-        expectedURL: `${import.meta.env.VITE_API_BASE_URL}/api/products/${productId}/gallery/upload`
+        expectedURL: `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'}/api/products/${productId}/gallery/upload`
       });
       
       // Upload via backend API using JSON approach (handles Spaces upload and database metadata save)
@@ -589,6 +589,7 @@ const ProductGalleryUpload: React.FC<ProductGalleryUploadProps> = ({
             accept="image/*"
             multiple
             onChange={handleFileInput}
+            style={{ display: 'none' }}
           />
         </div>
       </div>

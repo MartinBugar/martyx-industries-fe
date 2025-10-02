@@ -8,6 +8,19 @@ interface AdminLayoutProps {
   navTabs?: React.ReactNode;
 }
 
+const sidebarLinkStyle: React.CSSProperties = {
+  display: 'block',
+  padding: '10px 12px',
+  color: '#f0f0f0',
+  textDecoration: 'none',
+  borderRadius: 6,
+  marginBottom: 6,
+};
+
+const activeLinkStyle: React.CSSProperties = {
+  background: '#334155',
+};
+
 const AdminLayout: React.FC<AdminLayoutProps> = ({ title, children, navTabs }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -26,9 +39,9 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ title, children, navTabs }) =
   if (!isAuthed) {
     // Public view for admin login page
     return (
-      <div className="public-login-container">
-        <div className="public-login-card">
-          {title && <h1 className="public-login-title">{title}</h1>}
+      <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+        <div style={{ width: '100%', maxWidth: 420, background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.05)', padding: 24 }}>
+          {title && <h1 style={{ margin: 0, marginBottom: 16, fontSize: 20 }}>{title}</h1>}
           {children}
         </div>
       </div>
@@ -42,13 +55,13 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ title, children, navTabs }) =
       <aside className={`admin-sidebar${sidebarOpen ? ' is-open' : ''}`} id="admin-sidebar" aria-label="Admin navigation">
         <div className="admin-sidebar-title">Admin Panel</div>
         <nav>
-          <Link to="/admin/panel" className={`sidebar-link ${location.pathname === '/admin/panel' ? 'sidebar-link-active' : ''}`}>Dashboard</Link>
-          <Link to="/admin/users" className={`sidebar-link ${location.pathname.startsWith('/admin/users') ? 'sidebar-link-active' : ''}`}>Users</Link>
-          <Link to="/admin/products" className={`sidebar-link ${location.pathname.startsWith('/admin/products') ? 'sidebar-link-active' : ''}`}>Products</Link>
-          <Link to="/admin/orders" className={`sidebar-link ${location.pathname.startsWith('/admin/orders') ? 'sidebar-link-active' : ''}`}>Orders</Link>
+          <Link to="/admin/panel" style={{ ...sidebarLinkStyle, ...(location.pathname === '/admin/panel' ? activeLinkStyle : {}) }}>Dashboard</Link>
+          <Link to="/admin/users" style={{ ...sidebarLinkStyle, ...(location.pathname.startsWith('/admin/users') ? activeLinkStyle : {}) }}>Users</Link>
+          <Link to="/admin/products" style={{ ...sidebarLinkStyle, ...(location.pathname.startsWith('/admin/products') ? activeLinkStyle : {}) }}>Products</Link>
+          <Link to="/admin/orders" style={{ ...sidebarLinkStyle, ...(location.pathname.startsWith('/admin/orders') ? activeLinkStyle : {}) }}>Orders</Link>
         </nav>
         <div className="admin-logout-wrap">
-          <button onClick={handleLogout} className="logout-button">Logout</button>
+          <button onClick={handleLogout} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: 6, cursor: 'pointer' }}>Logout</button>
         </div>
       </aside>
 
