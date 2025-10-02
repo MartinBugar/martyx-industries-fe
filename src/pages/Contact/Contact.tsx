@@ -80,18 +80,12 @@ const Contact: React.FC = () => {
                   className="contact-mascot-image"
                   loading="eager"
                 />
-                <div className="mascot-greeting">
-                  <span>Ahoj! Som tu, aby som vám pomohla 😊</span>
-                </div>
+
               </div>
             </div>
             
             {/* Contact Details - Right Side */}
             <div className="contact-details">
-              <div className="company-intro">
-                <h3 className="company-name">{t('company_info.name')}</h3>
-                <p className="company-description">{t('company_info.description')}</p>
-              </div>
 
           <div className="info-section">
             <h4>{t('company_info.address.title')}</h4>
