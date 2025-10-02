@@ -27,7 +27,6 @@ const About: React.FC = () => {
               alt="Martyx Industries Mascot"
               className="mascot-image"
             />
-            <div className="mascot-glow"></div>
           </div>
         </div>
       </section>

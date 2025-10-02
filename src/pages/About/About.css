@@ -148,29 +148,6 @@
     transform: scale(1.02);
 }
 
-.mascot-glow {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 80%;
-    height: 80%;
-    background: radial-gradient(circle, rgba(246, 200, 69, 0.2) 0%, transparent 70%);
-    border-radius: 50%;
-    z-index: 1;
-    animation: pulse 3s ease-in-out infinite;
-}
-
-@keyframes pulse {
-    0%, 100% {
-        transform: translate(-50%, -50%) scale(1);
-        opacity: 0.6;
-    }
-    50% {
-        transform: translate(-50%, -50%) scale(1.1);
-        opacity: 0.8;
-    }
-}
 
 @keyframes fadeInRight {
     from {
@@ -652,9 +629,6 @@
     will-change: transform;
 }
 
-.mascot-glow {
-    will-change: transform, opacity;
-}
 
 .about-page .btn:focus-visible {
     outline-offset: 4px;
