@@ -42,6 +42,7 @@ const ModelPhotoGallery: React.FC<ModelPhotoGalleryProps> = ({ model, onClose })
   const [selectedPhoto, setSelectedPhoto] = useState<ModelPhoto | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isNavigating, setIsNavigating] = useState(false);
+  const [deletingPhotoId, setDeletingPhotoId] = useState<number | null>(null);
   const navigationTimeoutRef = React.useRef<number | null>(null);
 
   useEffect(() => {
@@ -185,6 +186,71 @@ const ModelPhotoGallery: React.FC<ModelPhotoGalleryProps> = ({ model, onClose })
     }, 150);
   }, [photos, isNavigating]);
 
+  const deletePhoto = async (photoId: number) => {
+    if (!window.confirm('Naozaj chcete zmazať túto fotku?')) {
+      return;
+    }
+
+    setDeletingPhotoId(photoId);
+
+    try {
+      const token = getAuthToken();
+      if (!token) {
+        throw new Error('Nie ste prihlásený');
+      }
+
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL || 'http://localhost:8080'}/api/user-photos/${photoId}`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (!response.ok) {
+        if (response.status === 500) {
+          console.warn(`Backend endpoint DELETE /api/user-photos/${photoId} not implemented yet`);
+          
+          // Mock delete for testing
+          if (import.meta.env.VITE_MOCK_DELETES === 'true') {
+            console.log('🎭 Mock mode - simulating photo delete');
+            setPhotos(prevPhotos => prevPhotos.filter(p => p.id !== photoId));
+            
+            // If deleted photo was selected in lightbox, close it
+            if (selectedPhoto && selectedPhoto.id === photoId) {
+              closeLightbox();
+            }
+            
+            return;
+          }
+          
+          throw new Error('Backend endpoint pre mazanie fotiek nie je implementovaný. Kontaktujte backend developera.');
+        }
+        
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Nepodarilo sa zmazať fotku');
+      }
+
+      // Remove photo from local state
+      setPhotos(prevPhotos => prevPhotos.filter(p => p.id !== photoId));
+      
+      // If deleted photo was selected in lightbox, close it
+      if (selectedPhoto && selectedPhoto.id === photoId) {
+        closeLightbox();
+      }
+
+      console.log('Photo deleted successfully');
+    } catch (err: any) {
+      console.error('Error deleting photo:', err);
+      alert(err.message || 'Nepodarilo sa zmazať fotku. Skúste to znovu.');
+    } finally {
+      setDeletingPhotoId(null);
+    }
+  };
+
   // Handle keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -250,37 +316,54 @@ const ModelPhotoGallery: React.FC<ModelPhotoGalleryProps> = ({ model, onClose })
 
             {!loading && !error && photos.length > 0 && (
               <div className="photos-grid">
-                {photos.map((photo) => (
-                  <div key={photo.id} className="photo-card" onClick={() => openLightbox(photo)}>
-                    <div className="photo-image">
-                      <img 
-                        src={photo.thumbnailUrl || photo.cdnUrl} 
-                        alt={photo.originalFilename}
-                        loading="lazy"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = '/placeholder-image.png';
-                        }}
-                      />
-                      <div className="photo-overlay">
-                        <svg viewBox="0 0 24 24" fill="none">
-                          <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                      </div>
+              {photos.map((photo) => (
+                <div key={photo.id} className="photo-card">
+                  <div className="photo-image" onClick={() => openLightbox(photo)}>
+                    <img 
+                      src={photo.thumbnailUrl || photo.cdnUrl} 
+                      alt={photo.originalFilename}
+                      loading="lazy"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = '/placeholder-image.png';
+                      }}
+                    />
+                    <div className="photo-overlay">
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
                     </div>
-                    <div className="photo-info">
-                      <div className="photo-meta">
-                        <span className="photo-name">{photo.originalFilename}</span>
-                        <span className="photo-size">{formatFileSize(photo.fileSize)}</span>
-                      </div>
-                      <div className="photo-status">
-                        {getStatusBadge(photo.verificationStatus)}
-                      </div>
-                      <div className="photo-date">
-                        {formatDate(photo.uploadDate)}
-                      </div>
+                    
+                    {/* Delete button */}
+                    <button
+                      className="delete-photo-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deletePhoto(photo.id);
+                      }}
+                      disabled={deletingPhotoId === photo.id}
+                      title="Zmazať fotku"
+                    >
+                      {deletingPhotoId === photo.id ? (
+                        <div className="delete-spinner"></div>
+                      ) : (
+                        <span className="delete-cross">×</span>
+                      )}
+                    </button>
+                  </div>
+                  <div className="photo-info">
+                    <div className="photo-meta">
+                      <span className="photo-name">{photo.originalFilename}</span>
+                      <span className="photo-size">{formatFileSize(photo.fileSize)}</span>
+                    </div>
+                    <div className="photo-status">
+                      {getStatusBadge(photo.verificationStatus)}
+                    </div>
+                    <div className="photo-date">
+                      {formatDate(photo.uploadDate)}
                     </div>
                   </div>
-                ))}
+                </div>
+              ))}
               </div>
             )}
           </div>

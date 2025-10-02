@@ -48,6 +48,7 @@ const ModelCollection: React.FC = () => {
   const [selectedModel, setSelectedModel] = useState<PurchasedModel | null>(null);
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [galleryModalOpen, setGalleryModalOpen] = useState(false);
+  const [deletingPhotoId, setDeletingPhotoId] = useState<number | null>(null);
 
   // Load photos for a specific model/product
   const loadPhotosForModel = async (productId: string): Promise<ModelPhoto[]> => {
@@ -206,6 +207,93 @@ const ModelCollection: React.FC = () => {
     setSelectedModel(null);
   };
 
+  const deletePhoto = async (photoId: number, modelProductId: string) => {
+    if (!window.confirm('Naozaj chcete zmazať túto fotku?')) {
+      return;
+    }
+
+    setDeletingPhotoId(photoId);
+
+    try {
+      const token = getAuthToken();
+      if (!token) {
+        throw new Error('Nie ste prihlásený');
+      }
+
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL || 'http://localhost:8080'}/api/user-photos/${photoId}`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (!response.ok) {
+        if (response.status === 500) {
+          console.warn(`Backend endpoint DELETE /api/user-photos/${photoId} not implemented yet`);
+          
+          // Mock delete for testing
+          if (import.meta.env.VITE_MOCK_DELETES === 'true') {
+            console.log('🎭 Mock mode - simulating photo delete');
+            
+            // Update local state
+            setCollectionData(prevData => {
+              if (!prevData) return prevData;
+              
+              return {
+                ...prevData,
+                models: prevData.models.map(model => {
+                  if (model.product_id === modelProductId) {
+                    return {
+                      ...model,
+                      photos: model.photos.filter(p => p.id !== photoId)
+                    };
+                  }
+                  return model;
+                })
+              };
+            });
+            
+            return;
+          }
+          
+          throw new Error('Backend endpoint pre mazanie fotiek nie je implementovaný. Kontaktujte backend developera.');
+        }
+        
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Nepodarilo sa zmazať fotku');
+      }
+
+      // Update local state - remove photo from the specific model
+      setCollectionData(prevData => {
+        if (!prevData) return prevData;
+        
+        return {
+          ...prevData,
+          models: prevData.models.map(model => {
+            if (model.product_id === modelProductId) {
+              return {
+                ...model,
+                photos: model.photos.filter(p => p.id !== photoId)
+              };
+            }
+            return model;
+          })
+        };
+      });
+
+      console.log('Photo deleted successfully');
+    } catch (err: any) {
+      console.error('Error deleting photo:', err);
+      alert(err.message || 'Nepodarilo sa zmazať fotku. Skúste to znovu.');
+    } finally {
+      setDeletingPhotoId(null);
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     // Don't show badge for approved photos (default state)
     if (status === 'approved') {
@@ -329,18 +417,10 @@ const ModelCollection: React.FC = () => {
                 </span>
               </div>
               
-              <div className="model-info">
-                <div className="photos-count">
-                  <span className="label">Fotky:</span>
-                  <span className="value">
-                    {model.photos.length} / {model.max_photos}
-                  </span>
-                </div>
-              </div>
 
               {model.photos.length > 0 && (
                 <div className="model-photos">
-                  <h4>Uploadované fotky:</h4>
+                  <h4>Uploadované fotky:  { model.photos.length} / 10</h4>
                   <div className="photos-list">
                     {model.photos.map((photo) => (
                         <div key={photo.id} className="photo-item">
@@ -359,6 +439,23 @@ const ModelCollection: React.FC = () => {
                           </div>
                           {getStatusBadge(photo.verificationStatus)}
                         </div>
+                        
+                        {/* Delete button - right side */}
+                        <button
+                          className="delete-photo-btn-right"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deletePhoto(photo.id, model.product_id);
+                          }}
+                          disabled={deletingPhotoId === photo.id}
+                          title="Zmazať fotku"
+                        >
+                          {deletingPhotoId === photo.id ? (
+                            <div className="delete-spinner-small"></div>
+                          ) : (
+                            <span className="delete-cross">×</span>
+                          )}
+                        </button>
                         </div>
                     ))}
                   </div>
