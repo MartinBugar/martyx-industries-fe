@@ -72,37 +72,21 @@
   word-wrap: break-word;
 }
 
-/* Company Info Content Layout */
-.company-info-content {
-  display: flex;
-  flex-direction: column;
-  gap: 3rem;
-  margin-top: 2rem;
-  flex: 1; /* Take remaining space in company-info */
-}
-
-/* Top Section: Address and Contact Details */
-.contact-info-top {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  align-items: start;
-}
-
-/* Mascot Section - Bottom */
-.mascot-section {
+/* Mascot - Left Side */
+.mascot-left {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 2rem;
 }
 
-.mascot-container {
+/* Contact Info Section - In Form */
+.contact-info-section {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 1.5rem;
-  text-align: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .contact-mascot-image {
@@ -117,17 +101,6 @@
   transform: scale(1.05);
 }
 
-.mascot-greeting {
-  background: linear-gradient(135deg, #F6C845, #E6B82D);
-  color: #0B0F14;
-  padding: 1rem 1.5rem;
-  border-radius: 15px;
-  font-weight: 600;
-  font-size: 1rem;
-  box-shadow: 0 6px 20px rgba(246, 200, 69, 0.3);
-  max-width: 280px;
-  animation: fadeInUp 1s ease-out;
-}
 
 
 /* Animations */
@@ -142,11 +115,18 @@
   }
 }
 
-/* Responsive Design for Company Info */
+/* Responsive Design for New Layout */
 @media (max-width: 1024px) {
-  .contact-info-top {
+  .contact-container {
     grid-template-columns: 1fr;
     gap: 2rem;
+  }
+  
+  .mascot-left {
+    order: -1;
+  }
+  
+  .contact-info-section {
     text-align: center;
   }
   
@@ -156,75 +136,33 @@
 }
 
 @media (max-width: 768px) {
-  .company-info-content {
-    gap: 2rem;
-  }
-  
-  .contact-info-top {
-    gap: 1.5rem;
+  .contact-info-section {
+    gap: 1.2rem;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
   }
   
   .contact-mascot-image {
     width: 200px;
   }
-  
-  .mascot-greeting {
-    font-size: 0.9rem;
-    padding: 0.8rem 1.2rem;
-    max-width: 240px;
-  }
 }
 
 @media (max-width: 480px) {
-  .company-info-content {
+  .contact-container {
     gap: 1.5rem;
   }
   
-  .contact-info-top {
+  .contact-info-section {
     gap: 1rem;
-  }
-  
-  .mascot-section {
-    margin-top: 1.5rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
   }
   
   .contact-mascot-image {
     width: 160px;
   }
-  
-  .mascot-greeting {
-    font-size: 0.85rem;
-    padding: 0.7rem 1rem;
-    max-width: 200px;
-  }
 }
 
-/* Company Information Section - Fully Responsive */
-.company-info {
-  background: var(--surface);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--radius-lg);
-  padding: clamp(1.25rem, 4vw, 2rem);
-  backdrop-filter: blur(20px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-  display: flex;
-  flex-direction: column;
-  height: 100%; /* Full height to match contact form */
-  position: relative;
-  overflow: hidden;
-  width: 100%;
-  min-width: 0; /* Prevent grid overflow */
-}
-
-.company-info::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--accent), transparent);
-}
 
 .company-info h2 {
   font-size: clamp(1.25rem, 3.5vw, 1.8rem);
@@ -367,16 +305,16 @@
   background: var(--surface);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-lg);
-  padding: clamp(1.25rem, 4vw, 2rem);
+  padding: clamp(1rem, 3vw, 1.5rem); /* Reduced padding to match company-info */
   backdrop-filter: blur(20px);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
   position: relative;
   overflow: hidden;
   width: 100%;
-  min-width: 0; /* Prevent grid overflow */
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  height: 100%; /* Full height to match company-info */
+  height: 100%;
 }
 
 .contact-form-section::before {
@@ -408,10 +346,10 @@
 .contact-form {
   display: flex;
   flex-direction: column;
-  gap: clamp(1rem, 3vw, 1.5rem);
+  gap: clamp(0.8rem, 2.5vw, 1.2rem); /* Reduced gap */
   width: 100%;
-  flex: 1; /* Take remaining space in contact-form-section */
-  justify-content: space-between; /* Distribute form elements evenly */
+  flex: 1;
+  justify-content: flex-start; /* Changed from space-between to flex-start */
 }
 
 .form-group {
