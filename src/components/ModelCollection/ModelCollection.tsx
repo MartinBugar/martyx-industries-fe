@@ -4,6 +4,7 @@ import { useAuth } from '../../context/useAuth';
 import PhotoUploadModal from './PhotoUploadModal';
 import ModelPhotoGallery from './ModelPhotoGallery';
 import { getAuthToken } from '../../utils/tokenUtils';
+import { API_BASE_URL } from '../../services/apiUtils';
 import './ModelCollection.css';
 
 interface ModelPhoto {
@@ -81,7 +82,7 @@ const ModelCollection: React.FC = () => {
         return { is_completed: false, is_public: false };
       }
 
-      const url = `${import.meta.env.VITE_API_URL || 'http://localhost:8080'}/api/user-models/${productId}/status?order_id=${orderId}`;
+      const url = `${API_BASE_URL}/api/user-models/${productId}/status?order_id=${orderId}`;
       console.log(`🔍 Loading model status from: ${url}`);
       
       const response = await fetch(url, {
@@ -139,7 +140,7 @@ const ModelCollection: React.FC = () => {
       }
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:8080'}/api/user-photos/${productId}`,
+        `${API_BASE_URL}/api/user-photos/${productId}`,
         {
           method: 'GET',
           headers: {
@@ -323,7 +324,7 @@ const ModelCollection: React.FC = () => {
       }
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:8080'}/api/user-photos/${photoId}`,
+        `${API_BASE_URL}/api/user-photos/${photoId}`,
         {
           method: 'DELETE',
           headers: {
@@ -421,7 +422,7 @@ const ModelCollection: React.FC = () => {
       }
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:8080'}/api/user-models/${productId}/status`,
+        `${API_BASE_URL}/api/user-models/${productId}/status`,
         {
           method: 'PATCH',
           headers: {

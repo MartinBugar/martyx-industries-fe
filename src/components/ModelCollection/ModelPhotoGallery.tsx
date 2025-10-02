@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getAuthToken } from '../../utils/tokenUtils';
+import { API_BASE_URL } from '../../services/apiUtils';
 import './ModelPhotoGallery.css';
 
 interface ModelPhoto {
@@ -80,7 +81,7 @@ const ModelPhotoGallery: React.FC<ModelPhotoGalleryProps> = ({ model, onClose })
       }
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:8080'}/api/user-photos/${model.product_id}`,
+        `${API_BASE_URL}/api/user-photos/${model.product_id}`,
         {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -202,7 +203,7 @@ const ModelPhotoGallery: React.FC<ModelPhotoGalleryProps> = ({ model, onClose })
       }
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:8080'}/api/user-photos/${photoId}`,
+        `${API_BASE_URL}/api/user-photos/${photoId}`,
         {
           method: 'DELETE',
           headers: {
