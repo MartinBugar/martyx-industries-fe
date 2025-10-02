@@ -70,10 +70,28 @@ const Contact: React.FC = () => {
         
           <h2 id="company-info-title">{t('company_info.title')}</h2>
           
-          <div className="company-card">
-            <h3 className="company-name">{t('company_info.name')}</h3>
-            <p className="company-description">{t('company_info.description')}</p>
-          </div>
+          <div className="company-info-content">
+            {/* Mascot Section - Left Side */}
+            <div className="mascot-section">
+              <div className="mascot-container">
+                <img
+                  src="/cassandra/Contact-Cass.png"
+                  alt="Cassandra - váš kontaktný asistent"
+                  className="contact-mascot-image"
+                  loading="eager"
+                />
+                <div className="mascot-greeting">
+                  <span>Ahoj! Som tu, aby som vám pomohla 😊</span>
+                </div>
+              </div>
+            </div>
+            
+            {/* Contact Details - Right Side */}
+            <div className="contact-details">
+              <div className="company-intro">
+                <h3 className="company-name">{t('company_info.name')}</h3>
+                <p className="company-description">{t('company_info.description')}</p>
+              </div>
 
           <div className="info-section">
             <h4>{t('company_info.address.title')}</h4>
@@ -132,6 +150,8 @@ const Contact: React.FC = () => {
               <div>
                 <p>{t('company_info.contact.business_hours')}</p>
               </div>
+            </div>
+          </div>
             </div>
           </div>
         </section>

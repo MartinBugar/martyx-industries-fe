@@ -70,6 +70,151 @@
   word-wrap: break-word;
 }
 
+/* Company Info Content Layout */
+.company-info-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: start;
+  margin-top: 2rem;
+}
+
+/* Mascot Section - Left Side */
+.mascot-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.mascot-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  text-align: center;
+}
+
+.contact-mascot-image {
+  width: 280px;
+  height: auto;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+  filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.2));
+}
+
+.contact-mascot-image:hover {
+  transform: scale(1.05);
+}
+
+.mascot-greeting {
+  background: linear-gradient(135deg, #F6C845, #E6B82D);
+  color: #0B0F14;
+  padding: 1rem 1.5rem;
+  border-radius: 15px;
+  font-weight: 600;
+  font-size: 1rem;
+  box-shadow: 0 6px 20px rgba(246, 200, 69, 0.3);
+  max-width: 280px;
+  animation: fadeInUp 1s ease-out;
+}
+
+/* Contact Details - Right Side */
+.contact-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.company-intro {
+  margin-bottom: 1rem;
+}
+
+.company-name {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, var(--text-primary), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.company-description {
+  font-size: 1rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design for Company Info */
+@media (max-width: 1024px) {
+  .company-info-content {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    text-align: center;
+  }
+  
+  .mascot-section {
+    order: -1;
+  }
+  
+  .contact-mascot-image {
+    width: 240px;
+  }
+}
+
+@media (max-width: 768px) {
+  .company-info-content {
+    gap: 2rem;
+  }
+  
+  .contact-mascot-image {
+    width: 200px;
+  }
+  
+  .mascot-greeting {
+    font-size: 0.9rem;
+    padding: 0.8rem 1.2rem;
+    max-width: 240px;
+  }
+  
+  .company-name {
+    font-size: 1.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .company-info-content {
+    gap: 1.5rem;
+  }
+  
+  .contact-mascot-image {
+    width: 160px;
+  }
+  
+  .mascot-greeting {
+    font-size: 0.85rem;
+    padding: 0.7rem 1rem;
+    max-width: 200px;
+  }
+  
+  .company-name {
+    font-size: 1.4rem;
+  }
+}
+
 /* Company Information Section - Fully Responsive */
 .company-info {
   background: var(--surface);
