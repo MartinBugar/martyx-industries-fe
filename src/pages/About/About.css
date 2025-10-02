@@ -252,7 +252,7 @@
     align-items: center;
     justify-content: center;
     min-height: 600px;
-    transform: translateY(-100px);
+    transform: translateY(-50px);
 }
 
 .mascot-background {
