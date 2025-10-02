@@ -243,27 +243,10 @@ const ModelCollection: React.FC = () => {
               </div>
               
               <div className="model-info">
-                <div className="purchase-date">
-                  <span className="label">Zakúpené:</span>
-                  <span className="value">
-                    {new Date(model.purchase_date).toLocaleDateString('sk-SK')}
-                  </span>
-                </div>
-                <div className="order-info">
-                  <span className="label">Objednávka:</span>
-                  <span className="value">#{model.order_number}</span>
-                </div>
                 <div className="photos-count">
                   <span className="label">Fotky:</span>
                   <span className="value">
                     {model.photos.length} / {model.max_photos}
-                  </span>
-                </div>
-                <div className="price-info">
-                  <span className="label">Cena:</span>
-                  <span className="value">
-                    {model.currency === 'USD' ? '$' : model.currency === 'EUR' ? '€' : ''}
-                    {model.price.toFixed(2)} × {model.quantity}
                   </span>
                 </div>
               </div>

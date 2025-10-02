@@ -2,9 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/useAuth';
 import type { Order } from '../../context/authTypes';
 import './OrderHistory.css';
-import { paymentService } from '../../services/paymentService';
-import { extractPerProductLinks } from '../../helpers/downloads';
-import type { ProductLink } from '../../helpers/downloads';
+// Note: Download functionality moved to OrderDetailsCard
 import OrderDetailsCard from '../OrderDetailsCard';
 
 
@@ -34,21 +32,7 @@ const OrderHistory: React.FC = () => {
   // Get orders from context
   const orders = getOrders();
 
-    // Per-order dynamic download links derived from PaymentDTO
-    const [productLinksByOrder, setProductLinksByOrder] = useState<Record<string, ProductLink[]>>({});
-
-    const ensureProductLinks = async (order: Order) => {
-      try {
-        if (!order || !order.paymentId) return;
-        if (productLinksByOrder[order.id]) return;
-        const dto = await paymentService.getPaymentDetails(order.paymentId);
-        const built = extractPerProductLinks(dto);
-        setProductLinksByOrder(prev => ({ ...prev, [order.id]: built }));
-      } catch (e) {
-        const msg = e instanceof Error ? e.message : 'Failed to load download links';
-        console.error('Failed to load product links:', msg);
-      }
-    };
+    // Note: Download functionality is handled directly in OrderDetailsCard via orderService
   
   // Format date/time string
   const formatDateTime = (dateString: string) => {
@@ -75,12 +59,7 @@ const OrderHistory: React.FC = () => {
     setSelectedOrder(order === selectedOrder ? null : order);
   };
 
-  // When an order is selected, try to load its product download links (if paymentId is known)
-  useEffect(() => {
-    if (selectedOrder) {
-      void ensureProductLinks(selectedOrder);
-    }
-  }, [selectedOrder]);
+  // Note: Download links are handled directly in OrderDetailsCard
 
 
 
