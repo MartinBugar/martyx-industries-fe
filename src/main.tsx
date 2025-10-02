@@ -6,6 +6,7 @@ import './i18n'
 import App from './App.tsx'
 import { initializeModelViewerConfig } from './utils/modelViewerConfig'
 import { initializeLanguage } from './utils/languageUtils'
+import './utils/debugAuth' // Import debug utilities for console access
 
 // Initialize model-viewer configuration for production optimization
 initializeModelViewerConfig();

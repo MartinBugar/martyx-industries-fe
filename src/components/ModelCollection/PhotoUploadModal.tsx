@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { getAuthToken, debugToken } from '../../utils/tokenUtils';
 
 interface PurchasedModel {
   order_id: string;
@@ -109,42 +110,148 @@ const PhotoUploadModal: React.FC<PhotoUploadModalProps> = ({ model, onClose, onS
 
     try {
       const formData = new FormData();
-      formData.append('order_id', model.order_id.toString());
-      formData.append('model_id', model.model_id.toString());
+      formData.append('product_id', model.product_id);
+      formData.append('product_name', model.product_name);
+      formData.append('order_id', model.order_id);
       
-      selectedFiles.forEach((selectedFile, index) => {
+      // Append each file with proper naming
+      selectedFiles.forEach((selectedFile) => {
         formData.append('photos', selectedFile.file);
       });
 
-      // TODO: Replace with actual API call
-      // const response = await fetch('/api/user/upload-model-photo', {
-      //   method: 'POST',
-      //   body: formData,
-      //   onUploadProgress: (progressEvent) => {
-      //     const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-      //     setUploadProgress(progress);
-      //   }
-      // });
-
-      // Mock upload with progress simulation
-      for (let i = 0; i <= 100; i += 10) {
-        setUploadProgress(i);
-        await new Promise(resolve => setTimeout(resolve, 100));
+      // Get auth token using utility function
+      const token = getAuthToken();
+      if (!token) {
+        throw new Error('Nie ste prihlásený');
       }
 
-      // Mock success response
-      console.log('Uploading files for model:', model.product_name);
-      console.log('Files:', selectedFiles.map(f => f.file.name));
+      // Debug token for troubleshooting
+      console.log('🔍 Upload Debug Info:');
+      console.log('Product ID:', model.product_id);
+      console.log('Product Name:', model.product_name);
+      console.log('Order ID:', model.order_id);
+      console.log('Files count:', selectedFiles.length);
+      debugToken();
+
+      // Test if backend is reachable first
+      try {
+        console.log('🧪 Testing backend connectivity...');
+        const testResponse = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8080'}/api/health`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        console.log('🧪 Health check status:', testResponse.status);
+      } catch (healthError) {
+        console.log('⚠️ Backend health check failed:', healthError);
+      }
+
+      // Try different possible endpoints
+      const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+      const possibleEndpoints = [
+        `${baseUrl}/api/user-photos/upload`,
+        `${baseUrl}/api/photos/upload`,
+        `${baseUrl}/api/upload/user-photos`,
+        `${baseUrl}/api/user/photos/upload`
+      ];
+      
+      let apiUrl = possibleEndpoints[0]; // Default to first endpoint
+      console.log('🌐 Primary API URL:', apiUrl);
+      console.log('🔑 Authorization header:', `Bearer ${token.substring(0, 20)}...`);
+      
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      console.log('📡 Response status:', response.status);
+      console.log('📡 Response headers:', Object.fromEntries(response.headers.entries()));
+
+      if (!response.ok) {
+        let errorData: any = {};
+        const contentType = response.headers.get('content-type');
+        
+        try {
+          if (contentType && contentType.includes('application/json')) {
+            errorData = await response.json();
+          } else {
+            const textError = await response.text();
+            console.log('📄 Error response text:', textError);
+            errorData = { message: textError || `HTTP ${response.status}` };
+          }
+        } catch (parseError) {
+          console.log('❌ Failed to parse error response:', parseError);
+          errorData = { message: `HTTP ${response.status}: ${response.statusText}` };
+        }
+        
+        console.log('❌ Error data:', errorData);
+        
+        // Special handling for 500 errors - likely backend not implemented
+        if (response.status === 500) {
+          console.log('🚨 Backend Error 500 - Endpoint likely not implemented');
+          console.log('📋 Backend Developer Info:');
+          console.log('   Required endpoint: POST /api/user-photos/upload');
+          console.log('   Required headers: Authorization: Bearer <jwt-token>');
+          console.log('   Required form data: product_id, product_name, order_id, photos[]');
+          console.log('   See BACKEND_USER_PHOTOS_INTEGRATION.md for full implementation');
+          
+          throw new Error(`Backend chyba (500): Endpoint /api/user-photos/upload pravdepodobne nie je implementovaný. Kontaktujte backend developera.`);
+        }
+        
+        throw new Error(`Chyba pri uploade fotografií: ${errorData.message || response.statusText}`);
+      }
+
+      const result = await response.json();
+      
+      // Simulate progress for better UX
+      for (let i = 0; i <= 100; i += 20) {
+        setUploadProgress(i);
+        await new Promise(resolve => setTimeout(resolve, 200));
+      }
+
+      console.log('Upload successful:', result);
 
       // Clean up object URLs
       selectedFiles.forEach(file => {
         URL.revokeObjectURL(file.preview);
       });
 
-      onSuccess();
-    } catch (err) {
-      setError('Nepodarilo sa uploadnúť fotky. Skúste to znovu.');
+      setSelectedFiles([]);
+      onSuccess(); // Notify parent about successful upload
+    } catch (err: any) {
       console.error('Upload error:', err);
+      
+      // If it's a 500 error (backend not implemented), offer mock mode
+      if (err.message && err.message.includes('Backend chyba (500)')) {
+        console.log('💡 Suggestion: Enable mock mode for testing without backend');
+        console.log('   Add VITE_MOCK_UPLOADS=true to .env file');
+        
+        // Check if mock mode is enabled
+        if (import.meta.env.VITE_MOCK_UPLOADS === 'true') {
+          console.log('🎭 Mock mode enabled - simulating successful upload');
+          
+          // Simulate successful upload
+          for (let i = 0; i <= 100; i += 20) {
+            setUploadProgress(i);
+            await new Promise(resolve => setTimeout(resolve, 200));
+          }
+          
+          // Clean up object URLs
+          selectedFiles.forEach(file => {
+            URL.revokeObjectURL(file.preview);
+          });
+
+          setSelectedFiles([]);
+          onSuccess(); // Notify parent about successful upload
+          return;
+        }
+      }
+      
+      setError(err.message || 'Nepodarilo sa uploadnúť fotky. Skúste to znovu.');
     } finally {
       setUploading(false);
       setUploadProgress(0);

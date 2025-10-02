@@ -2,14 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/useAuth';
 import type { Order } from '../../context/authTypes';
 import PhotoUploadModal from './PhotoUploadModal';
+import ModelPhotoGallery from './ModelPhotoGallery';
+import { getAuthToken } from '../../utils/tokenUtils';
 import './ModelCollection.css';
 
 interface ModelPhoto {
   id: number;
-  cdn_url: string;
-  thumbnail_url: string;
-  verification_status: 'pending' | 'approved' | 'rejected';
-  upload_date: string;
+  originalFilename: string;
+  fileName: string;
+  fileSize: number;
+  cdnUrl: string;
+  thumbnailUrl: string;
+  verificationStatus: 'pending' | 'approved' | 'rejected';
+  uploadDate: string;
+  productId: string;
+  productName: string;
 }
 
 interface PurchasedModel {
@@ -40,6 +47,50 @@ const ModelCollection: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedModel, setSelectedModel] = useState<PurchasedModel | null>(null);
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
+  const [galleryModalOpen, setGalleryModalOpen] = useState(false);
+
+  // Load photos for a specific model/product
+  const loadPhotosForModel = async (productId: string): Promise<ModelPhoto[]> => {
+    try {
+      const token = getAuthToken();
+      if (!token) {
+        console.warn('No auth token available for loading photos');
+        return [];
+      }
+
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL || 'http://localhost:8080'}/api/user-photos/${productId}`,
+        {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          // No photos found for this product - this is normal
+          return [];
+        }
+        
+        if (response.status === 500) {
+          console.warn(`Backend endpoint GET /api/user-photos/${productId} not implemented yet`);
+          return [];
+        }
+        
+        throw new Error(`Failed to load photos: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      const photos = data.data?.photos || [];
+      return photos;
+    } catch (error) {
+      console.error(`Error loading photos for product ${productId}:`, error);
+      return [];
+    }
+  };
 
   // Fetch orders when component mounts
   useEffect(() => {
@@ -48,9 +99,9 @@ const ModelCollection: React.FC = () => {
     }
   }, [user, hasLoadedOrders, ordersLoading, refreshOrders]);
 
-  // Process orders into collection data
+  // Process orders into collection data and load photos
   useEffect(() => {
-    const processOrders = () => {
+    const processOrdersAndLoadPhotos = async () => {
       try {
         if (!user) {
           setCollectionData(null);
@@ -80,16 +131,27 @@ const ModelCollection: React.FC = () => {
               quantity: item.quantity,
               price: item.price,
               currency: order.currency,
-              photos: [], // TODO: Load from backend API
+              photos: [], // Will be loaded below
               can_upload: true,
               max_photos: 10
             });
           });
         });
 
+        // Load photos for each model
+        await Promise.all(models.map(async (model) => {
+          try {
+            const photos = await loadPhotosForModel(model.product_id);
+            model.photos = photos;
+          } catch (error) {
+            console.error(`Failed to load photos for ${model.product_name}:`, error);
+            model.photos = [];
+          }
+        }));
+
         // Calculate stats
         const completedModels = models.filter(model => 
-          model.photos.some(photo => photo.verification_status === 'approved')
+          model.photos.some(photo => photo.verificationStatus === 'approved')
         ).length;
 
         const collectionData: CollectionData = {
@@ -109,7 +171,7 @@ const ModelCollection: React.FC = () => {
     };
 
     if (hasLoadedOrders) {
-      processOrders();
+      processOrdersAndLoadPhotos();
     } else if (!ordersLoading && user) {
       setLoading(false);
     }
@@ -127,6 +189,11 @@ const ModelCollection: React.FC = () => {
     setUploadModalOpen(true);
   };
 
+  const handleGalleryClick = (model: PurchasedModel) => {
+    setSelectedModel(model);
+    setGalleryModalOpen(true);
+  };
+
   const handleUploadSuccess = () => {
     // Refresh collection data
     fetchCollection();
@@ -134,14 +201,29 @@ const ModelCollection: React.FC = () => {
     setSelectedModel(null);
   };
 
+  const handleGalleryClose = () => {
+    setGalleryModalOpen(false);
+    setSelectedModel(null);
+  };
+
   const getStatusBadge = (status: string) => {
+    // Don't show badge for approved photos (default state)
+    if (status === 'approved') {
+      return null;
+    }
+    
     const statusConfig = {
       pending: { text: 'Čaká na schválenie', class: 'status-pending' },
-      approved: { text: 'Schválené', class: 'status-approved' },
       rejected: { text: 'Zamietnuté', class: 'status-rejected' }
     };
     
     const config = statusConfig[status as keyof typeof statusConfig];
+    
+    // Fallback for unknown status (but not approved)
+    if (!config) {
+      return <span className="status-badge status-unknown">{status || 'Neznámy stav'}</span>;
+    }
+    
     return <span className={`status-badge ${config.class}`}>{config.text}</span>;
   };
 
@@ -150,12 +232,12 @@ const ModelCollection: React.FC = () => {
       return { text: 'Nie je dokončený', class: 'model-status-incomplete' };
     }
     
-    const hasApproved = model.photos.some(photo => photo.verification_status === 'approved');
+    const hasApproved = model.photos.some(photo => photo.verificationStatus === 'approved');
     if (hasApproved) {
       return { text: 'Dokončený', class: 'model-status-completed' };
     }
     
-    const hasPending = model.photos.some(photo => photo.verification_status === 'pending');
+    const hasPending = model.photos.some(photo => photo.verificationStatus === 'pending');
     if (hasPending) {
       return { text: 'Čaká na schválenie', class: 'model-status-pending' };
     }
@@ -211,15 +293,20 @@ const ModelCollection: React.FC = () => {
       <div className="collection-header">
         <h2>Moja zbierka modelov</h2>
         <p>Sledujte svoj pokrok a uploadujte fotky dokončených modelov</p>
-        <div className="collection-stats">
+      </div>
+
+      <div className="stats-container">
+        <div className="stats-card">
           <div className="stat-item">
             <span className="stat-number">{collectionData.total_models}</span>
-            <span className="stat-label">Celkom modelov</span>
+            <span className="stat-label">Celkom</span>
           </div>
+          <div className="stat-divider"></div>
           <div className="stat-item">
             <span className="stat-number">{collectionData.completed_models}</span>
-            <span className="stat-label">Dokončených</span>
+            <span className="stat-label">Dokončené</span>
           </div>
+          <div className="stat-divider"></div>
           <div className="stat-item">
             <span className="stat-number">
               {collectionData.total_models - collectionData.completed_models}
@@ -256,10 +343,10 @@ const ModelCollection: React.FC = () => {
                   <h4>Uploadované fotky:</h4>
                   <div className="photos-list">
                     {model.photos.map((photo) => (
-                      <div key={photo.id} className="photo-item">
+                        <div key={photo.id} className="photo-item">
                         <div className="photo-thumbnail">
                           <img 
-                            src={photo.thumbnail_url || photo.cdn_url} 
+                            src={photo.thumbnailUrl || photo.cdnUrl} 
                             alt="Model photo"
                             onError={(e) => {
                               (e.target as HTMLImageElement).src = '/placeholder-image.png';
@@ -268,17 +355,32 @@ const ModelCollection: React.FC = () => {
                         </div>
                         <div className="photo-info">
                           <div className="photo-date">
-                            {new Date(photo.upload_date).toLocaleDateString('sk-SK')}
+                            {new Date(photo.uploadDate).toLocaleDateString('sk-SK')}
                           </div>
-                          {getStatusBadge(photo.verification_status)}
+                          {getStatusBadge(photo.verificationStatus)}
                         </div>
-                      </div>
+                        </div>
                     ))}
                   </div>
                 </div>
               )}
 
               <div className="model-actions">
+                <button
+                  onClick={() => handleGalleryClick(model)}
+                  className="gallery-button"
+                >
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" stroke="currentColor" strokeWidth="2"/>
+                    <circle cx="8.5" cy="8.5" r="1.5" stroke="currentColor" strokeWidth="2"/>
+                    <polyline points="21,15 16,10 5,21" stroke="currentColor" strokeWidth="2"/>
+                  </svg>
+                  {model.photos.length > 0 
+                    ? `Otvoriť galériu (${model.photos.length})` 
+                    : 'Otvoriť galériu'
+                  }
+                </button>
+                
                 {model.can_upload && (
                   <button
                     onClick={() => handleUploadClick(model)}
@@ -307,6 +409,13 @@ const ModelCollection: React.FC = () => {
             setSelectedModel(null);
           }}
           onSuccess={handleUploadSuccess}
+        />
+      )}
+
+      {galleryModalOpen && selectedModel && (
+        <ModelPhotoGallery
+          model={selectedModel}
+          onClose={handleGalleryClose}
         />
       )}
     </div>
