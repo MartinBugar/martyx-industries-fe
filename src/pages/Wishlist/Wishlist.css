@@ -21,6 +21,7 @@
   min-height: 100vh;
   background: var(--wishlist-bg);
   color: var(--wishlist-text);
+  position: relative;
 }
 
 .wishlist-container {
@@ -28,6 +29,29 @@
   margin: 0 auto;
   padding: 24px 16px;
   background: transparent;
+}
+
+/* ========== FLOATING MASCOT ========== */
+.wishlist-floating-mascot {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.floating-mascot-image {
+  width: 250px;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(246, 200, 69, 0.2));
+  opacity: 0.9;
+  transition: all 0.3s ease;
+}
+
+.floating-mascot-image:hover {
+  opacity: 1;
+  transform: scale(1.05);
 }
 
 /* ========== HEADER ========== */
@@ -250,29 +274,51 @@
 
 /* ========== EMPTY STATE ========== */
 .wishlist-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
   padding: 64px 32px;
   background: var(--wishlist-card);
   border-radius: var(--wishlist-radius);
   border: 1px solid var(--wishlist-border);
+  gap: 2rem;
 }
 
-.wishlist-empty svg {
-  color: #d1d5db;
-  margin-bottom: 16px;
+.wishlist-mascot {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.wishlist-empty h2 {
-  font-size: 20px;
+.mascot-image-wishlist {
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 25px rgba(246, 200, 69, 0.15));
+}
+
+.empty-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.empty-content h2 {
+  font-size: 24px;
   font-weight: 600;
   color: #1a1a1a;
-  margin: 0 0 8px 0;
+  margin: 0;
 }
 
-.wishlist-empty p {
+.empty-content p {
   color: #6b7280;
-  margin: 0 0 24px 0;
+  margin: 0;
   font-size: 16px;
+  line-height: 1.5;
+  max-width: 500px;
 }
 
 /* ========== TOOLBAR ========== */
@@ -578,6 +624,32 @@
 
 /* ========== RESPONSIVE DESIGN ========== */
 @media (max-width: 768px) {
+  .wishlist-empty {
+    padding: 48px 24px;
+    gap: 1.5rem;
+  }
+  
+  .mascot-image-wishlist {
+    max-width: 250px;
+  }
+  
+  .empty-content h2 {
+    font-size: 20px;
+  }
+  
+  .empty-content p {
+    font-size: 14px;
+  }
+  
+  .wishlist-floating-mascot {
+    bottom: 1.5rem;
+    right: 1.5rem;
+  }
+  
+  .floating-mascot-image {
+    width: 200px;
+  }
+  
   .wishlist-container {
     padding: 16px;
   }
@@ -634,6 +706,32 @@
 }
 
 @media (max-width: 480px) {
+  .wishlist-empty {
+    padding: 32px 16px;
+    gap: 1rem;
+  }
+  
+  .mascot-image-wishlist {
+    max-width: 200px;
+  }
+  
+  .empty-content h2 {
+    font-size: 18px;
+  }
+  
+  .empty-content p {
+    font-size: 14px;
+  }
+  
+  .wishlist-floating-mascot {
+    bottom: 1rem;
+    right: 1rem;
+  }
+  
+  .floating-mascot-image {
+    width: 120px;
+  }
+  
   .wishlist-container {
     padding: 12px;
   }
