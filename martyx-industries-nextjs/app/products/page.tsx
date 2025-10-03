@@ -21,11 +21,14 @@ export default async function ProductsPage() {
 
   try {
     const result = await getProducts(1, 20);
-    products = result.products;
-    totalCount = result.totalCount;
-    hasMore = result.hasMore;
+    products = Array.isArray(result?.products) ? result.products : [];
+    totalCount = result?.totalCount || 0;
+    hasMore = result?.hasMore || false;
   } catch (error) {
     console.error('Failed to fetch products:', error);
+    products = [];
+    totalCount = 0;
+    hasMore = false;
   }
 
   return (

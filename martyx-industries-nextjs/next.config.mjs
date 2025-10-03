@@ -1,5 +1,10 @@
+import path from 'path'
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Workspace root configuration - tells Next.js that the project root is one level up
+  outputFileTracingRoot: path.join(process.cwd(), '..'),
+
   images: {
     remotePatterns: [
       {

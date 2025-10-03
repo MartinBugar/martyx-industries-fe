@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "npm --prefix martyx-industries-nextjs run dev",
-    "build": "cd martyx-industries-nextjs && npm install --production=false && npm run build",
+    "build": "npm --prefix martyx-industries-nextjs ci && npm --prefix martyx-industries-nextjs run build",
     "start": "npm --prefix martyx-industries-nextjs run start",
     "lint": "eslint .",
     "preview": "vite preview"

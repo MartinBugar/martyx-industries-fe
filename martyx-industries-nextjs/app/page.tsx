@@ -14,9 +14,11 @@ export default async function Home() {
   let featuredProducts: Product[] = [];
 
   try {
-    featuredProducts = await getFeaturedProducts();
+    const result = await getFeaturedProducts();
+    featuredProducts = Array.isArray(result) ? result : [];
   } catch (error) {
     console.error('Failed to fetch featured products:', error);
+    featuredProducts = [];
   }
 
   return (

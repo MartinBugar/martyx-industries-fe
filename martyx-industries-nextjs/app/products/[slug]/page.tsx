@@ -5,7 +5,7 @@ import { getProductBySlug, getProductSlugs } from "@/lib/api";
 import type { Metadata } from "next";
 
 interface ProductDetailPageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export async function generateStaticParams() {
@@ -24,7 +24,8 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: ProductDetailPageProps): Promise<Metadata> {
   try {
-    const product = await getProductBySlug(params.slug);
+    const { slug } = await params;
+    const product = await getProductBySlug(slug);
 
     const title = product.seo?.title || product.title;
     const description = product.seo?.description || product.shortDescription || product.description;
@@ -62,10 +63,11 @@ export async function generateMetadata({ params }: ProductDetailPageProps): Prom
 export const revalidate = 3600; // Revalidate every hour
 
 export default async function ProductDetailPage({ params }: ProductDetailPageProps) {
+  const { slug } = await params;
   let product;
 
   try {
-    product = await getProductBySlug(params.slug);
+    product = await getProductBySlug(slug);
   } catch (_error) {
     notFound();
   }
