@@ -110,7 +110,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
 
       <h3 id="features">Features:</h3>
       <ul className="features-list">
-        {product.features.map((feature, index) => (
+        {(product.features || []).map((feature, index) => (
           <li key={index}>{feature}</li>
         ))}
       </ul>
@@ -448,10 +448,10 @@ const ProductDetail: React.FC = () => {
     <div className="product-detail-page">
       <div className="product-container">
         {productWithGallery && <ProductView product={productWithGallery} />}
-        <ProductDetails product={product} />
+        {product && <ProductDetails product={product} />}
 
         <nav className="product-bookmarks" aria-label="Product sections" role="tablist">
-          {tabs.map((t) => (
+          {(tabs || []).map((t) => (
             <button
               key={t.id}
               id={`tab-${t.id}`}
@@ -478,11 +478,11 @@ const ProductDetail: React.FC = () => {
             {activeTab.id === 'PrintInfo' && <PrintInfoTab content={activeTab.content} />}
             {activeTab.id === 'Download' && <DownloadTab content={activeTab.content} />}
             {activeTab.id === 'Features' && <FeaturesTab content={activeTab.content} />}
-            {activeTab.id === 'Reviews' && <ReviewsTab content={activeTab.content} productId={product.id} />}
+            {activeTab.id === 'Reviews' && product && <ReviewsTab content={activeTab.content} productId={product.id} />}
           </div>
         )}
 
-        {product.videoUrl && (
+        {product?.videoUrl && (
           <div className="product-video-section" style={{ marginTop: '24px' }}>
             <div style={{
               position: 'relative',
@@ -493,7 +493,7 @@ const ProductDetail: React.FC = () => {
             }}>
               <iframe
                 title="Product video"
-                src={toYouTubeEmbedUrl(product.videoUrl)}
+                src={toYouTubeEmbedUrl(product?.videoUrl || '')}
                 style={{
                   position: 'absolute',
                   top: 0,

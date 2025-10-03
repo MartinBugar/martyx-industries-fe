@@ -70,14 +70,18 @@ export function middleware(request: NextRequest) {
   response.headers.set(
     'Content-Security-Policy',
     [
-      "default-src 'self'",
+      "default-src 'self' blob:",
       "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.paypal.com https://www.sandbox.paypal.com",
       "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' data: https://martyx-industries.fra1.cdn.digitaloceanspaces.com https://fra1.digitaloceanspaces.com",
+      "img-src 'self' data: https: blob:",
       "font-src 'self' data:",
-      "connect-src 'self' http://localhost:8080 https://martyx-industries-be-2xf3x.ondigitalocean.app https://api.paypal.com https://api.sandbox.paypal.com https://www.sandbox.paypal.com",
-      "frame-src 'self' https://www.paypal.com https://www.sandbox.paypal.com",
+      "connect-src 'self' http://localhost:8080 https://martyx-industries-be-2xf3x.ondigitalocean.app https://mi-gallery.fra1.digitaloceanspaces.com https://fra1.digitaloceanspaces.com https://api.paypal.com https://api.sandbox.paypal.com https://www.sandbox.paypal.com wss: ws:",
+      "frame-src 'self' https://www.paypal.com https://www.sandbox.paypal.com https://www.youtube.com https://www.youtube-nocookie.com",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self' https://www.paypal.com https://www.sandbox.paypal.com",
       "frame-ancestors 'none'",
+      "upgrade-insecure-requests"
     ].join('; ')
   );
 

@@ -154,7 +154,30 @@ export async function getProductBySlug(slug: string): Promise<Product> {
   const response = await fetchWithError(endpoint, {
     next: { revalidate: 3600, tags: ['products', `product:${slug}`] }
   });
-  return response.json();
+  
+  const backendProduct = await response.json();
+  
+  // Merge with hardcoded data (similar to hybridProductService)
+  const { getHardcodedDataById } = await import('./data/hardcodedProductData');
+  const hardcodedData = getHardcodedDataById(backendProduct.id.toString());
+  
+  // Merge backend data with hardcoded frontend data
+  const mergedProduct: Product = {
+    id: backendProduct.id.toString(),
+    name: backendProduct.name,
+    price: backendProduct.price,
+    currency: backendProduct.currency,
+    description: backendProduct.description,
+    features: hardcodedData?.features || [],
+    modelPath: hardcodedData?.modelPath || '',
+    gallery: hardcodedData?.gallery || [],
+    interactionInstructions: hardcodedData?.interactionInstructions || [],
+    productType: backendProduct.productType,
+    modelViewerSettings: hardcodedData?.modelViewerSettings,
+    videoUrl: hardcodedData?.videoUrl
+  };
+  
+  return mergedProduct;
 }
 
 export async function getProductById(id: string | number): Promise<Product> {

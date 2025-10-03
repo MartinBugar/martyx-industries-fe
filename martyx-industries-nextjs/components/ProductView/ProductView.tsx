@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import ModelViewer from '../ModelViewer/ModelViewer';
 import Gallery from '../Gallery/Gallery';
 import { type Product } from '../../lib/types/product';
 import styles from './ProductView.module.css';
@@ -12,24 +13,46 @@ interface ProductViewProps {
 const ProductView: React.FC<ProductViewProps> = ({ product }) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  // Note: ModelViewer is skipped for now (3D rendering is complex)
-  // We're using Gallery only as per requirements
+  // Get model viewer settings from product or use defaults
+  const settings = product.modelViewerSettings || {};
 
   return (
     <div className={styles['product-view-container']}>
-      {/* Model container - placeholder for future ModelViewer integration */}
+      {/* Model container with ModelViewer */}
       <div className={styles['model-container']}>
-        {/* TODO: Integrate ModelViewer when ready */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: '100%',
-          color: '#9ca3af',
-          fontSize: '0.875rem'
-        }}>
-          3D Model Viewer - To be integrated
-        </div>
+        {product.modelPath ? (
+          <ModelViewer 
+            modelPath={product.modelPath}
+            alt={`A 3D model of ${product.name}`}
+            poster={settings?.poster}
+            camera-orbit={settings?.cameraOrbit}
+            touch-action={settings?.touchAction}
+            cameraControls={settings?.cameraControls}
+            autoRotate={settings?.autoRotate}
+            interaction-prompt={settings?.interactionPrompt}
+            shadowIntensity={settings?.shadowIntensity}
+            exposure={settings?.exposure}
+            environment-image={settings?.environmentImage}
+            shadow-softness={settings?.shadowSoftness}
+            toneMapping={settings?.toneMapping}
+            metallicFactor={settings?.metallicFactor}
+            roughnessFactor={settings?.roughnessFactor}
+            height={settings?.height}
+            fullscreen={isFullscreen}
+            onFullscreenChange={setIsFullscreen}
+          />
+        ) : (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '100%',
+            color: '#9ca3af',
+            fontSize: '0.875rem'
+          }}>
+            No 3D model available
+          </div>
+        )}
       </div>
 
       {/* Product Gallery */}

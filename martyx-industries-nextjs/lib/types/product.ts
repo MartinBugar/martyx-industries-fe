@@ -68,10 +68,10 @@ export interface Product {
   price: number;
   currency: string;
   description: string;
-  features: string[];
-  modelPath: string;
-  gallery: string[];
-  interactionInstructions: string[];
+  features?: string[];
+  modelPath?: string;
+  gallery?: string[];
+  interactionInstructions?: string[];
   productType: 'DIGITAL' | 'PHYSICAL';
   modelViewerSettings?: ModelViewerSettings;
   tabs?: ProductTab[];

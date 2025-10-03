@@ -96,7 +96,7 @@ const resources = {
     },
     nav: {
       home: 'Home',
-      products: 'Products',
+      products: 'Shop',
       about: 'About',
       contact: 'Contact',
       search: 'Search',
@@ -107,8 +107,8 @@ const resources = {
       sign_up: 'Sign Up',
       sign_out: 'Sign Out',
       account: 'Account',
-      toggle_navigation: 'Toggle navigation',
-      close_menu: 'Close menu',
+      toggle_navigation: 'Toggle Navigation',
+      close_menu: 'Close Menu',
     },
     common: {
       loading: 'Loading...',
@@ -260,13 +260,13 @@ const resources = {
     },
     nav: {
       home: 'Domov',
-      products: 'Produkty',
+      products: 'Obchod',
       about: 'O nás',
       contact: 'Kontakt',
       search: 'Hľadať',
       search_placeholder: 'Hľadať produkty...',
       cart: 'Košík',
-      wishlist: 'Wishlist',
+      wishlist: 'Zoznam prianí',
       sign_in: 'Prihlásiť sa',
       sign_up: 'Registrovať sa',
       sign_out: 'Odhlásiť sa',
@@ -364,11 +364,11 @@ const resources = {
 };
 
 // Add fallback resources for better SSR support
-if (!isServer) {
-  i18n.addResourceBundle('en', 'common', resources.en.common);
-  i18n.addResourceBundle('sk', 'common', resources.sk.common);
-  i18n.addResourceBundle('en', 'home', resources.en.home);
-  i18n.addResourceBundle('sk', 'home', resources.sk.home);
-}
+i18n.addResourceBundle('en', 'common', resources.en.common);
+i18n.addResourceBundle('sk', 'common', resources.sk.common);
+i18n.addResourceBundle('en', 'home', resources.en.home);
+i18n.addResourceBundle('sk', 'home', resources.sk.home);
+i18n.addResourceBundle('en', 'nav', resources.en.nav);
+i18n.addResourceBundle('sk', 'nav', resources.sk.nav);
 
 export default i18n;
