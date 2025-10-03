@@ -15,6 +15,7 @@ import { useCart } from '@/context/useCart';
 import WishlistButton from '@/components/WishlistButton';
 import { reviewsService, type Review } from '@/lib/services/reviewsService';
 import StarRating from '@/components/StarRating';
+import { getHardcodedTabs } from '@/lib/data/hardcodedProductData';
 
 // Local inlined ProductDetails component
 interface ProductDetailsProps {
@@ -156,26 +157,26 @@ const buildTabs = (p: Product): ProductTab[] => {
   if (process.env.NODE_ENV === 'development') {
     console.log('🔧 Building tabs for product:', p.id, 'has custom tabs:', p.tabs?.length);
   }
+
   let tabs: ProductTab[];
-  if (p.tabs && p.tabs.length > 0) {
-    // Use product's custom tabs as-is
+
+  // First, try to get hardcoded tabs for this product ID
+  const hardcodedTabs = getHardcodedTabs(p.id);
+
+  if (hardcodedTabs && hardcodedTabs.length > 0) {
+    // Use hardcoded tabs (includes full content like PrintInfo data)
+    tabs = [...hardcodedTabs];
+    if (process.env.NODE_ENV === 'development') {
+      console.log('✅ Using hardcoded tabs for product', p.id, ':', tabs.map(t => `${t.id}(${t.content.kind})`));
+    }
+  } else if (p.tabs && p.tabs.length > 0) {
+    // Use product's custom tabs from backend
     tabs = [...p.tabs];
     if (process.env.NODE_ENV === 'development') {
-      console.log('✅ Using custom tabs:', tabs.map(t => `${t.id}(${t.content.kind})`));
-      const printInfoTab = tabs.find(t => t.id === 'PrintInfo');
-      if (printInfoTab) {
-        console.log('🔍 PrintInfo tab found in custom tabs:', printInfoTab.content.kind);
-        if (printInfoTab.content.kind === 'printInfo') {
-          console.log('🎉 PrintInfo has correct data type!');
-        } else {
-          console.log('❌ PrintInfo has wrong content type:', printInfoTab.content);
-        }
-      } else {
-        console.log('❌ PrintInfo tab NOT found in custom tabs!');
-      }
+      console.log('✅ Using backend tabs:', tabs.map(t => `${t.id}(${t.content.kind})`));
     }
   } else {
-    // Create default tabs for products without custom tabs
+    // Create default tabs for products without any tabs
     tabs = [
       { id: 'Details', label: 'Details', content: { kind: 'text', text: p.description } },
       { id: 'PrintInfo', label: 'Print Info', content: { kind: 'text', text: 'Print information not available for this product.' } },
