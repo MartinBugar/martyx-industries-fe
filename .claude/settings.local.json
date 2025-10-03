@@ -18,7 +18,11 @@
       "Bash(npx eslint:*)",
       "Bash(npx create-next-app@latest:*)",
       "Bash(npx tailwindcss init:*)",
-      "Bash(npm ci:*)"
+      "Bash(npm ci:*)",
+      "Bash(dir:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []
