@@ -20,8 +20,6 @@ import { CartProvider } from './context/CartContext'
 import { AuthProvider } from './context/AuthProvider'
 import { WishlistProvider } from './context/WishlistContext'
 import { useCart } from './context/useCart'
-import { DevPasswordGateProvider } from './context/DevPasswordGateProvider'
-import { DevPasswordGate } from './components/DevPasswordGate/DevPasswordGate'
 
 // Core components (not lazy loaded as they're needed immediately)
 import Navbar from './components/Navbar/Navbar'
@@ -102,17 +100,13 @@ function AppWrapper() {
     <BrowserRouter>
       <PayPalScriptProvider options={paypalOptions}>
         <SecurityErrorBoundary>
-          <DevPasswordGateProvider>
-            <DevPasswordGate>
-              <AuthProvider>
-                <CartProvider>
-                  <WishlistProvider>
-                    <AppContent />
-                  </WishlistProvider>
-                </CartProvider>
-              </AuthProvider>
-            </DevPasswordGate>
-          </DevPasswordGateProvider>
+          <AuthProvider>
+            <CartProvider>
+              <WishlistProvider>
+                <AppContent />
+              </WishlistProvider>
+            </CartProvider>
+          </AuthProvider>
         </SecurityErrorBoundary>
       </PayPalScriptProvider>
     </BrowserRouter>
