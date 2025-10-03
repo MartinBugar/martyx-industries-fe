@@ -1,0 +1,176 @@
+/* Admin Layout */
+.adminLayout {
+  display: flex;
+  min-height: 100vh;
+  background: #f7fafc;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 280px;
+  background: linear-gradient(180deg, #2d3748 0%, #1a202c 100%);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  height: 100vh;
+  z-index: 100;
+}
+
+.sidebarHeader {
+  padding: 2rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: white;
+  font-weight: 700;
+  font-size: 1.25rem;
+  transition: all 0.2s ease;
+}
+
+.logo:hover {
+  color: #63b3ed;
+}
+
+.logoIcon {
+  font-size: 1.5rem;
+}
+
+.logoText {
+  font-weight: 700;
+}
+
+/* Navigation */
+.navigation {
+  flex: 1;
+  padding: 1.5rem 0;
+}
+
+.navList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navItem {
+  margin-bottom: 0.5rem;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1.5rem;
+  color: #cbd5e0;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  position: relative;
+  border-left: 3px solid transparent;
+}
+
+.navLink:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  border-left-color: #63b3ed;
+}
+
+.navLink.active {
+  background: rgba(99, 179, 237, 0.1);
+  color: #63b3ed;
+  border-left-color: #63b3ed;
+  font-weight: 600;
+}
+
+.navIcon {
+  font-size: 1.25rem;
+  width: 24px;
+  text-align: center;
+}
+
+.navLabel {
+  font-size: 0.95rem;
+}
+
+/* Sidebar Footer */
+.sidebarFooter {
+  padding: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.backToSite {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #a0aec0;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.backToSite:hover {
+  color: #63b3ed;
+}
+
+/* Main Content */
+.mainContent {
+  flex: 1;
+  margin-left: 280px;
+  min-height: 100vh;
+  background: #f7fafc;
+}
+
+.contentWrapper {
+  min-height: 100vh;
+  background: #f7fafc;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    position: relative;
+    height: auto;
+  }
+  
+  .mainContent {
+    margin-left: 0;
+  }
+  
+  .sidebarHeader {
+    padding: 1rem;
+  }
+  
+  .navigation {
+    padding: 1rem 0;
+  }
+  
+  .navLink {
+    padding: 0.75rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo {
+    font-size: 1.1rem;
+  }
+  
+  .logoIcon {
+    font-size: 1.25rem;
+  }
+  
+  .navIcon {
+    font-size: 1.1rem;
+  }
+  
+  .navLabel {
+    font-size: 0.9rem;
+  }
+}
