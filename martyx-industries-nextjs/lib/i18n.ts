@@ -35,10 +35,53 @@ i18n
 const resources = {
   en: {
     home: {
-      title: 'Welcome to Martyx Industries',
-      subtitle: 'Premium 3D Printable Models',
-      featured_products: 'Featured Products',
-      view_all: 'View All Products',
+      hero: {
+        title: 'RC Tank Kits & STL Files',
+        subtitle: 'Build. Print. Command.',
+        shop_kits: 'Shop Kits',
+        download_stl: 'Download STL',
+        image_alt: 'RC Tank Kits & STL Files — product hero image',
+        facts: {
+          assembly_time: 'Assembly under 4h (prototype)',
+          layer_optimization: 'Optimized for 0.1 mm layers',
+          electronics_ready: 'Modular electronics ready',
+        },
+      },
+      how_it_works: {
+        title: 'How it works',
+        step_1: 'Step 1',
+        step_1_title: 'Choose',
+        step_1_description: 'Pick a Kit or STL bundle.',
+        step_2: 'Step 2',
+        step_2_title: 'Build or Print',
+        step_2_description: 'Assemble or 3D print.',
+        step_3: 'Step 3',
+        step_3_title: 'Drive',
+        step_3_description: 'Pair controller & enjoy.',
+      },
+      featured: {
+        title: 'Featured Products',
+        view_all: 'View All Products',
+      },
+      testimonials: {
+        title: 'What Our Customers Say',
+        subtitle: 'Real feedback from RC tank enthusiasts',
+      },
+      newsletter: {
+        title: 'Stay in the Loop',
+        description: 'Get exclusive access to new tank models, 3D printing tips, and special offers. Join our community of RC enthusiasts!',
+        email_label: 'Email address',
+        email_placeholder: 'Enter your email',
+        subscribe_button: 'Subscribe to newsletter',
+        privacy_note: '🔒 We respect your privacy. Unsubscribe at any time.',
+        success_title: 'Welcome aboard! 🎉',
+        success_message: "You're now subscribed to our newsletter. Check your email for a welcome message.",
+        benefits: {
+          early_access: 'Early access to new releases',
+          exclusive_guides: 'Exclusive 3D printing guides',
+          member_discounts: 'Member-only discounts',
+        },
+      },
     },
     products: {
       title: 'Products',
@@ -156,10 +199,53 @@ const resources = {
   },
   sk: {
     home: {
-      title: 'Vitajte v Martyx Industries',
-      subtitle: 'Prémiové 3D tlačiteľné modely',
-      featured_products: 'Odporúčané produkty',
-      view_all: 'Zobraziť všetky produkty',
+      hero: {
+        title: 'RC Tank Kity a STL Súbory',
+        subtitle: 'Zostavuj. Tlač. Ovládaj.',
+        shop_kits: 'Nakupovať Kity',
+        download_stl: 'Stiahnuť STL',
+        image_alt: 'RC Tank Kity a STL Súbory — hlavný obrázok produktu',
+        facts: {
+          assembly_time: 'Zostavenie pod 4h (prototyp)',
+          layer_optimization: 'Optimalizované pre 0,1 mm vrstvy',
+          electronics_ready: 'Modulárna elektronika pripravená',
+        },
+      },
+      how_it_works: {
+        title: 'Ako to funguje',
+        step_1: 'Krok 1',
+        step_1_title: 'Vyber',
+        step_1_description: 'Vyber Kit alebo STL balík.',
+        step_2: 'Krok 2',
+        step_2_title: 'Zostav alebo Vytlač',
+        step_2_description: 'Zložiť alebo 3D tlačiť.',
+        step_3: 'Krok 3',
+        step_3_title: 'Jazdi',
+        step_3_description: 'Spáruj ovládač a užívaj si.',
+      },
+      featured: {
+        title: 'Odporúčané Produkty',
+        view_all: 'Zobraziť Všetky Produkty',
+      },
+      testimonials: {
+        title: 'Čo Hovoria Naši Zákazníci',
+        subtitle: 'Skutočné hodnotenia od RC tank nadšencov',
+      },
+      newsletter: {
+        title: 'Zostaň v Obraze',
+        description: 'Získaj exkluzívny prístup k novým modelom tankov, 3D tlačovým tipom a špeciálnym ponukám. Pridaj sa k našej komunite RC nadšencov!',
+        email_label: 'E-mailová adresa',
+        email_placeholder: 'Zadaj svoj e-mail',
+        subscribe_button: 'Odoberať newsletter',
+        privacy_note: '🔒 Rešpektujeme tvoje súkromie. Odhlásiť sa môžeš kedykoľvek.',
+        success_title: 'Vitaj na palube! 🎉',
+        success_message: 'Teraz odoberáš náš newsletter. Skontroluj si e-mail pre uvítaciu správu.',
+        benefits: {
+          early_access: 'Skorý prístup k novým vydaniam',
+          exclusive_guides: 'Exkluzívne 3D tlačové návody',
+          member_discounts: 'Zľavy len pre členov',
+        },
+      },
     },
     products: {
       title: 'Produkty',
@@ -281,6 +367,8 @@ const resources = {
 if (!isServer) {
   i18n.addResourceBundle('en', 'common', resources.en.common);
   i18n.addResourceBundle('sk', 'common', resources.sk.common);
+  i18n.addResourceBundle('en', 'home', resources.en.home);
+  i18n.addResourceBundle('sk', 'home', resources.sk.home);
 }
 
 export default i18n;

@@ -8,6 +8,36 @@ import { getFeaturedProducts } from '@/lib/api';
 import { getImageSrcSet, getBestImageUrl, getBaseNameFromPath, isCDNEnabled } from '../utils/cdnImages';
 import styles from './home.module.css';
 
+// Loading component for SSR
+function LoadingHome() {
+  return (
+    <div className={styles.homeRoot} aria-label="Home Page">
+      <section className={styles.heroSection} aria-label="Hero">
+        <div className={styles.container}>
+          <div className={styles.heroGrid}>
+            <div className={styles.heroCopy}>
+              <div className={styles.heroContentWrapper}>
+                <div className={styles.heroMascotContainer}>
+                  <img
+                    src="/cassandra/Home-Cass.png"
+                    alt="Cassandra"
+                    className={styles.mascotImageHome}
+                    loading="eager"
+                  />
+                </div>
+                <div className={styles.heroTextContent}>
+                  <h1 className={styles.heroTitle}>RC Tank Kits & STL Files</h1>
+                  <p className={styles.heroSub}>Build. Print. Command.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
+
 interface Product {
   id: string;
   slug: string;
@@ -27,11 +57,15 @@ interface Product {
 }
 
 export default function Home() {
-  const { t, i18n } = useTranslation('home');
+  const { t, i18n, ready } = useTranslation('home');
   const [products, setProducts] = useState<Product[]>([]);
-  const featured = useMemo(() => products.slice(0, 6), [products]);
-
+  const featured = useMemo(() => Array.isArray(products) ? products.slice(0, 6) : [], [products]);
   const [subscribed, setSubscribed] = useState(false);
+
+  // Show loading component until translations are ready
+  if (!ready) {
+    return <LoadingHome />;
+  }
 
   // Try to import hero image via bundler; fallback to CSS placeholder if not present
   const heroAlt = t('hero.image_alt');
