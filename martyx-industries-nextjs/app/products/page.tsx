@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { getProducts } from "@/lib/api";
+import { getProducts, type Product } from "@/lib/api";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -15,9 +15,9 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic'; // Render on-demand
 
 export default async function ProductsPage() {
-  let products = [];
-  let totalCount = 0;
-  let hasMore = false;
+  let products: Product[] = [];
+  let totalCount: number = 0;
+  let hasMore: boolean = false;
 
   try {
     const result = await getProducts(1, 20);
