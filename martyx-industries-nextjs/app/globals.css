@@ -1,15 +1,22 @@
 @import "tailwindcss";
 
 :root {
-  /* Design tokens */
+  /* Typography baseline */
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  /* Design tokens - unified from both apps */
   --background: #0b0f12;
   --surface: #11161b;
   --card: #141a20;
   --text-primary: #e7eef5;
+  --text-secondary: #a7b3c1;
   --text-muted: #a7b3c1;
-  --accent: #28c1ff;
-  --accent-soft: rgba(40, 193, 255, 0.15);
+  --accent: #F6C845;
+  --accent-soft: rgba(246, 200, 69, 0.15);
   --products-accent: #F6C845;
+  --products-accent-rgb: 246, 200, 69;
   --accent-hover: #E6B82D;
   --radius-lg: 16px;
   --max-content-width: 1200px;
