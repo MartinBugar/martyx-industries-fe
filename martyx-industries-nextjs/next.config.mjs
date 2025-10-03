@@ -2,6 +2,9 @@ import path from 'path'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Standalone output for DigitalOcean deployment
+  output: 'standalone',
+  
   // Workspace root configuration - tells Next.js that the project root is one level up
   outputFileTracingRoot: path.join(process.cwd(), '..'),
 

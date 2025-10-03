@@ -1,47 +1,55 @@
-import React from 'react';
+'use client';
+
+import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useTranslation } from 'react-i18next';
 import WishlistButton from '@/components/WishlistButton/WishlistButton';
 import NewsletterForm from '@/components/NewsletterForm';
+import { getFeaturedProducts } from '@/lib/api';
 import styles from './home.module.css';
-
-// ISR Configuration
-export const revalidate = 300;
 
 interface Product {
   id: string;
-  name: string;
-  description: string;
+  slug: string;
+  title: string;
+  shortDescription?: string;
+  description?: string;
   price: number;
   currency: string;
-  gallery: string[];
+  category?: string;
+  gallery?: Array<{
+    id: string;
+    url: string;
+    alt?: string;
+    order?: number;
+  }>;
+  featured?: boolean;
 }
 
-async function getFeaturedProducts(): Promise<Product[]> {
-  try {
-    const response = await fetch(`${process.env.API_BASE_URL}/api/v1/products`, {
-      next: {
-        revalidate: 300,
-        tags: ['home', 'products']
-      },
-    });
+export default function Home() {
+  const { t, i18n } = useTranslation('home');
+  const [products, setProducts] = useState<Product[]>([]);
+  const featured = useMemo(() => products.slice(0, 6), [products]);
 
-    if (!response.ok) {
-      console.error(`API Error: ${response.status}`);
-      return [];
-    }
+  // Load products with gallery from API
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        const productsList = await getFeaturedProducts();
+        setProducts(productsList);
+      } catch (error) {
+        console.error('Failed to load products for home page:', error);
+        // Continue with empty array - don't show error on home page
+      }
+    };
 
-    const data = await response.json();
-    return Array.isArray(data) ? data.slice(0, 6) : [];
-  } catch (error) {
-    console.error('Failed to fetch products:', error);
-    return [];
-  }
-}
+    loadProducts();
+  }, [i18n.language]); // Reload products when language changes
 
-export default async function Home() {
-  const products = await getFeaturedProducts();
-  const featured = products.slice(0, 6);
+  // Try to import hero image via bundler; fallback to CSS placeholder if not present
+  const heroAlt = t('hero.image_alt');
+  const heroSrc = '/assets/home/tank.png';
 
   return (
     <div className={styles.homeRoot} aria-label="Home Page">
@@ -62,30 +70,28 @@ export default async function Home() {
                   />
                 </div>
                 <div className={styles.heroTextContent}>
-                  <h1 className={styles.heroTitle}>Premium 3D-Printed RC Models & STL Files</h1>
-                  <p className={styles.heroSub}>
-                    Professional-grade RC tanks and vehicles. Download STL files or order complete kits with electronics.
-                  </p>
+                  <h1 className={styles.heroTitle}>{t('hero.title')}</h1>
+                  <p className={styles.heroSub}>{t('hero.subtitle')}</p>
                   <div className={styles.heroCtas}>
                     <Link href="/products" className={`${styles.btn} ${styles.btnAccent}`}>
-                      Shop Kits
+                      {t('hero.shop_kits')}
                     </Link>
                     <Link href="/products" className={`${styles.btn} ${styles.btnOutline}`}>
-                      Download STL
+                      {t('hero.download_stl')}
                     </Link>
                   </div>
-                  <ul className={styles.heroKpis} aria-label="Key Features">
-                    <li>Assembly in 3-4 hours</li>
-                    <li>Optimized for layer adhesion</li>
-                    <li>Electronics-ready design</li>
+                  <ul className={styles.heroKpis} aria-label={t('hero.facts.assembly_time')}>
+                    <li>{t('hero.facts.assembly_time')}</li>
+                    <li>{t('hero.facts.layer_optimization')}</li>
+                    <li>{t('hero.facts.electronics_ready')}</li>
                   </ul>
                 </div>
               </div>
             </div>
             <div className={styles.heroVisual}>
               <Image
-                src="/assets/home/tank.png"
-                alt="Featured RC Tank Model"
+                src={heroSrc}
+                alt={heroAlt}
                 width={1800}
                 height={1000}
                 priority
@@ -103,39 +109,39 @@ export default async function Home() {
       </section>
 
       {/* How It Works */}
-      <section className={styles.howSection} aria-label="How It Works">
+      <section className={styles.howSection} aria-label={t('how_it_works.title')}>
         <div className={styles.container}>
           <div className={styles.sectionHeader}>
-            <h2>How It Works</h2>
+            <h2>{t('how_it_works.title')}</h2>
           </div>
           <div className={styles.howGrid}>
             <article className={styles.howCard}>
-              <span className={styles.howStep}>Step 1</span>
-              <h3>Choose Your Model</h3>
-              <p>Browse our collection of optimized 3D models. Each design is tested and ready for printing.</p>
+              <span className={styles.howStep}>{t('how_it_works.step_1')}</span>
+              <h3>{t('how_it_works.step_1_title')}</h3>
+              <p>{t('how_it_works.step_1_description')}</p>
             </article>
             <article className={styles.howCard}>
-              <span className={styles.howStep}>Step 2</span>
-              <h3>Download or Order</h3>
-              <p>Get instant access to STL files or order a complete kit with all electronics included.</p>
+              <span className={styles.howStep}>{t('how_it_works.step_2')}</span>
+              <h3>{t('how_it_works.step_2_title')}</h3>
+              <p>{t('how_it_works.step_2_description')}</p>
             </article>
             <article className={styles.howCard}>
-              <span className={styles.howStep}>Step 3</span>
-              <h3>Build & Enjoy</h3>
-              <p>Follow our detailed assembly guide and start driving your RC model in just a few hours.</p>
+              <span className={styles.howStep}>{t('how_it_works.step_3')}</span>
+              <h3>{t('how_it_works.step_3_title')}</h3>
+              <p>{t('how_it_works.step_3_description')}</p>
             </article>
           </div>
         </div>
       </section>
 
       {/* Featured Products */}
-      <section className={`${styles.homeSection} ${styles.featuredSection}`} aria-label="Featured Products">
+      <section className={`${styles.homeSection} ${styles.featuredSection}`} aria-label={t('featured.title')}>
         <div className={styles.container}>
           <div className={styles.sectionHeader}>
-            <h2>Featured Products</h2>
+            <h2>{t('featured.title')}</h2>
             <div style={{textAlign: 'center', marginTop: '1rem'}}>
               <Link className={`${styles.btn} ${styles.btnAccent}`} href="/products">
-                View All
+                {t('featured.view_all')}
               </Link>
             </div>
           </div>
@@ -143,10 +149,10 @@ export default async function Home() {
             {featured.map((p) => (
               <article key={p.id} className={styles.productCard}>
                 <div className={styles.productCardImageContainer}>
-                  <Link href={`/products/${p.id}`} className={styles.productCardLink}>
+                  <Link href={`/products/${p.slug || p.id}`} className={styles.productCardLink}>
                     <Image
-                      src={p.gallery?.[0] || '/assets/kit-01.png'}
-                      alt={p.name}
+                      src={p.gallery?.[0]?.url || '/assets/kit-01.png'}
+                      alt={p.title}
                       className={styles.productImage}
                       width={400}
                       height={400}
@@ -161,11 +167,11 @@ export default async function Home() {
                     />
                   </div>
                 </div>
-                <Link href={`/products/${p.id}`} className={styles.productCardLink}>
+                <Link href={`/products/${p.slug || p.id}`} className={styles.productCardLink}>
                   <div className={styles.productInfo}>
-                    <h3 className={styles.productTitle}>{p.name}</h3>
+                    <h3 className={styles.productTitle}>{p.title}</h3>
                     <div className={styles.productPrice}>{p.currency} {p.price.toFixed(2)}</div>
-                    <p className={styles.productDescription}>{p.description}</p>
+                    <p className={styles.productDescription}>{p.shortDescription || p.description}</p>
                   </div>
                 </Link>
               </article>
@@ -175,11 +181,11 @@ export default async function Home() {
       </section>
 
       {/* Testimonials */}
-      <section className={`${styles.homeSection} ${styles.testimonials}`} aria-label="Customer Reviews">
+      <section className={`${styles.homeSection} ${styles.testimonials}`} aria-label={t('testimonials.title')}>
         <div className={styles.container}>
           <div className={styles.sectionHeader}>
-            <h2>What Our Customers Say</h2>
-            <p className={styles.sectionSubtitle}>Real feedback from RC enthusiasts worldwide</p>
+            <h2>{t('testimonials.title')}</h2>
+            <p className={styles.sectionSubtitle}>{t('testimonials.subtitle')}</p>
           </div>
           <div className={styles.testimonialsGrid}>
             <article className={styles.testimonialCard}>
@@ -212,10 +218,10 @@ export default async function Home() {
                     </div>
                   </div>
                 </div>
-                <div className={styles.reviewDate}>2 weeks ago</div>
+                <div className={styles.reviewDate}>{t('testimonials.time_ago.weeks_2')}</div>
               </div>
               <blockquote className={styles.testimonialContent}>
-                <p>&quot;Printed over a weekend, runs like a charm. The STL files are perfectly optimized and the assembly guide is crystal clear. My kids love driving it around!&quot;</p>
+                <p>&quot;{t('testimonials.review_1')}&quot;</p>
               </blockquote>
               <div className={styles.testimonialFooter}>
                 <span className={styles.productTag}>Tiger I Kit</span>
@@ -252,10 +258,10 @@ export default async function Home() {
                     </div>
                   </div>
                 </div>
-                <div className={styles.reviewDate}>1 month ago</div>
+                <div className={styles.reviewDate}>{t('testimonials.time_ago.month_1')}</div>
               </div>
               <blockquote className={styles.testimonialContent}>
-                <p>&quot;Clean STLs, no supports needed on my setup. The modular design makes it easy to customize and the electronics integration is seamless. Highly recommended!&quot;</p>
+                <p>&quot;{t('testimonials.review_2')}&quot;</p>
               </blockquote>
               <div className={styles.testimonialFooter}>
                 <span className={styles.productTag}>Sherman STL Bundle</span>
@@ -292,10 +298,10 @@ export default async function Home() {
                     </div>
                   </div>
                 </div>
-                <div className={styles.reviewDate}>3 weeks ago</div>
+                <div className={styles.reviewDate}>{t('testimonials.time_ago.weeks_3')}</div>
               </div>
               <blockquote className={styles.testimonialContent}>
-                <p>&quot;Amazing quality! The tracks work perfectly and the suspension system is incredibly realistic. Assembly took exactly as advertised - under 4 hours.&quot;</p>
+                <p>&quot;{t('testimonials.review_3')}&quot;</p>
               </blockquote>
               <div className={styles.testimonialFooter}>
                 <span className={styles.productTag}>T-34 Kit</span>
@@ -332,10 +338,10 @@ export default async function Home() {
                     </div>
                   </div>
                 </div>
-                <div className={styles.reviewDate}>1 week ago</div>
+                <div className={styles.reviewDate}>{t('testimonials.time_ago.week_1')}</div>
               </div>
               <blockquote className={styles.testimonialContent}>
-                <p>&quot;The attention to detail is incredible. Every bolt and rivet is perfectly modeled. The controller range is impressive and the sound effects are spot on!&quot;</p>
+                <p>&quot;{t('testimonials.review_4')}&quot;</p>
               </blockquote>
               <div className={styles.testimonialFooter}>
                 <span className={styles.productTag}>Panther STL Bundle</span>
@@ -346,7 +352,7 @@ export default async function Home() {
       </section>
 
       {/* Newsletter */}
-      <section className={`${styles.homeSection} ${styles.newsletter}`} aria-label="Newsletter Signup">
+      <section className={`${styles.homeSection} ${styles.newsletter}`} aria-label={t('newsletter.title')}>
         <div className={styles.container}>
           <div className={styles.newsletterContainer}>
             <div className={styles.newsletterContent}>
@@ -357,9 +363,9 @@ export default async function Home() {
                     <polyline points="22,6 12,13 2,6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                 </div>
-                <h2 className={styles.newsletterTitle}>Stay in the Loop</h2>
+                <h2 className={styles.newsletterTitle}>{t('newsletter.title')}</h2>
                 <p className={styles.newsletterDescription}>
-                  Get exclusive updates, new model releases, and special discounts delivered to your inbox.
+                  {t('newsletter.description')}
                 </p>
               </div>
 
@@ -370,7 +376,7 @@ export default async function Home() {
                       <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                   </div>
-                  <span>Early access to new models</span>
+                  <span>{t('newsletter.benefits.early_access')}</span>
                 </div>
                 <div className={styles.benefitItem}>
                   <div className={styles.benefitIcon}>
@@ -378,7 +384,7 @@ export default async function Home() {
                       <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                   </div>
-                  <span>Exclusive printing guides & tips</span>
+                  <span>{t('newsletter.benefits.exclusive_guides')}</span>
                 </div>
                 <div className={styles.benefitItem}>
                   <div className={styles.benefitIcon}>
@@ -386,7 +392,7 @@ export default async function Home() {
                       <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                   </div>
-                  <span>Members-only discounts</span>
+                  <span>{t('newsletter.benefits.member_discounts')}</span>
                 </div>
               </div>
             </div>

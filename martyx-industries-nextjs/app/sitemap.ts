@@ -34,15 +34,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Dynamic product pages
   try {
-    const productSlugs = await getProductSlugs()
-    const productPages: MetadataRoute.Sitemap = productSlugs.map((product) => ({
-      url: `${baseUrl}/products/${product.slug}`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    }))
+    // Only try to fetch product slugs if API_BASE_URL is available
+    if (process.env.API_BASE_URL) {
+      const productSlugs = await getProductSlugs()
+      const productPages: MetadataRoute.Sitemap = productSlugs.map((product) => ({
+        url: `${baseUrl}/products/${product.slug}`,
+        lastModified: new Date(),
+        changeFrequency: 'weekly',
+        priority: 0.8,
+      }))
 
-    return [...staticPages, ...productPages]
+      return [...staticPages, ...productPages]
+    } else {
+      console.warn('API_BASE_URL not set during build, skipping dynamic product pages in sitemap')
+      return staticPages
+    }
   } catch (error) {
     console.error('Error generating sitemap:', error)
     return staticPages

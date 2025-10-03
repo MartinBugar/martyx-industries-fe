@@ -1,9 +1,13 @@
-const API_BASE_URL = process.env.API_BASE_URL;
-
-if (!API_BASE_URL) {
-  throw new Error(
-    'API_BASE_URL environment variable is not set. Please configure it in your environment variables.'
-  );
+function getApiBaseUrl(): string {
+  const API_BASE_URL = process.env.API_BASE_URL;
+  
+  if (!API_BASE_URL) {
+    throw new Error(
+      'API_BASE_URL environment variable is not set. Please configure it in your environment variables.'
+    );
+  }
+  
+  return API_BASE_URL;
 }
 
 export interface Product {
@@ -66,7 +70,7 @@ async function fetchWithError(url: string, options?: RequestInit): Promise<Respo
 }
 
 export async function getFeaturedProducts(): Promise<Product[]> {
-  const response = await fetchWithError(`${API_BASE_URL}/api/v1/products?featured=true`, {
+  const response = await fetchWithError(`${getApiBaseUrl()}/api/v1/products?featured=true`, {
     next: { revalidate: 3600, tags: ['products', 'featured-products'] }
   });
   return response.json();
@@ -77,35 +81,35 @@ export async function getProducts(page: number = 1, limit: number = 20): Promise
   totalCount: number;
   hasMore: boolean;
 }> {
-  const response = await fetchWithError(`${API_BASE_URL}/api/v1/products?page=${page}&limit=${limit}`, {
+  const response = await fetchWithError(`${getApiBaseUrl()}/api/v1/products?page=${page}&limit=${limit}`, {
     next: { revalidate: 600, tags: ['products'] }
   });
   return response.json();
 }
 
 export async function getProductBySlug(slug: string): Promise<Product> {
-  const response = await fetchWithError(`${API_BASE_URL}/api/v1/products/${slug}`, {
+  const response = await fetchWithError(`${getApiBaseUrl()}/api/v1/products/${slug}`, {
     next: { revalidate: 3600, tags: ['products', `product:${slug}`] }
   });
   return response.json();
 }
 
 export async function getProductSlugs(): Promise<{ slug: string }[]> {
-  const response = await fetchWithError(`${API_BASE_URL}/api/v1/products/slugs`, {
+  const response = await fetchWithError(`${getApiBaseUrl()}/api/v1/products/slugs`, {
     next: { revalidate: 3600, tags: ['products'] }
   });
   return response.json();
 }
 
 export async function getDocuments(): Promise<Document[]> {
-  const response = await fetchWithError(`${API_BASE_URL}/api/v1/documents`, {
+  const response = await fetchWithError(`${getApiBaseUrl()}/api/v1/documents`, {
     next: { revalidate: 3600, tags: ['documents'] }
   });
   return response.json();
 }
 
 export async function getAboutPage(): Promise<PageContent> {
-  const response = await fetchWithError(`${API_BASE_URL}/api/v1/pages/about`, {
+  const response = await fetchWithError(`${getApiBaseUrl()}/api/v1/pages/about`, {
     next: { revalidate: 86400, tags: ['pages', 'about'] }
   });
   return response.json();
