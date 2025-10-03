@@ -5,10 +5,12 @@
 .product-detail-page {
   min-height: 100vh;
   background: var(--product-detail-bg);
-  padding: var(--product-detail-spacing);
+  padding: 0;
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: flex-start;
+  box-sizing: border-box;
 }
 
 /* Main Product Container */
@@ -16,7 +18,9 @@
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  width: 95vw;
+  width: 98vw;
+  max-width: 98vw;
+  margin: 1rem auto;
   background: var(--product-detail-surface);
   border-radius: var(--product-detail-radius-lg);
   border: 1px solid var(--product-detail-border);
@@ -138,13 +142,13 @@
 
 @media (min-width: 768px) and (max-width: 1024px) {
   .product-container {
-    width: 96vw;
+    width: 98vw;
   }
 }
 
 @media (min-width: 1025px) {
   .product-container {
-    width: 95vw;
+    width: 98vw;
   }
 }
 
