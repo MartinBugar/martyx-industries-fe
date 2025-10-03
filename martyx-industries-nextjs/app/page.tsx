@@ -131,16 +131,6 @@ export default function Home() {
                   width={1800}
                   height={1000}
                   loading="eager"
-                  style={{ 
-                    width: '100%', 
-                    height: 'auto', 
-                    display: 'block', 
-                    borderRadius: 'var(--radius-lg)',
-                    userSelect: 'none',
-                    WebkitUserSelect: 'none',
-                    MozUserSelect: 'none',
-                    msUserSelect: 'none'
-                  }}
                 />
               ) : (
                 <div className={styles.heroImage} role="img" aria-label={heroAlt} />
@@ -179,7 +169,7 @@ export default function Home() {
         <div className={styles.container}>
           <div className={styles.sectionHeader}>
             <h2>{t('featured.title')}</h2>
-            <div style={{textAlign: 'center', marginTop: '1rem'}}>
+            <div className={styles.viewAllContainer}>
               <Link className={`${styles.btn} ${styles.primary}`} href="/products">{t('featured.view_all')}</Link>
             </div>
           </div>

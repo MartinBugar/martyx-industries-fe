@@ -277,8 +277,8 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ content, productId }) => {
             <ul className={styles['reviews-list']}>
               {reviews.map((r, idx) => (
                 <li key={(r.id ?? idx).toString()} className={styles['review-card']}>
-                  <div className={styles['review-card-header']} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
-                    <div className={styles['review-card-meta']} style={{ display: 'flex', flexDirection: 'column' }}>
+                  <div className={styles['review-card-header']}>
+                    <div className={styles['review-card-meta']}>
                       <strong>{r.displayName}</strong>
                       <small className={styles['muted']}>{formatDate(r.createdAt)}</small>
                     </div>

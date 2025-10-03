@@ -1,4 +1,5 @@
 import { SkeletonProductCard } from '@/components/Skeleton';
+import styles from './loading.module.css';
 
 export default function ProductsLoading() {
   return (
@@ -6,29 +7,12 @@ export default function ProductsLoading() {
       <div className="container">
         {/* Header Skeleton */}
         <div className="mb-8">
-          <div style={{
-            width: '200px',
-            height: '40px',
-            backgroundColor: 'var(--bg-secondary)',
-            borderRadius: '0.375rem',
-            marginBottom: '1rem',
-            animation: 'pulse 1.5s infinite'
-          }} />
-          <div style={{
-            width: '400px',
-            height: '24px',
-            backgroundColor: 'var(--bg-secondary)',
-            borderRadius: '0.375rem',
-            animation: 'pulse 1.5s infinite'
-          }} />
+          <div className={styles['header-title-skeleton']} />
+          <div className={styles['header-subtitle-skeleton']} />
         </div>
 
         {/* Product Grid Skeleton */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-          gap: '1.5rem'
-        }}>
+        <div className={styles['products-grid-skeleton']}>
           {[...Array(8)].map((_, i) => (
             <SkeletonProductCard key={i} />
           ))}

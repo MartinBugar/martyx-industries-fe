@@ -105,7 +105,7 @@ export default function ProductsGrid({
 
       {/* Results Info */}
       <div className={styles.resultsInfo}>
-        <p style={{ color: 'var(--text-muted)' }}>
+        <p>
           Showing {filteredProducts.length} of {totalCount} products
           {searchQuery && ` matching "${searchQuery}"`}
           {selectedCategory !== 'all' && ` in ${selectedCategory}`}

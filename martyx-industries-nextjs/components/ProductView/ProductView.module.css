@@ -172,3 +172,13 @@
     background: #000;
   }
 }
+
+/* No model available state */
+.no-model-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #9ca3af;
+  font-size: 0.875rem;
+}

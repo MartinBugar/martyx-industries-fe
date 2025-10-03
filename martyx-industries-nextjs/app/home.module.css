@@ -45,6 +45,11 @@
     margin-bottom: 4rem;
 }
 
+.sectionHeader .viewAllContainer {
+    text-align: center;
+    margin-top: 1rem;
+}
+
 .sectionHeader h2 {
   font-size: clamp(28px, 4vw, 48px);
   font-weight: 700;

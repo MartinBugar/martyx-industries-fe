@@ -48,14 +48,7 @@ const ProductView: React.FC<ProductViewProps> = ({ product }) => {
             onFullscreenChange={setIsFullscreen}
           />
         ) : (
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            height: '100%',
-            color: '#9ca3af',
-            fontSize: '0.875rem'
-          }}>
+          <div className={styles['no-model-message']}>
             No 3D model available
           </div>
         )}

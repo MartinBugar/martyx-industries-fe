@@ -1,6 +1,7 @@
 import { getProducts, type Product } from "@/lib/api";
 import type { Metadata } from "next";
 import ProductsGrid from "@/components/ProductsGrid";
+import styles from "./page.module.css";
 
 export const metadata: Metadata = {
   title: "Products | MartyX Industries",
@@ -45,7 +46,7 @@ export default async function ProductsPage() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-4">Products</h1>
-          <p className="text-lg" style={{ color: 'var(--text-muted)' }}>
+          <p className={`text-lg ${styles['page-description']}`}>
             Discover our collection of premium 3D-printed RC models and components
           </p>
         </div>
@@ -58,7 +59,7 @@ export default async function ProductsPage() {
         />
 
         {hasMore && (
-          <p className="text-center mt-8" style={{ color: 'var(--text-muted)' }}>
+          <p className={`text-center mt-8 ${styles['more-products-text']}`}>
             More products available. Use search and filters to find specific items.
           </p>
         )}

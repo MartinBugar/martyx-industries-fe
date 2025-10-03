@@ -100,6 +100,10 @@
   margin-bottom: 1.5rem;
 }
 
+.resultsInfo p {
+  color: var(--text-muted);
+}
+
 /* Products Grid */
 .grid {
   display: grid;

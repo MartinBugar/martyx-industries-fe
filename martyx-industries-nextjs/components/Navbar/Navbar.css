@@ -1366,3 +1366,30 @@ body.mi-lock-scroll {
     opacity: 1;
     color: var(--accent);
 }
+
+/* Quick actions container in mobile drawer */
+.mi-drawer__quick-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+    margin-bottom: 8px;
+}
+
+.mi-drawer__quick-actions .mi-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+/* Auth actions container in mobile drawer */
+.mi-drawer__auth-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.mi-drawer__auth-actions .mi-btn {
+    flex: 1;
+}
