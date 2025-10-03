@@ -160,10 +160,47 @@
   }
 }
 
+/* Model Viewer Loading State */
+.model-viewer-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 300px;
+  color: var(--product-text-muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+  background: radial-gradient(
+    ellipse at center,
+    #2a3441 0%,
+    #1a1f2e 100%
+  );
+  position: relative;
+}
+
+.model-viewer-loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin-top: 2rem;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--product-border);
+  border-top: 2px solid var(--product-accent);
+  border-radius: 50%;
+  animation: loading-spin 1s linear infinite;
+}
+
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   .model-container {
     animation: none;
     transition: none;
+  }
+  
+  .model-viewer-loading::after {
+    animation: none;
   }
 }

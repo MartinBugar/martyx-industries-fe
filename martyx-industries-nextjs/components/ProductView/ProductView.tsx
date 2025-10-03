@@ -1,8 +1,14 @@
 'use client';
 
 import React, { useState } from 'react';
-import ModelViewer from '../ModelViewer/ModelViewer';
+import dynamic from 'next/dynamic';
 import Gallery from '../Gallery/Gallery';
+
+// Dynamic import ModelViewer with SSR disabled
+const ModelViewer = dynamic(() => import('../ModelViewer/ModelViewer'), {
+  ssr: false,
+  loading: () => <div className={styles['model-viewer-loading']}>Loading 3D Model...</div>
+});
 import { type Product } from '../../lib/types/product';
 import styles from './ProductView.module.css';
 
