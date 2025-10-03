@@ -2,11 +2,12 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useTranslation } from 'react-i18next';
 import WishlistButton from '@/components/WishlistButton/WishlistButton';
 import NewsletterForm from '@/components/NewsletterForm';
+import OptimizedImage from '@/components/OptimizedImage';
 import { getFeaturedProducts } from '@/lib/api';
+import { getImageSrcSet, getBestImageUrl, getBaseNameFromPath, isCDNEnabled } from '@/utils/cdnImages';
 import styles from './home.module.css';
 
 interface Product {
@@ -60,13 +61,17 @@ export default function Home() {
             <div className={styles.heroCopy}>
               <div className={styles.heroContentWrapper}>
                 <div className={styles.heroMascotContainer}>
-                  <Image
+                  <OptimizedImage
                     src="/cassandra/Home-Cass.png"
+                    srcSet="/cassandra/Home-Cass.png 1x, /cassandra/Home-Cass.png 2x"
+                    sizes="(max-width: 360px) 160px, (max-width: 480px) 200px, (max-width: 768px) 260px, 320px"
                     alt="Cassandra - Váš 3D sprievodca"
                     className={styles.mascotImageHome}
                     width={400}
                     height={400}
                     priority
+                    loading="eager"
+                    decoding="sync"
                   />
                 </div>
                 <div className={styles.heroTextContent}>
@@ -89,12 +94,13 @@ export default function Home() {
               </div>
             </div>
             <div className={styles.heroVisual}>
-              <Image
+              <OptimizedImage
                 src={heroSrc}
                 alt={heroAlt}
                 width={1800}
                 height={1000}
                 priority
+                loading="eager"
                 style={{
                   width: '100%',
                   height: 'auto',
@@ -150,13 +156,29 @@ export default function Home() {
               <article key={p.id} className={styles.productCard}>
                 <div className={styles.productCardImageContainer}>
                   <Link href={`/products/${p.slug || p.id}`} className={styles.productCardLink}>
-                    <Image
-                      src={p.gallery?.[0]?.url || '/assets/kit-01.png'}
-                      alt={p.title}
+                    <OptimizedImage
+                      src={(() => {
+                        const mainImage = p.gallery?.[0]?.url || '/assets/kit-01.png';
+                        const isCDNUrl = mainImage.includes('digitaloceanspaces.com') || mainImage.includes(process.env.NEXT_PUBLIC_CDN_BASE || '');
+                        return !isCDNUrl && isCDNEnabled() ? getBestImageUrl(getBaseNameFromPath(mainImage), 400) : mainImage;
+                      })()}
+                      srcSet={(() => {
+                        const mainImage = p.gallery?.[0]?.url || '/assets/kit-01.png';
+                        const isCDNUrl = mainImage.includes('digitaloceanspaces.com') || mainImage.includes(process.env.NEXT_PUBLIC_CDN_BASE || '');
+                        return !isCDNUrl && isCDNEnabled() ? getImageSrcSet(getBaseNameFromPath(mainImage)) : undefined;
+                      })()}
+                      sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                      alt={`${p.title} - main image`}
                       className={styles.productImage}
                       width={400}
                       height={400}
                       loading="lazy"
+                      decoding="async"
+                      onLoad={() => {
+                        if (process.env.NODE_ENV === 'development' && p.id === "1") {
+                          console.log(`✅ Product card image for ${p.title} loaded successfully`);
+                        }
+                      }}
                     />
                   </Link>
                   <div className={styles.productCardWishlist}>

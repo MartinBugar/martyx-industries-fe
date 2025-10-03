@@ -1,9 +1,10 @@
 /**
  * CDN Image Utilities for Next.js
  * Handles image URL generation from DigitalOcean Spaces CDN with fallback to local assets
+ * 1:1 migration from Vite version with Next.js adaptations
  */
 
-// Environment variables
+// Environment variables - Next.js version
 const CDN_BASE = process.env.NEXT_PUBLIC_CDN_BASE || '';
 const CDN_FOLDER = process.env.NEXT_PUBLIC_CDN_FOLDER || '1';
 const USE_CDN_IMAGES = process.env.NEXT_PUBLIC_USE_CDN_IMAGES === 'true';
@@ -147,11 +148,11 @@ function getLocalImageUrl(baseName: string, size?: ImageSize, format?: string): 
   const extension = format || 'jpg';
   const sizePrefix = size && size !== 'original' ? `-${size}` : '';
 
-  // Check common local asset paths
+  // Check common local asset paths for Next.js
   const possiblePaths = [
-    `/assets/products/${baseName}${sizePrefix}.${extension}`,
-    `/assets/images/${baseName}${sizePrefix}.${extension}`,
     `/images/products/${baseName}${sizePrefix}.${extension}`,
+    `/assets/products/${baseName}${sizePrefix}.${extension}`,
+    `/public/images/products/${baseName}${sizePrefix}.${extension}`,
     `/images/products/${baseName}.${extension}`, // fallback to original
     `/api/placeholder/800/600` // ultimate fallback
   ];
@@ -228,4 +229,101 @@ export function getBaseNameFromPath(imagePath: string): string {
 
   // Remove size suffixes
   return baseName.replace(/-(thumb|400|800|1600)$/i, '');
+}
+
+/**
+ * Next.js specific: Get optimized image props for Next/Image component
+ */
+export interface NextImageProps {
+  src: string;
+  width?: number;
+  height?: number;
+  alt: string;
+  priority?: boolean;
+  loading?: 'lazy' | 'eager';
+  className?: string;
+  sizes?: string;
+  quality?: number;
+  placeholder?: 'blur' | 'empty';
+  blurDataURL?: string;
+}
+
+/**
+ * Generate Next/Image props with CDN optimization
+ */
+export function getNextImageProps(
+  baseName: string, 
+  alt: string, 
+  options: {
+    width?: number;
+    height?: number;
+    priority?: boolean;
+    className?: string;
+    sizes?: string;
+    quality?: number;
+  } = {}
+): NextImageProps {
+  const {
+    width = 800,
+    height = 600,
+    priority = false,
+    className,
+    sizes = '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw',
+    quality = 85
+  } = options;
+
+  // Get the best image URL based on target width
+  const src = getBestImageUrl(baseName, width);
+
+  return {
+    src,
+    width,
+    height,
+    alt,
+    priority,
+    loading: priority ? 'eager' : 'lazy',
+    className,
+    sizes,
+    quality,
+    placeholder: 'empty' // Can be enhanced with blur placeholders later
+  };
+}
+
+/**
+ * Generate Next/Image props for product images with CDN
+ */
+export function getProductImageProps(
+  productId: string,
+  imageNumber: number,
+  alt: string,
+  options: {
+    width?: number;
+    height?: number;
+    priority?: boolean;
+    className?: string;
+    sizes?: string;
+  } = {}
+): NextImageProps {
+  const {
+    width = 800,
+    height = 600,
+    priority = false,
+    className,
+    sizes = '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+  } = options;
+
+  const src = getProductImageUrl(productId, imageNumber, 'webp');
+
+  return {
+    src,
+    width,
+    height,
+    alt,
+    priority,
+    loading: priority ? 'eager' : 'lazy',
+    className,
+    sizes,
+    quality: 85,
+    placeholder: 'empty'
+  };
 }
