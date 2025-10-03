@@ -9,6 +9,12 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
+        hostname: 'mi-gallery.fra1.digitaloceanspaces.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
         hostname: 'martyx-industries.fra1.cdn.digitaloceanspaces.com',
         port: '',
         pathname: '/**',
@@ -17,7 +23,7 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'fra1.digitaloceanspaces.com',
         port: '',
-        pathname: '/martyx-industries/**',
+        pathname: '/**',
       },
     ],
     // Unoptimized mode - images loaded directly from DO Spaces (no Next.js proxy)

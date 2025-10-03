@@ -1,0 +1,117 @@
+.newsletterContainer {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.newsletterForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.inputGroup {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.emailInput {
+  flex: 1;
+  min-width: 250px;
+  padding: 0.875rem 1rem;
+  font-size: 1rem;
+  color: var(--text-primary);
+  background-color: var(--surface);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.emailInput:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(40, 193, 255, 0.1);
+}
+
+.emailInput:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.emailInput::placeholder {
+  color: var(--text-muted);
+}
+
+.submitButton {
+  padding: 0.875rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #0b0f12;
+  background-color: var(--products-accent);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+}
+
+.submitButton:hover:not(:disabled) {
+  background-color: var(--accent-hover);
+}
+
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.message {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  animation: slideIn 0.3s ease;
+}
+
+.successMessage {
+  color: #10b981;
+  background-color: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.errorMessage {
+  color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.privacyText {
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .inputGroup {
+    flex-direction: column;
+  }
+
+  .emailInput {
+    min-width: 100%;
+  }
+
+  .submitButton {
+    width: 100%;
+  }
+}

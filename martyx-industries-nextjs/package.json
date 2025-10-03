@@ -2,14 +2,15 @@
   "name": "martyx-industries-nextjs",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start -p ${PORT:-3000} -H 0.0.0.0",
+    "start": "next start -p 8080 -H 0.0.0.0",
     "lint": "eslint"
   },
   "engines": {
-    "node": ">=20 <25",
+    "node": ">=20",
     "npm": ">=10"
   },
   "dependencies": {

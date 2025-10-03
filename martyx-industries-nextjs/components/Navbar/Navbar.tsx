@@ -1,0 +1,411 @@
+"use client";
+
+import React, {useCallback, useEffect, useRef, useState} from "react";
+import {createPortal} from "react-dom";
+import "./Navbar.css";
+import Link from "next/link";
+import {usePathname, useRouter} from "next/navigation";
+import { useTranslation } from "react-i18next";
+import { useWishlist } from "../../context/WishlistContext";
+import LanguageSwitcher from "../LanguageSwitcher";
+import Image from "next/image";
+
+/**
+ * MARTYX "Metal" Navbar – fully responsive with hamburger mobile drawer.
+ * - Desktop (>=1024px): links + search + auth + cart
+ * - Mobile: hamburger opens drawer with search + links + auth
+ */
+
+type NavItem = { labelKey: string; href: string };
+type User = { id: string; name?: string; avatarUrl?: string };
+type Props = {
+    cartCount?: number;
+    onSearchSubmit?: (q: string) => void;
+    user?: User | null;
+    onLogout?: () => Promise<void> | void;
+};
+
+const LINKS: NavItem[] = [
+    {labelKey: "nav:home", href: "/"},
+    {labelKey: "nav:products", href: "/products"},
+    {labelKey: "nav:about", href: "/about"},
+    {labelKey: "nav:contact", href: "/contact"},
+];
+
+export default function Navbar({cartCount = 0, onSearchSubmit, user, onLogout}: Props) {
+    const { t } = useTranslation(['nav', 'common']);
+    const { items: wishlistItems } = useWishlist();
+    const [drawerOpen, setDrawerOpen] = useState(false);
+    const [q, setQ] = useState("");
+    const router = useRouter();
+    const pathname = usePathname();
+    const drawerRef = useRef<HTMLDivElement>(null);
+    const panelRef = useRef<HTMLDivElement>(null);
+    const searchInputRef = useRef<HTMLInputElement>(null);
+    const prevBodyPrRef = useRef<string | undefined>(undefined);
+    const [mounted, setMounted] = useState(false);
+
+    // Add hydrated class to enable transitions after React hydration
+    useEffect(() => {
+        setMounted(true);
+        document.documentElement.classList.add("hydrated");
+        return () => document.documentElement.classList.remove("hydrated");
+    }, []);
+
+    // Lock body scroll when drawer open with visual compensation for scrollbar width
+    useEffect(() => {
+        if (typeof window === "undefined" || typeof document === "undefined") return;
+
+        const body = document.body;
+        const docEl = document.documentElement;
+        // Scrollbar width = window innerWidth - document content width
+        const sbw = window.innerWidth - docEl.clientWidth;
+
+        body.classList.toggle("mi-lock-scroll", drawerOpen);
+
+        if (drawerOpen) {
+            // save previous padding-right to restore later
+            prevBodyPrRef.current = body.style.paddingRight;
+            body.style.paddingRight = `${sbw}px`; // visual compensation
+        } else {
+            body.style.paddingRight = prevBodyPrRef.current ?? "";
+            prevBodyPrRef.current = undefined;
+        }
+
+        return () => {
+            body.classList.remove("mi-lock-scroll");
+            body.style.paddingRight = prevBodyPrRef.current ?? "";
+            prevBodyPrRef.current = undefined;
+        };
+    }, [drawerOpen]);
+
+    // Esc closes; click on overlay closes
+    useEffect(() => {
+        function onKey(e: KeyboardEvent) {
+            if (e.key === "Escape") setDrawerOpen(false);
+        }
+
+        window.addEventListener("keydown", onKey);
+        return () => window.removeEventListener("keydown", onKey);
+    }, []);
+
+    // Close drawer on route change
+    useEffect(() => {
+        setDrawerOpen(false);
+    }, [pathname]);
+
+    const handleOverlayClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+        if (e.target === drawerRef.current) setDrawerOpen(false);
+    }, []);
+
+    const handleCloseDrawer = useCallback(() => setDrawerOpen(false), []);
+
+    const handleToggleDrawer = useCallback(() => setDrawerOpen(v => !v), []);
+
+    const onChangeQ = useCallback((e: React.ChangeEvent<HTMLInputElement>) => setQ(e.target.value), []);
+
+    // Basic focus trap inside drawer panel
+    useEffect(() => {
+        if (!drawerOpen || !panelRef.current) return;
+        const sel = 'a[href],button:not([disabled]),input,select,textarea,[tabindex]:not([tabindex="-1"])';
+        const focusables = Array.from(panelRef.current.querySelectorAll<HTMLElement>(sel))
+            .filter(el => !el.hasAttribute("disabled") && el.tabIndex !== -1);
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        first?.focus();
+
+        const handler: EventListener = (ev) => {
+            const e = ev as KeyboardEvent;
+            if (e.key !== "Tab" || focusables.length === 0) return;
+            if (e.shiftKey && document.activeElement === first) {
+                e.preventDefault();
+                (last as HTMLElement | undefined)?.focus();
+            } else if (!e.shiftKey && document.activeElement === last) {
+                e.preventDefault();
+                (first as HTMLElement | undefined)?.focus();
+            }
+        };
+        panelRef.current.addEventListener("keydown", handler);
+        return () => panelRef.current?.removeEventListener("keydown", handler);
+    }, [drawerOpen]);
+
+    const submitSearch = useCallback((e: React.FormEvent) => {
+        e.preventDefault();
+        const query = q.trim();
+        if (!query) return;
+        (onSearchSubmit ?? ((qq: string) =>
+                router.push(`/products?search=${encodeURIComponent(qq)}`)
+        ))(query);
+        setDrawerOpen(false);
+    }, [q, onSearchSubmit, router]);
+
+    const fallbackLogout = useCallback(() => {
+        try {
+            localStorage.removeItem("token");
+            localStorage.removeItem("auth:user");
+        } catch {
+            /* ignore */
+        }
+        router.push("/login");
+    }, [router]);
+
+    const doLogout = useCallback(async () => {
+        try {
+            await (onLogout ?? fallbackLogout)();
+        } finally {
+            setDrawerOpen(false);
+        }
+    }, [onLogout, fallbackLogout]);
+
+    // Helper function to check if link is active
+    const isActive = (href: string) => {
+        if (href === "/") {
+            return pathname === "/";
+        }
+        return pathname?.startsWith(href);
+    };
+
+    const Drawer = (
+        <div
+            id="nav-drawer"
+            className={`mi-drawer ${drawerOpen ? "is-open" : ""}`}
+            aria-hidden={!drawerOpen}
+            onClick={handleOverlayClick}
+            ref={drawerRef}
+        >
+            <div className="mi-drawer__panel mi-panel" role="dialog" aria-modal="true" aria-label="Menu" ref={panelRef}>
+                {/* Header: search (vľavo) + close (vpravo) */}
+                <div className="mi-drawer__header">
+                    <form className="mi-drawer__search" role="search" onSubmit={submitSearch}>
+                        <div className="mi-panel mi-drawer__searchbox">
+                            <SearchIcon/>
+                            <input
+                                type="search"
+                                placeholder={t('nav:search_placeholder')}
+                                ref={searchInputRef}
+                                value={q}
+                                onChange={onChangeQ}
+                            />
+                        </div>
+                    </form>
+
+                    <button
+                        type="button"
+                        className="mi-closebtn"
+                        aria-label={t('nav:close_menu')}
+                        onClick={handleCloseDrawer}
+                    >
+                        <span className="mi-x" aria-hidden="true">×</span>
+                    </button>
+                </div>
+
+                {/* Links */}
+                {LINKS.map((l) => (
+                    <Link
+                        key={l.href}
+                        href={l.href}
+                        className={`mi-drawer__link${isActive(l.href) ? " is-active" : ""}`}
+                        onClick={handleCloseDrawer}
+                    >
+                        {t(l.labelKey)}
+                    </Link>
+                ))}
+
+                {/* Quick actions (mobile drawer) */}
+                <div style={{ display: "flex", gap: 8, marginTop: 16, marginBottom: 8 }}>
+                  <Link
+                    href="/wishlist"
+                    className="mi-btn mi-btn--ghost"
+                    style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}
+                    onClick={handleCloseDrawer}
+                  >
+                    <WishlistIcon/>
+                    {t('nav:wishlist', 'Wishlist')}
+                    {wishlistItems.length > 0 && <span className="mi-badge">{wishlistItems.length}</span>}
+                  </Link>
+                  <Link
+                    href="/cart"
+                    className="mi-btn mi-btn--ghost"
+                    style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}
+                    onClick={handleCloseDrawer}
+                  >
+                    <CartIcon/>
+                    {t('nav:cart')}
+                    {cartCount > 0 && <span className="mi-badge">{cartCount}</span>}
+                  </Link>
+                </div>
+
+                {/* Auth / User actions (mobile drawer) */}
+                <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+                  {!user ? (
+                    <>
+                      <Link className="mi-btn mi-btn--ghost" href="/login" style={{ flex: 1 }} onClick={handleCloseDrawer}>
+                        {t('nav:sign_in')}
+                      </Link>
+                      <Link className="mi-btn mi-btn--primary" href="/register" style={{ flex: 1 }} onClick={handleCloseDrawer}>
+                        {t('nav:sign_up')}
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <Link className="mi-btn mi-btn--ghost" href="/account" style={{ flex: 1 }} onClick={handleCloseDrawer}>
+                        {t('nav:account')}
+                      </Link>
+                      <button type="button" className="mi-btn mi-btn--ghost" style={{ flex: 1 }} onClick={doLogout}>
+                        {t('nav:sign_out')}
+                      </button>
+                    </>
+                  )}
+                </div>
+            </div>
+        </div>
+    );
+
+    return (
+        <>
+            <nav className="mi-nav" role="navigation" aria-label="Primary">
+                <div className="mi-container">
+                    <div className="mi-nav__bar">
+                        {/* Brand */}
+                        <Link href="/" className="mi-brand" aria-label="Martyx Industries">
+                            <Image
+                                src="/logo/logo.png"
+                                alt="Martyx Industries logo"
+                                className="mi-brand__logo"
+                                width={34}
+                                height={34}
+                            />
+                            <span className="mi-brand__text">
+                                <span className="mi-brand__line">MARTYX </span>
+                                <span className="mi-brand__line">INDUSTRIES</span>
+                            </span>
+                        </Link>
+
+                        {/* Primary links (desktop) */}
+                        <ul className="mi-links mi-desktop">
+                            {LINKS.map((l) => (
+                                <li key={l.href}>
+                                    <Link
+                                        href={l.href}
+                                        className={`mi-link${isActive(l.href) ? " is-active" : ""}`}
+                                    >
+                                        {t(l.labelKey)}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+
+                        {/* Right actions */}
+                        <div className="mi-actions">
+                            {/* Search (desktop) */}
+                            <form className="mi-search mi-desktop" role="search" aria-label={t('nav:search')}
+                                  onSubmit={submitSearch}>
+                                <div className="mi-panel">
+                                    <SearchIcon/>
+                                    <input
+                                        type="search"
+                                        name="q"
+                                        placeholder={t('nav:search_placeholder')}
+                                        autoComplete="off"
+                                        value={q}
+                                        onChange={onChangeQ}
+                                    />
+                                </div>
+                            </form>
+
+                            {/* Auth / User (desktop) */}
+                            {!user ? (
+                                <>
+                                    <Link href="/login" className="mi-btn mi-btn--ghost mi-desktop">{t('nav:sign_in')}</Link>
+                                    <Link href="/register" className="mi-btn mi-btn--primary mi-desktop">{t('nav:sign_up')}</Link>
+                                </>
+                            ) : (
+                                <>
+                                    <Link href="/account" className="mi-iconbtn mi-desktop" aria-label={t('nav:account')}>
+                                        <UserIcon />
+                                    </Link>
+                                    <button type="button" className="mi-btn mi-btn--ghost mi-desktop" onClick={doLogout}>
+                                        {t('nav:sign_out')}
+                                    </button>
+                                </>
+                            )}
+
+                            {/* Language Switcher */}
+                            <LanguageSwitcher />
+
+                            {/* Wishlist */}
+                            <Link href="/wishlist" className="mi-iconbtn" aria-label={t('nav:wishlist', 'Wishlist')}>
+                                <WishlistIcon/>
+                                {wishlistItems.length > 0 && <span className="mi-badge" aria-live="polite">{wishlistItems.length}</span>}
+                                <span className="visually-hidden">{t('nav:wishlist', 'Wishlist')}</span>
+                            </Link>
+
+                            {/* Cart (always visible) */}
+                            <Link href="/cart" className="mi-iconbtn" aria-label={t('nav:cart')}>
+                                <CartIcon/>
+                                {cartCount > 0 && <span className="mi-badge" aria-live="polite">{cartCount}</span>}
+                                <span className="visually-hidden">{t('nav:cart')}</span>
+                            </Link>
+
+                            {/* MOBILE: hamburger (bez SVG/pseudo) */}
+                            <button
+                                className="mi-iconbtn mi-mobile"
+                                aria-expanded={drawerOpen}
+                                aria-controls="nav-drawer"
+                                aria-label={drawerOpen ? t('nav:close_menu') : t('nav:toggle_navigation')}
+                                onClick={handleToggleDrawer}
+                            >
+  <span className="mi-menu-bars" aria-hidden="true">
+    <span></span><span></span><span></span>
+  </span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </nav>
+            {mounted && typeof document !== "undefined" ? createPortal(Drawer, document.body) : null}
+        </>
+    );
+}
+
+/* ===== Inline SVG icons ===== */
+
+function SearchIcon() {
+    return (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+             aria-hidden="true">
+            <circle cx="11" cy="11" r="7"/>
+            <path d="m21 21-4.3-4.3"/>
+        </svg>
+    );
+}
+
+function UserIcon() {
+    return (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+            <circle cx="12" cy="8" r="4" />
+            <path d="M4 20c0-4 4-6 8-6s8 2 8 6" />
+        </svg>
+    );
+}
+
+function WishlistIcon() {
+    return (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+             aria-hidden="true">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+    );
+}
+
+function CartIcon() {
+    return (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+             aria-hidden="true">
+            <circle cx="10" cy="20" r="1"/>
+            <circle cx="18" cy="20" r="1"/>
+            <path d="M2 3h2l2.4 12.3A2 2 0 0 0 8.8 17h8.9a2 2 0 0 0 2-1.6L22 7H6"/>
+        </svg>
+    );
+}

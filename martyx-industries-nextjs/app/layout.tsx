@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -57,8 +59,12 @@ export default function RootLayout({
       <head>
         <link rel="canonical" href="https://martyx-industries.com/" />
       </head>
-      <body className={inter.variable}>
-        {children}
+      <body className={`${inter.variable} app-container`}>
+        <Navbar cartCount={0} />
+        <main className="main-content">
+          {children}
+        </main>
+        <Footer />
       </body>
     </html>
   );

@@ -22,7 +22,9 @@
       "Bash(dir:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(test:*)",
+      "Bash(npx next lint:*)"
     ],
     "deny": [],
     "ask": []
