@@ -1,25 +1,5 @@
 /* Modern ProductDetail Page - Minimalist E-commerce Design */
-
-/* CSS Variables matching site theme */
-:root {
-  --product-detail-bg: #0f1419;
-  --product-detail-surface: #1a1f2e;
-  --product-detail-card: #1e2530;
-  --product-detail-border: #2a3038;
-  --product-detail-text: #ffffff;
-  --product-detail-text-secondary: #d1d5db;
-  --product-detail-text-muted: #9ca3af;
-  --product-detail-accent: #6b7280;
-  --product-detail-accent-hover: #4b5563;
-  --product-detail-success: #059669;
-  --product-detail-danger: #dc2626;
-  --product-detail-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  --product-detail-shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.15);
-  --product-detail-transition: all 0.2s ease;
-  --product-detail-radius: 8px;
-  --product-detail-radius-lg: 12px;
-  --product-detail-spacing: clamp(1rem, 2.5vw, 2rem);
-}
+/* CSS Variables are defined in globals.css */
 
 /* Page Container */
 .product-detail-page {

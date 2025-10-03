@@ -343,19 +343,19 @@
   .product-detail-page {
     padding: 1rem;
   }
-  
+
   .product-container {
     gap: 1.5rem;
   }
-  
+
   .product-details {
     padding: 1rem;
   }
-  
+
   .product-bookmarks {
     padding: 1rem;
   }
-  
+
   .product-tab-panel {
     padding: 1.5rem 1rem;
   }
@@ -391,12 +391,13 @@ html {
 
 /* High Contrast Mode Support */
 @media (prefers-contrast: high) {
+
   .product-container,
   .features-list li,
   .product-tab-panel {
     border-width: 2px;
   }
-  
+
   .add-to-cart-btn {
     border-width: 2px;
   }
@@ -436,6 +437,7 @@ html {
     opacity: 0;
     transform: translateY(-20px) scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -524,16 +526,16 @@ html {
     padding: 2rem 1.5rem;
     margin: 1rem;
   }
-  
+
   .unavailable-icon svg {
     width: 60px;
     height: 60px;
   }
-  
+
   .unavailable-actions {
     flex-direction: column;
   }
-  
+
   .unavailable-actions .back-button,
   .unavailable-actions .products-button {
     width: 100%;
@@ -607,7 +609,8 @@ body:has(.product-unavailable-overlay) {
 
 /* Star colors */
 .star-full {
-  color: #fbbf24; /* Yellow/gold color */
+  color: #fbbf24;
+  /* Yellow/gold color */
 }
 
 .star-half {
@@ -619,7 +622,8 @@ body:has(.product-unavailable-overlay) {
 }
 
 .star-empty {
-  color: #e5e7eb; /* Light gray */
+  color: #e5e7eb;
+  /* Light gray */
 }
 
 .rating-text {
@@ -641,19 +645,19 @@ body:has(.product-unavailable-overlay) {
     gap: 0.75rem;
     margin: 0.5rem 0;
   }
-  
+
   .product-rating {
     gap: 0.5rem;
   }
-  
+
   .star-rating-small {
     font-size: 0.875rem;
   }
-  
+
   .rating-text {
     font-size: 0.8rem;
   }
-  
+
   .product-type-compact {
     font-size: 0.7rem;
     padding: 0.2rem 0.6rem;
@@ -665,15 +669,15 @@ body:has(.product-unavailable-overlay) {
   .product-unavailable-modal {
     animation: none;
   }
-  
+
   .star {
     transition: none;
   }
-  
+
   .stars-container:hover .star {
     transform: none;
   }
-  
+
   * {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
