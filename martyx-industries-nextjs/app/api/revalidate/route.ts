@@ -108,6 +108,15 @@ export async function POST(request: NextRequest) {
     const allSuccessful = results.every(result => result.success);
     const failedOperations = results.filter(result => !result.success);
 
+    // Log revalidation results
+    console.log('[Revalidate API]', {
+      success: allSuccessful,
+      pathsCount: paths?.length || 0,
+      tagsCount: tags?.length || 0,
+      failedCount: failedOperations.length,
+      timestamp: new Date().toISOString()
+    });
+
     return NextResponse.json({
       success: allSuccessful,
       message: allSuccessful

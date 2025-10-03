@@ -15,9 +15,9 @@ const nextConfig = {
         pathname: '/martyx-industries/**',
       },
     ],
-    // Unoptimized mode - images loaded directly from DO Spaces (no proxy)
-    unoptimized: false,
-    formats: ['image/webp'],
+    // Unoptimized mode - images loaded directly from DO Spaces (no Next.js proxy)
+    // This prevents high CPU/egress costs on DO App Platform
+    unoptimized: true,
   },
   env: {
     API_BASE_URL: process.env.API_BASE_URL,

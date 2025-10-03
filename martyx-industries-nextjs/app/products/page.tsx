@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   },
 };
 
-export const dynamic = 'force-dynamic'; // Render on-demand
+export const revalidate = 600; // Revalidate every 10 minutes
 
 export default async function ProductsPage() {
   let products: Product[] = [];

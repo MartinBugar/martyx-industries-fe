@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   },
 };
 
-export const dynamic = 'force-dynamic'; // Render on-demand
+export const revalidate = 3600; // Revalidate every hour
 
 export default async function DocumentsPage() {
   let documents: Document[] = [];

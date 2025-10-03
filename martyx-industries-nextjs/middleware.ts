@@ -1,23 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export function middleware(request: NextRequest) {
-  const { hostname, pathname, search } = request.nextUrl;
+  const { hostname } = request.nextUrl;
 
-  // Check if the hostname starts with 'www.'
+  // Redirect from www to apex domain
   if (hostname.startsWith('www.')) {
-    // Extract the domain without 'www.'
     const newHostname = hostname.slice(4);
-
-    // Create the redirect URL to the apex domain
     const redirectUrl = new URL(request.url);
     redirectUrl.hostname = newHostname;
 
-    // Return a permanent redirect (301)
-    return NextResponse.redirect(redirectUrl, 301);
+    return NextResponse.redirect(redirectUrl, { status: 301 });
   }
 
-  // Continue with the request if no redirect is needed
-  return NextResponse.next();
+  // Add security headers
+  const response = NextResponse.next();
+
+  response.headers.set('X-Frame-Options', 'DENY');
+  response.headers.set('X-Content-Type-Options', 'nosniff');
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  response.headers.set(
+    'Content-Security-Policy',
+    [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
+      "style-src 'self' 'unsafe-inline'",
+      "img-src 'self' data: https://martyx-industries.fra1.cdn.digitaloceanspaces.com https://fra1.digitaloceanspaces.com",
+      "font-src 'self' data:",
+      "connect-src 'self' https://martyx-industries-be-2xf3x.ondigitalocean.app",
+      "frame-ancestors 'none'",
+    ].join('; ')
+  );
+
+  return response;
 }
 
 // Configure which paths the middleware should run on

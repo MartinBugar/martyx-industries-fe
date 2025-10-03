@@ -1,4 +1,10 @@
-const API_BASE_URL = process.env.API_BASE_URL || 'https://martyx-industries-be-2xf3x.ondigitalocean.app';
+const API_BASE_URL = process.env.API_BASE_URL;
+
+if (!API_BASE_URL) {
+  throw new Error(
+    'API_BASE_URL environment variable is not set. Please configure it in your environment variables.'
+  );
+}
 
 export interface Product {
   id: string;
@@ -61,7 +67,7 @@ async function fetchWithError(url: string, options?: RequestInit): Promise<Respo
 
 export async function getFeaturedProducts(): Promise<Product[]> {
   const response = await fetchWithError(`${API_BASE_URL}/api/v1/products?featured=true`, {
-    next: { tags: ['products', 'featured-products'] }
+    next: { revalidate: 3600, tags: ['products', 'featured-products'] }
   });
   return response.json();
 }
@@ -72,35 +78,35 @@ export async function getProducts(page: number = 1, limit: number = 20): Promise
   hasMore: boolean;
 }> {
   const response = await fetchWithError(`${API_BASE_URL}/api/v1/products?page=${page}&limit=${limit}`, {
-    next: { tags: ['products'] }
+    next: { revalidate: 600, tags: ['products'] }
   });
   return response.json();
 }
 
 export async function getProductBySlug(slug: string): Promise<Product> {
   const response = await fetchWithError(`${API_BASE_URL}/api/v1/products/${slug}`, {
-    next: { tags: ['products', `product:${slug}`] }
+    next: { revalidate: 3600, tags: ['products', `product:${slug}`] }
   });
   return response.json();
 }
 
 export async function getProductSlugs(): Promise<{ slug: string }[]> {
   const response = await fetchWithError(`${API_BASE_URL}/api/v1/products/slugs`, {
-    next: { tags: ['products'] }
+    next: { revalidate: 3600, tags: ['products'] }
   });
   return response.json();
 }
 
 export async function getDocuments(): Promise<Document[]> {
   const response = await fetchWithError(`${API_BASE_URL}/api/v1/documents`, {
-    next: { tags: ['documents'] }
+    next: { revalidate: 3600, tags: ['documents'] }
   });
   return response.json();
 }
 
 export async function getAboutPage(): Promise<PageContent> {
   const response = await fetchWithError(`${API_BASE_URL}/api/v1/pages/about`, {
-    next: { tags: ['pages', 'about'] }
+    next: { revalidate: 86400, tags: ['pages', 'about'] }
   });
   return response.json();
 }

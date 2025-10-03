@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description: "Welcome to MartyX Industries - Premium 3D-printed RC models and components for enthusiasts and professionals.",
 };
 
-export const dynamic = 'force-dynamic'; // Render on-demand
+export const revalidate = 3600; // Revalidate every hour
 
 export default async function Home() {
   let featuredProducts: Product[] = [];

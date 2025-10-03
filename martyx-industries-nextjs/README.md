@@ -39,22 +39,34 @@ A modern Next.js application for MartyX Industries, featuring 3D-printed RC mode
 
 ## 🔧 Environment Variables
 
+### Required Variables
+
+**Build Time & Runtime:**
+- `API_BASE_URL` - Backend API URL (required for both build and runtime)
+  - Example: `https://martyx-industries-be-2xf3x.ondigitalocean.app`
+  - ⚠️ **CRITICAL:** No fallback - build will fail if missing
+
+**Runtime Only:**
+- `REVALIDATE_SECRET` - Secret token for `/api/revalidate` endpoint
+  - Generate a secure random string (e.g., `openssl rand -hex 32`)
+  - Used for Bearer authentication on revalidation API
+
+**Optional:**
+- `NEXT_PUBLIC_SITE_URL` - Public site URL for robots.txt and sitemap.xml
+  - Example: `https://martyx-industries.com`
+  - Default: `https://martyx-industries.com`
+
+### Local Development
+
 Create a `.env.local` file in the project root:
 
 ```bash
-# API Configuration
+# Required
 API_BASE_URL=https://martyx-industries-be-2xf3x.ondigitalocean.app
+REVALIDATE_SECRET=your-secure-random-token
 
-# Revalidation Secret for on-demand revalidation
-REVALIDATE_SECRET=your-revalidate-secret-token
-
-# PayPal Configuration (optional)
-NEXT_PUBLIC_PAYPAL_CLIENT_ID=your-production-paypal-client-id
-
-# DigitalOcean Spaces Configuration
-NEXT_PUBLIC_DO_SPACES_ENDPOINT=https://fra1.digitaloceanspaces.com
-NEXT_PUBLIC_DO_SPACES_BUCKET=martyx-industries
-NEXT_PUBLIC_DO_CDN_ENDPOINT=https://martyx-industries.fra1.cdn.digitaloceanspaces.com
+# Optional
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
 
 ## 📡 Backend API Endpoints
@@ -127,60 +139,45 @@ interface PageContent {
 
 ## 🚀 Getting Started
 
-### Local Development (Isolated in Subdirectory)
+### Local Development
 
-This Next.js project is **fully isolated** in `martyx-industries-nextjs/` and does not depend on any files in the parent directory.
-
-1. **Navigate to project directory:**
-   ```bash
-   cd martyx-industries-nextjs
-   ```
-
-2. **Install dependencies:**
+1. **Install dependencies:**
    ```bash
    npm ci
    ```
 
-3. **Set up environment variables:**
+2. **Set up environment variables:**
    ```bash
-   cp .env.example .env.local
-   # Edit .env.local with your values
+   # Create .env.local with required variables
+   echo "API_BASE_URL=https://martyx-industries-be-2xf3x.ondigitalocean.app" > .env.local
+   echo "REVALIDATE_SECRET=$(openssl rand -hex 32)" >> .env.local
    ```
 
-4. **Run development server:**
+3. **Run development server:**
    ```bash
    npm run dev
    ```
 
-5. **Open [http://localhost:3000](http://localhost:3000)**
+4. **Open [http://localhost:3000](http://localhost:3000)**
 
-### Build and Deploy
+### Production Build
 
-1. **Build for production:**
+1. **Full production build and test:**
    ```bash
-   cd martyx-industries-nextjs
+   npm ci && npm run build && PORT=8080 npm start
+   ```
+   Server binds to `0.0.0.0:$PORT` (default 3000)
+
+2. **Build only:**
+   ```bash
    npm ci
    npm run build
    ```
 
-2. **Start production server (with custom port):**
+3. **Start production server:**
    ```bash
    PORT=8080 npm start
    ```
-   Server will bind to `0.0.0.0:$PORT` (default 3000)
-
-3. **Test production build locally:**
-   ```bash
-   npm run build && PORT=8080 npm start
-   ```
-
-### Isolation Verification
-
-Verify that the project runs completely independently:
-```bash
-cd martyx-industries-nextjs && npm ci && npm run build && PORT=8080 npm start
-```
-✅ This should work without any files from the parent directory.
 
 ## 🔄 On-Demand Revalidation
 
@@ -210,33 +207,74 @@ curl -X POST https://martyx-industries.com/api/revalidate \
 - `pages` - Page content
 - `about` - About page
 
+### API Response Format
+
+**Success (200):**
+```json
+{
+  "success": true,
+  "message": "All revalidation operations completed successfully",
+  "results": [
+    {"type": "path", "value": "/products", "success": true},
+    {"type": "tag", "value": "products", "success": true}
+  ],
+  "timestamp": "2025-10-03T12:00:00.000Z"
+}
+```
+
+**Partial Success (207):**
+```json
+{
+  "success": false,
+  "message": "1 operation(s) failed",
+  "results": [
+    {"type": "path", "value": "/invalid", "success": false, "error": "..."}
+  ],
+  "timestamp": "2025-10-03T12:00:00.000Z"
+}
+```
+
+**Unauthorized (401):**
+```json
+{
+  "success": false,
+  "error": "Unauthorized"
+}
+```
+
 ## 🌐 DigitalOcean App Platform Deploy
 
 ### App Configuration
+- **Service Type:** Web Service
 - **Source Directory:** `martyx-industries-nextjs`
-- **Build Command:** `npm ci && npm run build`
+- **Build Command:** Custom: `npm ci && npm run build`
 - **Run Command:** `npm run start`
 - **HTTP Port:** Auto-detected from `$PORT` environment variable
+- **Instance Size:** Basic (512MB RAM recommended minimum)
 
-### Environment Variables
-Set the following in DigitalOcean App Platform:
-- `API_BASE_URL` - Backend API URL
-- `REVALIDATE_SECRET` - Secret token for `/api/revalidate`
-- `NEXT_PUBLIC_SITE_URL` - Public site URL (e.g., `https://martyx-industries.com`)
+### Required Environment Variables
 
-Optional:
-- `NEXT_PUBLIC_PAYPAL_CLIENT_ID`
-- `NEXT_PUBLIC_DO_SPACES_ENDPOINT`
-- `NEXT_PUBLIC_DO_SPACES_BUCKET`
-- `NEXT_PUBLIC_DO_CDN_ENDPOINT`
+Add these in **App-Level Environment Variables**:
+
+| Variable | Type | Value |
+|----------|------|-------|
+| `API_BASE_URL` | Build + Runtime | `https://martyx-industries-be-2xf3x.ondigitalocean.app` |
+| `REVALIDATE_SECRET` | Runtime | Generate with `openssl rand -hex 32` |
+| `NEXT_PUBLIC_SITE_URL` | Build + Runtime | `https://martyx-industries.com` |
+
+### Optional Environment Variables
+- `NEXT_PUBLIC_ASSETS_BASE` - CDN base URL for static assets (if using separate CDN)
 
 ### Domain Configuration
-- **Primary domain:** `martyx-industries.com`
-- **www redirect:** Automatically redirected to apex via middleware
+1. **Primary domain:** `martyx-industries.com` (apex)
+2. **www subdomain:** `www.martyx-industries.com` → 301 redirect to apex (via middleware)
+3. **SSL/TLS:** Automatic via DigitalOcean (Let's Encrypt)
 
 ### Health Check
-- **Endpoint:** `/api/health`
-- **Expected Response:** `200 OK` with JSON `{"status":"ok",...}`
+- **Path:** `/api/health`
+- **Expected:** `200 OK`
+- **Interval:** 30 seconds recommended
+- **Failure Threshold:** 3 attempts
 
 ## 🧪 Testing Commands
 
@@ -281,19 +319,45 @@ Expected: `{"success":true,...}`
 
 ## 📋 Acceptance Criteria Checklist
 
-- ✅ Next.js App Router with TypeScript and ESLint
-- ✅ SSR/SSG/ISR properly configured
-- ✅ Home page with featured products (SSG+ISR, revalidate=3600)
-- ✅ Products listing page (SSG+ISR, revalidate=600)
-- ✅ Product detail pages with dynamic routing and static generation
-- ✅ About page (SSG)
-- ✅ Documents page (SSG)
-- ✅ On-demand revalidation API with Bearer token authentication
-- ✅ SEO metadata, robots.txt, and sitemap.xml
-- ✅ www to apex redirect via middleware
-- ✅ Next.js Image with remote domains configured
-- ✅ Custom error and not-found pages
-- ✅ Cache tags for targeted revalidation
+### Core Features
+- ✅ Next.js 15 App Router with TypeScript
+- ✅ Tailwind CSS fully integrated (dependencies, postcss, config)
+- ✅ ISR configured (revalidate on all pages, no force-dynamic)
+- ✅ Cache tags on all API fetches for on-demand revalidation
+- ✅ images.unoptimized = true (direct loading from DO Spaces)
+- ✅ No hardcoded API_BASE_URL fallback (throws error if missing)
+
+### Pages & Rendering
+- ✅ Home page (ISR, revalidate=3600, tags: products/featured-products)
+- ✅ Products listing (ISR, revalidate=600, tags: products)
+- ✅ Product detail (ISR, revalidate=3600, tags: products/product:{slug})
+- ✅ About page (ISR, revalidate=86400, tags: pages/about)
+- ✅ Documents page (ISR, revalidate=3600, tags: documents)
+
+### APIs & Infrastructure
+- ✅ On-demand revalidation API (/api/revalidate)
+  - ✅ Bearer token authentication (REVALIDATE_SECRET)
+  - ✅ Supports paths and tags
+  - ✅ Logging to STDOUT
+- ✅ Health check endpoint (/api/health)
+
+### SEO & Crawling
+- ✅ robots.ts (no duplicate robots.txt route)
+- ✅ sitemap.ts (no duplicate sitemap.xml route)
+- ✅ Sitemap includes static + dynamic product URLs
+- ✅ Metadata with OpenGraph and Twitter Cards
+- ✅ Canonical URLs configured
+
+### Security & Middleware
+- ✅ www → apex redirect (301, via middleware)
+- ✅ Security headers (X-Frame-Options, CSP, etc.)
+- ✅ Middleware matcher excludes api/_next/favicon/robots/sitemap
+
+### Documentation
+- ✅ README with environment variables (build vs runtime)
+- ✅ README with deployment instructions
+- ✅ README with revalidation API examples
+- ✅ README with testing commands
 
 ## 🔍 SEO Features
 

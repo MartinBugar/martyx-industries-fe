@@ -22,7 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-export const dynamic = 'force-dynamic'; // Render on-demand
+export const revalidate = 86400; // Revalidate daily
 
 export default async function AboutPage() {
   let aboutData;
