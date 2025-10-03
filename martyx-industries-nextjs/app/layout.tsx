@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
+import NavbarWrapper from "@/components/NavbarWrapper";
 import Footer from "@/components/Footer";
+import { AuthProvider } from "@/context/AuthProvider";
 import { WishlistProvider } from "@/context/WishlistContext";
 import { CartProvider } from "@/context/CartContext";
 import I18nProvider from "@/components/I18nProvider";
@@ -64,15 +65,17 @@ export default function RootLayout({
       </head>
       <body className={`${inter.variable} app-container`}>
         <I18nProvider>
-          <WishlistProvider>
-            <CartProvider>
-              <Navbar cartCount={0} />
-              <main className="main-content">
-                {children}
-              </main>
-              <Footer />
-            </CartProvider>
-          </WishlistProvider>
+          <AuthProvider>
+            <WishlistProvider>
+              <CartProvider>
+                <NavbarWrapper />
+                <main className="main-content">
+                  {children}
+                </main>
+                <Footer />
+              </CartProvider>
+            </WishlistProvider>
+          </AuthProvider>
         </I18nProvider>
       </body>
     </html>

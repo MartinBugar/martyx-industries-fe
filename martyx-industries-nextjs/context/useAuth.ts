@@ -1,26 +1,11 @@
-// Temporary useAuth hook - to be replaced when AuthContext is fully ported
-// For now, returns a minimal interface for compatibility
+import { useContext } from 'react';
+import { AuthContext } from './AuthContext';
 
-interface User {
-  id: string;
-  email: string;
-  firstName?: string;
-  lastName?: string;
-  phone?: string;
-  address?: {
-    street?: string;
-    city?: string;
-    state?: string;
-    zipCode?: string;
-    country?: string;
-  };
-}
-
+// Custom hook to use the auth context
 export const useAuth = () => {
-  // TODO: Replace with actual AuthContext when ported
-  return {
-    isAuthenticated: false,
-    isLoading: false,
-    user: null as User | null,
-  };
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 };
