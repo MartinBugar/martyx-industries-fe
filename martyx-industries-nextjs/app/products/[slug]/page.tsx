@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import type { Product, ProductTab, ProductTabId } from '@/lib/types/product';
 import ProductView from '@/components/ProductView';
-import './ProductDetail.module.css';
+import styles from './ProductDetail.module.css';
 import DetailsTab from '@/components/ProductTabs/DetailsTab';
 import DownloadTab from '@/components/ProductTabs/DownloadTab';
 import FeaturesTab from '@/components/ProductTabs/FeaturesTab';
@@ -90,9 +90,9 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
   };
 
   return (
-    <div id="details" className="product-details">
+    <div id="details" className={styles['product-details']}>
       <h2>{product.name}</h2>
-      <div className="product-meta-row">
+      <div className={styles['product-meta-row']}>
         {!reviewsLoading && reviews.length > 0 && (
           <StarRating
             rating={averageRating}
@@ -100,29 +100,29 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
             size="small"
           />
         )}
-        <div className="product-type-compact">
+        <div className={styles['product-type-compact']}>
           {product.productType === 'DIGITAL' ? 'DIGITAL' : (product.productType === 'PHYSICAL' ? 'PHYSICAL' : product.productType)}
         </div>
       </div>
       <div
-        className="price">{product.price.toFixed(2)} {product.currency === 'EUR' ? '€' : product.currency}</div>
-      <p className="description">{product.description}</p>
+        className={styles.price}>{product.price.toFixed(2)} {product.currency === 'EUR' ? '€' : product.currency}</div>
+      <p className={styles.description}>{product.description}</p>
 
       <h3 id="features">Features:</h3>
-      <ul className="features-list">
+      <ul className={styles['features-list']}>
         {(product.features || []).map((feature, index) => (
           <li key={index}>{feature}</li>
         ))}
       </ul>
 
-      <div className="product-actions">
+      <div className={styles['product-actions']}>
         <WishlistButton
           productId={product.id}
           variant="button"
           size="large"
         />
         <button
-          className={`add-to-cart-btn${popup.visible ? ` is-popup ${popup.variant}` : ''}`}
+          className={`${styles['add-to-cart-btn']}${popup.visible ? ` ${styles['is-popup']} ${styles[popup.variant]}` : ''}`}
           onClick={handleAddToCart}
           disabled={popup.visible}
           aria-live="polite"
@@ -445,12 +445,12 @@ const ProductDetail: React.FC = () => {
   }
 
   return (
-    <div className="product-detail-page">
-      <div className="product-container">
+    <div className={styles['product-detail-page']}>
+      <div className={styles['product-container']}>
         {productWithGallery && <ProductView product={productWithGallery} />}
         {product && <ProductDetails product={product} />}
 
-        <nav className="product-bookmarks" aria-label="Product sections" role="tablist">
+        <nav className={styles['product-bookmarks']} aria-label="Product sections" role="tablist">
           {(tabs || []).map((t) => (
             <button
               key={t.id}
@@ -460,7 +460,7 @@ const ProductDetail: React.FC = () => {
               aria-selected={t.id === active}
               aria-controls={`panel-${t.id}`}
               onClick={() => setActive(t.id)}
-              className={t.id === active ? 'active' : ''}
+              className={t.id === active ? styles.active : ''}
             >
               {t.label}
             </button>
@@ -472,7 +472,7 @@ const ProductDetail: React.FC = () => {
             id={`panel-${activeTab.id}`}
             role="tabpanel"
             aria-labelledby={`tab-${activeTab.id}`}
-            className="product-tab-panel"
+            className={styles['product-tab-panel']}
           >
             {activeTab.id === 'Details' && <DetailsTab content={activeTab.content} />}
             {activeTab.id === 'PrintInfo' && <PrintInfoTab content={activeTab.content} />}
@@ -483,7 +483,7 @@ const ProductDetail: React.FC = () => {
         )}
 
         {product?.videoUrl && (
-          <div className="product-video-section" style={{ marginTop: '24px' }}>
+          <div className={styles['product-video-section']} style={{ marginTop: '24px' }}>
             <div style={{
               position: 'relative',
               paddingBottom: '56.25%',
