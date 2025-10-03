@@ -1,5 +1,5 @@
 {
-  "name": "3d1",
+  "name": "martyx-industries-monorepo",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,40 +9,6 @@
   "scripts": {
     "dev": "npm --prefix martyx-industries-nextjs run dev",
     "build": "npm --prefix martyx-industries-nextjs ci && npm --prefix martyx-industries-nextjs run build",
-    "start": "npm --prefix martyx-industries-nextjs run start",
-    "lint": "eslint .",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "@google/model-viewer": "^4.1.0",
-    "@paypal/paypal-js": "^8.2.0",
-    "@paypal/react-paypal-js": "^8.8.3",
-    "aws-sdk": "^2.1692.0",
-    "buffer": "^6.0.3",
-    "i18next": "^25.4.2",
-    "i18next-browser-languagedetector": "^8.2.0",
-    "i18next-http-backend": "^3.0.2",
-    "i18next-icu": "^2.4.0",
-    "intl-messageformat": "^10.7.16",
-    "next": "^14",
-    "react": "^18",
-    "react-dom": "^18",
-    "react-i18next": "^15.7.3",
-    "react-router-dom": "^7.7.1",
-    "three": "^0.172.0"
-  },
-  "devDependencies": {
-    "@eslint/js": "^9.30.1",
-    "@types/node": "24.6.2",
-    "@types/react": "^19.1.8",
-    "@types/react-dom": "^19.1.6",
-    "@vitejs/plugin-react": "^4.6.0",
-    "eslint": "^9.30.1",
-    "eslint-plugin-react-hooks": "^5.2.0",
-    "eslint-plugin-react-refresh": "^0.4.20",
-    "globals": "^16.3.0",
-    "typescript": "~5.8.3",
-    "typescript-eslint": "^8.35.1",
-    "vite": "^4.5.0"
+    "start": "npm --prefix martyx-industries-nextjs run start"
   }
 }
