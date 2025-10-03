@@ -4,10 +4,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import WishlistButton from '@/components/WishlistButton/WishlistButton';
-import NewsletterForm from '@/components/NewsletterForm';
-import OptimizedImage from '@/components/OptimizedImage';
 import { getFeaturedProducts } from '@/lib/api';
-import { getImageSrcSet, getBestImageUrl, getBaseNameFromPath, isCDNEnabled } from '@/utils/cdnImages';
+import { getImageSrcSet, getBestImageUrl, getBaseNameFromPath, isCDNEnabled } from '../utils/cdnImages';
 import styles from './home.module.css';
 
 interface Product {
@@ -33,6 +31,12 @@ export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
   const featured = useMemo(() => products.slice(0, 6), [products]);
 
+  const [subscribed, setSubscribed] = useState(false);
+
+  // Try to import hero image via bundler; fallback to CSS placeholder if not present
+  const heroAlt = t('hero.image_alt');
+  const heroSrc = '/assets/home/tank.png';
+
   // Load products with gallery from API
   useEffect(() => {
     const loadProducts = async () => {
@@ -48,30 +52,20 @@ export default function Home() {
     loadProducts();
   }, [i18n.language]); // Reload products when language changes
 
-  // Try to import hero image via bundler; fallback to CSS placeholder if not present
-  const heroAlt = t('hero.image_alt');
-  const heroSrc = '/assets/home/tank.png';
-
   return (
     <div className={styles.homeRoot} aria-label="Home Page">
-      {/* Hero Section */}
+      {/* 1) Hero */}
       <section className={styles.heroSection} aria-label="Hero">
         <div className={styles.container}>
           <div className={styles.heroGrid}>
             <div className={styles.heroCopy}>
               <div className={styles.heroContentWrapper}>
                 <div className={styles.heroMascotContainer}>
-                  <OptimizedImage
+                  <img
                     src="/cassandra/Home-Cass.png"
-                    srcSet="/cassandra/Home-Cass.png 1x, /cassandra/Home-Cass.png 2x"
-                    sizes="(max-width: 360px) 160px, (max-width: 480px) 200px, (max-width: 768px) 260px, 320px"
                     alt="Cassandra - Váš 3D sprievodca"
                     className={styles.mascotImageHome}
-                    width={400}
-                    height={400}
-                    priority
                     loading="eager"
-                    decoding="sync"
                   />
                 </div>
                 <div className={styles.heroTextContent}>
@@ -94,32 +88,36 @@ export default function Home() {
               </div>
             </div>
             <div className={styles.heroVisual}>
-              <OptimizedImage
-                src={heroSrc}
-                alt={heroAlt}
-                width={1800}
-                height={1000}
-                priority
-                loading="eager"
-                style={{
-                  width: '100%',
-                  height: 'auto',
-                  display: 'block',
-                  borderRadius: 'var(--radius-lg)',
-                  userSelect: 'none'
-                }}
-              />
+              {heroSrc ? (
+                <img
+                  src={heroSrc}
+                  alt={heroAlt}
+                  width={1800}
+                  height={1000}
+                  loading="eager"
+                  style={{ 
+                    width: '100%', 
+                    height: 'auto', 
+                    display: 'block', 
+                    borderRadius: 'var(--radius-lg)',
+                    userSelect: 'none',
+                    WebkitUserSelect: 'none',
+                    MozUserSelect: 'none',
+                    msUserSelect: 'none'
+                  }}
+                />
+              ) : (
+                <div className={styles.heroImage} role="img" aria-label={heroAlt} />
+              )}
             </div>
           </div>
         </div>
       </section>
 
-      {/* How It Works */}
+      {/* 2) How it works */}
       <section className={styles.howSection} aria-label={t('how_it_works.title')}>
         <div className={styles.container}>
-          <div className={styles.sectionHeader}>
-            <h2>{t('how_it_works.title')}</h2>
-          </div>
+          <div className={styles.sectionHeader}><h2>{t('how_it_works.title')}</h2></div>
           <div className={styles.howGrid}>
             <article className={styles.howCard}>
               <span className={styles.howStep}>{t('how_it_works.step_1')}</span>
@@ -140,15 +138,13 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Featured Products */}
+      {/* 3) Featured */}
       <section className={`${styles.homeSection} ${styles.featuredSection}`} aria-label={t('featured.title')}>
         <div className={styles.container}>
           <div className={styles.sectionHeader}>
             <h2>{t('featured.title')}</h2>
             <div style={{textAlign: 'center', marginTop: '1rem'}}>
-              <Link className={`${styles.btn} ${styles.btnAccent}`} href="/products">
-                {t('featured.view_all')}
-              </Link>
+              <Link className={`${styles.btn} ${styles.primary}`} href="/products">{t('featured.view_all')}</Link>
             </div>
           </div>
           <div className={styles.featuredGrid}>
@@ -156,27 +152,41 @@ export default function Home() {
               <article key={p.id} className={styles.productCard}>
                 <div className={styles.productCardImageContainer}>
                   <Link href={`/products/${p.slug || p.id}`} className={styles.productCardLink}>
-                    <OptimizedImage
+                    <img
                       src={(() => {
-                        const mainImage = p.gallery?.[0]?.url || '/assets/kit-01.png';
+                        if (!p.gallery?.[0]?.url) return '/assets/kit-01.png';
+                        const mainImage = p.gallery[0].url;
+                        // If the image URL is already a CDN URL, use it directly
                         const isCDNUrl = mainImage.includes('digitaloceanspaces.com') || mainImage.includes(process.env.NEXT_PUBLIC_CDN_BASE || '');
-                        return !isCDNUrl && isCDNEnabled() ? getBestImageUrl(getBaseNameFromPath(mainImage), 400) : mainImage;
+                        const finalSrc = isCDNUrl ? mainImage : (isCDNEnabled() ? getBestImageUrl(getBaseNameFromPath(mainImage), 800) : mainImage);
+                        if (process.env.NODE_ENV === 'development' && p.id === "1") {
+                          console.log(`🏠 Homepage card for ${p.title} - Original:`, mainImage, '→ Final:', finalSrc, '(CDN URL detected:', isCDNUrl, ')');
+                        }
+                        return finalSrc;
                       })()}
                       srcSet={(() => {
-                        const mainImage = p.gallery?.[0]?.url || '/assets/kit-01.png';
+                        if (!p.gallery?.[0]?.url) return undefined;
+                        const mainImage = p.gallery[0].url;
                         const isCDNUrl = mainImage.includes('digitaloceanspaces.com') || mainImage.includes(process.env.NEXT_PUBLIC_CDN_BASE || '');
                         return !isCDNUrl && isCDNEnabled() ? getImageSrcSet(getBaseNameFromPath(mainImage)) : undefined;
                       })()}
                       sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                      alt={`${p.title} - main image`}
+                      alt={p.title}
                       className={styles.productImage}
-                      width={400}
-                      height={400}
                       loading="lazy"
-                      decoding="async"
                       onLoad={() => {
                         if (process.env.NODE_ENV === 'development' && p.id === "1") {
-                          console.log(`✅ Product card image for ${p.title} loaded successfully`);
+                          console.log(`✅ Homepage card image for ${p.title} loaded successfully`);
+                        }
+                      }}
+                      onError={(e) => {
+                        if (process.env.NODE_ENV === 'development') {
+                          console.error(`❌ Homepage card image for ${p.title} failed to load:`, e.currentTarget.src);
+                        }
+                        // Fallback to local image if CDN fails
+                        const fallbackSrc = `/productsGallery/${p.id}/1.png`;
+                        if (e.currentTarget.src !== window.location.origin + fallbackSrc) {
+                          e.currentTarget.src = fallbackSrc;
                         }
                       }}
                     />
@@ -202,7 +212,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Testimonials */}
+      {/* 6) Testimonials */}
       <section className={`${styles.homeSection} ${styles.testimonials}`} aria-label={t('testimonials.title')}>
         <div className={styles.container}>
           <div className={styles.sectionHeader}>
@@ -240,10 +250,10 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
-                <div className={styles.reviewDate}>{t('testimonials.time_ago.weeks_2')}</div>
+                <div className={styles.reviewDate}>2 weeks ago</div>
               </div>
               <blockquote className={styles.testimonialContent}>
-                <p>&quot;{t('testimonials.review_1')}&quot;</p>
+                <p>"Printed over a weekend, runs like a charm. The STL files are perfectly optimized and the assembly guide is crystal clear. My kids love driving it around!"</p>
               </blockquote>
               <div className={styles.testimonialFooter}>
                 <span className={styles.productTag}>Tiger I Kit</span>
@@ -280,10 +290,10 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
-                <div className={styles.reviewDate}>{t('testimonials.time_ago.month_1')}</div>
+                <div className={styles.reviewDate}>1 month ago</div>
               </div>
               <blockquote className={styles.testimonialContent}>
-                <p>&quot;{t('testimonials.review_2')}&quot;</p>
+                <p>"Clean STLs, no supports needed on my setup. The modular design makes it easy to customize and the electronics integration is seamless. Highly recommended!"</p>
               </blockquote>
               <div className={styles.testimonialFooter}>
                 <span className={styles.productTag}>Sherman STL Bundle</span>
@@ -320,10 +330,10 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
-                <div className={styles.reviewDate}>{t('testimonials.time_ago.weeks_3')}</div>
+                <div className={styles.reviewDate}>3 weeks ago</div>
               </div>
               <blockquote className={styles.testimonialContent}>
-                <p>&quot;{t('testimonials.review_3')}&quot;</p>
+                <p>"Amazing quality! The tracks work perfectly and the suspension system is incredibly realistic. Assembly took exactly as advertised - under 4 hours."</p>
               </blockquote>
               <div className={styles.testimonialFooter}>
                 <span className={styles.productTag}>T-34 Kit</span>
@@ -360,10 +370,10 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
-                <div className={styles.reviewDate}>{t('testimonials.time_ago.week_1')}</div>
+                <div className={styles.reviewDate}>1 week ago</div>
               </div>
               <blockquote className={styles.testimonialContent}>
-                <p>&quot;{t('testimonials.review_4')}&quot;</p>
+                <p>"The attention to detail is incredible. Every bolt and rivet is perfectly modeled. The controller range is impressive and the sound effects are spot on!"</p>
               </blockquote>
               <div className={styles.testimonialFooter}>
                 <span className={styles.productTag}>Panther STL Bundle</span>
@@ -373,7 +383,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Newsletter */}
+      {/* 7) Newsletter */}
       <section className={`${styles.homeSection} ${styles.newsletter}`} aria-label={t('newsletter.title')}>
         <div className={styles.container}>
           <div className={styles.newsletterContainer}>
@@ -390,7 +400,7 @@ export default function Home() {
                   {t('newsletter.description')}
                 </p>
               </div>
-
+              
               <div className={styles.newsletterBenefits}>
                 <div className={styles.benefitItem}>
                   <div className={styles.benefitIcon}>
@@ -418,8 +428,49 @@ export default function Home() {
                 </div>
               </div>
             </div>
-
-            <NewsletterForm />
+            
+            <div className={styles.newsletterFormContainer}>
+              <form className={styles.newsletterForm} onSubmit={(e) => { e.preventDefault(); setSubscribed(true); console.log('newsletter_subscribed'); }}>
+                <div className={styles.formGroup}>
+                  <label htmlFor="newsletter-email" className={styles.formLabel}>{t('newsletter.email_label')}</label>
+                  <div className={styles.inputWrapper}>
+                    <input 
+                      id="newsletter-email" 
+                      name="email" 
+                      type="email" 
+                      required 
+                      placeholder={t('newsletter.email_placeholder')} 
+                      className={styles.newsletterInput}
+                      aria-label={t('newsletter.subscribe_button')}
+                    />
+                    <button type="submit" className={styles.newsletterSubmit} aria-label={t('newsletter.subscribe_button')}>
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M22 2L11 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+                <p className={styles.formNote}>
+                  {t('newsletter.privacy_note')}
+                </p>
+              </form>
+              
+              {subscribed && (
+                <div className={styles.newsletterSuccess} role="status" aria-live="polite">
+                  <div className={styles.successIcon}>
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <polyline points="22,4 12,14.01 9,11.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                  <div className={styles.successContent}>
+                    <h3>{t('newsletter.success_title')}</h3>
+                    <p>{t('newsletter.success_message')}</p>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </section>

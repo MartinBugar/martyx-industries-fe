@@ -10,6 +10,11 @@
     padding-block: 3.5rem;
 }
 
+/* Special styling for hero section to use full width */
+.homeSection.hero {
+    padding-inline: 0; /* Remove side padding for hero */
+}
+
 @media (min-width: 1024px) {
     .homeSection {
         padding-block: 6rem;
@@ -36,13 +41,13 @@
 
 .sectionHeader {
     margin-bottom: 1.25rem;
-    text-align: center;
 }
 
-.sectionHeader h2 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin: 0;
+.row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
 }
 
 /* Buttons */
@@ -53,11 +58,9 @@
     gap: 0.5rem;
     font-weight: 600;
     border-radius: var(--radius-lg);
-    padding: 0.75rem 1.5rem;
+    padding: 0.75rem 1rem;
     border: 1px solid transparent;
     text-decoration: none;
-    cursor: pointer;
-    transition: all 0.3s ease;
 }
 
 .btn:focus-visible {
@@ -82,6 +85,24 @@
 
 .btnOutline:hover {
     background: var(--accent-soft);
+}
+
+.btnSoft {
+    background: var(--accent-soft);
+    color: var(--products-accent);
+}
+
+.btnSoft:hover {
+    filter: brightness(1.1);
+}
+
+.primary {
+    background: var(--products-accent);
+    color: #0B0F14;
+}
+
+.primary:hover {
+    filter: brightness(0.95);
 }
 
 /* Hero Section */
@@ -256,11 +277,18 @@
     }
 }
 
-/* How It Works */
-.howSection {
-    background: var(--surface);
+@media (max-width: 360px) {
+    .mascotImageHome {
+        max-height: 120px;
+    }
+
+    .heroContentWrapper {
+        min-height: 250px;
+        gap: 1rem;
+    }
 }
 
+/* How it works */
 .howGrid {
     display: grid;
     grid-template-columns: 1fr;
@@ -275,38 +303,18 @@
 }
 
 .howCard {
-    background: var(--background);
+    background: var(--surface);
     border-radius: var(--radius-lg);
-    padding: 1.5rem;
+    padding: 1rem;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
     min-height: 160px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    transition: all 0.3s ease;
-}
-
-.howCard:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
 .howStep {
     font-size: 0.9rem;
     letter-spacing: 0.02em;
-    color: var(--products-accent);
-    font-weight: 600;
-}
-
-.howCard h3 {
-    font-size: 1.25rem;
-    margin: 0;
-}
-
-.howCard p {
-    color: var(--text-muted);
-    line-height: 1.6;
-    margin: 0;
 }
 
 /* Featured Products */
@@ -406,11 +414,42 @@
     overflow: hidden;
 }
 
-/* Testimonials */
-.testimonials {
-    background: var(--surface);
+/* Product body for home page cards */
+.productBody {
+    padding: 0.75rem 1rem;
 }
 
+.productBody .name {
+    font-weight: 600;
+}
+
+.productBody .price {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+/* Lazy placeholders */
+.lazyBox {
+    width: 100%;
+    height: 420px;
+    background: var(--card);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 0 0 1px var(--accent-soft) inset;
+}
+
+/* Media elements */
+.media {
+    width: 100%;
+    background: var(--card);
+    border-bottom: 1px solid var(--accent-soft);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.aspect169 {
+    aspect-ratio: 16 / 9;
+}
+
+/* Testimonials */
 .sectionSubtitle {
     color: var(--text-muted);
     font-size: 1.1rem;
@@ -439,7 +478,7 @@
 }
 
 .testimonialCard {
-    background: var(--background);
+    background: var(--surface);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: var(--radius-lg);
     padding: 1.5rem;
@@ -456,7 +495,7 @@
     left: 0;
     right: 0;
     height: 2px;
-    background: linear-gradient(90deg, var(--products-accent), transparent);
+    background: linear-gradient(90deg, var(--accent), transparent);
     opacity: 0;
     transition: opacity 0.3s ease;
 }
@@ -691,7 +730,7 @@
 }
 
 .newsletterFormContainer {
-    background: var(--background);
+    background: var(--surface);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: var(--radius-lg);
     padding: 2rem;
@@ -841,7 +880,7 @@
     color: var(--text-muted);
     font-size: 0.9rem;
     margin: 0;
-    line-height: 1.4;
+    line-line: 1.4;
 }
 
 /* Accessibility helpers */
