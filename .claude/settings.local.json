@@ -17,7 +17,8 @@
       "Bash(tsc:*)",
       "Bash(npx eslint:*)",
       "Bash(npx create-next-app@latest:*)",
-      "Bash(npx tailwindcss init:*)"
+      "Bash(npx tailwindcss init:*)",
+      "Bash(npm ci:*)"
     ],
     "deny": [],
     "ask": []
