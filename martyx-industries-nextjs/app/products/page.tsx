@@ -12,10 +12,21 @@ export const metadata: Metadata = {
   },
 };
 
-export const revalidate = 600; // Revalidate every 10 minutes
+export const dynamic = 'force-dynamic'; // Render on-demand
 
 export default async function ProductsPage() {
-  const { products, totalCount, hasMore } = await getProducts(1, 20);
+  let products = [];
+  let totalCount = 0;
+  let hasMore = false;
+
+  try {
+    const result = await getProducts(1, 20);
+    products = result.products;
+    totalCount = result.totalCount;
+    hasMore = result.hasMore;
+  } catch (error) {
+    console.error('Failed to fetch products:', error);
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
