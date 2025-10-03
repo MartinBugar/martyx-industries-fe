@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/useAuth';
 import UserProfile from '@/components/UserProfile/UserProfile';
 import TokenExpirationTimer from '@/components/TokenExpirationTimer/TokenExpirationTimer';
+import OrderHistory from '@/components/OrderHistory/OrderHistory';
 import './Account.css';
 
 type TabType = 'profile' | 'orders' | 'collection' | 'settings';
@@ -216,14 +217,7 @@ export default function Account() {
               role="tabpanel"
               aria-labelledby="orders-tab"
             >
-              {activeTab === 'orders' && (
-                <div className="orders-empty-state">
-                  <div className="empty-icon">📦</div>
-                  <h3>No Orders Yet</h3>
-                  <p>You haven't placed any orders yet.</p>
-                  <p>Browse our products and make your first purchase!</p>
-                </div>
-              )}
+              {activeTab === 'orders' && <OrderHistory />}
             </div>
 
             <div
