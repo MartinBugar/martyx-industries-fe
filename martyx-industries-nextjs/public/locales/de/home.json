@@ -1,0 +1,74 @@
+{
+  "hero": {
+    "title": "Willkommen bei MARTYX INDUSTRIES",
+    "subtitle": "Premium 3D-gedruckte RC-Modelle und Komponenten",
+    "description": "Entdecken Sie hochwertige ferngesteuerte Panzer, Fahrzeuge und maßgeschneiderte Teile, die für Enthusiasten und Profis entwickelt wurden.",
+    "cta_shop": "Jetzt einkaufen",
+    "cta_learn": "Mehr erfahren"
+  },
+  "featured": {
+    "title": "Ausgewählte Produkte",
+    "subtitle": "Entdecken Sie unsere beliebtesten 3D-gedruckten RC-Modelle",
+    "view_all": "Alle Produkte anzeigen"
+  },
+  "about": {
+    "title": "Über MARTYX INDUSTRIES",
+    "subtitle": "Präzision trifft auf Leidenschaft",
+    "description": "Wir sind spezialisiert auf die Herstellung hochwertiger 3D-gedruckter RC-Modelle und Komponenten. Unser Team aus erfahrenen Designern und Ingenieuren ist bestrebt, außergewöhnliche Produkte zu liefern, die die Erwartungen von RC-Enthusiasten weltweit übertreffen.",
+    "features": {
+      "quality": {
+        "title": "Premium-Qualität",
+        "description": "Jedes Produkt wird mit präzisen 3D-Drucktechnologien und hochwertigen Materialien hergestellt."
+      },
+      "design": {
+        "title": "Innovatives Design",
+        "description": "Unsere Designs kombinieren Funktionalität mit Ästhetik für ein außergewöhnliches RC-Erlebnis."
+      },
+      "support": {
+        "title": "Expertenunterstützung",
+        "description": "Unser engagiertes Team bietet umfassende Unterstützung für alle Ihre RC-Bedürfnisse."
+      }
+    }
+  },
+  "testimonials": {
+    "title": "Was unsere Kunden sagen",
+    "subtitle": "Vertrauen Sie den Experten",
+    "reviews": [
+      {
+        "name": "Alex Schmidt",
+        "role": "RC-Enthusiast",
+        "content": "Die Qualität der MARTYX-Produkte ist unübertroffen. Mein 3D-gedruckter Panzer läuft perfekt und sieht fantastisch aus!"
+      },
+      {
+        "name": "Maria Weber",
+        "role": "Professionelle Modellbauerin",
+        "content": "Als Profi schätze ich die Präzision und Detailgenauigkeit der MARTYX-Komponenten. Absolut empfehlenswert!"
+      },
+      {
+        "name": "Thomas Müller",
+        "role": "Hobbyist",
+        "content": "Hervorragender Kundenservice und schnelle Lieferung. Die Produkte haben meine Erwartungen übertroffen."
+      }
+    ]
+  },
+  "newsletter": {
+    "title": "Bleiben Sie auf dem Laufenden",
+    "subtitle": "Erhalten Sie die neuesten Updates zu neuen Produkten und exklusiven Angeboten",
+    "email_placeholder": "Geben Sie Ihre E-Mail-Adresse ein",
+    "subscribe_button": "Abonnieren",
+    "privacy_notice": "Wir respektieren Ihre Privatsphäre. Abmelden jederzeit möglich.",
+    "success_message": "Vielen Dank für Ihr Abonnement!",
+    "error_message": "Fehler beim Abonnieren. Bitte versuchen Sie es erneut."
+  },
+  "stats": {
+    "products": "Produkte",
+    "customers": "Zufriedene Kunden",
+    "countries": "Länder",
+    "experience": "Jahre Erfahrung"
+  },
+  "cta": {
+    "title": "Bereit, Ihr RC-Erlebnis zu verbessern?",
+    "subtitle": "Entdecken Sie unsere vollständige Kollektion hochwertiger 3D-gedruckter RC-Modelle und Komponenten",
+    "button": "Kollektion durchsuchen"
+  }
+}

@@ -1,0 +1,115 @@
+{
+  "title": "Unsere Produkte",
+  "subtitle": "Entdecken Sie unsere Kollektion hochwertiger 3D-gedruckter RC-Modelle",
+  "search_placeholder": "Produkte suchen...",
+  "filter": {
+    "title": "Filter",
+    "category": "Kategorie",
+    "price": "Preis",
+    "rating": "Bewertung",
+    "availability": "Verfügbarkeit",
+    "clear_all": "Alle löschen",
+    "apply": "Anwenden"
+  },
+  "sort": {
+    "title": "Sortieren nach",
+    "newest": "Neueste",
+    "oldest": "Älteste",
+    "price_low_high": "Preis: Niedrig zu Hoch",
+    "price_high_low": "Preis: Hoch zu Niedrig",
+    "rating": "Bewertung",
+    "popularity": "Beliebtheit",
+    "name_a_z": "Name: A-Z",
+    "name_z_a": "Name: Z-A"
+  },
+  "view": {
+    "grid": "Rasteransicht",
+    "list": "Listenansicht"
+  },
+  "product": {
+    "add_to_cart": "In den Warenkorb",
+    "add_to_wishlist": "Zur Wunschliste hinzufügen",
+    "remove_from_wishlist": "Von Wunschliste entfernen",
+    "view_details": "Details anzeigen",
+    "quick_view": "Schnellansicht",
+    "compare": "Vergleichen",
+    "share": "Teilen",
+    "out_of_stock": "Nicht vorrätig",
+    "in_stock": "Auf Lager",
+    "limited_stock": "Begrenzte Verfügbarkeit",
+    "preorder": "Vorbestellen",
+    "sale": "Angebot",
+    "new": "Neu",
+    "featured": "Empfohlen",
+    "bestseller": "Bestseller",
+    "rating": "Bewertung",
+    "reviews": "Bewertungen",
+    "no_reviews": "Keine Bewertungen",
+    "write_review": "Bewertung schreiben",
+    "price": "Preis",
+    "original_price": "Ursprünglicher Preis",
+    "sale_price": "Angebotspreis",
+    "discount": "Rabatt",
+    "save": "Sparen",
+    "free_shipping": "Kostenloser Versand",
+    "estimated_delivery": "Voraussichtliche Lieferung",
+    "quantity": "Menge",
+    "sku": "Artikelnummer",
+    "category": "Kategorie",
+    "tags": "Tags",
+    "dimensions": "Abmessungen",
+    "weight": "Gewicht",
+    "material": "Material",
+    "color": "Farbe",
+    "size": "Größe",
+    "specifications": "Spezifikationen",
+    "features": "Eigenschaften",
+    "description": "Beschreibung",
+    "additional_info": "Zusätzliche Informationen",
+    "related_products": "Ähnliche Produkte",
+    "recently_viewed": "Kürzlich angesehen",
+    "customers_also_bought": "Kunden kauften auch",
+    "you_might_like": "Das könnte Ihnen gefallen"
+  },
+  "cart": {
+    "added_to_cart": "Zum Warenkorb hinzugefügt",
+    "failed_to_add": "Fehler beim Hinzufügen zum Warenkorb",
+    "quantity_updated": "Menge aktualisiert",
+    "removed_from_cart": "Aus dem Warenkorb entfernt"
+  },
+  "wishlist": {
+    "added_to_wishlist": "Zur Wunschliste hinzugefügt",
+    "removed_from_wishlist": "Von der Wunschliste entfernt",
+    "failed_to_add": "Fehler beim Hinzufügen zur Wunschliste",
+    "failed_to_remove": "Fehler beim Entfernen von der Wunschliste"
+  },
+  "pagination": {
+    "previous": "Vorherige",
+    "next": "Nächste",
+    "page": "Seite",
+    "of": "von",
+    "showing": "Zeige",
+    "to": "bis",
+    "results": "Ergebnisse",
+    "no_results": "Keine Ergebnisse gefunden",
+    "load_more": "Mehr laden"
+  },
+  "empty_state": {
+    "no_products": "Keine Produkte gefunden",
+    "no_products_description": "Es gibt derzeit keine Produkte, die Ihren Kriterien entsprechen.",
+    "clear_filters": "Filter löschen",
+    "browse_all": "Alle Produkte durchsuchen"
+  },
+  "loading": {
+    "products": "Produkte werden geladen...",
+    "product": "Produkt wird geladen...",
+    "adding_to_cart": "Wird zum Warenkorb hinzugefügt...",
+    "adding_to_wishlist": "Wird zur Wunschliste hinzugefügt..."
+  },
+  "error": {
+    "failed_to_load": "Fehler beim Laden der Produkte",
+    "failed_to_load_product": "Fehler beim Laden des Produkts",
+    "try_again": "Erneut versuchen",
+    "refresh_page": "Seite aktualisieren"
+  }
+}

@@ -11,6 +11,7 @@ i18n
   .init({
     lng: 'en',
     fallbackLng: 'en',
+    supportedLngs: ['en', 'sk', 'de'],
     ns: ['home', 'products', 'nav', 'common', 'cart', 'wishlist', 'checkout', 'auth', 'about', 'contact', 'collection'],
     defaultNS: 'common',
 
@@ -276,18 +277,10 @@ const resources = {
   },
 };
 
-i18n
-  .use(initReactI18next)
-  .init({
-    resources,
-    lng: 'en',
-    fallbackLng: 'en',
-    // Namespace configuration
-    ns: ['home', 'products', 'nav', 'common', 'cart', 'wishlist', 'checkout', 'auth', 'about', 'contact', 'collection'],
-    defaultNS: 'common',
-    interpolation: {
-      escapeValue: false,
-    },
-  });
+// Add fallback resources for better SSR support
+if (!isServer) {
+  i18n.addResourceBundle('en', 'common', resources.en.common);
+  i18n.addResourceBundle('sk', 'common', resources.sk.common);
+}
 
 export default i18n;

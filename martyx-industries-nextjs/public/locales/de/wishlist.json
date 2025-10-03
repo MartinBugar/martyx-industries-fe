@@ -1,0 +1,23 @@
+{
+  "title": "Wunschliste",
+  "empty": "Ihre Wunschliste ist leer",
+  "empty_description": "Speichern Sie Artikel, die Ihnen gefallen, für später",
+  "add_to_wishlist": "Zur Wunschliste hinzufügen",
+  "remove_from_wishlist": "Von Wunschliste entfernen",
+  "move_to_cart": "In den Warenkorb",
+  "share_wishlist": "Wunschliste teilen",
+  "clear_wishlist": "Wunschliste leeren",
+  "item_count": "{count, plural, =0 {Keine Artikel} =1 {1 Artikel} other {# Artikel}}",
+  "last_updated": "Zuletzt aktualisiert",
+  "price_drop": "Preissenkung",
+  "back_in_stock": "Wieder vorrätig",
+  "out_of_stock": "Nicht vorrätig",
+  "limited_stock": "Begrenzte Verfügbarkeit",
+  "on_sale": "Im Angebot",
+  "continue_shopping": "Weiter einkaufen",
+  "loading": "Wunschliste wird geladen...",
+  "error": "Fehler beim Laden der Wunschliste",
+  "item_added": "Artikel zur Wunschliste hinzugefügt",
+  "item_removed": "Artikel von Wunschliste entfernt",
+  "moved_to_cart": "Artikel in den Warenkorb verschoben"
+}

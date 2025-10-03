@@ -8,6 +8,7 @@ import { WishlistProvider } from "@/context/WishlistContext";
 import { CartProvider } from "@/context/CartContext";
 import PayPalProvider from "@/components/PayPalProvider";
 import I18nProvider from "@/components/I18nProvider";
+import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -52,6 +53,17 @@ export const metadata: Metadata = {
   verification: {
     google: 'your-google-verification-code',
   },
+  // PWA metadata
+  manifest: "/manifest.webmanifest",
+  themeColor: "#0b0f14",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "MARTYX INDUSTRIES",
+  },
+  other: {
+    "mobile-web-app-capable": "yes",
+  },
 };
 
 export default function RootLayout({
@@ -65,6 +77,7 @@ export default function RootLayout({
         <link rel="canonical" href="https://martyx-industries.com/" />
       </head>
       <body className={`${inter.variable} app-container`}>
+        <ServiceWorkerRegistration />
         <I18nProvider>
           <PayPalProvider>
             <AuthProvider>

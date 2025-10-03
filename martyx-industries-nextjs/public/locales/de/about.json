@@ -1,0 +1,55 @@
+{
+  "title": "Über uns",
+  "subtitle": "Lernen Sie MARTYX INDUSTRIES kennen",
+  "hero": {
+    "title": "Unsere Geschichte",
+    "description": "MARTYX INDUSTRIES wurde mit der Vision gegründet, hochwertige 3D-gedruckte RC-Modelle und Komponenten zu entwickeln, die die Erwartungen von Enthusiasten und Profis weltweit übertreffen."
+  },
+  "mission": {
+    "title": "Unsere Mission",
+    "description": "Wir sind bestrebt, innovative und präzise 3D-gedruckte RC-Modelle zu liefern, die Funktionalität mit außergewöhnlicher Qualität verbinden."
+  },
+  "vision": {
+    "title": "Unsere Vision",
+    "description": "Die führende Marke für 3D-gedruckte RC-Modelle zu werden und die Zukunft des ferngesteuerten Modellbaus zu gestalten."
+  },
+  "values": {
+    "title": "Unsere Werte",
+    "quality": {
+      "title": "Qualität",
+      "description": "Wir verwenden nur die besten Materialien und Technologien für unsere Produkte."
+    },
+    "innovation": {
+      "title": "Innovation",
+      "description": "Wir entwickeln ständig neue Designs und verbessern bestehende Produkte."
+    },
+    "customer_focus": {
+      "title": "Kundenfokus",
+      "description": "Unsere Kunden stehen im Mittelpunkt alles, was wir tun."
+    },
+    "sustainability": {
+      "title": "Nachhaltigkeit",
+      "description": "Wir setzen uns für umweltfreundliche Produktionsmethoden ein."
+    }
+  },
+  "team": {
+    "title": "Unser Team",
+    "description": "Lernen Sie die talentierten Menschen kennen, die MARTYX INDUSTRIES möglich machen."
+  },
+  "history": {
+    "title": "Unsere Geschichte",
+    "description": "Von bescheidenen Anfängen bis zur Marktführerschaft - entdecken Sie unsere Reise."
+  },
+  "achievements": {
+    "title": "Unsere Erfolge",
+    "customers": "Zufriedene Kunden",
+    "products": "Produkte entwickelt",
+    "countries": "Länder beliefert",
+    "years": "Jahre Erfahrung"
+  },
+  "contact_cta": {
+    "title": "Bereit, mit uns zu arbeiten?",
+    "description": "Kontaktieren Sie uns noch heute und erfahren Sie, wie wir Ihnen helfen können.",
+    "button": "Kontakt aufnehmen"
+  }
+}

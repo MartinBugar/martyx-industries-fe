@@ -1,0 +1,50 @@
+{
+  "title": "Kollektion",
+  "subtitle": "Entdecken Sie unsere vollständige Produktpalette",
+  "categories": {
+    "all": "Alle",
+    "tanks": "Panzer",
+    "vehicles": "Fahrzeuge",
+    "accessories": "Zubehör",
+    "parts": "Ersatzteile",
+    "kits": "Bausätze",
+    "digital": "Digital",
+    "physical": "Physisch"
+  },
+  "filters": {
+    "title": "Filter",
+    "category": "Kategorie",
+    "price_range": "Preisbereich",
+    "rating": "Bewertung",
+    "availability": "Verfügbarkeit",
+    "brand": "Marke",
+    "material": "Material",
+    "scale": "Maßstab",
+    "difficulty": "Schwierigkeit",
+    "clear_all": "Alle löschen",
+    "apply": "Anwenden"
+  },
+  "sort": {
+    "title": "Sortieren nach",
+    "featured": "Empfohlen",
+    "newest": "Neueste",
+    "oldest": "Älteste",
+    "price_low_high": "Preis: Niedrig zu Hoch",
+    "price_high_low": "Preis: Hoch zu Niedrig",
+    "name_a_z": "Name: A-Z",
+    "name_z_a": "Name: Z-A",
+    "rating": "Bewertung",
+    "popularity": "Beliebtheit"
+  },
+  "view_modes": {
+    "grid": "Raster",
+    "list": "Liste"
+  },
+  "product_count": "{count, plural, =0 {Keine Produkte} =1 {1 Produkt} other {# Produkte}} gefunden",
+  "loading": "Produkte werden geladen...",
+  "error": "Fehler beim Laden der Produkte",
+  "no_results": "Keine Produkte gefunden",
+  "no_results_description": "Versuchen Sie, Ihre Filter anzupassen oder andere Suchbegriffe zu verwenden.",
+  "load_more": "Mehr laden",
+  "showing": "Zeige {start} - {end} von {total} Produkten"
+}
