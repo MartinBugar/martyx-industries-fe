@@ -121,11 +121,22 @@ export default function PayPalCheckoutButton({ items, totalAmount, currency = "E
 
   // force re-render arrays: separate for wallet and card (PayPal re-reads style on change)
   const forceReRenderWallet = useMemo(
-    () => [cartHash, currency, "capture", 48], // 48 is wallet height
+    () => {
+      // Ensure all values are serializable and not undefined
+      const hash = cartHash?.toString() || 'default';
+      const curr = currency || 'EUR';
+      return [hash, curr, "capture", 48]; // 48 is wallet height
+    },
     [cartHash, currency]
   );
   const forceReRenderCard = useMemo(
-    () => [cartHash, currency, "capture", CARD_HEIGHT],
+    () => {
+      // Ensure all values are serializable and not undefined
+      const hash = cartHash?.toString() || 'default';
+      const curr = currency || 'EUR';
+      const height = CARD_HEIGHT || 55;
+      return [hash, curr, "capture", height];
+    },
     [cartHash, currency, CARD_HEIGHT]
   );
 

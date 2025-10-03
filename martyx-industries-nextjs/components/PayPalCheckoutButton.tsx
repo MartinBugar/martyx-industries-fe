@@ -88,6 +88,11 @@ export default function PayPalCheckoutButton({
     return data.id as string;
   }, [items, totalAmount, currency, email, firstName, lastName, billingAddress]);
 
+  // Ensure cartHash is always a valid value for forceReRender
+  const safeCartHash = useMemo(() => {
+    return cartHash?.toString() || 'default';
+  }, [cartHash]);
+
   // Capture on server after approval
   const onApprove = useCallback(async (data: { orderID: string }) => {
     const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.API_BASE_URL;
@@ -131,7 +136,7 @@ export default function PayPalCheckoutButton({
   return (
     <div className="paypal-checkout-container">
       <PayPalButtons
-        key={`paypal-${cartHash}`}
+        key={`paypal-${safeCartHash}`}
         style={walletStyle}
         createOrder={createOrder}
         onApprove={onApprove}
@@ -140,10 +145,11 @@ export default function PayPalCheckoutButton({
           console.log('PayPal payment cancelled by user');
         }}
         fundingSource="paypal"
+        forceReRender={[safeCartHash, currency || 'EUR', 'capture']}
       />
       
       <PayPalButtons
-        key={`card-${cartHash}`}
+        key={`card-${safeCartHash}`}
         style={cardStyle}
         createOrder={createOrder}
         onApprove={onApprove}
@@ -152,6 +158,7 @@ export default function PayPalCheckoutButton({
           console.log('Card payment cancelled by user');
         }}
         fundingSource="card"
+        forceReRender={[safeCartHash, currency || 'EUR', 'capture']}
       />
     </div>
   );
