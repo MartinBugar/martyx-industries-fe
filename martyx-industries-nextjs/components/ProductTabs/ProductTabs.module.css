@@ -1,20 +1,18 @@
-/* Modern ProductTabs Component - Minimalist Design */
+/* Modern ProductTabs Component - Clean E-commerce Design */
 
-/* Product bookmarks bar (sticky tabs) */
-.product-bookmarks {
-  position: relative;
-  z-index: 10;
-  display: flex;
-  gap: 0.5rem;
-  justify-content: flex-start;
-  align-items: center;
-  padding: 1rem 1.5rem;
-  background: var(--tabs-bg);
-  border-top: 1px solid var(--tabs-border);
-  border-bottom: 1px solid var(--tabs-border);
-  overflow-x: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--tabs-border) transparent;
+/* Tab content styling - matches main product detail design */
+.product-tab-panel {
+  background: #ffffff;
+  color: #111827;
+  padding: 2rem;
+  min-height: 400px;
+  line-height: 1.6;
+}
+
+@media (max-width: 767px) {
+  .product-tab-panel {
+    padding: 1.5rem;
+  }
 }
 
 @media (max-width: 576px) {
@@ -77,32 +75,33 @@
   box-shadow: none;
 }
 
-/* Clean list styling inside tab panels (used by Features) */
+/* Clean list styling inside tab panels */
 .product-tab-panel .tab-list {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 1rem;
 }
 
 .product-tab-panel .tab-list > li {
   display: flex;
   align-items: flex-start;
   gap: 1rem;
-  padding: 1.25rem;
-  background: #ffffff;
+  padding: 1.5rem;
+  background: #f8fafc;
   border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  transition: all 0.2s ease;
-  color: #000000;
-  margin-bottom: 0.5rem;
+  border-radius: 12px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  color: #111827;
 }
 
 .product-tab-panel .tab-list > li:hover {
-  border-color: #d1d5db;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-color: #2563eb;
+  background: #f1f5f9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .product-tab-panel .tab-list > li::before {
@@ -121,22 +120,37 @@
   margin-top: 0.125rem;
 }
 
-/* Features content styling */
-.product-tab-panel .tab-list > li h4 {
-  margin: 0 0 0.5rem 0;
-  font-size: 1.1rem;
-  font-weight: 600;
+/* Typography in tab content */
+.product-tab-panel h1,
+.product-tab-panel h2,
+.product-tab-panel h3,
+.product-tab-panel h4 {
   color: #111827;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+  line-height: 1.3;
 }
 
-.product-tab-panel .tab-list > li p {
-  margin: 0;
-  font-size: 0.95rem;
-  line-height: 1.5;
+.product-tab-panel h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.product-tab-panel h3 {
+  font-size: 1.25rem;
+}
+
+.product-tab-panel h4 {
+  font-size: 1.125rem;
+}
+
+.product-tab-panel p {
+  margin: 0 0 1rem 0;
   color: #4b5563;
+  line-height: 1.6;
 }
 
-.product-tab-panel .tab-list > li strong {
+.product-tab-panel strong {
   color: #111827;
   font-weight: 600;
 }

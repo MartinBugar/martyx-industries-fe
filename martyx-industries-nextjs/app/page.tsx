@@ -58,19 +58,11 @@ interface Product {
 }
 
 export default function Home() {
+  // ALL HOOKS MUST BE AT THE TOP - BEFORE ANY CONDITIONAL RETURNS
   const { t, i18n, ready } = useTranslation('home');
   const [products, setProducts] = useState<Product[]>([]);
-  const featured = useMemo(() => Array.isArray(products) ? products.slice(0, 6) : [], [products]);
   const [subscribed, setSubscribed] = useState(false);
-
-  // Show loading component until translations are ready
-  if (!ready) {
-    return <LoadingHome />;
-  }
-
-  // Try to import hero image via bundler; fallback to CSS placeholder if not present
-  const heroAlt = t('hero.image_alt');
-  const heroSrc = '/assets/home/tank.png';
+  const featured = useMemo(() => Array.isArray(products) ? products.slice(0, 6) : [], [products]);
 
   // Load products with gallery from API
   useEffect(() => {
@@ -86,6 +78,15 @@ export default function Home() {
 
     loadProducts();
   }, [i18n.language]); // Reload products when language changes
+
+  // Show loading component until translations are ready
+  if (!ready) {
+    return <LoadingHome />;
+  }
+
+  // Try to import hero image via bundler; fallback to CSS placeholder if not present
+  const heroAlt = t('hero.image_alt');
+  const heroSrc = '/assets/home/tank.png';
 
   return (
     <div className={styles.homeRoot} aria-label="Home Page">
