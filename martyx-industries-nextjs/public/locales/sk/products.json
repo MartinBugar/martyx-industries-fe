@@ -1,0 +1,80 @@
+{
+  "title": "Produkty",
+  "loading": "Načítavam produkty...",
+  "error": "Nepodarilo sa načítať produkty. Skúste to znovu.",
+  "no_results": "Nenašli sa žiadne produkty.",
+  "search_placeholder": "Hľadať produkty...",
+  "sort_by": "Zoradiť podľa",
+  "sort_options": {
+    "newest": "Najnovšie",
+    "name": "Názov A-Z",
+    "price": "Cena nízka-vysoká"
+  },
+  "cart": {
+    "add_to_cart": "Pridať do košíka",
+    "add_success": "Produkt bol pridaný do košíka",
+    "add_limit": "Len 1 kus tohto produktu je povolený v košíku"
+  },
+  "type": {
+    "digital": "Digitálny",
+    "physical": "Fyzický"
+  },
+  "price": "{amount, number, currency} {currency}",
+  "inactive": "Neaktívny",
+  "sku": "SKU",
+  "category": "Kategória",
+  "product_data": {
+    "endeavour": {
+      "features": [
+        "Vysokorozlíšené textúry",
+        "Plne interaktívny 3D model",
+        "Nastaviteľné vlastnosti materiálu",
+        "Kompatibilný so všetkými hlavnými 3D softvérmi"
+      ],
+      "details": {
+        "title": "Endeavour - 3D tlačený RC APC projekt",
+        "intro": "Endeavour je vzrušujúci 3D tlačený RC obrnený transportér (APC) projekt, ktorý spája modernú DIY technológiu a RC modelárstvo. Táto komplexná súprava poskytuje všetko, čo potrebujete na vytvorenie vlastného Arduino riadeného RC vozidla od základov.",
+        "description": "Naša DIY súprava obsahuje všetky potrebné STL súbory na 3D tlač kompletného vozidla - od podvozku a kolies až po karosériu a vnútorné komponenty. Inovatívny modulárny dizajn umožňuje jednoduché zostavenie a prispôsobenie podľa vašich preferencií. V srdci Endeavour je Arduino Mega 2560 doska, ktorá s presnosťou ovláda všetko pohyb a pomocné funkcie.",
+        "specs_title": "Kľúčové technické špecifikácie:",
+        "specs": "• Celkové rozmery: 45cm (D) x 25cm (Š) x 20cm (V)\n• Hmotnosť: ~2,5kg po úplnom zostavení\n• Pohonný systém: 4 DC motory s tankovými pásmi\n• Ovládanie: 2.4GHz RC vysielač/prijímač\n• Napájanie: 2x 7.4V 2200mAh LiPo batérie\n• Čas tlače: ~60 hodín celkom\n• Odporúčaná výška vrstvy: 0,2mm\n• Výplň: 20-30%",
+        "conclusion": "Súprava je dodávaná s podrobnými pokynmi na zostavenie krok za krokom, kompletnými schémami zapojenia a hotovým Arduino kódom. Tento projekt je ideálny pre tvorcov so strednou skúsenosťou v 3D tlači a základnými znalosťami programovania Arduino. Upozorňujeme, že dodatočné hardvérové komponenty ako motory, elektronika a spojovací materiál sa musia kúpiť samostatne."
+      }
+    },
+    "raketa": {
+      "features": [
+        "Pokročilý raketový dizajn",
+        "Tlačiteľná vo viacerých častiach",
+        "Podrobné pokyny na zostavenie",
+        "Kompatibilná so štandardnými raketovými motormi"
+      ],
+      "details": {
+        "title": "Raketa - Modelová raketová súprava",
+        "intro": "Raketa je presne navrhnutý modelový raketový projekt určený pre nadšencov, ktorí chcú spojiť 3D tlač s leteckým inžinierstvom.",
+        "description": "Táto komplexná súprava obsahuje všetky potrebné komponenty na zostavenie vlastnej modelovej rakety od základov. Modulárny dizajn zabezpečuje jednoduché zostavenie pri zachovaní štrukturálnej integrity.",
+        "specs_title": "Technické špecifikácie:",
+        "specs": "• Výška: 30cm\n• Priemer: 5cm\n• Hmotnosť: ~400g\n• Kompatibilita motorov: Štandardné modelové raketové motory\n• Systém návratu: Padák\n• Čas tlače: ~15 hodín celkom",
+        "conclusion": "Perfektné na vzdelávacie účely a hobby raketových nadšencov. Všetky bezpečnostné pokyny a postupy štartu sú zahrnuté v dokumentácii."
+      }
+    }
+  },
+  "tabs": {
+    "details": "Detaily",
+    "features": "Vlastnosti",
+    "download": "Stiahnuť",
+    "reviews": "Recenzie"
+  },
+  "downloads": {
+    "build_guide": "Návod na zostavenie (PDF)",
+    "download_button": "Stiahnuť",
+    "no_downloads": "Nie sú dostupné žiadne sťahovania."
+  },
+  "features": {
+    "unavailable": "Obsah pre vlastnosti nie je dostupný."
+  },
+  "downloads": {
+    "download_product": "Stiahnuť produkt",
+    "download_all_products": "Stiahnuť všetky produkty (ZIP)",
+    "downloading": "Sťahujem…",
+    "download_failed": "Sťahovanie zlyhalo. Skúste to znovu."
+  }
+}

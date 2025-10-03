@@ -1,0 +1,59 @@
+{
+  "hero": {
+    "title": "RC Tank Kity a STL Súbory",
+    "subtitle": "Zostavuj. Tlač. Ovládaj.",
+    "shop_kits": "Nakupovať Kity",
+    "download_stl": "Stiahnuť STL",
+    "image_alt": "RC Tank Kity a STL Súbory — hlavný obrázok produktu",
+    "facts": {
+      "assembly_time": "Zostavenie pod 4h (prototyp)",
+      "layer_optimization": "Optimalizované pre 0,1 mm vrstvy",
+      "electronics_ready": "Modulárna elektronika pripravená"
+    }
+  },
+  "how_it_works": {
+    "title": "Ako to funguje",
+    "step_1": "Krok 1",
+    "step_1_title": "Vyber",
+    "step_1_description": "Vyber Kit alebo STL balík.",
+    "step_2": "Krok 2", 
+    "step_2_title": "Zostav alebo Vytlač",
+    "step_2_description": "Zložiť alebo 3D tlačiť.",
+    "step_3": "Krok 3",
+    "step_3_title": "Jazdi",
+    "step_3_description": "Spáruj ovládač a užívaj si."
+  },
+  "featured": {
+    "title": "Odporúčané Produkty",
+    "view_all": "Zobraziť Všetky Produkty"
+  },
+  "testimonials": {
+    "title": "Čo Hovoria Naši Zákazníci",
+    "subtitle": "Skutočné hodnotenia od RC tank nadšencov",
+    "review_1": "Vytlačené cez víkend, beží perfektne. STL súbory sú dokonale optimalizované a návod na zostavenie je krištáľovo jasný. Moje deti ho milujú!",
+    "review_2": "Čisté STL, žiadne podpory nepotrebné na mojom nastavení. Modulárny dizajn uľahčuje prispôsobenie a integrácia elektroniky je bezproblémová. Vrelo odporúčam!",
+    "review_3": "Úžasná kvalita! Pásy funguju dokonale a systém odpruženia je neuveriteľne realistický. Zostavenie trvalo presne ako inzerované - pod 4 hodiny.",
+    "review_4": "Pozornosť venovaná detailom je neuveriteľná. Každá skrutka a nitovka je dokonale modelovaná. Dosah ovládača je pôsobivý a zvukové efekty sú presné!",
+    "time_ago": {
+      "weeks_2": "pred 2 týždňami",
+      "month_1": "pred 1 mesiacom", 
+      "weeks_3": "pred 3 týždňami",
+      "week_1": "pred 1 týždňom"
+    }
+  },
+  "newsletter": {
+    "title": "Zostaň v Obraze",
+    "description": "Získaj exkluzívny prístup k novým modelom tankov, 3D tlačovým tipom a špeciálnym ponukám. Pridaj sa k našej komunite RC nadšencov!",
+    "email_label": "E-mailová adresa",
+    "email_placeholder": "Zadaj svoj e-mail",
+    "subscribe_button": "Odoberať newsletter",
+    "privacy_note": "🔒 Rešpektujeme tvoje súkromie. Odhlásiť sa môžeš kedykoľvek.",
+    "success_title": "Vitaj na palube! 🎉",
+    "success_message": "Teraz odoberáš náš newsletter. Skontroluj si e-mail pre uvítaciu správu.",
+    "benefits": {
+      "early_access": "Skorý prístup k novým vydaniam",
+      "exclusive_guides": "Exkluzívne 3D tlačové návody", 
+      "member_discounts": "Zľavy len pre členov"
+    }
+  }
+}

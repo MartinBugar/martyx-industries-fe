@@ -1,0 +1,52 @@
+'use client';
+
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { type TabContent } from '../../lib/types/product';
+import styles from './ProductTabs.module.css';
+
+interface FeaturesTabProps {
+  content: TabContent;
+}
+
+const FeaturesTab: React.FC<FeaturesTabProps> = ({ content }) => {
+  const { t } = useTranslation('products');
+  switch (content.kind) {
+    case 'list':
+      return (
+        <ul className={`${styles['tab-list']} ${styles['features-list']}`}>
+          {content.items.map((it, i) => (
+            <li key={i}>{it}</li>
+          ))}
+        </ul>
+      );
+    case 'text':
+      return (
+        <ul>
+          <li>{content.text}</li>
+        </ul>
+      );
+    case 'image':
+      return (
+        <figure className={styles['tab-image']}>
+          <img src={content.image.src} alt={content.image.alt ?? ''} />
+          {content.image.caption && <figcaption>{content.image.caption}</figcaption>}
+        </figure>
+      );
+    case 'gallery':
+      return (
+        <div className={styles['tab-gallery']}>
+          {content.images.map((im, i) => (
+            <figure key={i} className={styles['tab-gallery-item']}>
+              <img src={im.src} alt={im.alt ?? ''} />
+              {im.caption && <figcaption>{im.caption}</figcaption>}
+            </figure>
+          ))}
+        </div>
+      );
+    default:
+      return <p>{t('features.unavailable')}</p>;
+  }
+};
+
+export default FeaturesTab;

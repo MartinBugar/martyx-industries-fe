@@ -1,0 +1,28 @@
+{
+  "title": "Wishlist",
+  "subtitle": "Keep track of products you love",
+  "stats": {
+    "total_items": "Total Items",
+    "available": "Available",
+    "total_value": "Total Value",
+    "unavailable": "Unavailable"
+  },
+  "empty": {
+    "title": "Your wishlist is empty",
+    "description": "Discover amazing products and add them to your wishlist to keep track of your favorites",
+    "browse_products": "Browse Products"
+  },
+  "actions": {
+    "add_to_cart": "Add to Cart",
+    "remove_from_wishlist": "Remove from Wishlist",
+    "view_product": "View Product",
+    "refresh": "Refresh"
+  },
+  "messages": {
+    "added_to_cart": "Product added to cart",
+    "removed_from_wishlist": "Product removed from wishlist",
+    "loading": "Loading wishlist...",
+    "error": "Error loading wishlist",
+    "last_updated": "Last updated"
+  }
+}

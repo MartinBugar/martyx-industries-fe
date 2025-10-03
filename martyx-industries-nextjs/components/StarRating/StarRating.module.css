@@ -1,0 +1,86 @@
+/* Star Rating Component Styles */
+
+.productRating {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.starsContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+}
+
+.star {
+  display: inline-block;
+  line-height: 1;
+  transition: all 0.2s ease;
+}
+
+/* Star sizes */
+.starRatingSmall {
+  font-size: 0.875rem;
+}
+
+.starRatingMedium {
+  font-size: 1.125rem;
+}
+
+.starRatingLarge {
+  font-size: 1.5rem;
+}
+
+/* Star colors */
+.starFull {
+  color: #fbbf24; /* Yellow/gold color */
+}
+
+.starHalf {
+  background: linear-gradient(90deg, #fbbf24 50%, #e5e7eb 50%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: #fbbf24;
+}
+
+.starEmpty {
+  color: #e5e7eb; /* Light gray */
+}
+
+.ratingText {
+  color: var(--product-detail-text-secondary, #d1d5db);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Hover effects for interactive stars */
+.starsContainer:hover .star {
+  transform: scale(1.05);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .productRating {
+    gap: 0.5rem;
+  }
+
+  .starRatingSmall {
+    font-size: 0.875rem;
+  }
+
+  .ratingText {
+    font-size: 0.8rem;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .star {
+    transition: none;
+  }
+
+  .starsContainer:hover .star {
+    transform: none;
+  }
+}

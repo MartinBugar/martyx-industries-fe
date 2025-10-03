@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { WishlistProvider } from "@/context/WishlistContext";
+import { CartProvider } from "@/context/CartContext";
 import I18nProvider from "@/components/I18nProvider";
 
 const inter = Inter({
@@ -64,11 +65,13 @@ export default function RootLayout({
       <body className={`${inter.variable} app-container`}>
         <I18nProvider>
           <WishlistProvider>
-            <Navbar cartCount={0} />
-            <main className="main-content">
-              {children}
-            </main>
-            <Footer />
+            <CartProvider>
+              <Navbar cartCount={0} />
+              <main className="main-content">
+                {children}
+              </main>
+              <Footer />
+            </CartProvider>
           </WishlistProvider>
         </I18nProvider>
       </body>

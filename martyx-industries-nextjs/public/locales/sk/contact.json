@@ -1,0 +1,51 @@
+{
+  "title": "Kontakt",
+  "subtitle": "Spojte sa s nami",
+  "company_info": {
+    "title": "Informácie o spoločnosti",
+    "name": "MARTYX INDUSTRIES",
+    "description": "Sme špecialisti na RC modely a komponenty. Naša spoločnosť sa zameriava na poskytovanie kvalitných produktov a služieb pre nadšencov RC modelárstva.",
+    "address": {
+      "title": "Adresa",
+      "street": "Hlavná ulica 123",
+      "city": "Bratislava 811 01",
+      "country": "Slovensko"
+    },
+    "contact": {
+      "title": "Kontaktné údaje",
+      "phone": "+421 123 456 789",
+      "email": "info@martyx-industries.sk",
+      "business_hours": "Pon - Pia: 9:00 - 17:00"
+    }
+  },
+  "form": {
+    "title": "Kontaktný formulár",
+    "subtitle": "Napíšte nám správu a odpovieme vám čo najskôr",
+    "fields": {
+      "email": {
+        "label": "E-mailová adresa",
+        "placeholder": "vas@email.sk"
+      },
+      "subject": {
+        "label": "Predmet",
+        "placeholder": "Predmet správy"
+      },
+      "text": {
+        "label": "Správa",
+        "placeholder": "Napíšte nám vašu správu..."
+      }
+    },
+    "submit": "Odoslať správu",
+    "sending": "Odesilá sa...",
+    "success": "Správa bola úspešne odoslaná!",
+    "error": "Nastala chyba pri odosielaní správy. Skúste to prosím znovu.",
+    "validation": {
+      "email_required": "E-mail je povinný",
+      "email_invalid": "E-mail musí mať platný formát",
+      "subject_required": "Predmet je povinný",
+      "subject_max_length": "Predmet môže mať maximálne 255 znakov",
+      "text_required": "Text správy je povinný",
+      "text_max_length": "Text správy môže mať maximálne 5000 znakov"
+    }
+  }
+}

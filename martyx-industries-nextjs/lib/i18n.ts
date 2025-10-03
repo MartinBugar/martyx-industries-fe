@@ -1,9 +1,55 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
+import HttpBackend from 'i18next-http-backend';
 
-// Translation resources
+const isServer = typeof window === 'undefined';
+
+// Translation resources - dynamically loaded from public/locales
+i18n
+  .use(HttpBackend)
+  .use(initReactI18next)
+  .init({
+    lng: 'en',
+    fallbackLng: 'en',
+    ns: ['home', 'products', 'nav', 'common', 'cart', 'wishlist', 'checkout', 'auth', 'about', 'contact', 'collection'],
+    defaultNS: 'common',
+
+    backend: {
+      loadPath: '/locales/{{lng}}/{{ns}}.json',
+    },
+
+    interpolation: {
+      escapeValue: false,
+    },
+
+    react: {
+      useSuspense: false,
+    },
+
+    // Only enable debug in development
+    debug: !isServer && process.env.NODE_ENV === 'development',
+  });
+
+// Fallback inline resources for SSR (optional, but recommended for initial render)
 const resources = {
   en: {
+    home: {
+      title: 'Welcome to Martyx Industries',
+      subtitle: 'Premium 3D Printable Models',
+      featured_products: 'Featured Products',
+      view_all: 'View All Products',
+    },
+    products: {
+      title: 'Products',
+      loading: 'Loading products...',
+      no_products: 'No products found',
+      filter: 'Filter',
+      sort: 'Sort',
+      price: 'Price',
+      category: 'Category',
+      add_to_cart: 'Add to Cart',
+      view_details: 'View Details',
+    },
     nav: {
       home: 'Home',
       products: 'Products',
@@ -24,9 +70,107 @@ const resources = {
       loading: 'Loading...',
       error: 'Error',
       success: 'Success',
+      cancel: 'Cancel',
+      confirm: 'Confirm',
+      save: 'Save',
+      delete: 'Delete',
+      edit: 'Edit',
+      close: 'Close',
+    },
+    cart: {
+      title: 'Shopping Cart',
+      empty: 'Your cart is empty',
+      subtotal: 'Subtotal',
+      total: 'Total',
+      checkout: 'Checkout',
+      continue_shopping: 'Continue Shopping',
+      remove: 'Remove',
+      quantity: 'Quantity',
+      add_success: 'Added to cart',
+      add_limit: 'Maximum quantity reached',
+      add_to_cart: 'Add to Cart',
+    },
+    wishlist: {
+      title: 'Wishlist',
+      empty: 'Your wishlist is empty',
+      add_to_cart: 'Add to Cart',
+      remove: 'Remove',
+      add_success: 'Added to wishlist',
+      remove_success: 'Removed from wishlist',
+      login_required: 'Please login to use wishlist',
+    },
+    checkout: {
+      title: 'Checkout',
+      billing_details: 'Billing Details',
+      shipping_details: 'Shipping Details',
+      payment_method: 'Payment Method',
+      order_summary: 'Order Summary',
+      place_order: 'Place Order',
+      first_name: 'First Name',
+      last_name: 'Last Name',
+      email: 'Email',
+      phone: 'Phone',
+      address: 'Address',
+      city: 'City',
+      postal_code: 'Postal Code',
+      country: 'Country',
+    },
+    auth: {
+      sign_in: 'Sign In',
+      sign_up: 'Sign Up',
+      sign_out: 'Sign Out',
+      email: 'Email',
+      password: 'Password',
+      confirm_password: 'Confirm Password',
+      forgot_password: 'Forgot Password?',
+      no_account: "Don't have an account?",
+      have_account: 'Already have an account?',
+      reset_password: 'Reset Password',
+      login_success: 'Login successful',
+      logout_success: 'Logout successful',
+      register_success: 'Registration successful',
+    },
+    about: {
+      title: 'About Us',
+      subtitle: 'Learn more about Martyx Industries',
+      description: 'We create premium 3D printable models for enthusiasts and professionals.',
+    },
+    contact: {
+      title: 'Contact Us',
+      subtitle: 'Get in touch with us',
+      name: 'Name',
+      email: 'Email',
+      message: 'Message',
+      send: 'Send Message',
+      success: 'Message sent successfully',
+      error: 'Failed to send message',
+    },
+    collection: {
+      title: 'Collection',
+      all_products: 'All Products',
+      featured: 'Featured',
+      new_arrivals: 'New Arrivals',
+      best_sellers: 'Best Sellers',
     },
   },
   sk: {
+    home: {
+      title: 'Vitajte v Martyx Industries',
+      subtitle: 'Prémiové 3D tlačiteľné modely',
+      featured_products: 'Odporúčané produkty',
+      view_all: 'Zobraziť všetky produkty',
+    },
+    products: {
+      title: 'Produkty',
+      loading: 'Načítavam produkty...',
+      no_products: 'Neboli nájdené žiadne produkty',
+      filter: 'Filter',
+      sort: 'Zoradiť',
+      price: 'Cena',
+      category: 'Kategória',
+      add_to_cart: 'Pridať do košíka',
+      view_details: 'Zobraziť detaily',
+    },
     nav: {
       home: 'Domov',
       products: 'Produkty',
@@ -47,6 +191,87 @@ const resources = {
       loading: 'Načítavam...',
       error: 'Chyba',
       success: 'Úspech',
+      cancel: 'Zrušiť',
+      confirm: 'Potvrdiť',
+      save: 'Uložiť',
+      delete: 'Vymazať',
+      edit: 'Upraviť',
+      close: 'Zavrieť',
+    },
+    cart: {
+      title: 'Nákupný košík',
+      empty: 'Váš košík je prázdny',
+      subtotal: 'Medzisúčet',
+      total: 'Celkom',
+      checkout: 'Pokladňa',
+      continue_shopping: 'Pokračovať v nákupe',
+      remove: 'Odstrániť',
+      quantity: 'Množstvo',
+      add_success: 'Pridané do košíka',
+      add_limit: 'Dosiahnuté maximálne množstvo',
+      add_to_cart: 'Pridať do košíka',
+    },
+    wishlist: {
+      title: 'Wishlist',
+      empty: 'Váš wishlist je prázdny',
+      add_to_cart: 'Pridať do košíka',
+      remove: 'Odstrániť',
+      add_success: 'Pridané do wishlistu',
+      remove_success: 'Odstránené z wishlistu',
+      login_required: 'Prosím prihláste sa pre použitie wishlistu',
+    },
+    checkout: {
+      title: 'Pokladňa',
+      billing_details: 'Fakturačné údaje',
+      shipping_details: 'Dodacie údaje',
+      payment_method: 'Spôsob platby',
+      order_summary: 'Súhrn objednávky',
+      place_order: 'Objednať',
+      first_name: 'Meno',
+      last_name: 'Priezvisko',
+      email: 'Email',
+      phone: 'Telefón',
+      address: 'Adresa',
+      city: 'Mesto',
+      postal_code: 'PSČ',
+      country: 'Krajina',
+    },
+    auth: {
+      sign_in: 'Prihlásiť sa',
+      sign_up: 'Registrovať sa',
+      sign_out: 'Odhlásiť sa',
+      email: 'Email',
+      password: 'Heslo',
+      confirm_password: 'Potvrdiť heslo',
+      forgot_password: 'Zabudnuté heslo?',
+      no_account: 'Nemáte účet?',
+      have_account: 'Už máte účet?',
+      reset_password: 'Obnoviť heslo',
+      login_success: 'Prihlásenie úspešné',
+      logout_success: 'Odhlásenie úspešné',
+      register_success: 'Registrácia úspešná',
+    },
+    about: {
+      title: 'O nás',
+      subtitle: 'Zistite viac o Martyx Industries',
+      description: 'Vytvárame prémiové 3D tlačiteľné modely pre nadšencov a profesionálov.',
+    },
+    contact: {
+      title: 'Kontakt',
+      subtitle: 'Spojte sa s nami',
+      name: 'Meno',
+      email: 'Email',
+      message: 'Správa',
+      send: 'Odoslať správu',
+      success: 'Správa bola úspešne odoslaná',
+      error: 'Nepodarilo sa odoslať správu',
+    },
+    collection: {
+      title: 'Kolekcia',
+      all_products: 'Všetky produkty',
+      featured: 'Odporúčané',
+      new_arrivals: 'Novinky',
+      best_sellers: 'Najpredávanejšie',
     },
   },
 };
@@ -57,6 +282,9 @@ i18n
     resources,
     lng: 'en',
     fallbackLng: 'en',
+    // Namespace configuration
+    ns: ['home', 'products', 'nav', 'common', 'cart', 'wishlist', 'checkout', 'auth', 'about', 'contact', 'collection'],
+    defaultNS: 'common',
     interpolation: {
       escapeValue: false,
     },

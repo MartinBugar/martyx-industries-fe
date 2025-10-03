@@ -14,14 +14,19 @@ interface WishlistContextType {
   items: WishlistItem[];
   addItem: (item: WishlistItem) => void;
   removeItem: (productId: string) => void;
+  addToWishlist: (item: WishlistItem) => void;
+  removeFromWishlist: (productId: string) => void;
   clearWishlist: () => void;
   isInWishlist: (productId: string) => boolean;
+  error: string | null;
+  clearError: () => void;
 }
 
 const WishlistContext = createContext<WishlistContextType | undefined>(undefined);
 
 export function WishlistProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<WishlistItem[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   const addItem = useCallback((item: WishlistItem) => {
     setItems((prev) => {
@@ -44,8 +49,26 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     return items.some((i) => i.productId === productId);
   }, [items]);
 
+  const clearError = useCallback(() => {
+    setError(null);
+  }, []);
+
+  // Alias methods for compatibility
+  const addToWishlist = addItem;
+  const removeFromWishlist = removeItem;
+
   return (
-    <WishlistContext.Provider value={{ items, addItem, removeItem, clearWishlist, isInWishlist }}>
+    <WishlistContext.Provider value={{
+      items,
+      addItem,
+      removeItem,
+      addToWishlist,
+      removeFromWishlist,
+      clearWishlist,
+      isInWishlist,
+      error,
+      clearError
+    }}>
       {children}
     </WishlistContext.Provider>
   );

@@ -1,0 +1,56 @@
+{
+  "title": "Martyx Industries",
+  "lead": "We engineer 3D‑printed RC platforms and parts that are easy to build, maintain, and upgrade. Designed, tested, and refined so you can spend more time driving and less time troubleshooting.",
+  "features": {
+    "title": "What We Do",
+    "precision": {
+      "title": "Engineering Precision",
+      "description": "CAD-designed components with perfect hardware compatibility and optimal performance."
+    },
+    "quality": {
+      "title": "Tested Quality",
+      "description": "Every design is stress-tested and refined through real-world testing and feedback."
+    },
+    "support": {
+      "title": "Complete Support",
+      "description": "Comprehensive documentation, BOMs, and community support for all your builds."
+    }
+  },
+  "story": {
+    "title": "Our Story",
+    "description": "Born from a passion for RC engineering, we combine modern 3D printing technology with precision design to democratize high-quality RC vehicle construction for enthusiasts worldwide."
+  },
+  "cta": {
+    "shop_products": "Shop Products",
+    "contact_us": "Contact Us"
+  },
+  "stats": {
+    "models": "Unique models",
+    "customers": "Satisfied customers",
+    "monthly": "New models monthly",
+    "download": "Instant download"
+  },
+  "mission": {
+    "title": "Our mission",
+    "description": "We combine passion for RC modeling with cutting-edge 3D printing technology. Our STL files are designed with maximum attention to detail, optimized for easy printing and perfect results."
+  },
+  "why": {
+    "title": "Why choose us?",
+    "description": "With more than 5 years of experience in 3D modeling and RC modeling, we bring you proven solutions that work. We test each model on different types of printers and materials."
+  },
+  "features": {
+    "professional": "Professionally designed models",
+    "optimized": "Optimized for all printer types",
+    "guides": "Detailed guides and supports",
+    "community": "Community of enthusiasts",
+    "tested": "Tested on real projects",
+    "updates": "Regular model updates",
+    "support_sk": "Customer support in Slovak",
+    "guarantee": "Compatibility guarantee"
+  },
+  "cta": {
+    "title": "Ready to start your project?",
+    "description": "Explore our collection of premium STL models and start creating amazing RC models today!",
+    "button": "Browse catalog"
+  }
+}

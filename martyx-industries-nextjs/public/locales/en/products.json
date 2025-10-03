@@ -1,0 +1,80 @@
+{
+  "title": "Products",
+  "loading": "Loading products...",
+  "error": "Failed to load products. Please try again later.",
+  "no_results": "No products found.",
+  "search_placeholder": "Search products...",
+  "sort_by": "Sort by",
+  "sort_options": {
+    "newest": "Newest",
+    "name": "Name A-Z",
+    "price": "Price Low-High"
+  },
+  "cart": {
+    "add_to_cart": "Add to Cart",
+    "add_success": "Product was added to cart",
+    "add_limit": "Only 1 piece of this product is allowed in cart"
+  },
+  "type": {
+    "digital": "Digital",
+    "physical": "Physical"
+  },
+  "price": "{amount, number, currency} {currency}",
+  "inactive": "Inactive",
+  "sku": "SKU",
+  "category": "Category",
+  "product_data": {
+    "endeavour": {
+      "features": [
+        "High-resolution textures",
+        "Fully interactive 3D model",
+        "Adjustable material properties",
+        "Compatible with all major 3D software"
+      ],
+      "details": {
+        "title": "Endeavour - 3D Printed RC APC Project",
+        "intro": "The Endeavour is an exciting 3D printed RC Armored Personnel Carrier (APC) project that brings together modern DIY technology and RC modeling. This comprehensive kit provides everything you need to create your own Arduino-powered RC vehicle from the ground up.",
+        "description": "Our DIY kit includes all the necessary STL files for 3D printing the complete vehicle - from chassis and wheels to body panels and internal components. The innovative modular design allows for easy assembly and customization to match your preferences. At the heart of the Endeavour is an Arduino Mega 2560 board that handles all movement control and auxiliary features with precision.",
+        "specs_title": "Key Technical Specifications:",
+        "specs": "• Overall dimensions: 45cm (L) x 25cm (W) x 20cm (H)\n• Weight: ~2.5kg when fully assembled\n• Drive system: 4 DC motors with tank-style tracks\n• Control: 2.4GHz RC transmitter/receiver\n• Power: 2x 7.4V 2200mAh LiPo batteries\n• Print time: ~60 hours total\n• Recommended layer height: 0.2mm\n• Infill: 20-30%",
+        "conclusion": "The kit comes complete with detailed step-by-step assembly instructions, comprehensive wiring diagrams, and ready-to-use Arduino code. This project is ideal for makers with intermediate experience in 3D printing and basic Arduino programming skills. Please note that additional hardware components like motors, electronics, and fasteners need to be purchased separately."
+      }
+    },
+    "raketa": {
+      "features": [
+        "Advanced rocket design",
+        "Printable in multiple parts",
+        "Detailed assembly instructions",
+        "Compatible with standard rocket engines"
+      ],
+      "details": {
+        "title": "Raketa - Model Rocket Kit",
+        "intro": "The Raketa is a precision-engineered model rocket project designed for enthusiasts who want to combine 3D printing with aerospace engineering.",
+        "description": "This comprehensive kit includes all necessary components to build your own model rocket from scratch. The modular design ensures easy assembly while maintaining structural integrity.",
+        "specs_title": "Technical Specifications:",
+        "specs": "• Height: 30cm\n• Diameter: 5cm\n• Weight: ~400g\n• Engine compatibility: Standard model rocket engines\n• Recovery system: Parachute\n• Print time: ~15 hours total",
+        "conclusion": "Perfect for educational purposes and hobbyist rocket enthusiasts. All safety guidelines and launch procedures are included in the documentation."
+      }
+    }
+  },
+  "tabs": {
+    "details": "Details",
+    "features": "Features",
+    "download": "Download",
+    "reviews": "Reviews"
+  },
+  "downloads": {
+    "build_guide": "Build Guide (PDF)",
+    "download_button": "Download",
+    "no_downloads": "No downloads available."
+  },
+  "features": {
+    "unavailable": "Content unavailable for Features."
+  },
+  "downloads": {
+    "download_product": "Download product",
+    "download_all_products": "Download all products (ZIP)",
+    "downloading": "Downloading…",
+    "download_failed": "Download failed. Please try again."
+  }
+}

@@ -1,215 +1,485 @@
-import Link from "next/link";
-import { notFound } from "next/navigation";
-import { getProductBySlug, getProductSlugs } from "@/lib/api";
-import type { Metadata } from "next";
-import ProductGallery from "@/components/ProductGallery";
-import AddToCart from "@/components/AddToCart";
-import ProductTabs from "@/components/ProductTabs";
+'use client';
 
-interface ProductDetailPageProps {
-  params: Promise<{ slug: string }>;
+import React from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
+import type { Product, ProductTab, ProductTabId } from '@/lib/types/product';
+import ProductView from '@/components/ProductView';
+import './ProductDetail.module.css';
+import DetailsTab from '@/components/ProductTabs/DetailsTab';
+import DownloadTab from '@/components/ProductTabs/DownloadTab';
+import FeaturesTab from '@/components/ProductTabs/FeaturesTab';
+import ReviewsTab from '@/components/ProductTabs/ReviewsTab';
+import PrintInfoTab from '@/components/ProductTabs/PrintInfoTab';
+import { useCart } from '@/context/useCart';
+import WishlistButton from '@/components/WishlistButton';
+import { reviewsService, type Review } from '@/lib/services/reviewsService';
+import StarRating from '@/components/StarRating';
+
+// Local inlined ProductDetails component
+interface ProductDetailsProps {
+  product: Product;
 }
 
-export async function generateStaticParams() {
-  try {
-    const slugs = await getProductSlugs();
-    return slugs.map((item) => ({
-      slug: item.slug,
-    }));
-  } catch (_error) {
-    // Return empty array if API is not available during build
-    // This enables fallback mode where pages are generated on-demand
-    console.warn('Unable to fetch product slugs during build time - using fallback mode');
-    return [];
-  }
-}
+const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
+  const { addToCart } = useCart();
+  const { t } = useTranslation('products');
 
-export async function generateMetadata({ params }: ProductDetailPageProps): Promise<Metadata> {
-  try {
-    const { slug } = await params;
-    const product = await getProductBySlug(slug);
+  const [popup, setPopup] = React.useState<{ visible: boolean; message: string; variant: 'success' | 'warning' }>({
+    visible: false,
+    message: '',
+    variant: 'success'
+  });
+  const timerRef = React.useRef<number | null>(null);
 
-    const title = product.seo?.title || product.title;
-    const description = product.seo?.description || product.shortDescription || product.description;
-    const keywords = product.seo?.keywords || [];
+  // Reviews state for rating display
+  const [reviews, setReviews] = React.useState<Array<Review & { displayName: string; createdAt: string }>>([]);
+  const [reviewsLoading, setReviewsLoading] = React.useState(true);
 
-    return {
-      title,
-      description,
-      keywords,
-      openGraph: {
-        title: `${title} | MartyX Industries`,
-        description: description || '',
-        images: product.gallery?.length ? [
-          {
-            url: product.gallery[0].url,
-            alt: product.gallery[0].alt || product.title,
-          }
-        ] : [],
-      },
-      twitter: {
-        card: 'summary_large_image',
-        title: `${title} | MartyX Industries`,
-        description: description || '',
-        images: product.gallery?.length ? [product.gallery[0].url] : [],
-      },
+  // Calculate average rating
+  const averageRating = React.useMemo(() => {
+    if (!reviews.length) return 0;
+    const sum = reviews.reduce((acc, r) => acc + (r.rating ?? 0), 0);
+    return sum / reviews.length;
+  }, [reviews]);
+
+  // Load reviews for rating calculation
+  React.useEffect(() => {
+    let cancelled = false;
+    setReviewsLoading(true);
+
+    reviewsService.getReviews(product.id)
+      .then((data) => {
+        if (!cancelled) {
+          setReviews(data);
+          setReviewsLoading(false);
+        }
+      })
+      .catch((e: unknown) => {
+        if (!cancelled) {
+          console.error('Failed to load reviews for rating:', e);
+          setReviews([]);
+          setReviewsLoading(false);
+        }
+      });
+
+    return () => { cancelled = true; };
+  }, [product.id]);
+
+  React.useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        window.clearTimeout(timerRef.current);
+      }
     };
-  } catch (_error) {
-    return {
-      title: 'Product Not Found',
-      description: 'The requested product could not be found.',
-    };
-  }
-}
+  }, []);
 
-export const revalidate = 3600; // Revalidate every hour
+  const handleAddToCart = () => {
+    const status = addToCart(product);
+    const isLimit = status === 'limit';
+    const message = isLimit ? t('cart.add_limit') : t('cart.add_success');
+    const variant = isLimit ? 'warning' : 'success';
 
-export default async function ProductDetailPage({ params }: ProductDetailPageProps) {
-  const { slug } = await params;
-  let product;
-
-  try {
-    product = await getProductBySlug(slug);
-  } catch (_error) {
-    notFound();
-  }
-
-  if (!product) {
-    notFound();
-  }
+    setPopup({ visible: true, message, variant });
+    if (timerRef.current) {
+      window.clearTimeout(timerRef.current);
+    }
+    timerRef.current = window.setTimeout(() => {
+      setPopup(p => ({ ...p, visible: false }));
+    }, 2000);
+  };
 
   return (
-    <div className="main-content">
-      <div className="container">
-        {/* Breadcrumbs */}
-        <nav className="mb-6" aria-label="Breadcrumb">
-          <ol style={{ display: 'flex', gap: '0.5rem', color: 'var(--text-muted)', fontSize: '0.875rem' }}>
-            <li>
-              <Link href="/" style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>
-                Home
-              </Link>
-            </li>
-            <li>/</li>
-            <li>
-              <Link href="/products" style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>
-                Products
-              </Link>
-            </li>
-            {product.category && (
-              <>
-                <li>/</li>
-                <li>{product.category}</li>
-              </>
-            )}
-            <li>/</li>
-            <li style={{ color: 'var(--text-primary)' }}>{product.title}</li>
-          </ol>
-        </nav>
+    <div id="details" className="product-details">
+      <h2>{product.name}</h2>
+      <div className="product-meta-row">
+        {!reviewsLoading && reviews.length > 0 && (
+          <StarRating
+            rating={averageRating}
+            totalReviews={reviews.length}
+            size="small"
+          />
+        )}
+        <div className="product-type-compact">
+          {product.productType === 'DIGITAL' ? 'DIGITAL' : (product.productType === 'PHYSICAL' ? 'PHYSICAL' : product.productType)}
+        </div>
+      </div>
+      <div
+        className="price">{product.price.toFixed(2)} {product.currency === 'EUR' ? '€' : product.currency}</div>
+      <p className="description">{product.description}</p>
 
-        {/* Product Layout */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr',
-          gap: '3rem',
-          marginBottom: '4rem'
-        }}>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-            gap: '2rem',
-            alignItems: 'start'
-          }}>
-            {/* Left Column - Gallery */}
-            <ProductGallery gallery={product.gallery || []} title={product.title} />
+      <h3 id="features">Features:</h3>
+      <ul className="features-list">
+        {product.features.map((feature, index) => (
+          <li key={index}>{feature}</li>
+        ))}
+      </ul>
 
-            {/* Right Column - Product Info */}
-            <div>
-              {/* Category */}
-              {product.category && (
-                <span style={{
-                  display: 'inline-block',
-                  padding: '0.25rem 0.75rem',
-                  backgroundColor: 'var(--accent-color)',
-                  color: 'white',
-                  borderRadius: '0.25rem',
-                  fontSize: '0.875rem',
-                  fontWeight: '500',
-                  marginBottom: '1rem'
-                }}>
-                  {product.category}
-                </span>
-              )}
+      <div className="product-actions">
+        <WishlistButton
+          productId={product.id}
+          variant="button"
+          size="large"
+        />
+        <button
+          className={`add-to-cart-btn${popup.visible ? ` is-popup ${popup.variant}` : ''}`}
+          onClick={handleAddToCart}
+          disabled={popup.visible}
+          aria-live="polite"
+        >
+          {popup.visible ? popup.message : t('cart.add_to_cart')}
+        </button>
+      </div>
+    </div>
+  );
+};
 
-              {/* Title */}
-              <h1 style={{
-                fontSize: '2.5rem',
-                fontWeight: 'bold',
-                marginBottom: '1rem',
-                lineHeight: '1.2'
-              }}>
-                {product.title}
-              </h1>
+const toYouTubeEmbedUrl = (url: string): string => {
+  try {
+    const u = new URL(url);
+    if (u.hostname.includes('youtu.be')) {
+      const id = u.pathname.replace(/^\//, '');
+      return `https://www.youtube.com/embed/${id}`;
+    }
+    if (u.hostname.includes('youtube.com')) {
+      if (u.pathname.startsWith('/embed/')) return url;
+      const v = u.searchParams.get('v');
+      if (v) return `https://www.youtube.com/embed/${v}`;
+    }
+  } catch {
+    return url;
+  }
+  return url;
+};
 
-              {/* Short Description */}
-              {product.shortDescription && (
-                <p style={{
-                  fontSize: '1.125rem',
-                  color: 'var(--text-muted)',
-                  marginBottom: '1.5rem',
-                  lineHeight: '1.6'
-                }}>
-                  {product.shortDescription}
-                </p>
-              )}
+const buildTabs = (p: Product): ProductTab[] => {
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🔧 Building tabs for product:', p.id, 'has custom tabs:', p.tabs?.length);
+  }
+  let tabs: ProductTab[];
+  if (p.tabs && p.tabs.length > 0) {
+    // Use product's custom tabs as-is
+    tabs = [...p.tabs];
+    if (process.env.NODE_ENV === 'development') {
+      console.log('✅ Using custom tabs:', tabs.map(t => `${t.id}(${t.content.kind})`));
+      const printInfoTab = tabs.find(t => t.id === 'PrintInfo');
+      if (printInfoTab) {
+        console.log('🔍 PrintInfo tab found in custom tabs:', printInfoTab.content.kind);
+        if (printInfoTab.content.kind === 'printInfo') {
+          console.log('🎉 PrintInfo has correct data type!');
+        } else {
+          console.log('❌ PrintInfo has wrong content type:', printInfoTab.content);
+        }
+      } else {
+        console.log('❌ PrintInfo tab NOT found in custom tabs!');
+      }
+    }
+  } else {
+    // Create default tabs for products without custom tabs
+    tabs = [
+      { id: 'Details', label: 'Details', content: { kind: 'text', text: p.description } },
+      { id: 'PrintInfo', label: 'Print Info', content: { kind: 'text', text: 'Print information not available for this product.' } },
+      { id: 'Features', label: 'Features', content: { kind: 'list', items: p.features } }
+    ];
 
-              {/* Price */}
-              <div style={{
-                fontSize: '2rem',
-                fontWeight: 'bold',
-                color: 'var(--accent-color)',
-                marginBottom: '2rem'
-              }}>
-                {product.price} {product.currency}
+    if (p.productType === 'DIGITAL') {
+      tabs.splice(2, 0, {
+        id: 'Download',
+        label: 'Download',
+        content: { kind: 'text', text: 'Files available for download after purchase.' }
+      });
+    }
+  }
+
+  // ALWAYS ensure PrintInfo tab exists
+  if (!tabs.some(t => t.id === 'PrintInfo')) {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('⚠️ PrintInfo tab missing, adding fallback for product', p.id);
+    }
+    const detailsIndex = tabs.findIndex(t => t.id === 'Details');
+    if (detailsIndex !== -1) {
+      tabs.splice(detailsIndex + 1, 0, {
+        id: 'PrintInfo',
+        label: 'Print Info',
+        content: { kind: 'text', text: 'Print information not available for this product.' }
+      });
+    } else {
+      tabs.unshift({
+        id: 'PrintInfo',
+        label: 'Print Info',
+        content: { kind: 'text', text: 'Print information not available for this product.' }
+      });
+    }
+  } else {
+    if (process.env.NODE_ENV === 'development') {
+      const printInfoTab = tabs.find(t => t.id === 'PrintInfo');
+      console.log('✅ PrintInfo tab exists with content kind:', printInfoTab?.content.kind);
+      if (printInfoTab?.content.kind === 'printInfo') {
+        console.log('🎉 PrintInfo tab has real data!', printInfoTab.content.data);
+      }
+    }
+  }
+
+  // Ensure Reviews tab exists
+  if (!tabs.some(t => t.id === 'Reviews')) {
+    tabs.push({ id: 'Reviews', label: 'Reviews', content: { kind: 'text', text: '' } });
+  }
+
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🎯 Final tabs built:', tabs.map(t => `${t.id}(${t.content.kind})`));
+  }
+  return tabs;
+};
+
+const ProductDetail: React.FC = () => {
+  const params = useParams();
+  const router = useRouter();
+  const slug = params?.slug as string;
+  const { i18n } = useTranslation('products');
+  const [product, setProduct] = React.useState<Product | null>(null);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
+  const [isProductInactive, setIsProductInactive] = React.useState(false);
+  const [galleryImages, setGalleryImages] = React.useState<string[]>([]);
+  const [hasLoadedGallery, setHasLoadedGallery] = React.useState(false);
+  const [active, setActive] = React.useState<ProductTabId>('Details');
+
+  const tabs = React.useMemo(() => {
+    if (product) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🔍 Product loaded:', product.id, 'has tabs:', !!product.tabs);
+      }
+      return buildTabs(product);
+    }
+    return [];
+  }, [product]);
+
+  // Reset gallery loading flag when slug changes
+  React.useEffect(() => {
+    setHasLoadedGallery(false);
+    setGalleryImages([]);
+  }, [slug]);
+
+  // Load product from API
+  React.useEffect(() => {
+    const loadProduct = async () => {
+      if (!slug) {
+        setError('Product ID is required');
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        setError(null);
+        setIsProductInactive(false);
+
+        // TODO: Replace with actual API call - for now use placeholder
+        // const productData = await hybridProductService.getProductByStringId(slug);
+        // setProduct(productData);
+
+        // Placeholder until API is connected
+        throw new Error('Product loading not implemented');
+      } catch (err) {
+        console.error('Failed to load product:', err);
+        setIsProductInactive(true);
+        setError(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProduct();
+  }, [slug, i18n.language]);
+
+  // Load gallery images from database
+  React.useEffect(() => {
+    const loadGalleryImages = async () => {
+      if (!product || !slug || hasLoadedGallery) return;
+
+      try {
+        console.log(`🖼️ Loading gallery images from database for product: ${slug}`);
+
+        // TODO: Replace with actual gallery service
+        // const galleryData = await productGalleryService.getProductImages(slug);
+        // const sortedGallery = galleryData.sort((a, b) => (a.order || 0) - (b.order || 0));
+        // const imageUrls = sortedGallery.map(img => img.cdnUrl || img.url).filter(Boolean);
+        // setGalleryImages(imageUrls);
+        // setProduct(prev => prev ? { ...prev, gallery: imageUrls } : null);
+
+        setHasLoadedGallery(true);
+      } catch (error) {
+        console.error('❌ Failed to load gallery images from database:', error);
+        setGalleryImages([]);
+        setHasLoadedGallery(true);
+      }
+    };
+
+    loadGalleryImages();
+  }, [product, slug, hasLoadedGallery]);
+
+  React.useEffect(() => {
+    const firstTabId = tabs[0]?.id ?? 'Details';
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🎯 Setting active tab to:', firstTabId, 'available tabs:', tabs.map(t => t.id));
+    }
+    setActive(firstTabId);
+  }, [tabs]);
+
+  const activeTab = tabs.find(t => t.id === active) ?? tabs[0];
+
+  const productWithGallery = React.useMemo(() => {
+    if (!product) return null;
+
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🔄 productWithGallery updated (database-only):', {
+        productId: product.id,
+        galleryImagesCount: galleryImages.length,
+        hasLoadedGallery: hasLoadedGallery,
+        galleryImages: galleryImages.slice(0, 3)
+      });
+    }
+
+    return {
+      ...product,
+      gallery: galleryImages
+    };
+  }, [product, galleryImages, hasLoadedGallery]);
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="product-detail-page">
+        <div className="product-container">
+          <div className="loading-message">Loading product...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show product unavailable state
+  if (isProductInactive) {
+    return (
+      <div className="product-detail-page">
+        <div className="product-container">
+          <div className="product-unavailable-overlay">
+            <div className="product-unavailable-modal">
+              <div className="unavailable-icon">
+                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+                  <path d="m15 9-6 6" stroke="currentColor" strokeWidth="2" />
+                  <path d="m9 9 6 6" stroke="currentColor" strokeWidth="2" />
+                </svg>
               </div>
-
-              {/* Add to Cart */}
-              <AddToCart product={product} />
-
-              {/* Availability & Shipping */}
-              <div style={{
-                marginTop: '2rem',
-                padding: '1.5rem',
-                backgroundColor: 'var(--bg-secondary)',
-                borderRadius: '0.5rem',
-                border: '1px solid var(--border-color)'
-              }}>
-                <div style={{ marginBottom: '1rem' }}>
-                  <strong style={{ color: 'var(--text-primary)' }}>Availability:</strong>
-                  <span style={{ color: 'var(--success-color)', marginLeft: '0.5rem' }}>In Stock</span>
-                </div>
-                <div style={{ marginBottom: '1rem' }}>
-                  <strong style={{ color: 'var(--text-primary)' }}>Shipping:</strong>
-                  <span style={{ color: 'var(--text-muted)', marginLeft: '0.5rem' }}>
-                    Worldwide shipping available
-                  </span>
-                </div>
-                <div>
-                  <strong style={{ color: 'var(--text-primary)' }}>Processing Time:</strong>
-                  <span style={{ color: 'var(--text-muted)', marginLeft: '0.5rem' }}>
-                    3-5 business days
-                  </span>
-                </div>
+              <h1>Produkt je aktuálne nedostupný</h1>
+              <p>
+                Momentálne pracujeme na tomto produkte. <br />
+                Prosím, skúste to neskôr alebo sa vráťte na hlavnú stránku.
+              </p>
+              <div className="unavailable-actions">
+                <button
+                  onClick={() => router.back()}
+                  className="back-button"
+                >
+                  Späť
+                </button>
+                <button
+                  onClick={() => router.push('/products')}
+                  className="products-button"
+                >
+                  Všetky produkty
+                </button>
               </div>
             </div>
           </div>
         </div>
+      </div>
+    );
+  }
 
-        {/* Product Tabs - Description, Specs, Reviews */}
-        <ProductTabs
-          description={product.description}
-          specs={product.specs}
-        />
+  // Show error state
+  if (error || !product) {
+    return (
+      <div className="product-detail-page">
+        <div className="product-container">
+          <div className="error-message">
+            <p>{error || 'Product not found'}</p>
+            <button onClick={() => router.back()} className="back-button">
+              Go Back
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="product-detail-page">
+      <div className="product-container">
+        {productWithGallery && <ProductView product={productWithGallery} />}
+        <ProductDetails product={product} />
+
+        <nav className="product-bookmarks" aria-label="Product sections" role="tablist">
+          {tabs.map((t) => (
+            <button
+              key={t.id}
+              id={`tab-${t.id}`}
+              type="button"
+              role="tab"
+              aria-selected={t.id === active}
+              aria-controls={`panel-${t.id}`}
+              onClick={() => setActive(t.id)}
+              className={t.id === active ? 'active' : ''}
+            >
+              {t.label}
+            </button>
+          ))}
+        </nav>
+
+        {activeTab && (
+          <div
+            id={`panel-${activeTab.id}`}
+            role="tabpanel"
+            aria-labelledby={`tab-${activeTab.id}`}
+            className="product-tab-panel"
+          >
+            {activeTab.id === 'Details' && <DetailsTab content={activeTab.content} />}
+            {activeTab.id === 'PrintInfo' && <PrintInfoTab content={activeTab.content} />}
+            {activeTab.id === 'Download' && <DownloadTab content={activeTab.content} />}
+            {activeTab.id === 'Features' && <FeaturesTab content={activeTab.content} />}
+            {activeTab.id === 'Reviews' && <ReviewsTab content={activeTab.content} productId={product.id} />}
+          </div>
+        )}
+
+        {product.videoUrl && (
+          <div className="product-video-section" style={{ marginTop: '24px' }}>
+            <div style={{
+              position: 'relative',
+              paddingBottom: '56.25%',
+              height: 0,
+              overflow: 'hidden',
+              borderRadius: '8px'
+            }}>
+              <iframe
+                title="Product video"
+                src={toYouTubeEmbedUrl(product.videoUrl)}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  border: 0
+                }}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
-}
+};
+
+export default ProductDetail;

@@ -1,0 +1,312 @@
+'use client';
+
+import React, { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
+import { type TabContent } from '../../lib/types/product';
+import { reviewsService, type Review as ReviewModel } from '../../lib/services/reviewsService';
+import { useAuth } from '../../context/useAuth';
+import { adminService } from '../../lib/services/adminService';
+import styles from './ProductTabs.module.css';
+
+interface ReviewsTabProps {
+  content: TabContent;
+  productId: string;
+}
+
+const renderTabBody = (content: TabContent) => {
+  switch (content.kind) {
+    case 'text':
+      return (
+        <div className={styles['rich-text']} dangerouslySetInnerHTML={{ __html: content.text }} />
+      );
+    case 'list':
+      return (
+        <ul>
+          {content.items.map((it, i) => (
+            <li key={i}>{it}</li>
+          ))}
+        </ul>
+      );
+    case 'image':
+      return (
+        <figure className={styles['tab-image']}>
+          <img src={content.image.src} alt={content.image.alt ?? ''} />
+          {content.image.caption && <figcaption>{content.image.caption}</figcaption>}
+        </figure>
+      );
+    case 'gallery':
+      return (
+        <div className={styles['tab-gallery']}>
+          {content.images.map((im, i) => (
+            <figure key={i} className={styles['tab-gallery-item']}>
+              <img src={im.src} alt={im.alt ?? ''} />
+              {im.caption && <figcaption>{im.caption}</figcaption>}
+            </figure>
+          ))}
+        </div>
+      );
+    case 'downloads':
+      return (
+        <ul className={styles['downloads-list']}>
+          {content.items.map((d, i) => (
+            <li key={i} className={styles['download-item']}>
+              <a href={d.url} download>
+                {d.label}
+              </a>
+              {(d.size || d.format) && (
+                <span className={styles['download-meta']}>
+                  {d.format ? ` ${d.format}` : ''}
+                  {d.size ? ` · ${d.size}` : ''}
+                </span>
+              )}
+            </li>
+          ))}
+        </ul>
+      );
+    default:
+      return null;
+  }
+};
+
+const formatDate = (iso?: string) => {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return iso;
+  return d.toLocaleString();
+};
+
+const Stars: React.FC<{ value: number }> = ({ value }) => {
+  const stars = useMemo(() => {
+    const v = Math.max(0, Math.min(5, Math.round(value)));
+    return '★★★★★☆☆☆☆☆'.slice(5 - v, 10 - v);
+  }, [value]);
+  return <span aria-label={`${value} out of 5 stars`} title={`${value}/5`}>{stars}</span>;
+};
+
+const StarRating: React.FC<{ value: number; onChange: (v: number) => void; id?: string }> = ({ value, onChange, id }) => {
+  const [hover, setHover] = useState<number | null>(null);
+  const current = hover ?? value;
+  return (
+    <div className={styles['star-rating']} role="radiogroup" aria-labelledby={id ? `${id}-label` : undefined}>
+      {[1, 2, 3, 4, 5].map((v) => {
+        const filled = v <= current;
+        return (
+          <button
+            key={v}
+            type="button"
+            role="radio"
+            aria-checked={value === v}
+            className={`${styles['star']} ${filled ? styles['filled'] : ''}`}
+            onMouseEnter={() => setHover(v)}
+            onMouseLeave={() => setHover(null)}
+            onFocus={() => setHover(v)}
+            onBlur={() => setHover(null)}
+            onClick={() => onChange(v)}
+            aria-label={`${v} star${v > 1 ? 's' : ''}`}
+          >
+            ★
+          </button>
+        );
+      })}
+    </div>
+  );
+};
+
+const ReviewsTab: React.FC<ReviewsTabProps> = ({ content, productId }) => {
+  const { t } = useTranslation('common');
+  const { isAuthenticated } = useAuth();
+  const [reviews, setReviews] = useState<Array<ReviewModel & { displayName: string; createdAt: string }>>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [formOpen, setFormOpen] = useState(false);
+  const [rating, setRating] = useState<number>(5);
+  const [text, setText] = useState<string>('');
+  const [submitting, setSubmitting] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | number | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+    reviewsService.getReviews(productId)
+      .then((data) => { if (!cancelled) setReviews(data); })
+      .catch((e: unknown) => { if (!cancelled) setError(e instanceof Error ? e.message : 'Failed to load reviews'); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [productId]);
+
+  // Check if current user is ADMIN to conditionally show delete buttons
+  useEffect(() => {
+    let cancelled = false;
+    const check = async () => {
+      if (!isAuthenticated) {
+        if (!cancelled) setIsAdmin(false);
+        return;
+      }
+      try {
+        const ok = await adminService.checkAdmin();
+        if (!cancelled) setIsAdmin(ok);
+      } catch {
+        if (!cancelled) setIsAdmin(false);
+      }
+    };
+    void check();
+    return () => { cancelled = true; };
+  }, [isAuthenticated]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isAuthenticated) {
+      setError('You must be logged in to submit a review.');
+      return;
+    }
+    if (!rating || !text.trim()) {
+      setError('Please provide both rating and review text.');
+      return;
+    }
+    setSubmitting(true);
+    setError(null);
+    try {
+      const created = await reviewsService.addReview(productId, { rating, text });
+      setReviews((prev) => [created, ...prev]);
+      setText('');
+      setRating(5);
+      setFormOpen(false);
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Failed to submit review');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const averageRating = useMemo(() => {
+    if (!reviews.length) return 0;
+    const sum = reviews.reduce((acc, r) => acc + (r.rating ?? 0), 0);
+    return sum / reviews.length;
+  }, [reviews]);
+
+  const handleDelete = async (reviewId: string | number) => {
+    if (!isAdmin) return;
+    const confirmed = window.confirm(t('admin.confirm_delete_review'));
+    if (!confirmed) return;
+    try {
+      setDeletingId(reviewId);
+      await reviewsService.deleteReview(productId, reviewId);
+      setReviews(prev => prev.filter(r => r.id !== reviewId));
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Failed to delete review');
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  const body = renderTabBody(content);
+
+  return (
+    <>
+      {body}
+      <div className={styles['reviews-section']}>
+        <div className={styles['reviews-header']}>
+          <div className={styles['reviews-title-row']}>
+            <h3 className={styles['reviews-title']}>Reviews</h3>
+            {reviews.length > 0 && (
+              <div
+                className={styles['reviews-average']}
+                aria-label={`Average rating ${averageRating.toFixed(1)} out of 5 based on ${reviews.length} reviews`}
+                title={`${averageRating.toFixed(1)} / 5 (${reviews.length} review${reviews.length > 1 ? 's' : ''})`}
+             >
+                <span className={styles['stars']}><Stars value={averageRating} /></span>
+                <span className={styles['avg-number']}>{averageRating.toFixed(1)}</span>
+                <span className={styles['avg-count']}>({reviews.length})</span>
+              </div>
+            )}
+          </div>
+          {isAuthenticated ? (
+            <button
+              type="button"
+              onClick={() => setFormOpen((v) => !v)}
+              className={styles['icon-btn']}
+              aria-label={formOpen ? 'Close review form' : 'Write a review'}
+              title={formOpen ? 'Close review form' : 'Write a review'}
+              aria-expanded={formOpen}
+              aria-controls="write-review-form"
+            >
+              {formOpen ? (
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                </svg>
+              ) : (
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M4 17.25V20h2.75L17.81 8.94l-2.75-2.75L4 17.25z" fill="currentColor"/>
+                  <path d="M20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 2.75 2.75 1.84-1.82z" fill="currentColor"/>
+                </svg>
+              )}
+            </button>
+          ) : (
+            <Link href="/login" className={`${styles['secondary-btn']} ${styles['chip-btn']}`}>Log in to write a review</Link>
+          )}
+        </div>
+
+        {formOpen && isAuthenticated && (
+          <form id="write-review-form" onSubmit={handleSubmit} className={styles['review-form']} aria-label={t('aria.write_review_form')}>
+            <div className={styles['form-field']}>
+              <label id="rating-label" htmlFor="rating-stars">Rating</label>
+              <StarRating id="rating-stars" value={rating} onChange={setRating} />
+              <small className={styles['muted']}>Tap a star to set your rating</small>
+            </div>
+            <div className={styles['form-field']}>
+              <label htmlFor="review-text">Your review</label>
+              <textarea id="review-text" value={text} onChange={(e) => setText(e.target.value)} rows={5} required placeholder={t('placeholders.review_placeholder')} />
+            </div>
+            <div className={styles['form-actions']}>
+              <button type="submit" className={styles['primary-btn']} disabled={submitting || !text.trim()}>{submitting ? 'Submitting...' : 'Submit Review'}</button>
+              <button type="button" className={styles['secondary-btn']} onClick={() => setFormOpen(false)} disabled={submitting}>Cancel</button>
+            </div>
+          </form>
+        )}
+
+        {loading && <p className={styles['muted']}>Loading reviews...</p>}
+        {error && <p role="alert" className={styles['error-text']}>{error}</p>}
+
+        {!loading && !error && (
+          reviews.length === 0 ? (
+            <p className={styles['muted']}>No reviews yet.</p>
+          ) : (
+            <ul className={styles['reviews-list']}>
+              {reviews.map((r, idx) => (
+                <li key={(r.id ?? idx).toString()} className={styles['review-card']}>
+                  <div className={styles['review-card-header']} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                    <div className={styles['review-card-meta']} style={{ display: 'flex', flexDirection: 'column' }}>
+                      <strong>{r.displayName}</strong>
+                      <small className={styles['muted']}>{formatDate(r.createdAt)}</small>
+                    </div>
+                    {isAdmin && r.id != null && (
+                      <button
+                        type="button"
+                        className={styles['review-delete-btn']}
+                        onClick={() => handleDelete(r.id as string | number)}
+                        disabled={deletingId === r.id}
+                        aria-label={t('aria.delete_review')}
+                        title={t('aria.delete_review')}
+                      >
+                        ×
+                      </button>
+                    )}
+                  </div>
+                  <div className={styles['review-card-stars']}>
+                    <Stars value={r.rating ?? 0} />
+                  </div>
+                  <p className={styles['review-card-text']}>{r.text}</p>
+                </li>
+              ))}
+            </ul>
+          )
+        )}
+      </div>
+    </>
+  );
+};
+
+export default ReviewsTab;

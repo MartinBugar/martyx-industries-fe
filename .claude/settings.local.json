@@ -28,7 +28,10 @@
       "Bash(mkdir:*)",
       "Bash(touch:*)",
       "Bash(npm start)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(robocopy:*)",
+      "Bash(xcopy:*)",
+      "Bash(taskkill:*)"
     ],
     "deny": [],
     "ask": []

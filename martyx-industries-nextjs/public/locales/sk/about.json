@@ -1,0 +1,56 @@
+{
+  "title": "O Martyx Industries",
+  "lead": "Navrhujeme 3D tlačené RC platformy a diely, ktoré sú jednoduché na zostavenie, údržbu a upgrade. Navrhnuté, testované a zdokonalené, aby ste mohli tráviť viac času jazdením a menej času riešením problémov.",
+  "features": {
+    "title": "Čo robíme",
+    "precision": {
+      "title": "Inžinierska presnosť",
+      "description": "CAD-navrhnuté komponenty s dokonalou kompatibilitou hardvéru a optimálnym výkonom."
+    },
+    "quality": {
+      "title": "Testovaná kvalita",
+      "description": "Každý dizajn je testovaný a zdokonalený prostredníctvom reálneho testovania a spätnej väzby."
+    },
+    "support": {
+      "title": "Kompletná podpora",
+      "description": "Komplexná dokumentácia, BOM a komunitná podpora pre všetky vaše zostavy."
+    }
+  },
+  "story": {
+    "title": "Náš príbeh",
+    "description": "Zrodení z vášne pre RC inžinierstvo, kombinujeme modernú 3D tlačovú technológiu s presným dizajnom na demokratizáciu vysokokvalitnej konštrukcie RC vozidiel pre nadšencov po celom svete."
+  },
+  "cta": {
+    "shop_products": "Nakupovať produkty",
+    "contact_us": "Kontaktujte nás"
+  },
+  "stats": {
+    "models": "Unikátnych modelov",
+    "customers": "Spokojných zákazníkov",
+    "monthly": "Nových modelov mesačne",
+    "download": "Okamžité stiahnutie"
+  },
+  "mission": {
+    "title": "Naša misia",
+    "description": "Spájame vášeň pre RC modelárstvo s najmodernejšou technológiou 3D tlače. Naše STL súbory sú navrhnuté s maximálnou pozornosťou k detailom, optimalizované pre jednoduchú tlač a perfektný výsledok."
+  },
+  "why": {
+    "title": "Prečo si vybrať nás?",
+    "description": "S viac ako 5 rokmi skúseností v oblasti 3D modelovania a RC modelárstva vám prinášame overené riešenia, ktoré fungujú. Každý model testujeme na rôznych typoch tlačiarní a materiálov."
+  },
+  "features": {
+    "professional": "Profesionálne navrhnuté modely",
+    "optimized": "Optimalizované pre všetky typy tlačiarní",
+    "guides": "Detailné návody a podpory",
+    "community": "Komunita nadšencov",
+    "tested": "Testované na reálnych projektoch",
+    "updates": "Pravidelné aktualizácie modelov",
+    "support_sk": "Zákaznícka podpora v slovenčine",
+    "guarantee": "Garancia kompatibility"
+  },
+  "cta": {
+    "title": "Pripravení začať váš projekt?",
+    "description": "Preskúmajte našu kolekciu prémiových STL modelov a začnite tvoriť úžasné RC modely už dnes!",
+    "button": "Prezrieť katalóg"
+  }
+}

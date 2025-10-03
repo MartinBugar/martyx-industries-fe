@@ -1,0 +1,169 @@
+/* Modern ProductView Component - Minimalist E-commerce Design */
+
+.product-view-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* 3D Model Container with Premium Gradient Background */
+.model-container {
+  width: 100%;
+  position: relative;
+  border-radius: var(--product-radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--product-border);
+
+  /* Premium radial gradient - lightest in center, darker towards edges */
+  background: radial-gradient(
+    ellipse at center,
+    #2a3441 0%,      /* Lightest center */
+    #242b36 25%,     /* Light-medium */
+    #1e252f 50%,     /* Medium */
+    #1a1f2e 75%,     /* Dark */
+    #0f1419 100%     /* Darkest edges */
+  );
+
+  /* Subtle overlay for depth */
+  background-image:
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 70% 70%, rgba(107, 114, 128, 0.05) 0%, transparent 50%);
+
+  aspect-ratio: 16/10;
+  height: auto;
+  min-height: 300px;
+  max-height: min(65vh, 600px);
+
+  /* Subtle shadow for depth */
+  box-shadow: var(--product-shadow-lg);
+
+  /* Smooth transitions */
+  transition: var(--product-transition);
+}
+
+.model-container:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Gallery Section Styling */
+.product-gallery-section {
+  margin-top: 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 767px) {
+  .product-view-container {
+    gap: 1rem;
+  }
+
+  .model-container {
+    aspect-ratio: 16/9;
+    min-height: 250px;
+    max-height: 50vh;
+    border-radius: var(--product-radius);
+  }
+}
+
+@media (max-width: 480px) {
+  .product-view-container {
+    gap: 0.75rem;
+  }
+
+  .model-container {
+    min-height: 200px;
+    max-height: 45vh;
+  }
+}
+
+/* Desktop Layout */
+@media (min-width: 768px) {
+  .product-view-container {
+    width: auto;
+    flex: 2 1 0;
+    min-width: 0;
+    align-self: stretch;
+  }
+
+  .product-gallery-section {
+    margin-top: 1.5rem;
+  }
+
+  .model-container {
+    min-height: 350px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .model-container {
+    min-height: 400px;
+  }
+}
+
+/* Large screens optimization */
+@media (min-width: 1400px) {
+  .model-container {
+    max-height: min(70vh, 700px);
+  }
+}
+
+/* Fullscreen enhancement */
+.model-container.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  max-height: none;
+  z-index: 9999;
+  border-radius: 0;
+  aspect-ratio: auto;
+}
+
+/* Loading state */
+.model-container.loading {
+  background: radial-gradient(
+    ellipse at center,
+    #2a3441 0%,
+    #1a1f2e 100%
+  );
+}
+
+.model-container.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--product-border);
+  border-top: 3px solid var(--product-accent);
+  border-radius: 50%;
+  animation: loading-spin 1s linear infinite;
+}
+
+@keyframes loading-spin {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .model-container {
+    border-width: 2px;
+    background: radial-gradient(
+      ellipse at center,
+      #333 0%,
+      #111 100%
+    );
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .model-container {
+    animation: none;
+    transition: none;
+  }
+}

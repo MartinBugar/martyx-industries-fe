@@ -1,0 +1,59 @@
+{
+  "hero": {
+    "title": "RC Tank Kits & STL Files",
+    "subtitle": "Build. Print. Command.",
+    "shop_kits": "Shop Kits",
+    "download_stl": "Download STL",
+    "image_alt": "RC Tank Kits & STL Files — product hero image",
+    "facts": {
+      "assembly_time": "Assembly under 4h (prototype)",
+      "layer_optimization": "Optimized for 0.1 mm layers",
+      "electronics_ready": "Modular electronics ready"
+    }
+  },
+  "how_it_works": {
+    "title": "How it works",
+    "step_1": "Step 1",
+    "step_1_title": "Choose",
+    "step_1_description": "Pick a Kit or STL bundle.",
+    "step_2": "Step 2",
+    "step_2_title": "Build or Print",
+    "step_2_description": "Assemble or 3D print.",
+    "step_3": "Step 3",
+    "step_3_title": "Drive",
+    "step_3_description": "Pair controller & enjoy."
+  },
+  "featured": {
+    "title": "Featured Products",
+    "view_all": "View All Products"
+  },
+  "testimonials": {
+    "title": "What Our Customers Say",
+    "subtitle": "Real feedback from RC tank enthusiasts",
+    "review_1": "Printed over a weekend, runs like a charm. The STL files are perfectly optimized and the assembly guide is crystal clear. My kids love driving it around!",
+    "review_2": "Clean STLs, no supports needed on my setup. The modular design makes it easy to customize and the electronics integration is seamless. Highly recommended!",
+    "review_3": "Amazing quality! The tracks work perfectly and the suspension system is incredibly realistic. Assembly took exactly as advertised - under 4 hours.",
+    "review_4": "The attention to detail is incredible. Every bolt and rivet is perfectly modeled. The controller range is impressive and the sound effects are spot on!",
+    "time_ago": {
+      "weeks_2": "2 weeks ago",
+      "month_1": "1 month ago",
+      "weeks_3": "3 weeks ago",
+      "week_1": "1 week ago"
+    }
+  },
+  "newsletter": {
+    "title": "Stay in the Loop",
+    "description": "Get exclusive access to new tank models, 3D printing tips, and special offers. Join our community of RC enthusiasts!",
+    "email_label": "Email address",
+    "email_placeholder": "Enter your email",
+    "subscribe_button": "Subscribe to newsletter",
+    "privacy_note": "🔒 We respect your privacy. Unsubscribe at any time.",
+    "success_title": "Welcome aboard! 🎉",
+    "success_message": "You're now subscribed to our newsletter. Check your email for a welcome message.",
+    "benefits": {
+      "early_access": "Early access to new releases",
+      "exclusive_guides": "Exclusive 3D printing guides",
+      "member_discounts": "Member-only discounts"
+    }
+  }
+}
