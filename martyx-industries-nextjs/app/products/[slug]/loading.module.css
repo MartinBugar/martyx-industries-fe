@@ -1,0 +1,42 @@
+.breadcrumb-container {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.breadcrumb-item {
+  width: 60px;
+  height: 16px;
+  background-color: var(--bg-secondary);
+  border-radius: 0.25rem;
+  animation: pulse 1.5s infinite;
+}
+
+.breadcrumb-item-medium {
+  width: 80px;
+  height: 16px;
+  background-color: var(--bg-secondary);
+  border-radius: 0.25rem;
+  animation: pulse 1.5s infinite;
+}
+
+.breadcrumb-item-large {
+  width: 120px;
+  height: 16px;
+  background-color: var(--bg-secondary);
+  border-radius: 0.25rem;
+  animation: pulse 1.5s infinite;
+}
+
+.breadcrumb-separator {
+  color: var(--text-muted);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
