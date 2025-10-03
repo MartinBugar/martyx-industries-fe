@@ -266,7 +266,7 @@ export default function Wishlist() {
               return (
                 <article key={item.id} className={styles.wishlistItem}>
                   <div className={styles.itemImageContainer}>
-                    <Link href={`/products/${product.slug}`} className={styles.itemLink}>
+                    <Link href={`/products/${product.slug || product.id}`} className={styles.itemLink}>
                       <img
                         src={product.gallery?.[0]?.url || '/assets/kit-01.png'}
                         alt={product.title}
@@ -284,7 +284,7 @@ export default function Wishlist() {
                   </div>
 
                   <div className={styles.itemContent}>
-                    <Link href={`/products/${product.slug}`} className={styles.itemLink}>
+                    <Link href={`/products/${product.slug || product.id}`} className={styles.itemLink}>
                       <h3 className={styles.itemTitle}>{product.title}</h3>
                       <div className={styles.itemPrice}>
                         {product.currency} {product.price.toFixed(2)}

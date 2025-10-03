@@ -13,7 +13,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   return (
     <Link
-      href={`/products/${productSlug}`}
+      href={`/products/${product.slug || product.id}`}
       className={styles.card}
     >
       {/* Product Image */}

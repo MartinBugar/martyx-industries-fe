@@ -40,8 +40,9 @@ function LoadingHome() {
 
 interface Product {
   id: string;
-  slug: string;
-  title: string;
+  slug?: string;
+  name: string;
+  title?: string; // For backward compatibility
   shortDescription?: string;
   description?: string;
   price: number;
@@ -205,17 +206,17 @@ export default function Home() {
                         return !isCDNUrl && isCDNEnabled() ? getImageSrcSet(getBaseNameFromPath(mainImage)) : undefined;
                       })()}
                       sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                      alt={p.title}
+                      alt={p.name || p.title}
                       className={styles.productImage}
                       loading="lazy"
                       onLoad={() => {
                         if (process.env.NODE_ENV === 'development' && p.id === "1") {
-                          console.log(`✅ Homepage card image for ${p.title} loaded successfully`);
+                          console.log(`✅ Homepage card image for ${p.name || p.title} loaded successfully`);
                         }
                       }}
                       onError={(e) => {
                         if (process.env.NODE_ENV === 'development') {
-                          console.error(`❌ Homepage card image for ${p.title} failed to load:`, e.currentTarget.src);
+                          console.error(`❌ Homepage card image for ${p.name || p.title} failed to load:`, e.currentTarget.src);
                         }
                         // Fallback to local image if CDN fails
                         const fallbackSrc = `/productsGallery/${p.id}/1.png`;
@@ -235,7 +236,7 @@ export default function Home() {
                 </div>
                 <Link href={`/products/${p.slug || p.id}`} className={styles.productCardLink}>
                   <div className={styles.productInfo}>
-                    <h3 className={styles.productTitle}>{p.title}</h3>
+                    <h3 className={styles.productTitle}>{p.name || p.title}</h3>
                     <div className={styles.productPrice}>{p.currency} {p.price.toFixed(2)}</div>
                     <p className={styles.productDescription}>{p.shortDescription || p.description}</p>
                   </div>

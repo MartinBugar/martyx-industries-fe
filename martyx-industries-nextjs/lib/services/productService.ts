@@ -32,7 +32,7 @@ export const productService = {
         )
       });
 
-      const data = await apiClient.get(`/api/v1/products?${params}`);
+      const data = await apiClient.get(`/api/products?${params}`);
       return data;
     } catch (error) {
       console.error('Error fetching products:', error);
@@ -43,7 +43,7 @@ export const productService = {
   // Get featured products
   getFeaturedProducts: async (): Promise<Product[]> => {
     try {
-      const data = await apiClient.get('/api/v1/products?featured=true');
+      const data = await apiClient.get('/api/products?featured=true');
       return data.products || data;
     } catch (error) {
       console.error('Error fetching featured products:', error);
@@ -54,7 +54,7 @@ export const productService = {
   // Get single product by ID
   getProductById: async (id: string): Promise<Product> => {
     try {
-      const data = await apiClient.get(`/api/v1/products/${id}`);
+      const data = await apiClient.get(`/api/products/${id}`);
       return data;
     } catch (error) {
       console.error(`Error fetching product ${id}:`, error);
@@ -65,7 +65,7 @@ export const productService = {
   // Get single product by slug
   getProductBySlug: async (slug: string): Promise<Product> => {
     try {
-      const data = await apiClient.get(`/api/v1/products/slug/${slug}`);
+      const data = await apiClient.get(`/api/products/slug/${slug}`);
       return data;
     } catch (error) {
       console.error(`Error fetching product by slug ${slug}:`, error);
@@ -76,7 +76,7 @@ export const productService = {
   // Get product categories
   getCategories: async (): Promise<string[]> => {
     try {
-      const data = await apiClient.get('/api/v1/products/categories');
+      const data = await apiClient.get('/api/products/categories');
       return data.categories || data;
     } catch (error) {
       console.error('Error fetching categories:', error);
@@ -93,7 +93,7 @@ export const productService = {
         limit: limit.toString()
       });
 
-      const data = await apiClient.get(`/api/v1/products/search?${params}`);
+      const data = await apiClient.get(`/api/products/search?${params}`);
       return data;
     } catch (error) {
       console.error('Error searching products:', error);
@@ -109,7 +109,7 @@ export const productService = {
         limit: limit.toString()
       });
 
-      const data = await apiClient.get(`/api/v1/products/${productId}/reviews?${params}`);
+      const data = await apiClient.get(`/api/products/${productId}/reviews?${params}`);
       return data;
     } catch (error) {
       console.error(`Error fetching reviews for product ${productId}:`, error);
@@ -124,7 +124,7 @@ export const productService = {
     title?: string;
   }) => {
     try {
-      const data = await apiClient.post(`/api/v1/products/${productId}/reviews`, review);
+      const data = await apiClient.post(`/api/products/${productId}/reviews`, review);
       return data;
     } catch (error) {
       console.error(`Error adding review for product ${productId}:`, error);
@@ -139,7 +139,7 @@ export const productService = {
         limit: limit.toString()
       });
 
-      const data = await apiClient.get(`/api/v1/products/${productId}/related?${params}`);
+      const data = await apiClient.get(`/api/products/${productId}/related?${params}`);
       return data.products || data;
     } catch (error) {
       console.error(`Error fetching related products for ${productId}:`, error);

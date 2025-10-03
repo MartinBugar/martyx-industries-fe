@@ -27,7 +27,7 @@ export const registrationService = {
   // Register new user
   register: async (userData: RegistrationData): Promise<RegistrationResponse> => {
     try {
-      const data = await apiClient.post('/api/v1/auth/register', userData);
+      const data = await apiClient.post('/api/auth/register', userData);
       return {
         success: true,
         message: data.message || 'Registration successful',
@@ -63,7 +63,7 @@ export const registrationService = {
   // Verify email address
   verifyEmail: async (token: string): Promise<EmailVerificationResponse> => {
     try {
-      const data = await apiClient.post('/api/v1/auth/verify-email', { token });
+      const data = await apiClient.post('/api/auth/confirm', { token });
       return {
         success: true,
         message: data.message || 'Email verified successfully'
@@ -89,7 +89,7 @@ export const registrationService = {
   // Resend verification email
   resendVerificationEmail: async (email: string): Promise<EmailVerificationResponse> => {
     try {
-      const data = await apiClient.post('/api/v1/auth/resend-verification', { email });
+      const data = await apiClient.post('/api/auth/resend-confirmation', { email });
       return {
         success: true,
         message: data.message || 'Verification email sent successfully'
@@ -122,7 +122,7 @@ export const registrationService = {
   // Check if email is available
   checkEmailAvailability: async (email: string): Promise<{ available: boolean; message?: string }> => {
     try {
-      const data = await apiClient.get(`/api/v1/auth/check-email?email=${encodeURIComponent(email)}`);
+      const data = await apiClient.get(`/api/auth/check-email?email=${encodeURIComponent(email)}`);
       return {
         available: data.available !== false,
         message: data.message

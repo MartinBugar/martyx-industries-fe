@@ -20,7 +20,7 @@ export const contactService = {
   // Submit contact form
   submitContactForm: async (formData: ContactFormData): Promise<ContactResponse> => {
     try {
-      const data = await apiClient.post('/api/v1/contact', formData);
+      const data = await apiClient.post('/api/contact/send', formData);
       return {
         success: true,
         message: data.message || 'Message sent successfully',
@@ -40,7 +40,7 @@ export const contactService = {
   // Get contact information (if available from backend)
   getContactInfo: async () => {
     try {
-      const data = await apiClient.get('/api/v1/contact/info');
+      const data = await apiClient.get('/api/contact/info');
       return data;
     } catch (error) {
       console.error('Error fetching contact info:', error);
@@ -57,7 +57,7 @@ export const contactService = {
   // Get FAQ data (if available from backend)
   getFAQ: async () => {
     try {
-      const data = await apiClient.get('/api/v1/contact/faq');
+      const data = await apiClient.get('/api/contact/faq');
       return data.faqs || data;
     } catch (error) {
       console.error('Error fetching FAQ:', error);

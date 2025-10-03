@@ -75,7 +75,7 @@ export function middleware(request: NextRequest) {
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: https://martyx-industries.fra1.cdn.digitaloceanspaces.com https://fra1.digitaloceanspaces.com",
       "font-src 'self' data:",
-      "connect-src 'self' https://martyx-industries-be-2xf3x.ondigitalocean.app https://api.paypal.com https://api.sandbox.paypal.com https://www.sandbox.paypal.com",
+      "connect-src 'self' http://localhost:8080 https://martyx-industries-be-2xf3x.ondigitalocean.app https://api.paypal.com https://api.sandbox.paypal.com https://www.sandbox.paypal.com",
       "frame-src 'self' https://www.paypal.com https://www.sandbox.paypal.com",
       "frame-ancestors 'none'",
     ].join('; ')

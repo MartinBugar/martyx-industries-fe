@@ -274,7 +274,7 @@ const ProductDetail: React.FC = () => {
         setError(null);
         setIsProductInactive(false);
 
-        // Import getProductBySlug from lib/api
+        // Import getProductById from lib/api (supports both ID and slug)
         const { getProductBySlug } = await import('@/lib/api');
         const productData = await getProductBySlug(slug);
 

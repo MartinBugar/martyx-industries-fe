@@ -48,22 +48,7 @@ export interface Product {
   updatedAt?: string;
 }
 
-export interface Document {
-  id: string;
-  title: string;
-  type: 'pdf' | 'html';
-  url: string;
-  description?: string;
-}
-
-export interface PageContent {
-  content: string;
-  title?: string;
-  seo?: {
-    title?: string;
-    description?: string;
-  };
-}
+// Document and PageContent interfaces removed - not used
 
 async function fetchWithError(url: string, options?: RequestInit): Promise<Response> {
   try {
@@ -160,8 +145,26 @@ export async function getProducts(page: number = 0, size: number = 20): Promise<
 }
 
 export async function getProductBySlug(slug: string): Promise<Product> {
-  const response = await fetchWithError(`${getApiBaseUrl()}/api/products/${slug}`, {
+  // Convert slug to ID if it's numeric, otherwise try to fetch by slug
+  const numericId = parseInt(slug);
+  const endpoint = !isNaN(numericId) ? 
+    `${getApiBaseUrl()}/api/products/${numericId}` : 
+    `${getApiBaseUrl()}/api/products/slug/${slug}`;
+    
+  const response = await fetchWithError(endpoint, {
     next: { revalidate: 3600, tags: ['products', `product:${slug}`] }
+  });
+  return response.json();
+}
+
+export async function getProductById(id: string | number): Promise<Product> {
+  const numericId = typeof id === 'string' ? parseInt(id) : id;
+  if (isNaN(numericId)) {
+    throw new Error(`Invalid product ID: ${id}`);
+  }
+  
+  const response = await fetchWithError(`${getApiBaseUrl()}/api/products/${numericId}`, {
+    next: { revalidate: 3600, tags: ['products', `product:${numericId}`] }
   });
   return response.json();
 }
@@ -173,19 +176,9 @@ export async function getProductSlugs(): Promise<{ slug: string }[]> {
   return response.json();
 }
 
-export async function getDocuments(): Promise<Document[]> {
-  const response = await fetchWithError(`${getApiBaseUrl()}/api/v1/documents`, {
-    next: { revalidate: 3600, tags: ['documents'] }
-  });
-  return response.json();
-}
+// Documents endpoint removed - not available in backend
 
-export async function getAboutPage(): Promise<PageContent> {
-  const response = await fetchWithError(`${getApiBaseUrl()}/api/v1/pages/about`, {
-    next: { revalidate: 86400, tags: ['pages', 'about'] }
-  });
-  return response.json();
-}
+// About page is now static - no API needed
 
 // Product Gallery API
 export interface GalleryImage {

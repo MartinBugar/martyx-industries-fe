@@ -1,55 +1,21 @@
 import Link from "next/link";
-import { getAboutPage } from "@/lib/api";
+// About page is static, no API needed
 import type { Metadata } from "next";
 
 export async function generateMetadata(): Promise<Metadata> {
-  try {
-    const aboutData = await getAboutPage();
-
-    return {
-      title: aboutData.seo?.title || aboutData.title || "About Us",
-      description: aboutData.seo?.description || "Learn more about MartyX Industries and our passion for premium 3D-printed RC models.",
-      openGraph: {
-        title: `${aboutData.seo?.title || aboutData.title || "About Us"} | MartyX Industries`,
-        description: aboutData.seo?.description || "Learn more about MartyX Industries and our passion for premium 3D-printed RC models.",
-      },
-    };
-  } catch (_error) {
-    return {
-      title: "About Us",
-      description: "Learn more about MartyX Industries and our passion for premium 3D-printed RC models.",
-    };
-  }
+  return {
+    title: "O Martyx Industries",
+    description: "Spájame vášeň pre RC modelárstvo s najmodernejšou technológiou 3D tlače. Kvalitné STL súbory a RC komponenty.",
+    openGraph: {
+      title: "O Martyx Industries | Inovatívne 3D riešenia",
+      description: "Spájame vášeň pre RC modelárstvo s najmodernejšou technológiou 3D tlače. Kvalitné STL súbory a RC komponenty.",
+    },
+  };
 }
 
 export const revalidate = 86400; // Revalidate daily
 
-export default async function AboutPage() {
-  let aboutData;
-
-  try {
-    aboutData = await getAboutPage();
-  } catch (_error) {
-    // Fallback content if API fails
-    aboutData = {
-      title: "About MartyX Industries",
-      content: `
-        <div class="prose max-w-none">
-          <h2>Welcome to MartyX Industries</h2>
-          <p>We are passionate creators of premium 3D-printed RC models and components. Our mission is to provide enthusiasts and professionals with high-quality, precision-engineered products that exceed expectations.</p>
-
-          <h3>Our Story</h3>
-          <p>Founded by RC enthusiasts, MartyX Industries combines cutting-edge 3D printing technology with deep knowledge of remote control vehicles. We understand what it takes to create products that perform reliably in demanding conditions.</p>
-
-          <h3>Quality Commitment</h3>
-          <p>Every product we create undergoes rigorous testing and quality control. We use only premium materials and state-of-the-art printing technology to ensure durability and precision in every component.</p>
-
-          <h3>Innovation</h3>
-          <p>We continuously push the boundaries of what's possible with 3D printing technology, developing new techniques and materials to create products that were previously impossible to manufacture.</p>
-        </div>
-      `
-    };
-  }
+export default function AboutPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -57,20 +23,29 @@ export default async function AboutPage() {
         {/* Hero Section */}
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            {aboutData.title || "About MartyX Industries"}
+            O Martyx Industries
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Crafting the future of RC modeling with precision 3D printing technology
+            Spájame vášeň pre RC modelárstvo s najmodernejšou technológiou 3D tlače
           </p>
         </div>
 
         {/* Main Content */}
         <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-lg shadow-lg p-8 mb-12">
-            <div
-              className="prose prose-lg max-w-none"
-              dangerouslySetInnerHTML={{ __html: aboutData.content }}
-            />
+            <div className="prose prose-lg max-w-none">
+              <h2>Vitajte v Martyx Industries</h2>
+              <p>Sme vášniví tvorcovia prémiových 3D tlačených RC modelov a komponentov. Naším poslaním je poskytovať nadšencom a profesionálom vysokokvalitné, presne navrhnuté produkty, ktoré prekračujú očakávania.</p>
+
+              <h3>Náš príbeh</h3>
+              <p>Založená RC nadšencami, Martyx Industries kombinuje špičkovú technológiu 3D tlače s hlbokými znalosťami diaľkovo ovládaných vozidiel. Rozumieme tomu, čo je potrebné na vytvorenie produktov, ktoré spoľahlivo fungujú v náročných podmienkach.</p>
+
+              <h3>Záväzok kvality</h3>
+              <p>Každý produkt, ktorý vytvárame, prechádza prísnym testovaním a kontrolou kvality. Používame len prémiové materiály a najmodernejšiu tlačovú technológiu na zabezpečenie trvanlivosti a presnosti každého komponentu.</p>
+
+              <h3>Inovácie</h3>
+              <p>Neustále posúvame hranice toho, čo je možné s technológiou 3D tlače, vyvíjame nové techniky a materiály na vytvorenie produktov, ktoré bolo predtým nemožné vyrobiť.</p>
+            </div>
           </div>
 
           {/* Values Section */}
