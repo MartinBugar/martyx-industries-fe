@@ -7,9 +7,9 @@
     "node": ">=20"
   },
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start -p $PORT -H 0.0.0.0",
+    "dev": "cd martyx-industries-nextjs && next dev",
+    "build": "cd martyx-industries-nextjs && next build",
+    "start": "cd martyx-industries-nextjs && next start -p $PORT -H 0.0.0.0",
     "lint": "eslint .",
     "preview": "vite preview"
   },
