@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import { AuthProvider } from "@/context/AuthProvider";
 import { WishlistProvider } from "@/context/WishlistContext";
 import { CartProvider } from "@/context/CartContext";
+import PayPalProvider from "@/components/PayPalProvider";
 import I18nProvider from "@/components/I18nProvider";
 
 const inter = Inter({
@@ -65,17 +66,19 @@ export default function RootLayout({
       </head>
       <body className={`${inter.variable} app-container`}>
         <I18nProvider>
-          <AuthProvider>
-            <WishlistProvider>
-              <CartProvider>
-                <NavbarWrapper />
-                <main className="main-content">
-                  {children}
-                </main>
-                <Footer />
-              </CartProvider>
-            </WishlistProvider>
-          </AuthProvider>
+          <PayPalProvider>
+            <AuthProvider>
+              <WishlistProvider>
+                <CartProvider>
+                  <NavbarWrapper />
+                  <main className="main-content">
+                    {children}
+                  </main>
+                  <Footer />
+                </CartProvider>
+              </WishlistProvider>
+            </AuthProvider>
+          </PayPalProvider>
         </I18nProvider>
       </body>
     </html>

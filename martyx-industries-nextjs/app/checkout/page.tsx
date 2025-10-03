@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { useCart } from '@/context/useCart';
 import { useAuth } from '@/context/useAuth';
+import PayPalCheckoutButton from '@/components/PayPalCheckoutButton';
 import styles from './Checkout.module.css';
 // import PayPalCheckoutButton from '@/components/PayPalCheckoutButton';
 
@@ -288,16 +289,24 @@ export default function Checkout() {
                 {/* PayPal Button */}
                 <div className={styles.paypalSection}>
                   <p>{t('checkout.paypal_description', 'Pay securely with PayPal')}</p>
-                  {/* <PayPalCheckoutButton
-                    amount={total}
+                  <PayPalCheckoutButton
+                    items={items}
+                    totalAmount={getTotalPrice()}
                     currency={derivedCurrency}
+                    email={formData.email}
+                    firstName={formData.firstName}
+                    lastName={formData.lastName}
+                    cartHash={cartHash}
+                    billingAddress={{
+                      street: formData.billingStreet,
+                      city: formData.billingCity,
+                      state: formData.billingState,
+                      postalCode: formData.billingPostalCode,
+                      country: formData.billingCountry
+                    }}
                     onSuccess={handlePayPalSuccess}
                     onError={handlePayPalError}
-                    cartHash={cartHash}
-                  /> */}
-                  <div className={styles.paypalPlaceholder}>
-                    PayPal Button (Component not implemented yet)
-                  </div>
+                  />
                 </div>
 
                 <div className={styles.paymentDivider}>

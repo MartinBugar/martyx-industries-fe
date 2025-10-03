@@ -2,6 +2,8 @@
 
 import React, { useState, type ReactNode, useEffect } from 'react';
 import { AuthContext, type User, type Order, type LoginErrorResponse } from './AuthContext';
+import { authApi, setAuthToken, removeAuthToken } from '../lib/services/api';
+import { isTokenExpired } from '../lib/services/api';
 
 // Props for the AuthProvider component
 interface AuthProviderProps {
@@ -34,15 +36,7 @@ const secureLocalStorage = {
   }
 };
 
-// Mock function to check if token is expired
-const isTokenExpired = (token: string): boolean => {
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    return payload.exp * 1000 < Date.now();
-  } catch {
-    return true;
-  }
-};
+// isTokenExpired is now imported from lib/services/api
 
 // AuthProvider component to wrap the app and provide authentication functionality
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
@@ -96,9 +90,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           secureLocalStorage.remove('token');
           localStorage.removeItem('user');
           localStorage.removeItem('token');
+          removeAuthToken();
           setUser(null);
         } else {
           console.log('✅ Token is valid, setting auth');
+          
+          // Set token for API requests
+          setAuthToken(token);
           
           // If user exists, set it in state
           if (storedUser && typeof storedUser === 'object') {
@@ -111,6 +109,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               secureLocalStorage.remove('token');
               localStorage.removeItem('user');
               localStorage.removeItem('token');
+              removeAuthToken();
             }
           } else {
             console.log('⚠️ No stored user found');
@@ -133,37 +132,36 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(true);
     
     try {
-      // Mock login - replace with actual API call
       console.log('🔑 Attempting login for:', email);
       
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Call actual API
+      const response = await authApi.login(email, password);
       
-      // Mock successful login
-      const mockUser: User = {
-        id: '1',
-        email,
-        firstName: 'John',
-        lastName: 'Doe',
-        orders: []
-      };
-      
-      const mockToken = 'mock-jwt-token-' + Date.now();
-      
-      // Store user and token
-      secureLocalStorage.set('user', mockUser);
-      secureLocalStorage.set('token', mockToken);
-      
-      setUser(mockUser);
-      console.log('✅ Login successful');
-      
-      return true;
-    } catch (error) {
+      if (response.success && response.token && response.user) {
+        // Store user and token
+        secureLocalStorage.set('user', response.user);
+        secureLocalStorage.set('token', response.token);
+        
+        // Set token for future API requests
+        setAuthToken(response.token);
+        
+        setUser(response.user);
+        console.log('✅ Login successful');
+        
+        return true;
+      } else {
+        return {
+          success: false,
+          message: response.message || 'Login failed. Please check your credentials.',
+          code: response.code || 'LOGIN_FAILED'
+        };
+      }
+    } catch (error: any) {
       console.error('❌ Login failed:', error);
       return {
         success: false,
-        message: 'Login failed. Please check your credentials.',
-        code: 'LOGIN_FAILED'
+        message: error.data?.message || error.message || 'Login failed. Please check your credentials.',
+        code: error.data?.code || 'LOGIN_FAILED'
       };
     } finally {
       setIsLoading(false);
@@ -174,11 +172,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = async (): Promise<void> => {
     console.log('🚪 Logging out user');
     
+    // Get current token for API call
+    const token = secureLocalStorage.get('token', null);
+    
+    // Call logout API if token exists
+    if (token) {
+      try {
+        await authApi.logout(token);
+      } catch (error) {
+        console.warn('Logout API call failed:', error);
+        // Continue with local logout even if API fails
+      }
+    }
+    
     // Clear stored data
     secureLocalStorage.remove('user');
     secureLocalStorage.remove('token');
     localStorage.removeItem('user');
     localStorage.removeItem('token');
+    
+    // Remove auth token from future requests
+    removeAuthToken();
     
     // Clear state
     setUser(null);
@@ -285,18 +299,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       console.log('📧 Sending password reset email to:', email);
       
-      // Mock API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await authApi.forgotPassword(email);
       
       return {
-        success: true,
-        message: 'Password reset email sent successfully. Please check your inbox.'
+        success: response.success !== false,
+        message: response.message || 'Password reset email sent successfully. Please check your inbox.'
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Forgot password failed:', error);
       return {
         success: false,
-        message: 'Failed to send password reset email. Please try again.'
+        message: error.data?.message || error.message || 'Failed to send password reset email. Please try again.'
       };
     }
   };
@@ -306,18 +319,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       console.log('🔑 Resetting password with token:', token.substring(0, 10) + '...');
       
-      // Mock API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await authApi.resetPassword(token, password);
       
       return {
-        success: true,
-        message: 'Password reset successfully. You can now sign in with your new password.'
+        success: response.success !== false,
+        message: response.message || 'Password reset successfully. You can now sign in with your new password.'
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Password reset failed:', error);
       return {
         success: false,
-        message: 'Password reset failed. Please try again or request a new reset link.'
+        message: error.data?.message || error.message || 'Password reset failed. Please try again or request a new reset link.'
       };
     }
   };
