@@ -10,10 +10,14 @@ import WishlistButton from '@/components/WishlistButton';
 import { getImageSrcSet, getBestImageUrl, getBaseNameFromPath, isCDNEnabled } from '@/utils/cdnImages';
 import './Products.css';
 
+interface ProductWithGallery extends Omit<Product, 'gallery'> {
+  gallery: string[];
+}
+
 export default function ProductsPage() {
   const { addToCart } = useCart();
   const { t, i18n } = useTranslation('products');
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<ProductWithGallery[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const searchParams = useSearchParams();
@@ -37,11 +41,11 @@ export default function ProductsPage() {
         const productsWithGallery = await Promise.all(
           productsList.map(async (product) => {
             try {
-              const galleryData = await getProductGallery(product.slug || product.id);
+              const galleryData = await getProductGallery(String(product.slug || product.id));
 
               // Sort by order and get URLs (prefer CDN URLs)
               const sortedGallery = galleryData.sort((a, b) => (a.order || 0) - (b.order || 0));
-              const galleryUrls = sortedGallery.map(img => img.cdnUrl || img.url).filter(Boolean);
+              const galleryUrls = sortedGallery.map(img => img.cdnUrl || img.url).filter(Boolean) as string[];
 
               if (process.env.NODE_ENV === 'development') {
                 console.log(`🏷️ Product ${product.id} (${product.name}) gallery loaded:`, {
@@ -52,7 +56,7 @@ export default function ProductsPage() {
 
               return {
                 ...product,
-                gallery: galleryUrls as any
+                gallery: galleryUrls
               };
             } catch (galleryError) {
               console.warn(`Failed to load gallery for product ${product.id}:`, galleryError);
@@ -90,23 +94,28 @@ export default function ProductsPage() {
     };
   }, []);
 
-  const handleAdd = (p: Product) => () => {
-    const status = addToCart(p);
+  const handleAdd = (p: ProductWithGallery) => () => {
+    const productForCart = {
+      ...p,
+      id: String(p.id),
+      gallery: undefined // Cart doesn't need gallery
+    };
+    const status = addToCart(productForCart as any);
     const isLimit = status === 'limit';
     const message = isLimit ? t('cart.add_limit') : t('cart.add_success');
     const variant: Popup['variant'] = isLimit ? 'warning' : 'success';
 
-    setPopups(prev => ({ ...prev, [p.id]: { visible: true, message, variant } }));
+    setPopups(prev => ({ ...prev, [String(p.id)]: { visible: true, message, variant } }));
 
-    const existing = timersRef.current[p.id];
+    const existing = timersRef.current[String(p.id)];
     if (existing) window.clearTimeout(existing);
 
-    timersRef.current[p.id] = window.setTimeout(() => {
+    timersRef.current[String(p.id)] = window.setTimeout(() => {
       setPopups(prev => ({
         ...prev,
-        [p.id]: { ...(prev[p.id] || { message: '', variant: 'success' }), visible: false }
+        [String(p.id)]: { ...(prev[String(p.id)] || { message: '', variant: 'success' }), visible: false }
       }));
-      delete timersRef.current[p.id];
+      delete timersRef.current[String(p.id)];
     }, 2000);
   };
 
@@ -199,7 +208,7 @@ export default function ProductsPage() {
               {filteredProducts.map((p) => {
                 const mainImage = p.gallery && p.gallery.length > 0 ? p.gallery[0] : undefined;
                 return (
-                  <article key={p.id} className="product-card">
+                  <article key={String(p.id)} className="product-card">
                     <Link href={`/products/${p.slug || p.id}`} className="product-card-link">
                       <div className="product-card-image-container">
                         {mainImage ? (
@@ -247,7 +256,7 @@ export default function ProductsPage() {
                         )}
                         <div className="product-card-wishlist">
                           <WishlistButton
-                            productId={p.id}
+                            productId={String(p.id)}
                             size="small"
                             variant="icon"
                           />
@@ -264,22 +273,22 @@ export default function ProductsPage() {
 
                     <div className="product-card-actions">
                       <button
-                        className={`add-to-cart-btn${popups[p.id]?.visible ? ` is-popup ${popups[p.id].variant}` : ''}`}
+                        className={`add-to-cart-btn${popups[String(p.id)]?.visible ? ` is-popup ${popups[String(p.id)].variant}` : ''}`}
                         onClick={handleAdd(p)}
-                        disabled={!!popups[p.id]?.visible}
+                        disabled={!!popups[String(p.id)]?.visible}
                         aria-live="polite"
                       >
-                        {popups[p.id]?.visible ? (
+                        {popups[String(p.id)]?.visible ? (
                           <span className="popup-message">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                               strokeWidth="2">
-                              {popups[p.id].variant === 'success' ? (
+                              {popups[String(p.id)].variant === 'success' ? (
                                 <polyline points="20,6 9,17 4,12"></polyline>
                               ) : (
                                 <circle cx="12" cy="12" r="10"></circle>
                               )}
                             </svg>
-                            {popups[p.id].message}
+                            {popups[String(p.id)].message}
                           </span>
                         ) : (
                           <span className="add-to-cart-text">

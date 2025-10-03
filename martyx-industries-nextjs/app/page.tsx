@@ -39,7 +39,7 @@ function LoadingHome() {
 }
 
 interface Product {
-  id: string;
+  id: string | number;
   slug?: string;
   name: string;
   title?: string; // For backward compatibility
@@ -47,7 +47,7 @@ interface Product {
   description?: string;
   price: number;
   currency: string;
-  category?: string;
+  category?: string | null;
   gallery?: Array<{
     id: string;
     url: string;

@@ -56,7 +56,7 @@ const ProductView: React.FC<ProductViewProps> = ({ product }) => {
 
       {/* Product Gallery */}
       <div id="gallery" className={styles['product-gallery-section']}>
-        <Gallery productName={product.name} images={product.gallery} />
+        <Gallery productName={product.name} images={product.gallery || []} />
       </div>
     </div>
   );

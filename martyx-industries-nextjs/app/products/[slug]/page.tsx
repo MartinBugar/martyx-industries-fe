@@ -180,7 +180,7 @@ const buildTabs = (p: Product): ProductTab[] => {
     tabs = [
       { id: 'Details', label: 'Details', content: { kind: 'text', text: p.description } },
       { id: 'PrintInfo', label: 'Print Info', content: { kind: 'text', text: 'Print information not available for this product.' } },
-      { id: 'Features', label: 'Features', content: { kind: 'list', items: p.features } }
+      { id: 'Features', label: 'Features', content: { kind: 'list', items: p.features || [] } }
     ];
 
     if (p.productType === 'DIGITAL') {
@@ -318,7 +318,7 @@ const ProductDetail: React.FC = () => {
           const sortedGallery = galleryData.sort((a, b) => (a.order || 0) - (b.order || 0));
 
           // Extract URLs (prefer CDN URLs)
-          const imageUrls = sortedGallery.map(img => img.cdnUrl || img.url).filter(Boolean);
+          const imageUrls = sortedGallery.map(img => img.cdnUrl || img.url).filter(Boolean) as string[];
 
           console.log(`✅ Gallery images sorted by order:`, {
             totalImages: imageUrls.length,
@@ -330,10 +330,10 @@ const ProductDetail: React.FC = () => {
             }))
           });
 
-          setGalleryImages(imageUrls as string[]);
+          setGalleryImages(imageUrls);
 
           // Update product with the loaded gallery images
-          setProduct(prev => prev ? { ...prev, gallery: imageUrls as any } : null);
+          setProduct(prev => prev ? { ...prev, gallery: imageUrls } : null);
         } else {
           console.log('📁 No gallery images found in database - no gallery will be shown');
           setGalleryImages([]);

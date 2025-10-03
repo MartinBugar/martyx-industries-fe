@@ -162,7 +162,7 @@ export async function getProductBySlug(slug: string): Promise<Product> {
   const hardcodedData = getHardcodedDataById(backendProduct.id.toString());
   
   // Merge backend data with hardcoded frontend data
-  const mergedProduct: Product = {
+  const mergedProduct: any = {
     id: backendProduct.id.toString(),
     name: backendProduct.name,
     price: backendProduct.price,

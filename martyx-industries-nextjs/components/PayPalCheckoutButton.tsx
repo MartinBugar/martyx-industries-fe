@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { PayPalButtons } from "@paypal/react-paypal-js";
 import type { CartItem } from "../context/cartContextTypes";
 
