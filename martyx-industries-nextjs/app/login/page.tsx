@@ -18,7 +18,7 @@ export default function Login() {
   const { t } = useTranslation('auth');
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const { isAuthenticated, isLoading: authLoading, login } = useAuth();
 
   const [formData, setFormData] = useState<LoginFormData>({
     email: '',
@@ -68,15 +68,31 @@ export default function Login() {
     setError(null);
 
     try {
-      // Mock login - replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Mock success - redirect to intended page
-      const redirect = searchParams.get('redirect') || '/';
-      router.push(redirect);
+      console.log('🔐 Submitting login form...');
+      const result = await login(formData.email, formData.password);
+      console.log('📬 Login result:', result);
+
+      if (result === true) {
+        console.log('✅ Login successful, redirecting...');
+        // Login successful - redirect to intended page
+        const redirect = searchParams.get('redirect') || '/';
+        router.push(redirect);
+      } else if (typeof result === 'object' && 'message' in result) {
+        console.log('❌ Login failed with message:', result.message);
+        // Login failed with error message
+        setError(result.message || t('login.error', 'Invalid email or password. Please try again.'));
+
+        // Show resend confirmation option if email not confirmed
+        if (result.code === 'EMAIL_NOT_CONFIRMED') {
+          // TODO: Show resend confirmation UI
+        }
+      } else {
+        console.log('❌ Login failed with unknown result');
+        setError(t('login.error', 'Invalid email or password. Please try again.'));
+      }
     } catch (error: unknown) {
-      console.error('Login error:', error);
-      setError(t('login.error', 'Invalid email or password. Please try again.'));
+      console.error('❌ Login error:', error);
+      setError(t('login.error', 'An error occurred during login. Please try again.'));
     } finally {
       setIsLoading(false);
     }
@@ -103,20 +119,29 @@ export default function Login() {
 
   return (
     <div className={styles.loginPage}>
-      <div className={styles.loginContainer}>
-        <div className={styles.loginCard}>
+      <div className={styles.loginMainContainer}>
+        {/* Cassandra Section */}
+        <div className={styles.loginMascotSection}>
+          <img
+            src="/cassandra/Register-Cass.png"
+            alt="Cassandra - Login Assistant"
+            className={styles.mascotImageLogin}
+            loading="eager"
+          />
+        </div>
+
+        {/* Form Section */}
+        <div className={styles.loginFormContainer}>
           {/* Header */}
-          <div className={styles.loginHeader}>
-            <div className={styles.mascotContainer}>
-              <img
-                src="/cassandra/Account-Cass.png"
-                alt="Cassandra - Login Assistant"
-                className={styles.mascotImage}
-                loading="eager"
-              />
+          <div className={styles.formHeader}>
+            <div className={styles.formIcon}>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
             </div>
-            <h1>{t('login.title', 'Welcome Back')}</h1>
-            <p>{t('login.subtitle', 'Sign in to your account to continue')}</p>
+            <h1 className={styles.formTitle}>{t('login.title', 'Welcome Back')}</h1>
+            <p className={styles.formSubtitle}>{t('login.subtitle', 'Sign in to your account to continue')}</p>
           </div>
 
           {/* Confirmation Banner */}
@@ -286,7 +311,7 @@ export default function Login() {
           {/* Footer */}
           <div className={styles.loginFooter}>
             <p>
-              {t('login.no_account', "Don't have an account?")}{' '}
+              {t('login.no_account', "Don't have an account?")}
               <Link href="/register" className={styles.registerLink}>
                 {t('login.sign_up', 'Sign up')}
               </Link>

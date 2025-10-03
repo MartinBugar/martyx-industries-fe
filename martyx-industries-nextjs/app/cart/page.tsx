@@ -4,23 +4,17 @@ import React, { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { useCart } from '@/context/useCart';
-import styles from './Cart.module.css';
+import './Cart.css';
 
-interface CartPageProps {
-  // Modal props - when provided, renders as modal
-  isOpen?: boolean;
-  onClose?: () => void;
-  onCheckout?: () => void;
-}
-
-// This is the main cart page - modal props are handled separately in components
 export default function CartPage() {
   const { items, removeFromCart, updateQuantity, getTotalItems, getTotalPrice } = useCart();
   const router = useRouter();
   const { t, i18n } = useTranslation(['checkout', 'common']);
+
   const handleCheckout = () => {
     router.push('/checkout');
   };
+
   const handleBackToShopping = () => router.push('/products');
 
   // Robust currency formatting with i18n locale
@@ -48,105 +42,165 @@ export default function CartPage() {
   };
 
   return (
-    <div className={styles.cartPageContainer}>
-      <div className={styles.container}>
-        <div className={styles.pageHeader}>
-          <h1>{t('cart.title', 'Your Cart')} ({getTotalItems()})</h1>
-        </div>
+    <div className="cart-page-container">
+      <div className="container">
+        <header className="header">
+          <h1>{t('cart.title')}</h1>
+          <p>
+            {isEmpty
+              ? t('cart.empty_message')
+              : `${getTotalItems()} ${t('cart.item_count', { count: getTotalItems() })} ${t('cart.item_prepared', { count: getTotalItems() })}`}
+          </p>
+        </header>
 
         {isEmpty ? (
-          <div className={styles.emptyCart}>
-            <div className={styles.emptyIcon}>
-              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <circle cx="9" cy="21" r="1"></circle>
-                <circle cx="20" cy="21" r="1"></circle>
-                <path d="m1 1 4 4 2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-              </svg>
+          <section className="cart-items" role="region" aria-labelledby="empty">
+            <div className="empty-cart">
+              <div className="empty-cart-mascot">
+                <img
+                  src="/cassandra/Empty-Cass.png"
+                  alt="Cassandra - your empty cart guide"
+                  className="mascot-image-empty-cart"
+                  loading="eager"
+                  decoding="sync"
+                />
+              </div>
+              <div className="empty-cart-content">
+                <h3 id="empty">{t('cart.empty')}</h3>
+                <p>{t('cart.empty_description')}</p>
+                <button className="continue-shopping-btn" onClick={handleBackToShopping}
+                       aria-label={t('cart.continue_shopping')}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M19 12H5M5 12l7 7m-7-7l7-7"/>
+                  </svg>
+                  {t('cart.continue_shopping')}
+                </button>
+              </div>
             </div>
-            <h3>{t('cart.empty.title', 'Your cart is empty')}</h3>
-            <p>{t('cart.empty.subtitle', 'Add some awesome RC models to get started!')}</p>
-            <button className={styles.btnPrimary} onClick={handleBackToShopping}>
-              {t('cart.empty.continue_shopping', 'Continue Shopping')}
-            </button>
-          </div>
+          </section>
         ) : (
-          <>
-            <div className={styles.cartItems}>
-              {items.map((item) => (
-                <div key={item.product.id} className={styles.cartItem}>
-                  <div className={styles.itemImage}>
-                    <img 
-                      src={item.product.gallery?.[0] || '/assets/kit-01.png'} 
-                      alt={item.product.name}
-                      loading="lazy"
-                    />
-                  </div>
-                  <div className={styles.itemDetails}>
-                    <h4 className={styles.itemName}>{item.product.name}</h4>
-                    <p className={styles.itemType}>
-                      {item.product.productType === 'DIGITAL' ? t('common.digital', 'Digital') : t('common.physical', 'Physical')}
-                    </p>
-                    <div className={styles.itemPrice}>
-                      {formatPrice(item.product.price, item.product.currency)}
-                    </div>
-                  </div>
-                  <div className={styles.itemControls}>
-                    <div className={styles.quantityControls}>
-                      <button 
-                        onClick={() => onQty(item.product.id, item.quantity - 1, item.product.productType === 'DIGITAL')}
-                        className={styles.qtyBtn}
-                        aria-label="Decrease quantity"
-                      >
-                        -
-                      </button>
-                      <span className={styles.quantity}>{item.quantity}</span>
-                      <button 
-                        onClick={() => onQty(item.product.id, item.quantity + 1, item.product.productType === 'DIGITAL')}
-                        className={styles.qtyBtn}
-                        disabled={item.product.productType === 'DIGITAL' && item.quantity >= 1}
-                        aria-label="Increase quantity"
-                      >
-                        +
-                      </button>
-                    </div>
-                    <button 
-                      onClick={() => removeFromCart(item.product.id)}
-                      className={styles.removeBtn}
-                      aria-label="Remove item"
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <polyline points="3,6 5,6 21,6"></polyline>
-                        <path d="m19,6v14a2,2 0 0,1-2,2H7a2,2 0 0,1-2-2V6m3,0V4a2,2 0 0,1,2-2h4a2,2 0 0,1,2,2v2"></path>
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
+          <div className="cart-layout">
+            {/* ITEMS */}
+            <section className="cart-items" aria-label={t('cart.items_in_cart')}>
+              {items.map(item => {
+                const isDigital = item.product.productType === 'DIGITAL';
+                const thumb = item.product.gallery?.[0];
 
-            <div className={styles.cartSummary}>
-              <div className={styles.summaryRow}>
-                <span>{t('cart.subtotal', 'Subtotal')}</span>
+                return (
+                  <div key={item.product.id} className="cart-item">
+                    <div className="item-image" aria-hidden="true">
+                      {thumb ? (
+                        <img src={thumb} alt={item.product.name}/>
+                      ) : (
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <rect x="3" y="3" width="18" height="18" rx="2"/>
+                          <path d="M3 9h18"/>
+                          <path d="M9 21V9"/>
+                        </svg>
+                      )}
+                    </div>
+
+                    <div className="item-details">
+                      <div className="item-name">{item.product.name}</div>
+
+                      <div className="item-type" aria-label={isDigital ? t('cart.digital_product') : t('cart.physical_product')}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M5 12.5L10 17.5L20 6.5"/>
+                        </svg>
+                        {isDigital ? 'DIGITAL' : 'PHYSICAL'}
+                      </div>
+                    </div>
+
+                    <div className="item-price-section">
+                      <div className="quantity-control" aria-label={t('cart.adjust_quantity', { product: item.product.name })}>
+                        <button
+                          className="quantity-btn"
+                          aria-label={t('cart.decrease_quantity')}
+                          onClick={() => onQty(item.product.id, item.quantity - 1, isDigital)}
+                          disabled={item.quantity <= 1}
+                        >−</button>
+                        <span className="quantity" aria-live="polite">{item.quantity}</span>
+                        <button
+                          className="quantity-btn"
+                          aria-label={t('cart.increase_quantity')}
+                          onClick={() => onQty(item.product.id, item.quantity + 1, isDigital)}
+                          disabled={isDigital && item.quantity >= 1}
+                        >+</button>
+                      </div>
+
+                      <div className="item-price">
+                        {formatPrice(item.product.price * item.quantity, item.product.currency)}
+                      </div>
+
+                      <button
+                        className="remove-btn"
+                        aria-label={t('cart.remove_item', { product: item.product.name })}
+                        onClick={() => removeFromCart(item.product.id)}
+                        title={t('cart.remove')}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+
+              <a className="continue-shopping" onClick={handleBackToShopping} href="#stay" aria-label={t('cart.continue_shopping')}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M19 12H5M5 12l7 7m-7-7l7-7"/>
+                </svg>
+                {t('cart.continue_shopping')}
+              </a>
+            </section>
+
+            {/* SUMMARY */}
+            <aside className="order-summary" aria-label={t('order_summary.title')}>
+              <h2 className="summary-title">{t('order_summary.title')}</h2>
+
+              <div className="summary-row">
+                <span>{t('order_summary.subtotal')} ({getTotalItems()} {t('cart.item_count', { count: getTotalItems() })})</span>
                 <span>{formatPrice(subtotal)}</span>
               </div>
-              {hasPhysicalProducts && (
-                <div className={styles.summaryRow}>
-                  <span>{t('cart.shipping', 'Shipping')}</span>
-                  <span>{formatPrice(shipping)}</span>
+
+              {hasPhysicalProducts ? (
+                <div className="summary-row">
+                  <span>{t('order_summary.shipping')}</span>
+                  <span>{shipping > 0 ? formatPrice(shipping) : t('cart.free')}</span>
+                </div>
+              ) : (
+                <div className="delivery-info">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="1" y="3" width="15" height="13"/>
+                    <path d="M16 8h4l3 3v5h-7V8z"/>
+                    <circle cx="5.5" cy="18.5" r="2.5"/>
+                    <circle cx="18.5" cy="18.5" r="2.5"/>
+                  </svg>
+                  <span>{t('cart.digital_delivery')}</span>
                 </div>
               )}
-              <div className={`${styles.summaryRow} ${styles.total}`}>
-                <span>{t('cart.total', 'Total')}</span>
+
+              <div className="summary-row total">
+                <span>{t('order_summary.total')}</span>
                 <span>{formatPrice(total)}</span>
               </div>
-            </div>
 
-            <div className={styles.cartActions}>
-              <button className={styles.btnPrimary} onClick={handleCheckout}>
-                {t('cart.proceed_to_checkout', 'Proceed to Checkout')}
+              <button className="checkout-btn" onClick={handleCheckout}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M9 11l3 3L22 4"/>
+                  <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+                </svg>
+                {t('cart.proceed_to_payment')}
               </button>
-            </div>
-          </>
+
+              <div className="secure-text">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="5" y="11" width="14" height="10" rx="2"/>
+                  <path d="M12 11V7a5 5 0 010-10"/>
+                </svg>
+                {t('cart.secure_payment')}
+              </div>
+            </aside>
+          </div>
         )}
       </div>
     </div>

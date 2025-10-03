@@ -130,34 +130,77 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Login function
   const login = async (email: string, password: string): Promise<boolean | LoginErrorResponse> => {
     setIsLoading(true);
-    
+
     try {
       console.log('🔑 Attempting login for:', email);
-      
-      // Call actual API
+
+      // Call actual API - returns { token, id, email, emailConfirmed }
       const response = await authApi.login(email, password);
-      
-      if (response.success && response.token && response.user) {
-        // Store user and token
-        secureLocalStorage.set('user', response.user);
-        secureLocalStorage.set('token', response.token);
-        
-        // Set token for future API requests
-        setAuthToken(response.token);
-        
-        setUser(response.user);
-        console.log('✅ Login successful');
-        
-        return true;
-      } else {
+
+      console.log('📦 Login response:', response);
+
+      // Extract data from response
+      const { token, id, email: userEmail, emailConfirmed } = response;
+
+      // Check if email is confirmed
+      if (emailConfirmed === false) {
+        console.log('⚠️ Email not confirmed');
         return {
           success: false,
-          message: response.message || 'Login failed. Please check your credentials.',
-          code: response.code || 'LOGIN_FAILED'
+          message: 'Please confirm your email address before logging in. Check your email for the confirmation link.',
+          code: 'EMAIL_NOT_CONFIRMED'
         };
       }
+
+      // Check if we have required data
+      if (!token || !id || !userEmail) {
+        console.error('❌ Missing required login data:', { hasToken: !!token, hasId: !!id, hasEmail: !!userEmail });
+        return {
+          success: false,
+          message: 'Login response missing required data',
+          code: 'INVALID_RESPONSE'
+        };
+      }
+
+      // Create user object from response data
+      const newUser: User = {
+        id: id,
+        email: userEmail,
+        orders: [] // Initialize empty orders array
+      };
+
+      // Store user data in state and localStorage
+      setUser(newUser);
+      console.log('💾 Storing user:', newUser);
+      secureLocalStorage.set('user', newUser);
+      localStorage.setItem('user', JSON.stringify(newUser)); // Also store in regular localStorage
+
+      // Store token in localStorage
+      console.log('🔑 Storing token');
+      secureLocalStorage.set('token', token);
+      localStorage.setItem('token', JSON.stringify(token)); // Also store in regular localStorage
+
+      // Set auth token for future API requests
+      setAuthToken(token);
+
+      console.log('✅ Login successful');
+
+      return true;
     } catch (error: any) {
       console.error('❌ Login failed:', error);
+
+      // Check if the error message contains text about account not being activated
+      const errorMessage = error.data?.message || error.message || String(error);
+      if (errorMessage.includes('Account not activated') ||
+          errorMessage.includes('not activated') ||
+          errorMessage.toLowerCase().includes('confirm your registration')) {
+        return {
+          success: false,
+          message: 'Account not activated. Please check your email and confirm your registration.',
+          code: 'EMAIL_NOT_CONFIRMED'
+        };
+      }
+
       return {
         success: false,
         message: error.data?.message || error.message || 'Login failed. Please check your credentials.',
