@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "npm --prefix martyx-industries-nextjs run dev",
-    "build": "npm --prefix martyx-industries-nextjs ci && npm --prefix martyx-industries-nextjs run build",
+    "build": "npm --prefix martyx-industries-nextjs install && npm --prefix martyx-industries-nextjs run build",
     "start": "npm --prefix martyx-industries-nextjs run start"
   }
 }
