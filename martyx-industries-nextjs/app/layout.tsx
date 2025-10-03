@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { WishlistProvider } from "@/context/WishlistContext";
+import I18nProvider from "@/components/I18nProvider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -60,11 +62,15 @@ export default function RootLayout({
         <link rel="canonical" href="https://martyx-industries.com/" />
       </head>
       <body className={`${inter.variable} app-container`}>
-        <Navbar cartCount={0} />
-        <main className="main-content">
-          {children}
-        </main>
-        <Footer />
+        <I18nProvider>
+          <WishlistProvider>
+            <Navbar cartCount={0} />
+            <main className="main-content">
+              {children}
+            </main>
+            <Footer />
+          </WishlistProvider>
+        </I18nProvider>
       </body>
     </html>
   );

@@ -203,8 +203,8 @@ export default async function Home() {
             <div className={styles.testimonial}>
               <div className={styles.testimonialRating}>★★★★★</div>
               <p className={styles.testimonialText}>
-                "The quality is outstanding! The precision and detail in every print
-                is exactly what I needed for my RC projects."
+                &ldquo;The quality is outstanding! The precision and detail in every print
+                is exactly what I needed for my RC projects.&rdquo;
               </p>
               <p className={styles.testimonialAuthor}>— Martin K., RC Enthusiast</p>
             </div>
@@ -212,8 +212,8 @@ export default async function Home() {
             <div className={styles.testimonial}>
               <div className={styles.testimonialRating}>★★★★★</div>
               <p className={styles.testimonialText}>
-                "Fast delivery and professional service. The custom tank components
-                fit perfectly and look amazing."
+                &ldquo;Fast delivery and professional service. The custom tank components
+                fit perfectly and look amazing.&rdquo;
               </p>
               <p className={styles.testimonialAuthor}>— Peter S., Model Builder</p>
             </div>
@@ -221,8 +221,8 @@ export default async function Home() {
             <div className={styles.testimonial}>
               <div className={styles.testimonialRating}>★★★★★</div>
               <p className={styles.testimonialText}>
-                "I've ordered multiple times and the consistency is incredible.
-                MartyX Industries is now my go-to for all RC parts."
+                &ldquo;I&apos;ve ordered multiple times and the consistency is incredible.
+                MartyX Industries is now my go-to for all RC parts.&rdquo;
               </p>
               <p className={styles.testimonialAuthor}>— Jana D., Professional Racer</p>
             </div>
@@ -230,8 +230,8 @@ export default async function Home() {
             <div className={styles.testimonial}>
               <div className={styles.testimonialRating}>★★★★★</div>
               <p className={styles.testimonialText}>
-                "The attention to detail and customer support is exceptional.
-                They helped me design a custom chassis that exceeded expectations."
+                &ldquo;The attention to detail and customer support is exceptional.
+                They helped me design a custom chassis that exceeded expectations.&rdquo;
               </p>
               <p className={styles.testimonialAuthor}>— Lukáš M., Designer</p>
             </div>

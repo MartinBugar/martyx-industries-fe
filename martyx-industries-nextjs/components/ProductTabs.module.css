@@ -1,0 +1,140 @@
+.container {
+  margin-top: 4rem;
+}
+
+.tabNav {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 2px solid var(--border-color);
+  margin-bottom: 2rem;
+}
+
+.tabButton {
+  padding: 0.875rem 1.5rem;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-muted);
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  bottom: -2px;
+}
+
+.tabButton:hover {
+  color: var(--text-primary);
+}
+
+.tabButton.active {
+  color: var(--accent-color);
+  border-bottom-color: var(--accent-color);
+  font-weight: 600;
+}
+
+.tabContent {
+  min-height: 200px;
+}
+
+.descriptionTab {
+  line-height: 1.8;
+}
+
+.description {
+  color: var(--text-primary);
+}
+
+.description p {
+  margin-bottom: 1rem;
+}
+
+.description ul,
+.description ol {
+  margin-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.description h2,
+.description h3 {
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+}
+
+.description h2 {
+  font-size: 1.5rem;
+}
+
+.description h3 {
+  font-size: 1.25rem;
+}
+
+.specificationsTab {
+  overflow-x: auto;
+}
+
+.specsTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.specsTable tbody tr {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.specsTable tbody tr:last-child {
+  border-bottom: none;
+}
+
+.specKey {
+  padding: 1rem 1rem 1rem 0;
+  font-weight: 600;
+  color: var(--text-primary);
+  width: 40%;
+  vertical-align: top;
+}
+
+.specValue {
+  padding: 1rem;
+  color: var(--text-muted);
+  width: 60%;
+}
+
+.reviewsTab {
+  padding: 2rem 0;
+}
+
+.noContent {
+  color: var(--text-muted);
+  text-align: center;
+  padding: 2rem;
+  font-style: italic;
+}
+
+@media (max-width: 640px) {
+  .tabNav {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tabButton {
+    white-space: nowrap;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  .specKey,
+  .specValue {
+    display: block;
+    width: 100%;
+  }
+
+  .specKey {
+    padding-bottom: 0.25rem;
+  }
+
+  .specValue {
+    padding-top: 0.25rem;
+  }
+}
