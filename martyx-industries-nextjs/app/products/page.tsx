@@ -1,68 +1,328 @@
-import { getProducts, type Product } from "@/lib/api";
-import type { Metadata } from "next";
-import ProductsGrid from "@/components/ProductsGrid";
-import styles from "./page.module.css";
+'use client';
 
-export const metadata: Metadata = {
-  title: "Products | MartyX Industries",
-  description: "Browse our premium 3D-printed RC models and components. High-quality remote control tanks, vehicles, and custom parts manufactured with precision.",
-  openGraph: {
-    title: "Products | MartyX Industries",
-    description: "Browse our collection of premium 3D-printed RC models and components.",
-  },
-};
+import React, { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'next/navigation';
+import { getProducts, getProductGallery, type Product } from '@/lib/api';
+import { useCart } from '@/context/useCart';
+import WishlistButton from '@/components/WishlistButton';
+import { getImageSrcSet, getBestImageUrl, getBaseNameFromPath, isCDNEnabled } from '@/utils/cdnImages';
+import './Products.css';
 
-// ISR configuration with tag-based revalidation
-export const revalidate = 300; // Revalidate every 5 minutes
+export default function ProductsPage() {
+  const { addToCart } = useCart();
+  const { t, i18n } = useTranslation('products');
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const [searchTerm, setSearchTerm] = useState(searchParams?.get('search') || '');
+  const [sortBy, setSortBy] = useState<'name' | 'price' | 'newest'>('newest');
 
-export default async function ProductsPage() {
-  let products: Product[] = [];
-  let totalCount: number = 0;
-  let hasMore: boolean = false;
+  type Popup = { visible: boolean; message: string; variant: 'success' | 'warning' };
+  const [popups, setPopups] = useState<Record<string, Popup>>({});
+  const timersRef = useRef<Record<string, number>>({});
 
-  try {
-    // Fetch with ISR and tags - Spring Data pages are 0-indexed
-    const result = await getProducts(0, 50);
-    products = Array.isArray(result?.products) ? result.products : [];
-    totalCount = result?.totalCount || 0;
-    hasMore = result?.hasMore || false;
+  // Load products with database gallery
+  useEffect(() => {
+    const loadProductsWithGallery = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const result = await getProducts(0, 50);
+        const productsList = Array.isArray(result?.products) ? result.products : [];
 
-    console.log(`📊 Products page loaded: ${products.length} products, total: ${totalCount}`);
-  } catch (error) {
-    console.error('❌ Failed to fetch products in page component:', error);
-    products = [];
-    totalCount = 0;
-    hasMore = false;
+        // Load gallery for each product from database
+        const productsWithGallery = await Promise.all(
+          productsList.map(async (product) => {
+            try {
+              const galleryData = await getProductGallery(product.slug || product.id);
+
+              // Sort by order and get URLs (prefer CDN URLs)
+              const sortedGallery = galleryData.sort((a, b) => (a.order || 0) - (b.order || 0));
+              const galleryUrls = sortedGallery.map(img => img.cdnUrl || img.url).filter(Boolean);
+
+              if (process.env.NODE_ENV === 'development') {
+                console.log(`🏷️ Product ${product.id} (${product.name}) gallery loaded:`, {
+                  galleryCount: galleryUrls.length,
+                  mainImage: galleryUrls[0] || 'none'
+                });
+              }
+
+              return {
+                ...product,
+                gallery: galleryUrls as any
+              };
+            } catch (galleryError) {
+              console.warn(`Failed to load gallery for product ${product.id}:`, galleryError);
+              return {
+                ...product,
+                gallery: []
+              };
+            }
+          })
+        );
+
+        setProducts(productsWithGallery);
+      } catch (err) {
+        console.error('Failed to load products:', err);
+        setError('Failed to load products. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProductsWithGallery();
+  }, [i18n.language]);
+
+  // Update search term when URL search param changes
+  useEffect(() => {
+    const urlSearchTerm = searchParams?.get('search') || '';
+    setSearchTerm(urlSearchTerm);
+  }, [searchParams]);
+
+  useEffect(() => {
+    return () => {
+      // cleanup all timers on unmount
+      Object.values(timersRef.current).forEach(id => window.clearTimeout(id));
+      timersRef.current = {};
+    };
+  }, []);
+
+  const handleAdd = (p: Product) => () => {
+    const status = addToCart(p);
+    const isLimit = status === 'limit';
+    const message = isLimit ? t('cart.add_limit') : t('cart.add_success');
+    const variant: Popup['variant'] = isLimit ? 'warning' : 'success';
+
+    setPopups(prev => ({ ...prev, [p.id]: { visible: true, message, variant } }));
+
+    const existing = timersRef.current[p.id];
+    if (existing) window.clearTimeout(existing);
+
+    timersRef.current[p.id] = window.setTimeout(() => {
+      setPopups(prev => ({
+        ...prev,
+        [p.id]: { ...(prev[p.id] || { message: '', variant: 'success' }), visible: false }
+      }));
+      delete timersRef.current[p.id];
+    }, 2000);
+  };
+
+  // Filter and sort products
+  const filteredProducts = products
+    .filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()))
+    .sort((a, b) => {
+      switch (sortBy) {
+        case 'name':
+          return a.name.localeCompare(b.name);
+        case 'price':
+          return a.price - b.price;
+        case 'newest':
+          return String(b.id).localeCompare(String(a.id));
+        default:
+          return 0;
+      }
+    });
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="products-page">
+        <div className="products-container">
+          <div className="loading-message">{t('loading')}</div>
+        </div>
+      </div>
+    );
   }
 
-  // Extract unique categories from products
-  const categories = Array.from(
-    new Set(products.map(p => p.category).filter(Boolean))
-  ) as string[];
+  // Show error state
+  if (error) {
+    return (
+      <div className="products-page">
+        <div className="products-container">
+          <div className="error-message">
+            <p>{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="retry-button"
+            >
+              {t('actions.retry')}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="main-content">
-      <div className="container">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-4">Products</h1>
-          <p className={`text-lg ${styles['page-description']}`}>
-            Discover our collection of premium 3D-printed RC models and components
-          </p>
+    <div className="products-page">
+      <div className="products-container">
+        {/* Toolbar */}
+        <div className="products-toolbar">
+          <div className="search-container">
+            <svg className="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" strokeWidth="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.35-4.35"></path>
+            </svg>
+            <input
+              type="text"
+              placeholder={t('search_placeholder')}
+              value={searchTerm}
+              onChange={(e) => {
+                const newSearchTerm = e.target.value;
+                setSearchTerm(newSearchTerm);
+              }}
+              className="search-input"
+            />
+          </div>
+
+          <div className="sort-container">
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+              className="sort-select"
+            >
+              <option value="newest">Newest</option>
+              <option value="name">Name A-Z</option>
+              <option value="price">Price Low-High</option>
+            </select>
+          </div>
         </div>
 
-        {/* Client Component with search/filter */}
-        <ProductsGrid
-          initialProducts={products}
-          categories={categories}
-          totalCount={totalCount}
-        />
+        {/* Products Grid */}
+        <div className="products-grid-container">
+          {filteredProducts.length > 0 ? (
+            <div className="products-grid">
+              {filteredProducts.map((p) => {
+                const mainImage = p.gallery && p.gallery.length > 0 ? p.gallery[0] : undefined;
+                return (
+                  <article key={p.id} className="product-card">
+                    <Link href={`/products/${p.slug || p.id}`} className="product-card-link">
+                      <div className="product-card-image-container">
+                        {mainImage ? (
+                          <img
+                            src={(() => {
+                              const isCDNUrl = mainImage.includes('digitaloceanspaces.com') || mainImage.includes(process.env.NEXT_PUBLIC_CDN_BASE || '');
+                              const finalSrc = isCDNUrl ? mainImage : (isCDNEnabled() ? getBestImageUrl(getBaseNameFromPath(mainImage), 800) : mainImage);
+                              return finalSrc;
+                            })()}
+                            srcSet={(() => {
+                              const isCDNUrl = mainImage.includes('digitaloceanspaces.com') || mainImage.includes(process.env.NEXT_PUBLIC_CDN_BASE || '');
+                              return !isCDNUrl && isCDNEnabled() ? getImageSrcSet(getBaseNameFromPath(mainImage)) : undefined;
+                            })()}
+                            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                            alt={`${p.name} - main image`}
+                            className="product-card-image"
+                            loading="lazy"
+                            onError={(e) => {
+                              const fallbackSrc = `/productsGallery/${p.id}/1.png`;
+                              if (e.currentTarget.src !== window.location.origin + fallbackSrc) {
+                                e.currentTarget.src = fallbackSrc;
+                              }
+                            }}
+                          />
+                        ) : (
+                          <div className="product-card-placeholder">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none"
+                              stroke="currentColor" strokeWidth="1.5">
+                              <path
+                                d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
+                              <circle cx="12" cy="13" r="3"></circle>
+                            </svg>
+                          </div>
+                        )}
+                        {p.productType === 'DIGITAL' && (
+                          <div className="product-badge">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                              stroke="currentColor" strokeWidth="2">
+                              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                              <polyline points="7,10 12,15 17,10"></polyline>
+                              <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            Digital
+                          </div>
+                        )}
+                        <div className="product-card-wishlist">
+                          <WishlistButton
+                            productId={p.id}
+                            size="small"
+                            variant="icon"
+                          />
+                        </div>
+                      </div>
 
-        {hasMore && (
-          <p className={`text-center mt-8 ${styles['more-products-text']}`}>
-            More products available. Use search and filters to find specific items.
-          </p>
-        )}
+                      <div className="product-card-content">
+                        <h3 className="product-card-title">{p.name}</h3>
+                        <p className="product-card-description">{p.description}</p>
+                        <div
+                          className="product-card-price">{p.price.toFixed(2)} {p.currency === 'EUR' ? '€' : p.currency}</div>
+                      </div>
+                    </Link>
+
+                    <div className="product-card-actions">
+                      <button
+                        className={`add-to-cart-btn${popups[p.id]?.visible ? ` is-popup ${popups[p.id].variant}` : ''}`}
+                        onClick={handleAdd(p)}
+                        disabled={!!popups[p.id]?.visible}
+                        aria-live="polite"
+                      >
+                        {popups[p.id]?.visible ? (
+                          <span className="popup-message">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                              strokeWidth="2">
+                              {popups[p.id].variant === 'success' ? (
+                                <polyline points="20,6 9,17 4,12"></polyline>
+                              ) : (
+                                <circle cx="12" cy="12" r="10"></circle>
+                              )}
+                            </svg>
+                            {popups[p.id].message}
+                          </span>
+                        ) : (
+                          <span className="add-to-cart-text">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                              strokeWidth="2">
+                              <circle cx="8" cy="21" r="1"></circle>
+                              <circle cx="19" cy="21" r="1"></circle>
+                              <path
+                                d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57L20.6 7H6"></path>
+                            </svg>
+                            {t('cart.add_to_cart')}
+                          </span>
+                        )}
+                      </button>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="no-products">
+              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                strokeWidth="1.5">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+              </svg>
+              <h3>No products found</h3>
+              <p>Try adjusting your search or filter criteria</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Floating Products Cassandra */}
+      <div className="products-floating-mascot">
+        <img
+          src="/cassandra/Products-Cass.png"
+          srcSet="/cassandra/Products-Cass.png 1x, /cassandra/Products-Cass.png 2x"
+          sizes="(max-width: 360px) 160px, (max-width: 480px) 200px, (max-width: 768px) 260px, 320px"
+          alt="Cassandra - váš sprievodca produktmi"
+          className="floating-mascot-image-products"
+          loading="eager"
+        />
       </div>
     </div>
   );

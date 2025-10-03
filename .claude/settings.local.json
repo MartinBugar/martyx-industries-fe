@@ -35,7 +35,8 @@
       "Bash(timeout 3 curl -v -H \"Accept-Language: en\" \"http://localhost:8080/api/products/all\")",
       "Bash(rm:*)",
       "Bash(tasklist)",
-      "Bash(git restore:*)"
+      "Bash(git restore:*)",
+      "Bash(grep:*)"
     ],
     "deny": [],
     "ask": []
