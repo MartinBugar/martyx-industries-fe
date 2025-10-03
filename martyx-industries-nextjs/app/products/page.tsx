@@ -20,13 +20,15 @@ export default async function ProductsPage() {
   let hasMore: boolean = false;
 
   try {
-    // Fetch with ISR and tags
-    const result = await getProducts(1, 50);
+    // Fetch with ISR and tags - Spring Data pages are 0-indexed
+    const result = await getProducts(0, 50);
     products = Array.isArray(result?.products) ? result.products : [];
     totalCount = result?.totalCount || 0;
     hasMore = result?.hasMore || false;
+
+    console.log(`📊 Products page loaded: ${products.length} products, total: ${totalCount}`);
   } catch (error) {
-    console.error('Failed to fetch products:', error);
+    console.error('❌ Failed to fetch products in page component:', error);
     products = [];
     totalCount = 0;
     hasMore = false;

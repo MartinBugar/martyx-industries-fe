@@ -31,7 +31,8 @@
       "Bash(curl:*)",
       "Bash(robocopy:*)",
       "Bash(xcopy:*)",
-      "Bash(taskkill:*)"
+      "Bash(taskkill:*)",
+      "Bash(timeout 3 curl -v -H \"Accept-Language: en\" \"http://localhost:8080/api/products/all\")"
     ],
     "deny": [],
     "ask": []

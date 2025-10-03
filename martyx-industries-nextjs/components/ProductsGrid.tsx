@@ -34,11 +34,15 @@ export default function ProductsGrid({
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(
-        product =>
-          product.title.toLowerCase().includes(query) ||
-          product.shortDescription?.toLowerCase().includes(query) ||
-          product.description?.toLowerCase().includes(query) ||
-          product.category?.toLowerCase().includes(query)
+        product => {
+          const title = product.name || product.title || '';
+          return (
+            title.toLowerCase().includes(query) ||
+            product.shortDescription?.toLowerCase().includes(query) ||
+            product.description?.toLowerCase().includes(query) ||
+            product.category?.toLowerCase().includes(query)
+          );
+        }
       );
     }
 

@@ -8,9 +8,12 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
+  const productName = product.name || product.title || 'Unnamed Product';
+  const productSlug = product.slug || product.id.toString();
+
   return (
     <Link
-      href={`/products/${product.slug}`}
+      href={`/products/${productSlug}`}
       className={styles.card}
     >
       {/* Product Image */}
@@ -18,7 +21,16 @@ export default function ProductCard({ product }: ProductCardProps) {
         {product.gallery && product.gallery.length > 0 ? (
           <Image
             src={product.gallery[0].url}
-            alt={product.gallery[0].alt || product.title}
+            alt={product.gallery[0].alt || productName}
+            fill
+            className={styles.image}
+            sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            priority={false}
+          />
+        ) : product.imageUrl ? (
+          <Image
+            src={product.imageUrl}
+            alt={productName}
             fill
             className={styles.image}
             sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
@@ -62,7 +74,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
         {/* Title */}
         <h3 className={styles.title}>
-          {product.title}
+          {productName}
         </h3>
 
         {/* Description */}

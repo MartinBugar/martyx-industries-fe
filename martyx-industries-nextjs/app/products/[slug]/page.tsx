@@ -274,14 +274,20 @@ const ProductDetail: React.FC = () => {
         setError(null);
         setIsProductInactive(false);
 
-        // TODO: Replace with actual API call - for now use placeholder
-        // const productData = await hybridProductService.getProductByStringId(slug);
-        // setProduct(productData);
+        // Import getProductBySlug from lib/api
+        const { getProductBySlug } = await import('@/lib/api');
+        const productData = await getProductBySlug(slug);
 
-        // Placeholder until API is connected
-        throw new Error('Product loading not implemented');
+        // Check if product is inactive
+        if (productData.active === false) {
+          setIsProductInactive(true);
+          setProduct(null);
+        } else {
+          setProduct(productData as any); // Type assertion for compatibility
+        }
       } catch (err) {
         console.error('Failed to load product:', err);
+        // Any error should show unavailable state
         setIsProductInactive(true);
         setError(null);
       } finally {
@@ -300,12 +306,37 @@ const ProductDetail: React.FC = () => {
       try {
         console.log(`🖼️ Loading gallery images from database for product: ${slug}`);
 
-        // TODO: Replace with actual gallery service
-        // const galleryData = await productGalleryService.getProductImages(slug);
-        // const sortedGallery = galleryData.sort((a, b) => (a.order || 0) - (b.order || 0));
-        // const imageUrls = sortedGallery.map(img => img.cdnUrl || img.url).filter(Boolean);
-        // setGalleryImages(imageUrls);
-        // setProduct(prev => prev ? { ...prev, gallery: imageUrls } : null);
+        // Import getProductGallery from lib/api
+        const { getProductGallery } = await import('@/lib/api');
+        const galleryData = await getProductGallery(slug);
+
+        console.log(`📊 Loaded ${galleryData.length} gallery records from database:`, galleryData);
+
+        if (galleryData.length > 0) {
+          // Sort by order field (ascending)
+          const sortedGallery = galleryData.sort((a, b) => (a.order || 0) - (b.order || 0));
+
+          // Extract URLs (prefer CDN URLs)
+          const imageUrls = sortedGallery.map(img => img.cdnUrl || img.url).filter(Boolean);
+
+          console.log(`✅ Gallery images sorted by order:`, {
+            totalImages: imageUrls.length,
+            imageUrls: imageUrls,
+            orderInfo: sortedGallery.map(img => ({
+              fileName: img.fileName,
+              order: img.order,
+              url: img.cdnUrl || img.url
+            }))
+          });
+
+          setGalleryImages(imageUrls as string[]);
+
+          // Update product with the loaded gallery images
+          setProduct(prev => prev ? { ...prev, gallery: imageUrls as any } : null);
+        } else {
+          console.log('📁 No gallery images found in database - no gallery will be shown');
+          setGalleryImages([]);
+        }
 
         setHasLoadedGallery(true);
       } catch (error) {
