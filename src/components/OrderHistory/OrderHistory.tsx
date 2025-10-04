@@ -91,19 +91,9 @@ const OrderHistory: React.FC = () => {
   if (ordersLoading || (!hasLoadedOrders && user)) {
     return (
       <div className="orders-container">
-        <div className="loading-container">
-          <div className="neon-spinner">
-            <div className="spinner-ring"></div>
-          </div>
-          <div className="loading-text">
-            <span className="loading-label">ACCESSING DATABASE</span>
-            <div className="loading-dots">
-              <span></span>
-              <span></span>
-              <span></span>
-            </div>
-            <p className="loading-subtitle">Retrieving order data...</p>
-          </div>
+        <div className="orders-loading">
+          <div className="loading-spinner"></div>
+          <p>Loading your orders...</p>
         </div>
       </div>
     );

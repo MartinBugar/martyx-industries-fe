@@ -954,3 +954,34 @@
     opacity: 0.6;
   }
 }
+
+/* New Simple Loading States - matching ModelCollection */
+.orders-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.orders-loading .loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top: 3px solid var(--accent);
+  border-radius: 50%;
+  animation: simple-spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+.orders-loading p {
+  color: var(--text-muted);
+  font-size: 1rem;
+  margin: 0;
+}
+
+@keyframes simple-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
