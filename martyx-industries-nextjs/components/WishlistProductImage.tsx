@@ -62,8 +62,11 @@ const WishlistProductImage: React.FC<WishlistProductImageProps> = memo(({
       itemName: item.productName,
       itemImageUrl: item.productImageUrl,
       productGallery: product?.gallery,
+      productImageUrl: product?.imageUrl,
       finalImageSrc: imageSrc,
-      loading
+      loading,
+      hasProduct: !!product,
+      productId: item.productId
     });
   }
 

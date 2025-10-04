@@ -362,8 +362,8 @@ const Wishlist: React.FC = () => {
                       </div>
 
                       <div className="product-card-content">
-                        <h3 className="product-card-title">{item.productName}</h3>
-                        <p className="product-card-description">{item.productDescription}</p>
+                        <h3 className="product-card-title">{item.productName || 'No Title'}</h3>
+                        <p className="product-card-description">{item.productDescription || 'No Description'}</p>
                         <div className="product-card-price">
                           {(item.productPrice ?? 0).toFixed(2)} {item.productCurrency === 'EUR' ? '€' : item.productCurrency}
                         </div>

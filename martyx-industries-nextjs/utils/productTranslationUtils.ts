@@ -145,7 +145,7 @@ export const getLocalizedHardcodedProductDataForService = (productId: string): P
   const currentLanguage = i18n.language || 'en';
   const t = i18n.getFixedT(currentLanguage, 'products');
   
-  if (import.meta.env.MODE === 'development') {
+  if (process.env.NODE_ENV === 'development') {
     console.log(`🌐 Getting localized product data for ${productId} in language: ${currentLanguage}`);
   }
   

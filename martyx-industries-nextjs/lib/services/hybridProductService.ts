@@ -58,9 +58,9 @@ export class HybridProductService {
   }
 
   /**
-   * Merge ProductDto from backend with hardcoded frontend data
+   * Merge Product from backend with hardcoded frontend data
    */
-  private mergeProductData(backendProduct: ProductDto, hardcodedData: HardcodedProductData | null): Product {
+  private mergeProductData(backendProduct: any, hardcodedData: HardcodedProductData | null): Product {
     console.log('🔀 HybridService: mergeProductData called for product', backendProduct.id);
     console.log('🔀 Backend product:', backendProduct);
     console.log('🔀 Hardcoded data:', hardcodedData);
@@ -83,7 +83,7 @@ export class HybridProductService {
       id: backendProduct.id.toString(),
       name: backendProduct.name,
       price: backendProduct.price,
-      currency: backendProduct.currency, // Now comes from backend
+      currency: backendProduct.currency,
       description: backendProduct.description,
       features: mergedHardcodedData.features!,
       modelPath: mergedHardcodedData.modelPath!,
@@ -216,7 +216,7 @@ export class HybridProductService {
   async getProductById(id: number): Promise<Product> {
     try {
       const currentLanguage = getCurrentLanguage();
-
+      
       // Check cache first
       if (this.productCache.has(id) && this.isCacheValid()) {
         if (process.env.NODE_ENV === 'development') {
@@ -229,16 +229,12 @@ export class HybridProductService {
         console.log(`🔄 Fetching product ${id} from backend for language: ${currentLanguage}`);
       }
 
-      // Fetch from backend with current language
-      const backendProduct = await productService.getProduct(id, currentLanguage);
+      // Fetch from backend - Next.js productService doesn't have language parameter
+      const backendProduct = await productService.getProductById(id.toString());
 
-      // Check if product is active - throw a special error type
-      if (!backendProduct.active) {
-        const inactiveError: ProductError = new Error(`Product ${id} is not active`);
-        inactiveError.code = 'PRODUCT_INACTIVE';
-        throw inactiveError;
-      }
-
+      // Next.js backend Product type doesn't have 'active' property like the original project
+      // So we assume the product is active if we can fetch it successfully
+      
       const hardcodedData = this.getHardcodedDataById(backendProduct.id.toString());
       const mergedProduct = this.mergeProductData(backendProduct, hardcodedData);
 
@@ -249,17 +245,12 @@ export class HybridProductService {
 
       return mergedProduct;
     } catch (error) {
-      // If the error is specifically about inactive product, don't use fallback
-      if ((error as ProductError).code === 'PRODUCT_INACTIVE') {
-        throw error;
-      }
-
       console.error(`Failed to fetch product ${id} from backend:`, error);
-
+      
       // Only use fallback for network/connection errors, not HTTP errors
       // Check if this is a network error vs HTTP error response
       const isNetworkError = this.isNetworkError(error as Error);
-
+      
       if (isNetworkError) {
         // Fallback: try to find in hardcoded data (only for connection errors)
         const baseHardcodedData = hardcodedProductsData.find(data => data.id === id.toString());
@@ -267,18 +258,15 @@ export class HybridProductService {
           // Get localized data for this product
           const localizedData = getLocalizedHardcodedProductDataForService(id.toString());
           const hardcodedData = { ...baseHardcodedData, ...localizedData };
-
-          const mockBackendProduct: ProductDto = {
-            id: id,
+          
+          // Create mock backend product - using Next.js Product type instead of ProductDto
+          const mockBackendProduct: any = {
+            id: id.toString(), // Next.js uses string IDs
             name: `Mock Product ${id}`,
             description: 'Product data unavailable - backend connection failed',
             price: 0,
             currency: 'USD', // Default fallback currency
-            imageUrl: null,
-            sku: `MOCK-${id}`,
-            category: null,
-            productType: 'DIGITAL',
-            active: true // Fallback products are considered active for development
+            productType: 'DIGITAL'
           };
           const fallbackProduct = this.mergeProductData(mockBackendProduct, hardcodedData);
           console.warn(`Using fallback data for product ${id} due to network error`);

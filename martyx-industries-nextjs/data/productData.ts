@@ -135,7 +135,11 @@ export const hardcodedProductsData: HardcodedProductData[] = [
             "Compatible with all major 3D software"
         ],
         modelPath: endeavourModel,
-        gallery: [], // Gallery loaded from database
+        gallery: [
+            "/productsGallery/1/endeavour_1.jpg",
+            "/productsGallery/1/endeavour_2.jpg", 
+            "/productsGallery/1/endeavour_3.jpg"
+        ], // Temporary gallery for testing
         interactionInstructions: baseInteractionInstructions,
         modelViewerSettings: defaultModelViewerSettings,
         videoUrl: 'https://youtu.be/b5QAer6Q8lY',
@@ -290,7 +294,11 @@ export const hardcodedProductsData: HardcodedProductData[] = [
             "DDDDDDDDDDDDDDDDDDDDDDDDDDD"
         ],
         modelPath: raketaModel,
-        gallery: [], // Gallery loaded from database
+        gallery: [
+            "/productsGallery/1/endeavour_1.jpg",
+            "/productsGallery/1/endeavour_2.jpg", 
+            "/productsGallery/1/endeavour_3.jpg"
+        ], // Temporary gallery for testing
         interactionInstructions: baseInteractionInstructions,
         modelViewerSettings: defaultModelViewerSettings,
         videoUrl: 'https://www.youtube-nocookie.com/embed/bXxOCo0VL1Y',
