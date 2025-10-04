@@ -9,6 +9,7 @@ interface OptimizedImageProps {
   className?: string;
   placeholder?: string;
   priority?: boolean;
+  eager?: boolean; // Nová prop pre immediate loading bez intersection observer
   style?: React.CSSProperties;
   // Všetky ostatné img props
   [key: string]: any;
@@ -22,16 +23,17 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   className = '',
   placeholder = '/images/product-placeholder.svg',
   priority = false,
+  eager = false,
   style = {},
   ...imgProps
 }) => {
   const [loaded, setLoaded] = useState(false);
-  const [inView, setInView] = useState(priority);
+  const [inView, setInView] = useState(priority || eager); // Eager loading alebo priority
   const [error, setError] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
-    if (priority) return;
+    if (priority || eager) return; // Skip intersection observer pre priority/eager obrázky
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -50,7 +52,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
     }
 
     return () => observer.disconnect();
-  }, [priority]);
+  }, [priority, eager]);
 
   const handleLoad = () => {
     setLoaded(true);
@@ -69,7 +71,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
     ...style,
     // Pridaj len minimálne potrebné štýly pre optimalizáciu
     transition: loaded ? 'opacity 0.3s ease' : 'none',
-    opacity: loaded ? 1 : (priority ? 1 : 0.8)
+    opacity: loaded ? 1 : (priority || eager ? 1 : 0.8)
   };
 
   return (
@@ -83,7 +85,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
       style={combinedStyle}
       onLoad={handleLoad}
       onError={handleError}
-      loading={priority ? 'eager' : 'lazy'}
+      loading={(priority || eager) ? 'eager' : 'lazy'}
       decoding="async"
       {...imgProps} // Spread všetky ostatné props
     />

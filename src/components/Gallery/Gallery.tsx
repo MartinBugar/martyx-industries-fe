@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './Gallery.css';
 import OptimizedImage from '../OptimizedImage/OptimizedImage';
 import { getImageSrcSet, getBestImageUrl, getBaseNameFromPath, isCDNEnabled } from '../../utils/cdnImages';
+import { useImagePreload, useBatchImagePreload } from '../../hooks/useImagePreload';
 
 interface GalleryProps {
   productName: string;
@@ -32,10 +33,26 @@ const Gallery: React.FC<GalleryProps> = ({ productName, images }) => {
   // Debug: log received images
   React.useEffect(() => {
     if (import.meta.env.DEV) {
-      console.log('🖼️ Gallery received images for', productName, ':', images);
-      console.log('🔍 First 3 image URLs:', images.slice(0, 3));
+      console.log('🖼️ Gallery received images for', productName, ':', images.length, 'images');
+      console.log('🔍 All image URLs:', images);
     }
   }, [images, productName]);
+
+  // Preload obrázkov pomocou HTML link tags (rýchlejšie)
+  const thumbnailUrls = React.useMemo(() => 
+    optimizedImages.slice(0, 6).map(img => img.thumbnailSrc), 
+    [optimizedImages]
+  );
+  
+  useImagePreload(thumbnailUrls, 'high'); // High priority pre thumbnail obrázky
+  
+  // Batch preload zvyšných obrázkov
+  const remainingUrls = React.useMemo(() => 
+    optimizedImages.slice(6).map(img => img.thumbnailSrc), 
+    [optimizedImages]
+  );
+  
+  useBatchImagePreload(remainingUrls, 50); // Rýchlejší batch preload
 
   // Cleanup timeout on unmount
   React.useEffect(() => {
@@ -121,7 +138,7 @@ const Gallery: React.FC<GalleryProps> = ({ productName, images }) => {
             <OptimizedImage
               src={optimizedImages[index]?.thumbnailSrc || image}
               alt={`${productName} - Image ${index + 1}`}
-              priority={index < 3} // Prvé 3 thumbnail obrázky majú prioritu
+              eager={true} // Všetky thumbnail obrázky sa načítajú okamžite
               className="gallery-thumbnail-image"
             />
           </div>
