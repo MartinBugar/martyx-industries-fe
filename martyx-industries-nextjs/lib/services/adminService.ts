@@ -1,17 +1,5 @@
-import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
-
-// Note: authApi will need to be imported when AuthContext is ported
-// For now, we'll create a minimal interface
-const authApi = {
-  login: async (email: string, password: string): Promise<{ token?: string }> => {
-    const response = await fetch(`${API_BASE_URL}/api/auth/login`, withLangHeaders({
-      method: 'POST',
-      headers: defaultHeaders as HeadersInit,
-      body: JSON.stringify({ email, password }),
-    }));
-    return await handleResponse(response);
-  }
-};
+import { API_BASE_URL, handleResponse, withLangHeaders } from './apiUtils';
+import { authApi, defaultHeaders } from './api';
 
 export const adminService = {
   // Verifies if the current authenticated user has ADMIN privileges on the backend
@@ -42,10 +30,25 @@ export const adminService = {
         headers: defaultHeaders as HeadersInit,
       }));
 
+      // Debug logging
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🔍 Admin check request:', {
+          url: `${API_BASE_URL}/api/admin/check`,
+          headers: defaultHeaders,
+          status: response.status,
+          statusText: response.statusText
+        });
+      }
+
       if (response.ok) {
         // Backend now returns a boolean body: true if admin, false otherwise
         try {
           const data = await response.json();
+          
+          if (process.env.NODE_ENV === 'development') {
+            console.log('🔍 Admin check response data:', { data, type: typeof data });
+          }
+          
           if (typeof data === 'boolean') return data;
           if (typeof data === 'string') return data.trim().toLowerCase() === 'true';
           if (data && typeof data.isAdmin === 'boolean') return data.isAdmin;

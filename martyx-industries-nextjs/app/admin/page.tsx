@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { authApi, setAuthToken, removeAuthToken } from '@/lib/services/api';
 import { adminService } from '@/lib/services/adminService';
 import { isTokenExpired } from '@/lib/services/apiUtils';
-import AdminLayout from '@/components/admin/AdminLayout';
+import AdminLayout from './components/AdminLayout';
 
 export default function AdminLogin() {
   const router = useRouter();
@@ -21,12 +21,41 @@ export default function AdminLogin() {
     const adminFlag = hasWindow && window.localStorage.getItem('adminAuthed') === 'true';
     const token = hasWindow ? window.localStorage.getItem('token') : null;
     const validToken = !!token && !isTokenExpired(token);
+    
+    // Debug logging
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🔐 Admin login check:', {
+        hasWindow,
+        adminFlag,
+        hasToken: !!token,
+        tokenLength: token?.length || 0,
+        validToken,
+        willRedirect: adminFlag && validToken,
+        currentPath: window.location.pathname
+      });
+    }
+    
     if (adminFlag && validToken) {
+      console.log('✅ Already authenticated, redirecting to /admin/panel');
       router.replace('/admin/panel');
     } else if (adminFlag && !validToken) {
+      console.log('❌ Invalid token, clearing adminAuthed flag');
       window.localStorage.removeItem('adminAuthed');
+      window.localStorage.removeItem('token');
+    } else {
+      console.log('📝 Showing login form');
     }
   }, [router]);
+
+  // Debug function to clear localStorage
+  const clearAuth = () => {
+    localStorage.removeItem('adminAuthed');
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    removeAuthToken();
+    console.log('🧹 Cleared all auth data');
+    window.location.reload();
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,8 +68,12 @@ export default function AdminLogin() {
 
     setLoading(true);
     try {
+      console.log('🔄 Starting admin login process...');
+      
       // 1) Authenticate against backend
       const loginResp = await authApi.login(email.trim(), password.trim());
+      console.log('🔑 Login response:', { hasToken: !!loginResp?.token });
+      
       if (!loginResp?.token) {
         throw new Error('Invalid login response');
       }
@@ -48,17 +81,26 @@ export default function AdminLogin() {
       // 2) Store token and set auth header for subsequent admin check
       localStorage.setItem('token', loginResp.token);
       setAuthToken(loginResp.token);
+      console.log('💾 Token stored and auth header set:', {
+        tokenLength: loginResp.token.length,
+        tokenStart: loginResp.token.substring(0, 20) + '...'
+      });
 
       // 3) Verify admin access with backend
+      console.log('🔍 Checking admin privileges...');
       const isAdmin = await adminService.checkAdmin();
+      console.log('👑 Admin check result:', isAdmin);
+      
       if (isAdmin) {
         // Mark admin session and proceed
         localStorage.setItem('adminAuthed', 'true');
+        console.log('✅ Admin access granted, redirecting to /admin/panel');
         router.replace('/admin/panel');
         return;
       }
 
       // Not an admin -> clear token and show ACCES DENIED
+      console.log('❌ Admin access denied, clearing credentials');
       removeAuthToken();
       localStorage.removeItem('token');
       localStorage.removeItem('user');
@@ -102,6 +144,16 @@ export default function AdminLogin() {
         <button type="submit" style={{ width: '100%', background: '#111827', color: '#fff', padding: '10px 12px', border: 'none', borderRadius: 6, cursor: 'pointer', opacity: loading ? 0.8 : 1 }} disabled={loading}>
           {loading ? 'Logging In…' : 'Log In'}
         </button>
+        
+        {process.env.NODE_ENV === 'development' && (
+          <button 
+            type="button" 
+            onClick={clearAuth}
+            style={{ width: '100%', background: '#dc2626', color: '#fff', padding: '6px 12px', border: 'none', borderRadius: 6, cursor: 'pointer', marginTop: 8, fontSize: '12px' }}
+          >
+            🧹 Clear Auth Data (Debug)
+          </button>
+        )}
       </form>
 
       {showDeniedModal && (

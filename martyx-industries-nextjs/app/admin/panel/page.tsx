@@ -1,23 +1,48 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { isTokenExpired } from '@/lib/services/apiUtils';
+import RequireAdmin from '@/components/RequireAdmin';
 import AdminLayout from '@/components/admin/AdminLayout';
 import VisitorChart, { type VisitorChartDataPoint } from '@/components/Charts/VisitorChart';
 import { visitorService } from '@/lib/services/visitorService';
-import { systemHealthService, type SystemHealthData } from '@/lib/services/systemHealthService';
+import { systemHealthService, type SystemHealthResponse } from '@/lib/services/systemHealthService';
 import { revenueAnalyticsService, type RevenueAnalytics } from '@/lib/services/revenueAnalyticsService';
 import './AdminDashboard.css';
 
 type DashboardSection = 'status' | 'visitors' | 'revenue';
 
+// KPI Card Component (from old implementation)
+interface KPICardProps {
+  label: string;
+  value: string | number;
+  loading?: boolean;
+  error?: string;
+  accent?: 'blue' | 'green';
+}
+
+const KPICard: React.FC<KPICardProps> = ({ label, value, loading, error, accent = 'blue' }) => {
+  const accentColor = accent === 'blue' ? '#3B82F6' : '#10B981';
+
+  return (
+    <div className="kpi-card">
+      <div className="kpi-label">{label}</div>
+      {loading ? (
+        <div className="kpi-loading">Loading…</div>
+      ) : error ? (
+        <div className="kpi-error">{error}</div>
+      ) : (
+        <div className="kpi-value">{typeof value === 'number' ? value.toLocaleString() : value}</div>
+      )}
+      <div className="kpi-accent" style={{ backgroundColor: accentColor }}></div>
+    </div>
+  );
+};
+
 export default function AdminDashboard() {
-  const router = useRouter();
   const [activeSection, setActiveSection] = useState<DashboardSection>('status');
 
   // Status data
-  const [systemHealth, setSystemHealth] = useState<SystemHealthData | null>(null);
+  const [systemHealth, setSystemHealth] = useState<SystemHealthResponse | null>(null);
   const [loadingStatus, setLoadingStatus] = useState(true);
 
   // Visitors data
@@ -30,17 +55,7 @@ export default function AdminDashboard() {
   const [loadingRevenue, setLoadingRevenue] = useState(true);
 
   useEffect(() => {
-    const hasWindow = typeof window !== 'undefined';
-    const adminFlag = hasWindow && window.localStorage.getItem('adminAuthed') === 'true';
-    const token = hasWindow ? window.localStorage.getItem('token') : null;
-    const validToken = !!token && !isTokenExpired(token);
-
-    if (!adminFlag || !validToken) {
-      router.replace('/admin');
-      return;
-    }
-
-    // Load data based on active section
+    // Load data based on active section - no auth check needed, RequireAdmin handles it
     if (activeSection === 'status') {
       loadSystemHealth();
     } else if (activeSection === 'visitors') {
@@ -48,7 +63,7 @@ export default function AdminDashboard() {
     } else if (activeSection === 'revenue') {
       loadRevenueData();
     }
-  }, [activeSection, router]);
+  }, [activeSection]);
 
   const loadSystemHealth = async () => {
     setLoadingStatus(true);
@@ -113,70 +128,106 @@ export default function AdminDashboard() {
   );
 
   return (
-    <AdminLayout title="Dashboard" navTabs={navTabs}>
+    <RequireAdmin>
+      <AdminLayout title="Dashboard" navTabs={navTabs}>
       {/* Status Section */}
       {activeSection === 'status' && (
         <div className="dashboard-section">
-          <h2 className="section-title">System Status</h2>
+          <div className="section-header">
+            <div className="section-pill" style={{ backgroundColor: '#3B82F6' }}>
+              STATUS
+            </div>
+            <div className="section-divider"></div>
+          </div>
 
-          {loadingStatus ? (
-            <div className="loading-state">Loading system health...</div>
-          ) : systemHealth ? (
-            <>
-              {/* KPI Row */}
-              <div className="kpi-row">
-                <div className="kpi-card">
-                  <div className="kpi-label">Overall Health</div>
-                  <div className={`kpi-value status-${systemHealth.overall.toLowerCase()}`}>
-                    {systemHealth.overall}
-                  </div>
-                </div>
-                <div className="kpi-card">
-                  <div className="kpi-label">Database</div>
-                  <div className={`kpi-value status-${systemHealth.database.status.toLowerCase()}`}>
-                    {systemHealth.database.status}
-                  </div>
-                  <div className="kpi-subtext">{systemHealth.database.responseTime}ms</div>
-                </div>
-                <div className="kpi-card">
-                  <div className="kpi-label">CPU Usage</div>
-                  <div className="kpi-value">{systemHealth.cpu.usage}%</div>
-                  <div className="kpi-subtext">{systemHealth.cpu.cores} cores</div>
-                </div>
-                <div className="kpi-card">
-                  <div className="kpi-label">Memory</div>
-                  <div className="kpi-value">{systemHealth.memory.usagePercent}%</div>
-                  <div className="kpi-subtext">{systemHealth.memory.used} / {systemHealth.memory.total}</div>
-                </div>
-              </div>
+          {/* System Health KPIs */}
+          <div className="kpi-row">
+            <KPICard
+              label="Database"
+              value={loadingStatus ? "Loading..." : systemHealth?.database.connected ? "Connected" : "Disconnected"}
+              loading={loadingStatus}
+              error={systemHealth ? undefined : 'Failed to load'}
+              accent={systemHealth?.database.connected ? "green" : "blue"}
+            />
+            <KPICard
+              label="DB Response Time"
+              value={loadingStatus ? "Loading..." : systemHealth?.database.connected ? `${systemHealth.database.connectionTime}ms` : "N/A"}
+              loading={loadingStatus}
+              error={systemHealth ? undefined : 'Failed to load'}
+              accent="blue"
+            />
+            <KPICard
+              label="System Uptime"
+              value={loadingStatus ? "Loading..." : systemHealth ? `${Math.floor(systemHealth.system.uptime / 3600)}h` : "N/A"}
+              loading={loadingStatus}
+              error={systemHealth ? undefined : 'Failed to load'}
+              accent="green"
+            />
+            <KPICard
+              label="CPU Usage"
+              value={loadingStatus ? "Loading..." : systemHealth ? `${systemHealth.system.cpuUsage}%` : "N/A"}
+              loading={loadingStatus}
+              error={systemHealth ? undefined : 'Failed to load'}
+              accent={systemHealth && systemHealth.system.cpuUsage > 80 ? "blue" : "green"}
+            />
+          </div>
 
-              {/* Services Status */}
-              <div className="services-grid">
-                <h3 className="subsection-title">Services</h3>
-                <div className="service-cards">
-                  <div className="service-card">
-                    <div className="service-name">Disk</div>
-                    <div className={`service-status status-${systemHealth.disk.status.toLowerCase()}`}>
-                      {systemHealth.disk.status}
-                    </div>
-                    <div className="service-detail">{systemHealth.disk.usagePercent}% used ({systemHealth.disk.used} / {systemHealth.disk.total})</div>
-                  </div>
-
-                  {systemHealth.services.map((service, idx) => (
-                    <div key={idx} className="service-card">
-                      <div className="service-name">{service.name}</div>
-                      <div className={`service-status status-${service.status.toLowerCase()}`}>
-                        {service.status}
+          {/* System Details */}
+          <div className="bottom-row">
+            <div className="data-status">
+              <div className="card">
+                <h3 className="card-title">System Health</h3>
+                <div className="status-info">
+                  {loadingStatus ? (
+                    <div className="status-text">Loading system metrics...</div>
+                  ) : !systemHealth ? (
+                    <div className="status-text" style={{ color: '#EF4444' }}>Error loading system health</div>
+                  ) : (
+                    <>
+                      <div className="status-text">
+                        Memory: {(systemHealth.system.memoryUsage.used / 1024).toFixed(1)}GB / {(systemHealth.system.memoryUsage.total / 1024).toFixed(1)}GB ({systemHealth.system.memoryUsage.percentage.toFixed(1)}%)
                       </div>
-                      <div className="service-detail">{service.responseTime}ms</div>
-                    </div>
-                  ))}
+                      <div className="status-text">
+                        Disk: {(systemHealth.system.diskSpace.used / 1024).toFixed(1)}GB / {(systemHealth.system.diskSpace.total / 1024).toFixed(1)}GB ({systemHealth.system.diskSpace.percentage.toFixed(1)}%)
+                      </div>
+                      <div className="status-text">
+                        Database: {systemHealth.database.database}
+                      </div>
+                      <div className={`status-pill ${systemHealth.overallStatus === 'healthy' ? 'healthy' : systemHealth.overallStatus === 'degraded' ? 'degraded' : 'critical'}`}>
+                        {systemHealth.overallStatus.charAt(0).toUpperCase() + systemHealth.overallStatus.slice(1)}
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
-            </>
-          ) : (
-            <div className="error-state">Failed to load system health data</div>
-          )}
+            </div>
+            <div className="system-bandwidth">
+              <div className="card">
+                <h3 className="card-title">API Endpoints</h3>
+                <div className="bandwidth-content">
+                  {loadingStatus ? (
+                    <div>Loading endpoints...</div>
+                  ) : !systemHealth ? (
+                    <div className="bandwidth-unavailable">Failed to load endpoint status</div>
+                  ) : systemHealth.apiEndpoints && systemHealth.apiEndpoints.length > 0 ? (
+                    <div className="endpoints-list">
+                      {systemHealth.apiEndpoints.map((endpoint, index) => (
+                        <div key={index} className="endpoint-row">
+                          <div className="endpoint-name">{endpoint.endpoint}</div>
+                          <div className="endpoint-time">{endpoint.responseTime}ms</div>
+                          <div className={`endpoint-status ${endpoint.status}`}>
+                            {endpoint.status}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="bandwidth-placeholder">No endpoint data available</div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
@@ -340,5 +391,6 @@ export default function AdminDashboard() {
         </div>
       )}
     </AdminLayout>
+    </RequireAdmin>
   );
 }

@@ -31,26 +31,27 @@ function isTokenExpired(token: string): boolean {
 export function middleware(request: NextRequest) {
   const { hostname, pathname } = request.nextUrl;
 
-  // Admin route protection
-  if (pathname.startsWith('/admin') && pathname !== '/admin') {
-    // Get token from cookies or headers
-    const token = request.cookies.get('token')?.value || 
-                  request.headers.get('authorization')?.replace('Bearer ', '');
-    
-    // Get admin flag from cookies
-    const adminAuthed = request.cookies.get('adminAuthed')?.value === 'true';
-    
-    // Check if user has valid admin access
-    const hasValidToken = token && !isTokenExpired(token);
-    const isAdminRoute = pathname.startsWith('/admin/');
-    
-    if (isAdminRoute && (!hasValidToken || !adminAuthed)) {
-      // Redirect to admin login with return URL
-      const loginUrl = new URL('/admin', request.url);
-      loginUrl.searchParams.set('redirect', pathname);
-      return NextResponse.redirect(loginUrl);
-    }
-  }
+  // DISABLED: Admin route protection - handled by client-side RequireAdmin component
+  // The middleware was interfering with localStorage-based auth
+  // if (pathname.startsWith('/admin') && pathname !== '/admin') {
+  //   // Get token from cookies or headers
+  //   const token = request.cookies.get('token')?.value || 
+  //                 request.headers.get('authorization')?.replace('Bearer ', '');
+  //   
+  //   // Get admin flag from cookies
+  //   const adminAuthed = request.cookies.get('adminAuthed')?.value === 'true';
+  //   
+  //   // Check if user has valid admin access
+  //   const hasValidToken = token && !isTokenExpired(token);
+  //   const isAdminRoute = pathname.startsWith('/admin/');
+  //   
+  //   if (isAdminRoute && (!hasValidToken || !adminAuthed)) {
+  //     // Redirect to admin login with return URL
+  //     const loginUrl = new URL('/admin', request.url);
+  //     loginUrl.searchParams.set('redirect', pathname);
+  //     return NextResponse.redirect(loginUrl);
+  //   }
+  // }
 
   // Redirect from www to apex domain
   if (hostname.startsWith('www.')) {
