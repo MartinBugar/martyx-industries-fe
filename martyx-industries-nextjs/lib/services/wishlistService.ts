@@ -72,14 +72,8 @@ export class WishlistService {
         productId: typeof productId === 'string' ? parseInt(productId) : productId
       };
 
-      // Use DELETE method with request body as specified in backend requirements
-      await apiClient.request(`${this.baseUrl}/remove`, {
-        method: 'DELETE',
-        body: request,
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
+      // Use POST method for remove to avoid CORS preflight issues with DELETE+body
+      await apiClient.post(`${this.baseUrl}/remove`, request);
     } catch (error) {
       console.error('Failed to remove from wishlist:', error);
       throw error;

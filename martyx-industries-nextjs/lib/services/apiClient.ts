@@ -67,7 +67,8 @@ class ApiClient {
     const requestPromise = this.executeRequest<T>(url, withLangHeaders({
       method,
       headers: { ...defaultHeaders, ...headers } as HeadersInit,
-      body: body ? JSON.stringify(body) : undefined
+      body: body ? JSON.stringify(body) : undefined,
+      credentials: 'include' // Enable CORS with credentials (cookies, auth headers)
     }), retry, retryAttempts, retryDelay);
 
     // Store pending request

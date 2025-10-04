@@ -36,7 +36,8 @@
       "Bash(rm:*)",
       "Bash(tasklist)",
       "Bash(git restore:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(timeout:*)"
     ],
     "deny": [],
     "ask": []

@@ -97,8 +97,9 @@ export const authApi = {
         method: 'POST',
         headers: defaultHeaders as HeadersInit,
         body: JSON.stringify({ email, password }),
+        credentials: 'include' // Enable CORS with credentials
       }));
-      
+
       const handledResponse = await handleResponse(response);
       return await handledResponse.json();
     } catch (error) {
@@ -116,8 +117,9 @@ export const authApi = {
           ...defaultHeaders,
           'Authorization': `Bearer ${token}`,
         } as HeadersInit,
+        credentials: 'include' // Enable CORS with credentials
       }));
-      
+
       const handledResponse = await handleResponse(response);
       return await handledResponse.json();
     } catch (error) {
@@ -133,8 +135,9 @@ export const authApi = {
         method: 'POST',
         headers: defaultHeaders as HeadersInit,
         body: JSON.stringify({ email }),
+        credentials: 'include' // Enable CORS with credentials
       }));
-      
+
       const handledResponse = await handleResponse(response);
       return await handledResponse.json();
     } catch (error) {
@@ -142,7 +145,7 @@ export const authApi = {
       throw error;
     }
   },
-  
+
   // Reset password with token
   resetPassword: async (token: string, password: string) => {
     try {
@@ -150,8 +153,9 @@ export const authApi = {
         method: 'POST',
         headers: defaultHeaders as HeadersInit,
         body: JSON.stringify({ token, password }),
+        credentials: 'include' // Enable CORS with credentials
       }));
-      
+
       const handledResponse = await handleResponse(response);
       return await handledResponse.json();
     } catch (error) {
