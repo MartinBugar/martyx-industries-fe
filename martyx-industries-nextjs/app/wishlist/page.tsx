@@ -15,7 +15,7 @@ import LoadingSpinner from '@/components/common/LoadingSpinner';
 import WishlistProductImage from '@/components/WishlistProductImage';
 import { productGalleryService } from '@/lib/services/productGalleryService';
 import './Wishlist.css';
-import '../products/Products.css';
+import '../products/Products.css'; // Import product card styles
 
 const Wishlist: React.FC = () => {
   const { t } = useTranslation('wishlist');
@@ -317,65 +317,81 @@ const Wishlist: React.FC = () => {
 
             {/* Wishlist Items */}
             <div className={`wishlist-items wishlist-items--${viewMode}`}>
-              {availableItems.map((item) => (
-                <article key={item.id} className="product-card wishlist-product-card">
+              {availableItems.map((item) => {
+                // Debug: Log item data
+                if (process.env.NODE_ENV === 'development') {
+                  console.log('🔍 Wishlist item:', {
+                    id: item.id,
+                    productId: item.productId,
+                    productName: item.productName,
+                    productImageUrl: item.productImageUrl,
+                    productPrice: item.productPrice,
+                    productDescription: item.productDescription,
+                    isAvailable: item.isAvailable
+                  });
+                  console.log('🔍 Product data:', productsData.get(item.productId));
+                }
 
-                  <Link href={`/products/${item.productId}`} className="product-card-link">
-                    <div className="product-card-image-container">
-                      <WishlistProductImage
-                        item={item}
-                        product={productsData.get(item.productId)}
-                        loading={loadingProducts}
-                      />
+                return (
+                  <article key={item.id} className="product-card wishlist-product-card">
 
-                      <div className="product-card-wishlist">
-                        <WishlistButton
-                          productId={item.productId}
-                          variant="icon"
-                          size="small"
+                    <Link href={`/products/${item.productId}`} className="product-card-link">
+                      <div className="product-card-image-container">
+                        <WishlistProductImage
+                          item={item}
+                          product={productsData.get(item.productId)}
+                          loading={loadingProducts}
                         />
-                      </div>
 
-                      {item.productType === 'digital' && (
-                        <div className="product-badge">
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <line x1="12" y1="15" x2="12" y2="3"></line>
-                          </svg>
-                          Digital
+                        <div className="product-card-wishlist">
+                          <WishlistButton
+                            productId={item.productId}
+                            variant="icon"
+                            size="small"
+                          />
                         </div>
-                      )}
-                    </div>
 
-                    <div className="product-card-content">
-                      <h3 className="product-card-title">{item.productName}</h3>
-                      <p className="product-card-description">{item.productDescription}</p>
-                      <div className="product-card-price">
-                        {(item.productPrice ?? 0).toFixed(2)} {item.productCurrency === 'EUR' ? '€' : item.productCurrency}
+                        {item.productType === 'digital' && (
+                          <div className="product-badge">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            Digital
+                          </div>
+                        )}
                       </div>
+
+                      <div className="product-card-content">
+                        <h3 className="product-card-title">{item.productName}</h3>
+                        <p className="product-card-description">{item.productDescription}</p>
+                        <div className="product-card-price">
+                          {(item.productPrice ?? 0).toFixed(2)} {item.productCurrency === 'EUR' ? '€' : item.productCurrency}
+                        </div>
+                      </div>
+                    </Link>
+
+                    <div className="product-card-actions">
+                      <button
+                        className="add-to-cart-btn"
+                        onClick={() => handleAddToCart(item)}
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <circle cx="8" cy="21" r="1"/>
+                          <circle cx="19" cy="21" r="1"/>
+                          <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57L20.6 7H6"/>
+                        </svg>
+                        Add to Cart
+                      </button>
                     </div>
-                  </Link>
 
-                  <div className="product-card-actions">
-                    <button
-                      className="add-to-cart-btn"
-                      onClick={() => handleAddToCart(item)}
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <circle cx="8" cy="21" r="1"/>
-                        <circle cx="19" cy="21" r="1"/>
-                        <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57L20.6 7H6"/>
-                      </svg>
-                      Add to Cart
-                    </button>
-                  </div>
-
-                  <div className="wishlist-item-meta">
-                    <span className="wishlist-added-date">
-                      Added {new Date(item.addedAt).toLocaleDateString()}
-                    </span>
-                  </div>
-                </article>
-              ))}
+                    <div className="wishlist-item-meta">
+                      <span className="wishlist-added-date">
+                        Added {new Date(item.addedAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </article>
+                );
+              })}
 
               {/* Unavailable Items Section */}
               {unavailableItems.length > 0 && (

@@ -52,8 +52,10 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
             if ((error as any).code === 'PRODUCT_INACTIVE') {
               return { ...item, isAvailable: false };
             }
-            // For other errors (network, etc.), keep original status
-            return item;
+            // For other errors (network, etc.), assume product is available
+            // This prevents network issues from marking all products as unavailable
+            console.warn(`Error checking availability for product ${item.productId}, assuming available:`, error);
+            return { ...item, isAvailable: true };
           }
         })
       );
@@ -122,8 +124,12 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
         // If we can't fetch the product (inactive or not found), mark as unavailable
         if ((error as any).code === 'PRODUCT_INACTIVE') {
           correctedItem = { ...newItem, isAvailable: false };
+        } else {
+          // For other errors (network, etc.), assume product is available
+          // since user was able to add it to wishlist (it was visible on the page)
+          console.warn('Error checking product availability, assuming available:', error);
+          correctedItem = { ...newItem, isAvailable: true };
         }
-        // For other errors (network, etc.), keep original status
       }
 
       setItems(prev => [correctedItem, ...prev]);
@@ -200,6 +206,7 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
     } catch (err: any) {
       console.error('Failed to remove from wishlist:', err);
 
+      // Handle backend errors with proper error messages
       if (err.message?.includes('Authentication required') || err.message?.includes('session has expired')) {
         setError('Please log in to remove items from wishlist');
       } else if (err.message?.includes('401') || err.errorData?.status === 401) {
@@ -207,11 +214,11 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
       } else if (err.message?.includes('403') || err.errorData?.status === 403) {
         setError('You do not have permission to modify this wishlist');
       } else if (err.message?.includes('404') || err.errorData?.status === 404) {
-        setError('Item not found in wishlist');
+        setError('Product not found in wishlist');
       } else if (err.message?.includes('5') || err.errorData?.status >= 500) {
         setError('Server error, please try again');
       } else {
-        setError('Unable to remove from wishlist. Please try again.');
+        setError('Unable to remove from wishlist');
       }
 
       return false;
@@ -225,56 +232,74 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
 
   const cleanupWishlist = useCallback(async (): Promise<number> => {
     if (!isAuthenticated) {
-      return 0;
+      throw new Error('Please login to cleanup wishlist');
     }
 
     try {
       setError(null);
       const removedCount = await wishlistService.cleanupWishlist();
 
-      // Reload wishlist after cleanup
+      // Reload data after cleanup
       await loadWishlist();
       await loadStats();
 
       return removedCount;
-    } catch (err: any) {
+    } catch (err) {
       console.error('Failed to cleanup wishlist:', err);
-      setError('Unable to cleanup wishlist');
-      return 0;
+      setError('Failed to cleanup wishlist');
+      throw err;
     }
   }, [isAuthenticated, loadWishlist, loadStats]);
 
   const addMultiple = useCallback(async (productIds: (string | number)[]): Promise<void> => {
     if (!isAuthenticated) {
-      setError('Please login to add items to wishlist');
-      return;
+      throw new Error('Please login to add items to wishlist');
     }
 
     try {
       setError(null);
       await wishlistService.addMultiple(productIds);
+
+      // Reload data after bulk operation
       await loadWishlist();
       await loadStats();
     } catch (err: any) {
       console.error('Failed to add multiple items to wishlist:', err);
-      setError('Unable to add items to wishlist');
+
+      if (err.message?.includes('Authentication required') || err.message?.includes('session has expired')) {
+        setError('Please log in to add items to wishlist');
+      } else if (err.message?.includes('401') || err.errorData?.status === 401) {
+        setError('Your session has expired. Please log in again.');
+      } else {
+        setError('Failed to add products to wishlist');
+      }
+      throw err;
     }
   }, [isAuthenticated, loadWishlist, loadStats]);
 
   const removeMultiple = useCallback(async (productIds: (string | number)[]): Promise<void> => {
     if (!isAuthenticated) {
-      setError('Please login to remove items from wishlist');
-      return;
+      throw new Error('Please login to remove items from wishlist');
     }
 
     try {
       setError(null);
       await wishlistService.removeMultiple(productIds);
+
+      // Reload data after bulk operation
       await loadWishlist();
       await loadStats();
     } catch (err: any) {
       console.error('Failed to remove multiple items from wishlist:', err);
-      setError('Unable to remove items from wishlist');
+
+      if (err.message?.includes('Authentication required') || err.message?.includes('session has expired')) {
+        setError('Please log in to remove items from wishlist');
+      } else if (err.message?.includes('401') || err.errorData?.status === 401) {
+        setError('Your session has expired. Please log in again.');
+      } else {
+        setError('Failed to remove products from wishlist');
+      }
+      throw err;
     }
   }, [isAuthenticated, loadWishlist, loadStats]);
 

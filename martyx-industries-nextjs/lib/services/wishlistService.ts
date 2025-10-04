@@ -72,8 +72,35 @@ export class WishlistService {
         productId: typeof productId === 'string' ? parseInt(productId) : productId
       };
 
-      // Use POST method for remove to avoid CORS preflight issues with DELETE+body
-      await apiClient.post(`${this.baseUrl}/remove`, request);
+      // Debug logging
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🗑️ Removing from wishlist:', {
+          originalProductId: productId,
+          requestData: request,
+          endpoint: `${this.baseUrl}/remove`
+        });
+      }
+
+      // Try POST first (as used in original project), then fallback to DELETE (as defined in backend)
+      try {
+        // First try: POST method (matches original project)
+        await apiClient.post(`${this.baseUrl}/remove`, request);
+        
+        if (process.env.NODE_ENV === 'development') {
+          console.log('✅ Successfully removed from wishlist using POST method');
+        }
+      } catch (postError) {
+        if (process.env.NODE_ENV === 'development') {
+          console.log('❌ POST method failed, trying DELETE method:', postError);
+        }
+        
+        // Fallback: DELETE method with body (matches backend @DeleteMapping)
+        await apiClient.delete(`${this.baseUrl}/remove`, { body: request });
+        
+        if (process.env.NODE_ENV === 'development') {
+          console.log('✅ Successfully removed from wishlist using DELETE method');
+        }
+      }
     } catch (error) {
       console.error('Failed to remove from wishlist:', error);
       throw error;

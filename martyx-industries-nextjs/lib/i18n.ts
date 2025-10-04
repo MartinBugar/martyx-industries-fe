@@ -120,6 +120,7 @@ const resources = {
       delete: 'Delete',
       edit: 'Edit',
       close: 'Close',
+      language: 'Language',
     },
     cart: {
       title: 'Shopping Cart',
@@ -284,6 +285,7 @@ const resources = {
       delete: 'Vymazať',
       edit: 'Upraviť',
       close: 'Zavrieť',
+      language: 'Jazyk',
     },
     cart: {
       title: 'Nákupný košík',

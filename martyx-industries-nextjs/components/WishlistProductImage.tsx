@@ -56,6 +56,17 @@ const WishlistProductImage: React.FC<WishlistProductImageProps> = memo(({
 
   const imageSrc = getOptimizedImageSrc();
 
+  // Debug logging
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🖼️ WishlistProductImage:', {
+      itemName: item.productName,
+      itemImageUrl: item.productImageUrl,
+      productGallery: product?.gallery,
+      finalImageSrc: imageSrc,
+      loading
+    });
+  }
+
   if (loading) {
     return (
       <div className="product-card-placeholder loading-shimmer">
