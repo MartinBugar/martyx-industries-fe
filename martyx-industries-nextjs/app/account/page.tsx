@@ -6,6 +6,7 @@ import { useAuth } from '@/context/useAuth';
 import UserProfile from '@/components/UserProfile/UserProfile';
 import TokenExpirationTimer from '@/components/TokenExpirationTimer/TokenExpirationTimer';
 import OrderHistory from '@/components/OrderHistory/OrderHistory';
+import ModelCollection from '@/components/ModelCollection/ModelCollection';
 import './Account.css';
 
 type TabType = 'profile' | 'orders' | 'collection' | 'settings';
@@ -226,14 +227,7 @@ export default function Account() {
               role="tabpanel"
               aria-labelledby="collection-tab"
             >
-              {activeTab === 'collection' && (
-                <div className="collection-empty">
-                  <div className="empty-icon">📦</div>
-                  <h3>No Models Yet</h3>
-                  <p>Your purchased models will appear here.</p>
-                  <p>Complete an order to start building your collection!</p>
-                </div>
-              )}
+              {activeTab === 'collection' && <ModelCollection />}
             </div>
 
             <div

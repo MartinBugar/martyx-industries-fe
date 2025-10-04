@@ -1,0 +1,252 @@
+/* Mobile-First Responsive Admin Layout */
+
+.admin-shell {
+  display: flex;
+  min-height: 100vh;
+  background: #0F1115;
+  position: relative;
+}
+
+.admin-sidebar {
+  width: 100%;
+  background: #14171E;
+  color: #ffffff;
+  padding: 16px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 50;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  overflow-y: auto;
+  max-width: 280px;
+}
+
+.admin-sidebar-title {
+  font-weight: 700;
+  margin-bottom: 16px;
+  font-size: 18px;
+}
+
+.admin-sidebar nav a {
+  display: block;
+  padding: 10px 12px;
+  color: #f0f0f0;
+  text-decoration: none;
+  border-radius: 6px;
+  margin-bottom: 6px;
+}
+
+.admin-logout-wrap {
+  position: absolute;
+  bottom: 16px;
+}
+
+.admin-content {
+  flex: 1;
+  min-width: 0;
+  background: #0F1115;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.admin-topbar {
+  background: #1F2538;
+  border-bottom: 1px solid #374151;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.admin-topbar-title {
+  margin: 0;
+  font-size: 20px;
+  color: #ffffff;
+}
+
+.admin-burger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #1F2538;
+  color: #ffffff;
+  border: 1px solid #374151;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  min-width: 40px;
+  height: 40px;
+}
+
+.admin-burger:focus-visible,
+.admin-sidebar button:focus-visible,
+.admin-content button:focus-visible,
+.admin-content a:focus-visible {
+  outline: 2px solid #3B82F6; /* dashboard blue */
+  outline-offset: 2px;
+}
+
+.admin-main {
+  padding: 16px;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+  flex: 1;
+  overflow-x: auto;
+}
+
+/* Active link helper (inline style still sets background for active) */
+.admin-link-active {
+  background: #3B82F6; /* dashboard blue */
+}
+
+/* Sidebar open state */
+.admin-sidebar.is-open {
+  transform: translateX(0);
+  box-shadow: 4px 0 20px rgba(0,0,0,0.35);
+}
+
+/* Overlay for mobile */
+.admin-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 45;
+}
+
+/* Tablet and larger screens */
+@media (min-width: 768px) {
+  .admin-burger {
+    display: none;
+  }
+
+  .admin-sidebar {
+    position: relative;
+    transform: translateX(0);
+    width: 240px;
+    max-width: none;
+    box-shadow: none;
+  }
+
+  .admin-main {
+    padding: 24px;
+  }
+
+  .admin-topbar {
+    padding: 16px 24px;
+  }
+}
+
+/* Large screens */
+@media (min-width: 1200px) {
+  .admin-sidebar {
+    width: 280px;
+  }
+
+  .admin-main {
+    padding: 32px;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 480px) {
+  .admin-topbar {
+    padding: 12px;
+    gap: 6px;
+  }
+
+  .admin-topbar-title {
+    font-size: 18px;
+  }
+
+  .admin-main {
+    padding: 12px;
+  }
+
+  .admin-sidebar {
+    padding: 12px;
+  }
+}
+
+/* Admin Navigation Tabs - using same style as dashboard-tabs */
+.admin-nav-tabs {
+  display: flex;
+  gap: 4px;
+  margin-left: 8px;
+  flex-wrap: wrap;
+}
+
+.admin-nav-tab {
+  background: transparent;
+  border: 1px solid #374151;
+  color: #9CA3AF;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+}
+
+.admin-nav-tab:hover {
+  background: #374151;
+  color: #ffffff;
+  border-color: #4B5563;
+}
+
+.admin-nav-tab.active {
+  background: #3B82F6;
+  color: #ffffff;
+  border-color: #3B82F6;
+}
+
+/* Focus states for accessibility */
+.admin-nav-tab:focus-visible {
+  outline: 2px solid #3B82F6;
+  outline-offset: 2px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .admin-nav-tabs {
+    gap: 8px;
+    margin-left: 16px;
+  }
+
+  .admin-nav-tab {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-nav-tabs {
+    gap: 4px;
+    margin-left: 4px;
+    flex-wrap: wrap;
+  }
+
+  .admin-nav-tab {
+    padding: 6px 12px;
+    font-size: 12px;
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+  }
+}

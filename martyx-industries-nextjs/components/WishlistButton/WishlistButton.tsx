@@ -25,8 +25,7 @@ const WishlistButton: React.FC<WishlistButtonProps> = ({
   const [isProcessing, setIsProcessing] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
-  const productIdStr = typeof productId === 'number' ? String(productId) : productId;
-  const inWishlist = isInWishlist(productIdStr);
+  const inWishlist = isInWishlist(productId);
 
   const handleClick = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -43,16 +42,9 @@ const WishlistButton: React.FC<WishlistButtonProps> = ({
 
     try {
       if (inWishlist) {
-        removeFromWishlist(productIdStr);
+        await removeFromWishlist(productId);
       } else {
-        // For now, add with minimal info - real implementation would need full product data
-        addToWishlist({
-          id: productIdStr,
-          productId: productIdStr,
-          title: 'Product',
-          price: 0,
-          imageUrl: undefined
-        });
+        await addToWishlist(productId);
       }
     } catch (err) {
       console.error('Wishlist operation failed:', err);

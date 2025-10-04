@@ -1,0 +1,362 @@
+/* Admin Dashboard Styles */
+
+.dashboard-section {
+  padding: 8px 0;
+}
+
+.section-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 24px 0;
+}
+
+.subsection-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 16px 0;
+}
+
+/* KPI Cards */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.kpi-card {
+  background: #1F2538;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.kpi-label {
+  font-size: 13px;
+  color: #9CA3AF;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.kpi-value {
+  font-size: 32px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1;
+}
+
+.kpi-subtext {
+  font-size: 12px;
+  color: #6B7280;
+  margin-top: 4px;
+}
+
+/* Status Colors */
+.status-healthy,
+.status-ok {
+  color: #10B981;
+}
+
+.status-warning {
+  color: #F59E0B;
+}
+
+.status-critical,
+.status-error {
+  color: #EF4444;
+}
+
+/* Services Grid */
+.services-grid {
+  margin-top: 32px;
+}
+
+.service-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.service-card {
+  background: #1F2538;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.service-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.service-status {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.service-detail {
+  font-size: 12px;
+  color: #9CA3AF;
+}
+
+/* Chart Container */
+.chart-container {
+  margin-top: 32px;
+  background: #1F2538;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  padding: 24px;
+}
+
+.chart-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 16px;
+  overflow-x: auto;
+}
+
+.chart-wrapper svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Top Countries */
+.top-countries {
+  margin-top: 32px;
+}
+
+.country-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.country-item {
+  background: #1F2538;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.country-rank {
+  font-size: 20px;
+  font-weight: 700;
+  color: #3B82F6;
+  min-width: 48px;
+  text-align: center;
+}
+
+.country-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  flex: 1;
+}
+
+.country-count {
+  font-size: 14px;
+  color: #9CA3AF;
+  font-weight: 500;
+}
+
+/* Top Products */
+.top-products {
+  margin-top: 32px;
+}
+
+.product-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.product-item {
+  background: #1F2538;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.product-rank {
+  font-size: 20px;
+  font-weight: 700;
+  color: #10B981;
+  min-width: 48px;
+  text-align: center;
+}
+
+.product-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.product-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.product-sales {
+  font-size: 13px;
+  color: #9CA3AF;
+}
+
+.product-revenue {
+  font-size: 18px;
+  font-weight: 700;
+  color: #10B981;
+}
+
+/* Loading & Error States */
+.loading-state,
+.error-state,
+.empty-state {
+  padding: 48px;
+  text-align: center;
+  background: #1F2538;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  color: #9CA3AF;
+  font-size: 14px;
+}
+
+.error-state {
+  color: #EF4444;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .kpi-row {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+  }
+
+  .kpi-card {
+    padding: 16px;
+  }
+
+  .kpi-value {
+    font-size: 24px;
+  }
+
+  .service-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-container {
+    padding: 16px;
+  }
+
+  .chart-wrapper svg {
+    width: 100%;
+    height: auto;
+  }
+
+  .country-item,
+  .product-item {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .country-rank,
+  .product-rank {
+    font-size: 16px;
+    min-width: 36px;
+  }
+
+  .country-name,
+  .product-name {
+    font-size: 14px;
+  }
+
+  .product-revenue {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .section-title {
+    font-size: 20px;
+  }
+
+  .subsection-title {
+    font-size: 16px;
+  }
+
+  .kpi-row {
+    grid-template-columns: 1fr;
+  }
+
+  .kpi-card {
+    padding: 14px;
+  }
+
+  .kpi-value {
+    font-size: 20px;
+  }
+
+  .chart-container {
+    padding: 12px;
+  }
+
+  .country-item,
+  .product-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .country-rank,
+  .product-rank {
+    font-size: 14px;
+    min-width: auto;
+    text-align: left;
+  }
+
+  .product-item {
+    gap: 12px;
+  }
+
+  .product-details {
+    width: 100%;
+  }
+
+  .product-revenue {
+    align-self: flex-end;
+  }
+}
+
+/* Animation for loading states */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.loading-state {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}

@@ -2,9 +2,10 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { authApi, setAuthToken } from '@/lib/services/api';
-import { isTokenExpired } from '@/lib/services/api';
-import styles from './Admin.module.css';
+import { authApi, setAuthToken, removeAuthToken } from '@/lib/services/api';
+import { adminService } from '@/lib/services/adminService';
+import { isTokenExpired } from '@/lib/services/apiUtils';
+import AdminLayout from '@/components/admin/AdminLayout';
 
 export default function AdminLogin() {
   const router = useRouter();
@@ -21,7 +22,7 @@ export default function AdminLogin() {
     const token = hasWindow ? window.localStorage.getItem('token') : null;
     const validToken = !!token && !isTokenExpired(token);
     if (adminFlag && validToken) {
-      router.replace('/admin/dashboard');
+      router.replace('/admin/panel');
     } else if (adminFlag && !validToken) {
       window.localStorage.removeItem('adminAuthed');
     }
@@ -47,131 +48,77 @@ export default function AdminLogin() {
       // 2) Store token and set auth header for subsequent admin check
       localStorage.setItem('token', loginResp.token);
       setAuthToken(loginResp.token);
-      
-      // Set cookies for middleware
-      document.cookie = `token=${loginResp.token}; path=/; max-age=${7 * 24 * 60 * 60}; secure; samesite=strict`;
-      document.cookie = `adminAuthed=true; path=/; max-age=${7 * 24 * 60 * 60}; secure; samesite=strict`;
 
-      // 3) Verify admin access with backend (mock for now)
-      // const adminCheckResp = await adminService.checkAdminAccess();
-      // if (!adminCheckResp?.isAdmin) {
-      //   throw new Error('Access denied: Admin privileges required');
-      // }
-
-      // Mock admin check - replace with actual implementation
-      const isAdmin = loginResp.user?.role === 'admin' || email.includes('admin');
-      if (!isAdmin) {
-        setShowDeniedModal(true);
-        localStorage.removeItem('token');
+      // 3) Verify admin access with backend
+      const isAdmin = await adminService.checkAdmin();
+      if (isAdmin) {
+        // Mark admin session and proceed
+        localStorage.setItem('adminAuthed', 'true');
+        router.replace('/admin/panel');
         return;
       }
 
-      // 4) Success: set admin flag and redirect
-      localStorage.setItem('adminAuthed', 'true');
-      router.push('/admin/dashboard');
-
-    } catch (error: unknown) {
-      console.error('Admin login error:', error);
-      
-      const err = error as Error & { message?: string };
-      if (err.message?.includes('Access denied')) {
-        setShowDeniedModal(true);
-      } else {
-        setError(err.message || 'Login failed. Please check your credentials.');
-      }
-      
-      // Clean up on error
+      // Not an admin -> clear token and show ACCES DENIED
+      removeAuthToken();
       localStorage.removeItem('token');
-      localStorage.removeItem('adminAuthed');
-      
-      // Clear cookies
-      document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-      document.cookie = 'adminAuthed=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      localStorage.removeItem('user');
+      setError('ACCES DENIED');
+      setShowDeniedModal(true);
+    } catch (err) {
+      console.error('Admin login error:', err);
+      setError('ACCES DENIED');
+      setShowDeniedModal(true);
     } finally {
       setLoading(false);
     }
   };
 
-  const closeDeniedModal = () => {
-    setShowDeniedModal(false);
-    setEmail('');
-    setPassword('');
-  };
-
   return (
-    <div className={styles.adminLoginContainer}>
-      <div className={styles.adminLoginCard}>
-        <div className={styles.adminLoginHeader}>
-          <h1>Admin Panel</h1>
-          <p>Secure access required</p>
-        </div>
-
-        <form onSubmit={handleSubmit} className={styles.adminLoginForm}>
-          {error && (
-            <div className={styles.errorMessage}>
-              {error}
-            </div>
-          )}
-
-          <div className={styles.formGroup}>
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              disabled={loading}
-              placeholder="admin@martyx-industries.com"
-            />
-          </div>
-
-          <div className={styles.formGroup}>
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              disabled={loading}
-              placeholder="Enter your password"
-            />
-          </div>
-
-          <button
-            type="submit"
+    <AdminLayout title="Admin Login">
+      <form onSubmit={handleSubmit}>
+        {error && <div style={{ color: '#b91c1c', marginBottom: 12 }}>{error}</div>}
+        <div style={{ marginBottom: 12 }}>
+          <label style={{ display: 'block', marginBottom: 6 }}>Email</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            style={{ width: '100%', padding: '8px 10px', border: '1px solid #e5e7eb', borderRadius: 6 }}
+            placeholder="admin@example.com"
             disabled={loading}
-            className={styles.loginButton}
-          >
-            {loading ? 'Authenticating...' : 'Login to Admin Panel'}
-          </button>
-        </form>
-
-        <div className={styles.adminLoginFooter}>
-          <p>Authorized personnel only</p>
+          />
         </div>
-      </div>
+        <div style={{ marginBottom: 16 }}>
+          <label style={{ display: 'block', marginBottom: 6 }}>Password</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            style={{ width: '100%', padding: '8px 10px', border: '1px solid #e5e7eb', borderRadius: 6 }}
+            placeholder="••••••••"
+            disabled={loading}
+          />
+        </div>
+        <button type="submit" style={{ width: '100%', background: '#111827', color: '#fff', padding: '10px 12px', border: 'none', borderRadius: 6, cursor: 'pointer', opacity: loading ? 0.8 : 1 }} disabled={loading}>
+          {loading ? 'Logging In…' : 'Log In'}
+        </button>
+      </form>
 
-      {/* Access Denied Modal */}
       {showDeniedModal && (
-        <div className={styles.modal}>
-          <div className={styles.modalContent}>
-            <div className={styles.modalHeader}>
-              <h3>Access Denied</h3>
-            </div>
-            <div className={styles.modalBody}>
-              <p>You do not have administrator privileges.</p>
-              <p>Please contact your system administrator if you believe this is an error.</p>
-            </div>
-            <div className={styles.modalFooter}>
-              <button onClick={closeDeniedModal} className={styles.modalButton}>
-                OK
-              </button>
-            </div>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
+          <div style={{ background: '#fff', padding: '32px 28px', borderRadius: 12, maxWidth: 520, width: '90%', textAlign: 'center', boxShadow: '0 10px 25px rgba(0,0,0,0.2)' }} role="dialog" aria-modal="true" aria-labelledby="admin-access-denied-title">
+            <h2 id="admin-access-denied-title" style={{ fontSize: 32, margin: '0 0 16px', color: '#111827', letterSpacing: 1 }}>ACCES DENIED</h2>
+            <p style={{ fontSize: 16, marginBottom: 24, color: '#374151' }}>You do not have permission to access the admin panel.</p>
+            <button
+              autoFocus
+              onClick={() => setShowDeniedModal(false)}
+              style={{ background: '#111827', color: '#fff', padding: '10px 16px', border: 'none', borderRadius: 6, cursor: 'pointer' }}
+            >
+              OK
+            </button>
           </div>
         </div>
       )}
-    </div>
+    </AdminLayout>
   );
 }

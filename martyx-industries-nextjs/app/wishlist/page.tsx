@@ -7,57 +7,35 @@ import { useTranslation } from 'react-i18next';
 import { useWishlist } from '@/context/WishlistContext';
 import { useAuth } from '@/context/useAuth';
 import { useCart } from '@/context/useCart';
-import WishlistButton from '@/components/WishlistButton/WishlistButton';
-import type { Product } from '@/lib/types/product';
-import styles from './Wishlist.module.css';
+import { hybridProductService } from '@/lib/services/hybridProductService';
+import { type Product } from '@/data/productData';
+import { type WishlistItem } from '@/types/wishlist';
+import WishlistButton from '@/components/WishlistButton';
+import LoadingSpinner from '@/components/common/LoadingSpinner';
+import WishlistProductImage from '@/components/WishlistProductImage';
+import { productGalleryService } from '@/lib/services/productGalleryService';
+import './Wishlist.css';
+import '../products/Products.css';
 
-interface ApiProduct {
-  id: string;
-  slug: string;
-  title: string;
-  shortDescription?: string;
-  description?: string;
-  price: number;
-  currency: string;
-  category?: string;
-  gallery?: Array<{
-    id: string;
-    url: string;
-    alt?: string;
-    order?: number;
-  }>;
-  featured?: boolean;
-}
-
-interface WishlistItem {
-  id: string;
-  productId: string;
-  title: string;
-  price: number;
-  imageUrl?: string;
-}
-
-export default function Wishlist() {
+const Wishlist: React.FC = () => {
   const { t } = useTranslation('wishlist');
   const router = useRouter();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
   const {
     items,
+    stats,
+    isLoading,
     error,
-    clearError
+    totalCount,
+    lastUpdated,
+    clearError,
+    refreshWishlist
   } = useWishlist();
-  
-  // Mock additional properties that aren't in the current context
-  const stats = null;
-  const isLoading = false;
-  const totalCount = items.length;
-  const lastUpdated = new Date().toISOString();
-  const refreshWishlist = () => {};
   const { addToCart } = useCart();
 
   const [viewMode] = useState<'grid' | 'list'>('grid');
   const [showStats, setShowStats] = useState(false);
-  const [productsData, setProductsData] = useState<Map<string, ApiProduct>>(new Map());
+  const [productsData, setProductsData] = useState<Map<number, Product>>(new Map());
   const [loadingProducts, setLoadingProducts] = useState(false);
 
   useEffect(() => {
@@ -74,7 +52,7 @@ export default function Wishlist() {
     }
   }, [error, clearError]);
 
-  // Mock product fetching - replace with actual API calls
+  // Optimized parallel fetching of product data
   useEffect(() => {
     const fetchProductsData = async () => {
       if (items.length === 0) {
@@ -83,33 +61,64 @@ export default function Wishlist() {
       }
 
       setLoadingProducts(true);
-      const newProductsData = new Map<string, ApiProduct>();
+      const newProductsData = new Map<number, Product>();
 
       try {
-        // Mock product data - replace with actual API calls
-        for (const item of items) {
-          const mockProduct: ApiProduct = {
-            id: item.productId,
-            slug: `product-${item.productId}`,
-            title: `Product ${item.productId}`,
-            shortDescription: 'Mock product description',
-            price: 29.99,
-            currency: 'EUR',
-            gallery: [
-              {
-                id: '1',
-                url: '/assets/kit-01.png',
-                alt: `Product ${item.productId}`,
-                order: 0
+        // Parallel fetching instead of sequential - with database gallery
+        const productPromises = items.map(async (item) => {
+          try {
+            const product = await hybridProductService.getProductById(item.productId);
+
+            // Load gallery for this product from database (same as Products page)
+            try {
+              const galleryData = await productGalleryService.getProductImages(product.id.toString());
+
+              // Sort by order and get URLs (prefer CDN URLs) - image with order 0 will be first
+              const sortedGallery = galleryData.sort((a, b) => (a.order || 0) - (b.order || 0));
+              const galleryUrls = sortedGallery.map(img => img.cdnUrl || img.url).filter(Boolean);
+
+              if (process.env.NODE_ENV === 'development') {
+                console.log(`🏷️ Wishlist: Product ${product.id} (${product.name}) gallery loaded:`, {
+                  galleryCount: galleryUrls.length,
+                  mainImage: galleryUrls[0] || 'none'
+                });
               }
-            ]
-          };
-          newProductsData.set(item.productId, mockProduct);
-        }
+
+              // Update product with database gallery
+              const productWithGallery = {
+                ...product,
+                gallery: galleryUrls // Replace hardcoded gallery with database gallery
+              };
+
+              return { productId: item.productId, product: productWithGallery };
+            } catch (galleryError) {
+              if (process.env.NODE_ENV === 'development') {
+                console.log(`🏷️ Wishlist: No gallery found for product ${product.id}, using fallback`);
+              }
+              // Return product without database gallery (keeps hardcoded or empty gallery)
+              return { productId: item.productId, product };
+            }
+          } catch (err) {
+            if (process.env.NODE_ENV === 'development') {
+              console.error(`Failed to fetch product data for ${item.productId}:`, err);
+            }
+            return null;
+          }
+        });
+
+        const results = await Promise.all(productPromises);
+
+        results.forEach(result => {
+          if (result) {
+            newProductsData.set(result.productId, result.product);
+          }
+        });
 
         setProductsData(newProductsData);
-      } catch (error) {
-        console.error('Failed to fetch products data:', error);
+      } catch (err) {
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Failed to fetch products data:', err);
+        }
       } finally {
         setLoadingProducts(false);
       }
@@ -118,208 +127,327 @@ export default function Wishlist() {
     fetchProductsData();
   }, [items]);
 
-  const handleAddToCart = useCallback((apiProduct: ApiProduct) => {
-    // Convert ApiProduct to Product for cart
-    const product: Product = {
-      id: apiProduct.id,
-      name: apiProduct.title,
-      price: apiProduct.price,
-      currency: apiProduct.currency,
-      description: apiProduct.description || apiProduct.shortDescription || '',
+
+
+  const handleAddToCart = useCallback((item: WishlistItem) => {
+    const product = {
+      id: String(item.productId),
+      name: item.productName,
+      price: item.productPrice,
+      currency: item.productCurrency,
+      description: item.productDescription,
       features: [],
       modelPath: '',
-      gallery: apiProduct.gallery?.map(g => g.url) || [],
+      gallery: item.productImageUrl ? [item.productImageUrl] : [],
       interactionInstructions: [],
-      productType: 'PHYSICAL'
+      productType: item.productType as 'DIGITAL' | 'PHYSICAL'
     };
     addToCart(product);
   }, [addToCart]);
 
-  const handleRefresh = useCallback(() => {
-    refreshWishlist();
-  }, [refreshWishlist]);
 
-  // Show loading state during auth check
+  // Memoize filtered items to prevent unnecessary recalculations
+  const { availableItems, unavailableItems } = useMemo(() => ({
+    availableItems: items.filter(item => item.isAvailable),
+    unavailableItems: items.filter(item => !item.isAvailable)
+  }), [items]);
+
+  // Show loading while auth is being checked
   if (authLoading) {
     return (
-      <div className={styles.loadingContainer}>
-        <div className={styles.spinner}>Loading...</div>
+      <div className="wishlist-page">
+        <div className="wishlist-container">
+          <LoadingSpinner size="large" message="Loading..." />
+        </div>
       </div>
     );
   }
 
-  // Don't render if not authenticated (will redirect)
   if (!isAuthenticated) {
-    return null;
+    return null; // Will redirect in useEffect
+  }
+
+  if (isLoading) {
+    return (
+      <div className="wishlist-page">
+        <div className="wishlist-container">
+          <LoadingSpinner size="large" message="Loading your wishlist..." />
+        </div>
+      </div>
+    );
   }
 
   return (
-    <main className={styles.wishlistContainer}>
-      <div className={styles.container}>
+    <div className="wishlist-page">
+      {/* Floating Cassandra - visible when wishlist has items */}
+      {items.length > 0 && (
+        <div className="wishlist-floating-mascot">
+          <img
+            src="/cassandra/Wishlist-Cass.png"
+            alt="Cassandra - váš sprievodca wishlistom"
+            className="floating-mascot-image"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+      )}
+
+      <div className="wishlist-container">
         {/* Header */}
-        <div className={styles.wishlistHeader}>
-          <div className={styles.headerContent}>
-            <h1>{t('wishlist.title', 'My Wishlist')}</h1>
-            <div className={styles.headerStats}>
-              <span className={styles.itemCount}>
-                {totalCount} {totalCount === 1 ? t('wishlist.item', 'item') : t('wishlist.items', 'items')}
-              </span>
+        <div className="wishlist-header">
+          <div className="wishlist-title-section">
+            <h1 className="wishlist-title">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="1.5">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+              {t('title', 'Wishlist')} {totalCount > 0 && `(${totalCount})`}
+            </h1>
+            <p className="wishlist-subtitle">
+              {t('subtitle', 'Keep track of products you love')}
               {lastUpdated && (
-                <span className={styles.lastUpdated}>
-                  {t('wishlist.last_updated', 'Last updated')}: {new Date(lastUpdated).toLocaleDateString()}
+                <span className="last-updated">
+                  {' • Last updated: '}{new Date(lastUpdated).toLocaleString()}
                 </span>
               )}
-            </div>
+            </p>
           </div>
 
-          <div className={styles.headerActions}>
+          <div className="wishlist-header-actions">
             <button
-              onClick={() => setShowStats(!showStats)}
-              className={styles.statsToggle}
-              aria-label={showStats ? t('wishlist.hide_stats', 'Hide stats') : t('wishlist.show_stats', 'Show stats')}
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2z"/>
-                <path d="M19 4H15a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/>
-              </svg>
-            </button>
-            <button
-              onClick={handleRefresh}
-              className={styles.refreshBtn}
+              className="btn btn-outline"
+              onClick={() => refreshWishlist()}
               disabled={isLoading}
-              aria-label={t('wishlist.refresh', 'Refresh wishlist')}
+              aria-label="Refresh wishlist"
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polyline points="23,4 23,10 17,10"/>
-                <polyline points="1,20 1,14 7,14"/>
-                <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={isLoading ? 'rotate' : ''}>
+                <path d="M23 4v6h-6M1 20v-6h6"/>
+                <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4a9 9 0 0 1-14.85 4.36L23 14"/>
               </svg>
+              Refresh
             </button>
+
+            {stats && (
+              <button
+                className="wishlist-stats-toggle"
+                onClick={() => setShowStats(!showStats)}
+                aria-expanded={showStats}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2"/>
+                  <path d="M9 12l2 2 4-4"/>
+                </svg>
+                {showStats ? 'Hide Stats' : 'Stats'}
+              </button>
+            )}
           </div>
         </div>
 
         {/* Stats Panel */}
-        {showStats && (
-          <div className={styles.statsPanel}>
-            <div className={styles.statsGrid}>
-              <div className={styles.statItem}>
-                <span className={styles.statLabel}>{t('wishlist.stats.total_items', 'Total Items')}</span>
-                <span className={styles.statValue}>{totalCount}</span>
+        {showStats && stats && (
+          <div className="wishlist-stats">
+            <div className="stats-grid">
+              <div className="stat-card">
+                <div className="stat-number">{stats.totalItems}</div>
+                <div className="stat-label">{t('stats.total_items', 'Total Items')}</div>
               </div>
-              <div className={styles.statItem}>
-                <span className={styles.statLabel}>{t('wishlist.stats.total_value', 'Total Value')}</span>
-                <span className={styles.statValue}>€0.00</span>
+              <div className="stat-card">
+                <div className="stat-number">{stats.availableItems}</div>
+                <div className="stat-label">{t('stats.available', 'Available')}</div>
               </div>
-              <div className={styles.statItem}>
-                <span className={styles.statLabel}>{t('wishlist.stats.avg_price', 'Avg Price')}</span>
-                <span className={styles.statValue}>€0.00</span>
+              <div className="stat-card">
+                <div className="stat-number">
+                  {stats.totalValue.toFixed(2)} {stats.currency}
+                </div>
+                <div className="stat-label">{t('stats.total_value', 'Total Value')}</div>
               </div>
-              <div className={styles.statItem}>
-                <span className={styles.statLabel}>{t('wishlist.stats.categories', 'Categories')}</span>
-                <span className={styles.statValue}>0</span>
-              </div>
+              {stats.unavailableItems > 0 && (
+                <div className="stat-card stat-card--warning">
+                  <div className="stat-number">{stats.unavailableItems}</div>
+                  <div className="stat-label">{t('stats.unavailable', 'Unavailable')}</div>
+                </div>
+              )}
             </div>
           </div>
         )}
 
         {/* Error Message */}
         {error && (
-          <div className={styles.errorMessage}>
-            <p>{error}</p>
-            <button onClick={clearError} className={styles.dismissBtn}>
-              {t('common.dismiss', 'Dismiss')}
+          <div className="wishlist-error" role="alert">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="15" y1="9" x2="9" y2="15"/>
+              <line x1="9" y1="9" x2="15" y2="15"/>
+            </svg>
+            <span>{error}</span>
+            <button onClick={clearError} className="error-close">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
             </button>
           </div>
         )}
 
-        {/* Loading State */}
-        {(isLoading || loadingProducts) && (
-          <div className={styles.loadingState}>
-            <div className={styles.spinner}>Loading...</div>
-            <p>{t('wishlist.loading', 'Loading your wishlist...')}</p>
-          </div>
-        )}
-
         {/* Empty State */}
-        {!isLoading && !loadingProducts && items.length === 0 && (
-          <div className={styles.emptyState}>
-            <div className={styles.emptyIcon}>
-              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-              </svg>
+        {items.length === 0 ? (
+          <div className="wishlist-empty">
+            <div className="wishlist-mascot">
+              <img
+                src="/cassandra/Empty-Cass.png"
+                alt="Cassandra - váš sprievodca prázdnym wishlistom"
+                className="mascot-image-wishlist"
+                loading="eager"
+                decoding="sync"
+              />
             </div>
-            <h3>{t('wishlist.empty.title', 'Your wishlist is empty')}</h3>
-            <p>{t('wishlist.empty.subtitle', 'Save your favorite RC models and STL files here')}</p>
-            <Link href="/products" className={styles.browseBtn}>
-              {t('wishlist.empty.browse_products', 'Browse Products')}
-            </Link>
+            <div className="empty-content">
+              <h2>Váš wishlist je prázdny</h2>
+              <p>Objavte úžasné produkty a pridajte si ich do wishlistu, aby ste mali prehľad o svojich obľúbených</p>
+              <Link href="/products" className="btn btn-primary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="11" cy="11" r="8"/>
+                  <path d="M21 21l-4.35-4.35"/>
+                </svg>
+                Prehliadať produkty
+              </Link>
+            </div>
           </div>
-        )}
+        ) : (
+          <>
 
-        {/* Wishlist Items */}
-        {!isLoading && !loadingProducts && items.length > 0 && (
-          <div className={styles.wishlistGrid}>
-            {items.map((item) => {
-              const product = productsData.get(item.productId);
-              if (!product) return null;
+            {/* Wishlist Items */}
+            <div className={`wishlist-items wishlist-items--${viewMode}`}>
+              {availableItems.map((item) => (
+                <article key={item.id} className="product-card wishlist-product-card">
 
-              return (
-                <article key={item.id} className={styles.wishlistItem}>
-                  <div className={styles.itemImageContainer}>
-                    <Link href={`/products/${product.slug || product.id}`} className={styles.itemLink}>
-                      <img
-                        src={product.gallery?.[0]?.url || '/assets/kit-01.png'}
-                        alt={product.title}
-                        className={styles.itemImage}
-                        loading="lazy"
+                  <Link href={`/products/${item.productId}`} className="product-card-link">
+                    <div className="product-card-image-container">
+                      <WishlistProductImage
+                        item={item}
+                        product={productsData.get(item.productId)}
+                        loading={loadingProducts}
                       />
-                    </Link>
-                    <div className={styles.itemWishlistBtn}>
-                      <WishlistButton
-                        productId={product.id}
-                        size="small"
-                        variant="icon"
-                      />
+
+                      <div className="product-card-wishlist">
+                        <WishlistButton
+                          productId={item.productId}
+                          variant="icon"
+                          size="small"
+                        />
+                      </div>
+
+                      {item.productType === 'digital' && (
+                        <div className="product-badge">
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                          </svg>
+                          Digital
+                        </div>
+                      )}
                     </div>
+
+                    <div className="product-card-content">
+                      <h3 className="product-card-title">{item.productName}</h3>
+                      <p className="product-card-description">{item.productDescription}</p>
+                      <div className="product-card-price">
+                        {(item.productPrice ?? 0).toFixed(2)} {item.productCurrency === 'EUR' ? '€' : item.productCurrency}
+                      </div>
+                    </div>
+                  </Link>
+
+                  <div className="product-card-actions">
+                    <button
+                      className="add-to-cart-btn"
+                      onClick={() => handleAddToCart(item)}
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="8" cy="21" r="1"/>
+                        <circle cx="19" cy="21" r="1"/>
+                        <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57L20.6 7H6"/>
+                      </svg>
+                      Add to Cart
+                    </button>
                   </div>
 
-                  <div className={styles.itemContent}>
-                    <Link href={`/products/${product.slug || product.id}`} className={styles.itemLink}>
-                      <h3 className={styles.itemTitle}>{product.title}</h3>
-                      <div className={styles.itemPrice}>
-                        {product.currency} {product.price.toFixed(2)}
-                      </div>
-                      {product.shortDescription && (
-                        <p className={styles.itemDescription}>{product.shortDescription}</p>
-                      )}
-                    </Link>
-
-                    <div className={styles.itemActions}>
-                      <button
-                        onClick={() => handleAddToCart(product)}
-                        className={styles.addToCartBtn}
-                      >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <circle cx="9" cy="21" r="1"/>
-                          <circle cx="20" cy="21" r="1"/>
-                          <path d="m1 1 4 4 2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-                        </svg>
-                        {t('wishlist.add_to_cart', 'Add to Cart')}
-                      </button>
-                    </div>
-
-                    <div className={styles.itemMeta}>
-                      <span className={styles.addedDate}>
-                        {t('wishlist.added', 'Added')}: {new Date().toLocaleDateString()}
-                      </span>
-                    </div>
+                  <div className="wishlist-item-meta">
+                    <span className="wishlist-added-date">
+                      Added {new Date(item.addedAt).toLocaleDateString()}
+                    </span>
                   </div>
                 </article>
-              );
-            })}
-          </div>
+              ))}
+
+              {/* Unavailable Items Section */}
+              {unavailableItems.length > 0 && (
+                <>
+                  <div className="unavailable-section-header">
+                    <h3>Unavailable Items</h3>
+                    <p>These items are no longer available for purchase</p>
+                  </div>
+
+                  {unavailableItems.map((item) => (
+                    <article key={item.id} className="product-card wishlist-product-card wishlist-product-card--unavailable">
+
+                      <Link href={`/products/${item.productId}`} className="product-card-link">
+                        <div className="product-card-image-container">
+                          <WishlistProductImage
+                            item={item}
+                            product={productsData.get(item.productId)}
+                            loading={loadingProducts}
+                          />
+
+                          <div className="unavailable-overlay">
+                            <span>Unavailable</span>
+                          </div>
+
+                          <div className="product-card-wishlist">
+                            <WishlistButton
+                              productId={item.productId}
+                              variant="icon"
+                              size="small"
+                            />
+                          </div>
+
+                          {item.productType === 'digital' && (
+                            <div className="product-badge">
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                              </svg>
+                              Digital
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="product-card-content">
+                          <h3 className="product-card-title">{item.productName}</h3>
+                          <p className="product-card-description">{item.productDescription}</p>
+                          <div className="product-card-price">
+                            {(item.productPrice ?? 0).toFixed(2)} {item.productCurrency === 'EUR' ? '€' : item.productCurrency}
+                          </div>
+                        </div>
+                      </Link>
+
+                      <div className="product-card-actions">
+                        <button className="add-to-cart-btn" disabled>
+                          Unavailable
+                        </button>
+                      </div>
+
+                      <div className="wishlist-item-meta">
+                        <span className="wishlist-added-date">
+                          Added {new Date(item.addedAt).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </article>
+                  ))}
+                </>
+              )}
+            </div>
+          </>
         )}
       </div>
-    </main>
+    </div>
   );
-}
+};
+
+export default Wishlist;
