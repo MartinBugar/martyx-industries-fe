@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { type Product } from '../../data/productData';
 import { hybridProductService } from '../../services/hybridProductService';
 import WishlistButton from '../../components/WishlistButton';
+import OptimizedImage from '../../components/OptimizedImage/OptimizedImage';
 import { getImageSrcSet, getBestImageUrl, getBaseNameFromPath, isCDNEnabled } from '../../utils/cdnImages';
 import { productGalleryService } from '../../services/productGalleryService';
 import './Home.css';
@@ -92,11 +93,11 @@ const Home: React.FC = () => {
             <div className="hero-copy">
               <div className="hero-content-wrapper">
                 <div className="hero-mascot-container">
-                  <img
+                  <OptimizedImage
                     src="/cassandra/Home-Cass.png"
                     alt="Cassandra - Váš 3D sprievodca"
                     className="mascot-image-home"
-                    loading="eager"
+                    priority={true} // Hero mascot má najvyššiu prioritu
                   />
                 </div>
                 <div className="hero-text-content">
@@ -116,13 +117,11 @@ const Home: React.FC = () => {
             </div>
             <div className="hero-visual">
               {heroSrc ? (
-                <img
+                <OptimizedImage
                   src={heroSrc}
                   alt={heroAlt}
-                  width={1800}
-                  height={1000}
-                  loading="eager"
-                  decoding="sync"
+                  priority={true} // Hero obrázok má najvyššiu prioritu
+                  className="hero-image"
                   style={{ 
                     width: '100%', 
                     height: 'auto', 
@@ -176,11 +175,11 @@ const Home: React.FC = () => {
             </div>
           </div>
           <div className="featured-grid">
-            {featured.map((p) => (
+            {featured.map((p, index) => (
               <article key={p.id} className="product-card">
                 <div className="product-card-image-container">
                   <Link to={`/products/${p.id}`} className="product-card-link">
-                    <img
+                    <OptimizedImage
                       src={(() => {
                         if (!p.gallery?.[0]) return '/assets/kit-01.png';
                         const mainImage = p.gallery[0];
@@ -192,31 +191,10 @@ const Home: React.FC = () => {
                         }
                         return finalSrc;
                       })()}
-                      srcSet={(() => {
-                        if (!p.gallery?.[0]) return undefined;
-                        const mainImage = p.gallery[0];
-                        const isCDNUrl = mainImage.includes('digitaloceanspaces.com') || mainImage.includes(import.meta.env.VITE_CDN_BASE || '');
-                        return !isCDNUrl && isCDNEnabled() ? getImageSrcSet(getBaseNameFromPath(mainImage)) : undefined;
-                      })()}
-                      sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
                       alt={p.name}
                       className="product-image"
-                      loading="lazy"
-                      onLoad={() => {
-                        if (import.meta.env.DEV && p.id === "1") {
-                          console.log(`✅ Homepage card image for ${p.name} loaded successfully`);
-                        }
-                      }}
-                      onError={(e) => {
-                        if (import.meta.env.DEV) {
-                          console.error(`❌ Homepage card image for ${p.name} failed to load:`, e.currentTarget.src);
-                        }
-                        // Fallback to local image if CDN fails
-                        const fallbackSrc = `/productsGallery/${p.id}/1.png`;
-                        if (e.currentTarget.src !== window.location.origin + fallbackSrc) {
-                          e.currentTarget.src = fallbackSrc;
-                        }
-                      }}
+                      priority={index < 3} // Prvé 3 featured produkty majú prioritu
+                      placeholder="/images/product-placeholder.svg"
                     />
                   </Link>
                   <div className="product-card-wishlist">

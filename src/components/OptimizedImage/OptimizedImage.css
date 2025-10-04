@@ -1,0 +1,18 @@
+/* Optimized Image - Minimal CSS that doesn't break existing styles */
+
+/* Base optimized image styles - only what's needed for optimization */
+.optimized-image {
+  /* Zachovaj všetky existujúce štýly, pridaj len optimalizácie */
+}
+
+.optimized-image.loading {
+  /* Jemný loading efekt bez narušenia layoutu */
+  filter: blur(0.5px);
+}
+
+.optimized-image.loaded {
+  /* Smooth transition keď sa obrázok načíta */
+  filter: none;
+}
+
+/* Žiadne ďalšie štýly - necháme existujúce CSS triedy fungovať normálne */

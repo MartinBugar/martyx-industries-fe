@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './Gallery.css';
+import OptimizedImage from '../OptimizedImage/OptimizedImage';
 import { getImageSrcSet, getBestImageUrl, getBaseNameFromPath, isCDNEnabled } from '../../utils/cdnImages';
 
 interface GalleryProps {
@@ -12,7 +13,6 @@ const Gallery: React.FC<GalleryProps> = ({ productName, images }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   // Removed loaded state to prevent loading issues
   const [isNavigating, setIsNavigating] = useState(false);
-  const imgRefs = React.useRef<(HTMLImageElement | null)[]>([]);
   const navigationTimeoutRef = React.useRef<number | null>(null);
 
   // Pre-compute optimized image URLs to avoid expensive calculations during navigation
@@ -118,14 +118,11 @@ const Gallery: React.FC<GalleryProps> = ({ productName, images }) => {
             className="gallery-thumbnail"
             onClick={() => openFullscreenGallery(index)}
           >
-            <img
-              ref={(el) => { imgRefs.current[index] = el; }}
+            <OptimizedImage
               src={optimizedImages[index]?.thumbnailSrc || image}
-              srcSet={optimizedImages[index]?.srcSet}
-              sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 200px"
               alt={`${productName} - Image ${index + 1}`}
-              decoding="async"
-              loading="eager"
+              priority={index < 3} // Prvé 3 thumbnail obrázky majú prioritu
+              className="gallery-thumbnail-image"
             />
           </div>
         ))}
@@ -151,22 +148,11 @@ const Gallery: React.FC<GalleryProps> = ({ productName, images }) => {
               &#10094;
             </button>
             <div className="fullscreen-image-container">
-              <img
+              <OptimizedImage
                 src={optimizedImages[currentImageIndex]?.fullscreenSrc || images[currentImageIndex]}
-                srcSet={optimizedImages[currentImageIndex]?.srcSet}
-                sizes="100vw"
                 alt={`${productName} - Image ${currentImageIndex + 1}`}
                 className="fullscreen-image"
-                onLoad={() => {
-                  if (import.meta.env.DEV && currentImageIndex === 0) {
-                    console.log(`✅ Fullscreen image ${currentImageIndex + 1} loaded successfully`);
-                  }
-                }}
-                onError={(e) => {
-                  if (import.meta.env.DEV) {
-                    console.error(`❌ Fullscreen image ${currentImageIndex + 1} failed to load:`, e.currentTarget.src);
-                  }
-                }}
+                priority={true} // Fullscreen obrázok má vždy prioritu
               />
               <div className="image-counter">
                 {currentImageIndex + 1} / {images.length}

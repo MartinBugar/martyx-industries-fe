@@ -5,6 +5,7 @@ import {type Product} from '../../data/productData';
 import {hybridProductService} from '../../services/hybridProductService';
 import {useCart} from '../../context/useCart';
 import WishlistButton from '../../components/WishlistButton';
+import OptimizedImage from '../../components/OptimizedImage/OptimizedImage';
 import { getImageSrcSet, getBestImageUrl, getBaseNameFromPath, isCDNEnabled } from '../../utils/cdnImages';
 import { productGalleryService } from '../../services/productGalleryService';
 import './Products.css';
@@ -205,14 +206,14 @@ const Products: React.FC = () => {
                 <div className="products-grid-container">
                     {filteredProducts.length > 0 ? (
                         <div className="products-grid">
-                            {filteredProducts.map((p) => {
+                            {filteredProducts.map((p, index) => {
                                 const mainImage = p.gallery && p.gallery.length > 0 ? p.gallery[0] : undefined;
                                 return (
                                     <article key={p.id} className="product-card">
                                         <Link to={`/products/${p.id}`} className="product-card-link">
                                             <div className="product-card-image-container">
                                                 {mainImage ? (
-                                                    <img
+                                                    <OptimizedImage
                                                         src={(() => {
                                                             // If the image URL is already a CDN URL, use it directly
                                                             const isCDNUrl = mainImage.includes('digitaloceanspaces.com') || mainImage.includes(import.meta.env.VITE_CDN_BASE || '');
@@ -222,30 +223,10 @@ const Products: React.FC = () => {
                                                             }
                                                             return finalSrc;
                                                         })()}
-                                                        srcSet={(() => {
-                                                            const isCDNUrl = mainImage.includes('digitaloceanspaces.com') || mainImage.includes(import.meta.env.VITE_CDN_BASE || '');
-                                                            return !isCDNUrl && isCDNEnabled() ? getImageSrcSet(getBaseNameFromPath(mainImage)) : undefined;
-                                                        })()}
-                                                        sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
                                                         alt={`${p.name} - main image`}
                                                         className="product-card-image"
-                                                        loading="lazy"
-                                                        decoding="async"
-                                                        onLoad={() => {
-                                                            if (import.meta.env.DEV && p.id === "1") {
-                                                                console.log(`✅ Product card image for ${p.name} loaded successfully`);
-                                                            }
-                                                        }}
-                                                        onError={(e) => {
-                                                            if (import.meta.env.DEV) {
-                                                                console.error(`❌ Product card image for ${p.name} failed to load:`, e.currentTarget.src);
-                                                            }
-                                                            // Fallback to local image if CDN fails
-                                                            const fallbackSrc = `/productsGallery/${p.id}/1.png`;
-                                                            if (e.currentTarget.src !== window.location.origin + fallbackSrc) {
-                                                                e.currentTarget.src = fallbackSrc;
-                                                            }
-                                                        }}
+                                                        priority={index < 6} // Prvých 6 produktov má prioritu
+                                                        placeholder="/images/product-placeholder.svg"
                                                     />
                                                 ) : (
                                                     <div className="product-card-placeholder">
@@ -338,14 +319,11 @@ const Products: React.FC = () => {
             
             {/* Floating Products Cassandra */}
             <div className="products-floating-mascot">
-                <img 
+                <OptimizedImage
                     src="/cassandra/Products-Cass.png" 
-                    srcSet="/cassandra/Products-Cass.png 1x, /cassandra/Products-Cass.png 2x"
-                    sizes="(max-width: 360px) 160px, (max-width: 480px) 200px, (max-width: 768px) 260px, 320px"
                     alt="Cassandra - váš sprievodca produktmi"
                     className="floating-mascot-image-products"
-                    loading="eager"
-                    decoding="sync"
+                    priority={true} // Mascot je vždy viditeľný, má prioritu
                 />
             </div>
         </div>

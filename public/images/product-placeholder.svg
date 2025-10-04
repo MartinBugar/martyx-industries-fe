@@ -1,0 +1,14 @@
+/* Simple placeholder for products */
+<svg width="300" height="300" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="300" height="300" fill="#141a20"/>
+  <g transform="translate(150,150)">
+    <!-- Package icon -->
+    <path d="M-40,-20 L40,-20 L50,0 L50,40 L-50,40 L-50,0 Z" fill="none" stroke="#F6C845" stroke-width="2"/>
+    <path d="M-40,-20 L0,-40 L40,-20" fill="none" stroke="#F6C845" stroke-width="2"/>
+    <path d="M0,-40 L0,0" stroke="#F6C845" stroke-width="2"/>
+    <path d="M-50,0 L50,0" stroke="#F6C845" stroke-width="1" opacity="0.5"/>
+  </g>
+  <text x="150" y="200" text-anchor="middle" fill="#a7b3c1" font-family="Arial, sans-serif" font-size="14">
+    Loading product...
+  </text>
+</svg>
