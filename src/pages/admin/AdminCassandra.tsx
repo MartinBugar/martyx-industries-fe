@@ -4,19 +4,19 @@ import './AdminCassandra.css';
 
 const AdminCassandra: React.FC = () => {
     return (
-        <AdminLayout title="CASSANDRA AI Assistant">
+        <AdminLayout title="CASSANDRA Mascot">
             <div className="admin-cassandra-container">
                 <div className="cassandra-content">
                     <div className="cassandra-image-container">
                         <div className="cassandra-display">
                             <div className="cassandra-header">
-                                <h1>Cassandra AI Assistant</h1>
-                                <p>Your intelligent companion for managing Martyx Industries operations.</p>
+                                <h1>Cassandra</h1>
+                                <p>The official mascot of Martyx Industries - your loyal companion in space exploration and innovation.</p>
                             </div>
                             <div className="cassandra-image-wrapper">
                                 <img 
                                     src="/cassandra/Cassandra-life.png" 
-                                    alt="Cassandra AI Assistant" 
+                                    alt="Cassandra - Martyx Industries Mascot" 
                                     className="cassandra-image"
                                 />
                             </div>
