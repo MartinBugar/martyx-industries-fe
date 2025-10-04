@@ -5,7 +5,7 @@ import { type Product } from '../../data/productData';
 import { hybridProductService } from '../../services/hybridProductService';
 import WishlistButton from '../../components/WishlistButton';
 import OptimizedImage from '../../components/OptimizedImage/OptimizedImage';
-import { getImageSrcSet, getBestImageUrl, getBaseNameFromPath, isCDNEnabled } from '../../utils/cdnImages';
+import { getBestImageUrl, getBaseNameFromPath, isCDNEnabled } from '../../utils/cdnImages';
 import { productGalleryService } from '../../services/productGalleryService';
 import './Home.css';
 
