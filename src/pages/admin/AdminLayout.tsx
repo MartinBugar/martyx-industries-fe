@@ -59,6 +59,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ title, children, navTabs }) =
           <Link to="/admin/users" style={{ ...sidebarLinkStyle, ...(location.pathname.startsWith('/admin/users') ? activeLinkStyle : {}) }}>Users</Link>
           <Link to="/admin/products" style={{ ...sidebarLinkStyle, ...(location.pathname.startsWith('/admin/products') ? activeLinkStyle : {}) }}>Products</Link>
           <Link to="/admin/orders" style={{ ...sidebarLinkStyle, ...(location.pathname.startsWith('/admin/orders') ? activeLinkStyle : {}) }}>Orders</Link>
+          <Link to="/admin/cassandra" style={{ ...sidebarLinkStyle, ...(location.pathname === '/admin/cassandra' ? activeLinkStyle : {}) }}>CASSANDRA</Link>
         </nav>
         <div className="admin-logout-wrap">
           <button onClick={handleLogout} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: 6, cursor: 'pointer' }}>Logout</button>

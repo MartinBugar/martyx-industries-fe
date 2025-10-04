@@ -99,7 +99,7 @@ const AdminLogin: React.FC = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="form-input"
-              placeholder="admin@martyx-industries.com"
+              placeholder="XXXXXXXXXXXX"
               disabled={loading}
               autoComplete="email"
               required
@@ -113,7 +113,7 @@ const AdminLogin: React.FC = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="form-input"
-              placeholder="••••••••••••"
+              placeholder="XXXXXXXXXXXX"
               disabled={loading}
               autoComplete="current-password"
               required
