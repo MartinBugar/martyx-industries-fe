@@ -38,11 +38,6 @@ const DevelopmentGate: React.FC<DevelopmentGateProps> = ({ onAccess }) => {
     <div className="development-gate">
       <div className="gate-content">
         <div className="gate-header">
-          <img
-            src="/cassandra/Home-Cass.png"
-            alt="Cassandra Home"
-            className="cassandra-image"
-          />
           <h1>MARTYX INDUSTRIES</h1>
           <h2>Vývojová verzia</h2>
         </div>
