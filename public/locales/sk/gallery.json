@@ -1,0 +1,72 @@
+{
+  "title": "Galéria Komunity",
+  "subtitle": "Pozrite si úžasné modely od našich builderov",
+
+  "stats": {
+    "builders": "Builderov",
+    "models": "Modelov",
+    "photos": "Fotiek",
+    "likes": "lajkov"
+  },
+
+  "filter": {
+    "label": "Filter",
+    "all": "Všetky modely",
+    "completed": "Len dokončené"
+  },
+
+  "sort": {
+    "label": "Zoradiť podľa",
+    "recent": "Najnovšie fotky",
+    "most_photos": "Najviac fotiek",
+    "alphabetic": "Abecedne",
+    "most_liked": "Najviac lajkované"
+  },
+
+  "card": {
+    "models": "modelov",
+    "photos": "fotiek",
+    "view_gallery": "Zobraziť galériu"
+  },
+
+  "back_to_gallery": "Späť do galérie",
+  "member_since": "Člen od {{date}}",
+  "completed": "Dokončené",
+  "photos": "fotiek",
+
+  "like": "Lajkovať",
+  "unlike": "Zrušiť lajk",
+
+  "pagination": {
+    "previous": "Predchádzajúca",
+    "next": "Ďalšia"
+  },
+
+  "lightbox": {
+    "close": "Zavrieť",
+    "previous": "Predchádzajúca",
+    "next": "Ďalšia",
+    "comments_coming_soon": "Komentáre už čoskoro"
+  },
+
+  "empty": {
+    "title": "Zatiaľ tu nie sú žiadne verejné galérie",
+    "description": "Staň sa prvý, kto zdieľa svoj model!",
+    "no_models": "Zatiaľ žiadne verejné modely"
+  },
+
+  "loading": {
+    "title": "Načítavam galériu..."
+  },
+
+  "errors": {
+    "load_failed": "Nepodarilo sa načítať galériu",
+    "user_not_found": "Používateľ nenájdený",
+    "user_no_public": "Tento používateľ nemá žiadne verejné galérie",
+    "login_required": "Pre lajkovanie je potrebné sa prihlásiť"
+  },
+
+  "actions": {
+    "retry": "Skúsiť znovu"
+  }
+}

@@ -54,6 +54,8 @@ import {
   CartPage,
   Wishlist,
   UserAccount,
+  UserGallery,
+  UserGalleryDetail,
   EmailConfirmation,
   CookiesPolicy,
   PrivacyPolicy,
@@ -203,6 +205,8 @@ const MainContent = React.memo(() => {
             <Route path="/payment/paypal/success" element={<PayPalSuccess />} />
             <Route path="/payment/paypal/cancel" element={<PayPalCancel />} />
             <Route path="/account" element={<UserAccount />} />
+            <Route path="/gallery" element={<UserGallery />} />
+            <Route path="/gallery/:userId" element={<UserGalleryDetail />} />
             <Route path="/cookies-policy" element={<CookiesPolicy />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-of-service" element={<TermsOfService />} />
