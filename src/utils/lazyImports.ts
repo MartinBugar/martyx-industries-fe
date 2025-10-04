@@ -22,6 +22,8 @@ export const PayPalCancel = lazy(() => import('../pages/Payments/PayPalCancel'))
 export const CartPage = lazy(() => import('../pages/CartPage/CartPage'));
 export const Wishlist = lazy(() => import('../pages/Wishlist/Wishlist'));
 export const UserAccount = lazy(() => import('../pages/UserAccount/UserAccount'));
+export const UserGallery = lazy(() => import('../pages/UserGallery/UserGallery'));
+export const UserGalleryDetail = lazy(() => import('../pages/UserGallery/UserGalleryDetail'));
 export const CookiesPolicy = lazy(() => import('../pages/CookiesPolicy/CookiesPolicy'));
 export const PrivacyPolicy = lazy(() => import('../pages/PrivacyPolicy/PrivacyPolicy'));
 export const TermsOfService = lazy(() => import('../pages/TermsOfService/TermsOfService'));

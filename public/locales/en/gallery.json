@@ -1,0 +1,72 @@
+{
+  "title": "Community Gallery",
+  "subtitle": "Check out amazing models from our builders",
+
+  "stats": {
+    "builders": "Builders",
+    "models": "Models",
+    "photos": "Photos",
+    "likes": "likes"
+  },
+
+  "filter": {
+    "label": "Filter",
+    "all": "All models",
+    "completed": "Completed only"
+  },
+
+  "sort": {
+    "label": "Sort by",
+    "recent": "Recent photos",
+    "most_photos": "Most photos",
+    "alphabetic": "Alphabetical",
+    "most_liked": "Most liked"
+  },
+
+  "card": {
+    "models": "models",
+    "photos": "photos",
+    "view_gallery": "View Gallery"
+  },
+
+  "back_to_gallery": "Back to Gallery",
+  "member_since": "Member since {{date}}",
+  "completed": "Completed",
+  "photos": "photos",
+
+  "like": "Like",
+  "unlike": "Unlike",
+
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next"
+  },
+
+  "lightbox": {
+    "close": "Close",
+    "previous": "Previous",
+    "next": "Next",
+    "comments_coming_soon": "Comments coming soon"
+  },
+
+  "empty": {
+    "title": "No public galleries yet",
+    "description": "Be the first to share your model!",
+    "no_models": "No public models yet"
+  },
+
+  "loading": {
+    "title": "Loading gallery..."
+  },
+
+  "errors": {
+    "load_failed": "Failed to load gallery",
+    "user_not_found": "User not found",
+    "user_no_public": "This user has no public galleries",
+    "login_required": "Please log in to like photos"
+  },
+
+  "actions": {
+    "retry": "Try again"
+  }
+}

@@ -1,0 +1,255 @@
+/* User Card Component Styles */
+
+.user-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface, #1a1a1a);
+  border: 1px solid var(--color-border, #333);
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+}
+
+.user-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  border-color: var(--color-primary, #ff6b35);
+}
+
+.user-card:active {
+  transform: translateY(-2px);
+}
+
+/* Avatar Section */
+.user-avatar {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 16px;
+  position: relative;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid var(--color-border, #333);
+  transition: border-color 0.3s ease;
+}
+
+.user-card:hover .user-avatar {
+  border-color: var(--color-primary, #ff6b35);
+}
+
+.user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--color-primary, #ff6b35), var(--color-primary-dark, #e55a2b));
+  color: white;
+  font-size: 32px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.avatar-placeholder.hidden {
+  display: none;
+}
+
+/* User Info */
+.user-info {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.user-nickname {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text, #ffffff);
+  margin: 0 0 8px 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-stats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--color-text-secondary, #999);
+}
+
+.user-stats .divider {
+  color: var(--color-border, #333);
+}
+
+.user-likes {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 14px;
+  color: var(--color-primary, #ff6b35);
+}
+
+.user-likes .heart-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Photo Preview Grid */
+.photo-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+  aspect-ratio: 1;
+}
+
+.preview-thumbnail {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--color-background-dark, #0a0a0a);
+  border: 1px solid var(--color-border, #333);
+}
+
+.preview-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.user-card:hover .preview-thumbnail img {
+  transform: scale(1.05);
+}
+
+.preview-thumbnail.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-placeholder {
+  color: var(--color-border, #333);
+}
+
+.empty-placeholder svg {
+  opacity: 0.3;
+}
+
+/* View Gallery Button */
+.view-gallery-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+  background: var(--color-primary, #ff6b35);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.view-gallery-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.user-card:hover .view-gallery-btn {
+  background: var(--color-primary-dark, #e55a2b);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+}
+
+.view-gallery-btn:active {
+  transform: translateY(0);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .user-card {
+    padding: 16px;
+  }
+
+  .user-avatar {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 12px;
+  }
+
+  .avatar-placeholder {
+    font-size: 24px;
+  }
+
+  .user-nickname {
+    font-size: 16px;
+  }
+
+  .user-stats {
+    font-size: 13px;
+  }
+
+  .photo-preview-grid {
+    gap: 6px;
+  }
+
+  .view-gallery-btn {
+    padding: 10px;
+    font-size: 13px;
+  }
+}
+
+/* Dark mode adjustments (optional) */
+@media (prefers-color-scheme: light) {
+  .user-card {
+    background: #ffffff;
+    border-color: #e0e0e0;
+  }
+
+  .user-card:hover {
+    border-color: var(--color-primary, #ff6b35);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  }
+
+  .user-avatar {
+    border-color: #e0e0e0;
+  }
+
+  .user-nickname {
+    color: #1a1a1a;
+  }
+
+  .user-stats {
+    color: #666;
+  }
+
+  .user-stats .divider {
+    color: #ccc;
+  }
+
+  .preview-thumbnail {
+    background: #f5f5f5;
+    border-color: #e0e0e0;
+  }
+}

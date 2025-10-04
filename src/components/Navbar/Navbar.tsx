@@ -25,6 +25,7 @@ type Props = {
 const LINKS: NavItem[] = [
     {labelKey: "nav:home", href: "/"},
     {labelKey: "nav:products", href: "/products"},
+    {labelKey: "nav:gallery", href: "/gallery"},
     {labelKey: "nav:about", href: "/about"},
     {labelKey: "nav:contact", href: "/contact"},
 ];
