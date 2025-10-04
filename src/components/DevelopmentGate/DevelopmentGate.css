@@ -4,55 +4,47 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: linear-gradient(135deg, #0b0f14 0%, #1a1a2e 50%, #16213e 100%);
+  background: linear-gradient(135deg, #213547 0%, #1a2838 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 10000;
-  font-family: 'Arial', sans-serif;
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   color: #ffffff;
 }
 
 .gate-content {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
-  border-radius: 20px;
+  border-radius: 16px;
   padding: 3rem;
   max-width: 500px;
   width: 90%;
   text-align: center;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
 }
 
 .gate-header {
   margin-bottom: 2rem;
 }
 
-.cassandra-image {
-  width: 120px;
-  height: 120px;
-  object-fit: contain;
-  margin-bottom: 1rem;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
-}
-
 .gate-header h1 {
   font-size: 2.5rem;
   font-weight: bold;
   margin: 0.5rem 0;
-  background: linear-gradient(45deg, #4fc3f7, #29b6f6, #03a9f4);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #ffffff;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  letter-spacing: 2px;
 }
 
 .gate-header h2 {
   font-size: 1.2rem;
-  color: #ffa726;
+  color: #4caf50;
   margin: 0;
   font-weight: normal;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .gate-message {
@@ -62,7 +54,7 @@
 .gate-message p {
   font-size: 1.1rem;
   line-height: 1.6;
-  color: #e0e0e0;
+  color: rgba(255, 255, 255, 0.9);
   margin: 0;
 }
 
@@ -78,16 +70,17 @@
 .input-group label {
   display: block;
   margin-bottom: 0.5rem;
-  font-weight: bold;
+  font-weight: 600;
   color: #ffffff;
+  font-size: 0.95rem;
 }
 
 .input-group input {
   width: 100%;
   padding: 12px 16px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
   color: #ffffff;
   font-size: 1rem;
   transition: all 0.3s ease;
@@ -96,22 +89,22 @@
 
 .input-group input:focus {
   outline: none;
-  border-color: #4fc3f7;
-  background: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 0 10px rgba(79, 195, 247, 0.3);
+  border-color: #4caf50;
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
 }
 
 .input-group input::placeholder {
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .input-group input.error {
   border-color: #f44336;
-  box-shadow: 0 0 10px rgba(244, 67, 54, 0.3);
+  box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.2);
 }
 
 .error-message {
-  color: #f44336;
+  color: #ff6b6b;
   font-size: 0.9rem;
   margin-top: 0.5rem;
   margin-bottom: 1rem;
@@ -119,13 +112,13 @@
 
 .access-button {
   width: 100%;
-  padding: 12px 24px;
-  background: linear-gradient(45deg, #4fc3f7, #29b6f6);
+  padding: 14px 24px;
+  background: #4caf50;
   color: #ffffff;
   border: none;
   border-radius: 8px;
   font-size: 1.1rem;
-  font-weight: bold;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   text-transform: uppercase;
@@ -133,24 +126,24 @@
 }
 
 .access-button:hover {
-  background: linear-gradient(45deg, #29b6f6, #03a9f4);
+  background: #45a049;
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(79, 195, 247, 0.4);
+  box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
 }
 
 .access-button:active {
   transform: translateY(0);
-  box-shadow: 0 4px 10px rgba(79, 195, 247, 0.3);
+  box-shadow: 0 4px 10px rgba(76, 175, 80, 0.2);
 }
 
 .gate-footer {
   margin-top: 2rem;
   padding-top: 1rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .gate-footer p {
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.6);
   font-size: 0.9rem;
   margin: 0;
 }
@@ -160,11 +153,6 @@
   .gate-content {
     padding: 2rem;
     margin: 1rem;
-  }
-
-  .cassandra-image {
-    width: 80px;
-    height: 80px;
   }
 
   .gate-header h1 {
