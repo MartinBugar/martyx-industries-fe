@@ -34,6 +34,7 @@ import ScrollToTop from './components/ScrollToTop/ScrollToTop'
 import LoadingSpinner from './components/common/LoadingSpinner'
 import { useEffectOnce } from './hooks/useOptimizedEffect'
 import { visitorService } from './services/visitorService'
+import DevelopmentGate from './components/DevelopmentGate/DevelopmentGate'
 
 // Lazy imports for code splitting
 import {
@@ -87,6 +88,8 @@ const PageLoader = () => (
 
 // Optimized App wrapper with memoized security initialization
 function AppWrapper() {
+  const [showDevelopmentGate, setShowDevelopmentGate] = useState(true);
+
   // Initialize security only once
   useEffectOnce(() => {
     setupCSPReporting();
@@ -98,6 +101,23 @@ function AppWrapper() {
     document.documentElement.classList.add("hydrated");
     return () => document.documentElement.classList.remove("hydrated");
   }, []);
+
+  // Check if development access has been granted
+  useEffect(() => {
+    const hasAccess = sessionStorage.getItem('dev-access') === 'granted';
+    if (hasAccess) {
+      setShowDevelopmentGate(false);
+    }
+  }, []);
+
+  const handleDevelopmentAccess = useCallback(() => {
+    setShowDevelopmentGate(false);
+  }, []);
+
+  // Show development gate first
+  if (showDevelopmentGate) {
+    return <DevelopmentGate onAccess={handleDevelopmentAccess} />;
+  }
 
   return (
     <BrowserRouter>
