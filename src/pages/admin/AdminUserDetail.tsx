@@ -271,24 +271,18 @@ const AdminUserDetail: React.FC = () => {
   // Removed individual photo actions - use bulk actions instead
   // Removed moderation functionality - photos are auto-approved on upload
 
-  const handleBulkAction = async (action: 'delete' | 'make_public' | 'make_private') => {
+  const handleBulkAction = async (action: 'delete') => {
     if (selectedPhotos.size === 0) {
       alert('Please select photos first');
       return;
     }
 
     const photoIds = Array.from(selectedPhotos);
-    let reason = '';
-    let notifyUsers = true;
-
-    if (action === 'delete') {
-      reason = window.prompt(`Enter reason for deleting ${photoIds.length} photos:`) || '';
-      if (!reason.trim()) {
-        alert('Reason is required for photo deletion');
-        return;
-      }
-    } else {
-      notifyUsers = window.confirm(`Notify users about ${action} action?`);
+    const reason = window.prompt(`Enter reason for deleting ${photoIds.length} photos:`) || '';
+    
+    if (!reason.trim()) {
+      alert('Reason is required for photo deletion');
+      return;
     }
 
     setBulkActionLoading(true);
@@ -296,16 +290,16 @@ const AdminUserDetail: React.FC = () => {
       await adminGalleryService.bulkAction({
         action,
         photoIds,
-        reason: reason.trim() || undefined,
-        notifyUsers
+        reason: reason.trim(),
+        notifyUsers: true
       });
       
       // Reload admin gallery data and clear selection
       await loadAdminGallery();
       setSelectedPhotos(new Set());
-      alert(`Bulk ${action} completed successfully`);
+      alert(`Successfully deleted ${photoIds.length} photos`);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : `Failed to perform bulk ${action}`;
+      const msg = err instanceof Error ? err.message : 'Failed to delete photos';
       alert(`Error: ${msg}`);
     } finally {
       setBulkActionLoading(false);
@@ -477,25 +471,11 @@ const AdminUserDetail: React.FC = () => {
             </div>
             <div className="bulk-buttons">
               <button 
-                onClick={() => handleBulkAction('make_public')} 
-                disabled={selectedPhotos.size === 0 || bulkActionLoading}
-                className="btn btn-sm btn-info"
-              >
-                🌐 Make Public
-              </button>
-              <button 
-                onClick={() => handleBulkAction('make_private')} 
-                disabled={selectedPhotos.size === 0 || bulkActionLoading}
-                className="btn btn-sm btn-secondary"
-              >
-                🔒 Make Private
-              </button>
-              <button 
                 onClick={() => handleBulkAction('delete')} 
                 disabled={selectedPhotos.size === 0 || bulkActionLoading}
                 className="btn btn-sm btn-danger"
               >
-                🗑️ Delete Selected
+                🗑️ Delete Selected Photos
               </button>
             </div>
           </div>

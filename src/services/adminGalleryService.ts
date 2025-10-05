@@ -93,9 +93,9 @@ export interface AdminPhotoUpdateRequest {
 }
 
 export interface AdminBulkActionRequest {
-  action: 'delete' | 'make_public' | 'make_private';
+  action: 'delete';
   photoIds: number[];
-  reason?: string;
+  reason: string;
   adminNotes?: string;
   notifyUsers?: boolean;
 }
