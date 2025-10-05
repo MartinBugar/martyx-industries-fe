@@ -30,14 +30,14 @@
 }
 
 .user-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(255, 215, 0, 0.2), 0 0 30px rgba(255, 215, 0, 0.1);
-  border-color: #ffd700;
-  background: rgba(10, 10, 10, 0.9);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
+  border-color: rgba(255, 215, 0, 0.4);
+  background: rgba(10, 10, 10, 0.85);
 }
 
 .user-card:hover::before {
-  opacity: 1;
+  opacity: 0.5;
 }
 
 .user-card:active {
@@ -66,8 +66,8 @@
 }
 
 .user-card:hover .user-avatar {
-  border-color: #ffd700;
-  box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.1), 0 0 20px rgba(255, 215, 0, 0.2);
+  border-color: rgba(255, 215, 0, 0.5);
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.08);
 }
 
 .user-avatar img {
@@ -169,12 +169,11 @@
 }
 
 .user-card:hover .preview-thumbnail {
-  border-color: rgba(255, 215, 0, 0.4);
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.1);
+  border-color: rgba(255, 215, 0, 0.25);
 }
 
 .user-card:hover .preview-thumbnail img {
-  transform: scale(1.1);
+  transform: scale(1.05);
 }
 
 .preview-thumbnail.empty {
@@ -231,10 +230,8 @@
 }
 
 .user-card:hover .view-gallery-btn {
-  background: linear-gradient(135deg, #ffd700, #daa520);
-  color: #000;
-  border-color: #ffd700;
-  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3), 0 0 20px rgba(255, 215, 0, 0.15);
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.15));
+  border-color: rgba(255, 215, 0, 0.5);
 }
 
 .user-card:hover .view-gallery-btn::before {
@@ -242,7 +239,7 @@
 }
 
 .user-card:hover .view-gallery-btn svg {
-  transform: translateX(2px);
+  transform: translateX(1px);
 }
 
 .view-gallery-btn:active {
