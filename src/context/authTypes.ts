@@ -36,6 +36,7 @@ export interface User {
   orders: Order[];
   // Optional fields for backward compatibility
   name?: string;
+  username?: string;
   firstName?: string;
   lastName?: string;
   phone?: string;

@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/useAuth';
-import type { PublicPhotoWithUser, PublicPhoto } from '../../types/userGallery';
+import type { PublicPhotoWithUser } from '../../types/userGallery';
 import { userGalleryService } from '../../services/userGalleryService';
 import Lightbox from './Lightbox';
 import './PhotoGrid.css';
