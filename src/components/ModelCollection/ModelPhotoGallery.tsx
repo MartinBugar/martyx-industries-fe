@@ -35,9 +35,10 @@ interface PurchasedModel {
 interface ModelPhotoGalleryProps {
   model: PurchasedModel;
   onClose: () => void;
+  onPhotoDeleted?: (photoId: number) => void;
 }
 
-const ModelPhotoGallery: React.FC<ModelPhotoGalleryProps> = ({ model, onClose }) => {
+const ModelPhotoGallery: React.FC<ModelPhotoGalleryProps> = ({ model, onClose, onPhotoDeleted }) => {
   const { t } = useTranslation('collection');
   const [photos, setPhotos] = useState<ModelPhoto[]>(model.photos || []);
   const [loading, setLoading] = useState(false);
@@ -221,12 +222,17 @@ const ModelPhotoGallery: React.FC<ModelPhotoGalleryProps> = ({ model, onClose })
           if (import.meta.env.VITE_MOCK_DELETES === 'true') {
             console.log('🎭 Mock mode - simulating photo delete');
             setPhotos(prevPhotos => prevPhotos.filter(p => p.id !== photoId));
-            
+
+            // Notify parent component
+            if (onPhotoDeleted) {
+              onPhotoDeleted(photoId);
+            }
+
             // If deleted photo was selected in lightbox, close it
             if (selectedPhoto && selectedPhoto.id === photoId) {
               closeLightbox();
             }
-            
+
             return;
           }
           
@@ -239,7 +245,12 @@ const ModelPhotoGallery: React.FC<ModelPhotoGalleryProps> = ({ model, onClose })
 
       // Remove photo from local state
       setPhotos(prevPhotos => prevPhotos.filter(p => p.id !== photoId));
-      
+
+      // Notify parent component
+      if (onPhotoDeleted) {
+        onPhotoDeleted(photoId);
+      }
+
       // If deleted photo was selected in lightbox, close it
       if (selectedPhoto && selectedPhoto.id === photoId) {
         closeLightbox();

@@ -37,7 +37,7 @@ const PhotoUploadModal: React.FC<PhotoUploadModalProps> = ({ model, onClose, onS
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const maxFiles = 5;
+  const maxFiles = 10;
   const maxFileSize = 10 * 1024 * 1024; // 10MB
   const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
@@ -111,16 +111,6 @@ const PhotoUploadModal: React.FC<PhotoUploadModalProps> = ({ model, onClose, onS
     setError(null);
 
     try {
-      const formData = new FormData();
-      formData.append('product_id', model.product_id);
-      formData.append('product_name', model.product_name);
-      formData.append('order_id', model.order_id);
-      
-      // Append each file with proper naming
-      selectedFiles.forEach((selectedFile) => {
-        formData.append('photos', selectedFile.file);
-      });
-
       // Get auth token using utility function
       const token = getAuthToken();
       if (!token) {
@@ -135,87 +125,93 @@ const PhotoUploadModal: React.FC<PhotoUploadModalProps> = ({ model, onClose, onS
       console.log('Files count:', selectedFiles.length);
       debugToken();
 
-      // Test if backend is reachable first
-      try {
-        console.log('🧪 Testing backend connectivity...');
-        const testResponse = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8080'}/api/health`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-        console.log('🧪 Health check status:', testResponse.status);
-      } catch (healthError) {
-        console.log('⚠️ Backend health check failed:', healthError);
-      }
-
-      // Try different possible endpoints
       const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
-      const possibleEndpoints = [
-        `${baseUrl}/api/user-photos/upload`,
-        `${baseUrl}/api/photos/upload`,
-        `${baseUrl}/api/upload/user-photos`,
-        `${baseUrl}/api/user/photos/upload`
-      ];
-      
-      let apiUrl = possibleEndpoints[0]; // Default to first endpoint
-      console.log('🌐 Primary API URL:', apiUrl);
-      console.log('🔑 Authorization header:', `Bearer ${token.substring(0, 20)}...`);
-      
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-        body: formData,
-      });
+      const apiUrl = `${baseUrl}/api/user-photos/upload`;
 
-      console.log('📡 Response status:', response.status);
-      console.log('📡 Response headers:', Object.fromEntries(response.headers.entries()));
+      let uploadedCount = 0;
+      const totalFiles = selectedFiles.length;
+      const errors: string[] = [];
 
-      if (!response.ok) {
-        let errorData: any = {};
-        const contentType = response.headers.get('content-type');
-        
+      // Upload files one by one
+      for (let i = 0; i < selectedFiles.length; i++) {
+        const selectedFile = selectedFiles[i];
+
         try {
-          if (contentType && contentType.includes('application/json')) {
-            errorData = await response.json();
-          } else {
-            const textError = await response.text();
-            console.log('📄 Error response text:', textError);
-            errorData = { message: textError || `HTTP ${response.status}` };
+          console.log(`📤 Uploading file ${i + 1}/${totalFiles}: ${selectedFile.file.name}`);
+
+          const formData = new FormData();
+          formData.append('product_id', model.product_id);
+          formData.append('product_name', model.product_name);
+          formData.append('order_id', model.order_id);
+          formData.append('photos', selectedFile.file); // Backend expects 'photos' field
+
+          const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+            body: formData,
+          });
+
+          if (!response.ok) {
+            let errorData: any = {};
+            const contentType = response.headers.get('content-type');
+
+            try {
+              if (contentType && contentType.includes('application/json')) {
+                errorData = await response.json();
+              } else {
+                const textError = await response.text();
+                errorData = { message: textError || `HTTP ${response.status}` };
+              }
+            } catch (parseError) {
+              errorData = { message: `HTTP ${response.status}: ${response.statusText}` };
+            }
+
+            // Special handling for 500 errors
+            if (response.status === 500) {
+              console.log('🚨 Backend Error 500 - Check server logs');
+              console.log('💡 Common causes:');
+              console.log('   - Spring Boot file size limit (default 1MB) - needs application.yml config');
+              console.log('   - Missing multipart configuration');
+              console.log('   - Database connection issues');
+              console.log('   - Digital Ocean Spaces credentials');
+              throw new Error(`Server error pri nahrávaní ${selectedFile.file.name}. Skontrolujte server logs.`);
+            }
+
+            // Special handling for 413 (file too large)
+            if (response.status === 413) {
+              throw new Error(`Súbor ${selectedFile.file.name} je príliš veľký pre server. Backend má nižší limit ako 10MB.`);
+            }
+
+            throw new Error(errorData.message || response.statusText);
           }
-        } catch (parseError) {
-          console.log('❌ Failed to parse error response:', parseError);
-          errorData = { message: `HTTP ${response.status}: ${response.statusText}` };
+
+          const result = await response.json();
+          console.log(`✅ File ${i + 1} uploaded successfully:`, result);
+
+          uploadedCount++;
+
+          // Update progress
+          const progress = Math.round(((i + 1) / totalFiles) * 100);
+          setUploadProgress(progress);
+
+        } catch (fileError: any) {
+          console.error(`❌ Error uploading file ${i + 1}:`, fileError);
+          errors.push(`${selectedFile.file.name}: ${fileError.message}`);
         }
-        
-        console.log('❌ Error data:', errorData);
-        
-        // Special handling for 500 errors - likely backend not implemented
-        if (response.status === 500) {
-          console.log('🚨 Backend Error 500 - Endpoint likely not implemented');
-          console.log('📋 Backend Developer Info:');
-          console.log('   Required endpoint: POST /api/user-photos/upload');
-          console.log('   Required headers: Authorization: Bearer <jwt-token>');
-          console.log('   Required form data: product_id, product_name, order_id, photos[]');
-          console.log('   See BACKEND_USER_PHOTOS_INTEGRATION.md for full implementation');
-          
-          throw new Error(`Backend chyba (500): Endpoint /api/user-photos/upload pravdepodobne nie je implementovaný. Kontaktujte backend developera.`);
-        }
-        
-        throw new Error(`Chyba pri uploade fotografií: ${errorData.message || response.statusText}`);
       }
 
-      const result = await response.json();
-      
-      // Simulate progress for better UX
-      for (let i = 0; i <= 100; i += 20) {
-        setUploadProgress(i);
-        await new Promise(resolve => setTimeout(resolve, 200));
+      // Check if all uploads failed
+      if (uploadedCount === 0) {
+        throw new Error(errors.join('\n'));
       }
 
-      console.log('Upload successful:', result);
+      // Show partial success message if some failed
+      if (errors.length > 0) {
+        console.warn('⚠️ Some uploads failed:', errors);
+        setError(`Nahraných ${uploadedCount}/${totalFiles} fotiek. Zlyhania: ${errors.join(', ')}`);
+      }
 
       // Clean up object URLs
       selectedFiles.forEach(file => {
@@ -223,7 +219,11 @@ const PhotoUploadModal: React.FC<PhotoUploadModalProps> = ({ model, onClose, onS
       });
 
       setSelectedFiles([]);
-      onSuccess(); // Notify parent about successful upload
+
+      // Only call onSuccess if at least one file was uploaded
+      if (uploadedCount > 0) {
+        onSuccess();
+      }
     } catch (err: any) {
       console.error('Upload error:', err);
       

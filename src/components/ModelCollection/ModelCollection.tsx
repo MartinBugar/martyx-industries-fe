@@ -310,6 +310,30 @@ const ModelCollection: React.FC = () => {
     setSelectedModel(null);
   };
 
+  const handlePhotoDeleted = (photoId: number) => {
+    if (!selectedModel) return;
+
+    // Update local state - remove photo from the specific model
+    setCollectionData(prevData => {
+      if (!prevData) return prevData;
+
+      return {
+        ...prevData,
+        models: prevData.models.map(model => {
+          if (model.product_id === selectedModel.product_id) {
+            return {
+              ...model,
+              photos: model.photos.filter(p => p.id !== photoId)
+            };
+          }
+          return model;
+        })
+      };
+    });
+
+    console.log('Photo removed from card view:', photoId);
+  };
+
   const deletePhoto = async (photoId: number, modelProductId: string) => {
     if (!window.confirm('Naozaj chcete zmazať túto fotku?')) {
       return;
@@ -687,6 +711,7 @@ const ModelCollection: React.FC = () => {
         <ModelPhotoGallery
           model={selectedModel}
           onClose={handleGalleryClose}
+          onPhotoDeleted={handlePhotoDeleted}
         />
       )}
     </div>
