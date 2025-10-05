@@ -172,9 +172,9 @@
   font-size: 0.75rem;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: #00d4ff !important;
+  color: #ffd700 !important;
   font-weight: 700;
-  text-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
+  text-shadow: none;
 }
 
 /* Legacy styles - kept for compatibility with other components */
@@ -1003,7 +1003,7 @@
     margin-bottom: 1.25rem;
     letter-spacing: 0.06em;
     font-weight: 800;
-    text-shadow: 0 0 10px rgba(0, 212, 255, 0.6);
+    text-shadow: none;
   }
 
   /* Enhanced orders list */

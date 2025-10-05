@@ -2,8 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import UserCard from './UserCard';
+import PhotoGrid from './PhotoGrid';
 import { userGalleryService } from '../../services/userGalleryService';
-import type { PublicUser, GalleryStats, GalleryFilter, GallerySort } from '../../types/userGallery';
+import type { PublicUser, PublicPhotoWithUser, GalleryStats, GalleryFilter, GallerySort, GalleryView } from '../../types/userGallery';
 import './UserGallery.css';
 
 const UserGallery: React.FC = () => {
@@ -12,6 +13,7 @@ const UserGallery: React.FC = () => {
 
   // State
   const [users, setUsers] = useState<PublicUser[]>([]);
+  const [photos, setPhotos] = useState<PublicPhotoWithUser[]>([]);
   const [stats, setStats] = useState<GalleryStats>({
     total_users: 0,
     total_public_models: 0,
@@ -20,7 +22,10 @@ const UserGallery: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Filters & Sort from URL params
+  // View mode & Filters from URL params
+  const [view, setView] = useState<GalleryView>(
+    (searchParams.get('view') as GalleryView) || 'users'
+  );
   const [filter, setFilter] = useState<GalleryFilter>(
     (searchParams.get('filter') as GalleryFilter) || 'all'
   );
@@ -41,23 +46,37 @@ const UserGallery: React.FC = () => {
     setError(null);
 
     try {
-      const data = await userGalleryService.getPublicGallery({
-        filter,
-        sort,
-        page: currentPage,
-        limit: itemsPerPage
-      });
+      if (view === 'photos') {
+        // Fetch all photos
+        const data = await userGalleryService.getAllPublicPhotos({
+          sort,
+          page: currentPage,
+          limit: itemsPerPage
+        });
 
-      setUsers(data.users);
-      setStats(data.stats);
-      setTotalPages(data.pagination.total_pages);
+        setPhotos(data.photos);
+        setStats(data.stats);
+        setTotalPages(data.pagination.total_pages);
+      } else {
+        // Fetch users
+        const data = await userGalleryService.getPublicGallery({
+          filter,
+          sort,
+          page: currentPage,
+          limit: itemsPerPage
+        });
+
+        setUsers(data.users);
+        setStats(data.stats);
+        setTotalPages(data.pagination.total_pages);
+      }
     } catch (err) {
       console.error('Error fetching gallery:', err);
       setError(err instanceof Error ? err.message : 'Failed to load gallery');
     } finally {
       setLoading(false);
     }
-  }, [filter, sort, currentPage]);
+  }, [view, filter, sort, currentPage]);
 
   // Load data on mount and when params change
   useEffect(() => {
@@ -67,12 +86,19 @@ const UserGallery: React.FC = () => {
   // Update URL params when filters change
   useEffect(() => {
     const params: Record<string, string> = {};
-    if (filter !== 'all') params.filter = filter;
+    if (view !== 'users') params.view = view;
+    if (filter !== 'all' && view === 'users') params.filter = filter;
     if (sort !== 'recent') params.sort = sort;
     if (currentPage > 1) params.page = currentPage.toString();
 
     setSearchParams(params, { replace: true });
-  }, [filter, sort, currentPage, setSearchParams]);
+  }, [view, filter, sort, currentPage, setSearchParams]);
+
+  // Handle view change
+  const handleViewChange = (newView: GalleryView) => {
+    setView(newView);
+    setCurrentPage(1); // Reset to first page
+  };
 
   // Handle filter change
   const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -165,20 +191,37 @@ const UserGallery: React.FC = () => {
         </div>
       </div>
 
-      {/* Filters & Sort */}
+      {/* View Tabs & Filters */}
       <div className="gallery-controls">
-        <div className="filter-group">
-          <label htmlFor="gallery-filter">{t('filter.label', 'Filter')}</label>
-          <select
-            id="gallery-filter"
-            value={filter}
-            onChange={handleFilterChange}
-            className="filter-select"
+        <div className="view-tabs">
+          <button
+            className={`view-tab ${view === 'users' ? 'active' : ''}`}
+            onClick={() => handleViewChange('users')}
           >
-            <option value="all">{t('filter.all', 'All models')}</option>
-            <option value="completed">{t('filter.completed', 'Completed only')}</option>
-          </select>
+            {t('view.users', 'Builders')}
+          </button>
+          <button
+            className={`view-tab ${view === 'photos' ? 'active' : ''}`}
+            onClick={() => handleViewChange('photos')}
+          >
+            {t('view.all_photos', 'All Photos')}
+          </button>
         </div>
+
+        {view === 'users' && (
+          <div className="filter-group">
+            <label htmlFor="gallery-filter">{t('filter.label', 'Filter')}</label>
+            <select
+              id="gallery-filter"
+              value={filter}
+              onChange={handleFilterChange}
+              className="filter-select"
+            >
+              <option value="all">{t('filter.all', 'All models')}</option>
+              <option value="completed">{t('filter.completed', 'Completed only')}</option>
+            </select>
+          </div>
+        )}
 
         <div className="sort-group">
           <label htmlFor="gallery-sort">{t('sort.label', 'Sort by')}</label>
@@ -188,20 +231,33 @@ const UserGallery: React.FC = () => {
             onChange={handleSortChange}
             className="sort-select"
           >
-            <option value="recent">{t('sort.recent', 'Recent photos')}</option>
-            <option value="most_photos">{t('sort.most_photos', 'Most photos')}</option>
-            <option value="alphabetic">{t('sort.alphabetic', 'Alphabetical')}</option>
-            <option value="most_liked">{t('sort.most_liked', 'Most liked')}</option>
+            {view === 'users' ? (
+              <>
+                <option value="recent">{t('sort.recent', 'Recent photos')}</option>
+                <option value="most_photos">{t('sort.most_photos', 'Most photos')}</option>
+                <option value="alphabetic">{t('sort.alphabetic', 'Alphabetical')}</option>
+                <option value="most_liked">{t('sort.most_liked', 'Most liked')}</option>
+              </>
+            ) : (
+              <>
+                <option value="recent">{t('sort.recent', 'Newest first')}</option>
+                <option value="most_liked">{t('sort.most_liked', 'Most liked')}</option>
+              </>
+            )}
           </select>
         </div>
       </div>
 
-      {/* User Cards Grid */}
-      <div className="users-grid">
-        {users.map(user => (
-          <UserCard key={user.user_id} user={user} />
-        ))}
-      </div>
+      {/* Content Grid */}
+      {view === 'users' ? (
+        <div className="users-grid">
+          {users.map(user => (
+            <UserCard key={user.user_id} user={user} />
+          ))}
+        </div>
+      ) : (
+        <PhotoGrid photos={photos} />
+      )}
 
       {/* Pagination */}
       {totalPages > 1 && (
