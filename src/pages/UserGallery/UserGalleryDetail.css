@@ -379,6 +379,83 @@
 }
 
 /* Responsive Design */
+/* MacBook Air 14" (1440px width) */
+@media (max-width: 1440px) {
+  .user-gallery-detail {
+    max-width: 1280px;
+    padding: 0 16px 32px;
+  }
+
+  .user-header {
+    margin-bottom: 10px;
+  }
+
+  .back-btn {
+    font-size: 12px;
+    gap: 5px;
+  }
+
+  .back-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .user-profile {
+    padding: 10px 0;
+    gap: 14px;
+  }
+
+  .user-avatar-large {
+    width: 55px;
+    height: 55px;
+  }
+
+  .avatar-placeholder-large {
+    font-size: 22px;
+  }
+
+  .user-meta h1 {
+    font-size: 18px;
+  }
+
+  .member-since {
+    font-size: 11px;
+  }
+
+  .user-stats-detail {
+    font-size: 12px;
+    gap: 10px;
+  }
+
+  .model-section-header h2 {
+    font-size: 20px;
+  }
+
+  .completed-badge {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+
+  .photo-count {
+    font-size: 12px;
+  }
+
+  .photos-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+  }
+
+  .like-btn {
+    padding: 7px 11px;
+    font-size: 12px;
+  }
+
+  .like-btn svg {
+    width: 17px;
+    height: 17px;
+  }
+}
+
 @media (max-width: 768px) {
   .user-gallery-detail {
     padding: 24px 16px;

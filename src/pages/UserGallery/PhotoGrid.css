@@ -97,6 +97,33 @@
 }
 
 /* Responsive */
+/* MacBook Air 14" (1440px width) */
+@media (max-width: 1440px) {
+  .photos-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+  }
+
+  .photo-item {
+    border-radius: 10px;
+  }
+
+  .photo-overlay {
+    padding: 10px;
+  }
+
+  .like-btn {
+    padding: 7px 11px;
+    font-size: 13px;
+    gap: 5px;
+  }
+
+  .like-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
 @media (max-width: 768px) {
   .photos-grid {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));

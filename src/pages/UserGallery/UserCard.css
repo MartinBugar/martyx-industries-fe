@@ -247,6 +247,65 @@
 }
 
 /* Responsive Design */
+/* MacBook Air 14" (1440px width) */
+@media (max-width: 1440px) {
+  .user-card {
+    padding: 14px;
+  }
+
+  .user-card-header {
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .user-avatar {
+    width: 46px;
+    height: 46px;
+  }
+
+  .avatar-placeholder {
+    font-size: 18px;
+  }
+
+  .user-username {
+    font-size: 13px;
+  }
+
+  .user-stats {
+    font-size: 10px;
+    gap: 5px;
+  }
+
+  .user-likes {
+    font-size: 10px;
+  }
+
+  .user-likes .heart-icon {
+    width: 11px;
+    height: 11px;
+  }
+
+  .photo-preview-grid {
+    gap: 5px;
+    margin-bottom: 10px;
+  }
+
+  .preview-thumbnail {
+    border-radius: 5px;
+  }
+
+  .view-gallery-btn {
+    padding: 9px;
+    font-size: 11px;
+    gap: 5px;
+  }
+
+  .view-gallery-btn svg {
+    width: 13px;
+    height: 13px;
+  }
+}
+
 @media (max-width: 768px) {
   .user-card {
     padding: 12px;
