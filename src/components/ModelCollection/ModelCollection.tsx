@@ -620,40 +620,17 @@ const ModelCollection: React.FC = () => {
                   <h4>{t('model.photos_count')}: {model.photos.length} / 10</h4>
                   <div className="photos-list">
                     {model.photos.map((photo) => (
-                        <div key={photo.id} className="photo-item">
+                      <div key={photo.id} className="photo-item">
                         <div className="photo-thumbnail">
-                          <img 
-                            src={photo.thumbnailUrl || photo.cdnUrl} 
+                          <img
+                            src={photo.thumbnailUrl || photo.cdnUrl}
                             alt="Model photo"
                             onError={(e) => {
                               (e.target as HTMLImageElement).src = '/placeholder-image.png';
                             }}
                           />
                         </div>
-                        <div className="photo-info">
-                          <div className="photo-date">
-                            {new Date(photo.uploadDate).toLocaleDateString('sk-SK')}
-                          </div>
-                          {getStatusBadge(photo.verificationStatus)}
-                        </div>
-                        
-                        {/* Delete button - right side */}
-                        <button
-                          className="delete-photo-btn-right"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            deletePhoto(photo.id, model.product_id);
-                          }}
-                          disabled={deletingPhotoId === photo.id}
-                          title="Zmazať fotku"
-                        >
-                          {deletingPhotoId === photo.id ? (
-                            <div className="delete-spinner-small"></div>
-                          ) : (
-                            <span className="delete-cross">×</span>
-                          )}
-                        </button>
-                        </div>
+                      </div>
                     ))}
                   </div>
                 </div>
