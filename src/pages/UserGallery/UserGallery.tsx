@@ -24,7 +24,7 @@ const UserGallery: React.FC = () => {
 
   // View mode & Filters from URL params
   const [view, setView] = useState<GalleryView>(
-    (searchParams.get('view') as GalleryView) || 'users'
+    (searchParams.get('view') as GalleryView) || 'photos'
   );
   const [filter, setFilter] = useState<GalleryFilter>(
     (searchParams.get('filter') as GalleryFilter) || 'all'
@@ -86,7 +86,7 @@ const UserGallery: React.FC = () => {
   // Update URL params when filters change
   useEffect(() => {
     const params: Record<string, string> = {};
-    if (view !== 'users') params.view = view;
+    if (view !== 'photos') params.view = view;
     if (filter !== 'all' && view === 'users') params.filter = filter;
     if (sort !== 'recent') params.sort = sort;
     if (currentPage > 1) params.page = currentPage.toString();
@@ -195,16 +195,16 @@ const UserGallery: React.FC = () => {
       <div className="gallery-controls">
         <div className="view-tabs">
           <button
-            className={`view-tab ${view === 'users' ? 'active' : ''}`}
-            onClick={() => handleViewChange('users')}
-          >
-            {t('view.users', 'Builders')}
-          </button>
-          <button
             className={`view-tab ${view === 'photos' ? 'active' : ''}`}
             onClick={() => handleViewChange('photos')}
           >
             {t('view.all_photos', 'All Photos')}
+          </button>
+          <button
+            className={`view-tab ${view === 'users' ? 'active' : ''}`}
+            onClick={() => handleViewChange('users')}
+          >
+            {t('view.users', 'Builders')}
           </button>
         </div>
 
