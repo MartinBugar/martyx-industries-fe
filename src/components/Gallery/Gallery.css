@@ -262,3 +262,149 @@
 .gallery-close-btn:active {
   transform: scale(0.96);
 }
+
+/* MacBook Air M2 14" Responsive Design */
+@media (min-width: 1400px) and (max-width: 1600px) and (min-height: 900px) and (max-height: 1100px) {
+  /* MacBook Air M2 14" specific optimizations */
+
+  .product-gallery {
+    margin-top: 24px;
+  }
+
+  .gallery-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  /* Enhanced thumbnails */
+  .gallery-thumbnails {
+    gap: 12px;
+    padding-bottom: 12px;
+  }
+
+  .gallery-thumbnail {
+    width: calc(20% - 10px);
+    border-radius: 8px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .gallery-thumbnail:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Enhanced fullscreen gallery */
+  .fullscreen-content {
+    width: 92%;
+    height: 92%;
+    max-width: 1350px;
+  }
+
+  .fullscreen-image-container {
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .fullscreen-image {
+    border-radius: 12px;
+  }
+
+  /* Enhanced image counter */
+  .image-counter {
+    bottom: 24px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 15px;
+    font-weight: 600;
+    backdrop-filter: blur(12px);
+    background-color: rgba(0, 0, 0, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* Enhanced navigation buttons */
+  .gallery-nav-btn {
+    width: 56px;
+    height: 56px;
+    font-size: 24px;
+    border-radius: 28px;
+    background-color: rgba(20, 20, 20, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .gallery-nav-btn:hover:not(:disabled) {
+    background-color: rgba(20, 20, 20, 0.9);
+    transform: translateY(-50%) scale(1.05);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+  }
+
+  .gallery-nav-btn:active:not(:disabled) {
+    transform: translateY(-50%) scale(0.98);
+  }
+
+  .prev-btn {
+    left: 24px;
+  }
+
+  .next-btn {
+    right: 24px;
+  }
+
+  /* Enhanced close button */
+  .gallery-close-btn {
+    width: 48px;
+    height: 48px;
+    font-size: 24px;
+    border-radius: 24px;
+    top: 24px;
+    right: 24px;
+    background-color: rgba(20, 20, 20, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .gallery-close-btn:hover {
+    background-color: rgba(20, 20, 20, 0.9);
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+  }
+
+  .gallery-close-btn:active {
+    transform: scale(0.98);
+  }
+
+  /* Enhanced focus states */
+  .gallery-nav-btn:focus-visible,
+  .gallery-close-btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.8), 0 8px 25px rgba(0, 0, 0, 0.4);
+  }
+
+  /* Better safe area handling */
+  .fullscreen-content {
+    padding-top: max(16px, var(--safe-top, env(safe-area-inset-top, 0px)));
+    padding-bottom: max(16px, var(--safe-bottom, env(safe-area-inset-bottom, 0px)));
+    padding-left: max(16px, var(--safe-left, env(safe-area-inset-left, 0px)));
+    padding-right: max(16px, var(--safe-right, env(safe-area-inset-right, 0px)));
+  }
+
+  .gallery-close-btn {
+    top: calc(max(16px, var(--safe-top, env(safe-area-inset-top, 0px))) + 8px);
+    right: max(16px, var(--safe-right, env(safe-area-inset-right, 0px)));
+  }
+
+  .prev-btn {
+    left: max(16px, var(--safe-left, env(safe-area-inset-left, 0px)));
+  }
+
+  .next-btn {
+    right: max(16px, var(--safe-right, env(safe-area-inset-right, 0px)));
+  }
+
+  .image-counter {
+    bottom: max(20px, var(--safe-bottom, env(safe-area-inset-bottom, 0px)));
+  }
+}

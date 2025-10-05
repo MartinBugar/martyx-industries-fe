@@ -1467,6 +1467,242 @@
     }
 }
 
+/* ========== MACBOOK AIR M2 14" RESPONSIVE DESIGN ========== */
+@media (min-width: 1400px) and (max-width: 1600px) and (min-height: 900px) and (max-height: 1100px) {
+    /* MacBook Air M2 14" specific optimizations */
+
+    /* Container max-width optimization */
+    .hero-container,
+    .stats-container,
+    .content-wrapper,
+    .creator-wrapper,
+    .cta-container {
+        max-width: 1350px;
+        padding: 0 2.3rem; /* 15% increase */
+    }
+
+    /* Hero section */
+    .hero-container {
+        gap: 4.6rem; /* 15% increase */
+    }
+
+    .hero-title {
+        font-size: 4.2rem; /* 5% increase */
+    }
+
+    .title-highlight {
+        font-size: 2.6rem; /* 4% increase */
+    }
+
+    .hero-subtitle {
+        font-size: 1.37rem; /* 5% increase */
+        margin-bottom: 3.5rem; /* 16% increase */
+    }
+
+    .hero-features-grid {
+        gap: 1.7rem; /* 13% increase */
+        margin-bottom: 3.5rem; /* 16% increase */
+    }
+
+    .feature-card {
+        padding: 1.7rem; /* 13% increase */
+        gap: 1.15rem; /* 15% increase */
+    }
+
+    .feature-icon-wrapper {
+        width: 56px; /* 12% increase */
+        height: 56px;
+    }
+
+    .feature-icon {
+        font-size: 1.6rem; /* 7% increase */
+    }
+
+    .feature-content h3 {
+        font-size: 1.16rem; /* 5% increase */
+    }
+
+    .feature-desc {
+        font-size: 0.95rem; /* 5% increase */
+    }
+
+    /* Mascot showcase */
+    .mascot-image {
+        width: 505px; /* 5% increase */
+        padding: 2.3rem; /* 15% increase */
+    }
+
+    .mascot-name {
+        font-size: 1.68rem; /* 5% increase */
+    }
+
+    .mascot-role {
+        font-size: 1.05rem; /* 5% increase */
+    }
+
+    /* Stats section */
+    .stats-title {
+        font-size: 3.15rem; /* 5% increase */
+    }
+
+    .stats-subtitle {
+        font-size: 1.26rem; /* 5% increase */
+    }
+
+    .stat-card.modern {
+        padding: 2.9rem; /* 16% increase */
+    }
+
+    .stat-icon {
+        font-size: 3.15rem; /* 5% increase */
+        margin-bottom: 1.7rem; /* 13% increase */
+    }
+
+    .stat-content .stat-number {
+        font-size: 3.7rem; /* 6% increase */
+    }
+
+    .stat-content .stat-label {
+        font-size: 1.26rem; /* 5% increase */
+    }
+
+    .stat-description {
+        font-size: 0.95rem; /* 5% increase */
+    }
+
+    /* Content sections */
+    .content-section {
+        gap: 6.9rem; /* 15% increase */
+        margin-bottom: 9.2rem; /* 15% increase */
+    }
+
+    .section-title {
+        font-size: 2.95rem; /* 5% increase */
+    }
+
+    .section-description {
+        font-size: 1.26rem; /* 5% increase */
+        margin-bottom: 3.5rem; /* 16% increase */
+    }
+
+    .features-grid {
+        gap: 1.7rem; /* 13% increase */
+    }
+
+    .feature-item.modern {
+        padding: 1.7rem; /* 13% increase */
+        gap: 1.15rem; /* 15% increase */
+    }
+
+    .feature-icon-modern {
+        width: 56px; /* 12% increase */
+        height: 56px;
+    }
+
+    .feature-text h4 {
+        font-size: 1.16rem; /* 5% increase */
+    }
+
+    .feature-text p {
+        font-size: 0.95rem; /* 5% increase */
+    }
+
+    /* Visual showcase */
+    .visual-showcase {
+        padding: 3.5rem; /* 16% increase */
+        min-height: 460px; /* 15% increase */
+    }
+
+    .showcase-item {
+        padding: 2.3rem; /* 15% increase */
+        gap: 1.15rem; /* 15% increase */
+    }
+
+    .showcase-icon {
+        font-size: 3.15rem; /* 5% increase */
+    }
+
+    /* Creator section */
+    .creator-title {
+        font-size: 3.15rem; /* 5% increase */
+    }
+
+    .creator-subtitle {
+        font-size: 1.26rem; /* 5% increase */
+    }
+
+    .creator-content {
+        gap: 4.6rem; /* 15% increase */
+    }
+
+    .profile-avatar {
+        width: 170px; /* 13% increase */
+        height: 170px;
+        font-size: 4.2rem; /* 5% increase */
+    }
+
+    .profile-name {
+        font-size: 1.6rem; /* 7% increase */
+    }
+
+    .profile-role {
+        font-size: 1.16rem; /* 5% increase */
+        margin-bottom: 2.3rem; /* 15% increase */
+    }
+
+    .profile-badge {
+        padding: 1.15rem; /* 15% increase */
+        gap: 1.15rem; /* 15% increase */
+    }
+
+    .story-text {
+        font-size: 1.16rem; /* 5% increase */
+    }
+
+    .story-quote {
+        padding: 2.3rem; /* 15% increase */
+    }
+
+    .quote-text {
+        font-size: 1.16rem; /* 5% increase */
+    }
+
+    /* CTA section */
+    .cta-title {
+        font-size: 3.7rem; /* 6% increase */
+        margin-bottom: 1.7rem; /* 13% increase */
+    }
+
+    .cta-description {
+        font-size: 1.37rem; /* 5% increase */
+        max-width: 800px; /* 14% increase */
+    }
+
+    .cta-button.primary {
+        padding: 2.3rem 4.6rem; /* 15% increase */
+        font-size: 1.37rem; /* 5% increase */
+    }
+
+    .cta-features {
+        gap: 3.5rem; /* 16% increase */
+    }
+
+    .cta-feature {
+        font-size: 1.05rem; /* 5% increase */
+    }
+
+    .cta-feature .feature-icon {
+        font-size: 1.26rem; /* 5% increase */
+    }
+
+    /* Button improvements */
+    .hero-button.modern {
+        padding: 1.15rem 2.9rem; /* 15% increase */
+        font-size: 1.16rem; /* 5% increase */
+        min-width: 230px; /* 15% increase */
+    }
+}
+
 /* Print Styles */
 @media print {
     .bg-particles,

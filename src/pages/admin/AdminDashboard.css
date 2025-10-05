@@ -1080,3 +1080,277 @@
         border: 1px solid #ffffff;
     }
 }
+
+/* MacBook Air M2 14" specific optimizations */
+@media (min-width: 1400px) and (max-width: 1600px) and (min-height: 900px) and (max-height: 1100px) {
+  /* MacBook Air M2 14" specific optimizations */
+
+  .dashboard-v3 {
+    padding: 28px 32px;
+    gap: 24px;
+    max-width: 1500px;
+    margin: 0 auto;
+  }
+
+  /* Enhanced KPI Row for MacBook Air M2 14" */
+  .kpi-row {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+
+  .kpi-card {
+    padding: 20px 24px;
+    background: linear-gradient(135deg, #1F2538 0%, #1B2030 100%);
+    border: 1px solid rgba(59, 130, 246, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+    border-color: rgba(59, 130, 246, 0.3);
+  }
+
+  .kpi-value {
+    font-size: 28px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #ffffff 0%, #3B82F6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .kpi-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #9CA3AF;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* Enhanced dashboard sections */
+  .visitors-content,
+  .revenue-content {
+    grid-template-columns: 1fr 400px;
+    gap: 28px;
+  }
+
+  .visitors-chart,
+  .revenue-chart,
+  .visitors-countries,
+  .revenue-products {
+    padding: 24px;
+    background: linear-gradient(135deg, #1F2538 0%, #1B2030 100%);
+    border: 1px solid rgba(59, 130, 246, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+  }
+
+  .visitors-chart:hover,
+  .revenue-chart:hover,
+  .visitors-countries:hover,
+  .revenue-products:hover {
+    border-color: rgba(59, 130, 246, 0.2);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Enhanced chart styling */
+  .chart-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 8px;
+  }
+
+  .chart-subtitle {
+    font-size: 14px;
+    color: #9CA3AF;
+    margin-bottom: 20px;
+  }
+
+  .chart-wrapper {
+    padding: 20px;
+    min-height: 280px;
+    background: #0F1115;
+    border: 1px solid rgba(59, 130, 246, 0.05);
+  }
+
+  /* Enhanced progress bars */
+  .progress-row {
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(55, 65, 81, 0.3);
+  }
+
+  .progress-info {
+    min-width: 120px;
+  }
+
+  .progress-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #ffffff;
+  }
+
+  .progress-bar-container {
+    height: 8px;
+    background: #374151;
+    border-radius: 4px;
+    margin: 0 12px;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #3B82F6 0%, #1D4ED8 100%);
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+  }
+
+  /* Enhanced product revenue styling */
+  .product-revenue-row {
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(55, 65, 81, 0.3);
+  }
+
+  .product-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #ffffff;
+  }
+
+  .product-revenue-amount {
+    font-size: 14px;
+    font-weight: 700;
+    color: #10B981;
+    min-width: 80px;
+  }
+
+  /* Enhanced bottom row */
+  .bottom-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+  }
+
+  .data-status,
+  .system-bandwidth {
+    padding: 24px;
+    background: linear-gradient(135deg, #1F2538 0%, #1B2030 100%);
+    border: 1px solid rgba(59, 130, 246, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    min-height: 240px;
+  }
+
+  .status-text {
+    font-size: 14px;
+    color: #9CA3AF;
+    padding: 12px 0;
+  }
+
+  .endpoint-row {
+    padding: 12px 0;
+    min-height: 44px;
+  }
+
+  .endpoint-name {
+    font-size: 13px;
+    color: #ffffff;
+    font-family: 'SF Mono', Monaco, Menlo, monospace;
+  }
+
+  .endpoint-time {
+    font-size: 13px;
+    color: #9CA3AF;
+    min-width: 60px;
+  }
+
+  .endpoint-status {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 12px;
+    min-width: 60px;
+    max-width: 60px;
+    text-align: center;
+  }
+
+  /* Enhanced dashboard tabs */
+  .dashboard-tabs {
+    margin-left: 24px;
+    gap: 8px;
+  }
+
+  .dashboard-tab {
+    padding: 10px 20px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 10px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .dashboard-tab::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+    transition: left 0.3s ease;
+  }
+
+  .dashboard-tab:hover::before {
+    left: 100%;
+  }
+
+  .dashboard-tab:hover {
+    background: rgba(59, 130, 246, 0.1);
+    color: #ffffff;
+    border-color: rgba(59, 130, 246, 0.3);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+  }
+
+  .dashboard-tab.active {
+    background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+    color: #ffffff;
+    border-color: #3B82F6;
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+    transform: translateY(-1px);
+  }
+
+  /* Enhanced section headers */
+  .section-header {
+    margin-bottom: 20px;
+  }
+
+  .section-pill {
+    background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 8px 16px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  }
+}

@@ -207,3 +207,334 @@
     outline: 2px solid #66b3ff;
     outline-offset: 2px;
 }
+
+/* MacBook Air M2 14" specific optimizations */
+@media (min-width: 1400px) and (max-width: 1600px) and (min-height: 900px) and (max-height: 1100px) {
+    /* MacBook Air M2 14" specific optimizations */
+
+    .policy-page {
+        background: linear-gradient(135deg, #1a1a1a 0%, #1e1e1e 100%);
+        color: #ffffff;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        line-height: 1.7;
+        min-height: 100vh;
+    }
+
+    .policy-container {
+        padding: 3.5rem 3rem;
+        max-width: 1200px;
+        margin: 0 auto;
+        background: linear-gradient(135deg, rgba(42, 42, 42, 0.8) 0%, rgba(26, 26, 26, 0.9) 100%);
+        border-radius: 20px;
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Enhanced header section */
+    .policy-header {
+        text-align: center;
+        margin-bottom: 4rem;
+        padding-bottom: 2.5rem;
+        border-bottom: 2px solid rgba(102, 179, 255, 0.3);
+        position: relative;
+    }
+
+    .policy-header::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        height: 2px;
+        background: linear-gradient(90deg, #66b3ff, #99ccff);
+        border-radius: 1px;
+    }
+
+    .policy-title {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(135deg, #ffffff 0%, #66b3ff 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        line-height: 1.2;
+        letter-spacing: -0.5px;
+    }
+
+    .policy-last-updated {
+        color: #cccccc;
+        font-size: 1.125rem;
+        margin-bottom: 0;
+        font-style: italic;
+        font-weight: 500;
+        opacity: 0.9;
+    }
+
+    /* Enhanced content sections */
+    .policy-content {
+        line-height: 1.8;
+    }
+
+    .policy-section {
+        margin-bottom: 3.5rem;
+        padding: 0;
+        scroll-margin-top: 120px;
+        background: rgba(42, 42, 42, 0.3);
+        border-radius: 16px;
+        padding: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: all 0.3s ease;
+    }
+
+    .policy-section:hover {
+        background: rgba(42, 42, 42, 0.5);
+        border-color: rgba(102, 179, 255, 0.2);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    .policy-section-title {
+        font-size: 1.875rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        color: #ffffff;
+        border-bottom: 2px solid #66b3ff;
+        padding-bottom: 0.75rem;
+        position: relative;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .policy-section-title::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 60px;
+        height: 2px;
+        background: linear-gradient(90deg, #66b3ff, #99ccff);
+        border-radius: 1px;
+    }
+
+    .policy-section-content {
+        color: #e5e5e5;
+        font-size: 1.125rem;
+        line-height: 1.8;
+        margin-bottom: 2rem;
+        font-weight: 400;
+    }
+
+    .policy-section-content p {
+        margin-bottom: 1.5rem;
+        text-align: justify;
+    }
+
+    .policy-section-content ul {
+        list-style: none;
+        padding-left: 0;
+        margin: 1.5rem 0;
+    }
+
+    .policy-section-content li {
+        margin-bottom: 1rem;
+        color: #e5e5e5;
+        position: relative;
+        padding-left: 2rem;
+        font-weight: 400;
+    }
+
+    .policy-section-content li::before {
+        content: '▶';
+        position: absolute;
+        left: 0;
+        color: #66b3ff;
+        font-weight: bold;
+        font-size: 0.8rem;
+    }
+
+    /* Enhanced links */
+    .policy-section-content a {
+        color: #66b3ff;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border-bottom: 1px solid transparent;
+        position: relative;
+    }
+
+    .policy-section-content a::before {
+        content: '';
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        width: 0;
+        height: 1px;
+        background: #99ccff;
+        transition: width 0.3s ease;
+    }
+
+    .policy-section-content a:hover {
+        color: #99ccff;
+        transform: translateY(-1px);
+    }
+
+    .policy-section-content a:hover::before {
+        width: 100%;
+    }
+
+    /* Enhanced introduction section */
+    .policy-intro {
+        background: linear-gradient(135deg, rgba(42, 42, 42, 0.8) 0%, rgba(68, 68, 68, 0.6) 100%);
+        border: 1px solid rgba(102, 179, 255, 0.3);
+        border-radius: 16px;
+        padding: 2.5rem;
+        margin-bottom: 3rem;
+        backdrop-filter: blur(8px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .policy-intro::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, transparent 0%, rgba(102, 179, 255, 0.05) 50%, transparent 100%);
+        pointer-events: none;
+    }
+
+    .policy-intro .policy-section-content {
+        font-size: 1.25rem;
+        font-weight: 500;
+        color: #f5f5f5;
+        margin-bottom: 0;
+        text-align: center;
+        position: relative;
+        z-index: 2;
+    }
+
+    /* Enhanced scroll to top button */
+    .scroll-to-top {
+        position: fixed;
+        bottom: 3rem;
+        right: 3rem;
+        background: linear-gradient(135deg, #66b3ff 0%, #99ccff 100%);
+        color: #1a1a1a;
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        font-weight: bold;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        opacity: 0;
+        visibility: hidden;
+        z-index: 1000;
+        box-shadow: 0 8px 24px rgba(102, 179, 255, 0.3);
+        backdrop-filter: blur(8px);
+    }
+
+    .scroll-to-top.visible {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .scroll-to-top:hover {
+        background: linear-gradient(135deg, #99ccff 0%, #ccddff 100%);
+        transform: translateY(-4px) scale(1.05);
+        box-shadow: 0 12px 32px rgba(102, 179, 255, 0.4);
+    }
+
+    .scroll-to-top:active {
+        transform: translateY(-2px) scale(1.02);
+    }
+
+    /* Enhanced typography */
+    .policy-section-content strong {
+        color: #ffffff;
+        font-weight: 700;
+    }
+
+    .policy-section-content em {
+        color: #99ccff;
+        font-style: italic;
+    }
+
+    /* Enhanced readability improvements */
+    .policy-section-content p:first-child {
+        margin-top: 0;
+    }
+
+    .policy-section-content p:last-child {
+        margin-bottom: 0;
+    }
+
+    /* Enhanced focus states */
+    .policy-section-content a:focus {
+        outline: 2px solid #66b3ff;
+        outline-offset: 4px;
+        border-radius: 4px;
+        background: rgba(102, 179, 255, 0.1);
+    }
+
+    .scroll-to-top:focus {
+        outline: 3px solid #66b3ff;
+        outline-offset: 4px;
+    }
+
+    /* Enhanced visual hierarchy */
+    .policy-section:nth-child(even) {
+        background: rgba(48, 48, 48, 0.3);
+    }
+
+    .policy-section:nth-child(odd) {
+        background: rgba(42, 42, 42, 0.3);
+    }
+
+    /* Enhanced animation for smooth scrolling */
+    html {
+        scroll-behavior: smooth;
+    }
+
+    /* Enhanced table styling if present */
+    .policy-section-content table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 2rem 0;
+        background: rgba(42, 42, 42, 0.5);
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .policy-section-content th,
+    .policy-section-content td {
+        padding: 1rem 1.5rem;
+        text-align: left;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .policy-section-content th {
+        background: rgba(102, 179, 255, 0.2);
+        color: #ffffff;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .policy-section-content tr:hover {
+        background: rgba(102, 179, 255, 0.05);
+    }
+}

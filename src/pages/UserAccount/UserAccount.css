@@ -776,8 +776,210 @@
     bottom: 0.75rem;
     right: 0.75rem;
   }
-  
+
   .floating-mascot-image-account {
     width: 120px;
+  }
+}
+
+/* MacBook Air M2 14" Responsive Design */
+@media (min-width: 1400px) and (max-width: 1600px) and (min-height: 900px) and (max-height: 1100px) {
+  /* MacBook Air M2 14" specific optimizations */
+
+  .account-container {
+    max-width: 1350px;
+    gap: 1.5rem;
+  }
+
+  /* Enhanced header styling */
+  .account-header {
+    padding: 2.5rem;
+    border-radius: 20px;
+    backdrop-filter: blur(25px);
+  }
+
+  .header-content {
+    gap: 2.5rem;
+  }
+
+  .user-welcome {
+    gap: 2rem;
+  }
+
+  .user-avatar {
+    width: 96px;
+    height: 96px;
+    font-size: 2.25rem;
+    border-width: 4px;
+  }
+
+  .welcome-title {
+    font-size: 2.25rem;
+    font-weight: 800;
+    line-height: 1.1;
+  }
+
+  .user-email {
+    font-size: 1.125rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .account-stats {
+    gap: 2rem;
+  }
+
+  .stat-label {
+    font-size: 0.95rem;
+  }
+
+  .stat-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  .session-card {
+    padding: 1.25rem;
+    border-radius: 16px;
+    min-width: 320px;
+  }
+
+  /* Enhanced tabbed interface */
+  .account-tabbed-interface {
+    border-radius: 20px;
+    backdrop-filter: blur(25px);
+  }
+
+  .account-navigation {
+    padding: 0.75rem;
+  }
+
+  .nav-tabs {
+    gap: 0.75rem;
+  }
+
+  .nav-tab {
+    padding: 1.25rem 2rem;
+    border-radius: 16px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    min-width: 140px;
+  }
+
+  .tab-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .nav-actions {
+    gap: 0.75rem;
+  }
+
+  .nav-action-button {
+    padding: 0.75rem 1.25rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .nav-action-button svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* Enhanced content panels */
+  .content-panel {
+    padding: 2.5rem;
+    min-height: 700px;
+  }
+
+  /* Better settings content */
+  .settings-content {
+    gap: 2rem;
+  }
+
+  .settings-card {
+    padding: 2.5rem;
+    border-radius: 16px;
+    backdrop-filter: blur(15px);
+  }
+
+  .settings-card h2 {
+    font-size: 1.625rem;
+    font-weight: 700;
+    margin-bottom: 1.25rem;
+  }
+
+  .settings-card p {
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+
+  /* Enhanced floating mascot */
+  .floating-mascot-image-account {
+    width: 280px;
+  }
+
+  /* Better loading animation */
+  .loading-animation {
+    margin-bottom: 2.5rem;
+  }
+
+  .spinner {
+    width: 56px;
+    height: 56px;
+    border-width: 4px;
+  }
+
+  .ring {
+    width: 56px;
+    height: 56px;
+    border-width: 3px;
+  }
+
+  .account-loading h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+  }
+
+  .account-loading p {
+    font-size: 1.125rem;
+  }
+
+  /* Enhanced collection content */
+  .collection-content {
+    padding: 2.5rem;
+  }
+
+  .collection-header h2 {
+    font-size: 2.25rem;
+    font-weight: 800;
+    margin-bottom: 0.75rem;
+  }
+
+  .collection-header p {
+    font-size: 1.2rem;
+  }
+
+  .collection-placeholder {
+    padding: 5rem 3rem;
+    border-radius: 20px;
+    border-width: 3px;
+  }
+
+  .placeholder-icon {
+    font-size: 5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .collection-placeholder h3 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 1.25rem;
+  }
+
+  .collection-placeholder p {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
   }
 }
