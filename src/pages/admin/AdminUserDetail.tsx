@@ -5,7 +5,7 @@ import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
 import { adminUsersService, type AdminUser } from '../../services/adminUsersService';
 import { userGalleryService } from '../../services/userGalleryService';
-import { adminGalleryService, type AdminUserPhotosResponse } from '../../services/adminGalleryService';
+import { adminGalleryService, type AdminUserPhotosResponse, type AdminModelInfo } from '../../services/adminGalleryService';
 import type { UserGalleryDetail } from '../../types/userGallery';
 
 type AdminUserTab = 'details' | 'gallery';
@@ -36,7 +36,6 @@ const AdminUserDetail: React.FC = () => {
   const [adminGalleryError, setAdminGalleryError] = useState<string | null>(null);
   const [selectedPhotos, setSelectedPhotos] = useState<Set<number>>(new Set());
   const [bulkActionLoading, setBulkActionLoading] = useState<boolean>(false);
-  const [photoActionLoading, setPhotoActionLoading] = useState<Set<number>>(new Set());
 
   const loadUser = async () => {
     if (!id) return;
@@ -88,7 +87,7 @@ const AdminUserDetail: React.FC = () => {
     }
   };
 
-  // Load admin gallery (all photos including private)
+  // Load admin gallery (using admin endpoints with model status)
   const loadAdminGallery = useCallback(async () => {
     if (!id) return;
     setAdminGalleryLoading(true);
@@ -100,8 +99,53 @@ const AdminUserDetail: React.FC = () => {
         sort: 'recent',
         filter: 'all'
       });
-      setAdminGalleryData(data);
+      
+      console.log('Admin gallery data received:', data);
+      console.log('Photos array:', data.photos);
+      console.log('First photo structure:', data.photos[0]);
+      
+      // Check if data has photos array
+      if (!data.photos || !Array.isArray(data.photos)) {
+        throw new Error('Invalid data structure: photos array not found');
+      }
+      
+      // Transform flat photos array into models structure
+      const modelsMap = new Map<string, AdminModelInfo>();
+      
+      data.photos.forEach(photo => {
+        const modelKey = `${photo.productId}-${photo.productName}`;
+        
+        if (!modelsMap.has(modelKey)) {
+          // Check what fields are available in photo object
+          console.log('Photo object keys:', Object.keys(photo));
+          console.log('Photo isPublic:', photo.isPublic);
+          console.log('Photo isCompleted:', photo.isCompleted);
+          
+          modelsMap.set(modelKey, {
+            productId: photo.productId,
+            productName: photo.productName,
+            isPublic: photo.isPublic || false, // Use actual backend data with fallback
+            isCompleted: photo.isCompleted || false, // Use actual backend data with fallback
+            photoCount: 0,
+            photos: []
+          });
+        }
+        
+        const model = modelsMap.get(modelKey)!;
+        model.photos.push(photo);
+        model.photoCount = model.photos.length;
+      });
+      
+      const transformedData: AdminUserPhotosResponse = {
+        ...data,
+        models: Array.from(modelsMap.values())
+      };
+      
+      console.log('Transformed admin gallery data:', transformedData);
+      
+      setAdminGalleryData(transformedData);
     } catch (err) {
+      console.error('Admin gallery loading error:', err);
       const msg = err instanceof Error ? err.message : 'Failed to load admin gallery';
       setAdminGalleryError(msg);
     } finally {
@@ -202,88 +246,10 @@ const AdminUserDetail: React.FC = () => {
     }
   };
 
-  // Admin gallery functions
-  const handleDeletePhoto = async (photoId: number, photoName: string) => {
-    const reason = window.prompt(`Enter reason for deleting photo "${photoName}":`);
-    if (!reason || reason.trim() === '') {
-      alert('Reason is required for photo deletion');
-      return;
-    }
+  // Removed individual photo actions - use bulk actions instead
+  // Removed moderation functionality - photos are auto-approved on upload
 
-    const notifyUser = window.confirm('Notify user about photo deletion?');
-    const adminNotes = window.prompt('Admin notes (optional):') || '';
-
-    setPhotoActionLoading(prev => new Set(prev).add(photoId));
-    try {
-      await adminGalleryService.deletePhoto(photoId, {
-        reason: reason.trim(),
-        notifyUser,
-        adminNotes: adminNotes.trim() || undefined
-      });
-      
-      // Reload admin gallery data
-      await loadAdminGallery();
-      alert('Photo deleted successfully');
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to delete photo';
-      alert(`Error: ${msg}`);
-    } finally {
-      setPhotoActionLoading(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(photoId);
-        return newSet;
-      });
-    }
-  };
-
-  const handleModeratePhoto = async (photoId: number, action: 'approve' | 'reject', photoName: string) => {
-    const adminNotes = window.prompt(`Admin notes for ${action}ing photo "${photoName}" (optional):`) || '';
-    const notifyUser = window.confirm(`Notify user about photo ${action}?`);
-
-    setPhotoActionLoading(prev => new Set(prev).add(photoId));
-    try {
-      await adminGalleryService.moderatePhoto(photoId, {
-        action,
-        adminNotes: adminNotes.trim() || undefined,
-        notifyUser
-      });
-      
-      // Reload admin gallery data
-      await loadAdminGallery();
-      alert(`Photo ${action}d successfully`);
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : `Failed to ${action} photo`;
-      alert(`Error: ${msg}`);
-    } finally {
-      setPhotoActionLoading(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(photoId);
-        return newSet;
-      });
-    }
-  };
-
-  // const handleUpdatePhoto = async (photoId: number, updates: { isPublic?: boolean; adminNotes?: string; order?: number }) => {
-  //   setPhotoActionLoading(prev => new Set(prev).add(photoId));
-  //   try {
-  //     await adminGalleryService.updatePhoto(photoId, updates);
-      
-  //     // Reload admin gallery data
-  //     await loadAdminGallery();
-  //     alert('Photo updated successfully');
-  //   } catch (err) {
-  //     const msg = err instanceof Error ? err.message : 'Failed to update photo';
-  //     alert(`Error: ${msg}`);
-  //   } finally {
-  //     setPhotoActionLoading(prev => {
-  //       const newSet = new Set(prev);
-  //       newSet.delete(photoId);
-  //       return newSet;
-  //     });
-  //   }
-  // };
-
-  const handleBulkAction = async (action: 'approve' | 'reject' | 'delete' | 'make_public' | 'make_private') => {
+  const handleBulkAction = async (action: 'delete' | 'make_public' | 'make_private') => {
     if (selectedPhotos.size === 0) {
       alert('Please select photos first');
       return;
@@ -291,7 +257,6 @@ const AdminUserDetail: React.FC = () => {
 
     const photoIds = Array.from(selectedPhotos);
     let reason = '';
-    let adminNotes = '';
     let notifyUsers = true;
 
     if (action === 'delete') {
@@ -300,13 +265,7 @@ const AdminUserDetail: React.FC = () => {
         alert('Reason is required for photo deletion');
         return;
       }
-    }
-
-    if (action === 'approve' || action === 'reject') {
-      adminNotes = window.prompt(`Admin notes for ${action}ing ${photoIds.length} photos (optional):`) || '';
-    }
-
-    if (action !== 'delete') {
+    } else {
       notifyUsers = window.confirm(`Notify users about ${action} action?`);
     }
 
@@ -316,7 +275,6 @@ const AdminUserDetail: React.FC = () => {
         action,
         photoIds,
         reason: reason.trim() || undefined,
-        adminNotes: adminNotes.trim() || undefined,
         notifyUsers
       });
       
@@ -345,8 +303,9 @@ const AdminUserDetail: React.FC = () => {
   };
 
   const selectAllPhotos = () => {
-    if (adminGalleryData?.photos) {
-      setSelectedPhotos(new Set(adminGalleryData.photos.map(photo => photo.id)));
+    if (adminGalleryData?.models) {
+      const allPhotos = adminGalleryData.models.flatMap(model => model.photos);
+      setSelectedPhotos(new Set(allPhotos.map(photo => photo.id)));
     }
   };
 
@@ -464,7 +423,7 @@ const AdminUserDetail: React.FC = () => {
       );
     }
 
-    const { user, photos, stats } = adminGalleryData;
+    const { user, models, stats } = adminGalleryData;
 
     return (
       <div className="admin-gallery-content">
@@ -475,35 +434,18 @@ const AdminUserDetail: React.FC = () => {
             <span className="stat-item">Total: {stats.totalPhotos}</span>
             <span className="stat-item">Public: {stats.publicPhotos}</span>
             <span className="stat-item">Private: {stats.privatePhotos}</span>
-            <span className="stat-item">Pending: {stats.pendingPhotos}</span>
-            <span className="stat-item">Approved: {stats.approvedPhotos}</span>
-            <span className="stat-item">Rejected: {stats.rejectedPhotos}</span>
           </div>
         </div>
 
         {/* Bulk Actions */}
-        {photos.length > 0 && (
+        {models.length > 0 && (
           <div className="bulk-actions">
             <div className="selection-info">
-              <span>{selectedPhotos.size} of {photos.length} photos selected</span>
+              <span>{selectedPhotos.size} of {models.reduce((sum, model) => sum + model.photos.length, 0)} photos selected</span>
               <button onClick={selectAllPhotos} className="btn btn-sm btn-outline">Select All</button>
               <button onClick={clearSelection} className="btn btn-sm btn-outline">Clear</button>
             </div>
             <div className="bulk-buttons">
-              <button 
-                onClick={() => handleBulkAction('approve')} 
-                disabled={selectedPhotos.size === 0 || bulkActionLoading}
-                className="btn btn-sm btn-success"
-              >
-                Approve Selected
-              </button>
-              <button 
-                onClick={() => handleBulkAction('reject')} 
-                disabled={selectedPhotos.size === 0 || bulkActionLoading}
-                className="btn btn-sm btn-warning"
-              >
-                Reject Selected
-              </button>
               <button 
                 onClick={() => handleBulkAction('make_public')} 
                 disabled={selectedPhotos.size === 0 || bulkActionLoading}
@@ -529,98 +471,68 @@ const AdminUserDetail: React.FC = () => {
           </div>
         )}
 
-        {photos.length === 0 ? (
+        {models.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '40px' }}>
             <div style={{ fontSize: '18px', color: '#666' }}>No photos found</div>
             <p style={{ color: '#888', marginTop: '8px' }}>This user hasn't uploaded any photos yet.</p>
           </div>
         ) : (
-          <div className="admin-photos-grid">
-            {photos.map((photo) => (
-              <div key={photo.id} className={`admin-photo-card ${selectedPhotos.has(photo.id) ? 'selected' : ''}`}>
-                <div className="photo-checkbox">
-                  <input
-                    type="checkbox"
-                    checked={selectedPhotos.has(photo.id)}
-                    onChange={() => togglePhotoSelection(photo.id)}
-                  />
+          <div className="gallery-models">
+            {models.map((model) => (
+              <div key={`${model.productId}-${model.productName}`} className="gallery-model-card">
+                <div className="model-header">
+                  <h4 className="model-name">{model.productName}</h4>
+                  <div className="model-status">
+                    <span className="photo-count">{model.photos.length} photos</span>
+                    <span className={`model-badge ${model.isPublic ? 'public' : 'private'}`}>
+                      {model.isPublic ? '🌐 Public' : '🔒 Private'}
+                    </span>
+                    <span className={`model-badge ${model.isCompleted ? 'completed' : 'in-progress'}`}>
+                      {model.isCompleted ? '✅ Completed' : '🚧 In Progress'}
+                    </span>
+                  </div>
                 </div>
                 
-                <div className="photo-image">
-                  <img 
-                    src={photo.thumbnailUrl || photo.cdnUrl} 
-                    alt={photo.originalFilename}
-                    className="photo-thumbnail"
-                    loading="lazy"
-                  />
-                  <div className="photo-overlay">
-                    <div className="photo-actions">
-                      <button
-                        onClick={() => window.open(photo.cdnUrl, '_blank')}
-                        className="btn btn-sm btn-outline"
-                        title="View Full Size"
-                      >
-                        👁️
-                      </button>
-                      {photo.verificationStatus === 'pending' && (
-                        <>
-                          <button
-                            onClick={() => handleModeratePhoto(photo.id, 'approve', photo.originalFilename)}
-                            disabled={photoActionLoading.has(photo.id)}
-                            className="btn btn-sm btn-success"
-                            title="Approve Photo"
-                          >
-                            ✓
-                          </button>
-                          <button
-                            onClick={() => handleModeratePhoto(photo.id, 'reject', photo.originalFilename)}
-                            disabled={photoActionLoading.has(photo.id)}
-                            className="btn btn-sm btn-warning"
-                            title="Reject Photo"
-                          >
-                            ✗
-                          </button>
-                        </>
-                      )}
-                      <button
-                        onClick={() => handleDeletePhoto(photo.id, photo.originalFilename)}
-                        disabled={photoActionLoading.has(photo.id)}
-                        className="btn btn-sm btn-danger"
-                        title="Delete Photo"
-                      >
-                        🗑️
-                      </button>
-                    </div>
-                  </div>
-                </div>
+                <div className="model-photos">
+                  {model.photos.map((photo) => (
+                    <div key={photo.id} className={`admin-photo-card ${selectedPhotos.has(photo.id) ? 'selected' : ''}`}>
+                      <div className="photo-checkbox">
+                        <input
+                          type="checkbox"
+                          checked={selectedPhotos.has(photo.id)}
+                          onChange={() => togglePhotoSelection(photo.id)}
+                        />
+                      </div>
+                      
+                      <div className="photo-image">
+                        <img 
+                          src={photo.thumbnailUrl || photo.cdnUrl} 
+                          alt={photo.originalFilename}
+                          className="photo-thumbnail"
+                          loading="lazy"
+                        />
+                      </div>
 
-                <div className="photo-info">
-                  <div className="photo-name" title={photo.originalFilename}>
-                    {photo.originalFilename}
-                  </div>
-                  <div className="photo-meta">
-                    <span className={`status-badge ${photo.verificationStatus}`}>
-                      {photo.verificationStatus}
-                    </span>
-                    <span className={`visibility-badge ${photo.isPublic ? 'public' : 'private'}`}>
-                      {photo.isPublic ? 'Public' : 'Private'}
-                    </span>
-                  </div>
-                  <div className="photo-stats">
-                    <span>❤️ {photo.likesCount}</span>
-                    <span>💬 {photo.commentsCount}</span>
-                    <span>📅 {new Date(photo.uploadDate).toLocaleDateString()}</span>
-                  </div>
-                  {photo.adminNotes && (
-                    <div className="admin-notes">
-                      <strong>Admin Notes:</strong> {photo.adminNotes}
+                      <div className="photo-info">
+                        <div className="photo-name" title={photo.originalFilename}>
+                          {photo.originalFilename}
+                        </div>
+                        <div className="photo-meta">
+                          <span className="upload-date">
+                            📅 {new Date(photo.uploadDate).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <div className="photo-stats">
+                          <span>❤️ {photo.likesCount || 0}</span>
+                        </div>
+                        {photo.adminNotes && (
+                          <div className="admin-notes">
+                            <strong>Admin Notes:</strong> {photo.adminNotes}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  )}
-                  {photo.moderatedBy && (
-                    <div className="moderation-info">
-                      <small>Moderated by {photo.moderatedBy} on {new Date(photo.moderatedAt!).toLocaleDateString()}</small>
-                    </div>
-                  )}
+                  ))}
                 </div>
               </div>
             ))}

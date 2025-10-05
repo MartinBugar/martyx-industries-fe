@@ -12,16 +12,14 @@ export interface AdminPhotoInfo {
   url: string;
   cdnUrl: string;
   thumbnailUrl: string;
-  verificationStatus: 'pending' | 'approved' | 'rejected';
+  verificationStatus: 'approved';
   isPublic: boolean;
+  isCompleted?: boolean; // Model completion status from backend
   uploadDate: string;
-  likesCount: number;
-  commentsCount: number;
+  likesCount: number; // This should come from backend
   order?: number;
   folderName: string;
   adminNotes?: string;
-  moderatedBy?: string;
-  moderatedAt?: string;
 }
 
 export interface AdminUserSummary {
@@ -31,10 +29,17 @@ export interface AdminUserSummary {
   lastName: string;
   totalPhotos: number;
   publicPhotos: number;
-  pendingPhotos: number;
-  rejectedPhotos: number;
   lastUploadDate: string;
   isActive: boolean;
+}
+
+export interface AdminModelInfo {
+  productId: string;
+  productName: string;
+  isPublic: boolean;
+  isCompleted: boolean;
+  photoCount: number;
+  photos: AdminPhotoInfo[];
 }
 
 export interface AdminUserPhotosResponse {
@@ -44,7 +49,8 @@ export interface AdminUserPhotosResponse {
     firstName: string;
     lastName: string;
   };
-  photos: AdminPhotoInfo[];
+  photos: AdminPhotoInfo[]; // Backend returns flat array
+  models: AdminModelInfo[]; // Frontend transforms to models
   pagination: {
     currentPage: number;
     totalPages: number;
@@ -56,9 +62,6 @@ export interface AdminUserPhotosResponse {
     totalPhotos: number;
     publicPhotos: number;
     privatePhotos: number;
-    pendingPhotos: number;
-    approvedPhotos: number;
-    rejectedPhotos: number;
   };
 }
 
@@ -68,11 +71,7 @@ export interface AdminPhotoDeleteRequest {
   adminNotes?: string;
 }
 
-export interface AdminPhotoModerateRequest {
-  action: 'approve' | 'reject';
-  adminNotes?: string;
-  notifyUser?: boolean;
-}
+// Removed moderation - photos are auto-approved on upload
 
 export interface AdminPhotoUpdateRequest {
   isPublic?: boolean;
@@ -81,7 +80,7 @@ export interface AdminPhotoUpdateRequest {
 }
 
 export interface AdminBulkActionRequest {
-  action: 'approve' | 'reject' | 'delete' | 'make_public' | 'make_private';
+  action: 'delete' | 'make_public' | 'make_private';
   photoIds: number[];
   reason?: string;
   adminNotes?: string;
@@ -112,7 +111,7 @@ class AdminGalleryService {
     page?: number;
     limit?: number;
     sort?: 'recent' | 'most_photos' | 'alphabetic' | 'most_uploads';
-    filter?: 'all' | 'has_pending' | 'has_rejected' | 'has_approved';
+    filter?: 'all' | 'has_public' | 'has_private';
     search?: string;
   } = {}) {
     const queryParams = new URLSearchParams();
@@ -130,8 +129,8 @@ class AdminGalleryService {
   async getUserPhotos(userId: number, params: {
     page?: number;
     limit?: number;
-    sort?: 'recent' | 'oldest' | 'product_name' | 'verification_status';
-    filter?: 'all' | 'pending' | 'approved' | 'rejected' | 'public' | 'private';
+    sort?: 'recent' | 'oldest' | 'product_name';
+    filter?: 'all' | 'public' | 'private';
     productId?: string;
   } = {}): Promise<AdminUserPhotosResponse> {
     const queryParams = new URLSearchParams();
@@ -141,49 +140,34 @@ class AdminGalleryService {
     if (params.filter) queryParams.append('filter', params.filter);
     if (params.productId) queryParams.append('productId', params.productId);
 
-    const url = `${this.baseUrl}/users/${userId}/photos${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
-    return apiClient.get(url);
+    const url = `${this.baseUrl}/users/${userId.toString()}/photos${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+    const response = await apiClient.get<{ success: boolean; data: AdminUserPhotosResponse }>(url);
+    return response.data;
   }
 
   // Delete a photo
   async deletePhoto(photoId: number, request: AdminPhotoDeleteRequest) {
     const url = `${this.baseUrl}/photos/${photoId}`;
-    return apiClient.delete(url, { body: request });
+    const response = await apiClient.delete<{ success: boolean; data: any }>(url, { body: request });
+    return response.data;
   }
 
-  // Moderate a photo (approve/reject)
-  async moderatePhoto(photoId: number, request: AdminPhotoModerateRequest) {
-    const url = `${this.baseUrl}/photos/${photoId}/moderate`;
-    return apiClient.put(url, request);
-  }
+  // Removed moderation functionality - photos are auto-approved on upload
 
   // Update photo metadata
   async updatePhoto(photoId: number, request: AdminPhotoUpdateRequest) {
     const url = `${this.baseUrl}/photos/${photoId}`;
-    return apiClient.put(url, request);
+    const response = await apiClient.put<{ success: boolean; data: any }>(url, request);
+    return response.data;
   }
 
-  // Get pending photos for moderation
-  async getPendingPhotos(params: {
-    page?: number;
-    limit?: number;
-    sort?: 'upload_date' | 'user_name' | 'product_name';
-    userId?: number;
-  } = {}) {
-    const queryParams = new URLSearchParams();
-    if (params.page) queryParams.append('page', params.page.toString());
-    if (params.limit) queryParams.append('limit', params.limit.toString());
-    if (params.sort) queryParams.append('sort', params.sort);
-    if (params.userId) queryParams.append('userId', params.userId.toString());
-
-    const url = `${this.baseUrl}/photos/pending${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
-    return apiClient.get(url);
-  }
+  // Removed pending photos endpoint - photos are auto-approved on upload
 
   // Perform bulk actions on multiple photos
   async bulkAction(request: AdminBulkActionRequest): Promise<AdminBulkActionResponse> {
     const url = `${this.baseUrl}/photos/bulk-action`;
-    return apiClient.post(url, request);
+    const response = await apiClient.post<{ success: boolean; data: AdminBulkActionResponse }>(url, request);
+    return response.data;
   }
 }
 
