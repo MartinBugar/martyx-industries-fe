@@ -93,7 +93,7 @@ export interface AdminPhotoUpdateRequest {
 }
 
 export interface AdminBulkActionRequest {
-  action: 'delete';
+  action: 'delete' | 'make_public' | 'make_private' | 'mark_completed' | 'mark_in_progress';
   photoIds: number[];
   reason: string;
   adminNotes?: string;
@@ -182,6 +182,18 @@ class AdminGalleryService {
   async bulkAction(request: AdminBulkActionRequest): Promise<AdminBulkActionResponse> {
     const url = `${this.baseUrl}/photos/bulk-action`;
     const response = await apiClient.post<{ success: boolean; data: AdminBulkActionResponse }>(url, request);
+    return response.data;
+  }
+
+  // Update model status (public/private, completed/in-progress)
+  async updateModelStatus(userId: number, productId: string, updates: {
+    isPublic?: boolean;
+    isCompleted?: boolean;
+    reason?: string;
+    notifyUser?: boolean;
+  }): Promise<{ success: boolean; message: string }> {
+    const url = `${this.baseUrl}/users/${userId}/models/${productId}/status`;
+    const response = await apiClient.put<{ success: boolean; data: { success: boolean; message: string } }>(url, updates);
     return response.data;
   }
 }

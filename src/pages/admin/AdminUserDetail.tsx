@@ -36,6 +36,7 @@ const AdminUserDetail: React.FC = () => {
   const [adminGalleryError, setAdminGalleryError] = useState<string | null>(null);
   const [selectedPhotos, setSelectedPhotos] = useState<Set<number>>(new Set());
   const [bulkActionLoading, setBulkActionLoading] = useState<boolean>(false);
+  const [modelActionLoading, setModelActionLoading] = useState<Set<string>>(new Set());
 
   const loadUser = async () => {
     if (!id) return;
@@ -329,6 +330,51 @@ const AdminUserDetail: React.FC = () => {
     setSelectedPhotos(new Set());
   };
 
+  // Model-level actions
+  const handleModelAction = async (productId: string, action: 'toggle_public' | 'toggle_completed') => {
+    const modelKey = productId;
+    setModelActionLoading(prev => new Set(prev).add(modelKey));
+    
+    try {
+      // Get current model data
+      const model = adminGalleryData?.models.find(m => m.productId === productId);
+      if (!model || !id) return;
+      
+      let updates: { isPublic?: boolean; isCompleted?: boolean; reason?: string; notifyUser?: boolean } = {};
+      
+      if (action === 'toggle_public') {
+        const newPublicStatus = !model.isPublic;
+        updates = {
+          isPublic: newPublicStatus,
+          reason: `Admin changed model to ${newPublicStatus ? 'Public' : 'Private'}`,
+          notifyUser: true
+        };
+      } else if (action === 'toggle_completed') {
+        const newCompletedStatus = !model.isCompleted;
+        updates = {
+          isCompleted: newCompletedStatus,
+          reason: `Admin marked model as ${newCompletedStatus ? 'Completed' : 'In Progress'}`,
+          notifyUser: true
+        };
+      }
+      
+      // Update model status via new endpoint
+      await adminGalleryService.updateModelStatus(parseInt(id), productId, updates);
+      
+      // Reload admin gallery data
+      await loadAdminGallery();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : `Failed to perform model ${action}`;
+      alert(`Error: ${msg}`);
+    } finally {
+      setModelActionLoading(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(modelKey);
+        return newSet;
+      });
+    }
+  };
+
   // Helper definitions for rendering all fields
   const hiddenKeys = new Set(['password', 'passwordHash', 'salt']);
 
@@ -491,7 +537,44 @@ const AdminUserDetail: React.FC = () => {
             {models.map((model) => (
               <div key={`${model.productId}-${model.productName}`} className="gallery-model-card">
                 <div className="model-header">
-                  <h4 className="model-name">{model.productName}</h4>
+                  <div className="model-title-section">
+                    <h4 className="model-name">{model.productName}</h4>
+                    <div className="model-controls">
+                      <div className="model-toggles">
+                        <div className="toggle-group">
+                          <label className="toggle-label">
+                            <input
+                              type="checkbox"
+                              checked={model.isPublic}
+                              onChange={(e) => handleModelAction(model.productId, 'toggle_public')}
+                              disabled={modelActionLoading.has(model.productId)}
+                              className="toggle-checkbox"
+                            />
+                            <span className="toggle-slider"></span>
+                            <span className="toggle-text">Public</span>
+                          </label>
+                        </div>
+                        <div className="toggle-group">
+                          <label className="toggle-label">
+                            <input
+                              type="checkbox"
+                              checked={model.isCompleted}
+                              onChange={(e) => handleModelAction(model.productId, 'toggle_completed')}
+                              disabled={modelActionLoading.has(model.productId)}
+                              className="toggle-checkbox"
+                            />
+                            <span className="toggle-slider"></span>
+                            <span className="toggle-text">Completed</span>
+                          </label>
+                        </div>
+                      </div>
+                      {modelActionLoading.has(model.productId) && (
+                        <div className="updating-indicator">
+                          <div className="mini-spinner"></div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                   <div className="model-status">
                     <span className="photo-count">{model.photos.length} photos</span>
                     <span className={`model-badge ${model.isPublic ? 'public' : 'private'}`}>
