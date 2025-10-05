@@ -12,14 +12,16 @@ export interface AdminPhotoInfo {
   url: string;
   cdnUrl: string;
   thumbnailUrl: string;
-  verificationStatus: 'approved';
-  isPublic: boolean;
-  isCompleted?: boolean; // Model completion status from backend
+  verificationStatus: 'APPROVED';
+  public: boolean; // Backend sends 'public' not 'isPublic'
   uploadDate: string;
-  likesCount: number; // This should come from backend
+  likesCount: number; // This comes from backend
+  commentsCount: number; // This comes from backend
   order?: number;
   folderName: string;
   adminNotes?: string;
+  moderatedBy?: string;
+  moderatedAt?: string;
 }
 
 export interface AdminUserSummary {
@@ -42,6 +44,13 @@ export interface AdminModelInfo {
   photos: AdminPhotoInfo[];
 }
 
+export interface AdminModelStatusInfo {
+  productId: string;
+  productName: string;
+  isPublic: boolean;
+  isCompleted: boolean;
+}
+
 export interface AdminUserPhotosResponse {
   user: {
     userId: number;
@@ -54,7 +63,7 @@ export interface AdminUserPhotosResponse {
   pagination: {
     currentPage: number;
     totalPages: number;
-    totalPhotos: number;
+    totalItems: number; // Backend sends 'totalItems' not 'totalPhotos'
     hasNext: boolean;
     hasPrev: boolean;
   };
@@ -62,7 +71,11 @@ export interface AdminUserPhotosResponse {
     totalPhotos: number;
     publicPhotos: number;
     privatePhotos: number;
+    pendingPhotos: number;
+    approvedPhotos: number;
+    rejectedPhotos: number;
   };
+  modelStatuses: Record<string, AdminModelStatusInfo>; // Backend provides model statuses as object
 }
 
 export interface AdminPhotoDeleteRequest {
@@ -140,7 +153,9 @@ class AdminGalleryService {
     if (params.filter) queryParams.append('filter', params.filter);
     if (params.productId) queryParams.append('productId', params.productId);
 
-    const url = `${this.baseUrl}/users/${userId.toString()}/photos${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+    // Ensure userId is sent as string to match backend expectation
+    const url = `${this.baseUrl}/users/${String(userId)}/photos${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+    console.log('Admin gallery API URL:', url);
     const response = await apiClient.get<{ success: boolean; data: AdminUserPhotosResponse }>(url);
     return response.data;
   }

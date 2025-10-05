@@ -104,6 +104,17 @@ const AdminUserDetail: React.FC = () => {
       console.log('Photos array:', data.photos);
       console.log('First photo structure:', data.photos[0]);
       
+      // Debug: Check if backend provides model-level status
+      console.log('=== BACKEND DATA DEBUG ===');
+      console.log('Model statuses from backend:', data.modelStatuses);
+      console.log('Photos array length:', data.photos.length);
+      if (data.photos.length > 0) {
+        const firstPhoto = data.photos[0];
+        console.log('First photo structure:', firstPhoto);
+        console.log('All photo fields:', Object.keys(firstPhoto));
+      }
+      console.log('========================');
+      
       // Check if data has photos array
       if (!data.photos || !Array.isArray(data.photos)) {
         throw new Error('Invalid data structure: photos array not found');
@@ -116,16 +127,17 @@ const AdminUserDetail: React.FC = () => {
         const modelKey = `${photo.productId}-${photo.productName}`;
         
         if (!modelsMap.has(modelKey)) {
-          // Check what fields are available in photo object
-          console.log('Photo object keys:', Object.keys(photo));
-          console.log('Photo isPublic:', photo.isPublic);
-          console.log('Photo isCompleted:', photo.isCompleted);
+          // Get model status from backend modelStatuses object
+          const modelStatus = data.modelStatuses?.[photo.productId];
+          
+          console.log(`Model ${photo.productId} status from backend:`, modelStatus);
           
           modelsMap.set(modelKey, {
             productId: photo.productId,
             productName: photo.productName,
-            isPublic: photo.isPublic || false, // Use actual backend data with fallback
-            isCompleted: photo.isCompleted || false, // Use actual backend data with fallback
+            // Use model status from backend modelStatuses object
+            isPublic: modelStatus?.isPublic ?? false, // Real backend data
+            isCompleted: modelStatus?.isCompleted ?? false, // Real backend data
             photoCount: 0,
             photos: []
           });
@@ -142,6 +154,16 @@ const AdminUserDetail: React.FC = () => {
       };
       
       console.log('Transformed admin gallery data:', transformedData);
+      
+      // Debug: Check transformed model data
+      if (transformedData.models.length > 0) {
+        const firstModel = transformedData.models[0];
+        console.log('=== TRANSFORMED MODEL DEBUG ===');
+        console.log('Model isPublic (transformed):', firstModel.isPublic, typeof firstModel.isPublic);
+        console.log('Model isCompleted (transformed):', firstModel.isCompleted, typeof firstModel.isCompleted);
+        console.log('Model name:', firstModel.productName);
+        console.log('===============================');
+      }
       
       setAdminGalleryData(transformedData);
     } catch (err) {
