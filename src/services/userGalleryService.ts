@@ -13,8 +13,69 @@ import type {
   PublicPhotoWithUser
 } from '../types/userGallery';
 
+// Backend types for transformation
+interface BackendPreviewPhoto {
+  thumbnailUrl: string;
+  productName: string;
+}
+
+interface BackendPublicUser {
+  userId: number;
+  nickname: string;
+  avatarUrl: string | null;
+  totalPublicModels: number;
+  totalPublicPhotos: number;
+  totalLikes?: number;
+  latestUploadDate?: string;
+  previewPhotos?: BackendPreviewPhoto[];
+}
+
+interface BackendUserProfile {
+  userId: number;
+  nickname: string;
+  avatarUrl: string | null;
+  memberSince: string;
+  totalPublicModels: number;
+  totalPublicPhotos: number;
+  totalLikes?: number;
+}
+
+interface BackendPhoto {
+  id: number;
+  thumbnailUrl: string;
+  cdnUrl: string;
+  uploadDate: string;
+  likesCount: number;
+  isLikedByUser: boolean;
+  commentsCount: number;
+}
+
+interface BackendModel {
+  productId: string;
+  productName: string;
+  isCompleted: boolean;
+  photoCount: number;
+  photos?: BackendPhoto[];
+}
+
+interface BackendPhotoWithUser {
+  photoId?: number;
+  id?: number;
+  thumbnailUrl: string;
+  cdnUrl: string;
+  uploadDate: string;
+  likesCount?: number;
+  isLikedByUser?: boolean;
+  commentsCount?: number;
+  userId: number;
+  username?: string;
+  nickname?: string;
+  userAvatarUrl: string | null;
+  productName: string;
+}
+
 // Helper function to transform backend camelCase to frontend snake_case
-const transformPublicUser = (backendUser: any): PublicUser => ({
+const transformPublicUser = (backendUser: BackendPublicUser): PublicUser => ({
   user_id: backendUser.userId,
   username: backendUser.nickname, // backend uses 'nickname' field for username
   avatar_url: backendUser.avatarUrl,
@@ -22,13 +83,13 @@ const transformPublicUser = (backendUser: any): PublicUser => ({
   total_public_photos: backendUser.totalPublicPhotos,
   total_likes: backendUser.totalLikes,
   latest_upload_date: backendUser.latestUploadDate,
-  preview_photos: backendUser.previewPhotos?.map((photo: any) => ({
+  preview_photos: backendUser.previewPhotos?.map((photo) => ({
     thumbnail_url: photo.thumbnailUrl,
     product_name: photo.productName
   })) || []
 });
 
-const transformUserProfile = (backendUser: any): UserProfile => {
+const transformUserProfile = (backendUser: BackendUserProfile): UserProfile => {
   const transformed = {
     user_id: backendUser.userId,
     username: backendUser.nickname, // backend uses 'nickname' field for username
@@ -137,12 +198,12 @@ export const userGalleryService = {
     // Transform backend camelCase to frontend snake_case
     return {
       user: transformUserProfile(backendData.user),
-      models: backendData.models?.map((model: any) => ({
+      models: backendData.models?.map((model: BackendModel) => ({
         product_id: model.productId,
         product_name: model.productName,
         is_completed: model.isCompleted,
         photo_count: model.photoCount,
-        photos: model.photos?.map((photo: any) => ({
+        photos: model.photos?.map((photo: BackendPhoto) => ({
           id: photo.id,
           thumbnail_url: photo.thumbnailUrl,
           cdn_url: photo.cdnUrl,
@@ -356,16 +417,16 @@ export const userGalleryService = {
 
     // Transform backend camelCase to frontend snake_case
     return {
-      photos: backendData.photos?.map((photo: any) => ({
-        id: photo.id,
+      photos: backendData.photos?.map((photo: BackendPhotoWithUser) => ({
+        id: photo.photoId || photo.id || 0, // backend uses 'photoId'
         thumbnail_url: photo.thumbnailUrl,
         cdn_url: photo.cdnUrl,
         upload_date: photo.uploadDate,
-        likes_count: photo.likesCount,
-        is_liked_by_user: photo.isLikedByUser,
-        comments_count: photo.commentsCount,
+        likes_count: photo.likesCount || 0,
+        is_liked_by_user: photo.isLikedByUser || false,
+        comments_count: photo.commentsCount || 0,
         user_id: photo.userId,
-        username: photo.nickname, // backend uses 'nickname' field
+        username: photo.username || photo.nickname || '', // backend uses 'username' field
         user_avatar_url: photo.userAvatarUrl,
         product_name: photo.productName
       } as PublicPhotoWithUser)) || [],

@@ -159,25 +159,6 @@ const Lightbox: React.FC<LightboxProps> = ({
             </svg>
           </button>
         )}
-
-        {/* Thumbnail Strip (optional - for quick navigation) */}
-        {photos.length > 1 && (
-          <div className="lightbox-thumbnails">
-            {photos.map((photo, index) => (
-              <button
-                key={photo.id}
-                className={`lightbox-thumbnail ${index === currentIndex ? 'active' : ''}`}
-                onClick={() => onNavigate(index)}
-              >
-                <img
-                  src={photo.thumbnail_url}
-                  alt={`Thumbnail ${index + 1}`}
-                  loading="lazy"
-                />
-              </button>
-            ))}
-          </div>
-        )}
       </div>
     </div>
   );
