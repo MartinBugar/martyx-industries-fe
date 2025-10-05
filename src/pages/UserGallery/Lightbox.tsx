@@ -4,8 +4,13 @@ import type { PublicPhoto } from '../../types/userGallery';
 import type { User } from '../../context/authTypes';
 import './Lightbox.css';
 
+interface LightboxPhoto extends PublicPhoto {
+  username?: string;
+  user_id?: number;
+}
+
 interface LightboxProps {
-  photos: PublicPhoto[];
+  photos: LightboxPhoto[];
   currentIndex: number;
   onClose: () => void;
   onNavigate: (index: number) => void;
@@ -106,44 +111,51 @@ const Lightbox: React.FC<LightboxProps> = ({
               (e.target as HTMLImageElement).src = currentPhoto.thumbnail_url;
             }}
           />
+        </div>
 
-          {/* Image Info Overlay */}
-          <div className="lightbox-info">
-            <div className="lightbox-counter">
-              {currentIndex + 1} / {photos.length}
+        {/* Image Info Footer */}
+        <div className="lightbox-info">
+          <div className="lightbox-counter">
+            {currentIndex + 1} / {photos.length}
+          </div>
+
+          {/* Username in center */}
+          {currentPhoto.username && (
+            <div className="lightbox-username">
+              {currentPhoto.username}
             </div>
+          )}
 
-            <div className="lightbox-actions">
-              {/* Like Button */}
-              <button
-                className={`lightbox-like-btn ${currentPhoto.is_liked_by_user ? 'liked' : ''}`}
-                onClick={handleLike}
-                disabled={!currentUser}
-                title={currentUser ? (currentPhoto.is_liked_by_user ? t('unlike', 'Unlike') : t('like', 'Like')) : t('errors.login_required', 'Login required')}
+          <div className="lightbox-actions">
+            {/* Like Button */}
+            <button
+              className={`lightbox-like-btn ${currentPhoto.is_liked_by_user ? 'liked' : ''}`}
+              onClick={handleLike}
+              disabled={!currentUser}
+              title={currentUser ? (currentPhoto.is_liked_by_user ? t('unlike', 'Unlike') : t('like', 'Like')) : t('errors.login_required', 'Login required')}
+            >
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill={currentPhoto.is_liked_by_user ? 'currentColor' : 'none'}
+                stroke="currentColor"
+                strokeWidth="2"
               >
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill={currentPhoto.is_liked_by_user ? 'currentColor' : 'none'}
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                </svg>
-                <span>{currentPhoto.likes_count}</span>
-              </button>
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+              </svg>
+              <span>{currentPhoto.likes_count}</span>
+            </button>
 
-              {/* Future: Comments button */}
-              {currentPhoto.comments_count !== undefined && currentPhoto.comments_count > 0 && (
-                <button className="lightbox-comments-btn" disabled title={t('lightbox.comments_coming_soon', 'Comments coming soon')}>
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                  </svg>
-                  <span>{currentPhoto.comments_count}</span>
-                </button>
-              )}
-            </div>
+            {/* Future: Comments button */}
+            {currentPhoto.comments_count !== undefined && currentPhoto.comments_count > 0 && (
+              <button className="lightbox-comments-btn" disabled title={t('lightbox.comments_coming_soon', 'Comments coming soon')}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                <span>{currentPhoto.comments_count}</span>
+              </button>
+            )}
           </div>
         </div>
 
