@@ -8,7 +8,9 @@ import type {
   LikePhotoResponse,
   PhotoCommentsResponse,
   PublicUser,
-  UserProfile
+  UserProfile,
+  AllPhotosGalleryData,
+  PublicPhotoWithUser
 } from '../types/userGallery';
 
 // Helper function to transform backend camelCase to frontend snake_case
@@ -312,5 +314,72 @@ export const userGalleryService = {
 
     const data = await response.json();
     return data.data || data;
+  },
+
+  /**
+   * Get all public photos from all users (All Photos view)
+   *
+   * @param params - Query parameters for sorting and pagination
+   * @returns AllPhotosGalleryData with photos, stats and pagination
+   */
+  async getAllPublicPhotos(params: { sort?: string; page?: number; limit?: number }): Promise<AllPhotosGalleryData> {
+    const queryString = new URLSearchParams({
+      sort: params.sort || 'recent',
+      page: String(params.page || 1),
+      limit: String(params.limit || 20)
+    }).toString();
+
+    const token = getAuthToken();
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json'
+    };
+
+    // Add authorization header if user is logged in (for is_liked_by_user)
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(
+      `${API_BASE_URL}/api/public-gallery/all-photos?${queryString}`,
+      {
+        method: 'GET',
+        headers
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch all public photos: ${response.status} ${response.statusText}`);
+    }
+
+    const responseData = await response.json();
+    const backendData = responseData.data || responseData;
+
+    // Transform backend camelCase to frontend snake_case
+    return {
+      photos: backendData.photos?.map((photo: any) => ({
+        id: photo.id,
+        thumbnail_url: photo.thumbnailUrl,
+        cdn_url: photo.cdnUrl,
+        upload_date: photo.uploadDate,
+        likes_count: photo.likesCount,
+        is_liked_by_user: photo.isLikedByUser,
+        comments_count: photo.commentsCount,
+        user_id: photo.userId,
+        username: photo.nickname, // backend uses 'nickname' field
+        user_avatar_url: photo.userAvatarUrl,
+        product_name: photo.productName
+      } as PublicPhotoWithUser)) || [],
+      pagination: {
+        current_page: backendData.pagination?.currentPage || 1,
+        total_pages: backendData.pagination?.totalPages || 0,
+        total_users: backendData.pagination?.totalPhotos || 0,
+        items_per_page: backendData.pagination?.itemsPerPage || 20
+      },
+      stats: {
+        total_users: backendData.stats?.totalUsers || 0,
+        total_public_models: backendData.stats?.totalPublicModels || 0,
+        total_public_photos: backendData.stats?.totalPublicPhotos || 0
+      }
+    };
   }
 };

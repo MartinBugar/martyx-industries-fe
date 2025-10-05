@@ -69,6 +69,7 @@ export interface UserGalleryDetail {
 }
 
 export type GalleryFilter = 'all' | 'completed';
+export type GalleryView = 'users' | 'photos';
 export type GallerySort = 'recent' | 'most_photos' | 'alphabetic' | 'most_liked';
 
 export interface GalleryQueryParams {
@@ -76,6 +77,20 @@ export interface GalleryQueryParams {
   sort?: GallerySort;
   page?: number;
   limit?: number;
+  view?: GalleryView;
+}
+
+export interface PublicPhotoWithUser extends PublicPhoto {
+  user_id: number;
+  username: string;
+  user_avatar_url: string | null;
+  product_name: string;
+}
+
+export interface AllPhotosGalleryData {
+  photos: PublicPhotoWithUser[];
+  pagination: GalleryPagination;
+  stats: GalleryStats;
 }
 
 // Like action types

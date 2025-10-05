@@ -35,13 +35,13 @@
 .profile-container .section-title {
   font-size: 1rem;
   font-weight: 600;
-  color: #00d4ff !important;
+  color: #ffd700 !important;
   margin: 0 0 1rem 0;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   padding-left: 0.5rem;
   position: relative;
-  text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+  text-shadow: none;
 }
 
 .profile-container .section-title::before {
@@ -52,7 +52,7 @@
   transform: translateY(-50%);
   width: 3px;
   height: 16px;
-  background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+  background: linear-gradient(135deg, #ffd700 0%, #daa520 100%);
   border-radius: 2px;
   box-shadow: 0 0 8px rgba(0, 212, 255, 0.6);
 }
@@ -200,8 +200,8 @@
 .profile-container .form-section .section-title {
   font-size: 0.875rem;
   margin-bottom: 1rem;
-  color: #00d4ff !important;
-  text-shadow: 0 0 8px rgba(0, 212, 255, 0.4);
+  color: #ffd700 !important;
+  text-shadow: none;
 }
 
 .form-card {
@@ -422,7 +422,7 @@
     font-size: 0.875rem;
     margin-bottom: 0.75rem;
     text-align: center;
-    color: #00d4ff !important;
+    color: #ffd700 !important;
   }
   
   .profile-field {
@@ -458,7 +458,7 @@
   .profile-container .section-title {
     font-size: 0.8rem;
     margin-bottom: 0.5rem;
-    color: #00d4ff !important;
+    color: #ffd700 !important;
   }
   
   .profile-field {
@@ -564,13 +564,13 @@
     font-weight: 700;
     margin-bottom: 1.25rem;
     padding-left: 0.75rem;
-    text-shadow: 0 0 12px rgba(0, 212, 255, 0.6);
+    text-shadow: none;
   }
 
   .profile-container .section-title::before {
     width: 4px;
     height: 20px;
-    box-shadow: 0 0 10px rgba(0, 212, 255, 0.8);
+    box-shadow: none;
   }
 
   /* Enhanced profile cards */
@@ -661,7 +661,7 @@
   .profile-container .form-section .section-title {
     font-size: 0.95rem;
     margin-bottom: 1.25rem;
-    text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+    text-shadow: none;
   }
 
   .form-card {

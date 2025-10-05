@@ -21,6 +21,9 @@ This document specifies the backend API requirements for the **User Gallery** fe
 - `GET /api/public-gallery` - Browse all public galleries
 - `GET /api/public-gallery/:userId` - View specific user's public gallery
 
+### Public Endpoints (Optional Auth)
+- `GET /api/public-gallery/all-photos` - Get all public photos from all users (auth optional for is_liked_by_user)
+
 ### Protected Endpoints (Auth Required)
 - `POST /api/public-gallery/photos/:photoId/like` - Like a photo
 - `DELETE /api/public-gallery/photos/:photoId/unlike` - Unlike a photo
@@ -304,7 +307,132 @@ ORDER BY ums.product_name ASC, ump.upload_date DESC;
 
 ---
 
-### 3. POST /api/public-gallery/photos/:photoId/like
+### 3. GET /api/public-gallery/all-photos
+
+**Description:** Get all public photos from all users (All Photos view) - shows mixed photos from everyone in a single grid
+
+**Authentication:** Optional (if provided, returns `is_liked_by_user` for current user; if not, always `false`)
+
+**Query Parameters:**
+```
+?sort=recent|most_liked
+&page=1
+&limit=20
+```
+
+**Example Request:**
+```bash
+GET /api/public-gallery/all-photos?sort=recent&page=1&limit=20
+```
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "data": {
+    "photos": [
+      {
+        "id": 789,
+        "thumbnail_url": "https://martyx-spaces.fra1.digitaloceanspaces.com/user-photos/123/ENDEAVOUR/thumbs/photo1.jpg",
+        "cdn_url": "https://martyx-spaces.fra1.digitaloceanspaces.com/user-photos/123/ENDEAVOUR/photo1.jpg",
+        "upload_date": "2024-12-21T10:30:00Z",
+        "likes_count": 12,
+        "is_liked_by_user": false,
+        "comments_count": 0,
+        "user_id": 123,
+        "nickname": "SpaceBuilder42",
+        "user_avatar_url": null,
+        "product_name": "Endeavour Space Shuttle"
+      },
+      {
+        "id": 790,
+        "thumbnail_url": "https://martyx-spaces.fra1.digitaloceanspaces.com/user-photos/456/ISS/thumbs/photo2.jpg",
+        "cdn_url": "https://martyx-spaces.fra1.digitaloceanspaces.com/user-photos/456/ISS/photo2.jpg",
+        "upload_date": "2024-12-20T15:20:00Z",
+        "likes_count": 8,
+        "is_liked_by_user": true,
+        "comments_count": 0,
+        "user_id": 456,
+        "nickname": "ModelMaster99",
+        "user_avatar_url": "https://...",
+        "product_name": "International Space Station"
+      }
+    ],
+    "pagination": {
+      "current_page": 1,
+      "total_pages": 10,
+      "total_photos": 193,
+      "items_per_page": 20
+    },
+    "stats": {
+      "total_users": 87,
+      "total_public_models": 234,
+      "total_public_photos": 1523
+    }
+  }
+}
+```
+
+**SQL Implementation:**
+
+```sql
+-- Main query for all public photos with user info
+SELECT
+  ump.id,
+  ump.thumbnail_url,
+  ump.cdn_url,
+  ump.upload_date,
+  COALESCE(l.likes_count, 0) as likes_count,
+  CASE WHEN ul.user_id IS NOT NULL THEN true ELSE false END as is_liked_by_user,
+  0 as comments_count,
+  u.id as user_id,
+  u.nickname,
+  u.avatar_url as user_avatar_url,
+  ums.product_name
+FROM user_model_photos ump
+INNER JOIN user_model_status ums ON ump.user_id = ums.user_id
+                                 AND ump.product_id = ums.product_id
+INNER JOIN users u ON ump.user_id = u.id
+LEFT JOIN (
+  SELECT photo_id, COUNT(*) as likes_count
+  FROM photo_likes
+  GROUP BY photo_id
+) l ON ump.id = l.photo_id
+LEFT JOIN photo_likes ul ON ump.id = ul.photo_id AND ul.user_id = ? -- Current authenticated user (or NULL if not logged in)
+WHERE ums.is_public = true
+  AND ump.verification_status = 'approved'
+ORDER BY
+  CASE WHEN ? = 'recent' THEN ump.upload_date END DESC,
+  CASE WHEN ? = 'most_liked' THEN COALESCE(l.likes_count, 0) END DESC
+LIMIT ? OFFSET ?;
+
+-- Count query for pagination
+SELECT COUNT(*) as total_photos
+FROM user_model_photos ump
+INNER JOIN user_model_status ums ON ump.user_id = ums.user_id
+                                 AND ump.product_id = ums.product_id
+WHERE ums.is_public = true
+  AND ump.verification_status = 'approved';
+
+-- Stats query (same as endpoint 1)
+SELECT
+  COUNT(DISTINCT u.id) as total_users,
+  COUNT(DISTINCT ums.product_id) as total_public_models,
+  COUNT(ump.id) as total_public_photos
+FROM users u
+INNER JOIN user_model_status ums ON u.id = ums.user_id
+INNER JOIN user_model_photos ump ON ums.user_id = ump.user_id AND ums.product_id = ump.product_id
+WHERE ums.is_public = true
+  AND ump.verification_status = 'approved';
+```
+
+**Note:** Pre `is_liked_by_user`:
+- Ak je request autentifikovaný (JWT token): použiť `user_id` z tokenu
+- Ak NIE je autentifikovaný: vždy `false` (použiť NULL v LEFT JOIN)
+
+---
+
+### 4. POST /api/public-gallery/photos/:photoId/like
 
 **Description:** Like a photo (toggle like - ak už je liked, unlike; ak nie je, like)
 
@@ -383,7 +511,7 @@ SELECT COUNT(*) as likes_count FROM photo_likes WHERE photo_id = ?;
 
 ---
 
-### 4. DELETE /api/public-gallery/photos/:photoId/unlike
+### 5. DELETE /api/public-gallery/photos/:photoId/unlike
 
 **Description:** Unlike a photo
 
@@ -507,6 +635,7 @@ curl -X DELETE "http://localhost:8080/api/public-gallery/photos/789/unlike" \
 ### Endpoints
 - [ ] `GET /api/public-gallery` - List users with public galleries
 - [ ] `GET /api/public-gallery/:userId` - Specific user gallery
+- [ ] `GET /api/public-gallery/all-photos` - Get all public photos from all users
 - [ ] `POST /api/public-gallery/photos/:photoId/like` - Like photo
 - [ ] `DELETE /api/public-gallery/photos/:photoId/unlike` - Unlike photo
 
