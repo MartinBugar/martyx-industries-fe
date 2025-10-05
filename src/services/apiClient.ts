@@ -10,15 +10,18 @@
  */
 
 import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
+import { advancedCache } from '../utils/advancedCache';
 
 interface RequestConfig {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
   body?: any;
   headers?: Record<string, string>;
   cache?: boolean;
+  cacheType?: 'products' | 'user-data' | 'static-assets' | 'api-responses';
   retry?: boolean;
   retryAttempts?: number;
   retryDelay?: number;
+  staleWhileRevalidate?: boolean;
 }
 
 interface CacheEntry {
@@ -43,18 +46,34 @@ class ApiClient {
       body,
       headers = {},
       cache = false,
+      cacheType = 'api-responses',
       retry = false,
       retryAttempts = this.DEFAULT_RETRY_ATTEMPTS,
-      retryDelay = this.DEFAULT_RETRY_DELAY
+      retryDelay = this.DEFAULT_RETRY_DELAY,
+      staleWhileRevalidate = false
     } = config;
 
     const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;
     const requestKey = `${method}:${url}:${JSON.stringify(body)}`;
 
-    // Check cache for GET requests
+    // Check advanced cache for GET requests
     if (method === 'GET' && cache) {
-      const cached = this.getFromCache(requestKey);
-      if (cached) {
+      const cached = advancedCache.get(requestKey, cacheType);
+      if (cached && !staleWhileRevalidate) {
+        return cached;
+      }
+      
+      // For stale-while-revalidate, return cached data immediately and update in background
+      if (cached && staleWhileRevalidate) {
+        this.executeRequest<T>(url, withLangHeaders({
+          method,
+          headers: { ...defaultHeaders, ...headers } as HeadersInit,
+          body: body ? JSON.stringify(body) : undefined
+        }), false, 0, 0).then(result => {
+          advancedCache.set(requestKey, result, cacheType);
+        }).catch(() => {
+          // Ignore background update errors
+        });
         return cached;
       }
     }
@@ -76,9 +95,9 @@ class ApiClient {
     try {
       const result = await requestPromise;
       
-      // Cache successful GET requests
+      // Cache successful GET requests with advanced cache
       if (method === 'GET' && cache) {
-        this.setCache(requestKey, result);
+        advancedCache.set(requestKey, result, cacheType);
       }
 
       return result;

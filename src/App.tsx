@@ -35,6 +35,8 @@ import LoadingSpinner from './components/common/LoadingSpinner'
 import { useEffectOnce } from './hooks/useOptimizedEffect'
 import { visitorService } from './services/visitorService'
 import DevelopmentGate from './components/DevelopmentGate/DevelopmentGate'
+// import { useRoutePrefetch } from './hooks/useRoutePrefetch'
+// import { advancedCache } from './utils/advancedCache'
 
 // Lazy imports for code splitting
 import {
@@ -279,6 +281,7 @@ MainContent.displayName = 'MainContent';
 // Optimized app content
 function AppContent() {
   useIOSNoZoomOnFocus();
+  // useRoutePrefetch(); // Enable route prefetching - temporarily disabled
 
   // Track visitor - once per session
   useEffectOnce(() => {
@@ -304,6 +307,15 @@ function AppContent() {
       }
     }
   });
+
+  // Preload critical data on app start - temporarily disabled
+  // useEffectOnce(() => {
+  //   advancedCache.preloadCriticalData().catch(err => {
+  //     if (import.meta.env.DEV) {
+  //       console.warn('Failed to preload critical data:', err);
+  //     }
+  //   });
+  // });
 
   return (
     <>

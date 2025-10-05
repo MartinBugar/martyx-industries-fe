@@ -27,36 +27,57 @@ export default defineConfig({
     cssCodeSplit: true,
     cssMinify: true,
     
+    // Enable compression
+    reportCompressedSize: true,
+    
+    // Optimize chunks
+    chunkSizeWarningLimit: 1000,
+    
     // Chunk splitting strategy
     rollupOptions: {
       output: {
-        // Manual chunk splitting for better caching
-        manualChunks: {
+        // Enhanced chunk splitting for better caching
+        manualChunks: (id) => {
           // Vendor chunks
-          'vendor-react': ['react', 'react-dom'],
-          'vendor-router': ['react-router-dom'],
-          'vendor-paypal': ['@paypal/paypal-js', '@paypal/react-paypal-js'],
-          'vendor-three': ['three', '@google/model-viewer'],
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom')) {
+              return 'vendor-react';
+            }
+            if (id.includes('react-router')) {
+              return 'vendor-router';
+            }
+            if (id.includes('@paypal')) {
+              return 'vendor-paypal';
+            }
+            if (id.includes('three') || id.includes('@google/model-viewer')) {
+              return 'vendor-three';
+            }
+            if (id.includes('aws-sdk')) {
+              return 'vendor-aws';
+            }
+            if (id.includes('i18next')) {
+              return 'vendor-i18n';
+            }
+            // Other vendor libraries
+            return 'vendor-other';
+          }
           
           // Feature chunks
-          'admin-pages': [
-            'src/pages/admin/AdminDashboard',
-            'src/pages/admin/AdminUsers',
-            'src/pages/admin/AdminProducts',
-            'src/pages/admin/AdminOrders'
-          ],
-          'auth-pages': [
-            'src/pages/Login',
-            'src/pages/Registration',
-            'src/pages/ForgotPassword',
-            'src/pages/ResetPassword'
-          ],
-          'shop-pages': [
-            'src/pages/Products',
-            'src/pages/ProductDetail',
-            'src/pages/Checkout',
-            'src/pages/CartPage'
-          ]
+          if (id.includes('src/pages/admin/')) {
+            return 'admin-pages';
+          }
+          if (id.includes('src/pages/') && (id.includes('Login') || id.includes('Registration') || id.includes('ForgotPassword'))) {
+            return 'auth-pages';
+          }
+          if (id.includes('src/pages/') && (id.includes('Products') || id.includes('ProductDetail') || id.includes('Checkout'))) {
+            return 'shop-pages';
+          }
+          if (id.includes('src/components/effects/')) {
+            return 'effects';
+          }
+          if (id.includes('src/services/')) {
+            return 'services';
+          }
         },
         
         // Optimize chunk naming

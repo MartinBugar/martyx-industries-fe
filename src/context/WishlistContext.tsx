@@ -348,3 +348,6 @@ export const useWishlist = (): WishlistContextType => {
   }
   return context;
 };
+
+// Export for HMR compatibility
+export default WishlistProvider;
