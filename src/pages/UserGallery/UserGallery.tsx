@@ -47,7 +47,7 @@ const UserGallery: React.FC = () => {
 
     try {
       if (view === 'photos') {
-        // Fetch all photos
+        // Fetch all photos (now includes stats)
         const data = await userGalleryService.getAllPublicPhotos({
           sort,
           page: currentPage,
@@ -149,7 +149,7 @@ const UserGallery: React.FC = () => {
   }
 
   // Empty state
-  if (!loading && users.length === 0) {
+  if (!loading && ((view === 'users' && users.length === 0) || (view === 'photos' && photos.length === 0))) {
     return (
       <div className="user-gallery-page">
         <div className="gallery-header">

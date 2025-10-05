@@ -52,7 +52,7 @@ const ModelCollection: React.FC = () => {
   const [selectedModel, setSelectedModel] = useState<PurchasedModel | null>(null);
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [galleryModalOpen, setGalleryModalOpen] = useState(false);
-  const [deletingPhotoId, setDeletingPhotoId] = useState<number | null>(null);
+  // const [deletingPhotoId, setDeletingPhotoId] = useState<number | null>(null);
   const [updatingModel, setUpdatingModel] = useState<string | null>(null);
 
   // Helper function to recalculate stats
@@ -334,92 +334,93 @@ const ModelCollection: React.FC = () => {
     console.log('Photo removed from card view:', photoId);
   };
 
-  const deletePhoto = async (photoId: number, modelProductId: string) => {
-    if (!window.confirm('Naozaj chcete zmazať túto fotku?')) {
-      return;
-    }
+  // Delete photo function (currently not used in UI)
+  // const deletePhoto = async (photoId: number, modelProductId: string) => {
+  //   if (!window.confirm('Naozaj chcete zmazať túto fotku?')) {
+  //     return;
+  //   }
 
-    setDeletingPhotoId(photoId);
+  //   setDeletingPhotoId(photoId);
 
-    try {
-      const token = getAuthToken();
-      if (!token) {
-        throw new Error(t('errors.no_auth'));
-      }
+  //   try {
+  //     const token = getAuthToken();
+  //     if (!token) {
+  //       throw new Error(t('errors.no_auth'));
+  //     }
 
-      const response = await fetch(
-        `${API_BASE_URL}/api/user-photos/${photoId}`,
-        {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+  //     const response = await fetch(
+  //       `${API_BASE_URL}/api/user-photos/${photoId}`,
+  //       {
+  //         method: 'DELETE',
+  //         headers: {
+  //           'Authorization': `Bearer ${token}`,
+  //           'Content-Type': 'application/json',
+  //         },
+  //       }
+  //     );
 
-      if (!response.ok) {
-        if (response.status === 500) {
-          console.warn(`Backend endpoint DELETE /api/user-photos/${photoId} not implemented yet`);
-          
-          // Mock delete for testing
-          if (import.meta.env.VITE_MOCK_DELETES === 'true') {
-            console.log('🎭 Mock mode - simulating photo delete');
-            
-            // Update local state
-            setCollectionData(prevData => {
-              if (!prevData) return prevData;
-              
-              return {
-                ...prevData,
-                models: prevData.models.map(model => {
-                  if (model.product_id === modelProductId) {
-                    return {
-                      ...model,
-                      photos: model.photos.filter(p => p.id !== photoId)
-                    };
-                  }
-                  return model;
-                })
-              };
-            });
-            
-            return;
-          }
-          
-          throw new Error('Backend endpoint pre mazanie fotiek nie je implementovaný. Kontaktujte backend developera.');
-        }
-        
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || 'Nepodarilo sa zmazať fotku');
-      }
+  //     if (!response.ok) {
+  //       if (response.status === 500) {
+  //         console.warn(`Backend endpoint DELETE /api/user-photos/${photoId} not implemented yet`);
 
-      // Update local state - remove photo from the specific model
-      setCollectionData(prevData => {
-        if (!prevData) return prevData;
-        
-        return {
-          ...prevData,
-          models: prevData.models.map(model => {
-            if (model.product_id === modelProductId) {
-              return {
-                ...model,
-                photos: model.photos.filter(p => p.id !== photoId)
-              };
-            }
-            return model;
-          })
-        };
-      });
+  //         // Mock delete for testing
+  //         if (import.meta.env.VITE_MOCK_DELETES === 'true') {
+  //           console.log('🎭 Mock mode - simulating photo delete');
 
-      console.log('Photo deleted successfully');
-    } catch (err: any) {
-      console.error('Error deleting photo:', err);
-      alert(err.message || t('errors.photo_delete_failed'));
-    } finally {
-      setDeletingPhotoId(null);
-    }
-  };
+  //           // Update local state
+  //           setCollectionData(prevData => {
+  //             if (!prevData) return prevData;
+
+  //             return {
+  //               ...prevData,
+  //               models: prevData.models.map(model => {
+  //                 if (model.product_id === modelProductId) {
+  //                   return {
+  //                     ...model,
+  //                     photos: model.photos.filter(p => p.id !== photoId)
+  //                   };
+  //                 }
+  //                 return model;
+  //               })
+  //             };
+  //           });
+
+  //           return;
+  //         }
+
+  //         throw new Error('Backend endpoint pre mazanie fotiek nie je implementovaný. Kontaktujte backend developera.');
+  //       }
+
+  //       const errorData = await response.json().catch(() => ({}));
+  //       throw new Error(errorData.message || 'Nepodarilo sa zmazať fotku');
+  //     }
+
+  //     // Update local state - remove photo from the specific model
+  //     setCollectionData(prevData => {
+  //       if (!prevData) return prevData;
+
+  //       return {
+  //         ...prevData,
+  //         models: prevData.models.map(model => {
+  //           if (model.product_id === modelProductId) {
+  //             return {
+  //               ...model,
+  //               photos: model.photos.filter(p => p.id !== photoId)
+  //             };
+  //           }
+  //           return model;
+  //         })
+  //       };
+  //     });
+
+  //     console.log('Photo deleted successfully');
+  //   } catch (err) {
+  //     console.error('Error deleting photo:', err);
+  //     alert((err as Error).message || t('errors.photo_delete_failed'));
+  //   } finally {
+  //     setDeletingPhotoId(null);
+  //   }
+  // };
 
   const updateModelStatus = async (productId: string, orderId: string, field: 'is_completed' | 'is_public', value: boolean) => {
     console.log('🔄 Updating model status:', {
@@ -503,34 +504,35 @@ const ModelCollection: React.FC = () => {
       });
 
       console.log(`Model ${field} updated successfully to ${value} for product ${productId}, order ${orderId}`);
-    } catch (err: any) {
+    } catch (err) {
       console.error(`Error updating model ${field}:`, err);
-      alert(err.message || t(`errors.${field === 'is_completed' ? 'completion_error' : 'visibility_error'}`));
+      alert((err as Error).message || t(`errors.${field === 'is_completed' ? 'completion_error' : 'visibility_error'}`));
     } finally {
       setUpdatingModel(null);
     }
   };
 
-  const getStatusBadge = (status: string) => {
-    // Don't show badge for approved photos (default state)
-    if (status === 'approved') {
-      return null;
-    }
-    
-    const statusConfig = {
-      pending: { text: 'Čaká na schválenie', class: 'status-pending' },
-      rejected: { text: 'Zamietnuté', class: 'status-rejected' }
-    };
-    
-    const config = statusConfig[status as keyof typeof statusConfig];
-    
-    // Fallback for unknown status (but not approved)
-    if (!config) {
-      return <span className="status-badge status-unknown">{status || 'Neznámy stav'}</span>;
-    }
-    
-    return <span className={`status-badge ${config.class}`}>{config.text}</span>;
-  };
+  // Photo status badge helper (currently not used in UI)
+  // const getStatusBadge = (status: string) => {
+  //   // Don't show badge for approved photos (default state)
+  //   if (status === 'approved') {
+  //     return null;
+  //   }
+  //
+  //   const statusConfig = {
+  //     pending: { text: 'Čaká na schválenie', class: 'status-pending' },
+  //     rejected: { text: 'Zamietnuté', class: 'status-rejected' }
+  //   };
+  //
+  //   const config = statusConfig[status as keyof typeof statusConfig];
+  //
+  //   // Fallback for unknown status (but not approved)
+  //   if (!config) {
+  //     return <span className="status-badge status-unknown">{status || 'Neznámy stav'}</span>;
+  //   }
+  //
+  //   return <span className={`status-badge ${config.class}`}>{config.text}</span>;
+  // };
 
 
 
