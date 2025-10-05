@@ -6,8 +6,35 @@ import type {
   GalleryQueryParams,
   LikePhotoRequest,
   LikePhotoResponse,
-  PhotoCommentsResponse
+  PhotoCommentsResponse,
+  PublicUser,
+  UserProfile
 } from '../types/userGallery';
+
+// Helper function to transform backend camelCase to frontend snake_case
+const transformPublicUser = (backendUser: any): PublicUser => ({
+  user_id: backendUser.userId,
+  username: backendUser.nickname, // backend uses 'nickname' field for username
+  avatar_url: backendUser.avatarUrl,
+  total_public_models: backendUser.totalPublicModels,
+  total_public_photos: backendUser.totalPublicPhotos,
+  total_likes: backendUser.totalLikes,
+  latest_upload_date: backendUser.latestUploadDate,
+  preview_photos: backendUser.previewPhotos?.map((photo: any) => ({
+    thumbnail_url: photo.thumbnailUrl,
+    product_name: photo.productName
+  })) || []
+});
+
+const transformUserProfile = (backendUser: any): UserProfile => ({
+  user_id: backendUser.userId,
+  username: backendUser.nickname, // backend uses 'nickname' field for username
+  avatar_url: backendUser.avatarUrl,
+  member_since: backendUser.memberSince,
+  total_public_models: backendUser.totalPublicModels,
+  total_public_photos: backendUser.totalPublicPhotos,
+  total_likes: backendUser.totalLikes
+});
 
 export const userGalleryService = {
   /**
@@ -24,40 +51,46 @@ export const userGalleryService = {
       limit: String(params.limit || 20)
     }).toString();
 
+    const token = getAuthToken();
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json'
+    };
+
+    // Add authorization header if user is logged in
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
     const response = await fetch(
       `${API_BASE_URL}/api/public-gallery?${queryString}`,
       {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        }
+        headers
       }
     );
 
     if (!response.ok) {
-      if (response.status === 500) {
-        console.warn('Backend endpoint GET /api/public-gallery not implemented yet');
-        // Return mock data for development
-        return {
-          users: [],
-          pagination: {
-            current_page: 1,
-            total_pages: 0,
-            total_users: 0,
-            items_per_page: 20
-          },
-          stats: {
-            total_users: 0,
-            total_public_models: 0,
-            total_public_photos: 0
-          }
-        };
-      }
       throw new Error(`Failed to fetch public gallery: ${response.status} ${response.statusText}`);
     }
 
-    const data = await response.json();
-    return data.data || data;
+    const responseData = await response.json();
+    const backendData = responseData.data || responseData;
+
+    // Transform backend camelCase to frontend snake_case
+    return {
+      users: backendData.users?.map(transformPublicUser) || [],
+      pagination: {
+        current_page: backendData.pagination?.currentPage || 1,
+        total_pages: backendData.pagination?.totalPages || 0,
+        total_users: backendData.pagination?.totalUsers || 0,
+        items_per_page: backendData.pagination?.itemsPerPage || 20
+      },
+      stats: {
+        total_users: backendData.stats?.totalUsers || 0,
+        total_public_models: backendData.stats?.totalPublicModels || 0,
+        total_public_photos: backendData.stats?.totalPublicPhotos || 0
+      }
+    };
   },
 
   /**
@@ -67,13 +100,21 @@ export const userGalleryService = {
    * @returns UserGalleryDetail with user profile and models with photos
    */
   async getUserGallery(userId: number): Promise<UserGalleryDetail> {
+    const token = getAuthToken();
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json'
+    };
+
+    // Add authorization header if user is logged in
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
     const response = await fetch(
       `${API_BASE_URL}/api/public-gallery/${userId}`,
       {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        }
+        headers
       }
     );
 
@@ -81,26 +122,31 @@ export const userGalleryService = {
       if (response.status === 404) {
         throw new Error('User not found or has no public photos');
       }
-      if (response.status === 500) {
-        console.warn(`Backend endpoint GET /api/public-gallery/${userId} not implemented yet`);
-        // Return mock data for development
-        return {
-          user: {
-            user_id: userId,
-            nickname: 'MockUser',
-            avatar_url: null,
-            member_since: new Date().toISOString(),
-            total_public_models: 0,
-            total_public_photos: 0
-          },
-          models: []
-        };
-      }
       throw new Error(`Failed to fetch user gallery: ${response.status} ${response.statusText}`);
     }
 
-    const data = await response.json();
-    return data.data || data;
+    const responseData = await response.json();
+    const backendData = responseData.data || responseData;
+
+    // Transform backend camelCase to frontend snake_case
+    return {
+      user: transformUserProfile(backendData.user),
+      models: backendData.models?.map((model: any) => ({
+        product_id: model.productId,
+        product_name: model.productName,
+        is_completed: model.isCompleted,
+        photo_count: model.photoCount,
+        photos: model.photos?.map((photo: any) => ({
+          id: photo.id,
+          thumbnail_url: photo.thumbnailUrl,
+          cdn_url: photo.cdnUrl,
+          upload_date: photo.uploadDate,
+          likes_count: photo.likesCount,
+          is_liked_by_user: photo.isLikedByUser,
+          comments_count: photo.commentsCount
+        })) || []
+      })) || []
+    };
   },
 
   /**
@@ -135,20 +181,18 @@ export const userGalleryService = {
       if (response.status === 404) {
         throw new Error('Photo not found');
       }
-      if (response.status === 500) {
-        console.warn(`Backend endpoint POST /api/public-gallery/photos/${photoId}/like not implemented yet`);
-        // Return mock response for development
-        return {
-          success: true,
-          likes_count: 1,
-          is_liked: true
-        };
-      }
       throw new Error(`Failed to like photo: ${response.status} ${response.statusText}`);
     }
 
-    const data = await response.json();
-    return data;
+    const responseData = await response.json();
+    const data = responseData.data || responseData;
+
+    // Transform response if needed
+    return {
+      success: data.success ?? true,
+      likes_count: data.likesCount ?? data.likes_count,
+      is_liked: data.isLiked ?? data.is_liked
+    };
   },
 
   /**
@@ -182,20 +226,18 @@ export const userGalleryService = {
       if (response.status === 404) {
         throw new Error('Photo not found or not liked');
       }
-      if (response.status === 500) {
-        console.warn(`Backend endpoint DELETE /api/public-gallery/photos/${photoId}/unlike not implemented yet`);
-        // Return mock response for development
-        return {
-          success: true,
-          likes_count: 0,
-          is_liked: false
-        };
-      }
       throw new Error(`Failed to unlike photo: ${response.status} ${response.statusText}`);
     }
 
-    const data = await response.json();
-    return data;
+    const responseData = await response.json();
+    const data = responseData.data || responseData;
+
+    // Transform response if needed
+    return {
+      success: data.success ?? true,
+      likes_count: data.likesCount ?? data.likes_count,
+      is_liked: data.isLiked ?? data.is_liked
+    };
   },
 
   /**

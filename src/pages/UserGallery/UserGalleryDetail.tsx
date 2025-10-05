@@ -125,7 +125,7 @@ const UserGalleryDetail: React.FC = () => {
 
   // Get avatar placeholder
   const getAvatarPlaceholder = () => {
-    return userData?.nickname?.charAt(0).toUpperCase() || '?';
+    return userData?.username?.charAt(0).toUpperCase() || '?';
   };
 
   // Loading state
@@ -172,7 +172,7 @@ const UserGalleryDetail: React.FC = () => {
             {userData.avatar_url ? (
               <img
                 src={userData.avatar_url}
-                alt={userData.nickname}
+                alt={userData.username}
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
                   target.style.display = 'none';
@@ -186,7 +186,7 @@ const UserGalleryDetail: React.FC = () => {
           </div>
 
           <div className="user-meta">
-            <h1>{userData.nickname}</h1>
+            <h1>{userData.username}</h1>
             <p className="member-since">
               {t('member_since', { date: formatDate(userData.member_since) })}
             </p>

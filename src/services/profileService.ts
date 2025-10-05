@@ -6,6 +6,7 @@ import type { User } from '../context/authTypes';
 export interface ProfileUpdateData {
   firstName?: string;
   lastName?: string;
+  username?: string;
   phone?: string;
   address?: {
     street?: string;
