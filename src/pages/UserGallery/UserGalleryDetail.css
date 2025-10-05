@@ -510,6 +510,194 @@
   }
 }
 
+/* iPhone 15 and similar devices (390px width) */
+@media (max-width: 430px) {
+  .user-gallery-detail {
+    padding: 0 12px 24px;
+  }
+
+  .user-header {
+    margin-bottom: 10px;
+    margin-top: 6px;
+  }
+
+  .back-btn {
+    padding: 8px 4px;
+    font-size: 12px;
+    gap: 4px;
+    margin-bottom: 10px;
+  }
+
+  .back-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* Compact user profile for mobile */
+  .user-profile {
+    flex-direction: row;
+    padding: 12px 0;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .user-avatar-large {
+    width: 56px;
+    height: 56px;
+    border-width: 2px;
+  }
+
+  .avatar-placeholder-large {
+    font-size: 22px;
+  }
+
+  .user-meta {
+    flex: 1;
+    min-width: 0;
+    text-align: left;
+  }
+
+  .user-meta h1 {
+    font-size: 16px;
+    margin-bottom: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .member-since {
+    font-size: 10px;
+    margin-bottom: 6px;
+  }
+
+  /* Stack stats vertically on mobile */
+  .user-stats-detail {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 11px;
+  }
+
+  .user-stats-detail span {
+    white-space: nowrap;
+  }
+
+  .user-stats-detail .divider {
+    display: inline;
+    margin: 0 2px;
+  }
+
+  /* Models section mobile optimization */
+  .models-section {
+    gap: 32px;
+  }
+
+  .model-section {
+    padding-bottom: 32px;
+  }
+
+  .model-section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .model-section-header h2 {
+    font-size: 16px;
+    width: 100%;
+  }
+
+  .completed-badge {
+    font-size: 10px;
+    padding: 4px 8px;
+    gap: 4px;
+  }
+
+  .completed-badge svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .photo-count {
+    font-size: 11px;
+    margin-left: 0;
+    align-self: flex-start;
+  }
+
+  /* 2-column grid for photos on mobile */
+  .photos-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .photo-item {
+    border-radius: 8px;
+  }
+
+  /* Always visible like button on mobile */
+  .photo-overlay {
+    padding: 8px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.5) 50%, transparent 80%);
+  }
+
+  .like-btn {
+    padding: 6px 10px;
+    font-size: 11px;
+    gap: 4px;
+    border-radius: 16px;
+  }
+
+  .like-btn svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .like-btn span {
+    min-width: 16px;
+    font-size: 11px;
+  }
+
+  /* Mobile loading/error states */
+  .detail-loading,
+  .detail-error {
+    min-height: 50vh;
+    padding: 20px;
+  }
+
+  .loading-spinner {
+    width: 40px;
+    height: 40px;
+    border-width: 3px;
+  }
+
+  .detail-loading p {
+    font-size: 13px;
+  }
+
+  .error-icon {
+    font-size: 48px;
+  }
+
+  .detail-error h3 {
+    font-size: 18px;
+  }
+
+  .detail-error p {
+    font-size: 13px;
+  }
+
+  .back-to-gallery-btn {
+    padding: 10px 20px;
+    font-size: 13px;
+  }
+
+  .no-models {
+    padding: 32px 16px;
+    font-size: 14px;
+  }
+}
+
 @media (max-width: 480px) {
   .photos-grid {
     grid-template-columns: repeat(2, 1fr);

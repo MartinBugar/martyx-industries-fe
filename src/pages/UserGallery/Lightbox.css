@@ -398,6 +398,168 @@
   }
 }
 
+/* iPhone 15 and similar devices (390px width) */
+@media (max-width: 430px) {
+  .lightbox-overlay {
+    background: rgba(0, 0, 0, 0.98);
+  }
+
+  .lightbox-content {
+    padding: 0;
+    gap: 0;
+  }
+
+  /* Compact close button for mobile */
+  .lightbox-close-btn {
+    top: 12px;
+    right: 12px;
+    width: 40px;
+    height: 40px;
+    background: rgba(26, 26, 26, 0.95);
+    backdrop-filter: blur(16px);
+    z-index: 100;
+  }
+
+  .lightbox-close-btn svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Touch-friendly navigation buttons */
+  .lightbox-nav-btn {
+    width: 44px;
+    height: 44px;
+    background: rgba(26, 26, 26, 0.9);
+    backdrop-filter: blur(16px);
+  }
+
+  .lightbox-nav-btn svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .lightbox-prev-btn {
+    left: 8px;
+  }
+
+  .lightbox-next-btn {
+    right: 8px;
+  }
+
+  /* Full-height image container for mobile */
+  .lightbox-image-container {
+    max-width: 100%;
+    max-height: calc(100vh - 120px);
+    padding: 0 8px;
+  }
+
+  .lightbox-image {
+    max-width: 100%;
+    max-height: calc(100vh - 120px);
+    border-radius: 0;
+    object-fit: contain;
+  }
+
+  /* Fixed bottom info bar for mobile */
+  .lightbox-info {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: 100%;
+    padding: 12px 16px;
+    background: rgba(26, 26, 26, 0.98);
+    backdrop-filter: blur(20px);
+    border-radius: 0;
+    border-top: 1px solid rgba(255, 215, 0, 0.2);
+    flex-direction: column;
+    gap: 10px;
+    z-index: 99;
+  }
+
+  /* Counter at top of info bar */
+  .lightbox-counter {
+    position: absolute;
+    top: 12px;
+    left: 16px;
+    font-size: 12px;
+    min-width: auto;
+  }
+
+  /* Username centered in info bar */
+  .lightbox-username {
+    position: relative;
+    left: auto;
+    transform: none;
+    font-size: 14px;
+    text-align: center;
+    margin-top: 0;
+    order: -1;
+  }
+
+  /* Actions at bottom */
+  .lightbox-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .lightbox-like-btn,
+  .lightbox-comments-btn {
+    flex: 1;
+    max-width: 160px;
+    padding: 10px 16px;
+    font-size: 13px;
+    gap: 8px;
+    border-radius: 20px;
+    justify-content: center;
+  }
+
+  .lightbox-like-btn svg,
+  .lightbox-comments-btn svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Better touch feedback */
+  .lightbox-close-btn:active,
+  .lightbox-nav-btn:active {
+    transform: scale(0.95);
+    transition: transform 0.1s ease;
+  }
+
+  .lightbox-nav-btn:active {
+    transform: translateY(-50%) scale(0.95);
+  }
+
+  .lightbox-like-btn:active:not(:disabled),
+  .lightbox-comments-btn:active {
+    transform: scale(0.95);
+    transition: transform 0.1s ease;
+  }
+
+  /* Hide thumbnail strip on mobile */
+  .lightbox-thumbnails {
+    display: none;
+  }
+
+  /* Swipe indicator (optional) */
+  .lightbox-image-container::after {
+    content: '';
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+    pointer-events: none;
+  }
+}
+
 @media (max-width: 480px) {
   .lightbox-content {
     padding: 60px 10px 80px;

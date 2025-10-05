@@ -131,6 +131,77 @@
   }
 }
 
+/* iPhone 15 and similar devices (390px width) */
+@media (max-width: 430px) {
+  .photos-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .photo-item {
+    border-radius: 10px;
+    border-width: 1.5px;
+    aspect-ratio: 1;
+  }
+
+  .photo-item:active {
+    transform: scale(0.97);
+    transition: transform 0.1s ease;
+  }
+
+  .photo-item img {
+    border-radius: 10px;
+  }
+
+  /* Always visible overlay on mobile */
+  .photo-overlay {
+    opacity: 1;
+    bottom: 0;
+    right: 0;
+    left: auto;
+    top: auto;
+    padding: 8px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 60%, transparent 100%);
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+  }
+
+  .like-btn {
+    padding: 6px 10px;
+    font-size: 11px;
+    gap: 5px;
+    border-radius: 16px;
+    background: rgba(26, 26, 26, 0.95);
+    border-width: 1.5px;
+    backdrop-filter: blur(12px);
+  }
+
+  .like-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .like-btn span {
+    min-width: 16px;
+    font-size: 11px;
+  }
+
+  /* Better touch feedback */
+  .like-btn:active:not(:disabled) {
+    transform: scale(0.95);
+    transition: transform 0.1s ease;
+  }
+
+  /* Empty state */
+  .photos-empty {
+    min-height: 40vh;
+    padding: 20px;
+    font-size: 14px;
+  }
+}
+
 @media (max-width: 480px) {
   .photos-grid {
     grid-template-columns: repeat(2, 1fr);

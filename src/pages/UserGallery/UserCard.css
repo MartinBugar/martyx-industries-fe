@@ -306,6 +306,107 @@
   }
 }
 
+/* iPhone 15 and similar devices (390px width) */
+@media (max-width: 430px) {
+  .user-card {
+    padding: 12px;
+    border-radius: 10px;
+  }
+
+  /* Optimize header layout for mobile */
+  .user-card-header {
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .user-avatar {
+    width: 48px;
+    height: 48px;
+    border-width: 2px;
+  }
+
+  .avatar-placeholder {
+    font-size: 19px;
+  }
+
+  .user-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .user-username {
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+
+  .user-stats {
+    font-size: 11px;
+    gap: 6px;
+    margin-bottom: 4px;
+    flex-wrap: wrap;
+  }
+
+  .user-stats .divider {
+    font-size: 8px;
+  }
+
+  .user-likes {
+    font-size: 11px;
+    gap: 4px;
+  }
+
+  .user-likes .heart-icon {
+    width: 12px;
+    height: 12px;
+  }
+
+  /* Mobile-optimized photo preview grid */
+  .photo-preview-grid {
+    gap: 6px;
+    margin-bottom: 10px;
+    aspect-ratio: 1;
+  }
+
+  .preview-thumbnail {
+    border-radius: 6px;
+    border-width: 1px;
+  }
+
+  .empty-placeholder svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Enhanced view gallery button for mobile */
+  .view-gallery-btn {
+    padding: 10px 12px;
+    font-size: 12px;
+    gap: 6px;
+    border-radius: 8px;
+    font-weight: 600;
+  }
+
+  .view-gallery-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* Better touch targets */
+  .user-card:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
+  }
+
+  /* Optimize hover states for touch */
+  .user-card:hover {
+    transform: none;
+  }
+
+  .user-card:active {
+    transform: scale(0.98);
+  }
+}
+
 @media (max-width: 768px) {
   .user-card {
     padding: 12px;
