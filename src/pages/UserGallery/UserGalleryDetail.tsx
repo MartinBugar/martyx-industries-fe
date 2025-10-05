@@ -188,7 +188,7 @@ const UserGalleryDetail: React.FC = () => {
           <div className="user-meta">
             <h1>{userData.username}</h1>
             <p className="member-since">
-              {t('member_since', { date: formatDate(userData.member_since) })}
+              {t('member_since').replace('{{date}}', formatDate(userData.member_since))}
             </p>
             <div className="user-stats-detail">
               <span>

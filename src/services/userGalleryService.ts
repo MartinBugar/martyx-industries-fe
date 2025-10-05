@@ -26,15 +26,19 @@ const transformPublicUser = (backendUser: any): PublicUser => ({
   })) || []
 });
 
-const transformUserProfile = (backendUser: any): UserProfile => ({
-  user_id: backendUser.userId,
-  username: backendUser.nickname, // backend uses 'nickname' field for username
-  avatar_url: backendUser.avatarUrl,
-  member_since: backendUser.memberSince,
-  total_public_models: backendUser.totalPublicModels,
-  total_public_photos: backendUser.totalPublicPhotos,
-  total_likes: backendUser.totalLikes
-});
+const transformUserProfile = (backendUser: any): UserProfile => {
+  const transformed = {
+    user_id: backendUser.userId,
+    username: backendUser.nickname, // backend uses 'nickname' field for username
+    avatar_url: backendUser.avatarUrl,
+    member_since: backendUser.memberSince,
+    total_public_models: backendUser.totalPublicModels,
+    total_public_photos: backendUser.totalPublicPhotos,
+    total_likes: backendUser.totalLikes
+  };
+  console.log('🔄 Transform UserProfile:', { backendUser, transformed });
+  return transformed;
+};
 
 export const userGalleryService = {
   /**
