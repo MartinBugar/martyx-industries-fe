@@ -33,7 +33,7 @@ interface CacheEntry {
 class ApiClient {
   private cache = new Map<string, CacheEntry>();
   private pendingRequests = new Map<string, Promise<any>>();
-  private readonly CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+  // private readonly CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
   private readonly DEFAULT_RETRY_ATTEMPTS = 3;
   private readonly DEFAULT_RETRY_DELAY = 1000; // 1 second
 
@@ -157,31 +157,6 @@ class ApiClient {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
-  /**
-   * Get data from cache
-   */
-  private getFromCache(key: string): any | null {
-    const entry = this.cache.get(key);
-    if (!entry) return null;
-
-    if (Date.now() > entry.expiry) {
-      this.cache.delete(key);
-      return null;
-    }
-
-    return entry.data;
-  }
-
-  /**
-   * Set data in cache
-   */
-  private setCache(key: string, data: any): void {
-    this.cache.set(key, {
-      data,
-      timestamp: Date.now(),
-      expiry: Date.now() + this.CACHE_DURATION
-    });
-  }
 
   /**
    * Clear cache

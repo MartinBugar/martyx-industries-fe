@@ -3,7 +3,7 @@
  * Renders only visible items for large lists
  */
 
-import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useRef, useMemo, useCallback } from 'react';
 import './VirtualList.css';
 
 interface VirtualListProps<T> {
@@ -62,17 +62,22 @@ function VirtualList<T>({
   }, [onScroll]);
 
   // Scroll to specific item
-  const scrollToItem = useCallback((index: number) => {
-    if (containerRef.current) {
-      const targetScrollTop = index * itemHeight;
-      containerRef.current.scrollTop = targetScrollTop;
-    }
-  }, [itemHeight]);
+  // const scrollToItem = useCallback((index: number) => {
+  //   if (containerRef.current) {
+  //     const targetScrollTop = index * itemHeight;
+  //     containerRef.current.scrollTop = targetScrollTop;
+  //   }
+  // }, [itemHeight]);
 
-  // Scroll to top
-  const scrollToTop = useCallback(() => {
-    scrollToItem(0);
-  }, [scrollToItem]);
+  // Scroll to top function (exported for external use)
+  // const scrollToTop = useCallback(() => {
+  //   scrollToItem(0);
+  // }, [scrollToItem]);
+
+  // Expose scrollToTop for external use
+  // React.useImperativeHandle(React.forwardRef(() => null), () => ({
+  //   scrollToTop
+  // }));
 
   return (
     <div

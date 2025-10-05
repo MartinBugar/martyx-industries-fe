@@ -3,12 +3,19 @@
  * Uses virtual scrolling for large product lists
  */
 
-import React, { useMemo, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import VirtualList from '../VirtualList/VirtualList';
 import LocalizedProductCard from '../LocalizedProductCard/LocalizedProductCard';
-import { useCart } from '../../context/useCart';
-import { useWishlist } from '../../context/useWishlist';
-import type { Product } from '../../types/product';
+// import { useCart } from '../../context/CartContext';
+// import { useWishlist } from '../../context/WishlistContext';
+
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  image?: string;
+  [key: string]: any;
+}
 
 interface ProductListProps {
   products: Product[];
@@ -22,29 +29,22 @@ interface ProductListProps {
 
 const ProductList: React.FC<ProductListProps> = ({
   products,
-  loading = false,
-  onProductClick,
   className = '',
   itemHeight = 300,
   containerHeight = 600,
   useVirtualScrolling = true
 }) => {
-  const { addToCart } = useCart();
-  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  // const { addToCart } = useCart();
+  // const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
   // Memoized product card renderer
-  const renderProduct = useCallback((product: Product, index: number) => (
+  const renderProduct = useCallback((product: Product) => (
     <LocalizedProductCard
       key={product.id}
-      product={product}
-      onAddToCart={addToCart}
-      onAddToWishlist={addToWishlist}
-      onRemoveFromWishlist={removeFromWishlist}
-      isInWishlist={isInWishlist(product.id)}
-      onClick={() => onProductClick?.(product)}
-      className="product-card-virtual"
+      productId={parseInt(product.id)}
+      showFullDescription={false}
     />
-  ), [addToCart, addToWishlist, removeFromWishlist, isInWishlist, onProductClick]);
+  ), []);
 
   // Use virtual scrolling for large lists
   if (useVirtualScrolling && products.length > 20) {
@@ -65,9 +65,9 @@ const ProductList: React.FC<ProductListProps> = ({
   // Regular grid for smaller lists
   return (
     <div className={`product-list-grid ${className}`}>
-      {products.map((product, index) => (
+      {products.map((product) => (
         <div key={product.id} className="product-grid-item">
-          {renderProduct(product, index)}
+          {renderProduct(product)}
         </div>
       ))}
     </div>

@@ -62,7 +62,7 @@ class PerformanceMonitor {
     const observer = new PerformanceObserver((list) => {
       const entries = list.getEntries();
       entries.forEach((entry) => {
-        this.metrics.firstInputDelay = entry.processingStart - entry.startTime;
+        this.metrics.firstInputDelay = (entry as any).processingStart - entry.startTime;
       });
     });
 
@@ -111,7 +111,7 @@ class PerformanceMonitor {
       const entries = list.getEntries();
       entries.forEach((entry) => {
         if (entry.entryType === 'navigation') {
-          this.metrics.loadTime = entry.loadEventEnd - entry.fetchStart;
+          this.metrics.loadTime = (entry as any).loadEventEnd - (entry as any).fetchStart;
         }
       });
     });
@@ -127,7 +127,7 @@ class PerformanceMonitor {
       const startTime = performance.now();
       script.addEventListener('load', () => {
         const loadTime = performance.now() - startTime;
-        console.log(`Script ${script.src} loaded in ${loadTime}ms`);
+        console.log(`Script ${(script as HTMLScriptElement).src} loaded in ${loadTime}ms`);
       });
     });
 
@@ -138,7 +138,7 @@ class PerformanceMonitor {
       img.addEventListener('load', () => {
         const loadTime = performance.now() - startTime;
         if (loadTime > 1000) {
-          console.warn(`Slow image load: ${img.src} took ${loadTime}ms`);
+          console.warn(`Slow image load: ${(img as HTMLImageElement).src} took ${loadTime}ms`);
         }
       });
     });
@@ -161,8 +161,8 @@ class PerformanceMonitor {
 
   private sendToAnalytics(metrics: Partial<PerformanceMetrics>): void {
     // Send to your analytics service
-    if (typeof gtag !== 'undefined') {
-      gtag('event', 'web_vitals', {
+    if (typeof (window as any).gtag !== 'undefined') {
+      (window as any).gtag('event', 'web_vitals', {
         event_category: 'Performance',
         event_label: 'Core Web Vitals',
         value: Math.round(metrics.largestContentfulPaint || 0),

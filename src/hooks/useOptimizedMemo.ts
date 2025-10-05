@@ -3,7 +3,7 @@
  * Optimized memoization with custom comparison functions
  */
 
-import { useMemo, useRef, useCallback, type DependencyList } from 'react';
+import { useMemo, useRef, useState, useEffect, type DependencyList } from 'react';
 
 // Deep comparison for objects
 const deepEqual = (a: any, b: any): boolean => {
@@ -50,15 +50,15 @@ const shallowEqual = (a: any[], b: any[]): boolean => {
 export const useCustomMemo = <T>(
   factory: () => T,
   deps: DependencyList,
-  compareFn: (prev: DependencyList, next: DependencyList) => boolean = deepEqual
+  compareFn: (prev: any[], next: any[]) => boolean = deepEqual
 ): T => {
-  const ref = useRef<{ deps: DependencyList; value: T }>();
+  const ref = useRef<{ deps: DependencyList; value: T } | undefined>(undefined);
   
-  if (!ref.current || !compareFn(ref.current.deps, deps)) {
+  if (!ref.current || !compareFn(ref.current.deps as any[], deps as any[])) {
     ref.current = { deps, value: factory() };
   }
   
-  return ref.current.value;
+  return ref.current!.value;
 };
 
 // Shallow array comparison memo
@@ -87,15 +87,15 @@ export const useObjectMemo = <T>(
 export const useStableCallback = <T extends (...args: any[]) => any>(
   callback: T,
   deps: DependencyList,
-  compareFn: (prev: DependencyList, next: DependencyList) => boolean = deepEqual
+  compareFn: (prev: any[], next: any[]) => boolean = deepEqual
 ): T => {
-  const ref = useRef<{ deps: DependencyList; callback: T }>();
+  const ref = useRef<{ deps: DependencyList; callback: T } | undefined>(undefined);
   
-  if (!ref.current || !compareFn(ref.current.deps, deps)) {
+  if (!ref.current || !compareFn(ref.current.deps as any[], deps as any[])) {
     ref.current = { deps, callback };
   }
   
-  return ref.current.callback;
+  return ref.current!.callback;
 };
 
 // Memoized style object
@@ -121,14 +121,14 @@ export const useDebouncedMemo = <T>(
   delay: number = 300
 ): T => {
   const [debouncedDeps, setDebouncedDeps] = useState(deps);
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<number | undefined>(undefined);
   
   useEffect(() => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
     
-    timeoutRef.current = setTimeout(() => {
+    timeoutRef.current = window.setTimeout(() => {
       setDebouncedDeps(deps);
     }, delay);
     

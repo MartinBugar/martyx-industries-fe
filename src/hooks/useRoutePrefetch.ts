@@ -29,7 +29,7 @@ class RoutePrefetcher {
   }
 
   // Prefetch route chunks
-  async prefetchRoute(route: string, priority: 'high' | 'medium' | 'low' = 'low'): Promise<void> {
+  async prefetchRoute(route: string, _priority: 'high' | 'medium' | 'low' = 'low'): Promise<void> {
     if (this.prefetchedRoutes.has(route)) return;
 
     try {
@@ -57,17 +57,17 @@ class RoutePrefetcher {
   }
 
   // Prefetch API data
-  async prefetchData(endpoint: string, priority: 'high' | 'medium' | 'low' = 'low'): Promise<void> {
+  async prefetchData(endpoint: string, _priority: 'high' | 'medium' | 'low' = 'low'): Promise<void> {
     if (this.prefetchedData.has(endpoint)) return;
 
     try {
       const response = await fetch(endpoint);
       if (response.ok) {
         const data = await response.json();
-        const etag = response.headers.get('etag');
-        const lastModified = response.headers.get('last-modified');
+        // const etag = response.headers.get('etag');
+        // const lastModified = response.headers.get('last-modified');
         
-        advancedCache.set(endpoint, data, 'api-responses', etag || undefined, lastModified || undefined);
+        advancedCache.set(endpoint, data, 'api-responses');
         this.prefetchedData.add(endpoint);
         console.log(`✅ Prefetched data: ${endpoint}`);
       }
@@ -117,7 +117,7 @@ export const routePrefetcher = RoutePrefetcher.getInstance();
 // Hook for route-based prefetching
 export const useRoutePrefetch = () => {
   const location = useLocation();
-  const prefetchTimeoutRef = useRef<NodeJS.Timeout>();
+  const prefetchTimeoutRef = useRef<number | undefined>(undefined);
 
   // Prefetch based on current route
   useEffect(() => {
@@ -156,7 +156,7 @@ export const useRoutePrefetch = () => {
       }
 
       // Set new timeout for prefetching
-      prefetchTimeoutRef.current = setTimeout(() => {
+      prefetchTimeoutRef.current = window.setTimeout(() => {
         // Prefetch routes
         config.routes.forEach(route => {
           routePrefetcher.queuePrefetch(route, config.priority, config.delay);
@@ -177,8 +177,8 @@ export const useRoutePrefetch = () => {
   }, [location.pathname]);
 
   // Manual prefetch function
-  const prefetch = useCallback((url: string, priority: 'high' | 'medium' | 'low' = 'low') => {
-    routePrefetcher.queuePrefetch(url, priority);
+  const prefetch = useCallback((url: string, _priority: 'high' | 'medium' | 'low' = 'low') => {
+    routePrefetcher.queuePrefetch(url, _priority);
   }, []);
 
   return { prefetch };
