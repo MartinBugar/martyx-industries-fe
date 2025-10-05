@@ -637,17 +637,165 @@
   }
 }
 
+/* ========== MACBOOK AIR M2 14" RESPONSIVE DESIGN ========== */
+@media (min-width: 1400px) and (max-width: 1600px) and (min-height: 900px) and (max-height: 1100px) {
+  /* MacBook Air M2 14" specific optimizations */
+
+  /* Main container optimization */
+  .login-main-container {
+    max-width: 1350px;
+    gap: 4.6rem; /* 15% increase */
+  }
+
+  /* Mascot section */
+  .mascot-image-login {
+    max-width: 520px; /* 15% increase */
+  }
+
+  /* Form container optimization */
+  .login-form-container {
+    flex: 0 0 600px; /* 15% increase for better readability */
+    padding: 2.9rem; /* 16% increase */
+    border-radius: 23px; /* 15% increase */
+  }
+
+  /* Form header */
+  .form-icon {
+    width: 72px; /* 12% increase */
+    height: 72px;
+    margin-bottom: 1.7rem; /* 13% increase */
+  }
+
+  .form-title {
+    font-size: 2.1rem; /* 5% increase */
+    margin: 0 0 0.6rem 0; /* 20% increase */
+  }
+
+  .form-subtitle {
+    font-size: 1.05rem; /* 5% increase */
+  }
+
+  /* Banner sections */
+  .confirmation-banner,
+  .resend-section,
+  .form-error {
+    padding: 1.15rem 1.45rem; /* 15% increase */
+    margin-bottom: 1.7rem; /* 13% increase */
+    font-size: 0.95rem; /* 5% increase */
+  }
+
+  .banner-icon,
+  .resend-icon {
+    width: 23px; /* 15% increase */
+    height: 23px;
+    margin-top: 0.15rem; /* 20% increase */
+  }
+
+  .banner-content h4 {
+    font-size: 1.05rem; /* 5% increase */
+    margin: 0 0 0.3rem 0; /* 20% increase */
+  }
+
+  .resend-content p {
+    font-size: 0.95rem; /* 5% increase */
+    margin: 0 0 0.85rem 0; /* 13% increase */
+  }
+
+  .resend-btn {
+    padding: 0.6rem 1.15rem; /* 20% increase */
+    font-size: 0.9rem; /* 5% increase */
+    gap: 0.6rem; /* 20% increase */
+  }
+
+  /* Form elements */
+  .login-form {
+    gap: 1.7rem; /* 13% increase */
+  }
+
+  .form-group {
+    gap: 0.6rem; /* 20% increase */
+  }
+
+  .form-label {
+    font-size: 0.95rem; /* 5% increase */
+    gap: 0.6rem; /* 20% increase */
+    margin-bottom: 0.3rem; /* 20% increase */
+  }
+
+  .form-label svg {
+    width: 20px; /* 11% increase */
+    height: 20px;
+  }
+
+  .form-input {
+    height: 60px; /* 15% increase */
+    padding: 0 1.15rem 0 3.5rem; /* 15% increase */
+    font-size: 1.05rem; /* 5% increase */
+  }
+
+  .input-with-toggle .form-input {
+    padding-right: 3.5rem; /* 16% increase */
+  }
+
+  .password-toggle-btn {
+    right: 1.15rem; /* 15% increase */
+    padding: 0.6rem; /* 20% increase */
+  }
+
+  /* Form options */
+  .form-options {
+    margin-top: -0.6rem; /* 20% increase */
+  }
+
+  .forgot-link {
+    font-size: 0.95rem; /* 5% increase */
+  }
+
+  /* Submit button */
+  .form-submit-btn {
+    height: 60px; /* 15% increase */
+    font-size: 1.05rem; /* 5% increase */
+    gap: 0.6rem; /* 20% increase */
+    margin-top: 0.6rem; /* 20% increase */
+  }
+
+  .btn-arrow {
+    width: 23px; /* 15% increase */
+    height: 23px;
+  }
+
+  .btn-spinner {
+    width: 23px; /* 15% increase */
+    height: 23px;
+  }
+
+  /* Form footer */
+  .form-footer {
+    margin-top: 2.3rem; /* 15% increase */
+    padding-top: 1.7rem; /* 13% increase */
+  }
+
+  .footer-text,
+  .footer-link {
+    font-size: 0.95rem; /* 5% increase */
+  }
+
+  .footer-text {
+    margin-right: 0.6rem; /* 20% increase */
+  }
+}
+
 /* ===== HIGH CONTRAST MODE ===== */
 @media (prefers-contrast: high) {
   .login-form-container {
     border-width: 2px;
     border-color: var(--text-primary);
   }
-  
+
   .form-input {
     border-width: 2px;
   }
-  
+
   .form-input:focus {
     border-width: 3px;
   }

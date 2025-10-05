@@ -337,7 +337,8 @@ html {
   --breakpoint-lg: 768px;   /* Tablets */
   --breakpoint-xl: 1024px;  /* Small desktops */
   --breakpoint-2xl: 1200px; /* Large desktops */
-  --breakpoint-3xl: 1400px; /* Extra large desktops */
+  --breakpoint-macbook: 1512px; /* MacBook Air M2 14" */
+  --breakpoint-3xl: 1600px; /* Extra large desktops */
 }
 
 html, body, #root { 

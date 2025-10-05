@@ -985,3 +985,350 @@
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+/* MacBook Air M2 14" Responsive Design */
+@media (min-width: 1400px) and (max-width: 1600px) and (min-height: 900px) and (max-height: 1100px) {
+  /* MacBook Air M2 14" specific optimizations */
+
+  .orders-container {
+    max-width: 1350px;
+    margin: 0 auto;
+    gap: 2rem;
+  }
+
+  /* Enhanced section title */
+  .orders-container .section-title {
+    font-size: 0.8rem;
+    margin-bottom: 1.25rem;
+    letter-spacing: 0.06em;
+    font-weight: 800;
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.6);
+  }
+
+  /* Enhanced orders list */
+  .orders-list {
+    gap: 1.25rem;
+  }
+
+  /* Enhanced order cards */
+  .order-card {
+    border-radius: 20px;
+    backdrop-filter: blur(25px);
+    border-width: 2px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .order-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  .order-card.expanded {
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+    border-color: rgba(40, 193, 255, 0.3);
+  }
+
+  /* Enhanced order header */
+  .order-header {
+    padding: 2rem;
+    gap: 1.25rem;
+  }
+
+  .order-header:hover {
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .order-header-left {
+    gap: 0.35rem;
+  }
+
+  .order-id {
+    font-size: 1.125rem;
+    font-weight: 800;
+  }
+
+  .order-date {
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .order-header-right {
+    gap: 1.25rem;
+  }
+
+  .order-amount {
+    font-size: 1.2rem;
+    font-weight: 800;
+  }
+
+  /* Enhanced toggle button */
+  .toggle-details {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    backdrop-filter: blur(15px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .toggle-details:hover {
+    background: rgba(255, 255, 255, 0.12);
+    transform: scale(1.08);
+  }
+
+  .toggle-details .chevron {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Enhanced order details */
+  .order-details {
+    border-top-width: 2px;
+    padding: 2.5rem;
+    backdrop-filter: blur(25px);
+  }
+
+  /* Enhanced status badges */
+  .status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    border-width: 2px;
+    backdrop-filter: blur(15px);
+  }
+
+  .status-badge.completed {
+    box-shadow: 0 0 25px rgba(34, 197, 94, 0.15);
+  }
+
+  .status-badge.processing {
+    box-shadow: 0 0 25px rgba(139, 92, 246, 0.15);
+  }
+
+  .status-badge.shipped {
+    box-shadow: 0 0 25px rgba(59, 130, 246, 0.15);
+  }
+
+  .status-badge.cancelled {
+    box-shadow: 0 0 25px rgba(239, 68, 68, 0.15);
+  }
+
+  .status-completed {
+    border-color: rgba(34, 197, 94, 0.5);
+  }
+
+  /* Enhanced KV pairs */
+  .kv {
+    padding: 1rem 0;
+    border-bottom-width: 2px;
+    gap: 1.25rem;
+  }
+
+  .kv:last-child {
+    padding-bottom: 0;
+  }
+
+  .k {
+    font-size: 0.85rem;
+    font-weight: 600;
+    min-width: 100px;
+  }
+
+  .v {
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+
+  .kv.total {
+    border-top-width: 2px;
+    padding-top: 1rem;
+    margin-top: 0.75rem;
+  }
+
+  .kv.total .v {
+    font-size: 1.2rem;
+    font-weight: 800;
+  }
+
+  .address {
+    line-height: 1.5;
+    font-size: 0.95rem;
+  }
+
+  .note {
+    line-height: 1.6;
+    font-size: 0.95rem;
+    font-style: italic;
+  }
+
+  /* Enhanced empty state */
+  .orders-empty-state {
+    padding: 5rem 3rem;
+    border-radius: 24px;
+    backdrop-filter: blur(25px);
+    border-width: 2px;
+  }
+
+  .empty-icon {
+    font-size: 5rem;
+    margin-bottom: 1.5rem;
+    opacity: 0.6;
+  }
+
+  .orders-empty-state h3 {
+    font-size: 1.75rem;
+    font-weight: 800;
+    margin-bottom: 0.75rem;
+  }
+
+  .orders-empty-state p {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+    line-height: 1.7;
+  }
+
+  /* Enhanced loading container */
+  .loading-container {
+    gap: 2.5rem;
+    padding: 5rem 0;
+    background: radial-gradient(circle at center, rgba(0, 212, 255, 0.08) 0%, transparent 70%);
+  }
+
+  /* Enhanced sci-fi loader */
+  .sci-fi-loader {
+    width: 70px;
+    height: 70px;
+  }
+
+  .hexagon-grid {
+    gap: 5px;
+  }
+
+  .hexagon {
+    width: 10px;
+    height: 10px;
+    border-width: 2px;
+  }
+
+  .circuit-core {
+    width: 20px;
+    height: 20px;
+  }
+
+  .inner-core {
+    width: 10px;
+    height: 10px;
+    box-shadow:
+      0 0 12px #00d4ff,
+      0 0 24px #00d4ff,
+      0 0 36px #00d4ff;
+  }
+
+  .core-ring {
+    width: 20px;
+    height: 20px;
+    border-width: 2px;
+  }
+
+  .scanning-beam {
+    width: 3px;
+    height: 35px;
+    box-shadow: 0 0 10px #00d4ff;
+  }
+
+  .ring-1 {
+    width: 48px;
+    height: 48px;
+    border-width: 2px;
+  }
+
+  .ring-2 {
+    width: 65px;
+    height: 65px;
+    border-width: 2px;
+  }
+
+  .ring-3 {
+    width: 82px;
+    height: 82px;
+    border-width: 2px;
+  }
+
+  .data-stream {
+    top: -30px;
+    width: 120px;
+    height: 15px;
+  }
+
+  .data-bits span {
+    font-size: 0.6rem;
+    text-shadow: 0 0 4px rgba(0, 212, 255, 0.8);
+  }
+
+  /* Enhanced loading text */
+  .loading-text {
+    gap: 0.75rem;
+  }
+
+  .loading-label {
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-shadow: 0 0 12px rgba(0, 212, 255, 0.6);
+  }
+
+  .loading-dots {
+    gap: 5px;
+    margin: 0.75rem 0;
+  }
+
+  .loading-dots span {
+    width: 8px;
+    height: 8px;
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.8);
+  }
+
+  .loading-subtitle {
+    font-size: 0.95rem;
+    font-weight: 600;
+    opacity: 0.9;
+  }
+
+  /* Enhanced neon spinner */
+  .neon-spinner {
+    width: 70px;
+    height: 70px;
+    margin-bottom: 2.5rem;
+  }
+
+  .spinner-ring {
+    border-width: 4px;
+    border-top-width: 4px;
+    box-shadow:
+      0 0 12px rgba(0, 212, 255, 0.6),
+      0 0 24px rgba(0, 212, 255, 0.4),
+      0 0 36px rgba(0, 212, 255, 0.2);
+  }
+
+  .spinner-ring::before {
+    border-width: 2px;
+  }
+
+  /* Enhanced simple loading */
+  .orders-loading {
+    padding: 5rem 3rem;
+  }
+
+  .orders-loading .loading-spinner {
+    width: 48px;
+    height: 48px;
+    border-width: 4px;
+    margin-bottom: 1.5rem;
+  }
+
+  .orders-loading p {
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+}
