@@ -447,15 +447,23 @@ const AdminUserDetail: React.FC = () => {
 
     const { user, models, stats } = adminGalleryData;
 
+    // Calculate total likes from all photos
+    const totalLikes = models.reduce((total, model) => {
+      return total + model.photos.reduce((modelLikes, photo) => {
+        return modelLikes + (photo.likesCount || 0);
+      }, 0);
+    }, 0);
+
     return (
       <div className="admin-gallery-content">
         <div className="gallery-header">
-          <h2>Admin Gallery: {user.firstName} {user.lastName}</h2>
-          <p>Email: {user.email}</p>
+          <h2>🎨 Admin Gallery: {user.firstName} {user.lastName}</h2>
+          <p>📧 {user.email}</p>
           <div className="gallery-stats">
-            <span className="stat-item">Total: {stats.totalPhotos}</span>
-            <span className="stat-item">Public: {stats.publicPhotos}</span>
-            <span className="stat-item">Private: {stats.privatePhotos}</span>
+            <span className="stat-item stat-total">Total: {stats.totalPhotos}</span>
+            <span className="stat-item stat-public">Public: {stats.publicPhotos}</span>
+            <span className="stat-item stat-private">Private: {stats.privatePhotos}</span>
+            <span className="stat-item stat-likes">Likes: {totalLikes}</span>
           </div>
         </div>
 
@@ -463,9 +471,9 @@ const AdminUserDetail: React.FC = () => {
         {models.length > 0 && (
           <div className="bulk-actions">
             <div className="selection-info">
-              <span>{selectedPhotos.size} of {models.reduce((sum, model) => sum + model.photos.length, 0)} photos selected</span>
-              <button onClick={selectAllPhotos} className="btn btn-sm btn-outline">Select All</button>
-              <button onClick={clearSelection} className="btn btn-sm btn-outline">Clear</button>
+              <span>📊 {selectedPhotos.size} of {models.reduce((sum, model) => sum + model.photos.length, 0)} photos selected</span>
+              <button onClick={selectAllPhotos} className="btn btn-sm btn-outline">✅ Select All</button>
+              <button onClick={clearSelection} className="btn btn-sm btn-outline">❌ Clear</button>
             </div>
             <div className="bulk-buttons">
               <button 
@@ -473,21 +481,21 @@ const AdminUserDetail: React.FC = () => {
                 disabled={selectedPhotos.size === 0 || bulkActionLoading}
                 className="btn btn-sm btn-info"
               >
-                Make Public
+                🌐 Make Public
               </button>
               <button 
                 onClick={() => handleBulkAction('make_private')} 
                 disabled={selectedPhotos.size === 0 || bulkActionLoading}
                 className="btn btn-sm btn-secondary"
               >
-                Make Private
+                🔒 Make Private
               </button>
               <button 
                 onClick={() => handleBulkAction('delete')} 
                 disabled={selectedPhotos.size === 0 || bulkActionLoading}
                 className="btn btn-sm btn-danger"
               >
-                Delete Selected
+                🗑️ Delete Selected
               </button>
             </div>
           </div>

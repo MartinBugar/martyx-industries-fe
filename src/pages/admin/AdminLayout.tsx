@@ -82,7 +82,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ title, children, navTabs }) =
           >
             ☰
           </button>
-          <h1 className="admin-topbar-title">Products</h1>
+          <h1 className="admin-topbar-title">{title || 'Admin Panel'}</h1>
           {navTabs && navTabs}
         </header>
         <section className="admin-main">
