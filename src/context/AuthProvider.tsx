@@ -262,6 +262,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const updatedProfileData = await profileService.updateProfile(user.id, {
         firstName: profileData.firstName,
         lastName: profileData.lastName,
+        username: profileData.username,
         phone: profileData.phone,
         address: profileData.address
       });

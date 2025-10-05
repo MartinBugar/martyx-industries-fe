@@ -15,7 +15,10 @@
       "Bash(node:*)",
       "Bash(npm install:*)",
       "Bash(tsc:*)",
-      "Bash(npx eslint:*)"
+      "Bash(npx eslint:*)",
+      "Bash(git checkout:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nAdd User Gallery feature - Community photo gallery\n\nImplemented complete User Gallery feature allowing users to view public model photos from the community:\n\nFeatures:\n- User cards grid with filters (All/Completed) and sorting (Recent/Most Photos/Alphabetic/Most Liked)\n- Individual user gallery pages with photos grouped by models\n- Fullscreen lightbox with navigation and like functionality\n- Like/unlike photos system (prepared for backend)\n- Responsive design for mobile/tablet/desktop\n- Avatar placeholders (first letter of nickname)\n- Pagination support (20 users per page)\n- Loading and error states\n- SEO-friendly URLs (/gallery/:userId)\n\nComponents:\n- UserGallery.tsx - Main gallery page with user grid\n- UserCard.tsx - User card component\n- UserGalleryDetail.tsx - Individual user gallery page\n- Lightbox.tsx - Fullscreen photo viewer\n- Complete CSS styling for all components\n\nBackend Integration:\n- userGalleryService.ts - API service layer\n- userGallery.ts - TypeScript types\n- BACKEND_USER_GALLERY_API.md - Complete API specification for backend implementation\n\nRouting & Navigation:\n- Added \"Gallery\" tab to Navbar\n- Routes: /gallery and /gallery/:userId\n- Lazy loading for performance\n\nTranslations:\n- Added SK and EN translations in gallery.json\n- Updated nav.json with gallery link\n\nStatus: Frontend complete, waiting for backend API implementation\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
     ],
     "deny": [],
     "ask": []

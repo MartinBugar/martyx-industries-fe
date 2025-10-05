@@ -11,9 +11,9 @@ interface UserCardProps {
 const UserCard: React.FC<UserCardProps> = ({ user }) => {
   const { t } = useTranslation('gallery');
 
-  // Generate avatar placeholder from first letter of nickname
+  // Generate avatar placeholder from first letter of username
   const getAvatarPlaceholder = () => {
-    return user.nickname?.charAt(0).toUpperCase() || '?';
+    return user.username?.charAt(0).toUpperCase() || '?';
   };
 
   return (
@@ -23,7 +23,7 @@ const UserCard: React.FC<UserCardProps> = ({ user }) => {
         {user.avatar_url ? (
           <img
             src={user.avatar_url}
-            alt={user.nickname}
+            alt={user.username}
             onError={(e) => {
               // Fallback to placeholder if image fails to load
               const target = e.target as HTMLImageElement;
@@ -39,7 +39,7 @@ const UserCard: React.FC<UserCardProps> = ({ user }) => {
 
       {/* User Info */}
       <div className="user-info">
-        <h3 className="user-nickname">{user.nickname}</h3>
+        <h3 className="user-username">{user.username}</h3>
         <div className="user-stats">
           <span>{user.total_public_models} {t('card.models')}</span>
           <span className="divider">•</span>

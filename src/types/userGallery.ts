@@ -7,7 +7,7 @@ export interface PreviewPhoto {
 
 export interface PublicUser {
   user_id: number;
-  nickname: string;
+  username: string;
   avatar_url: string | null;
   total_public_models: number;
   total_public_photos: number;
@@ -37,7 +37,7 @@ export interface UserGalleryData {
 
 export interface UserProfile {
   user_id: number;
-  nickname: string;
+  username: string;
   avatar_url: string | null;
   member_since: string;
   total_public_models: number;
@@ -93,7 +93,7 @@ export interface LikePhotoResponse {
 export interface Comment {
   id: number;
   user_id: number;
-  user_nickname: string;
+  user_username: string;
   user_avatar_url: string | null;
   comment_text: string;
   created_at: string;

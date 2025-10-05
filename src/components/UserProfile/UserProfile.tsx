@@ -5,6 +5,7 @@ import './UserProfile.css';
 interface UserProfileFormData {
   firstName: string;
   lastName: string;
+  username: string;
   phone: string;
   street: string;
   city: string;
@@ -24,6 +25,7 @@ const UserProfile: React.FC = () => {
   const [formData, setFormData] = useState<UserProfileFormData>({
     firstName: user?.firstName || '',
     lastName: user?.lastName || '',
+    username: user?.username || '',
     phone: user?.phone || '',
     street: user?.address?.street || '',
     city: user?.address?.city || '',
@@ -66,6 +68,7 @@ const UserProfile: React.FC = () => {
       setFormData({
         firstName: user.firstName || '',
         lastName: user.lastName || '',
+        username: user.username || '',
         phone: user.phone || '',
         street: user.address?.street || '',
         city: user.address?.city || '',
@@ -102,6 +105,7 @@ const UserProfile: React.FC = () => {
       const success = await updateProfile({
         firstName: formData.firstName,
         lastName: formData.lastName,
+        username: formData.username,
         phone: formData.phone,
         address: {
           street: formData.street,
@@ -136,6 +140,7 @@ const UserProfile: React.FC = () => {
       setFormData({
         firstName: user?.firstName || '',
         lastName: user?.lastName || '',
+        username: user?.username || '',
         phone: user?.phone || '',
         street: user?.address?.street || '',
         city: user?.address?.city || '',
@@ -209,6 +214,10 @@ const UserProfile: React.FC = () => {
                       ? `${user.firstName} ${user.lastName}`
                       : user.name || 'Not provided'}
                   </div>
+                </div>
+                <div className="profile-field">
+                  <div className="field-label">Username</div>
+                  <div className="field-value">{user.username || 'Not provided'}</div>
                 </div>
                 <div className="profile-field">
                   <div className="field-label">Phone</div>
@@ -299,7 +308,7 @@ const UserProfile: React.FC = () => {
                       disabled={isLoading}
                     />
                   </div>
-                  
+
                   <div className="form-group">
                     <label htmlFor="lastName">Last Name</label>
                     <input
@@ -313,7 +322,20 @@ const UserProfile: React.FC = () => {
                     />
                   </div>
                 </div>
-                
+
+                <div className="form-group">
+                  <label htmlFor="username">Username <span className="optional-label">(optional)</span></label>
+                  <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    value={formData.username}
+                    onChange={handleInputChange}
+                    placeholder="Enter username"
+                    disabled={isLoading}
+                  />
+                </div>
+
                 <div className="form-group">
                   <label htmlFor="phone">Phone</label>
                   <input
