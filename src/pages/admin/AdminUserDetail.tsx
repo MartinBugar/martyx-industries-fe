@@ -546,7 +546,7 @@ const AdminUserDetail: React.FC = () => {
                             <input
                               type="checkbox"
                               checked={model.isPublic}
-                              onChange={(e) => handleModelAction(model.productId, 'toggle_public')}
+                              onChange={() => handleModelAction(model.productId, 'toggle_public')}
                               disabled={modelActionLoading.has(model.productId)}
                               className="toggle-checkbox"
                             />
@@ -559,7 +559,7 @@ const AdminUserDetail: React.FC = () => {
                             <input
                               type="checkbox"
                               checked={model.isCompleted}
-                              onChange={(e) => handleModelAction(model.productId, 'toggle_completed')}
+                              onChange={() => handleModelAction(model.productId, 'toggle_completed')}
                               disabled={modelActionLoading.has(model.productId)}
                               className="toggle-checkbox"
                             />
