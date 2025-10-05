@@ -18,47 +18,50 @@ const UserCard: React.FC<UserCardProps> = ({ user }) => {
 
   return (
     <Link to={`/gallery/${user.user_id}`} className="user-card">
-      {/* Avatar */}
-      <div className="user-avatar">
-        {user.avatar_url ? (
-          <img
-            src={user.avatar_url}
-            alt={user.username}
-            onError={(e) => {
-              // Fallback to placeholder if image fails to load
-              const target = e.target as HTMLImageElement;
-              target.style.display = 'none';
-              target.nextElementSibling?.classList.remove('hidden');
-            }}
-          />
-        ) : null}
-        <div className={`avatar-placeholder ${user.avatar_url ? 'hidden' : ''}`}>
-          {getAvatarPlaceholder()}
-        </div>
-      </div>
-
-      {/* User Info */}
-      <div className="user-info">
-        <h3 className="user-username">{user.username}</h3>
-        <div className="user-stats">
-          <span>{user.total_public_models} {t('card.models')}</span>
-          <span className="divider">•</span>
-          <span>{user.total_public_photos} {t('card.photos')}</span>
-        </div>
-        {user.total_likes !== undefined && user.total_likes > 0 && (
-          <div className="user-likes">
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              className="heart-icon"
-            >
-              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-            </svg>
-            <span>{user.total_likes}</span>
+      {/* Header with Avatar and Info */}
+      <div className="user-card-header">
+        {/* Avatar */}
+        <div className="user-avatar">
+          {user.avatar_url ? (
+            <img
+              src={user.avatar_url}
+              alt={user.username}
+              onError={(e) => {
+                // Fallback to placeholder if image fails to load
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+                target.nextElementSibling?.classList.remove('hidden');
+              }}
+            />
+          ) : null}
+          <div className={`avatar-placeholder ${user.avatar_url ? 'hidden' : ''}`}>
+            {getAvatarPlaceholder()}
           </div>
-        )}
+        </div>
+
+        {/* User Info */}
+        <div className="user-info">
+          <h3 className="user-username">{user.username}</h3>
+          <div className="user-stats">
+            <span>{user.total_public_models} {t('card.models')}</span>
+            <span className="divider">•</span>
+            <span>{user.total_public_photos} {t('card.photos')}</span>
+          </div>
+          {user.total_likes !== undefined && user.total_likes > 0 && (
+            <div className="user-likes">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="heart-icon"
+              >
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+              </svg>
+              <span>{user.total_likes}</span>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Photo Preview Grid (2x2 or up to 4 thumbnails) */}
