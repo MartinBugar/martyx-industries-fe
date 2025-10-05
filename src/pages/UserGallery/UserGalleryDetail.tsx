@@ -101,7 +101,13 @@ const UserGalleryDetail: React.FC = () => {
 
   // Open lightbox with photos from specific model
   const openLightbox = (photos: PublicPhoto[], startIndex: number) => {
-    setLightboxPhotos(photos);
+    // Add username to photos for lightbox
+    const photosWithUsername = photos.map(photo => ({
+      ...photo,
+      username: userData?.username,
+      user_id: userData?.user_id
+    }));
+    setLightboxPhotos(photosWithUsername);
     setLightboxIndex(startIndex);
     setLightboxOpen(true);
     document.body.style.overflow = 'hidden';

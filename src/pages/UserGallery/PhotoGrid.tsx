@@ -71,14 +71,17 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ photos, onPhotoLikeChange }) => {
     }
   };
 
-  // Convert PublicPhotoWithUser to PublicPhoto for Lightbox
-  const convertToPublicPhoto = (photo: PublicPhotoWithUser): PublicPhoto => ({
+  // Convert PublicPhotoWithUser to LightboxPhoto
+  const convertToLightboxPhoto = (photo: PublicPhotoWithUser) => ({
     id: photo.id,
     cdn_url: photo.cdn_url,
     thumbnail_url: photo.thumbnail_url,
     upload_date: photo.upload_date,
     is_liked_by_user: photo.is_liked_by_user,
-    likes_count: photo.likes_count
+    likes_count: photo.likes_count,
+    comments_count: 0,
+    username: photo.username,
+    user_id: photo.user_id
   });
 
   if (photos.length === 0) {
@@ -129,7 +132,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ photos, onPhotoLikeChange }) => {
       {/* Fullscreen Lightbox */}
       {lightboxOpen && (
         <Lightbox
-          photos={localPhotos.map(convertToPublicPhoto)}
+          photos={localPhotos.map(convertToLightboxPhoto)}
           currentIndex={lightboxIndex}
           onClose={closeLightbox}
           onNavigate={setLightboxIndex}
