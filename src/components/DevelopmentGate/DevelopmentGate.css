@@ -4,25 +4,135 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: linear-gradient(135deg, #213547 0%, #1a2838 100%);
+  background: var(--background);
   display: flex;
-  align-items: center;
-  justify-content: center;
   z-index: 10000;
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   color: #ffffff;
+  overflow: hidden;
+}
+
+/* Left side - Cassandra Image */
+.gate-left {
+  flex: 1;
+  position: relative;
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(0, 0, 0, 0.4) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.gate-cassandra-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem;
+}
+
+.gate-cassandra-image {
+  max-width: 100%;
+  max-height: 90vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 0 80px rgba(255, 215, 0, 0.4));
+  animation: cassandraGateFloat 6s ease-in-out infinite;
+  position: relative;
+  z-index: 2;
+}
+
+@keyframes cassandraGateFloat {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-25px) scale(1.03);
+  }
+}
+
+.gate-gradient-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.2) 0%, transparent 60%),
+    linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Right side - Access Form */
+.gate-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  position: relative;
+  background:
+    radial-gradient(circle at 80% 20%, rgba(255, 215, 0, 0.08) 0%, transparent 50%),
+    linear-gradient(135deg, var(--background) 0%, var(--surface) 100%);
+}
+
+/* Animated background grid for right side */
+.gate-right::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    linear-gradient(rgba(255, 215, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 215, 0, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  animation: gateGridMove 20s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes gateGridMove {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(50px, 50px); }
 }
 
 .gate-content {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
+  background: rgba(10, 15, 18, 0.85);
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
   padding: 3rem;
   max-width: 500px;
   width: 90%;
   text-align: center;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 215, 0, 0.25);
+  box-shadow:
+    0 0 0 1px rgba(255, 215, 0, 0.15),
+    0 20px 40px rgba(0, 0, 0, 0.4),
+    0 0 100px rgba(255, 215, 0, 0.15);
+  animation: gateCardGlow 3s ease-in-out infinite alternate;
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes gateCardGlow {
+  0% {
+    box-shadow:
+      0 0 0 1px rgba(255, 215, 0, 0.15),
+      0 20px 40px rgba(0, 0, 0, 0.4),
+      0 0 100px rgba(255, 215, 0, 0.15);
+  }
+  100% {
+    box-shadow:
+      0 0 0 1px rgba(255, 215, 0, 0.25),
+      0 20px 40px rgba(0, 0, 0, 0.5),
+      0 0 120px rgba(255, 215, 0, 0.2);
+  }
 }
 
 .gate-header {
@@ -31,20 +141,24 @@
 
 .gate-header h1 {
   font-size: 2.5rem;
-  font-weight: bold;
+  font-weight: 700;
   margin: 0.5rem 0;
   color: #ffffff;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-  letter-spacing: 2px;
+  background: linear-gradient(135deg, #ffffff 0%, #ffd700 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+  letter-spacing: 3px;
 }
 
 .gate-header h2 {
   font-size: 1.2rem;
-  color: #4caf50;
+  color: #ffd700;
   margin: 0;
-  font-weight: normal;
+  font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 2px;
 }
 
 .gate-message {
@@ -78,9 +192,9 @@
 .input-group input {
   width: 100%;
   padding: 12px 16px;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  border-radius: 12px;
+  background: rgba(31, 37, 56, 0.6);
   color: #ffffff;
   font-size: 1rem;
   transition: all 0.3s ease;
@@ -89,9 +203,11 @@
 
 .input-group input:focus {
   outline: none;
-  border-color: #4caf50;
-  background: rgba(255, 255, 255, 0.12);
-  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+  border-color: #ffd700;
+  background: rgba(255, 215, 0, 0.08);
+  box-shadow:
+    0 0 0 3px rgba(255, 215, 0, 0.2),
+    0 0 20px rgba(255, 215, 0, 0.15);
 }
 
 .input-group input::placeholder {
@@ -113,27 +229,45 @@
 .access-button {
   width: 100%;
   padding: 14px 24px;
-  background: #4caf50;
-  color: #ffffff;
+  background: linear-gradient(135deg, #ffd700 0%, #daa520 100%);
+  color: #0a0a0a;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 1.1rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
+  position: relative;
+  overflow: hidden;
+}
+
+.access-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.access-button:hover::before {
+  left: 100%;
 }
 
 .access-button:hover {
-  background: #45a049;
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
+  box-shadow:
+    0 10px 25px rgba(255, 215, 0, 0.4),
+    0 0 30px rgba(255, 215, 0, 0.3);
 }
 
 .access-button:active {
   transform: translateY(0);
-  box-shadow: 0 4px 10px rgba(76, 175, 80, 0.2);
+  box-shadow: 0 4px 10px rgba(255, 215, 0, 0.2);
 }
 
 .gate-footer {
@@ -150,10 +284,100 @@
 
 /* Responsive design */
 
+/* Tablet and below - stack vertically */
+@media (max-width: 1024px) {
+  .development-gate {
+    flex-direction: column;
+  }
+
+  .gate-left {
+    min-height: 40vh;
+    max-height: 50vh;
+  }
+
+  .gate-cassandra-wrapper {
+    padding: 2rem;
+  }
+
+  .gate-cassandra-image {
+    max-height: 40vh;
+  }
+
+  .gate-right {
+    padding: 2rem 1rem;
+  }
+
+  .gate-content {
+    max-width: 500px;
+  }
+}
+
+/* Mobile - iPhone 15 and similar */
+@media (max-width: 430px) {
+  .development-gate {
+    flex-direction: column;
+  }
+
+  .gate-left {
+    min-height: 30vh;
+    max-height: 35vh;
+  }
+
+  .gate-cassandra-wrapper {
+    padding: 1rem;
+  }
+
+  .gate-cassandra-image {
+    max-height: 30vh;
+  }
+
+  .gate-right {
+    padding: 1.5rem 1rem;
+  }
+
+  .gate-content {
+    padding: 2rem 1.5rem;
+    max-width: 100%;
+    border-radius: 20px;
+  }
+
+  .gate-header h1 {
+    font-size: 1.8rem;
+    letter-spacing: 2px;
+  }
+
+  .gate-header h2 {
+    font-size: 1rem;
+    letter-spacing: 1.5px;
+  }
+
+  .gate-message p {
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .input-group label {
+    font-size: 0.9rem;
+  }
+
+  .input-group input {
+    padding: 10px 14px;
+    font-size: 0.95rem;
+  }
+
+  .access-button {
+    padding: 12px 20px;
+    font-size: 1rem;
+    letter-spacing: 1px;
+  }
+
+  .gate-footer p {
+    font-size: 0.85rem;
+  }
+}
+
 /* MacBook Air M2 14" - specific optimization */
-/* Aspect ratio 16:10.4 typical for MacBook Air 14" */
-@media (min-width: 1400px) and (max-width: 1600px) and (min-height: 900px) and (max-height: 1100px),
-       (min-aspect-ratio: 15/10) and (max-aspect-ratio: 16/10) and (min-width: 1400px) and (max-width: 1600px) {
+@media (min-width: 1400px) and (max-width: 1600px) and (min-height: 900px) and (max-height: 1100px) {
   .gate-content {
     max-width: 550px;
     padding: 3.5rem;
@@ -198,8 +422,8 @@
   }
 }
 
-/* Tablets and small laptops */
-@media (min-width: 768px) and (max-width: 1200px) {
+/* Tablets */
+@media (min-width: 768px) and (max-width: 1024px) {
   .gate-content {
     max-width: 480px;
     padding: 2.5rem;

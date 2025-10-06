@@ -36,20 +36,34 @@ const DevelopmentGate: React.FC<DevelopmentGateProps> = ({ onAccess }) => {
 
   return (
     <div className="development-gate">
-      <div className="gate-content">
-        <div className="gate-header">
-          <h1>MARTYX INDUSTRIES</h1>
-          <h2>Vývojová verzia</h2>
+      {/* Left side - Cassandra Image */}
+      <div className="gate-left">
+        <div className="gate-cassandra-wrapper">
+          <img
+            src="/cassandra/Cassandra-life.png"
+            alt="Cassandra"
+            className="gate-cassandra-image"
+          />
+          <div className="gate-gradient-overlay"></div>
         </div>
+      </div>
 
-        <div className="gate-message">
-          <p>
-            Táto webová stránka je momentálne v procese vývoja.
-            Pre prístup zadajte heslo.
-          </p>
-        </div>
+      {/* Right side - Access Form */}
+      <div className="gate-right">
+        <div className="gate-content">
+          <div className="gate-header">
+            <h1>MARTYX INDUSTRIES</h1>
+            <h2>Vývojová verzia</h2>
+          </div>
 
-        <form onSubmit={handleSubmit} className="gate-form">
+          <div className="gate-message">
+            <p>
+              Táto webová stránka je momentálne v procese vývoja.
+              Pre prístup zadajte heslo.
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="gate-form">
           <div className="input-group">
             <label htmlFor="password">Heslo:</label>
             <input
@@ -71,6 +85,7 @@ const DevelopmentGate: React.FC<DevelopmentGateProps> = ({ onAccess }) => {
 
         <div className="gate-footer">
           <p>© 2024 MARTYX INDUSTRIES</p>
+        </div>
         </div>
       </div>
     </div>
