@@ -407,7 +407,7 @@ const AdminDashboard: React.FC = () => {
                                     <h3 className="card-title">Top Countries</h3>
                                     {visitorAnalytics?.topCountries && visitorAnalytics.topCountries.length > 0 ? (
                                         <div className="countries-list">
-                                            {visitorAnalytics.topCountries.slice(0, 2).map((country) => (
+                                            {visitorAnalytics.topCountries.map((country) => (
                                                 <ProgressRow
                                                     key={country.countryCode}
                                                     code={country.countryCode}
