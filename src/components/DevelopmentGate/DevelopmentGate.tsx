@@ -40,7 +40,7 @@ const DevelopmentGate: React.FC<DevelopmentGateProps> = ({ onAccess }) => {
       <div className="gate-left">
         <div className="gate-cassandra-wrapper">
           <img
-            src="/cassandra/Cassandra-life.png"
+            src="/cassandra/Home-Cass.png"
             alt="Cassandra"
             className="gate-cassandra-image"
           />
