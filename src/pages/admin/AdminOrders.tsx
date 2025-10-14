@@ -2,7 +2,7 @@ import React, {useEffect, useMemo, useState} from 'react';
 import { Link } from 'react-router-dom';
 import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
-import {adminOrdersService, type AdminOrderDTO, type AdminOrderItem} from '../../services/adminOrdersService';
+import {adminOrdersService, type AdminOrderDTO, type AdminOrderItem, type PageResponse} from '../../services/adminOrdersService';
 
 const fieldInputStyle: React.CSSProperties = {
     width: '100%',
@@ -32,6 +32,11 @@ const AdminOrders: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
+    // Pagination state
+    const [page, setPage] = useState<number>(0);
+    const [totalPages, setTotalPages] = useState<number>(1);
+    const [totalElements, setTotalElements] = useState<number>(0);
+
     // Tab navigation state
     const [activeTab, setActiveTab] = useState<'all-orders' | 'create-order'>('all-orders');
 
@@ -56,12 +61,15 @@ const AdminOrders: React.FC = () => {
         return orders.filter(o => `${o.orderNumber ?? ''} ${o.userEmail ?? ''} ${o.status ?? ''}`.toLowerCase().includes(q));
     }, [orders, query]);
 
-    const loadOrders = async () => {
+    const loadOrders = async (pageNum: number = page) => {
         setLoading(true);
         setError(null);
         try {
-            const data = await adminOrdersService.getAllOrders();
-            setOrders(data);
+            const pageResponse: PageResponse<AdminOrderDTO> = await adminOrdersService.getAllOrders(pageNum, 20, 'id', 'DESC');
+            setOrders(pageResponse.content);
+            setTotalPages(pageResponse.totalPages);
+            setTotalElements(pageResponse.totalElements);
+            setPage(pageResponse.number);
         } catch (e: unknown) {
             const msg = e instanceof Error ? e.message : 'Failed to load orders';
             setError(msg);
@@ -71,7 +79,7 @@ const AdminOrders: React.FC = () => {
     };
 
     useEffect(() => {
-        loadOrders();
+        loadOrders(0);
     }, []);
 
     const formatDateTime = (value?: string): string => {
@@ -853,6 +861,34 @@ const AdminOrders: React.FC = () => {
                                     </tbody>
                                 </table>
                             </div>
+
+                            {/* Pagination Controls */}
+                            {totalPages > 1 && (
+                                <div className="pagination-controls" style={{ marginTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <div style={{ fontSize: '14px', color: '#6b7280' }}>
+                                        Showing {orders.length > 0 ? (page * 20 + 1) : 0} - {Math.min((page + 1) * 20, totalElements)} of {totalElements} orders
+                                    </div>
+                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                        <button
+                                            className="btn btn-outline btn-sm"
+                                            onClick={() => loadOrders(page - 1)}
+                                            disabled={page === 0 || loading}
+                                        >
+                                            Previous
+                                        </button>
+                                        <span style={{ padding: '8px 12px', fontSize: '14px', color: '#374151' }}>
+                                            Page {page + 1} of {totalPages}
+                                        </span>
+                                        <button
+                                            className="btn btn-outline btn-sm"
+                                            onClick={() => loadOrders(page + 1)}
+                                            disabled={page >= totalPages - 1 || loading}
+                                        >
+                                            Next
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
                         </>
                     )}
                 </div>

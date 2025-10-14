@@ -39,16 +39,54 @@ export interface AdminOrderDTO {
   [key: string]: unknown;
 }
 
+// Spring Data Page response interface
+export interface PageResponse<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+  first: boolean;
+  last: boolean;
+}
+
 const jsonHeaders = () => defaultHeaders as HeadersInit;
 
 export const adminOrdersService = {
-  async getAllOrders(): Promise<AdminOrderDTO[]> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/orders`, {
+  async getAllOrders(
+    page: number = 0,
+    size: number = 20,
+    sortBy: string = 'id',
+    sortDir: string = 'DESC'
+  ): Promise<PageResponse<AdminOrderDTO>> {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+      sortBy,
+      sortDir
+    });
+
+    const resp = await fetch(`${API_BASE_URL}/api/admin/orders?${params}`, {
       method: 'GET',
       headers: jsonHeaders(),
     });
     const data = await handleResponse(resp);
-    return Array.isArray(data) ? (data as AdminOrderDTO[]) : [];
+
+    // If backend returns paginated response, return it; otherwise wrap in page structure
+    if (data && typeof data === 'object' && 'content' in data) {
+      return data as PageResponse<AdminOrderDTO>;
+    }
+
+    // Fallback for non-paginated response (backward compatibility)
+    return {
+      content: Array.isArray(data) ? data : [],
+      totalElements: Array.isArray(data) ? data.length : 0,
+      totalPages: 1,
+      size: Array.isArray(data) ? data.length : 0,
+      number: 0,
+      first: true,
+      last: true
+    };
   },
 
   async getOrderById(id: string | number): Promise<AdminOrderDTO> {
