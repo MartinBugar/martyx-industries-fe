@@ -38,14 +38,11 @@ const DevelopmentGate: React.FC<DevelopmentGateProps> = ({ onAccess }) => {
     <div className="development-gate">
       {/* Left side - Cassandra Image */}
       <div className="gate-left">
-        <div className="gate-cassandra-wrapper">
-          <img
-            src="/cassandra/Home-Cass.png"
-            alt="Cassandra"
-            className="gate-cassandra-image"
-          />
-          <div className="gate-gradient-overlay"></div>
-        </div>
+        <img
+          src="/cassandra/Home-Cass.png"
+          alt="Cassandra"
+          className="gate-cassandra-image"
+        />
       </div>
 
       {/* Right side - Access Form */}

@@ -4,7 +4,9 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: var(--background);
+  background:
+    radial-gradient(circle at 80% 20%, rgba(255, 215, 0, 0.08) 0%, transparent 50%),
+    linear-gradient(135deg, var(--background) 0%, var(--surface) 100%);
   display: flex;
   z-index: 10000;
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -12,66 +14,8 @@
   overflow: hidden;
 }
 
-/* Left side - Cassandra Image */
-.gate-left {
-  flex: 1;
-  position: relative;
-  background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(0, 0, 0, 0.4) 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-.gate-cassandra-wrapper {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 4rem;
-}
-
-.gate-cassandra-image {
-  max-width: 100%;
-  max-height: 90vh;
-  width: auto;
-  height: auto;
-  object-fit: contain;
-  filter: drop-shadow(0 0 80px rgba(255, 215, 0, 0.4));
-  position: relative;
-  z-index: 2;
-}
-
-.gate-gradient-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background:
-    radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.2) 0%, transparent 60%),
-    linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, transparent 50%);
-  pointer-events: none;
-  z-index: 1;
-}
-
-/* Right side - Access Form */
-.gate-right {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-  position: relative;
-  background:
-    radial-gradient(circle at 80% 20%, rgba(255, 215, 0, 0.08) 0%, transparent 50%),
-    linear-gradient(135deg, var(--background) 0%, var(--surface) 100%);
-}
-
-/* Animated background grid for right side */
-.gate-right::before {
+/* Animated background grid for entire page */
+.development-gate::before {
   content: '';
   position: absolute;
   top: 0;
@@ -85,6 +29,42 @@
   animation: gateGridMove 20s linear infinite;
   pointer-events: none;
   z-index: 0;
+}
+
+/* Left side - Cassandra Image */
+.gate-left {
+  flex: 1;
+  position: relative;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.gate-cassandra-image {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  position: relative;
+  z-index: 2;
+}
+
+.gate-gradient-overlay {
+  display: none;
+}
+
+/* Right side - Access Form */
+.gate-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  position: relative;
+  background: transparent;
 }
 
 @keyframes gateGridMove {
@@ -107,7 +87,7 @@
     0 0 100px rgba(255, 215, 0, 0.15);
   animation: gateCardGlow 3s ease-in-out infinite alternate;
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
 @keyframes gateCardGlow {
@@ -285,10 +265,6 @@
     max-height: 50vh;
   }
 
-  .gate-cassandra-wrapper {
-    padding: 2rem;
-  }
-
   .gate-cassandra-image {
     max-height: 40vh;
   }
@@ -311,10 +287,6 @@
   .gate-left {
     min-height: 30vh;
     max-height: 35vh;
-  }
-
-  .gate-cassandra-wrapper {
-    padding: 1rem;
   }
 
   .gate-cassandra-image {
