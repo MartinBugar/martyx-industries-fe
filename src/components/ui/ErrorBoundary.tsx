@@ -1,4 +1,4 @@
-import React, { Component, ErrorInfo, type ReactNode } from 'react';
+import React, { Component, type ErrorInfo, type ReactNode } from 'react';
 import { AlertTriangle, RefreshCcw } from 'lucide-react';
 import './ErrorBoundary.css';
 
