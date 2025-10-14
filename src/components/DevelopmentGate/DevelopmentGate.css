@@ -38,13 +38,14 @@
   background: transparent;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
+  padding-right: 3rem;
   overflow: hidden;
 }
 
 .gate-cassandra-image {
-  max-width: 100%;
-  max-height: 100%;
+  max-width: 70%;
+  max-height: 80%;
   width: auto;
   height: auto;
   object-fit: contain;
@@ -61,8 +62,9 @@
   flex: 1;
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 2rem;
+  justify-content: flex-start;
+  padding-left: 3rem;
+  padding-right: 2rem;
   position: relative;
   background: transparent;
 }
