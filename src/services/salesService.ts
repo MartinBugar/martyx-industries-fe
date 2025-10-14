@@ -40,7 +40,8 @@ const dayKeyFromDate = (d: Date): string => {
 export const salesService = {
   // Build a daily timeseries of order counts for the last `days` days (including today)
   async getSalesTimeSeries(days: number = 30): Promise<SalesTimeSeriesPoint[]> {
-    const orders = await adminOrdersService.getAllOrders();
+    const ordersPage = await adminOrdersService.getAllOrders(0, 1000); // Get large batch
+    const orders = ordersPage.content;
 
     // Prepare day buckets
     const now = new Date();
@@ -78,7 +79,8 @@ export const salesService = {
 
   // Compute summary over last `days` days
   async getSalesSummary(days: number = 30): Promise<SalesSummary> {
-    const orders = await adminOrdersService.getAllOrders();
+    const ordersPage = await adminOrdersService.getAllOrders(0, 1000); // Get large batch
+    const orders = ordersPage.content;
 
     const now = new Date();
     const start = new Date(now);

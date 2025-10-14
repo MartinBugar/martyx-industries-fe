@@ -413,7 +413,8 @@ const ProductDetail: React.FC = () => {
         const heroImage = galleryImages[0] || product?.gallery?.[0];
         if (!heroImage || !isCDNEnabled()) return;
 
-        const baseName = getBaseNameFromPath(heroImage);
+        const imageUrl = typeof heroImage === 'string' ? heroImage : heroImage.url;
+        const baseName = getBaseNameFromPath(imageUrl);
         const preloadAttrs = getLCPPreloadAttributes(baseName);
 
         // Create and inject preload link

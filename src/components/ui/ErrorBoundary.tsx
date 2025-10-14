@@ -1,4 +1,4 @@
-import React, { Component, ErrorInfo, ReactNode } from 'react';
+import React, { Component, ErrorInfo, type ReactNode } from 'react';
 import { AlertTriangle, RefreshCcw } from 'lucide-react';
 import './ErrorBoundary.css';
 
@@ -66,7 +66,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
               Vyskytla sa neočakávaná chyba. Skúste obnoviť stránku alebo sa vráťte späť.
             </p>
 
-            {process.env.NODE_ENV === 'development' && this.state.error && (
+            {import.meta.env.DEV && this.state.error && (
               <details className="error-boundary-details">
                 <summary>Podrobnosti o chybe</summary>
                 <pre className="error-boundary-stack">
@@ -116,7 +116,7 @@ export const ErrorFallback: React.FC<ErrorFallbackProps> = ({
       <AlertTriangle className="error-fallback-icon" size={32} />
       <h3 className="error-fallback-title">Chyba</h3>
       <p className="error-fallback-message">{message}</p>
-      {error && process.env.NODE_ENV === 'development' && (
+      {error && import.meta.env.DEV && (
         <pre className="error-fallback-error">{error.toString()}</pre>
       )}
       {resetError && (
