@@ -69,3 +69,101 @@
 /*.controls-container {*/
 /*  display: none !important;*/
 /*}*/
+
+/* 3D Model Loading Overlay */
+.model-viewer-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 3D Rotating Cube Spinner */
+.loading-spinner-3d {
+  perspective: 800px;
+  width: 80px;
+  height: 80px;
+  margin-bottom: 20px;
+}
+
+.spinner-cube {
+  width: 60px;
+  height: 60px;
+  position: relative;
+  transform-style: preserve-3d;
+  animation: rotateCube 2s infinite linear;
+  margin: 0 auto;
+}
+
+@keyframes rotateCube {
+  0% {
+    transform: rotateX(0deg) rotateY(0deg);
+  }
+  100% {
+    transform: rotateX(360deg) rotateY(360deg);
+  }
+}
+
+.cube-face {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  opacity: 0.85;
+}
+
+.cube-face.front {
+  transform: translateZ(30px);
+}
+
+.cube-face.back {
+  transform: rotateY(180deg) translateZ(30px);
+}
+
+.cube-face.left {
+  transform: rotateY(-90deg) translateZ(30px);
+}
+
+.cube-face.right {
+  transform: rotateY(90deg) translateZ(30px);
+}
+
+.cube-face.top {
+  transform: rotateX(90deg) translateZ(30px);
+}
+
+.cube-face.bottom {
+  transform: rotateX(-90deg) translateZ(30px);
+}
+
+.loading-text {
+  font-size: 16px;
+  font-weight: 500;
+  color: #4a5568;
+  letter-spacing: 0.5px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}

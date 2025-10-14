@@ -73,6 +73,7 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
                                                  }) => {
     const modelViewerRef = useRef<ModelViewerElement>(null);
     const [isFullscreen, setIsFullscreen] = useState(fullscreen);
+    const [isLoading, setIsLoading] = useState(true);
     const [metalness, setMetalness] = useState(typeof metallicFactor === 'string' ? parseFloat(metallicFactor) : metallicFactor);
     const [roughness, setRoughness] = useState(typeof roughnessFactor === 'string' ? parseFloat(roughnessFactor) : roughnessFactor);
     const [exposureValue, setExposureValue] = useState(typeof exposure === 'string' ? parseFloat(exposure) : exposure);
@@ -166,6 +167,9 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
             if (import.meta.env.DEV) {
                 console.log('Model loaded successfully');
             }
+
+            // Hide loading indicator
+            setIsLoading(false);
 
             // Auto-adjust to desired zoom radius (works in both dev and production)
             setTimeout(() => {
@@ -324,6 +328,11 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
         setIsFullscreen(fullscreen);
     }, [fullscreen]);
 
+    // Reset loading state when model path changes
+    useEffect(() => {
+        setIsLoading(true);
+    }, [modelPath]);
+
     const toggleFullscreen = () => {
         const newFullscreenState = !isFullscreen;
         setIsFullscreen(newFullscreenState);
@@ -347,6 +356,23 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
 
     return (
         <div className={`model-viewer-container${isFullscreen ? ' fullscreen' : ''}`} style={containerStyle}>
+            {/* Loading Overlay */}
+            {isLoading && (
+                <div className="model-viewer-loading">
+                    <div className="loading-spinner-3d">
+                        <div className="spinner-cube">
+                            <div className="cube-face front"></div>
+                            <div className="cube-face back"></div>
+                            <div className="cube-face left"></div>
+                            <div className="cube-face right"></div>
+                            <div className="cube-face top"></div>
+                            <div className="cube-face bottom"></div>
+                        </div>
+                    </div>
+                    <p className="loading-text">Loading 3D Model...</p>
+                </div>
+            )}
+
             {React.createElement('model-viewer', {
                 ref: modelViewerRef,
                 src: modelPath,
