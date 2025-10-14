@@ -1,13 +1,13 @@
 import React from 'react';
-import { LucideIcon } from 'lucide-react';
+import type { LucideProps } from 'lucide-react';
 import './Input.css';
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
   helperText?: string;
-  leftIcon?: LucideIcon;
-  rightIcon?: LucideIcon;
+  leftIcon?: React.ComponentType<LucideProps>;
+  rightIcon?: React.ComponentType<LucideProps>;
   fullWidth?: boolean;
 }
 
