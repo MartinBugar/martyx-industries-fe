@@ -1,0 +1,111 @@
+/* Badge Base Styles */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+/* Badge Sizes */
+.badge-sm {
+  padding: 4px 8px;
+  font-size: 11px;
+  border-radius: 4px;
+}
+
+.badge-md {
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+.badge-lg {
+  padding: 8px 12px;
+  font-size: 13px;
+  border-radius: 8px;
+}
+
+/* Badge Variants */
+.badge-default {
+  background: #f3f4f6;
+  color: #374151;
+  border-color: #e5e7eb;
+}
+
+.badge-success {
+  background: #d1fae5;
+  color: #065f46;
+  border-color: #a7f3d0;
+}
+
+.badge-warning {
+  background: #fef3c7;
+  color: #92400e;
+  border-color: #fde68a;
+}
+
+.badge-danger {
+  background: #fee2e2;
+  color: #991b1b;
+  border-color: #fecaca;
+}
+
+.badge-info {
+  background: #dbeafe;
+  color: #1e40af;
+  border-color: #bfdbfe;
+}
+
+.badge-secondary {
+  background: #f3e8ff;
+  color: #6b21a8;
+  border-color: #e9d5ff;
+}
+
+/* Badge Dot */
+.badge-dot {
+  padding-left: 8px;
+}
+
+.badge-dot-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+.badge-sm.badge-dot {
+  padding-left: 6px;
+}
+
+.badge-sm .badge-dot-indicator {
+  width: 5px;
+  height: 5px;
+}
+
+.badge-lg.badge-dot {
+  padding-left: 10px;
+}
+
+.badge-lg .badge-dot-indicator {
+  width: 7px;
+  height: 7px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .badge-md {
+    padding: 5px 9px;
+    font-size: 11px;
+  }
+
+  .badge-lg {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+}

@@ -23,6 +23,7 @@
     "i18next-http-backend": "^3.0.2",
     "i18next-icu": "^2.4.0",
     "intl-messageformat": "^10.7.16",
+    "lucide-react": "^0.545.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-i18next": "^15.7.3",

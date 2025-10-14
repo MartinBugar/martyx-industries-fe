@@ -1,0 +1,114 @@
+/* Card Base Styles */
+.card {
+  background: white;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+/* Card Variants */
+.card-default {
+  border: 1px solid #e5e7eb;
+}
+
+.card-outlined {
+  border: 2px solid #d1d5db;
+}
+
+.card-elevated {
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.card-elevated:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
+}
+
+/* Card Padding */
+.card-padding-none {
+  padding: 0;
+}
+
+.card-padding-sm {
+  padding: 12px;
+}
+
+.card-padding-md {
+  padding: 20px;
+}
+
+.card-padding-lg {
+  padding: 28px;
+}
+
+/* Card Header */
+.card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.card-padding-none .card-header {
+  padding: 20px 20px 0;
+}
+
+/* Card Title */
+.card-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Card Description */
+.card-description {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Card Content */
+.card-content {
+  color: #374151;
+}
+
+.card-padding-none .card-content {
+  padding: 0 20px;
+}
+
+/* Card Footer */
+.card-footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.card-padding-none .card-footer {
+  padding: 16px 20px 20px;
+  margin-top: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .card-padding-md {
+    padding: 16px;
+  }
+
+  .card-padding-lg {
+    padding: 20px;
+  }
+
+  .card-title {
+    font-size: 16px;
+  }
+
+  .card-description {
+    font-size: 13px;
+  }
+}
