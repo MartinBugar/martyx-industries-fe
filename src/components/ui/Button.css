@@ -52,15 +52,8 @@
   border-color: transparent;
 }
 
-.btn-primary:hover:not(:disabled) {
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-  transform: translateY(-1px);
-}
-
 .btn-primary:active:not(:disabled) {
-  transform: translateY(0);
-  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.2);
+  opacity: 0.9;
 }
 
 .btn-secondary {
@@ -69,11 +62,6 @@
   border-color: transparent;
 }
 
-.btn-secondary:hover:not(:disabled) {
-  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
-  transform: translateY(-1px);
-}
 
 .btn-outline {
   background: white;
@@ -81,11 +69,6 @@
   border-color: #d1d5db;
 }
 
-.btn-outline:hover:not(:disabled) {
-  background: #f9fafb;
-  border-color: #9ca3af;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
 
 .btn-danger {
   background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
@@ -93,11 +76,6 @@
   border-color: transparent;
 }
 
-.btn-danger:hover:not(:disabled) {
-  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-  transform: translateY(-1px);
-}
 
 .btn-info {
   background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
@@ -105,11 +83,6 @@
   border-color: transparent;
 }
 
-.btn-info:hover:not(:disabled) {
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-  transform: translateY(-1px);
-}
 
 .btn-ghost {
   background: transparent;
@@ -117,10 +90,6 @@
   border-color: transparent;
 }
 
-.btn-ghost:hover:not(:disabled) {
-  background: #f3f4f6;
-  color: #374151;
-}
 
 /* Button States */
 .btn-loading {

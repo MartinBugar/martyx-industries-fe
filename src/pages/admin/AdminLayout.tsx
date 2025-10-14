@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { ErrorBoundary } from '../../components/ui';
 import './AdminLayout.css';
 
 interface AdminLayoutProps {
@@ -86,7 +87,9 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ title, children, navTabs }) =
           {navTabs && navTabs}
         </header>
         <section className="admin-main">
-          {children}
+          <ErrorBoundary>
+            {children}
+          </ErrorBoundary>
         </section>
       </div>
     </div>
