@@ -447,7 +447,7 @@ const ProductDetail: React.FC = () => {
     // Create an updated product object with database gallery images ONLY
     const productWithGallery = React.useMemo(() => {
         if (!product) return null;
-        
+
         if (import.meta.env.DEV) {
             console.log('🔄 productWithGallery updated (database-only):', {
                 productId: product.id,
@@ -456,10 +456,13 @@ const ProductDetail: React.FC = () => {
                 galleryImages: galleryImages.slice(0, 3) // First 3 for debugging
             });
         }
-        
+
+        // Extract URL strings for Product.gallery property (which expects string[])
+        const galleryUrls = galleryImages.map(img => img.url);
+
         return {
             ...product,
-            gallery: galleryImages // Use ONLY database images, no fallback to hardcoded
+            gallery: galleryUrls // Use ONLY database images, no fallback to hardcoded
         };
     }, [product, galleryImages, hasLoadedGallery]);
 
