@@ -717,7 +717,7 @@ const AdminOrders: React.FC = () => {
                                                                     title={String(expandedId) === String(id) ? 'Hide details' : 'View details'}
                                                                 />
                                                                 <Button
-                                                                    variant="outline"
+                                                                    variant="info"
                                                                     size="sm"
                                                                     icon={Pencil}
                                                                     onClick={() => startEdit(o)}
