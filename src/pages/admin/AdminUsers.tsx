@@ -1,9 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { Eye, Pencil, Trash2, Save, X, Search, RefreshCw } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
 import { adminUsersService, type AdminUser, type AdminSignupRequest, type PageResponse } from '../../services/adminUsersService';
+import { Button, Badge, SkeletonTable } from '../../components/ui';
 
 const initialCreate: AdminSignupRequest & { confirmPassword?: string } = {
   email: '',
@@ -237,9 +239,7 @@ const AdminUsers: React.FC = () => {
               <div className="mobile-table-cards">
                 {loading ? (
                   <div className="mobile-table-card">
-                    <div className="table-empty">
-                      <div className="loading-spinner"></div> Loading users...
-                    </div>
+                    <SkeletonTable rows={5} columns={4} />
                   </div>
                 ) : filteredUsers.length === 0 ? (
                   <div className="mobile-table-card">
@@ -258,24 +258,16 @@ const AdminUsers: React.FC = () => {
                         <div className="mobile-card-actions">
                           {editingId === user.id ? (
                             <>
-                              <button className="btn btn-primary btn-sm" onClick={saveEdit} disabled={saving}>
-                                {saving ? '💾' : '💾'}
-                              </button>
-                              <button className="btn btn-outline btn-sm" onClick={cancelEdit} disabled={saving}>
-                                ❌
-                              </button>
+                              <Button variant="primary" size="sm" icon={Save} onClick={saveEdit} disabled={saving} loading={saving} />
+                              <Button variant="outline" size="sm" icon={X} onClick={cancelEdit} disabled={saving} />
                             </>
                           ) : (
                             <>
                               <Link to={`/admin/users/${user.id}`} className="btn btn-outline btn-sm" title="View user details">
-                                👁️
+                                <Eye size={16} />
                               </Link>
-                              <button className="btn btn-outline btn-sm" onClick={() => startEdit(user)} title="Edit user">
-                                ✏️
-                              </button>
-                              <button className="btn btn-danger btn-sm" onClick={() => handleDelete(user.id)} title="Delete user">
-                                🗑️
-                              </button>
+                              <Button variant="outline" size="sm" icon={Pencil} onClick={() => startEdit(user)} title="Edit user" />
+                              <Button variant="danger" size="sm" icon={Trash2} onClick={() => handleDelete(user.id)} title="Delete user" />
                             </>
                           )}
                         </div>
@@ -335,9 +327,9 @@ const AdminUsers: React.FC = () => {
                             <div className="mobile-field">
                               <span className="mobile-field-label">Status:</span>
                               <span className="mobile-field-value">
-                                <span className={`user-status ${getConfirmed(user) === 'Yes' ? 'confirmed' : 'unconfirmed'}`}>
+                                <Badge variant={getConfirmed(user) === 'Yes' ? 'success' : 'warning'} size="sm">
                                   {getConfirmed(user) === 'Yes' ? 'Confirmed' : 'Unconfirmed'}
-                                </span>
+                                </Badge>
                               </span>
                             </div>
                             <div className="mobile-field">
@@ -374,7 +366,7 @@ const AdminUsers: React.FC = () => {
                   <tbody>
                     {loading ? (
                       <tr><td colSpan={7} className="table-empty">
-                        <div className="loading-spinner"></div> Loading users...
+                        <SkeletonTable rows={5} columns={7} />
                       </td></tr>
                     ) : filteredUsers.length === 0 ? (
                       <tr><td colSpan={7} className="table-empty">No users found.</td></tr>
@@ -427,9 +419,9 @@ const AdminUsers: React.FC = () => {
                             )}
                           </td>
                           <td>
-                            <span className={`user-status ${getConfirmed(user) === 'Yes' ? 'confirmed' : 'unconfirmed'}`}>
+                            <Badge variant={getConfirmed(user) === 'Yes' ? 'success' : 'warning'} size="sm">
                               {getConfirmed(user) === 'Yes' ? 'Confirmed' : 'Unconfirmed'}
-                            </span>
+                            </Badge>
                           </td>
                           <td>
                             <span className="user-roles">{getRoles(user)}</span>
@@ -439,24 +431,20 @@ const AdminUsers: React.FC = () => {
                             <div className="action-buttons">
                               {editingId === user.id ? (
                                 <>
-                                  <button className="btn btn-primary btn-sm" onClick={saveEdit} disabled={saving}>
-                                    {saving ? 'Saving...' : 'Save'}
-                                  </button>
-                                  <button className="btn btn-outline btn-sm" onClick={cancelEdit} disabled={saving}>
+                                  <Button variant="primary" size="sm" icon={Save} onClick={saveEdit} disabled={saving} loading={saving}>
+                                    Save
+                                  </Button>
+                                  <Button variant="outline" size="sm" onClick={cancelEdit} disabled={saving}>
                                     Cancel
-                                  </button>
+                                  </Button>
                                 </>
                               ) : (
                                 <>
                                   <Link to={`/admin/users/${user.id}`} className="btn btn-outline btn-sm" title="View user details">
-                                    👁️
+                                    <Eye size={16} />
                                   </Link>
-                                  <button className="btn btn-outline btn-sm" onClick={() => startEdit(user)} title="Edit user">
-                                    ✏️
-                                  </button>
-                                  <button className="btn btn-danger btn-sm" onClick={() => handleDelete(user.id)} title="Delete user">
-                                    🗑️
-                                  </button>
+                                  <Button variant="outline" size="sm" icon={Pencil} onClick={() => startEdit(user)} title="Edit user" />
+                                  <Button variant="danger" size="sm" icon={Trash2} onClick={() => handleDelete(user.id)} title="Delete user" />
                                 </>
                               )}
                             </div>
@@ -475,23 +463,25 @@ const AdminUsers: React.FC = () => {
                     Showing {users.length > 0 ? (page * 20 + 1) : 0} - {Math.min((page + 1) * 20, totalElements)} of {totalElements} users
                   </div>
                   <div style={{ display: 'flex', gap: '8px' }}>
-                    <button
-                      className="btn btn-outline btn-sm"
+                    <Button
+                      variant="outline"
+                      size="sm"
                       onClick={() => loadUsers(page - 1)}
                       disabled={page === 0 || loading}
                     >
                       Previous
-                    </button>
+                    </Button>
                     <span style={{ padding: '8px 12px', fontSize: '14px', color: '#374151' }}>
                       Page {page + 1} of {totalPages}
                     </span>
-                    <button
-                      className="btn btn-outline btn-sm"
+                    <Button
+                      variant="outline"
+                      size="sm"
                       onClick={() => loadUsers(page + 1)}
                       disabled={page >= totalPages - 1 || loading}
                     >
                       Next
-                    </button>
+                    </Button>
                   </div>
                 </div>
               )}
@@ -555,10 +545,12 @@ const AdminUsers: React.FC = () => {
                   />
                 </div>
                 <div className="form-actions">
-                  <button className="btn btn-primary" type="submit" disabled={creating}>
-                    {creating ? 'Creating...' : 'Create User'}
-                  </button>
-                  <button type="button" className="btn btn-outline" onClick={() => setCreateData({ ...initialCreate })} disabled={creating}>Clear</button>
+                  <Button variant="primary" type="submit" disabled={creating} loading={creating}>
+                    Create User
+                  </Button>
+                  <Button variant="outline" type="button" onClick={() => setCreateData({ ...initialCreate })} disabled={creating}>
+                    Clear
+                  </Button>
                 </div>
               </form>
             </div>
