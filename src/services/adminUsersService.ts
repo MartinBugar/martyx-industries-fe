@@ -18,14 +18,47 @@ export interface AdminSignupRequest {
   lastName?: string;
 }
 
+// Spring Data Page response interface
+export interface PageResponse<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+  first: boolean;
+  last: boolean;
+}
+
 export const adminUsersService = {
-  async getAllUsers(): Promise<AdminUser[]> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/users`, withLangHeaders({
+  async getAllUsers(page: number = 0, size: number = 20, sortBy: string = 'id', sortDir: string = 'DESC'): Promise<PageResponse<AdminUser>> {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+      sortBy,
+      sortDir
+    });
+
+    const resp = await fetch(`${API_BASE_URL}/api/admin/users?${params}`, withLangHeaders({
       method: 'GET',
       headers: defaultHeaders as HeadersInit,
     }));
     const data = await handleResponse(resp);
-    return Array.isArray(data) ? data as AdminUser[] : [];
+
+    // If backend returns paginated response, return it; otherwise wrap in page structure
+    if (data && typeof data === 'object' && 'content' in data) {
+      return data as PageResponse<AdminUser>;
+    }
+
+    // Fallback for non-paginated response (backward compatibility)
+    return {
+      content: Array.isArray(data) ? data : [],
+      totalElements: Array.isArray(data) ? data.length : 0,
+      totalPages: 1,
+      size: Array.isArray(data) ? data.length : 0,
+      number: 0,
+      first: true,
+      last: true
+    };
   },
 
   async getUserById(id: string | number): Promise<AdminUser> {

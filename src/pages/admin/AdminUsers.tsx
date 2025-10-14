@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
-import { adminUsersService, type AdminUser, type AdminSignupRequest } from '../../services/adminUsersService';
+import { adminUsersService, type AdminUser, type AdminSignupRequest, type PageResponse } from '../../services/adminUsersService';
 
 const initialCreate: AdminSignupRequest & { confirmPassword?: string } = {
   email: '',
@@ -18,6 +18,11 @@ const AdminUsers: React.FC = () => {
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Pagination state
+  const [page, setPage] = useState<number>(0);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [totalElements, setTotalElements] = useState<number>(0);
 
   // Tab navigation state
   const [activeTab, setActiveTab] = useState<'all-users' | 'create-user'>('all-users');
@@ -40,12 +45,15 @@ const AdminUsers: React.FC = () => {
     return users.filter(u => `${u.firstName ?? ''} ${u.lastName ?? ''} ${u.name ?? ''} ${u.email ?? ''}`.toLowerCase().includes(q));
   }, [users, query]);
 
-  const loadUsers = async () => {
+  const loadUsers = async (pageNum: number = page) => {
     setLoading(true);
     setError(null);
     try {
-      const data = await adminUsersService.getAllUsers();
-      setUsers(data);
+      const pageResponse: PageResponse<AdminUser> = await adminUsersService.getAllUsers(pageNum, 20, 'id', 'DESC');
+      setUsers(pageResponse.content);
+      setTotalPages(pageResponse.totalPages);
+      setTotalElements(pageResponse.totalElements);
+      setPage(pageResponse.number);
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Failed to load users';
       setError(msg);
@@ -55,7 +63,7 @@ const AdminUsers: React.FC = () => {
   };
 
   useEffect(() => {
-    loadUsers();
+    loadUsers(0);
   }, []);
 
   // Helpers for extra columns
@@ -459,6 +467,34 @@ const AdminUsers: React.FC = () => {
                   </tbody>
                 </table>
               </div>
+
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="pagination-controls" style={{ marginTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ fontSize: '14px', color: '#6b7280' }}>
+                    Showing {users.length > 0 ? (page * 20 + 1) : 0} - {Math.min((page + 1) * 20, totalElements)} of {totalElements} users
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button
+                      className="btn btn-outline btn-sm"
+                      onClick={() => loadUsers(page - 1)}
+                      disabled={page === 0 || loading}
+                    >
+                      Previous
+                    </button>
+                    <span style={{ padding: '8px 12px', fontSize: '14px', color: '#374151' }}>
+                      Page {page + 1} of {totalPages}
+                    </span>
+                    <button
+                      className="btn btn-outline btn-sm"
+                      onClick={() => loadUsers(page + 1)}
+                      disabled={page >= totalPages - 1 || loading}
+                    >
+                      Next
+                    </button>
+                  </div>
+                </div>
+              )}
             </>
           )}
 

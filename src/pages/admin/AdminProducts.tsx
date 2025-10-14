@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
-import { adminProductsService, type BaseProduct, type DigitalProduct, type PhysicalProduct } from '../../services/adminProductsService';
+import { adminProductsService, type BaseProduct, type DigitalProduct, type PhysicalProduct, type PageResponse } from '../../services/adminProductsService';
 
 type CreateProduct = BaseProduct & { productType: 'DIGITAL' | 'PHYSICAL' };
 
@@ -24,6 +24,11 @@ const AdminProducts: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Pagination state
+  const [page, setPage] = useState<number>(0);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [totalElements, setTotalElements] = useState<number>(0);
+
   // Tab navigation state
   const [activeTab, setActiveTab] = useState<'all-products' | 'create-product'>('all-products');
 
@@ -32,12 +37,15 @@ const AdminProducts: React.FC = () => {
   const [creating, setCreating] = useState<boolean>(false);
 
 
-  const loadProducts = async () => {
+  const loadProducts = async (pageNum: number = page) => {
     setLoading(true);
     setError(null);
     try {
-      const data = await adminProductsService.getProducts({});
-      setProducts(data);
+      const pageResponse: PageResponse<BaseProduct> = await adminProductsService.getProducts({}, pageNum, 20, 'id', 'DESC');
+      setProducts(pageResponse.content);
+      setTotalPages(pageResponse.totalPages);
+      setTotalElements(pageResponse.totalElements);
+      setPage(pageResponse.number);
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Failed to load products';
       setError(msg);
@@ -47,7 +55,7 @@ const AdminProducts: React.FC = () => {
   };
 
   useEffect(() => {
-    loadProducts();
+    loadProducts(0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -345,6 +353,34 @@ const AdminProducts: React.FC = () => {
               </tbody>
             </table>
           </div>
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="pagination-controls" style={{ marginTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ fontSize: '14px', color: '#6b7280' }}>
+                Showing {products.length > 0 ? (page * 20 + 1) : 0} - {Math.min((page + 1) * 20, totalElements)} of {totalElements} products
+              </div>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button
+                  className="btn btn-outline btn-sm"
+                  onClick={() => loadProducts(page - 1)}
+                  disabled={page === 0 || loading}
+                >
+                  Previous
+                </button>
+                <span style={{ padding: '8px 12px', fontSize: '14px', color: '#374151' }}>
+                  Page {page + 1} of {totalPages}
+                </span>
+                <button
+                  className="btn btn-outline btn-sm"
+                  onClick={() => loadProducts(page + 1)}
+                  disabled={page >= totalPages - 1 || loading}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
           </>
           )}
         </div>

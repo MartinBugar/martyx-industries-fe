@@ -42,18 +42,55 @@ export interface MessageResponse {
   message: string;
 }
 
+// Spring Data Page response interface
+export interface PageResponse<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+  first: boolean;
+  last: boolean;
+}
+
 export const adminProductsService = {
-  async getProducts(params?: { category?: string; active?: boolean }): Promise<BaseProduct[]> {
+  async getProducts(
+    params?: { category?: string; active?: boolean },
+    page: number = 0,
+    size: number = 20,
+    sortBy: string = 'id',
+    sortDir: string = 'DESC'
+  ): Promise<PageResponse<BaseProduct>> {
     const qs: string[] = [];
     if (params?.category) qs.push(`category=${encodeURIComponent(params.category)}`);
     if (typeof params?.active === 'boolean') qs.push(`active=${params.active}`);
-    const url = `${API_BASE_URL}/api/admin/products${qs.length ? `?${qs.join('&')}` : ''}`;
+    qs.push(`page=${page}`);
+    qs.push(`size=${size}`);
+    qs.push(`sortBy=${sortBy}`);
+    qs.push(`sortDir=${sortDir}`);
+
+    const url = `${API_BASE_URL}/api/admin/products?${qs.join('&')}`;
     const resp = await fetch(url, {
       method: 'GET',
       headers: defaultHeaders as HeadersInit,
     });
     const data = await handleResponse(resp);
-    return Array.isArray(data) ? (data as BaseProduct[]) : [];
+
+    // If backend returns paginated response, return it; otherwise wrap in page structure
+    if (data && typeof data === 'object' && 'content' in data) {
+      return data as PageResponse<BaseProduct>;
+    }
+
+    // Fallback for non-paginated response (backward compatibility)
+    return {
+      content: Array.isArray(data) ? data : [],
+      totalElements: Array.isArray(data) ? data.length : 0,
+      totalPages: 1,
+      size: Array.isArray(data) ? data.length : 0,
+      number: 0,
+      first: true,
+      last: true
+    };
   },
 
   async getProductById(id: string | number): Promise<BaseProduct> {
