@@ -285,7 +285,7 @@ const ProductDetail: React.FC = () => {
     const [loading, setLoading] = React.useState(true);
     const [error, setError] = React.useState<string | null>(null);
     const [isProductInactive, setIsProductInactive] = React.useState(false);
-    const [galleryImages, setGalleryImages] = React.useState<string[]>([]);
+    const [galleryImages, setGalleryImages] = React.useState<Array<{ url: string; thumbnailUrl?: string }>>([]);
     const [hasLoadedGallery, setHasLoadedGallery] = React.useState(false);
     const [active, setActive] = React.useState<ProductTabId>('Details');
 
@@ -355,23 +355,27 @@ const ProductDetail: React.FC = () => {
                 if (galleryData.length > 0) {
                     // Sort by order field (ascending)
                     const sortedGallery = galleryData.sort((a, b) => (a.order || 0) - (b.order || 0));
-                    
-                    // Extract URLs (prefer CDN URLs)
-                    const imageUrls = sortedGallery.map(img => img.cdnUrl || img.url).filter(Boolean);
-                    
+
+                    // Extract image data with both full URL and thumbnail URL
+                    const imageData = sortedGallery.map(img => ({
+                        url: img.cdnUrl || img.url,
+                        thumbnailUrl: img.thumbnailUrl || img.cdnUrl || img.url
+                    })).filter(img => img.url);
+
                     console.log(`✅ Gallery images sorted by order:`, {
-                        totalImages: imageUrls.length,
-                        imageUrls: imageUrls,
-                        orderInfo: sortedGallery.map(img => ({ 
-                            fileName: img.fileName, 
+                        totalImages: imageData.length,
+                        orderInfo: sortedGallery.map(img => ({
+                            fileName: img.fileName,
                             order: img.order,
-                            url: img.cdnUrl || img.url 
+                            url: img.cdnUrl || img.url,
+                            thumbnailUrl: img.thumbnailUrl
                         }))
                     });
 
-                    setGalleryImages(imageUrls);
-                    
-                    // Update product with the loaded gallery images (without triggering infinite loop)
+                    setGalleryImages(imageData);
+
+                    // Update product with the loaded gallery images (URLs only for compatibility)
+                    const imageUrls = imageData.map(img => img.url);
                     setProduct(prev => prev ? { ...prev, gallery: imageUrls } : null);
                 } else {
                     console.log('📁 No gallery images found in database - no gallery will be shown');
@@ -528,7 +532,7 @@ const ProductDetail: React.FC = () => {
     return (
         <div className="product-detail-page">
             <div className="product-container">
-                {productWithGallery && <ProductView product={productWithGallery}/>}
+                {productWithGallery && <ProductView product={productWithGallery} galleryData={galleryImages}/>}
                 <ProductDetails product={product}/>
 
                 <nav className="product-bookmarks" aria-label="Product sections" role="tablist">

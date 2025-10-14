@@ -9,6 +9,7 @@ export interface GalleryImage {
   size: number;
   url: string;
   cdnUrl?: string;
+  thumbnailUrl?: string;  // New field for thumbnail URL
   order: number;
   folderName?: string;
   createdAt: string;

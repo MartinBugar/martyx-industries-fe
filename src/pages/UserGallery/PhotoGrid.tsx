@@ -101,11 +101,11 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ photos, onPhotoLikeChange }) => {
             onClick={() => openLightbox(index)}
           >
             <img
-              src={photo.cdn_url}
+              src={photo.thumbnail_url || photo.cdn_url}
               alt={photo.product_name}
               loading="lazy"
               onError={(e) => {
-                (e.target as HTMLImageElement).src = photo.thumbnail_url || '/placeholder-image.png';
+                (e.target as HTMLImageElement).src = photo.cdn_url || '/placeholder-image.png';
               }}
             />
             <div className="photo-overlay">

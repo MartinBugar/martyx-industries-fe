@@ -7,9 +7,10 @@ import { useImagePreload, useBatchImagePreload } from '../../hooks/useImagePrelo
 interface GalleryProps {
   productName: string;
   images: string[];
+  galleryData?: Array<{ url: string; thumbnailUrl?: string }>;
 }
 
-const Gallery: React.FC<GalleryProps> = ({ productName, images }) => {
+const Gallery: React.FC<GalleryProps> = ({ productName, images, galleryData }) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   // Removed loaded state to prevent loading issues
@@ -17,10 +18,22 @@ const Gallery: React.FC<GalleryProps> = ({ productName, images }) => {
   const navigationTimeoutRef = React.useRef<number | null>(null);
 
   // Pre-compute optimized image URLs to avoid expensive calculations during navigation
+  // Use galleryData if available (with thumbnails), otherwise fall back to old behavior
   const optimizedImages = React.useMemo(() => {
+    if (galleryData && galleryData.length > 0) {
+      // Use gallery data with thumbnails from backend
+      return galleryData.map((data) => ({
+        thumbnailSrc: data.thumbnailUrl || data.url,
+        fullscreenSrc: data.url,
+        srcSet: undefined,
+        isCDNUrl: true
+      }));
+    }
+
+    // Fallback to old behavior for backward compatibility
     return images.map((image) => {
       const isCDNUrl = image.includes('digitaloceanspaces.com') || image.includes(import.meta.env.VITE_CDN_BASE || '');
-      
+
       return {
         thumbnailSrc: isCDNUrl ? image : (isCDNEnabled() ? getBestImageUrl(getBaseNameFromPath(image), 800) : image),
         fullscreenSrc: isCDNUrl ? image : (isCDNEnabled() ? getBestImageUrl(getBaseNameFromPath(image), 1600) : image),
@@ -28,15 +41,20 @@ const Gallery: React.FC<GalleryProps> = ({ productName, images }) => {
         isCDNUrl
       };
     });
-  }, [images]);
+  }, [images, galleryData]);
 
   // Debug: log received images
   React.useEffect(() => {
     if (import.meta.env.DEV) {
       console.log('🖼️ Gallery received images for', productName, ':', images.length, 'images');
       console.log('🔍 All image URLs:', images);
+      console.log('📦 Gallery data received:', galleryData);
+      console.log('🎨 Optimized images:', optimizedImages.map(img => ({
+        thumbnail: img.thumbnailSrc,
+        fullscreen: img.fullscreenSrc
+      })));
     }
-  }, [images, productName]);
+  }, [images, productName, galleryData, optimizedImages]);
 
   // Preload obrázkov pomocou HTML link tags (rýchlejšie)
   const thumbnailUrls = React.useMemo(() => 
@@ -138,7 +156,9 @@ const Gallery: React.FC<GalleryProps> = ({ productName, images }) => {
             <OptimizedImage
               src={optimizedImages[index]?.thumbnailSrc || image}
               alt={`${productName} - Image ${index + 1}`}
-              eager={true} // Všetky thumbnail obrázky sa načítajú okamžite
+              width={300}
+              height={225}
+              eager={index < 4} // Načítaj len prvé 4 thumbnaily okamžite
               className="gallery-thumbnail-image"
             />
           </div>

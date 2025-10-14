@@ -250,11 +250,11 @@ const UserGalleryDetail: React.FC = () => {
                     onClick={() => openLightbox(model.photos, index)}
                   >
                     <img
-                      src={photo.cdn_url}
+                      src={photo.thumbnail_url || photo.cdn_url}
                       alt={`${model.product_name} - ${index + 1}`}
                       loading="lazy"
                       onError={(e) => {
-                        (e.target as HTMLImageElement).src = photo.thumbnail_url || '/placeholder-image.png';
+                        (e.target as HTMLImageElement).src = photo.cdn_url || '/placeholder-image.png';
                       }}
                     />
 

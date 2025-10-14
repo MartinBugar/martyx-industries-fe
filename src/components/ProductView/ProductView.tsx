@@ -6,9 +6,10 @@ import './ProductView.css';
 
 interface ProductViewProps {
   product: Product;
+  galleryData?: Array<{ url: string; thumbnailUrl?: string }>;
 }
 
-const ProductView: React.FC<ProductViewProps> = ({ product }) => {
+const ProductView: React.FC<ProductViewProps> = ({ product, galleryData }) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
 
 
@@ -17,7 +18,7 @@ const ProductView: React.FC<ProductViewProps> = ({ product }) => {
   return (
     <div className="product-view-container">
       <div className="model-container">
-        <ModelViewer 
+        <ModelViewer
           modelPath={product.modelPath}
           alt={`A 3D model of ${product.name}`}
           poster={settings?.poster}
@@ -50,10 +51,10 @@ const ProductView: React.FC<ProductViewProps> = ({ product }) => {
       {/*    {isFullscreen ? 'Exit Fullscreen' : 'View in Fullscreen'}*/}
       {/*  </button>*/}
       {/*</div>*/}
-      
+
       {/* Product Gallery */}
       <div id="gallery" className="product-gallery-section">
-        <Gallery productName={product.name} images={product.gallery} />
+        <Gallery productName={product.name} images={product.gallery} galleryData={galleryData} />
       </div>
     </div>
   );
