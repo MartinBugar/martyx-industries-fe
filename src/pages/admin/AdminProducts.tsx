@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Eye, Pencil, Trash2 } from 'lucide-react';
+import { Eye, Pencil, X } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
 import { adminProductsService, type BaseProduct, type DigitalProduct, type PhysicalProduct, type PageResponse } from '../../services/adminProductsService';
@@ -273,7 +273,7 @@ const AdminProducts: React.FC = () => {
                         <Link to={`/admin/products/${p.id}/edit`} className="btn btn-outline btn-sm" title="Edit product">
                           <Pencil size={16} />
                         </Link>
-                        <Button variant="danger" size="sm" icon={Trash2} onClick={() => handleDelete(p.id!)} title="Delete product" />
+                        <Button variant="danger" size="sm" icon={X} onClick={() => handleDelete(p.id!)} title="Delete product" />
                       </div>
                     </div>
                     <div className="mobile-card-body">
@@ -348,7 +348,7 @@ const AdminProducts: React.FC = () => {
                           <Link to={`/admin/products/${p.id}/edit`} className="btn btn-outline btn-sm" title="Edit product">
                             <Pencil size={16} />
                           </Link>
-                          <Button variant="danger" size="sm" icon={Trash2} onClick={() => handleDelete(p.id!)} title="Delete product" />
+                          <Button variant="danger" size="sm" icon={X} onClick={() => handleDelete(p.id!)} title="Delete product" />
                         </div>
                       </td>
                     </tr>

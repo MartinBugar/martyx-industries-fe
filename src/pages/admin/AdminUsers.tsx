@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Eye, Pencil, Trash2, Save, X, Search, RefreshCw } from 'lucide-react';
+import { Eye, Pencil, Save, X, Search, RefreshCw } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
 import { adminUsersService, type AdminUser, type AdminSignupRequest, type PageResponse } from '../../services/adminUsersService';
@@ -267,7 +267,7 @@ const AdminUsers: React.FC = () => {
                                 <Eye size={16} />
                               </Link>
                               <Button variant="outline" size="sm" icon={Pencil} onClick={() => startEdit(user)} title="Edit user" />
-                              <Button variant="danger" size="sm" icon={Trash2} onClick={() => handleDelete(user.id)} title="Delete user" />
+                              <Button variant="danger" size="sm" icon={X} onClick={() => handleDelete(user.id)} title="Delete user" />
                             </>
                           )}
                         </div>
@@ -444,7 +444,7 @@ const AdminUsers: React.FC = () => {
                                     <Eye size={16} />
                                   </Link>
                                   <Button variant="outline" size="sm" icon={Pencil} onClick={() => startEdit(user)} title="Edit user" />
-                                  <Button variant="danger" size="sm" icon={Trash2} onClick={() => handleDelete(user.id)} title="Delete user" />
+                                  <Button variant="danger" size="sm" icon={X} onClick={() => handleDelete(user.id)} title="Delete user" />
                                 </>
                               )}
                             </div>

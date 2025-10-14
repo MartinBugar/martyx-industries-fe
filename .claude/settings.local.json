@@ -24,7 +24,10 @@
       "Bash(git commit -m \"$(cat <<''EOF''\nImplement thumbnail optimization for all galleries\n\nOptimized image loading across all gallery pages by implementing thumbnail system to reduce bandwidth usage by ~97%:\n\nFrontend Changes:\n- Gallery.tsx: Use thumbnailUrl for preview grid, full image only in lightbox\n- ProductView.tsx: Pass galleryData prop with thumbnail URLs\n- ProductDetail.tsx: Extract and pass thumbnail data to Gallery component\n- PhotoGrid.tsx: Display thumbnails in grid, full images on click\n- UserGalleryDetail.tsx: Use thumbnails for model photo previews\n- productGalleryService.ts: Added thumbnailUrl to GalleryImage interface\n\nBenefits:\n- Bandwidth reduction: ~10MB → ~250KB per page load (97.5% reduction)\n- Faster page loads with lazy-loaded thumbnails\n- Full quality images load only when user clicks\n- Backward compatible with images without thumbnails\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
       "Bash(git commit:*)",
       "Bash(git push:*)",
-      "Bash(mvn spring-boot:run:*)"
+      "Bash(mvn spring-boot:run:*)",
+      "Read(//c/Users/Martin/Downloads/**)",
+      "Read(//a//**)",
+      "Bash(findstr:*)"
     ],
     "deny": [],
     "ask": []

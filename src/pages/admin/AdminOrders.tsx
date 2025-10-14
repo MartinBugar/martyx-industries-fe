@@ -1,6 +1,6 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import { Link } from 'react-router-dom';
-import { Eye, Pencil, Trash2 } from 'lucide-react';
+import { Eye, Pencil, X } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
 import {adminOrdersService, type AdminOrderDTO, type AdminOrderItem, type PageResponse} from '../../services/adminOrdersService';
@@ -377,7 +377,7 @@ const AdminOrders: React.FC = () => {
                                                     <Link to={`/admin/orders/${order.id}/edit`} className="btn btn-outline btn-sm" title="Edit order">
                                                         <Pencil size={16} />
                                                     </Link>
-                                                    <Button variant="danger" size="sm" icon={Trash2} onClick={() => handleDelete(order.id!)} title="Delete order" />
+                                                    <Button variant="danger" size="sm" icon={X} onClick={() => handleDelete(order.id!)} title="Delete order" />
                                                 </div>
                                             </div>
                                             <div className="mobile-card-body">
@@ -726,7 +726,7 @@ const AdminOrders: React.FC = () => {
                                                                 <Button
                                                                     variant="danger"
                                                                     size="sm"
-                                                                    icon={Trash2}
+                                                                    icon={X}
                                                                     onClick={() => handleDelete(o.id!)}
                                                                     title="Delete order"
                                                                 />

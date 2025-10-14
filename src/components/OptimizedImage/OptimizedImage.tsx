@@ -30,6 +30,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   const [loaded, setLoaded] = useState(false);
   const [inView, setInView] = useState(priority || eager); // Eager loading alebo priority
   const [error, setError] = useState(false);
+  const [useFallback, setUseFallback] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
@@ -56,11 +57,22 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
 
   const handleLoad = () => {
     setLoaded(true);
+    setError(false);
   };
 
   const handleError = () => {
-    setError(true);
-    setLoaded(true);
+    if (import.meta.env.DEV) {
+      console.warn('❌ Image failed to load:', src);
+    }
+
+    // If the main image failed and we haven't tried fallback yet, try placeholder
+    if (!useFallback && !error) {
+      setUseFallback(true);
+      setError(true);
+    } else {
+      setError(true);
+      setLoaded(true); // Stop trying
+    }
   };
 
   // Kombinuj existujúce className s našimi optimalizačnými triedami
@@ -74,10 +86,17 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
     opacity: loaded ? 1 : (priority || eager ? 1 : 0.8)
   };
 
+  // Determine which source to use
+  const imageSrc = React.useMemo(() => {
+    if (!inView) return placeholder;
+    if (useFallback) return placeholder;
+    return src;
+  }, [inView, useFallback, src, placeholder]);
+
   return (
     <img
       ref={imgRef}
-      src={inView ? (error ? placeholder : src) : placeholder}
+      src={imageSrc}
       alt={alt}
       width={width}
       height={height}

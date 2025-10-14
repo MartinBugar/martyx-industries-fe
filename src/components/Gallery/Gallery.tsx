@@ -147,22 +147,36 @@ const Gallery: React.FC<GalleryProps> = ({ productName, images, galleryData }) =
   return (
     <div className="product-gallery">
       <div className="gallery-thumbnails">
-        {images.map((image, index) => (
-          <div
-            key={index}
-            className="gallery-thumbnail"
-            onClick={() => openFullscreenGallery(index)}
-          >
-            <OptimizedImage
-              src={optimizedImages[index]?.thumbnailSrc || image}
-              alt={`${productName} - Image ${index + 1}`}
-              width={300}
-              height={225}
-              eager={index < 4} // Načítaj len prvé 4 thumbnaily okamžite
-              className="gallery-thumbnail-image"
-            />
-          </div>
-        ))}
+        {images.map((image, index) => {
+          const thumbnailSrc = optimizedImages[index]?.thumbnailSrc || image;
+          const fullSrc = optimizedImages[index]?.fullscreenSrc || image;
+
+          return (
+            <div
+              key={index}
+              className="gallery-thumbnail"
+              onClick={() => openFullscreenGallery(index)}
+            >
+              <OptimizedImage
+                src={thumbnailSrc}
+                alt={`${productName} - Image ${index + 1}`}
+                width={300}
+                height={225}
+                eager={index < 4} // Načítaj len prvé 4 thumbnaily okamžite
+                className="gallery-thumbnail-image"
+                onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                  // Fallback to full image if thumbnail fails
+                  if (thumbnailSrc !== fullSrc && e.currentTarget.src !== fullSrc) {
+                    if (import.meta.env.DEV) {
+                      console.warn(`⚠️ Thumbnail failed for image ${index + 1}, using full image as fallback`);
+                    }
+                    e.currentTarget.src = fullSrc;
+                  }
+                }}
+              />
+            </div>
+          );
+        })}
       </div>
 
       {isFullscreen && (
