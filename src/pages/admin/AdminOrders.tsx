@@ -1,8 +1,10 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import { Link } from 'react-router-dom';
+import { Eye, Pencil, Trash2 } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
 import {adminOrdersService, type AdminOrderDTO, type AdminOrderItem, type PageResponse} from '../../services/adminOrdersService';
+import { Button, Badge, SkeletonTable } from '../../components/ui';
 
 const fieldInputStyle: React.CSSProperties = {
     width: '100%',
@@ -325,10 +327,10 @@ const AdminOrders: React.FC = () => {
                                     />
                                 </div>
                                 <div className="form-actions">
-                                    <button type="submit" className="btn btn-primary">Create Order</button>
-                                    <button type="button" onClick={() => setActiveTab('all-orders')}
-                                            className="btn btn-outline">Cancel
-                                    </button>
+                                    <Button variant="primary" type="submit">Create Order</Button>
+                                    <Button variant="outline" type="button" onClick={() => setActiveTab('all-orders')}>
+                                        Cancel
+                                    </Button>
                                 </div>
                             </form>
                         </div>
@@ -345,18 +347,16 @@ const AdminOrders: React.FC = () => {
                                     value={query}
                                     onChange={(e) => setQuery(e.target.value)}
                                 />
-                                <button onClick={loadOrders} className="btn btn-outline">
+                                <Button variant="outline" onClick={() => loadOrders()}>
                                     Refresh
-                                </button>
+                                </Button>
                             </div>
 
                             {/* Mobile Card Layout */}
                             <div className="mobile-table-cards">
                                 {loading ? (
                                     <div className="mobile-table-card">
-                                        <div className="table-empty">
-                                            <div className="loading-spinner"></div> Loading orders...
-                                        </div>
+                                        <SkeletonTable rows={5} columns={4} />
                                     </div>
                                 ) : filtered.length === 0 ? (
                                     <div className="mobile-table-card">
@@ -372,14 +372,12 @@ const AdminOrders: React.FC = () => {
                                                 </div>
                                                 <div className="mobile-card-actions">
                                                     <Link to={`/admin/orders/${order.id}/view`} className="btn btn-outline btn-sm" title="View order details">
-                                                        👁️
+                                                        <Eye size={16} />
                                                     </Link>
                                                     <Link to={`/admin/orders/${order.id}/edit`} className="btn btn-outline btn-sm" title="Edit order">
-                                                        ✏️
+                                                        <Pencil size={16} />
                                                     </Link>
-                                                    <button className="btn btn-danger btn-sm" onClick={() => handleDelete(order.id!)} title="Delete order">
-                                                        🗑️
-                                                    </button>
+                                                    <Button variant="danger" size="sm" icon={Trash2} onClick={() => handleDelete(order.id!)} title="Delete order" />
                                                 </div>
                                             </div>
                                             <div className="mobile-card-body">
@@ -390,9 +388,9 @@ const AdminOrders: React.FC = () => {
                                                 <div className="mobile-field">
                                                     <span className="mobile-field-label">Status:</span>
                                                     <span className="mobile-field-value">
-                                                        <span className={`user-status ${order.status === 'completed' || order.status === 'paid' ? 'confirmed' : 'unconfirmed'}`}>
+                                                        <Badge variant={order.status === 'COMPLETED' ? 'success' : 'warning'} size="sm">
                                                             {order.status ?? '—'}
-                                                        </span>
+                                                        </Badge>
                                                     </span>
                                                 </div>
                                                 <div className="mobile-field">
@@ -431,8 +429,7 @@ const AdminOrders: React.FC = () => {
                                     {loading ? (
                                         <tr>
                                             <td colSpan={8} className="table-empty">
-                                                <div className="loading-spinner"></div>
-                                                Loading orders...
+                                                <SkeletonTable rows={5} columns={8} />
                                             </td>
                                         </tr>
                                     ) : filtered.length === 0 ? (
@@ -703,31 +700,36 @@ const AdminOrders: React.FC = () => {
                                                         <td>{o.orderNumber ?? '—'}</td>
                                                         <td>{o.userEmail ?? '—'}</td>
                                                         <td>
-                          <span className={`user-status ${o.status === 'COMPLETED' ? 'confirmed' : 'unconfirmed'}`}>
-                            {o.status ?? '—'}
-                          </span>
+                                                            <Badge variant={o.status === 'COMPLETED' ? 'success' : 'warning'} size="sm">
+                                                                {o.status ?? '—'}
+                                                            </Badge>
                                                         </td>
                                                         <td>{formatDateTime(o.orderDate)}</td>
                                                         <td>{getItemsCount(o)}</td>
                                                         <td>{getTotalAmount(o).toFixed(2)} {o.currency ?? ''}</td>
                                                         <td className="text-right">
                                                             <div className="action-buttons">
-                                                                <button
+                                                                <Button
+                                                                    variant="outline"
+                                                                    size="sm"
+                                                                    icon={Eye}
                                                                     onClick={() => toggleExpanded(id as string | number)}
-                                                                    className="btn btn-outline btn-sm"
-                                                                    title={String(expandedId) === String(id) ? 'Hide details' : 'View details'}>
-                                                                    👁️
-                                                                </button>
-                                                                <button onClick={() => startEdit(o)}
-                                                                        className="btn btn-outline btn-sm"
-                                                                        title="Edit order">
-                                                                    ✏️
-                                                                </button>
-                                                                <button onClick={() => handleDelete(o.id!)}
-                                                                        className="btn btn-danger btn-sm"
-                                                                        title="Delete order">
-                                                                    🗑️
-                                                                </button>
+                                                                    title={String(expandedId) === String(id) ? 'Hide details' : 'View details'}
+                                                                />
+                                                                <Button
+                                                                    variant="outline"
+                                                                    size="sm"
+                                                                    icon={Pencil}
+                                                                    onClick={() => startEdit(o)}
+                                                                    title="Edit order"
+                                                                />
+                                                                <Button
+                                                                    variant="danger"
+                                                                    size="sm"
+                                                                    icon={Trash2}
+                                                                    onClick={() => handleDelete(o.id!)}
+                                                                    title="Delete order"
+                                                                />
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -869,23 +871,25 @@ const AdminOrders: React.FC = () => {
                                         Showing {orders.length > 0 ? (page * 20 + 1) : 0} - {Math.min((page + 1) * 20, totalElements)} of {totalElements} orders
                                     </div>
                                     <div style={{ display: 'flex', gap: '8px' }}>
-                                        <button
-                                            className="btn btn-outline btn-sm"
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
                                             onClick={() => loadOrders(page - 1)}
                                             disabled={page === 0 || loading}
                                         >
                                             Previous
-                                        </button>
+                                        </Button>
                                         <span style={{ padding: '8px 12px', fontSize: '14px', color: '#374151' }}>
                                             Page {page + 1} of {totalPages}
                                         </span>
-                                        <button
-                                            className="btn btn-outline btn-sm"
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
                                             onClick={() => loadOrders(page + 1)}
                                             disabled={page >= totalPages - 1 || loading}
                                         >
                                             Next
-                                        </button>
+                                        </Button>
                                     </div>
                                 </div>
                             )}
