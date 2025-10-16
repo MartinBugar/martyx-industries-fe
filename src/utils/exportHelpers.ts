@@ -46,6 +46,7 @@ export const exportService = {
   products: () => downloadCsvExport('products', `products_export_${Date.now()}.csv`),
   orders: () => downloadCsvExport('orders', `orders_export_${Date.now()}.csv`),
   payments: () => downloadCsvExport('payments', `payments_export_${Date.now()}.csv`),
+  shippings: () => downloadCsvExport('shippings', `shippings_export_${Date.now()}.csv`),
   reviews: () => downloadCsvExport('reviews', `reviews_export_${Date.now()}.csv`),
   contacts: () => downloadCsvExport('contacts', `contacts_export_${Date.now()}.csv`),
 };

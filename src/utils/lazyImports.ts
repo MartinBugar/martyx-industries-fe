@@ -38,6 +38,7 @@ export const AdminProductDetail = lazy(() => import('../pages/admin/AdminProduct
 export const AdminProductGallery = lazy(() => import('../pages/admin/AdminProductGallery'));
 export const AdminOrders = lazy(() => import('../pages/admin/AdminOrders'));
 export const AdminPayments = lazy(() => import('../pages/admin/AdminPayments'));
+export const AdminShippings = lazy(() => import('../pages/admin/AdminShippings'));
 export const AdminReviews = lazy(() => import('../pages/admin/AdminReviews'));
 export const AdminContacts = lazy(() => import('../pages/admin/AdminContacts'));
 export const AdminCassandra = lazy(() => import('../pages/admin/AdminCassandra'));
