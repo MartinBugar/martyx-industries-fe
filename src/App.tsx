@@ -70,6 +70,8 @@ import {
   AdminProductDetail,
   AdminProductGallery,
   AdminOrders,
+  AdminReviews,
+  AdminContacts,
   AdminCassandra,
   ConstellationParticles
 } from './utils/lazyImports'
@@ -258,6 +260,16 @@ const MainContent = React.memo(() => {
             <Route path="/admin/orders" element={
               <RequireAdmin>
                 <AdminOrders />
+              </RequireAdmin>
+            } />
+            <Route path="/admin/reviews" element={
+              <RequireAdmin>
+                <AdminReviews />
+              </RequireAdmin>
+            } />
+            <Route path="/admin/contacts" element={
+              <RequireAdmin>
+                <AdminContacts />
               </RequireAdmin>
             } />
             <Route path="/admin/cassandra" element={
