@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Eye, Pencil, X, Star } from 'lucide-react';
+import { Eye, Pencil, X, Star, Download } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
 import { adminReviewsService, type AdminReview, type PageResponse, type ReviewCreateRequest } from '../../services/adminReviewsService';
 import { Button, Badge, SkeletonTable } from '../../components/ui';
+import { exportService } from '../../utils/exportHelpers';
 
 const fieldInputStyle: React.CSSProperties = {
   width: '100%',
@@ -281,6 +282,9 @@ const AdminReviews: React.FC = () => {
                 />
                 <Button variant="outline" onClick={() => loadReviews()}>
                   Refresh
+                </Button>
+                <Button variant="outline" icon={Download} onClick={() => exportService.reviews()}>
+                  Export CSV
                 </Button>
               </div>
 

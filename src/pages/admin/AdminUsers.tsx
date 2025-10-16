@@ -1,11 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Eye, Pencil, Save, X } from 'lucide-react';
+import { Eye, Pencil, Save, X, Download } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
 import { adminUsersService, type AdminUser, type AdminSignupRequest, type PageResponse } from '../../services/adminUsersService';
 import { Button, Badge, SkeletonTable } from '../../components/ui';
+import { exportService } from '../../utils/exportHelpers';
 
 const initialCreate: AdminSignupRequest & { confirmPassword?: string } = {
   email: '',
@@ -233,6 +234,9 @@ const AdminUsers: React.FC = () => {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                 />
+                <Button variant="outline" icon={Download} onClick={() => exportService.users()}>
+                  Export CSV
+                </Button>
               </div>
 
               {/* Mobile Card Layout */}

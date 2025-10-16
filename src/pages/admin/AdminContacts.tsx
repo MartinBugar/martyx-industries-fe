@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Eye, Pencil, X, Mail, CheckCircle, Circle } from 'lucide-react';
+import { Eye, Pencil, X, Mail, CheckCircle, Circle, Download } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
 import { adminContactsService, type AdminContact, type PageResponse } from '../../services/adminContactsService';
 import { Button, Badge, SkeletonTable } from '../../components/ui';
+import { exportService } from '../../utils/exportHelpers';
 
 const fieldInputStyle: React.CSSProperties = {
   width: '100%',
@@ -217,6 +218,9 @@ const AdminContacts: React.FC = () => {
             />
             <Button variant="outline" onClick={() => loadContacts()}>
               Refresh
+            </Button>
+            <Button variant="outline" icon={Download} onClick={() => exportService.contacts()}>
+              Export CSV
             </Button>
           </div>
 

@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Eye, Pencil, X } from 'lucide-react';
+import { Eye, Pencil, X, Download } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
 import { adminProductsService, type BaseProduct, type DigitalProduct, type PhysicalProduct, type PageResponse } from '../../services/adminProductsService';
 import { Button, Badge, SkeletonTable } from '../../components/ui';
+import { exportService } from '../../utils/exportHelpers';
 
 type CreateProduct = BaseProduct & { productType: 'DIGITAL' | 'PHYSICAL' };
 
@@ -248,6 +249,12 @@ const AdminProducts: React.FC = () => {
           {/* All Products Tab */}
           {activeTab === 'all-products' && (
           <>
+            <div className="admin-header-actions" style={{ marginBottom: 16 }}>
+              <Button variant="outline" icon={Download} onClick={() => exportService.products()}>
+                Export CSV
+              </Button>
+            </div>
+
             {/* Mobile Card Layout */}
             <div className="mobile-table-cards">
               {loading ? (

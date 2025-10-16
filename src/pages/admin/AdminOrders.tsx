@@ -1,10 +1,11 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import { Link } from 'react-router-dom';
-import { Eye, Pencil, X } from 'lucide-react';
+import { Eye, Pencil, X, Download } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
 import {adminOrdersService, type AdminOrderDTO, type AdminOrderItem, type PageResponse} from '../../services/adminOrdersService';
 import { Button, Badge, SkeletonTable } from '../../components/ui';
+import { exportService } from '../../utils/exportHelpers';
 
 const fieldInputStyle: React.CSSProperties = {
     width: '100%',
@@ -349,6 +350,9 @@ const AdminOrders: React.FC = () => {
                                 />
                                 <Button variant="outline" onClick={() => loadOrders()}>
                                     Refresh
+                                </Button>
+                                <Button variant="outline" icon={Download} onClick={() => exportService.orders()}>
+                                    Export CSV
                                 </Button>
                             </div>
 
