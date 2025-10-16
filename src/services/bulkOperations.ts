@@ -63,5 +63,14 @@ export const bulkService = {
       body: JSON.stringify({ action, ids })
     }));
     return await handleResponse(response);
+  },
+
+  async payments(action: string, ids: number[], status?: string): Promise<BulkActionResponse> {
+    const response = await fetch(`${API_BASE_URL}/api/admin/bulk/payments`, withLangHeaders({
+      method: 'POST',
+      headers: defaultHeaders as HeadersInit,
+      body: JSON.stringify({ action, ids, status })
+    }));
+    return await handleResponse(response);
   }
 };
