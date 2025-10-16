@@ -35,6 +35,8 @@ import LoadingSpinner from './components/common/LoadingSpinner'
 import { useEffectOnce } from './hooks/useOptimizedEffect'
 import { visitorService } from './services/visitorService'
 import DevelopmentGate from './components/DevelopmentGate/DevelopmentGate'
+import { useSessionMonitor } from './hooks/useSessionMonitor'
+import { useTokenRefresh } from './hooks/useTokenRefresh'
 // import { useRoutePrefetch } from './hooks/useRoutePrefetch'
 // import { advancedCache } from './utils/advancedCache'
 
@@ -292,8 +294,15 @@ MainContent.displayName = 'MainContent';
 
 // Optimized app content
 function AppContent() {
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith('/admin');
+
   useIOSNoZoomOnFocus();
   // useRoutePrefetch(); // Enable route prefetching - temporarily disabled
+
+  // Security features for admin routes
+  useSessionMonitor(isAdminRoute, 15 * 60 * 1000); // 15 minutes inactivity timeout
+  useTokenRefresh(isAdminRoute); // Auto token refresh
 
   // Track visitor - once per session
   useEffectOnce(() => {
