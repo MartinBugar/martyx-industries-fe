@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Eye, Pencil, X } from 'lucide-react';
+import { Eye, Pencil, X, Search } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
 import { adminProductsService, type BaseProduct, type DigitalProduct, type PhysicalProduct, type PageResponse } from '../../services/adminProductsService';
 import { Button, Badge, SkeletonTable } from '../../components/ui';
+import { useDebounce } from '../../hooks/useDebounce';
 
 type CreateProduct = BaseProduct & { productType: 'DIGITAL' | 'PHYSICAL' };
 
@@ -38,12 +39,21 @@ const AdminProducts: React.FC = () => {
   const [createData, setCreateData] = useState<typeof initialCreate>({ ...initialCreate });
   const [creating, setCreating] = useState<boolean>(false);
 
+  // Search with debounce for server-side filtering
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const debouncedSearch = useDebounce(searchQuery, 500);
 
-  const loadProducts = async (pageNum: number = page) => {
+  const loadProducts = async (pageNum: number = page, search?: string) => {
     setLoading(true);
     setError(null);
     try {
-      const pageResponse: PageResponse<BaseProduct> = await adminProductsService.getProducts({}, pageNum, 20, 'id', 'DESC');
+      const pageResponse: PageResponse<BaseProduct> = await adminProductsService.getProducts(
+        { search: search || undefined },
+        pageNum,
+        20,
+        'id',
+        'DESC'
+      );
       setProducts(pageResponse.content);
       setTotalPages(pageResponse.totalPages);
       setTotalElements(pageResponse.totalElements);
@@ -56,10 +66,17 @@ const AdminProducts: React.FC = () => {
     }
   };
 
+  // Load products on mount
   useEffect(() => {
     loadProducts(0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Reload products when debounced search changes
+  useEffect(() => {
+    loadProducts(0, debouncedSearch);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearch]);
 
   const resetCreate = () => setCreateData({ ...initialCreate });
 
@@ -248,6 +265,44 @@ const AdminProducts: React.FC = () => {
           {/* All Products Tab */}
           {activeTab === 'all-products' && (
           <>
+            <div className="admin-header-actions" style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '20px' }}>
+              <div style={{ position: 'relative', flex: 1, maxWidth: '400px' }}>
+                <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af', pointerEvents: 'none' }} />
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="Search products by name or SKU..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  style={{ paddingLeft: '40px' }}
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    style={{
+                      position: 'absolute',
+                      right: '12px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      background: 'none',
+                      border: 'none',
+                      color: '#9ca3af',
+                      cursor: 'pointer',
+                      padding: '4px',
+                      display: 'flex',
+                      alignItems: 'center'
+                    }}
+                    title="Clear search"
+                  >
+                    <X size={16} />
+                  </button>
+                )}
+              </div>
+              {loading && debouncedSearch && (
+                <span style={{ fontSize: '14px', color: '#6b7280' }}>Searching...</span>
+              )}
+            </div>
+
             {/* Mobile Card Layout */}
             <div className="mobile-table-cards">
               {loading ? (

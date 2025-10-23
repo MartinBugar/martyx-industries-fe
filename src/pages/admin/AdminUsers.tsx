@@ -1,11 +1,12 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Eye, Pencil, Save, X } from 'lucide-react';
+import { Eye, Pencil, Save, X, Search } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
 import { adminUsersService, type AdminUser, type AdminSignupRequest, type PageResponse } from '../../services/adminUsersService';
 import { Button, Badge, SkeletonTable } from '../../components/ui';
+import { useDebounce } from '../../hooks/useDebounce';
 
 const initialCreate: AdminSignupRequest & { confirmPassword?: string } = {
   email: '',
@@ -38,20 +39,21 @@ const AdminUsers: React.FC = () => {
   const [editData, setEditData] = useState<Partial<AdminUser> & { password?: string }>({});
   const [saving, setSaving] = useState<boolean>(false);
 
-  // Search/filter (optional minimal UX)
-  const [query, setQuery] = useState<string>('');
+  // Search with debounce for server-side filtering
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const debouncedSearch = useDebounce(searchQuery, 500);
 
-  const filteredUsers = useMemo(() => {
-    if (!query.trim()) return users;
-    const q = query.toLowerCase();
-    return users.filter(u => `${u.firstName ?? ''} ${u.lastName ?? ''} ${u.name ?? ''} ${u.email ?? ''}`.toLowerCase().includes(q));
-  }, [users, query]);
-
-  const loadUsers = async (pageNum: number = page) => {
+  const loadUsers = async (pageNum: number = page, search?: string) => {
     setLoading(true);
     setError(null);
     try {
-      const pageResponse: PageResponse<AdminUser> = await adminUsersService.getAllUsers(pageNum, 20, 'id', 'DESC');
+      const pageResponse: PageResponse<AdminUser> = await adminUsersService.getAllUsers(
+        pageNum,
+        20,
+        'id',
+        'DESC',
+        search || undefined
+      );
       setUsers(pageResponse.content);
       setTotalPages(pageResponse.totalPages);
       setTotalElements(pageResponse.totalElements);
@@ -64,9 +66,17 @@ const AdminUsers: React.FC = () => {
     }
   };
 
+  // Load users on mount
   useEffect(() => {
     loadUsers(0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Reload users when debounced search changes
+  useEffect(() => {
+    loadUsers(0, debouncedSearch);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearch]);
 
   // Helpers for extra columns
   const getConfirmed = (user: AdminUser): string => {
@@ -225,14 +235,42 @@ const AdminUsers: React.FC = () => {
           {/* All Users Tab */}
           {activeTab === 'all-users' && (
             <>
-              <div className="admin-header-actions">
-                <input
-                  type="text"
-                  className="form-input"
-                  placeholder="Search users..."
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                />
+              <div className="admin-header-actions" style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                <div style={{ position: 'relative', flex: 1, maxWidth: '400px' }}>
+                  <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af', pointerEvents: 'none' }} />
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="Search users by name or email..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    style={{ paddingLeft: '40px' }}
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      style={{
+                        position: 'absolute',
+                        right: '12px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        background: 'none',
+                        border: 'none',
+                        color: '#9ca3af',
+                        cursor: 'pointer',
+                        padding: '4px',
+                        display: 'flex',
+                        alignItems: 'center'
+                      }}
+                      title="Clear search"
+                    >
+                      <X size={16} />
+                    </button>
+                  )}
+                </div>
+                {loading && debouncedSearch && (
+                  <span style={{ fontSize: '14px', color: '#6b7280' }}>Searching...</span>
+                )}
               </div>
 
               {/* Mobile Card Layout */}
@@ -241,12 +279,12 @@ const AdminUsers: React.FC = () => {
                   <div className="mobile-table-card">
                     <SkeletonTable rows={5} columns={4} />
                   </div>
-                ) : filteredUsers.length === 0 ? (
+                ) : users.length === 0 ? (
                   <div className="mobile-table-card">
                     <div className="table-empty">No users found.</div>
                   </div>
                 ) : (
-                  filteredUsers.map(user => (
+                  users.map(user => (
                     <div key={`mobile-${user.id}`} className="mobile-table-card">
                       <div className="mobile-card-header">
                         <div>
@@ -368,10 +406,10 @@ const AdminUsers: React.FC = () => {
                       <tr><td colSpan={7} className="table-empty">
                         <SkeletonTable rows={5} columns={7} />
                       </td></tr>
-                    ) : filteredUsers.length === 0 ? (
+                    ) : users.length === 0 ? (
                       <tr><td colSpan={7} className="table-empty">No users found.</td></tr>
                     ) : (
-                      filteredUsers.map(user => (
+                      users.map(user => (
                         <tr key={user.id}>
                           <td>{user.id}</td>
                           <td>

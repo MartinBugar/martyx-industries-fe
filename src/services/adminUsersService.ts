@@ -30,13 +30,17 @@ export interface PageResponse<T> {
 }
 
 export const adminUsersService = {
-  async getAllUsers(page: number = 0, size: number = 20, sortBy: string = 'id', sortDir: string = 'DESC'): Promise<PageResponse<AdminUser>> {
+  async getAllUsers(page: number = 0, size: number = 20, sortBy: string = 'id', sortDir: string = 'DESC', search?: string): Promise<PageResponse<AdminUser>> {
     const params = new URLSearchParams({
       page: page.toString(),
       size: size.toString(),
       sortBy,
       sortDir
     });
+
+    if (search && search.trim()) {
+      params.append('search', search.trim());
+    }
 
     const resp = await fetch(`${API_BASE_URL}/api/admin/users?${params}`, withLangHeaders({
       method: 'GET',

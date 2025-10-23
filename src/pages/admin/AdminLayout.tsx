@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ErrorBoundary } from '../../components/ui';
 import './AdminLayout.css';
+import '../../styles/admin-theme.css';
 
 interface AdminLayoutProps {
   title?: string;
@@ -60,6 +61,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ title, children, navTabs }) =
           <Link to="/admin/users" style={{ ...sidebarLinkStyle, ...(location.pathname.startsWith('/admin/users') ? activeLinkStyle : {}) }}>Users</Link>
           <Link to="/admin/products" style={{ ...sidebarLinkStyle, ...(location.pathname.startsWith('/admin/products') ? activeLinkStyle : {}) }}>Products</Link>
           <Link to="/admin/orders" style={{ ...sidebarLinkStyle, ...(location.pathname.startsWith('/admin/orders') ? activeLinkStyle : {}) }}>Orders</Link>
+          <Link to="/admin/gallery" style={{ ...sidebarLinkStyle, ...(location.pathname.startsWith('/admin/gallery') ? activeLinkStyle : {}) }}>Gallery</Link>
           <Link to="/admin/cassandra" style={{ ...sidebarLinkStyle, ...(location.pathname === '/admin/cassandra' ? activeLinkStyle : {}) }}>CASSANDRA</Link>
         </nav>
         <div className="admin-logout-wrap">

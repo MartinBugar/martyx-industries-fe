@@ -55,7 +55,7 @@ export interface PageResponse<T> {
 
 export const adminProductsService = {
   async getProducts(
-    params?: { category?: string; active?: boolean },
+    params?: { category?: string; active?: boolean; search?: string },
     page: number = 0,
     size: number = 20,
     sortBy: string = 'id',
@@ -64,6 +64,7 @@ export const adminProductsService = {
     const qs: string[] = [];
     if (params?.category) qs.push(`category=${encodeURIComponent(params.category)}`);
     if (typeof params?.active === 'boolean') qs.push(`active=${params.active}`);
+    if (params?.search && params.search.trim()) qs.push(`search=${encodeURIComponent(params.search.trim())}`);
     qs.push(`page=${page}`);
     qs.push(`size=${size}`);
     qs.push(`sortBy=${sortBy}`);

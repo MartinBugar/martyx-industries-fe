@@ -28,7 +28,8 @@
       "Read(//c/Users/Martin/Downloads/**)",
       "Read(//a//**)",
       "Bash(findstr:*)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(mvn compile:*)"
     ],
     "deny": [],
     "ask": []

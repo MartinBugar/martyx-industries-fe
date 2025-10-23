@@ -103,18 +103,6 @@ export const systemHealthService = {
   async getSystemHealth(): Promise<SystemHealthResponse> {
     console.log('🔄 SystemHealthService: getSystemHealth() called');
 
-    // For now, always return mock data since the backend endpoint may not exist
-    // This ensures the Status page works regardless of backend implementation
-    console.log('📊 Using mock system health data');
-    const mockData = generateMockSystemHealth();
-    console.log('📊 Generated mock data:', mockData);
-
-    // Add a small delay to simulate network request
-    await new Promise(resolve => setTimeout(resolve, 500));
-
-    return mockData;
-
-    /* Commented out real API call for now - can be re-enabled when backend is ready
     try {
       // Try to fetch from real API endpoint
       console.log(`🌐 Trying to fetch from: ${API_BASE_URL}/api/admin/system/health`);
@@ -140,7 +128,6 @@ export const systemHealthService = {
       console.log('📊 Generated mock data after error:', mockData);
       return mockData;
     }
-    */
   },
 
   // Get database connectivity status

@@ -1,0 +1,101 @@
+/* Bulk Actions Bar */
+.bulk-actions-bar {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 600px;
+  width: calc(100% - 40px);
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  z-index: 1000;
+  animation: slideUpBounce 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes slideUpBounce {
+  from {
+    transform: translateX(-50%) translateY(100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+}
+
+.bulk-actions-info {
+  color: white;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.bulk-actions-info strong {
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.bulk-actions-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Override button styles for bulk bar */
+.bulk-actions-bar .btn {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+  font-weight: 500;
+}
+
+.bulk-actions-bar .btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+.bulk-actions-bar .btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.bulk-actions-bar .btn-danger {
+  background: rgba(239, 68, 68, 0.9);
+  border-color: rgba(239, 68, 68, 1);
+}
+
+.bulk-actions-bar .btn-danger:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 1);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
+/* Mobile responsive */
+@media (max-width: 640px) {
+  .bulk-actions-bar {
+    flex-direction: column;
+    padding: 16px;
+    gap: 12px;
+    width: calc(100% - 20px);
+  }
+
+  .bulk-actions-info {
+    width: 100%;
+    text-align: center;
+  }
+
+  .bulk-actions-buttons {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .bulk-actions-buttons .btn {
+    flex: 1;
+    min-width: 100px;
+  }
+}
