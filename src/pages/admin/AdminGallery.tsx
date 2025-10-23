@@ -282,7 +282,7 @@ const AdminGallery: React.FC = () => {
                         <div className="mobile-field">
                           <span className="mobile-field-label">Status:</span>
                           <span className="mobile-field-value">
-                            <Badge variant={user.isActive ? 'success' : 'error'} size="sm">
+                            <Badge variant={user.isActive ? 'success' : 'danger'} size="sm">
                               {user.isActive ? 'Active' : 'Inactive'}
                             </Badge>
                           </span>
@@ -351,7 +351,7 @@ const AdminGallery: React.FC = () => {
                           </td>
                           <td>{formatDate(user.lastUploadDate)}</td>
                           <td style={{ textAlign: 'center' }}>
-                            <Badge variant={user.isActive ? 'success' : 'error'} size="sm">
+                            <Badge variant={user.isActive ? 'success' : 'danger'} size="sm">
                               {user.isActive ? 'Active' : 'Inactive'}
                             </Badge>
                           </td>

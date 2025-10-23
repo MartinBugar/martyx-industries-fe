@@ -31,6 +31,7 @@ export interface AdminUserSummary {
   lastName: string;
   totalPhotos: number;
   publicPhotos: number;
+  pendingPhotos: number;
   lastUploadDate: string;
   isActive: boolean;
 }

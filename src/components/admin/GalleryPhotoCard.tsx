@@ -69,7 +69,7 @@ const GalleryPhotoCard: React.FC<GalleryPhotoCardProps> = ({
         </div>
         <div className="photo-status">
           <Badge
-            variant={photo.verificationStatus === 'APPROVED' ? 'success' : photo.verificationStatus === 'PENDING' ? 'warning' : 'error'}
+            variant={photo.verificationStatus === 'APPROVED' ? 'success' : photo.verificationStatus === 'PENDING' ? 'warning' : 'danger'}
             size="sm"
           >
             {photo.verificationStatus}
