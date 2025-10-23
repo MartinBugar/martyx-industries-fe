@@ -35,6 +35,7 @@ import LoadingSpinner from './components/common/LoadingSpinner'
 import { useEffectOnce } from './hooks/useOptimizedEffect'
 import { visitorService } from './services/visitorService'
 import DevelopmentGate from './components/DevelopmentGate/DevelopmentGate'
+import RateLimitNotification, { type RateLimitError } from './components/RateLimitNotification/RateLimitNotification'
 // import { useRoutePrefetch } from './hooks/useRoutePrefetch'
 // import { advancedCache } from './utils/advancedCache'
 
@@ -282,6 +283,18 @@ MainContent.displayName = 'MainContent';
 function AppContent() {
   useIOSNoZoomOnFocus();
   // useRoutePrefetch(); // Enable route prefetching - temporarily disabled
+  const [rateLimitError, setRateLimitError] = useState<RateLimitError | null>(null);
+
+  // Rate limit event listener
+  useEffect(() => {
+    const handleRateLimit = (event: Event) => {
+      const customEvent = event as CustomEvent;
+      setRateLimitError(customEvent.detail);
+    };
+
+    window.addEventListener('api:rateLimit', handleRateLimit);
+    return () => window.removeEventListener('api:rateLimit', handleRateLimit);
+  }, []);
 
   // Track visitor - once per session
   useEffectOnce(() => {
@@ -321,6 +334,10 @@ function AppContent() {
     <>
       <ScrollToTop />
       <MainContent />
+      <RateLimitNotification
+        error={rateLimitError}
+        onClose={() => setRateLimitError(null)}
+      />
     </>
   );
 }

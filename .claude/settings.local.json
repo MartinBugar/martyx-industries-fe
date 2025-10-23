@@ -27,7 +27,8 @@
       "Bash(mvn spring-boot:run:*)",
       "Read(//c/Users/Martin/Downloads/**)",
       "Read(//a//**)",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "Bash(dir:*)"
     ],
     "deny": [],
     "ask": []

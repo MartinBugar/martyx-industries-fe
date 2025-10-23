@@ -53,7 +53,33 @@ export const handleResponse = async (response: Response) => {
         args: {}
       };
     }
-    
+
+    // Handle 429 Too Many Requests (Rate Limit Exceeded)
+    if (response.status === 429) {
+      const retryAfter = response.headers.get('X-Rate-Limit-Retry-After-Seconds') ||
+                        response.headers.get('Retry-After') ||
+                        '60';
+
+      const rateLimitError = {
+        message: errorData.message || 'Too many requests. Please try again later.',
+        retryAfterSeconds: parseInt(retryAfter, 10),
+        endpoint: new URL(response.url).pathname
+      };
+
+      console.warn('Rate limit exceeded:', rateLimitError);
+
+      // Dispatch rate limit event for global handling
+      window.dispatchEvent(new CustomEvent('api:rateLimit', {
+        detail: rateLimitError
+      }));
+
+      // Throw specific rate limit error
+      const error = new Error('RATE_LIMIT_EXCEEDED');
+      (error as any).errorData = errorData;
+      (error as any).rateLimitInfo = rateLimitError;
+      throw error;
+    }
+
     // Handle 401 Unauthorized responses (expired/invalid tokens)
     if (response.status === 401) {
       console.log('Received 401 Unauthorized, clearing authentication data');
@@ -64,17 +90,17 @@ export const handleResponse = async (response: Response) => {
       // Remove authorization header
       delete defaultHeaders['Authorization'];
       // Dispatch logout event with api_error reason to distinguish from token expiration
-      window.dispatchEvent(new CustomEvent('auth:logout', { 
-        detail: { reason: 'api_error' } 
+      window.dispatchEvent(new CustomEvent('auth:logout', {
+        detail: { reason: 'api_error' }
       }));
     }
-    
+
     // Throw error with unified contract data
     const error = new Error(errorData.errorCode || 'Unknown error');
     (error as any).errorData = errorData;
     throw error;
   }
-  
+
   // Parse successful response
   const data = await response.json();
   return data;
