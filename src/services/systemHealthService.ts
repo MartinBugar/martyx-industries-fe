@@ -104,29 +104,63 @@ export const systemHealthService = {
     console.log('🔄 SystemHealthService: getSystemHealth() called');
 
     try {
+      // Get token from localStorage
+      let token: string | null = null;
+      try {
+        const tokenRaw = localStorage.getItem('token');
+        if (tokenRaw) {
+          try {
+            token = JSON.parse(tokenRaw);
+          } catch {
+            token = tokenRaw;
+          }
+        }
+      } catch (e) {
+        console.error('Failed to get token from localStorage:', e);
+      }
+
+      if (!token) {
+        console.warn('⚠️ No authentication token found, using mock data');
+        return generateMockSystemHealth();
+      }
+
+      // Build headers with auth token
+      const headers = {
+        ...defaultHeaders,
+        'Authorization': `Bearer ${token}`
+      };
+
       // Try to fetch from real API endpoint
       console.log(`🌐 Trying to fetch from: ${API_BASE_URL}/api/admin/system/health`);
+      console.log('🔑 Using auth token:', token.substring(0, 20) + '...');
+
       const resp = await fetch(`${API_BASE_URL}/api/admin/system/health`, withLangHeaders({
         method: 'GET',
-        headers: defaultHeaders as HeadersInit,
+        headers: headers as HeadersInit,
       }));
+
+      console.log('📡 Response status:', resp.status);
 
       if (resp.ok) {
         console.log('✅ Real API endpoint responded successfully');
         const data = await resp.json();
+        console.log('📊 Real system health data:', data);
         return data as SystemHealthResponse;
+      } else if (resp.status === 401) {
+        console.warn('⚠️ Unauthorized (401) - token may be invalid or expired, using mock data');
+        const errorText = await resp.text();
+        console.warn('Error details:', errorText);
+        return generateMockSystemHealth();
       } else {
         // Fallback to mock data if endpoint doesn't exist
         console.warn('⚠️ System health endpoint not available, using mock data, status:', resp.status);
-        const mockData = generateMockSystemHealth();
-        console.log('📊 Generated mock data:', mockData);
-        return mockData;
+        const errorText = await resp.text();
+        console.warn('Error details:', errorText);
+        return generateMockSystemHealth();
       }
     } catch (err) {
-      console.warn('❌ Failed to fetch system health, using mock data:', err);
-      const mockData = generateMockSystemHealth();
-      console.log('📊 Generated mock data after error:', mockData);
-      return mockData;
+      console.error('❌ Failed to fetch system health, using mock data:', err);
+      return generateMockSystemHealth();
     }
   },
 

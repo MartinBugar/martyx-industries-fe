@@ -494,7 +494,7 @@ const AdminDashboard: React.FC = () => {
                             />
                             <KPICard
                                 label="System Uptime"
-                                value={systemHealthLoading ? "Loading..." : systemHealth ? systemHealthService.formatUptime(Date.now() / 1000 - systemHealth.system.uptime) : "N/A"}
+                                value={systemHealthLoading ? "Loading..." : systemHealth ? systemHealthService.formatUptime(systemHealth.system.uptime) : "N/A"}
                                 loading={systemHealthLoading}
                                 error={systemHealthError || undefined}
                                 accent="green"

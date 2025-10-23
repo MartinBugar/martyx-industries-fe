@@ -29,7 +29,10 @@
       "Read(//a//**)",
       "Bash(findstr:*)",
       "Bash(dir:*)",
-      "Bash(mvn compile:*)"
+      "Bash(mvn compile:*)",
+      "Bash(netstat:*)",
+      "Bash(curl:*)",
+      "Bash(taskkill:*)"
     ],
     "deny": [],
     "ask": []
