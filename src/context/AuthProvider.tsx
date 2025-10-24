@@ -232,14 +232,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.log("USER ID " + user.id);
       const profileData = await profileService.fetchProfile(user.id);
       
-      // Create updated user object
+      // Create updated user object with avatar convenience property
       const updatedUser = {
         ...user,
         ...profileData,
         // Ensure we don't overwrite id, email, or orders
         id: user.id,
         email: user.email,
-        orders: profileData.orders || user.orders
+        orders: profileData.orders || user.orders,
+        // Add avatarUrl convenience property from avatar.imageUrl
+        avatarUrl: profileData.avatar?.imageUrl || user.avatarUrl
       };
 
       // Update state and secureLocalStorage
@@ -267,14 +269,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         address: profileData.address
       });
       
-      // Create updated user object
+      // Create updated user object with avatar convenience property
       const updatedUser = {
         ...user,
         ...updatedProfileData,
         // Ensure we don't overwrite id, email, or orders
         id: user.id,
         email: user.email,
-        orders: updatedProfileData.orders || user.orders
+        orders: updatedProfileData.orders || user.orders,
+        // Add avatarUrl convenience property from avatar.imageUrl
+        avatarUrl: updatedProfileData.avatar?.imageUrl || user.avatarUrl
       };
 
       // Update state and secureLocalStorage

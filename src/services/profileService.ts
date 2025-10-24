@@ -19,14 +19,39 @@ export interface ProfileUpdateData {
 
 // Profile service
 export const profileService = {
-  // Fetch user profile data
-  fetchProfile: async (userId: string): Promise<Partial<User>> => {
+  // Fetch user profile data - now uses /api/users/me endpoint for authenticated user
+  fetchProfile: async (_userId?: string): Promise<Partial<User>> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/users/${userId}`, withLangHeaders({
+      // Get token from localStorage
+      let token: string | null = null;
+      try {
+        const tokenRaw = localStorage.getItem('token');
+        if (tokenRaw) {
+          try {
+            token = JSON.parse(tokenRaw);
+          } catch {
+            token = tokenRaw;
+          }
+        }
+      } catch (e) {
+        console.error('Failed to get token from localStorage:', e);
+      }
+
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      const headers = {
+        ...defaultHeaders,
+        'Authorization': `Bearer ${token}`,
+      };
+
+      // Use /api/users/me endpoint for authenticated user (includes avatar data)
+      const response = await fetch(`${API_BASE_URL}/api/users/me`, withLangHeaders({
         method: 'GET',
-        headers: defaultHeaders as HeadersInit,
+        headers: headers as HeadersInit,
       }));
-      
+
       return await handleResponse(response);
     } catch (error) {
       console.error('Fetch profile API error:', error);

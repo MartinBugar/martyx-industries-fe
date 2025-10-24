@@ -306,7 +306,20 @@ export default function Navbar({cartCount = 0, onSearchSubmit, user, onLogout}: 
                             ) : (
                                 <>
                                     <Link to="/account" className="mi-iconbtn mi-desktop" aria-label={t('nav:account')}>
-                                        <UserIcon />
+                                        {user.avatarUrl ? (
+                                            <img
+                                                src={user.avatarUrl}
+                                                alt="User avatar"
+                                                style={{
+                                                    width: '32px',
+                                                    height: '32px',
+                                                    borderRadius: '50%',
+                                                    objectFit: 'cover'
+                                                }}
+                                            />
+                                        ) : (
+                                            <UserIcon />
+                                        )}
                                     </Link>
                                     <button type="button" className="mi-btn mi-btn--ghost mi-desktop" onClick={doLogout}>
                                         {t('nav:sign_out')}

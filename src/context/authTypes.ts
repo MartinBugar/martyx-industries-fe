@@ -28,6 +28,15 @@ export interface Order {
   notes?: string;
 }
 
+// Define the structure of an avatar
+export interface Avatar {
+  id: number;
+  name: string;
+  imageUrl: string;
+  description?: string;
+  active?: boolean;
+}
+
 // Define the structure of a user
 export interface User {
   id: string;
@@ -47,6 +56,9 @@ export interface User {
     zipCode?: string;
     country?: string;
   };
+  // Avatar support
+  avatar?: Avatar;
+  avatarUrl?: string; // Convenience property for quick access
 }
 
 // Define the authentication response from the backend

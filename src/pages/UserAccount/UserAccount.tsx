@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/useAuth';
 import UserProfile from '../../components/UserProfile/UserProfile';
@@ -10,10 +10,15 @@ import type { Avatar } from '../../services/avatarService';
 import './UserAccount.css';
 
 const UserAccount: React.FC = () => {
-  const { user, isAuthenticated, isLoading } = useAuth();
+  const { user, isAuthenticated, isLoading, fetchProfile } = useAuth();
   const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'collection' | 'settings'>('profile');
   const [showAvatarSelector, setShowAvatarSelector] = useState(false);
   const [userAvatar, setUserAvatar] = useState<string | null>(user?.avatar?.imageUrl || null);
+
+  // Update userAvatar when user object changes
+  useEffect(() => {
+    setUserAvatar(user?.avatar?.imageUrl || null);
+  }, [user?.avatar?.imageUrl]);
   
   // Show loading while authentication state is being restored
   if (isLoading) {
@@ -257,10 +262,11 @@ const UserAccount: React.FC = () => {
       {showAvatarSelector && (
         <AvatarSelector
           onClose={() => setShowAvatarSelector(false)}
-          onAvatarSelected={(avatar: Avatar) => {
+          onAvatarSelected={async (avatar: Avatar) => {
             setUserAvatar(avatar.imageUrl);
-            // Optionally reload user data from auth context
-            window.location.reload(); // Simple refresh to update all instances
+            setShowAvatarSelector(false);
+            // Reload user data from backend to update all instances including navbar
+            await fetchProfile();
           }}
           currentAvatarId={user?.avatar?.id}
         />
