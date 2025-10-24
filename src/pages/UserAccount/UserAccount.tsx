@@ -5,11 +5,15 @@ import UserProfile from '../../components/UserProfile/UserProfile';
 import OrderHistory from '../../components/OrderHistory/OrderHistory';
 import ModelCollection from '../../components/ModelCollection/ModelCollection';
 import TokenExpirationTimer from '../../components/TokenExpirationTimer/TokenExpirationTimer';
+import AvatarSelector from '../../components/AvatarSelector/AvatarSelector';
+import type { Avatar } from '../../services/avatarService';
 import './UserAccount.css';
 
 const UserAccount: React.FC = () => {
   const { user, isAuthenticated, isLoading } = useAuth();
   const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'collection' | 'settings'>('profile');
+  const [showAvatarSelector, setShowAvatarSelector] = useState(false);
+  const [userAvatar, setUserAvatar] = useState<string | null>(user?.avatar?.imageUrl || null);
   
   // Show loading while authentication state is being restored
   if (isLoading) {
@@ -55,11 +59,21 @@ const UserAccount: React.FC = () => {
           <div className="header-content">
             <div className="user-welcome">
               <div className="user-avatar-section">
-                <div className="avatar-wrapper">
+                <div className="avatar-wrapper" onClick={() => setShowAvatarSelector(true)} style={{ cursor: 'pointer' }} title="Click to change avatar">
                   <div className="user-avatar">
-                    {user?.firstName?.charAt(0) || user?.name?.charAt(0) || 'U'}
+                    {userAvatar ? (
+                      <img src={userAvatar} alt="User avatar" style={{ width: '100%', height: '100%', borderRadius: '50%' }} />
+                    ) : (
+                      user?.firstName?.charAt(0) || user?.name?.charAt(0) || 'U'
+                    )}
                   </div>
                   <div className="avatar-status"></div>
+                  <div className="avatar-edit-badge" title="Change avatar">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
                 </div>
               </div>
               <div className="welcome-content">
@@ -238,6 +252,19 @@ const UserAccount: React.FC = () => {
           </main>
         </div>
       </div>
+
+      {/* Avatar Selector Modal */}
+      {showAvatarSelector && (
+        <AvatarSelector
+          onClose={() => setShowAvatarSelector(false)}
+          onAvatarSelected={(avatar: Avatar) => {
+            setUserAvatar(avatar.imageUrl);
+            // Optionally reload user data from auth context
+            window.location.reload(); // Simple refresh to update all instances
+          }}
+          currentAvatarId={user?.avatar?.id}
+        />
+      )}
     </div>
   );
 };

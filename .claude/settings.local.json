@@ -32,7 +32,8 @@
       "Bash(mvn compile:*)",
       "Bash(netstat:*)",
       "Bash(curl:*)",
-      "Bash(taskkill:*)"
+      "Bash(taskkill:*)",
+      "Bash(mvn flyway:*)"
     ],
     "deny": [],
     "ask": []

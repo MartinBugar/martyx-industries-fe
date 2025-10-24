@@ -199,6 +199,32 @@
   border-radius: 50%;
 }
 
+.avatar-edit-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 24px;
+  height: 24px;
+  background: linear-gradient(135deg, #ffd700, #daa520);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 2px solid rgba(10, 10, 10, 0.9);
+  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+}
+
+.avatar-edit-badge:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.5);
+}
+
+.avatar-edit-badge svg {
+  color: #000;
+}
+
 .welcome-content {
   flex: 1;
   min-width: 0;
