@@ -41,8 +41,7 @@ const ProductList: React.FC<ProductListProps> = ({
   const renderProduct = useCallback((product: Product) => (
     <LocalizedProductCard
       key={product.id}
-      productId={parseInt(product.id)}
-      showFullDescription={false}
+      variantId={parseInt(product.id)}
     />
   ), []);
 

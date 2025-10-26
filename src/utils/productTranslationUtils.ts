@@ -87,7 +87,7 @@ export const getLocalizedTabs = (productId: string, t: TFunction): ProductTab[] 
   const detailsContent = getLocalizedDetailsContent(productId, t);
   
   // Get the original hardcoded data to preserve PrintInfo
-  const originalData = hardcodedProductsData.find(data => data.id === productId);
+  const originalData = hardcodedProductsData.find(data => data.masterProductId.toString() === productId);
   const originalPrintInfoTab = originalData?.tabs?.find(tab => tab.id === 'PrintInfo');
   
   const tabs: ProductTab[] = [

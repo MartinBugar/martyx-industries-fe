@@ -196,10 +196,10 @@ const PayPalSuccess: React.FC = () => {
             if (isAuthenticated && user) {
               addOrder({
                 items: items.map((item) => ({
-                  productId: item.product.id,
+                  productId: item.product.variantId.toString(),
                   productName: item.product.name,
                   quantity: item.quantity,
-                  price: item.product.price,
+                  price: item.product.priceWithVat,
                 })),
                 totalAmount: getTotalPrice(),
                 status: 'completed',
@@ -250,10 +250,10 @@ const PayPalSuccess: React.FC = () => {
           if (isAuthenticated && user) {
             addOrder({
               items: items.map((item) => ({
-                productId: item.product.id,
+                productId: item.product.variantId.toString(),
                 productName: item.product.name,
                 quantity: item.quantity,
-                price: item.product.price,
+                price: item.product.priceWithVat,
               })),
               totalAmount: getTotalPrice(),
               status: 'completed',

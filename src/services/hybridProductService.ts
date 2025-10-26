@@ -133,6 +133,7 @@ export class HybridProductService {
       fulfillmentType: variant.fulfillmentType,
       stockQuantity: variant.stockQuantity,
       availabilityStatus: variant.availabilityStatus,
+      requiresShipping: variant.requiresShipping,
 
       // From hardcoded frontend data
       features: mergedHardcodedData.features!,

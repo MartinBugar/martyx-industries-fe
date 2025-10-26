@@ -105,8 +105,8 @@ const Checkout: React.FC = () => {
   // Calculate totals with discount and shipping
   const calculateTotals = () => {
     const subtotal = getTotalPrice();
-    const discountAmount = discountValidation?.valid ? (discountValidation.calculatedDiscountAmount || 0) : 0;
-    const shippingCost = selectedShipping?.shippingCost || 0;
+    const discountAmount = discountValidation?.valid ? (discountValidation.calculated_discount_amount || 0) : 0;
+    const shippingCost = selectedShipping?.shipping_cost || 0;
     const total = subtotal - discountAmount + shippingCost;
 
     return {
@@ -130,16 +130,16 @@ const Checkout: React.FC = () => {
       try {
         const totals = calculateTotals();
         const response = await shippingService.calculateShipping({
-          destinationCountryCode: formData.billingCountry.toUpperCase(),
-          totalWeightKg: calculateCartWeight(),
-          orderSubtotal: totals.subtotal,
-          postalCode: formData.billingPostalCode || undefined
+          destination_country_code: formData.billingCountry.toUpperCase(),
+          total_weight_kg: calculateCartWeight(),
+          order_subtotal: totals.subtotal,
+          destination_postal_code: formData.billingPostalCode || undefined
         });
 
-        if (response.availableRates && response.availableRates.length > 0) {
-          setShippingOptions(response.availableRates);
+        if (response.available_rates && response.available_rates.length > 0) {
+          setShippingOptions(response.available_rates);
           // Auto-select cheapest option
-          setSelectedShipping(response.availableRates[0]);
+          setSelectedShipping(response.available_rates[0]);
         } else {
           setShippingOptions([]);
           setSelectedShipping(null);
@@ -188,7 +188,7 @@ const Checkout: React.FC = () => {
       setDiscountValidation(validation);
 
       if (!validation.valid) {
-        setDiscountError(validation.errorMessage || 'Invalid discount code');
+        setDiscountError(validation.error_message || 'Invalid discount code');
       }
     } catch (error) {
       console.error('Error validating discount code:', error);

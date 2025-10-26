@@ -6,7 +6,7 @@ import './OrderConfirmation.css';
 
 const OrderConfirmation: React.FC = () => {
   const navigate = useNavigate();
-    const product = products.find(p => p.id === "1") ?? products[0];
+    const product = products.find(p => p.masterProductId === 1) ?? products[0];
   const [customerEmail, setCustomerEmail] = useState<string>('');
   const [orderNumber, setOrderNumber] = useState<string>('');
   const [isEmailSent, setIsEmailSent] = useState<boolean>(false);
@@ -114,7 +114,7 @@ const OrderConfirmation: React.FC = () => {
             
             <div className="info-row">
               <span>Total:</span>
-              <span>{product.price.toFixed(2)} {product.currency === 'EUR' ? '€' : product.currency}</span>
+              <span>{product.priceWithVat.toFixed(2)} {product.currency === 'EUR' ? '€' : product.currency}</span>
             </div>
           </div>
         </div>

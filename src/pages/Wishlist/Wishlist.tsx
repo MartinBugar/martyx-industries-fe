@@ -68,14 +68,14 @@ const Wishlist: React.FC = () => {
 
             // Load gallery for this product from database (same as Products page)
             try {
-              const galleryData = await productGalleryService.getProductImages(product.id.toString());
+              const galleryData = await productGalleryService.getProductImages(product.masterProductId.toString());
 
               // Sort by order and get URLs (prefer CDN URLs) - image with order 0 will be first
               const sortedGallery = galleryData.sort((a, b) => (a.order || 0) - (b.order || 0));
               const galleryUrls = sortedGallery.map(img => img.cdnUrl || img.url).filter(Boolean);
 
               if (import.meta.env.DEV) {
-                console.log(`🏷️ Wishlist: Product ${product.id} (${product.name}) gallery loaded:`, {
+                console.log(`🏷️ Wishlist: Product ${product.masterProductId} (${product.name}) gallery loaded:`, {
                   galleryCount: galleryUrls.length,
                   mainImage: galleryUrls[0] || 'none'
                 });
@@ -90,7 +90,7 @@ const Wishlist: React.FC = () => {
               return { productId: item.productId, product: productWithGallery };
             } catch (galleryError) {
               if (import.meta.env.DEV) {
-                console.log(`🏷️ Wishlist: No gallery found for product ${product.id}, using fallback`);
+                console.log(`🏷️ Wishlist: No gallery found for product ${product.masterProductId}, using fallback`);
               }
               // Return product without database gallery (keeps hardcoded or empty gallery)
               return { productId: item.productId, product };
@@ -127,20 +127,20 @@ const Wishlist: React.FC = () => {
 
 
   const handleAddToCart = useCallback((item: WishlistItem) => {
-    const product = {
-      id: String(item.productId),
-      name: item.productName,
-      price: item.productPrice,
-      currency: item.productCurrency,
-      description: item.productDescription,
-      features: [],
-      modelPath: '',
-      gallery: item.productImageUrl ? [item.productImageUrl] : [],
-      interactionInstructions: [],
-      productType: item.productType as 'DIGITAL' | 'PHYSICAL'
-    };
-    addToCart(product);
-  }, [addToCart]);
+    // Get full product data if available, otherwise use minimal product from wishlist item
+    const fullProduct = productsData.get(item.productId);
+
+    if (fullProduct) {
+      // Use full product data from hybrid service
+      addToCart(fullProduct);
+    } else {
+      // Fallback: create minimal product from wishlist item data
+      // This shouldn't normally happen as we fetch full product data above
+      console.warn('Adding to cart without full product data for', item.productId);
+      // Skip add to cart if we don't have full product data
+      // The user should wait for products to load
+    }
+  }, [addToCart, productsData]);
 
 
   // Memoize filtered items to prevent unnecessary recalculations

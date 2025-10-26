@@ -6,7 +6,6 @@ import type { ProductVariantDto } from '../../types/api';
 
 interface LocalizedProductCardProps {
   variantId: number;
-  showFullDescription?: boolean;
 }
 
 /**
@@ -14,8 +13,7 @@ interface LocalizedProductCardProps {
  * Shows how content changes based on selected language
  */
 const LocalizedProductCard: React.FC<LocalizedProductCardProps> = ({
-  variantId,
-  showFullDescription = false
+  variantId
 }) => {
   const { t, i18n } = useTranslation('products');
   const [product, setProduct] = useState<ProductVariantDto | null>(null);

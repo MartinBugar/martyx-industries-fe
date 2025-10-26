@@ -9,7 +9,7 @@ import './ProductTabs.css';
 
 interface ReviewsTabProps {
   content: TabContent;
-  productId: string;
+  productId: string | number;
 }
 
 const renderTabBody = (content: TabContent) => {
