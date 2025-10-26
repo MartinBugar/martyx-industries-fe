@@ -135,6 +135,10 @@ export interface VariantComponentDto {
   componentType?: string | null; // DIGITAL, PHYSICAL
   quantity?: number;
   description?: string | null;
+  filePath?: string | null;
+  fileSizeBytes?: number | null;
+  fileFormat?: string | null;
+  displayOrder?: number | null;
 }
 
 export interface ProductGalleryDto {
@@ -388,5 +392,85 @@ export const adminProductsService = {
    */
   async deleteProduct(id: string | number): Promise<MessageResponse | void> {
     return this.deleteMasterProduct(id);
+  },
+
+  // =========================================================================
+  // VARIANT CRUD (Admin only)
+  // =========================================================================
+
+  /**
+   * Create new variant for a master product
+   */
+  async createVariant(masterProductId: string | number, payload: ProductVariantDto): Promise<ProductVariantDto> {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/products/${masterProductId}/variants`, {
+      method: 'POST',
+      headers: defaultHeaders as HeadersInit,
+      body: JSON.stringify(payload),
+    });
+    return await handleResponse(resp) as ProductVariantDto;
+  },
+
+  /**
+   * Update existing variant
+   */
+  async updateVariant(id: string | number, payload: ProductVariantDto): Promise<ProductVariantDto> {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/variants/${id}`, {
+      method: 'PUT',
+      headers: defaultHeaders as HeadersInit,
+      body: JSON.stringify(payload),
+    });
+    return await handleResponse(resp) as ProductVariantDto;
+  },
+
+  /**
+   * Delete variant
+   */
+  async deleteVariant(id: string | number): Promise<MessageResponse | void> {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/variants/${id}`, {
+      method: 'DELETE',
+      headers: defaultHeaders as HeadersInit,
+    });
+    if (resp.status === 204) return;
+    return await handleResponse(resp) as MessageResponse;
+  },
+
+  // =========================================================================
+  // COMPONENT CRUD (Admin only)
+  // =========================================================================
+
+  /**
+   * Create new component for a variant
+   */
+  async createComponent(variantId: string | number, payload: VariantComponentDto): Promise<VariantComponentDto> {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/variants/${variantId}/components`, {
+      method: 'POST',
+      headers: defaultHeaders as HeadersInit,
+      body: JSON.stringify(payload),
+    });
+    return await handleResponse(resp) as VariantComponentDto;
+  },
+
+  /**
+   * Update existing component
+   */
+  async updateComponent(id: string | number, payload: VariantComponentDto): Promise<VariantComponentDto> {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/components/${id}`, {
+      method: 'PUT',
+      headers: defaultHeaders as HeadersInit,
+      body: JSON.stringify(payload),
+    });
+    return await handleResponse(resp) as VariantComponentDto;
+  },
+
+  /**
+   * Delete component
+   */
+  async deleteComponent(id: string | number): Promise<MessageResponse | void> {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/components/${id}`, {
+      method: 'DELETE',
+      headers: defaultHeaders as HeadersInit,
+    });
+    if (resp.status === 204) return;
+    return await handleResponse(resp) as MessageResponse;
   },
 };
