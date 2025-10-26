@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useCart } from '../../context/useCart';
 import { shippingService } from '../../services/shippingService';
-import type { ShippingOptionDto } from '../../types/shipping';
 import './CartPage.css';
 
 interface CartPageProps {
