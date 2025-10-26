@@ -455,6 +455,171 @@ export class ProductGalleryService {
       }
     };
   }
+
+  // =========================================================================
+  // NEW ARCHITECTURE: MasterProduct + ProductVariant Gallery Support
+  // =========================================================================
+
+  /**
+   * Get gallery for variant with fallback to master product
+   * Logic: If variant has specific images, return them. Otherwise return master product gallery.
+   */
+  async getGalleryForVariant(masterProductId: number, variantId?: number): Promise<GalleryImage[]> {
+    const endpoint = variantId
+      ? `${API_BASE_URL}/api/master-products/${masterProductId}/variants/${variantId}/gallery`
+      : `${API_BASE_URL}/api/master-products/${masterProductId}/gallery`;
+
+    const response = await fetch(endpoint, withLangHeaders({
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      } as HeadersInit,
+    }));
+
+    return handleResponse(response);
+  }
+
+  /**
+   * Get master product gallery (shared across variants)
+   */
+  async getMasterProductGallery(masterProductId: number): Promise<GalleryImage[]> {
+    const response = await fetch(`${API_BASE_URL}/api/master-products/${masterProductId}/gallery`, withLangHeaders({
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      } as HeadersInit,
+    }));
+
+    return handleResponse(response);
+  }
+
+  /**
+   * Upload image for master product (shared across variants)
+   */
+  async uploadImageForMasterProduct(masterProductId: number, file: File, order?: number): Promise<UploadImageResponse> {
+    try {
+      const base64Data = await this.fileToBase64(file);
+
+      const timestamp = Date.now();
+      const extension = file.name.split('.').pop() || 'png';
+      const baseName = file.name.replace(/\.[^/.]+$/, '').replace(/[^a-zA-Z0-9]/g, '_');
+      const generatedFileName = `${timestamp}_${baseName}.${extension}`;
+
+      const jsonRequest = {
+        fileName: generatedFileName,
+        originalName: file.name,
+        mimeType: file.type,
+        fileSize: Number(file.size),
+        order: order || 0,
+        folderName: String(masterProductId).toUpperCase(),
+        fileData: base64Data
+      };
+
+      const headers = { ...defaultHeaders };
+      const token = localStorage.getItem('token');
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const response = await fetch(`${API_BASE_URL}/api/master-products/${masterProductId}/gallery/upload-json`, withLangHeaders({
+        method: 'POST',
+        headers: headers as HeadersInit,
+        body: JSON.stringify(jsonRequest),
+      }));
+
+      if (!response.ok) {
+        throw new Error(`Upload failed: ${response.status}`);
+      }
+
+      return handleResponse(response);
+    } catch (error) {
+      console.error('❌ Master product image upload failed:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Upload image for specific variant
+   */
+  async uploadImageForVariant(masterProductId: number, variantId: number, file: File, order?: number): Promise<UploadImageResponse> {
+    try {
+      const base64Data = await this.fileToBase64(file);
+
+      const timestamp = Date.now();
+      const extension = file.name.split('.').pop() || 'png';
+      const baseName = file.name.replace(/\.[^/.]+$/, '').replace(/[^a-zA-Z0-9]/g, '_');
+      const generatedFileName = `${timestamp}_${baseName}.${extension}`;
+
+      const jsonRequest = {
+        fileName: generatedFileName,
+        originalName: file.name,
+        mimeType: file.type,
+        fileSize: Number(file.size),
+        order: order || 0,
+        folderName: `${masterProductId}_V${variantId}`.toUpperCase(),
+        fileData: base64Data
+      };
+
+      const headers = { ...defaultHeaders };
+      const token = localStorage.getItem('token');
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      if (import.meta.env.DEV) {
+        console.log(`📤 Uploading variant image to: ${API_BASE_URL}/api/master-products/${masterProductId}/variants/${variantId}/gallery/upload-json`);
+      }
+
+      const response = await fetch(`${API_BASE_URL}/api/master-products/${masterProductId}/variants/${variantId}/gallery/upload-json`, withLangHeaders({
+        method: 'POST',
+        headers: headers as HeadersInit,
+        body: JSON.stringify(jsonRequest),
+      }));
+
+      if (!response.ok) {
+        throw new Error(`Upload failed: ${response.status}`);
+      }
+
+      return handleResponse(response);
+    } catch (error) {
+      console.error('❌ Variant image upload failed:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Delete image from master product or variant
+   */
+  async deleteImageForProduct(masterProductId: number, variantId: number | null, imageId: string): Promise<{ success: boolean }> {
+    const endpoint = variantId
+      ? `${API_BASE_URL}/api/master-products/${masterProductId}/variants/${variantId}/gallery/${imageId}`
+      : `${API_BASE_URL}/api/master-products/${masterProductId}/gallery/${imageId}`;
+
+    const response = await fetch(endpoint, withLangHeaders({
+      method: 'DELETE',
+      headers: defaultHeaders as HeadersInit,
+    }));
+
+    return handleResponse(response);
+  }
+
+  /**
+   * Get image count for variant (with fallback to master)
+   */
+  async getImageCountForVariant(masterProductId: number, variantId?: number): Promise<number> {
+    const endpoint = variantId
+      ? `${API_BASE_URL}/api/master-products/${masterProductId}/variants/${variantId}/gallery/count`
+      : `${API_BASE_URL}/api/master-products/${masterProductId}/gallery/count`;
+
+    const response = await fetch(endpoint, withLangHeaders({
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      } as HeadersInit,
+    }));
+
+    return handleResponse(response);
+  }
 }
 
 export const productGalleryService = new ProductGalleryService();
