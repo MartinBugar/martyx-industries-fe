@@ -69,23 +69,31 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({product, onVariantChange
                 className="price">{product.priceWithVat.toFixed(2)} {product.currency === 'EUR' ? '€' : product.currency}</div>
             <p className="description">{product.description}</p>
 
-            <h3 id="features">What's Included:</h3>
-            <ul className="features-list">
-                {product.components && product.components.length > 0 ? (
-                    product.components
-                        .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))
-                        .map((component) => (
-                            <li key={component.id}>
-                                {component.quantity && component.quantity > 1 ? `${component.quantity}× ` : ''}
-                                {component.label || component.componentType}
-                            </li>
+            <div className="whats-included-section">
+                <h3 id="features">What's Included</h3>
+                <div className="features-grid">
+                    {product.components && product.components.length > 0 ? (
+                        product.components
+                            .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))
+                            .map((component) => (
+                                <div key={component.id} className="feature-item">
+                                    <span className="feature-icon">✓</span>
+                                    <span className="feature-text">
+                                        {component.quantity && component.quantity > 1 ? `${component.quantity}× ` : ''}
+                                        {component.label || component.componentType}
+                                    </span>
+                                </div>
+                            ))
+                    ) : (
+                        product.features.map((feature, index) => (
+                            <div key={index} className="feature-item">
+                                <span className="feature-icon">✓</span>
+                                <span className="feature-text">{feature}</span>
+                            </div>
                         ))
-                ) : (
-                    product.features.map((feature, index) => (
-                        <li key={index}>{feature}</li>
-                    ))
-                )}
-            </ul>
+                    )}
+                </div>
+            </div>
 
 
             <div className="product-actions">
