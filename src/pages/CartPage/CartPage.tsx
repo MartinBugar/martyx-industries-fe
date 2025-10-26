@@ -1,7 +1,9 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useCart } from '../../context/useCart';
+import { shippingService } from '../../services/shippingService';
+import type { ShippingOptionDto } from '../../types/shipping';
 import './CartPage.css';
 
 interface CartPageProps {
@@ -11,10 +13,10 @@ interface CartPageProps {
   onCheckout?: () => void;
 }
 
-const CartPage: React.FC<CartPageProps> = ({ 
-  isOpen, 
-  onClose, 
-  onCheckout 
+const CartPage: React.FC<CartPageProps> = ({
+  isOpen,
+  onClose,
+  onCheckout
 }) => {
   const { items, removeFromCart, updateQuantity, getTotalItems, getTotalPrice } = useCart();
   const navigate = useNavigate();
@@ -23,6 +25,10 @@ const CartPage: React.FC<CartPageProps> = ({
 
   // Modal mode vs Page mode
   const isModal = Boolean(isOpen !== undefined);
+
+  // Shipping state - fetch real shipping costs from backend
+  const [cheapestShipping, setCheapestShipping] = useState<number | null>(null);
+  const [isLoadingShipping, setIsLoadingShipping] = useState(false);
   
   const handleCheckout = () => {
     if (isModal && onCheckout) {
@@ -35,21 +41,69 @@ const CartPage: React.FC<CartPageProps> = ({
   // Modal-specific functionality
   useEffect(() => {
     if (!isModal || !isOpen) return;
-    
+
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && onClose) onClose();
     };
-    
+
     document.addEventListener('keydown', onKeyDown);
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     setTimeout(() => modalRef.current?.focus(), 0);
-    
+
     return () => {
       document.removeEventListener('keydown', onKeyDown);
       document.body.style.overflow = prevOverflow;
     };
   }, [isModal, isOpen, onClose]);
+
+  // Fetch real shipping costs from backend (same logic as Checkout page)
+  useEffect(() => {
+    const hasPhysicalProducts = items.some(i => i.product.requiresShipping);
+
+    // Only fetch shipping if we have physical products
+    if (!hasPhysicalProducts || items.length === 0) {
+      setCheapestShipping(0);
+      return;
+    }
+
+    const fetchShipping = async () => {
+      setIsLoadingShipping(true);
+
+      try {
+        // Calculate cart weight (same logic as Checkout)
+        const totalWeight = items.reduce((total, item) => {
+          const weight = (item.product as any).weightKg || 0.5; // Default 0.5kg if not specified
+          return total + (weight * item.quantity);
+        }, 0);
+
+        // Use Slovakia (SK) as default country, same as checkout page
+        const response = await shippingService.calculateShipping({
+          destination_country_code: 'SK',
+          total_weight_kg: totalWeight,
+          order_subtotal: getTotalPrice(),
+          destination_postal_code: undefined
+        });
+
+        if (response.available_rates && response.available_rates.length > 0) {
+          // Get cheapest shipping option (first one is cheapest, sorted by backend)
+          const cheapest = response.available_rates[0];
+          setCheapestShipping(cheapest.shipping_cost || 0);
+        } else {
+          // No shipping options available, set to 0
+          setCheapestShipping(0);
+        }
+      } catch (error) {
+        console.error('Error fetching shipping costs:', error);
+        // On error, fallback to 0 instead of showing wrong price
+        setCheapestShipping(0);
+      } finally {
+        setIsLoadingShipping(false);
+      }
+    };
+
+    fetchShipping();
+  }, [items, getTotalPrice]);
 
   const handleViewFullCart = () => {
     if (onClose) onClose();
@@ -71,8 +125,10 @@ const CartPage: React.FC<CartPageProps> = ({
 
   const subtotal = getTotalPrice();
   const hasPhysicalProducts = items.some(i => i.product.requiresShipping);
-  const shipping = items.length > 0 && hasPhysicalProducts ? 5.99 : 0;
-  const total = subtotal + shipping;
+  // Use fetched shipping cost instead of hardcoded value
+  // While loading, use null to show loading state; otherwise use fetched value or 0
+  const shipping = isLoadingShipping ? null : (cheapestShipping ?? 0);
+  const total = subtotal + (shipping ?? 0);
   const isEmpty = items.length === 0;
 
   const onQty = (variantId: string, next: number, isDigital: boolean) => {
@@ -222,7 +278,15 @@ const CartPage: React.FC<CartPageProps> = ({
               {hasPhysicalProducts ? (
                 <div className="summary-row">
                   <span>{t('order_summary.shipping')}</span>
-                  <span>{shipping > 0 ? formatPrice(shipping) : t('cart.free')}</span>
+                  <span>
+                    {isLoadingShipping ? (
+                      <span style={{ opacity: 0.6 }}>Calculating...</span>
+                    ) : shipping !== null && shipping > 0 ? (
+                      formatPrice(shipping)
+                    ) : (
+                      t('cart.free')
+                    )}
+                  </span>
                 </div>
               ) : (
                 <div className="delivery-info">

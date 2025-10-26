@@ -15,7 +15,7 @@ const getPriceDisplay = (product: Product): { prefix: string; price: number } =>
 
   if (hasMultipleVariants) {
     // Find lowest price from all variants
-    const lowestPrice = Math.min(...product.availableVariants.map(v => v.priceWithVat));
+    const lowestPrice = Math.min(...product.availableVariants!.map(v => v.priceWithVat));
     return { prefix: 'Od ', price: lowestPrice };
   }
 

@@ -55,7 +55,7 @@ const AdminProductGallery: React.FC = () => {
         to={`/admin/products/${id}`}
         className="admin-nav-tab"
       >
-        📦 Variants ({product?.variants?.length || 0})
+        📦 Variants ({Array.isArray(product?.variants) ? product.variants.length : 0})
       </Link>
       <Link
         to={`/admin/products/${id}/gallery`}
