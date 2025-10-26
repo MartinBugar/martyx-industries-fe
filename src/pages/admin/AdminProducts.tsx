@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Eye, Pencil, X, Search, Package } from 'lucide-react';
+import { Eye, X, Search, Package } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
 import { adminProductsService, type MasterProductDto, type PageResponse } from '../../services/adminProductsService';
@@ -178,7 +178,6 @@ const AdminProducts: React.FC = () => {
 
     const min = Math.min(...prices);
     const max = Math.max(...prices);
-    const currency = variants[0]?.currency || 'EUR';
 
     if (min === max) return `€${min.toFixed(2)}`;
     return `€${min.toFixed(2)} - €${max.toFixed(2)}`;
@@ -445,7 +444,7 @@ const AdminProducts: React.FC = () => {
                           </Badge>
                           {p.featured && <Badge variant="info" size="sm" style={{ marginLeft: 4 }}>Featured</Badge>}
                           {p.bestseller && <Badge variant="success" size="sm" style={{ marginLeft: 4 }}>Bestseller</Badge>}
-                          {p.newProduct && <Badge variant="primary" size="sm" style={{ marginLeft: 4 }}>New</Badge>}
+                          {p.newProduct && <Badge variant="info" size="sm" style={{ marginLeft: 4 }}>New</Badge>}
                         </span>
                       </div>
                     </div>
@@ -500,7 +499,7 @@ const AdminProducts: React.FC = () => {
                           </Badge>
                           {p.featured && <Badge variant="info" size="sm">Featured</Badge>}
                           {p.bestseller && <Badge variant="success" size="sm">Best</Badge>}
-                          {p.newProduct && <Badge variant="primary" size="sm">New</Badge>}
+                          {p.newProduct && <Badge variant="info" size="sm">New</Badge>}
                         </div>
                       </td>
                       <td className="text-right">

@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { Package, Plus, X, Save, Trash2 } from 'lucide-react';
+import { Package, Plus, Save, Trash2, Edit } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
 import { adminProductsService, type MasterProductDto, type ProductVariantDto, type VariantComponentDto } from '../../services/adminProductsService';
 import { Button, Badge } from '../../components/ui';
+import VariantEditor from '../../components/admin/VariantEditor';
+import ComponentEditor from '../../components/admin/ComponentEditor';
 
 const AdminProductDetail: React.FC = () => {
-  const { t } = useTranslation('common');
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
@@ -20,6 +20,15 @@ const AdminProductDetail: React.FC = () => {
 
   // Active tab: product-info | variants
   const [activeTab, setActiveTab] = useState<'product-info' | 'variants'>('product-info');
+
+  // Variant editor state
+  const [showVariantEditor, setShowVariantEditor] = useState(false);
+  const [editingVariant, setEditingVariant] = useState<ProductVariantDto | null>(null);
+
+  // Component editor state
+  const [showComponentEditor, setShowComponentEditor] = useState(false);
+  const [editingComponent, setEditingComponent] = useState<VariantComponentDto | null>(null);
+  const [componentVariantId, setComponentVariantId] = useState<number | null>(null);
 
   const load = async () => {
     if (!id) return;
@@ -53,14 +62,14 @@ const AdminProductDetail: React.FC = () => {
     setSavedMsg(null);
     try {
       const payload: MasterProductDto = { ...product };
-      // Clean timestamps (read-only)
-      delete (payload as Record<string, unknown>)['createdAt'];
-      delete (payload as Record<string, unknown>)['updatedAt'];
-      // Clean relationships (managed separately)
-      delete (payload as Record<string, unknown>)['variants'];
-      delete (payload as Record<string, unknown>)['gallery'];
+      // Clean timestamps (read-only) and relationships (managed separately)
+      const cleanPayload: any = { ...payload };
+      delete cleanPayload.createdAt;
+      delete cleanPayload.updatedAt;
+      delete cleanPayload.variants;
+      delete cleanPayload.gallery;
 
-      const updated = await adminProductsService.updateMasterProduct(id, payload);
+      const updated = await adminProductsService.updateMasterProduct(id, cleanPayload);
       setProduct(updated);
       setSavedMsg('Master product updated successfully.');
     } catch (e: unknown) {
@@ -69,6 +78,86 @@ const AdminProductDetail: React.FC = () => {
       setSavedMsg(null);
     } finally {
       setSaving(false);
+    }
+  };
+
+  // Variant CRUD handlers
+  const handleCreateVariant = () => {
+    setEditingVariant(null);
+    setShowVariantEditor(true);
+  };
+
+  const handleEditVariant = (variant: ProductVariantDto) => {
+    setEditingVariant(variant);
+    setShowVariantEditor(true);
+  };
+
+  const handleSaveVariant = async (variant: ProductVariantDto) => {
+    try {
+      if (variant.id) {
+        await adminProductsService.updateVariant(variant.id, variant);
+      } else {
+        await adminProductsService.createVariant(Number(id), variant);
+      }
+      setShowVariantEditor(false);
+      setEditingVariant(null);
+      await load(); // Reload product to get updated variants
+      setSavedMsg('Variant saved successfully!');
+    } catch (e: any) {
+      throw new Error(e.message || 'Failed to save variant');
+    }
+  };
+
+  const handleDeleteVariant = async (variantId: number) => {
+    if (!window.confirm('Are you sure you want to delete this variant?')) return;
+    try {
+      await adminProductsService.deleteVariant(variantId);
+      await load();
+      setSavedMsg('Variant deleted successfully!');
+    } catch (e: any) {
+      setError(e.message || 'Failed to delete variant');
+    }
+  };
+
+  // Component CRUD handlers
+  const handleAddComponent = (variantId: number) => {
+    setComponentVariantId(variantId);
+    setEditingComponent(null);
+    setShowComponentEditor(true);
+  };
+
+  const handleEditComponent = (component: VariantComponentDto, variantId: number) => {
+    setComponentVariantId(variantId);
+    setEditingComponent(component);
+    setShowComponentEditor(true);
+  };
+
+  const handleSaveComponent = async (component: VariantComponentDto) => {
+    if (componentVariantId === null) return;
+    try {
+      if (component.id) {
+        await adminProductsService.updateComponent(component.id, component);
+      } else {
+        await adminProductsService.createComponent(componentVariantId, component);
+      }
+      setShowComponentEditor(false);
+      setEditingComponent(null);
+      setComponentVariantId(null);
+      await load();
+      setSavedMsg('Component saved successfully!');
+    } catch (e: any) {
+      throw new Error(e.message || 'Failed to save component');
+    }
+  };
+
+  const handleDeleteComponent = async (componentId: number) => {
+    if (!window.confirm('Are you sure you want to delete this component?')) return;
+    try {
+      await adminProductsService.deleteComponent(componentId);
+      await load();
+      setSavedMsg('Component deleted successfully!');
+    } catch (e: any) {
+      setError(e.message || 'Failed to delete component');
     }
   };
 
@@ -83,18 +172,6 @@ const AdminProductDetail: React.FC = () => {
       const msg = e instanceof Error ? e.message : 'Failed to delete product';
       setError(msg);
     }
-  };
-
-  const getCategoryLabel = (cat?: string | null): string => {
-    if (!cat) return '—';
-    const labels: Record<string, string> = {
-      MODEL_KIT: 'Model Kit',
-      MERCHANDISE: 'Merchandise',
-      ELECTRONICS: 'Electronics',
-      ACCESSORIES: 'Accessories',
-      DIGITAL_DOWNLOAD: 'Digital Download',
-    };
-    return labels[cat] || cat;
   };
 
   // Navigation tabs
@@ -349,8 +426,8 @@ const AdminProductDetail: React.FC = () => {
                     <p style={{ color: '#6b7280' }}>
                       Manage product variants - different configurations with unique SKUs, pricing, and components.
                     </p>
-                    <Button variant="primary" icon={Plus} disabled>
-                      Add Variant (Coming Soon)
+                    <Button variant="primary" icon={Plus} onClick={handleCreateVariant}>
+                      Add Variant
                     </Button>
                   </div>
 
@@ -361,14 +438,22 @@ const AdminProductDetail: React.FC = () => {
                       <p style={{ color: '#6b7280', marginBottom: 24 }}>
                         Create product variants to offer different configurations (e.g., Digital Edition, Full Kit).
                       </p>
-                      <Button variant="primary" icon={Plus} disabled>
-                        Create First Variant (Coming Soon)
+                      <Button variant="primary" icon={Plus} onClick={handleCreateVariant}>
+                        Create First Variant
                       </Button>
                     </div>
                   ) : (
                     <div style={{ display: 'grid', gap: 16 }}>
                       {product.variants.map((variant, idx) => (
-                        <VariantCard key={variant.id || idx} variant={variant} />
+                        <VariantCard
+                          key={variant.id || idx}
+                          variant={variant}
+                          onEdit={() => handleEditVariant(variant)}
+                          onDelete={() => variant.id && handleDeleteVariant(variant.id)}
+                          onAddComponent={() => variant.id && handleAddComponent(variant.id)}
+                          onEditComponent={(comp) => variant.id && handleEditComponent(comp, variant.id)}
+                          onDeleteComponent={handleDeleteComponent}
+                        />
                       ))}
                     </div>
                   )}
@@ -378,12 +463,54 @@ const AdminProductDetail: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Modals */}
+      {showVariantEditor && (
+        <VariantEditor
+          variant={editingVariant}
+          masterProductId={Number(id)}
+          onSave={handleSaveVariant}
+          onCancel={() => {
+            setShowVariantEditor(false);
+            setEditingVariant(null);
+          }}
+        />
+      )}
+
+      {showComponentEditor && componentVariantId && (
+        <ComponentEditor
+          component={editingComponent}
+          variantId={componentVariantId}
+          onSave={handleSaveComponent}
+          onCancel={() => {
+            setShowComponentEditor(false);
+            setEditingComponent(null);
+            setComponentVariantId(null);
+          }}
+        />
+      )}
     </AdminLayout>
   );
 };
 
 // Component to display a single variant with its components
-const VariantCard: React.FC<{ variant: ProductVariantDto }> = ({ variant }) => {
+interface VariantCardProps {
+  variant: ProductVariantDto;
+  onEdit: () => void;
+  onDelete: () => void;
+  onAddComponent: () => void;
+  onEditComponent: (component: VariantComponentDto) => void;
+  onDeleteComponent: (componentId: number) => void;
+}
+
+const VariantCard: React.FC<VariantCardProps> = ({
+  variant,
+  onEdit,
+  onDelete,
+  onAddComponent,
+  onEditComponent,
+  onDeleteComponent,
+}) => {
   const [expanded, setExpanded] = useState(false);
 
   const getVariantTypeLabel = (type?: string | null): string => {
@@ -441,9 +568,14 @@ const VariantCard: React.FC<{ variant: ProductVariantDto }> = ({ variant }) => {
             )}
           </div>
         </div>
-        <Button variant="outline" size="sm">
-          {expanded ? 'Collapse' : 'Expand'}
-        </Button>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <Button variant="outline" size="sm" icon={Edit} onClick={onEdit}>
+            Edit
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => setExpanded(!expanded)}>
+            {expanded ? 'Collapse' : 'Expand'}
+          </Button>
+        </div>
       </div>
 
       {/* Expanded Details */}
@@ -490,9 +622,14 @@ const VariantCard: React.FC<{ variant: ProductVariantDto }> = ({ variant }) => {
 
           {/* Components - What's Included */}
           <div>
-            <h4 style={{ marginBottom: 12, fontSize: '14px', fontWeight: 600, color: '#374151' }}>
-              📦 What's Included in This Variant
-            </h4>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+              <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#374151' }}>
+                📦 What's Included in This Variant
+              </h4>
+              <Button variant="outline" size="sm" icon={Plus} onClick={onAddComponent}>
+                Add Component
+              </Button>
+            </div>
             {!variant.components || variant.components.length === 0 ? (
               <div style={{ padding: '12px', background: '#fef3c7', border: '1px solid #fde68a', borderRadius: '6px', fontSize: '14px' }}>
                 No components defined. Add components to specify what's included in this variant.
@@ -510,6 +647,7 @@ const VariantCard: React.FC<{ variant: ProductVariantDto }> = ({ variant }) => {
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center',
+                      gap: 12,
                     }}
                   >
                     <div style={{ flex: 1 }}>
@@ -523,23 +661,42 @@ const VariantCard: React.FC<{ variant: ProductVariantDto }> = ({ variant }) => {
                         </div>
                       )}
                     </div>
-                    {component.componentType && (
-                      <Badge
-                        variant={component.componentType === 'DIGITAL' ? 'info' : 'success'}
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                      {component.componentType && (
+                        <Badge
+                          variant={component.componentType.includes('DIGITAL') || component.componentType.includes('STL') || component.componentType.includes('SOFTWARE') || component.componentType.includes('GUIDE') || component.componentType.includes('BOM') ? 'info' : 'success'}
+                          size="sm"
+                        >
+                          {component.componentType}
+                        </Badge>
+                      )}
+                      <Button
+                        variant="outline"
                         size="sm"
-                      >
-                        {component.componentType}
-                      </Badge>
-                    )}
+                        icon={Edit}
+                        onClick={() => onEditComponent(component)}
+                        style={{ padding: '4px 8px' }}
+                      />
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        icon={Trash2}
+                        onClick={() => component.id && onDeleteComponent(component.id)}
+                        style={{ padding: '4px 8px' }}
+                      />
+                    </div>
                   </div>
                 ))}
               </div>
             )}
           </div>
 
-          <div style={{ marginTop: 20, paddingTop: 20, borderTop: '1px solid #e5e7eb' }}>
-            <Button variant="outline" size="sm" disabled>
-              Edit Variant (Coming Soon)
+          <div style={{ marginTop: 20, paddingTop: 20, borderTop: '1px solid #e5e7eb', display: 'flex', gap: 8 }}>
+            <Button variant="outline" size="sm" icon={Edit} onClick={onEdit}>
+              Edit Variant
+            </Button>
+            <Button variant="danger" size="sm" icon={Trash2} onClick={onDelete}>
+              Delete Variant
             </Button>
           </div>
         </div>

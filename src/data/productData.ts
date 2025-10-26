@@ -84,6 +84,22 @@ export interface Product {
     tabs?: ProductTab[];
     videoUrl?: string;
 
+    // From selected ProductVariant components
+    components?: Array<{
+        id: number;
+        componentName: string;
+        componentType?: string;
+        description?: string | null;
+        quantity?: number | null;
+        digital?: boolean;
+        physical?: boolean;
+        iconName?: string;
+        badgeColor?: string;
+        label?: string;
+        formattedFileSize?: string;
+        displayOrder?: number | null;
+    }>;
+
     // All available variants for this product
     availableVariants?: ProductVariant[];
 }
