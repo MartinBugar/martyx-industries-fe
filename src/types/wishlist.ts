@@ -10,6 +10,7 @@ export interface WishlistItem {
   productType: 'physical' | 'digital'; // Backend uses lowercase
   addedAt: string; // ISO date string
   isAvailable: boolean;
+  hasMultipleVariants: boolean;
 }
 
 export interface WishlistResponse {

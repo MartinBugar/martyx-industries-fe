@@ -347,7 +347,8 @@ const Wishlist: React.FC = () => {
                       <h3 className="product-card-title">{item.productName}</h3>
                       <p className="product-card-description">{item.productDescription}</p>
                       <div className="product-card-price">
-                        {item.productPrice.toFixed(2)} {item.productCurrency === 'EUR' ? '€' : item.productCurrency}
+                        {item.hasMultipleVariants && 'Od '}
+                        {item.productPrice ? item.productPrice.toFixed(2) : '0.00'} {item.productCurrency === 'EUR' ? '€' : item.productCurrency}
                       </div>
                     </div>
                   </Link>
@@ -419,7 +420,8 @@ const Wishlist: React.FC = () => {
                           <h3 className="product-card-title">{item.productName}</h3>
                           <p className="product-card-description">{item.productDescription}</p>
                           <div className="product-card-price">
-                            {item.productPrice.toFixed(2)} {item.productCurrency === 'EUR' ? '€' : item.productCurrency}
+                            {item.hasMultipleVariants && 'Od '}
+                            {item.productPrice ? item.productPrice.toFixed(2) : '0.00'} {item.productCurrency === 'EUR' ? '€' : item.productCurrency}
                           </div>
                         </div>
                       </Link>

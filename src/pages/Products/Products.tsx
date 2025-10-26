@@ -10,6 +10,20 @@ import { getBestImageUrl, getBaseNameFromPath, isCDNEnabled } from '../../utils/
 import { productGalleryService } from '../../services/productGalleryService';
 import './Products.css';
 
+// Helper function to get price display with "Od" prefix if multiple variants
+const getPriceDisplay = (product: Product): { prefix: string; price: number } => {
+    const hasMultipleVariants = product.availableVariants && product.availableVariants.length > 1;
+
+    if (hasMultipleVariants) {
+        // Find lowest price from all variants
+        const lowestPrice = Math.min(...product.availableVariants.map(v => v.priceWithVat));
+        return { prefix: 'Od ', price: lowestPrice };
+    }
+
+    // Single variant or no variants - show current price without prefix
+    return { prefix: '', price: product.priceWithVat };
+};
+
 const Products: React.FC = () => {
     const {addToCart} = useCart();
     const {t, i18n} = useTranslation('products');
@@ -253,7 +267,7 @@ const Products: React.FC = () => {
                                                 )}
                                                 <div className="product-card-wishlist">
                                                     <WishlistButton
-                                                        productId={p.variantId}
+                                                        productId={p.masterProductId}
                                                         size="small"
                                                         variant="icon"
                                                     />
@@ -263,8 +277,12 @@ const Products: React.FC = () => {
                                             <div className="product-card-content">
                                                 <h3 className="product-card-title">{p.name}</h3>
                                                 <p className="product-card-description">{p.description}</p>
-                                                <div
-                                                    className="product-card-price">{p.priceWithVat.toFixed(2)} {p.currency === 'EUR' ? '€' : p.currency}</div>
+                                                <div className="product-card-price">
+                                                    {(() => {
+                                                        const { prefix, price } = getPriceDisplay(p);
+                                                        return `${prefix}${price.toFixed(2)} ${p.currency === 'EUR' ? '€' : p.currency}`;
+                                                    })()}
+                                                </div>
                                             </div>
                                         </Link>
 

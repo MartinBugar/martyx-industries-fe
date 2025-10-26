@@ -9,6 +9,20 @@ import { getBestImageUrl, getBaseNameFromPath, isCDNEnabled } from '../../utils/
 import { productGalleryService } from '../../services/productGalleryService';
 import './Home.css';
 
+// Helper function to get price display with "Od" prefix if multiple variants
+const getPriceDisplay = (product: Product): { prefix: string; price: number } => {
+  const hasMultipleVariants = product.availableVariants && product.availableVariants.length > 1;
+
+  if (hasMultipleVariants) {
+    // Find lowest price from all variants
+    const lowestPrice = Math.min(...product.availableVariants.map(v => v.priceWithVat));
+    return { prefix: 'Od ', price: lowestPrice };
+  }
+
+  // Single variant or no variants - show current price without prefix
+  return { prefix: '', price: product.priceWithVat };
+};
+
 const Home: React.FC = () => {
   const { t, i18n } = useTranslation('home');
   const [products, setProducts] = useState<Product[]>([]);
@@ -199,7 +213,7 @@ const Home: React.FC = () => {
                   </Link>
                   <div className="product-card-wishlist">
                     <WishlistButton
-                      productId={p.variantId}
+                      productId={p.masterProductId}
                       size="small"
                       variant="icon"
                     />
@@ -208,7 +222,12 @@ const Home: React.FC = () => {
                 <Link to={`/products/${p.masterProductId}`} className="product-card-link">
                   <div className="product-info">
                     <h3 className="product-title">{p.name}</h3>
-                    <div className="product-price">{p.currency} {p.priceWithVat.toFixed(2)}</div>
+                    <div className="product-price">
+                      {(() => {
+                        const { prefix, price } = getPriceDisplay(p);
+                        return `${prefix}${price.toFixed(2)} ${p.currency === 'EUR' ? '€' : p.currency}`;
+                      })()}
+                    </div>
                     <p className="product-description">{p.description}</p>
                   </div>
                 </Link>

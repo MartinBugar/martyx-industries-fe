@@ -98,7 +98,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({product, onVariantChange
 
             <div className="product-actions">
                 <WishlistButton
-                    productId={product.variantId}
+                    productId={product.masterProductId}
                     variant="button"
                     size="large"
                 />
