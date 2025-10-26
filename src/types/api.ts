@@ -109,30 +109,42 @@ export interface ProductVariantDto {
   active: boolean;  // Changed from isActive to match backend
   createdAt: string;
   updatedAt: string;
+
+  // Components (What's Included)
+  components?: VariantComponentDto[];
 }
 
 // Variant Component DTO - Bill of Materials
 export interface VariantComponentDto {
   id: number;
   variantId: number;
-  componentType: 'STL_FILES' | 'MECHANICAL_PARTS' | 'ELECTRONICS' | 'PRINTED_PARTS' | 'ASSEMBLY_GUIDE' | 'SOFTWARE';
+  componentType: 'STL_FILES' | 'MECHANICAL_PARTS' | 'ELECTRONICS' | 'PRINTED_PARTS' | 'ASSEMBLY_GUIDE' | 'SOFTWARE' | 'BOM' | 'FASTENERS' | 'TOOLS' | 'GIFT' | 'PACKAGING' | 'OTHER';
   componentName: string;
   description: string | null;
-  isDigital: boolean;
-  isPhysical: boolean;
+  digital: boolean;
+  physical: boolean;
 
   // Digital component fields
   filePath: string | null;
   fileSizeBytes: number | null;
   fileFormat: string | null;
+  fileMimeType: string | null;
 
   // Physical component fields
   quantity: number | null;
   weightGrams: number | null;
 
+  // UI Metadata (from backend enum)
+  iconName?: string;
+  badgeColor?: string;
+  label?: string;
+  formattedFileSize?: string;
+
   // Ordering
   displayOrder: number;
+  highlighted?: boolean;
   createdAt: string;
+  updatedAt?: string;
 }
 
 // Product Gallery DTO - Product images

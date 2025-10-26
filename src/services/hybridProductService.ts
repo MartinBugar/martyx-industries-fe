@@ -173,6 +173,9 @@ export class HybridProductService {
       tabs: tabs,
       videoUrl: videoUrl,
 
+      // From selected ProductVariant components (What's Included)
+      components: variant.components || [],
+
       // All available variants for this product
       availableVariants: availableVariants
     };

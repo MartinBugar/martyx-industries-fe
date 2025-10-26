@@ -69,11 +69,43 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({product, onVariantChange
                 className="price">{product.priceWithVat.toFixed(2)} {product.currency === 'EUR' ? '€' : product.currency}</div>
             <p className="description">{product.description}</p>
 
-            <h3 id="features">Features:</h3>
+            <h3 id="features">What's Included:</h3>
             <ul className="features-list">
-                {product.features.map((feature, index) => (
-                    <li key={index}>{feature}</li>
-                ))}
+                {product.components && product.components.length > 0 ? (
+                    product.components
+                        .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))
+                        .map((component) => (
+                            <li key={component.id} style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                                <span style={{
+                                    display: 'inline-block',
+                                    padding: '2px 8px',
+                                    borderRadius: '4px',
+                                    fontSize: '0.75rem',
+                                    fontWeight: 600,
+                                    backgroundColor: component.badgeColor === 'blue' ? '#eff6ff' :
+                                                    component.badgeColor === 'green' ? '#f0fdf4' :
+                                                    component.badgeColor === 'purple' ? '#faf5ff' :
+                                                    '#f3f4f6',
+                                    color: component.badgeColor === 'blue' ? '#1e40af' :
+                                           component.badgeColor === 'green' ? '#15803d' :
+                                           component.badgeColor === 'purple' ? '#7c3aed' :
+                                           '#4b5563'
+                                }}>
+                                    {component.label || component.componentType}
+                                </span>
+                                <span>
+                                    {component.quantity && component.quantity > 1 ? `${component.quantity}× ` : ''}
+                                    <strong>{component.componentName}</strong>
+                                    {component.description && <span style={{color: '#6b7280'}}> — {component.description}</span>}
+                                    {component.formattedFileSize && <span style={{color: '#9ca3af', fontSize: '0.875rem'}}> ({component.formattedFileSize})</span>}
+                                </span>
+                            </li>
+                        ))
+                ) : (
+                    product.features.map((feature, index) => (
+                        <li key={index}>{feature}</li>
+                    ))
+                )}
             </ul>
 
 
