@@ -50,16 +50,11 @@ export interface ReorderImagesRequest {
 export class ProductGalleryService {
   /**
    * Get all images for a product (public endpoint - no authentication required)
+   * NOTE: Redirects to new MasterProduct architecture
    */
   async getProductImages(productId: string): Promise<GalleryImage[]> {
-    const response = await fetch(`${API_BASE_URL}/api/products/${productId}/gallery`, withLangHeaders({
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      } as HeadersInit,
-    }));
-
-    return handleResponse(response);
+    // Use new MasterProduct architecture
+    return this.getMasterProductGallery(Number(productId));
   }
 
   // fileToBase64 removed - not used in frontend-first upload approach
@@ -122,7 +117,7 @@ export class ProductGalleryService {
 
       if (import.meta.env.DEV) {
         console.log('📤 Uploading to backend via JSON API:', {
-          url: `${API_BASE_URL}/api/products/${request.productId}/gallery/upload`,
+          url: `${API_BASE_URL}/api/master-products/${request.productId}/gallery/upload-json`,
           payload: {
             fileName: jsonRequest.fileName,
             originalName: jsonRequest.originalName,
@@ -136,7 +131,8 @@ export class ProductGalleryService {
         });
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/products/${request.productId}/gallery/upload`, withLangHeaders({
+      // Use new MasterProduct architecture
+      const response = await fetch(`${API_BASE_URL}/api/master-products/${request.productId}/gallery/upload-json`, withLangHeaders({
         method: 'POST',
         headers: headers as HeadersInit,
         body: JSON.stringify(jsonRequest),
@@ -241,10 +237,15 @@ export class ProductGalleryService {
         cdnUrl: mockUrl
       };
 
-      const response = await fetch(`${API_BASE_URL}/api/products/${request.productId}/gallery/metadata`, {
+      // NOTE: This legacy fallback is deprecated - should not be reached
+      // Using new MasterProduct architecture
+      const response = await fetch(`${API_BASE_URL}/api/master-products/${request.productId}/gallery/upload-json`, {
         method: 'POST',
         headers: headers as HeadersInit,
-        body: JSON.stringify(metadataPayload),
+        body: JSON.stringify({
+          ...metadataPayload,
+          fileData: '' // Empty base64 for metadata-only
+        }),
       });
 
       if (!response.ok) {
@@ -289,24 +290,23 @@ export class ProductGalleryService {
 
   /**
    * Delete an image from product gallery
+   * NOTE: Redirects to new MasterProduct architecture
    */
   async deleteImage(productId: string, imageId: string): Promise<{ success: boolean }> {
-    const response = await fetch(`${API_BASE_URL}/api/products/${productId}/gallery/${imageId}`, withLangHeaders({
-      method: 'DELETE',
-      headers: defaultHeaders as HeadersInit,
-    }));
-
-    return handleResponse(response);
+    // Use new MasterProduct architecture (no variant specified = master product)
+    return this.deleteImageForProduct(Number(productId), null, imageId);
   }
 
   /**
    * Reorder images in product gallery
+   * NOTE: Redirects to new MasterProduct architecture
    */
   async reorderImages(request: ReorderImagesRequest): Promise<{ success: boolean }> {
-    const response = await fetch(`${API_BASE_URL}/api/products/${request.productId}/gallery/reorder`, withLangHeaders({
+    // Use new MasterProduct architecture (no variant = master product)
+    const response = await fetch(`${API_BASE_URL}/api/master-products/${request.productId}/gallery/reorder`, withLangHeaders({
       method: 'POST',
       headers: defaultHeaders as HeadersInit,
-      body: JSON.stringify(request),
+      body: JSON.stringify({ imageOrders: request.imageOrders }),
     }));
 
     return handleResponse(response);
