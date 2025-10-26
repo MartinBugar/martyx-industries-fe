@@ -7,7 +7,7 @@ import './Checkout.css';
 import PayPalCheckoutButton from '../../components/PayPalCheckoutButton';
 import { shippingService } from '../../services/shippingService';
 import { discountService } from '../../services/discountService';
-import type { ShippingCalculationResponseDto, ShippingRateDto } from '../../types/shipping';
+import type { ShippingOptionDto } from '../../types/shipping';
 import type { DiscountValidationDto } from '../../types/discounts';
 
 interface CheckoutFormData {
@@ -67,8 +67,8 @@ const Checkout: React.FC = () => {
   const [discountError, setDiscountError] = useState('');
 
   // Shipping state
-  const [shippingOptions, setShippingOptions] = useState<ShippingRateDto[]>([]);
-  const [selectedShipping, setSelectedShipping] = useState<ShippingRateDto | null>(null);
+  const [shippingOptions, setShippingOptions] = useState<ShippingOptionDto[]>([]);
+  const [selectedShipping, setSelectedShipping] = useState<ShippingOptionDto | null>(null);
   const [isLoadingShipping, setIsLoadingShipping] = useState(false);
   const [shippingError, setShippingError] = useState('');
 
@@ -182,7 +182,7 @@ const Checkout: React.FC = () => {
       const validation = await discountService.validateDiscount(
         discountCode.trim(),
         totals.subtotal,
-        user?.id
+        user?.id ? Number(user.id) : undefined
       );
 
       setDiscountValidation(validation);
@@ -389,9 +389,9 @@ const Checkout: React.FC = () => {
             {discountValidation?.valid && totals.discount > 0 && (
               <div className="breakdown-row discount-row">
                 <span>
-                  Discount ({discountValidation.discountCode})
-                  {discountValidation.discountType === 'PERCENTAGE' &&
-                    ` (${discountValidation.discountValue}%)`}
+                  Discount ({discountValidation.code})
+                  {discountValidation.discount_type === 'PERCENTAGE' &&
+                    ` (${discountValidation.discount_value}%)`}
                 </span>
                 <span className="discount-amount">-€{totals.discount.toFixed(2)}</span>
               </div>
@@ -401,9 +401,9 @@ const Checkout: React.FC = () => {
             {selectedShipping && (
               <div className="breakdown-row">
                 <span>
-                  Shipping ({selectedShipping.name})
-                  {selectedShipping.estimatedDeliveryDays &&
-                    ` - ${selectedShipping.estimatedDeliveryDays} days`}
+                  Shipping ({selectedShipping.rate_name})
+                  {(selectedShipping.delivery_days_min || selectedShipping.delivery_days_max) &&
+                    ` - ${selectedShipping.delivery_days_min || selectedShipping.delivery_days_max} days`}
                 </span>
                 <span>
                   {totals.shipping === 0 ? 'FREE' : `€${totals.shipping.toFixed(2)}`}
@@ -653,26 +653,26 @@ const Checkout: React.FC = () => {
                   <div className="shipping-options">
                     {shippingOptions.map((option) => (
                       <label
-                        key={option.id}
-                        className={`shipping-option ${selectedShipping?.id === option.id ? 'selected' : ''}`}
+                        key={option.shipping_rate_id}
+                        className={`shipping-option ${selectedShipping?.shipping_rate_id === option.shipping_rate_id ? 'selected' : ''}`}
                       >
                         <input
                           type="radio"
                           name="shipping"
-                          value={option.id}
-                          checked={selectedShipping?.id === option.id}
+                          value={option.shipping_rate_id}
+                          checked={selectedShipping?.shipping_rate_id === option.shipping_rate_id}
                           onChange={() => setSelectedShipping(option)}
                         />
                         <div className="shipping-details">
-                          <div className="shipping-name">{option.name}</div>
+                          <div className="shipping-name">{option.rate_name}</div>
                           <div className="shipping-meta">
-                            {option.estimatedDeliveryDays && (
-                              <span>{option.estimatedDeliveryDays} business days</span>
+                            {(option.delivery_days_min || option.delivery_days_max) && (
+                              <span>{option.delivery_days_min || option.delivery_days_max} business days</span>
                             )}
                           </div>
                         </div>
                         <div className="shipping-price">
-                          {option.shippingCost === 0 ? 'FREE' : `€${option.shippingCost.toFixed(2)}`}
+                          {(option.shipping_cost || 0) === 0 ? 'FREE' : `€${(option.shipping_cost || 0).toFixed(2)}`}
                         </div>
                       </label>
                     ))}
@@ -716,12 +716,12 @@ const Checkout: React.FC = () => {
                   <div className="discount-badge">
                     <span className="discount-icon">✓</span>
                     <div className="discount-info">
-                      <strong>{discountValidation.discountCode}</strong>
+                      <strong>{discountValidation.code}</strong>
                       <span className="discount-description">
-                        {discountValidation.discountType === 'PERCENTAGE'
-                          ? `${discountValidation.discountValue}% off`
-                          : discountValidation.discountType === 'FIXED_AMOUNT'
-                          ? `€${discountValidation.discountValue} off`
+                        {discountValidation.discount_type === 'PERCENTAGE'
+                          ? `${discountValidation.discount_value}% off`
+                          : discountValidation.discount_type === 'FIXED_AMOUNT'
+                          ? `€${discountValidation.discount_value} off`
                           : 'Free shipping'}
                       </span>
                     </div>
