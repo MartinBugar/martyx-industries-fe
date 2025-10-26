@@ -36,29 +36,29 @@ const Products: React.FC = () => {
                 const productsWithGallery = await Promise.all(
                     productsList.map(async (product) => {
                         try {
-                            const galleryData = await productGalleryService.getProductImages(product.id.toString());
-                            
+                            const galleryData = await productGalleryService.getProductImages(product.masterProductId.toString());
+
                             // Sort by order and get URLs (prefer CDN URLs) - image with order 0 will be first
                             const sortedGallery = galleryData.sort((a, b) => (a.order || 0) - (b.order || 0));
                             const galleryUrls = sortedGallery.map(img => img.cdnUrl || img.url).filter(Boolean);
-                            
+
                             if (import.meta.env.DEV) {
-                                console.log(`🏷️ Product ${product.id} (${product.name}) gallery loaded:`, {
+                                console.log(`🏷️ Product ${product.masterProductId} (${product.name}) gallery loaded:`, {
                                     galleryCount: galleryUrls.length,
                                     mainImage: galleryUrls[0] || 'none',
-                                    orderInfo: sortedGallery.slice(0, 3).map(img => ({ 
-                                        fileName: img.fileName, 
-                                        order: img.order 
+                                    orderInfo: sortedGallery.slice(0, 3).map(img => ({
+                                        fileName: img.fileName,
+                                        order: img.order
                                     }))
                                 });
                             }
-                            
+
                             return {
                                 ...product,
                                 gallery: galleryUrls // Replace empty gallery with database gallery
                             };
                         } catch (galleryError) {
-                            console.warn(`Failed to load gallery for product ${product.id}:`, galleryError);
+                            console.warn(`Failed to load gallery for product ${product.masterProductId}:`, galleryError);
                             return {
                                 ...product,
                                 gallery: [] // Keep empty gallery if loading fails
@@ -99,17 +99,18 @@ const Products: React.FC = () => {
         const message = isLimit ? t('cart.add_limit') : t('cart.add_success');
         const variant: Popup['variant'] = isLimit ? 'warning' : 'success';
 
-        setPopups(prev => ({...prev, [p.id]: {visible: true, message, variant}}));
+        const key = p.variantId.toString();
+        setPopups(prev => ({...prev, [key]: {visible: true, message, variant}}));
 
-        const existing = timersRef.current[p.id];
+        const existing = timersRef.current[key];
         if (existing) window.clearTimeout(existing);
 
-        timersRef.current[p.id] = window.setTimeout(() => {
+        timersRef.current[key] = window.setTimeout(() => {
             setPopups(prev => ({
                 ...prev,
-                [p.id]: {...(prev[p.id] || {message: '', variant: 'success'}), visible: false}
+                [key]: {...(prev[key] || {message: '', variant: 'success'}), visible: false}
             }));
-            delete timersRef.current[p.id];
+            delete timersRef.current[key];
         }, 2000);
     };
 
@@ -122,9 +123,9 @@ const Products: React.FC = () => {
                 case 'name':
                     return a.name.localeCompare(b.name);
                 case 'price':
-                    return a.price - b.price;
+                    return a.priceWithVat - b.priceWithVat;
                 case 'newest':
-                    return b.id.localeCompare(a.id);
+                    return b.variantId - a.variantId;
                 default:
                     return 0;
             }
@@ -208,9 +209,10 @@ const Products: React.FC = () => {
                         <div className="products-grid">
                             {filteredProducts.map((p, index) => {
                                 const mainImage = p.gallery && p.gallery.length > 0 ? p.gallery[0] : undefined;
+                                const popupKey = p.variantId.toString();
                                 return (
-                                    <article key={p.id} className="product-card">
-                                        <Link to={`/products/${p.id}`} className="product-card-link">
+                                    <article key={p.variantId} className="product-card">
+                                        <Link to={`/products/${p.masterProductId}`} className="product-card-link">
                                             <div className="product-card-image-container">
                                                 {mainImage ? (
                                                     <OptimizedImage
@@ -218,7 +220,7 @@ const Products: React.FC = () => {
                                                             // If the image URL is already a CDN URL, use it directly
                                                             const isCDNUrl = mainImage.includes('digitaloceanspaces.com') || mainImage.includes(import.meta.env.VITE_CDN_BASE || '');
                                                             const finalSrc = isCDNUrl ? mainImage : (isCDNEnabled() ? getBestImageUrl(getBaseNameFromPath(mainImage), 800) : mainImage);
-                                                            if (import.meta.env.DEV && p.id === "1") {
+                                                            if (import.meta.env.DEV && p.masterProductId === 1) {
                                                                 console.log(`🏷️ Product card for ${p.name} - Original:`, mainImage, '→ Final:', finalSrc, '(CDN URL detected:', isCDNUrl, ')');
                                                             }
                                                             return finalSrc;
@@ -238,7 +240,7 @@ const Products: React.FC = () => {
                                                         </svg>
                                                     </div>
                                                 )}
-                                                {p.productType === 'DIGITAL' && (
+                                                {p.variantType === 'DIGITAL_ONLY' && (
                                                     <div className="product-badge">
                                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
                                                              stroke="currentColor" strokeWidth="2">
@@ -251,7 +253,7 @@ const Products: React.FC = () => {
                                                 )}
                                                 <div className="product-card-wishlist">
                                                     <WishlistButton
-                                                        productId={p.id}
+                                                        productId={p.variantId}
                                                         size="small"
                                                         variant="icon"
                                                     />
@@ -262,28 +264,28 @@ const Products: React.FC = () => {
                                                 <h3 className="product-card-title">{p.name}</h3>
                                                 <p className="product-card-description">{p.description}</p>
                                                 <div
-                                                    className="product-card-price">{p.price.toFixed(2)} {p.currency === 'EUR' ? '€' : p.currency}</div>
+                                                    className="product-card-price">{p.priceWithVat.toFixed(2)} {p.currency === 'EUR' ? '€' : p.currency}</div>
                                             </div>
                                         </Link>
 
                                         <div className="product-card-actions">
                                             <button
-                                                className={`add-to-cart-btn${popups[p.id]?.visible ? ` is-popup ${popups[p.id].variant}` : ''}`}
+                                                className={`add-to-cart-btn${popups[popupKey]?.visible ? ` is-popup ${popups[popupKey].variant}` : ''}`}
                                                 onClick={handleAdd(p)}
-                                                disabled={!!popups[p.id]?.visible}
+                                                disabled={!!popups[popupKey]?.visible}
                                                 aria-live="polite"
                                             >
-                                                {popups[p.id]?.visible ? (
+                                                {popups[popupKey]?.visible ? (
                                                     <span className="popup-message">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                  strokeWidth="2">
-                              {popups[p.id].variant === 'success' ? (
+                              {popups[popupKey].variant === 'success' ? (
                                   <polyline points="20,6 9,17 4,12"></polyline>
                               ) : (
                                   <circle cx="12" cy="12" r="10"></circle>
                               )}
                             </svg>
-                                                        {popups[p.id].message}
+                                                        {popups[popupKey].message}
                           </span>
                                                 ) : (
                                                     <span className="add-to-cart-text">

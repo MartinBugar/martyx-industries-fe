@@ -49,20 +49,55 @@ export interface ProductTab {
     content: TabContent;
 }
 
+// NEW: Product interface now represents a merged MasterProduct + ProductVariant + hardcoded UI data
 export interface Product {
-    id: string;
+    // From MasterProduct
+    masterProductId: number;
     name: string;
-    price: number;
-    currency: string;
+    slug: string;
     description: string;
+    longDescription?: string;
+    productCategory: 'MODEL_KIT' | 'MERCHANDISE' | 'ELECTRONICS' | 'ACCESSORIES' | 'DIGITAL_DOWNLOAD';
+
+    // From selected ProductVariant
+    variantId: number;
+    variantName: string;
+    sku: string;
+    priceWithVat: number;
+    priceWithoutVat: number;
+    vatRate: number;
+    vatAmount: number;
+    currency: string;
+    variantType: 'DIGITAL_ONLY' | 'PHYSICAL_ONLY' | 'HYBRID';
+    fulfillmentType: 'DIGITAL' | 'PHYSICAL' | 'MIXED';
+    stockQuantity: number;
+    availabilityStatus: 'IN_STOCK' | 'OUT_OF_STOCK' | 'PRE_ORDER' | 'DISCONTINUED' | 'BACKORDERED';
+    requiresShipping: boolean;
+
+    // From hardcoded frontend data
     features: string[];
     modelPath: string;
     gallery: string[];
     interactionInstructions: string[];
-    productType: 'DIGITAL' | 'PHYSICAL';
     modelViewerSettings?: ModelViewerSettings;
     tabs?: ProductTab[];
     videoUrl?: string;
+
+    // All available variants for this product
+    availableVariants?: ProductVariant[];
+}
+
+// Individual variant info (used in variant selector)
+export interface ProductVariant {
+    variantId: number;
+    variantName: string;
+    priceWithVat: number;
+    priceWithoutVat: number;
+    currency: string;
+    sku: string;
+    variantType: 'DIGITAL_ONLY' | 'PHYSICAL_ONLY' | 'HYBRID';
+    stockQuantity: number;
+    availabilityStatus: 'IN_STOCK' | 'OUT_OF_STOCK' | 'PRE_ORDER' | 'DISCONTINUED' | 'BACKORDERED';
 }
 
 // Base interaction instructions shared across products
@@ -111,9 +146,9 @@ export const defaultModelViewerSettings: ModelViewerSettings = {
 };
 
 // Hardcoded frontend-specific data for products (UI, assets, tabs, etc.)
-// These complement the backend ProductDto data
+// These complement the backend MasterProduct + Variant data
 export interface HardcodedProductData {
-    id: string; // Must match backend product ID for pairing
+    masterProductId: number; // Must match backend master product ID for pairing
     features: string[];
     modelPath: string;
     gallery: string[];
@@ -126,7 +161,7 @@ export interface HardcodedProductData {
 // Hardcoded data that cannot be retrieved from backend
 export const hardcodedProductsData: HardcodedProductData[] = [
     {
-        id: "1", // Must match backend product ID
+        masterProductId: 1, // Must match backend master product ID
         features: [
             "High-resolution textures",
             "Fully interactive 3D model",
@@ -281,7 +316,7 @@ export const hardcodedProductsData: HardcodedProductData[] = [
         ]
     },
     {
-        id: "2", // Must match backend product ID
+        masterProductId: 2, // Must match backend master product ID
         features: [
             "AAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
             "BBBBBBBBBBBBBBBBBBBBBBBBBB",
@@ -332,14 +367,14 @@ export const hardcodedProductsData: HardcodedProductData[] = [
 ];
 
 // Debug: log hardcoded data in development
-console.log('🔥 ProductData.ts LOADED - Version 2!');
+console.log('🔥 ProductData.ts LOADED - NEW VARIANT ARCHITECTURE!');
 console.log('📊 HardcodedProductsData loaded:', hardcodedProductsData.map(p => ({
-    id: p.id,
+    masterProductId: p.masterProductId,
     tabsCount: p.tabs?.length || 0,
     tabIds: p.tabs?.map(t => t.id) || []
 })));
 
-// Legacy exports will be replaced by the hybrid product service
-// These are kept temporarily for backward compatibility during migration
-export const products: Product[] = []; // Will be populated by hybrid service
-export const product: Product | null = null; // Will be populated by hybrid service
+// Products are now populated dynamically by the hybrid product service
+// which merges MasterProduct + ProductVariant + HardcodedProductData
+export const products: Product[] = []; // Populated by hybrid service at runtime
+export const product: Product | null = null; // Populated by hybrid service at runtime

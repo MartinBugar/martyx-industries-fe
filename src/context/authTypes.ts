@@ -26,6 +26,16 @@ export interface Order {
   paymentMethod?: string;
   paymentId?: string;
   notes?: string;
+  // New fields for enhanced features
+  invoiceNumber?: string;
+  invoicePdfUrl?: string;
+  discountCode?: string;
+  discountAmount?: number;
+  shippingCost?: number;
+  shippingCarrier?: string;
+  shippingTrackingNumber?: string;
+  subtotal?: number;
+  taxAmount?: number;
 }
 
 // Define the structure of an avatar
@@ -59,6 +69,17 @@ export interface User {
   // Avatar support
   avatar?: Avatar;
   avatarUrl?: string; // Convenience property for quick access
+  // Customer metrics fields
+  totalOrders?: number;
+  totalSpent?: number;
+  averageOrderValue?: number;
+  lastOrderDate?: string; // ISO date string
+  firstOrderDate?: string; // ISO date string
+  customerLifetimeValue?: number;
+  customerTier?: string; // BRONZE, SILVER, GOLD, PLATINUM
+  isVip?: boolean;
+  riskScore?: number;
+  lastActivityAt?: string; // ISO date string
 }
 
 // Define the authentication response from the backend

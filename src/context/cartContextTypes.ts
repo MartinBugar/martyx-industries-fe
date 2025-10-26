@@ -11,8 +11,8 @@ export interface CartItem {
 export interface CartContextType {
   items: CartItem[];
   addToCart: (product: Product) => 'added' | 'limit';
-  removeFromCart: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
+  removeFromCart: (variantId: string) => void;
+  updateQuantity: (variantId: string, quantity: number) => void;
   clearCart: () => void;
   getTotalItems: () => number;
   getTotalPrice: () => number;

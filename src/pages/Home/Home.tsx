@@ -31,30 +31,30 @@ const Home: React.FC = () => {
         const productsWithGallery = await Promise.all(
           productsList.map(async (product) => {
             try {
-              const galleryData = await productGalleryService.getProductImages(product.id.toString());
-              
+              const galleryData = await productGalleryService.getProductImages(product.masterProductId.toString());
+
               // Sort by order and get URLs (prefer CDN URLs)
               const sortedGallery = galleryData.sort((a, b) => (a.order || 0) - (b.order || 0));
               const galleryUrls = sortedGallery.map(img => img.cdnUrl || img.url).filter(Boolean);
-              
+
               if (import.meta.env.DEV) {
-                console.log(`🏠 Product ${product.id} gallery loaded:`, {
+                console.log(`🏠 Product ${product.masterProductId} gallery loaded:`, {
                   productName: product.name,
                   galleryCount: galleryUrls.length,
                   mainImage: galleryUrls[0] || 'none',
-                  orderInfo: sortedGallery.slice(0, 3).map(img => ({ 
-                    fileName: img.fileName, 
-                    order: img.order 
+                  orderInfo: sortedGallery.slice(0, 3).map(img => ({
+                    fileName: img.fileName,
+                    order: img.order
                   }))
                 });
               }
-              
+
               return {
                 ...product,
                 gallery: galleryUrls // Replace empty gallery with database gallery
               };
             } catch (galleryError) {
-              console.warn(`Failed to load gallery for product ${product.id}:`, galleryError);
+              console.warn(`Failed to load gallery for product ${product.masterProductId}:`, galleryError);
               return {
                 ...product,
                 gallery: [] // Keep empty gallery if loading fails
@@ -176,9 +176,9 @@ const Home: React.FC = () => {
           </div>
           <div className="featured-grid">
             {featured.map((p, index) => (
-              <article key={p.id} className="product-card">
+              <article key={p.variantId} className="product-card">
                 <div className="product-card-image-container">
-                  <Link to={`/products/${p.id}`} className="product-card-link">
+                  <Link to={`/products/${p.masterProductId}`} className="product-card-link">
                     <OptimizedImage
                       src={(() => {
                         if (!p.gallery?.[0]) return '/assets/kit-01.png';
@@ -186,7 +186,7 @@ const Home: React.FC = () => {
                         // If the image URL is already a CDN URL, use it directly
                         const isCDNUrl = mainImage.includes('digitaloceanspaces.com') || mainImage.includes(import.meta.env.VITE_CDN_BASE || '');
                         const finalSrc = isCDNUrl ? mainImage : (isCDNEnabled() ? getBestImageUrl(getBaseNameFromPath(mainImage), 800) : mainImage);
-                        if (import.meta.env.DEV && p.id === "1") {
+                        if (import.meta.env.DEV && p.masterProductId === 1) {
                           console.log(`🏠 Homepage card for ${p.name} - Original:`, mainImage, '→ Final:', finalSrc, '(CDN URL detected:', isCDNUrl, ')');
                         }
                         return finalSrc;
@@ -199,16 +199,16 @@ const Home: React.FC = () => {
                   </Link>
                   <div className="product-card-wishlist">
                     <WishlistButton
-                      productId={p.id}
+                      productId={p.variantId}
                       size="small"
                       variant="icon"
                     />
                   </div>
                 </div>
-                <Link to={`/products/${p.id}`} className="product-card-link">
+                <Link to={`/products/${p.masterProductId}`} className="product-card-link">
                   <div className="product-info">
                     <h3 className="product-title">{p.name}</h3>
-                    <div className="product-price">{p.currency} {p.price.toFixed(2)}</div>
+                    <div className="product-price">{p.currency} {p.priceWithVat.toFixed(2)}</div>
                     <p className="product-description">{p.description}</p>
                   </div>
                 </Link>

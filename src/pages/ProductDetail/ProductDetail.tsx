@@ -90,24 +90,24 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({product}) => {
     React.useEffect(() => {
         let cancelled = false;
         setReviewsLoading(true);
-        
-        reviewsService.getReviews(product.id)
-            .then((data) => { 
+
+        reviewsService.getReviews(product.masterProductId)
+            .then((data) => {
                 if (!cancelled) {
                     setReviews(data);
                     setReviewsLoading(false);
                 }
             })
-            .catch((e: unknown) => { 
+            .catch((e: unknown) => {
                 if (!cancelled) {
                     console.error('Failed to load reviews for rating:', e);
                     setReviews([]);
                     setReviewsLoading(false);
                 }
             });
-        
+
         return () => { cancelled = true; };
-    }, [product.id]);
+    }, [product.masterProductId]);
 
     React.useEffect(() => {
         return () => {
@@ -144,11 +144,11 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({product}) => {
                     />
                 )}
                 <div className="product-type-compact">
-                    {product.productType === 'DIGITAL' ? 'DIGITAL' : (product.productType === 'PHYSICAL' ? 'PHYSICAL' : product.productType)}
+                    {product.variantType === 'DIGITAL_ONLY' ? 'DIGITAL' : (product.variantType === 'PHYSICAL_ONLY' ? 'PHYSICAL' : product.variantType)}
                 </div>
             </div>
             <div
-                className="price">{product.price.toFixed(2)} {product.currency === 'EUR' ? '€' : product.currency}</div>
+                className="price">{product.priceWithVat.toFixed(2)} {product.currency === 'EUR' ? '€' : product.currency}</div>
             <p className="description">{product.description}</p>
 
             <h3 id="features">Features:</h3>
@@ -161,7 +161,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({product}) => {
 
             <div className="product-actions">
                 <WishlistButton
-                    productId={product.id}
+                    productId={product.variantId}
                     variant="button"
                     size="large"
                 />
@@ -198,7 +198,7 @@ const toYouTubeEmbedUrl = (url: string): string => {
 
 const buildTabs = (p: Product): ProductTab[] => {
     if (import.meta.env.DEV) {
-        console.log('🔧 Building tabs for product:', p.id, 'has custom tabs:', p.tabs?.length);
+        console.log('🔧 Building tabs for product:', p.masterProductId, 'has custom tabs:', p.tabs?.length);
     }
     let tabs: ProductTab[];
     if (p.tabs && p.tabs.length > 0) {
@@ -227,7 +227,7 @@ const buildTabs = (p: Product): ProductTab[] => {
             {id: 'Features', label: 'Features', content: {kind: 'list', items: p.features}}
         ];
 
-        if (p.productType === 'DIGITAL') {
+        if (p.variantType === 'DIGITAL_ONLY') {
             tabs.splice(2, 0, {
                 id: 'Download',
                 label: 'Download',
@@ -239,7 +239,7 @@ const buildTabs = (p: Product): ProductTab[] => {
     // ALWAYS ensure PrintInfo tab exists - add it if missing (but only add fallback if no custom data exists)
     if (!tabs.some(t => t.id === 'PrintInfo')) {
         if (import.meta.env.DEV) {
-            console.log('⚠️ PrintInfo tab missing, adding fallback for product', p.id);
+            console.log('⚠️ PrintInfo tab missing, adding fallback for product', p.masterProductId);
         }
         // Find the index of Details tab and insert PrintInfo right after it
         const detailsIndex = tabs.findIndex(t => t.id === 'Details');
@@ -292,7 +292,7 @@ const ProductDetail: React.FC = () => {
     const tabs = React.useMemo(() => {
         if (product) {
             if (import.meta.env.DEV) {
-                console.log('🔍 Product loaded:', product.id, 'has tabs:', !!product.tabs);
+                console.log('🔍 Product loaded:', product.masterProductId, 'has tabs:', !!product.tabs);
             }
             return buildTabs(product);
         }
@@ -450,7 +450,8 @@ const ProductDetail: React.FC = () => {
 
         if (import.meta.env.DEV) {
             console.log('🔄 productWithGallery updated (database-only):', {
-                productId: product.id,
+                masterProductId: product.masterProductId,
+                variantId: product.variantId,
                 galleryImagesCount: galleryImages.length,
                 hasLoadedGallery: hasLoadedGallery,
                 galleryImages: galleryImages.slice(0, 3) // First 3 for debugging
@@ -546,7 +547,7 @@ const ProductDetail: React.FC = () => {
                     })()}
                     {tabs.length === 0 && import.meta.env.DEV && (
                         <div style={{color: 'red', padding: '1rem'}}>
-                            ⚠️ No tabs found! Product: {product?.id}
+                            ⚠️ No tabs found! Product: {product?.masterProductId}
                         </div>
                     )}
                     {tabs.map((t) => (
@@ -576,7 +577,7 @@ const ProductDetail: React.FC = () => {
                         {activeTab.id === 'PrintInfo' && <PrintInfoTab content={activeTab.content}/>}
                         {activeTab.id === 'Download' && <DownloadTab content={activeTab.content}/>}
                         {activeTab.id === 'Features' && <FeaturesTab content={activeTab.content}/>}
-                        {activeTab.id === 'Reviews' && <ReviewsTab content={activeTab.content} productId={product.id}/>}
+                        {activeTab.id === 'Reviews' && <ReviewsTab content={activeTab.content} productId={product.masterProductId}/>}
                     </div>
                 )}
 

@@ -10,18 +10,111 @@ export interface ApiErrorResponse {
   args: Record<string, any>;
 }
 
-// Product DTO from Backend
-export interface ProductDto {
+// ============================================================================
+// NEW PRODUCT ARCHITECTURE - MasterProduct + ProductVariant System
+// ============================================================================
+
+// Master Product DTO - Product concept (e.g., "ENDEAVOUR Robot Model")
+export interface MasterProductDto {
   id: number;
   name: string;
-  description: string;
-  price: number;
-  imageUrl: string | null;
+  slug: string;
+  description: string | null;
+  longDescription: string | null;
+  productCategory: 'MODEL_KIT' | 'MERCHANDISE' | 'ELECTRONICS' | 'ACCESSORIES' | 'DIGITAL_DOWNLOAD';
+  hasVariants: boolean;
+  isActive: boolean;
+  publishedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  // Associated variants loaded separately
+}
+
+// Product Variant DTO - Sellable SKU (e.g., "Digital Edition €89.90")
+export interface ProductVariantDto {
+  id: number;
+  masterProductId: number;
+  variantName: string;
   sku: string;
-  category: string | null;
+  variantType: 'DIGITAL_ONLY' | 'PHYSICAL_ONLY' | 'HYBRID';
+  fulfillmentType: 'DIGITAL' | 'PHYSICAL' | 'MIXED';
+
+  // Pricing (Slovak VAT included)
+  priceWithVat: number;
+  priceWithoutVat: number;
+  vatRate: number;
+  vatAmount: number;
   currency: string;
-  productType: 'DIGITAL' | 'PHYSICAL';
-  active: boolean;
+
+  // Stock management
+  stockQuantity: number;
+  trackInventory: boolean;
+  availabilityStatus: 'IN_STOCK' | 'OUT_OF_STOCK' | 'PRE_ORDER' | 'DISCONTINUED' | 'BACKORDERED';
+  lowStockThreshold: number | null;
+  reorderPoint: number | null;
+  reorderQuantity: number | null;
+
+  // Digital content
+  hasDigitalContent: boolean;
+  isDownloadable: boolean;
+  digitalFileUrl: string | null;
+  digitalFileSizeBytes: number | null;
+  downloadLimit: number;
+  downloadExpiryDays: number;
+
+  // Physical properties
+  requiresShipping: boolean;
+  weightGrams: number | null;
+  lengthCm: number | null;
+  widthCm: number | null;
+  heightCm: number | null;
+
+  // Status
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Variant Component DTO - Bill of Materials
+export interface VariantComponentDto {
+  id: number;
+  variantId: number;
+  componentType: 'STL_FILES' | 'MECHANICAL_PARTS' | 'ELECTRONICS' | 'PRINTED_PARTS' | 'ASSEMBLY_GUIDE' | 'SOFTWARE';
+  componentName: string;
+  description: string | null;
+  isDigital: boolean;
+  isPhysical: boolean;
+
+  // Digital component fields
+  filePath: string | null;
+  fileSizeBytes: number | null;
+  fileFormat: string | null;
+
+  // Physical component fields
+  quantity: number | null;
+  weightGrams: number | null;
+
+  // Ordering
+  displayOrder: number;
+  createdAt: string;
+}
+
+// Product Download DTO - Secure download tokens
+export interface ProductDownloadDto {
+  id: number;
+  orderId: number;
+  orderItemId: number;
+  variantId: number;
+  componentId: number | null;
+  downloadToken: string;
+  downloadUrl: string;
+  tokenType: 'EMAIL' | 'REGENERATED' | 'ADMIN_CREATED';
+  maxDownloads: number;
+  downloadCount: number;
+  expiresAt: string;
+  isActive: boolean;
+  revokedAt: string | null;
+  createdAt: string;
 }
 
 // Paginated Response from Backend
@@ -54,6 +147,24 @@ export interface PaginatedResponse<T> {
   empty: boolean;
 }
 
+// Billing Address with B2B support
+export interface BillingAddress {
+  email: string;
+  firstName: string;
+  lastName: string;
+  street: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  country: string;
+  // B2B fields
+  companyName?: string;
+  companyId?: string; // IČO
+  taxId?: string; // DIČ
+  vatId?: string; // IČ DPH
+  isCompany?: boolean;
+}
+
 // PayPal Order Creation
 export interface CreatePaymentRequest {
   orderItems: Array<{
@@ -64,16 +175,11 @@ export interface CreatePaymentRequest {
   }>;
   totalAmount: number;
   currency: string;
-  user: { 
-    email: string;
-    firstName: string;
-    lastName: string;
-    street: string;
-    city: string;
-    state: string;
-    zipCode: string;
-    country: string;
-  };
+  user: BillingAddress;
+  // Optional fields for new features
+  discountCode?: string;
+  shippingRateId?: number;
+  shippingCost?: number;
 }
 
 export interface CreateOrderResponse {

@@ -13,7 +13,7 @@ const ProductView: React.FC<ProductViewProps> = ({ product, galleryData }) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
 
 
-  const settings = product.id === '1' ? defaultModelViewerSettings : (product.modelViewerSettings ?? {});
+  const settings = product.masterProductId === 1 ? defaultModelViewerSettings : (product.modelViewerSettings ?? {});
 
   return (
     <div className="product-view-container">

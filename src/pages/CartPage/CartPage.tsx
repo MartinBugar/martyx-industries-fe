@@ -70,15 +70,15 @@ const CartPage: React.FC<CartPageProps> = ({
   };
 
   const subtotal = getTotalPrice();
-  const hasPhysicalProducts = items.some(i => i.product.productType === 'PHYSICAL');
+  const hasPhysicalProducts = items.some(i => i.product.requiresShipping);
   const shipping = items.length > 0 && hasPhysicalProducts ? 5.99 : 0;
   const total = subtotal + shipping;
   const isEmpty = items.length === 0;
 
-  const onQty = (productId: string, next: number, isDigital: boolean) => {
-    if (next < 1) return removeFromCart(productId);
+  const onQty = (variantId: string, next: number, isDigital: boolean) => {
+    if (next < 1) return removeFromCart(variantId);
     if (isDigital && next > 1) return; // digital max 1 ks
-    updateQuantity(productId, next);
+    updateQuantity(variantId, next);
   };
 
   // Don't render modal when closed
@@ -140,11 +140,11 @@ const CartPage: React.FC<CartPageProps> = ({
             {/* ITEMS */}
             <section className="cart-items" aria-label={t('cart.items_in_cart')}>
               {items.map(item => {
-                const isDigital = item.product.productType === 'DIGITAL';
+                const isDigital = item.product.variantType === 'DIGITAL_ONLY';
                 const thumb = item.product.gallery?.[0];
 
                 return (
-                  <div key={item.product.id} className="cart-item">
+                  <div key={item.product.variantId} className="cart-item">
                     <div className="item-image" aria-hidden="true">
                       {thumb ? (
                         <img src={thumb} alt={item.product.name}/>
@@ -173,26 +173,26 @@ const CartPage: React.FC<CartPageProps> = ({
                         <button
                           className="quantity-btn"
                           aria-label={t('cart.decrease_quantity')}
-                          onClick={() => onQty(item.product.id, item.quantity - 1, isDigital)}
+                          onClick={() => onQty(item.product.variantId.toString(), item.quantity - 1, isDigital)}
                           disabled={item.quantity <= 1}
                         >−</button>
                         <span className="quantity" aria-live="polite">{item.quantity}</span>
                         <button
                           className="quantity-btn"
                           aria-label={t('cart.increase_quantity')}
-                          onClick={() => onQty(item.product.id, item.quantity + 1, isDigital)}
+                          onClick={() => onQty(item.product.variantId.toString(), item.quantity + 1, isDigital)}
                           disabled={isDigital && item.quantity >= 1}
                         >+</button>
                       </div>
 
                       <div className="item-price">
-                        {formatPrice(item.product.price * item.quantity, item.product.currency)}
+                        {formatPrice(item.product.priceWithVat * item.quantity, item.product.currency)}
                       </div>
 
                       <button
                         className="remove-btn"
                         aria-label={t('cart.remove_item', { product: item.product.name })}
-                        onClick={() => removeFromCart(item.product.id)}
+                        onClick={() => removeFromCart(item.product.variantId.toString())}
                         title={t('cart.remove')}
                       >
                         ×

@@ -2,23 +2,23 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { productService } from '../../services/productService';
 import { translateApiError } from '../../utils/translateApiError';
-import type { ProductDto } from '../../types/api';
+import type { ProductVariantDto } from '../../types/api';
 
 interface LocalizedProductCardProps {
-  productId: number;
+  variantId: number;
   showFullDescription?: boolean;
 }
 
 /**
- * Component that demonstrates localized product loading from the new API
+ * Component that demonstrates localized product variant loading from the new API
  * Shows how content changes based on selected language
  */
 const LocalizedProductCard: React.FC<LocalizedProductCardProps> = ({
-  productId,
+  variantId,
   showFullDescription = false
 }) => {
   const { t, i18n } = useTranslation('products');
-  const [product, setProduct] = useState<ProductDto | null>(null);
+  const [product, setProduct] = useState<ProductVariantDto | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -29,7 +29,7 @@ const LocalizedProductCard: React.FC<LocalizedProductCardProps> = ({
         setError(null);
 
         // The productService automatically sends Accept-Language headers
-        const productData = await productService.getProduct(productId);
+        const productData = await productService.getVariant(variantId);
         setProduct(productData);
 
 
@@ -45,7 +45,7 @@ const LocalizedProductCard: React.FC<LocalizedProductCardProps> = ({
     };
 
     loadProduct();
-  }, [productId, i18n.language, t]); // Reload when language changes
+  }, [variantId, i18n.language, t]); // Reload when language changes
 
   if (loading) {
     return (
@@ -88,48 +88,37 @@ const LocalizedProductCard: React.FC<LocalizedProductCardProps> = ({
   return (
     <div className="product-card">
       <div className="product-card__image">
-        <img 
-          src={product.imageUrl || '/placeholder-image.png'} 
-          alt={product.name}
-          loading="lazy"
-        />
-        {!product.active && (
+        <div className="placeholder-icon" style={{ padding: '2rem', background: '#f0f0f0', textAlign: 'center' }}>
+          📦
+        </div>
+        {product.availabilityStatus !== 'IN_STOCK' && (
           <div className="product-card__badge product-card__badge--inactive">
-            {t('inactive')}
+            {t(product.availabilityStatus.toLowerCase())}
           </div>
         )}
       </div>
-      
+
       <div className="product-card__content">
         <h3 className="product-card__title">
-          {product.name}
+          {product.variantName}
         </h3>
-        
-        <p className="product-card__description">
-          {showFullDescription 
-            ? product.description 
-            : product.description.length > 100 
-              ? `${product.description.substring(0, 100)}...`
-              : product.description
-          }
-        </p>
-        
+
         <div className="product-card__details">
           <span className="product-card__category">
-            {product.category}
+            {product.variantType}
           </span>
           <span className="product-card__type">
-            {t(`type.${product.productType.toLowerCase()}`)}
+            {t(`type.${product.variantType.toLowerCase()}`)}
           </span>
         </div>
-        
+
         <div className="product-card__price">
-          {t('price', { 
-            amount: product.price, 
-            currency: product.currency 
+          {t('price', {
+            amount: product.priceWithVat,
+            currency: product.currency
           })}
         </div>
-        
+
         <div className="product-card__meta">
           <small className="product-card__sku">
             {t('sku')}: {product.sku}

@@ -1,10 +1,14 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useCart } from '../../context/useCart';
 import { useAuth } from '../../context/useAuth';
 import './Checkout.css';
 import PayPalCheckoutButton from '../../components/PayPalCheckoutButton';
+import { shippingService } from '../../services/shippingService';
+import { discountService } from '../../services/discountService';
+import type { ShippingCalculationResponseDto, ShippingRateDto } from '../../types/shipping';
+import type { DiscountValidationDto } from '../../types/discounts';
 
 interface CheckoutFormData {
   firstName: string;
@@ -19,6 +23,12 @@ interface CheckoutFormData {
   billingState: string;
   billingPostalCode: string;
   billingCountry: string;
+  // B2B Customer fields
+  isCompany: boolean;
+  companyName: string;
+  companyId: string; // IČO
+  taxId: string;     // DIČ
+  vatId: string;     // IČ DPH
 }
 
 const Checkout: React.FC = () => {
@@ -28,6 +38,7 @@ const Checkout: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [payStatus, setPayStatus] = useState<"idle"|"processing"|"success"|"error">("idle");
+
   const [formData, setFormData] = useState<CheckoutFormData>({
     firstName: user?.firstName || '',
     lastName: user?.lastName || '',
@@ -40,8 +51,35 @@ const Checkout: React.FC = () => {
     billingCity: '',
     billingState: '',
     billingPostalCode: '',
-    billingCountry: ''
+    billingCountry: 'SK', // Default to Slovakia
+    // Initialize B2B fields
+    isCompany: false,
+    companyName: '',
+    companyId: '', // IČO
+    taxId: '',     // DIČ
+    vatId: ''      // IČ DPH
   });
+
+  // Discount code state
+  const [discountCode, setDiscountCode] = useState('');
+  const [discountValidation, setDiscountValidation] = useState<DiscountValidationDto | null>(null);
+  const [isValidatingDiscount, setIsValidatingDiscount] = useState(false);
+  const [discountError, setDiscountError] = useState('');
+
+  // Shipping state
+  const [shippingOptions, setShippingOptions] = useState<ShippingRateDto[]>([]);
+  const [selectedShipping, setSelectedShipping] = useState<ShippingRateDto | null>(null);
+  const [isLoadingShipping, setIsLoadingShipping] = useState(false);
+  const [shippingError, setShippingError] = useState('');
+
+  // Calculate cart weight (assuming 0.5kg per item as default)
+  const calculateCartWeight = () => {
+    return items.reduce((total, item) => {
+      // If product has weight, use it, otherwise default to 0.5kg
+      const weight = (item.product as any).weightKg || 0.5;
+      return total + (weight * item.quantity);
+    }, 0);
+  };
 
   // Compute cartHash that changes when cart total or items change
   const cartHash = useMemo(() => {
@@ -64,13 +102,108 @@ const Checkout: React.FC = () => {
     return first;
   }, [items]);
 
+  // Calculate totals with discount and shipping
+  const calculateTotals = () => {
+    const subtotal = getTotalPrice();
+    const discountAmount = discountValidation?.valid ? (discountValidation.calculatedDiscountAmount || 0) : 0;
+    const shippingCost = selectedShipping?.shippingCost || 0;
+    const total = subtotal - discountAmount + shippingCost;
+
+    return {
+      subtotal,
+      discount: discountAmount,
+      shipping: shippingCost,
+      total: Math.max(0, total) // Ensure total is never negative
+    };
+  };
+
+  // Fetch shipping options when country changes
+  useEffect(() => {
+    const fetchShippingOptions = async () => {
+      if (!formData.billingCountry || formData.billingCountry.trim().length < 2) {
+        return;
+      }
+
+      setIsLoadingShipping(true);
+      setShippingError('');
+
+      try {
+        const totals = calculateTotals();
+        const response = await shippingService.calculateShipping({
+          destinationCountryCode: formData.billingCountry.toUpperCase(),
+          totalWeightKg: calculateCartWeight(),
+          orderSubtotal: totals.subtotal,
+          postalCode: formData.billingPostalCode || undefined
+        });
+
+        if (response.availableRates && response.availableRates.length > 0) {
+          setShippingOptions(response.availableRates);
+          // Auto-select cheapest option
+          setSelectedShipping(response.availableRates[0]);
+        } else {
+          setShippingOptions([]);
+          setSelectedShipping(null);
+          setShippingError('No shipping options available for this destination');
+        }
+      } catch (error) {
+        console.error('Error fetching shipping options:', error);
+        setShippingError('Failed to calculate shipping costs. Please check your address.');
+        setShippingOptions([]);
+        setSelectedShipping(null);
+      } finally {
+        setIsLoadingShipping(false);
+      }
+    };
+
+    fetchShippingOptions();
+  }, [formData.billingCountry, formData.billingPostalCode, items]);
+
   // Handle form input changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
-      [name]: value
+      [name]: type === 'checkbox' ? checked : value
     });
+  };
+
+  // Handle discount code validation
+  const handleValidateDiscount = async () => {
+    if (!discountCode.trim()) {
+      setDiscountError('Please enter a discount code');
+      return;
+    }
+
+    setIsValidatingDiscount(true);
+    setDiscountError('');
+
+    try {
+      const totals = calculateTotals();
+      const validation = await discountService.validateDiscount(
+        discountCode.trim(),
+        totals.subtotal,
+        user?.id
+      );
+
+      setDiscountValidation(validation);
+
+      if (!validation.valid) {
+        setDiscountError(validation.errorMessage || 'Invalid discount code');
+      }
+    } catch (error) {
+      console.error('Error validating discount code:', error);
+      setDiscountError('Failed to validate discount code. Please try again.');
+      setDiscountValidation(null);
+    } finally {
+      setIsValidatingDiscount(false);
+    }
+  };
+
+  // Handle discount code removal
+  const handleRemoveDiscount = () => {
+    setDiscountCode('');
+    setDiscountValidation(null);
+    setDiscountError('');
   };
 
   // PayPal success handler
@@ -91,8 +224,7 @@ const Checkout: React.FC = () => {
       }>;
       currency?: string;
       order?: { id?: number | string };
-      // New fields from backend capture-order response
-      status?: string; // expects "PAID" for success
+      status?: string;
       orderNumber?: string;
       downloadUrl?: string;
       downloadUrls?: string[];
@@ -121,7 +253,6 @@ const Checkout: React.FC = () => {
     const c = capture as PayPalCaptureLoose;
     const backendStatus = (c?.status || '').toString().toUpperCase();
 
-    // Accept both PAID and COMPLETED as successful statuses from backend
     if (backendStatus !== 'PAID' && backendStatus !== 'COMPLETED') {
       console.error('Capture not successful, aborting success navigation. Status:', c?.status);
       setPayStatus('error');
@@ -129,7 +260,6 @@ const Checkout: React.FC = () => {
       return;
     }
 
-    // Persist email for later use (on success only)
     if (formData.email) {
       sessionStorage.setItem('customerEmail', formData.email);
       localStorage.setItem('customerEmail', formData.email);
@@ -139,10 +269,11 @@ const Checkout: React.FC = () => {
     const payerEmail = c?.payer?.email_address || c?.payerEmail || formData.email || undefined;
     const orderId = c?.orderId ?? c?.order?.id ?? undefined;
     const currency = (c?.currency || c?.purchase_units?.[0]?.amount?.currency_code || 'EUR') as string;
-    const amount = typeof c?.amount === 'number' ? c.amount : Number(c?.purchase_units?.[0]?.amount?.value) || getTotalPrice();
+    const totals = calculateTotals();
+    const amount = typeof c?.amount === 'number' ? c.amount : Number(c?.purchase_units?.[0]?.amount?.value) || totals.total;
 
     const paymentState = {
-      status: 'COMPLETED', // map backend PAID -> UI COMPLETED
+      status: 'COMPLETED',
       amount,
       currency,
       paymentMethod: 'PAYPAL',
@@ -150,12 +281,10 @@ const Checkout: React.FC = () => {
       payerEmail,
       orderId,
       orderNumber: c?.orderNumber,
-      // pass-through any optional download info if backend provided it
       downloadUrl: c?.downloadUrl,
       downloadUrls: Array.isArray(c?.downloadUrls) ? c.downloadUrls : undefined,
       downloadToken: c?.downloadToken,
       downloadTokens: Array.isArray(c?.downloadTokens) ? c.downloadTokens : undefined,
-      // Include structured download links and order items
       downloadLinks: Array.isArray(c?.downloadLinks) ? c.downloadLinks : undefined,
       orderItems: Array.isArray(c?.orderItems) ? c.orderItems : undefined,
       invoiceDownloadUrl: c?.invoiceDownloadUrl,
@@ -171,8 +300,6 @@ const Checkout: React.FC = () => {
     }
 
     setPayStatus('success');
-
-    // Navigate to the dedicated PayPal success page with normalized payment data
     navigate('/payment/paypal/success', { state: { payment: paymentState } });
   };
 
@@ -182,8 +309,7 @@ const Checkout: React.FC = () => {
     setPayStatus("error");
     alert(t('payment.failed'));
   };
-  
-  // If redirected from PayPal with payment params, show processing instead of empty cart
+
   if (searchParams.get('paymentId')) {
     return (
       <main className="checkout-container" role="main" aria-labelledby="checkout-title">
@@ -194,15 +320,14 @@ const Checkout: React.FC = () => {
       </main>
     );
   }
-  
-  // If cart is empty, redirect to products
+
   if (items.length === 0) {
     return (
       <main className="checkout-container" role="main" aria-labelledby="checkout-title">
         <div className="empty-cart-message">
           <h2 id="checkout-title">Your cart is empty</h2>
           <p>Add some products to your cart before proceeding to checkout.</p>
-          <button 
+          <button
             className="continue-shopping-btn"
             onClick={() => navigate('/products')}
           >
@@ -212,14 +337,16 @@ const Checkout: React.FC = () => {
       </main>
     );
   }
-  
+
+  const totals = calculateTotals();
+
   return (
     <main className="checkout-container" role="main" aria-labelledby="checkout-title">
       <div className="checkout-header">
         <h1 id="checkout-title">Secure Checkout</h1>
         <p className="checkout-subtitle">Complete your order securely with PayPal</p>
       </div>
-      
+
       <div className="checkout-content">
         {/* Order Summary */}
         <div className="order-summary-card" role="region" aria-labelledby="order-summary-title">
@@ -227,15 +354,15 @@ const Checkout: React.FC = () => {
             <h2 id="order-summary-title">Order Summary</h2>
             <span className="item-count">{items.length} item{items.length !== 1 ? 's' : ''}</span>
           </div>
-          
+
           <div className="order-items" role="list">
             {items.map(item => {
-              const unit = Number(item.product.price);
+              const unit = Number(item.product.priceWithVat);
               const qty = Number(item.quantity);
               const lineTotal = (unit * qty).toFixed(2);
               return (
                 <div
-                  key={item.product.id}
+                  key={item.product.variantId}
                   className="order-item"
                   role="listitem"
                   aria-label={`${item.product.name}, quantity ${qty}, total €${lineTotal}`}
@@ -251,23 +378,46 @@ const Checkout: React.FC = () => {
               );
             })}
           </div>
-          
+
           <div className="order-breakdown" aria-live="polite">
             <div className="breakdown-row">
               <span>Subtotal</span>
-              <span>€{getTotalPrice().toFixed(2)}</span>
+              <span>€{totals.subtotal.toFixed(2)}</span>
             </div>
-            <div className="breakdown-row">
-              <span>Processing fees</span>
-              <span>€0.00</span>
-            </div>
+
+            {/* Discount Code Display */}
+            {discountValidation?.valid && totals.discount > 0 && (
+              <div className="breakdown-row discount-row">
+                <span>
+                  Discount ({discountValidation.discountCode})
+                  {discountValidation.discountType === 'PERCENTAGE' &&
+                    ` (${discountValidation.discountValue}%)`}
+                </span>
+                <span className="discount-amount">-€{totals.discount.toFixed(2)}</span>
+              </div>
+            )}
+
+            {/* Shipping Display */}
+            {selectedShipping && (
+              <div className="breakdown-row">
+                <span>
+                  Shipping ({selectedShipping.name})
+                  {selectedShipping.estimatedDeliveryDays &&
+                    ` - ${selectedShipping.estimatedDeliveryDays} days`}
+                </span>
+                <span>
+                  {totals.shipping === 0 ? 'FREE' : `€${totals.shipping.toFixed(2)}`}
+                </span>
+              </div>
+            )}
+
             <div className="breakdown-divider"></div>
             <div className="order-total">
               <span>Total</span>
-              <span>€{getTotalPrice().toFixed(2)}</span>
+              <span>€{totals.total.toFixed(2)}</span>
             </div>
           </div>
-          
+
           <div className="delivery-badge">
             <div className="badge-icon">📧</div>
             <div className="badge-content">
@@ -276,15 +426,16 @@ const Checkout: React.FC = () => {
             </div>
           </div>
         </div>
-        
+
         {/* Checkout Form */}
         <div className="checkout-form-card">
           <div className="card-header">
             <h2>Contact Information</h2>
-            <p className="form-subtitle">We'll send your digital products to this email address</p>
+            <p className="form-subtitle">We'll send your digital products and invoice to this email address</p>
           </div>
-          
+
           <form className="checkout-form">
+            {/* Personal Information */}
             <div className="form-section">
               <div className="form-row">
                 <div className="form-field">
@@ -300,7 +451,7 @@ const Checkout: React.FC = () => {
                     placeholder="Enter your first name"
                   />
                 </div>
-                
+
                 <div className="form-field">
                   <label htmlFor="lastName">Last Name</label>
                   <input
@@ -315,7 +466,7 @@ const Checkout: React.FC = () => {
                   />
                 </div>
               </div>
-              
+
               <div className="form-field">
                 <label htmlFor="email">Email Address</label>
                 <input
@@ -335,7 +486,80 @@ const Checkout: React.FC = () => {
             <div className="form-section">
               <h3 className="section-title">Billing Address</h3>
               <p className="section-subtitle">This information will be used for your invoice</p>
-              
+
+              {/* B2B Customer Toggle */}
+              <div className="form-field checkbox-field">
+                <label className="checkbox-label">
+                  <input
+                    type="checkbox"
+                    name="isCompany"
+                    checked={formData.isCompany}
+                    onChange={handleInputChange}
+                  />
+                  <span>I am purchasing as a company (B2B)</span>
+                </label>
+                <p className="field-hint">Check this if you need an invoice with company details (IČO, DIČ, IČ DPH)</p>
+              </div>
+
+              {/* B2B Fields - Show only if isCompany is checked */}
+              {formData.isCompany && (
+                <div className="b2b-fields">
+                  <div className="form-field">
+                    <label htmlFor="companyName">Company Name *</label>
+                    <input
+                      type="text"
+                      id="companyName"
+                      name="companyName"
+                      value={formData.companyName}
+                      onChange={handleInputChange}
+                      required={formData.isCompany}
+                      placeholder="Enter company name"
+                    />
+                  </div>
+
+                  <div className="form-row">
+                    <div className="form-field">
+                      <label htmlFor="companyId">IČO (Company ID) *</label>
+                      <input
+                        type="text"
+                        id="companyId"
+                        name="companyId"
+                        value={formData.companyId}
+                        onChange={handleInputChange}
+                        required={formData.isCompany}
+                        placeholder="12345678"
+                      />
+                    </div>
+
+                    <div className="form-field">
+                      <label htmlFor="taxId">DIČ (Tax ID) *</label>
+                      <input
+                        type="text"
+                        id="taxId"
+                        name="taxId"
+                        value={formData.taxId}
+                        onChange={handleInputChange}
+                        required={formData.isCompany}
+                        placeholder="1234567890"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-field">
+                    <label htmlFor="vatId">IČ DPH (VAT ID)</label>
+                    <input
+                      type="text"
+                      id="vatId"
+                      name="vatId"
+                      value={formData.vatId}
+                      onChange={handleInputChange}
+                      placeholder="SK1234567890 (optional)"
+                    />
+                    <p className="field-hint">Optional - only if you are VAT registered</p>
+                  </div>
+                </div>
+              )}
+
               <div className="form-field">
                 <label htmlFor="billingStreet">Street Address</label>
                 <input
@@ -349,7 +573,7 @@ const Checkout: React.FC = () => {
                   placeholder="Enter your street address"
                 />
               </div>
-              
+
               <div className="form-row">
                 <div className="form-field">
                   <label htmlFor="billingCity">City</label>
@@ -364,7 +588,7 @@ const Checkout: React.FC = () => {
                     placeholder="Enter your city"
                   />
                 </div>
-                
+
                 <div className="form-field">
                   <label htmlFor="billingState">State/Province</label>
                   <input
@@ -374,12 +598,11 @@ const Checkout: React.FC = () => {
                     autoComplete="address-level1"
                     value={formData.billingState}
                     onChange={handleInputChange}
-                    required
-                    placeholder="Enter your state"
+                    placeholder="Enter your state (optional)"
                   />
                 </div>
               </div>
-              
+
               <div className="form-row">
                 <div className="form-field">
                   <label htmlFor="billingPostalCode">Postal Code</label>
@@ -394,23 +617,133 @@ const Checkout: React.FC = () => {
                     placeholder="Enter postal code"
                   />
                 </div>
-                
+
                 <div className="form-field">
-                  <label htmlFor="billingCountry">Country</label>
+                  <label htmlFor="billingCountry">Country Code</label>
                   <input
                     type="text"
                     id="billingCountry"
                     name="billingCountry"
-                    autoComplete="country-name"
+                    autoComplete="country"
                     value={formData.billingCountry}
                     onChange={handleInputChange}
                     required
-                    placeholder="Enter your country"
+                    placeholder="SK, CZ, DE, etc."
+                    maxLength={2}
+                    style={{ textTransform: 'uppercase' }}
                   />
+                  <p className="field-hint">2-letter country code (e.g., SK for Slovakia)</p>
                 </div>
               </div>
             </div>
-            
+
+            {/* Shipping Options */}
+            {shippingOptions.length > 0 && (
+              <div className="form-section shipping-section">
+                <h3 className="section-title">Shipping Method</h3>
+                <p className="section-subtitle">Select your preferred shipping option</p>
+
+                {isLoadingShipping && (
+                  <div className="loading-message">
+                    <span className="loading-spinner">⏳</span> Calculating shipping options...
+                  </div>
+                )}
+
+                {!isLoadingShipping && (
+                  <div className="shipping-options">
+                    {shippingOptions.map((option) => (
+                      <label
+                        key={option.id}
+                        className={`shipping-option ${selectedShipping?.id === option.id ? 'selected' : ''}`}
+                      >
+                        <input
+                          type="radio"
+                          name="shipping"
+                          value={option.id}
+                          checked={selectedShipping?.id === option.id}
+                          onChange={() => setSelectedShipping(option)}
+                        />
+                        <div className="shipping-details">
+                          <div className="shipping-name">{option.name}</div>
+                          <div className="shipping-meta">
+                            {option.estimatedDeliveryDays && (
+                              <span>{option.estimatedDeliveryDays} business days</span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="shipping-price">
+                          {option.shippingCost === 0 ? 'FREE' : `€${option.shippingCost.toFixed(2)}`}
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                )}
+
+                {shippingError && (
+                  <div className="error-message">
+                    <span className="error-icon">⚠️</span> {shippingError}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Discount Code Section */}
+            <div className="form-section discount-section">
+              <h3 className="section-title">Discount Code</h3>
+              <p className="section-subtitle">Have a promo code? Enter it here</p>
+
+              {!discountValidation?.valid ? (
+                <div className="discount-input-group">
+                  <input
+                    type="text"
+                    className="discount-input"
+                    value={discountCode}
+                    onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
+                    placeholder="Enter discount code"
+                    disabled={isValidatingDiscount}
+                  />
+                  <button
+                    type="button"
+                    className="apply-discount-btn"
+                    onClick={handleValidateDiscount}
+                    disabled={isValidatingDiscount || !discountCode.trim()}
+                  >
+                    {isValidatingDiscount ? 'Validating...' : 'Apply'}
+                  </button>
+                </div>
+              ) : (
+                <div className="discount-applied">
+                  <div className="discount-badge">
+                    <span className="discount-icon">✓</span>
+                    <div className="discount-info">
+                      <strong>{discountValidation.discountCode}</strong>
+                      <span className="discount-description">
+                        {discountValidation.discountType === 'PERCENTAGE'
+                          ? `${discountValidation.discountValue}% off`
+                          : discountValidation.discountType === 'FIXED_AMOUNT'
+                          ? `€${discountValidation.discountValue} off`
+                          : 'Free shipping'}
+                      </span>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    className="remove-discount-btn"
+                    onClick={handleRemoveDiscount}
+                    aria-label="Remove discount code"
+                  >
+                    ×
+                  </button>
+                </div>
+              )}
+
+              {discountError && (
+                <div className="error-message">
+                  <span className="error-icon">⚠️</span> {discountError}
+                </div>
+              )}
+            </div>
+
             {/* Payment Section */}
             <div className="payment-section">
               <div className="payment-header">
@@ -420,12 +753,12 @@ const Checkout: React.FC = () => {
                   <span>Secure Payment</span>
                 </div>
               </div>
-              
+
               <div className="payment-method-card">
                 <div className="paypal-container">
                   <PayPalCheckoutButton
                     items={items}
-                    totalAmount={getTotalPrice()}
+                    totalAmount={totals.total}
                     currency={derivedCurrency}
                     email={formData.email}
                     firstName={formData.firstName}
@@ -436,7 +769,13 @@ const Checkout: React.FC = () => {
                       city: formData.billingCity,
                       state: formData.billingState,
                       postalCode: formData.billingPostalCode,
-                      country: formData.billingCountry
+                      country: formData.billingCountry,
+                      // B2B fields
+                      companyName: formData.isCompany ? formData.companyName : undefined,
+                      companyId: formData.isCompany ? formData.companyId : undefined,
+                      taxId: formData.isCompany ? formData.taxId : undefined,
+                      vatId: formData.isCompany && formData.vatId ? formData.vatId : undefined,
+                      isCompany: formData.isCompany
                     }}
                     onSuccess={handlePayPalSuccess}
                     onError={handlePayPalError}
@@ -447,7 +786,7 @@ const Checkout: React.FC = () => {
                 </p>
               </div>
             </div>
-            
+
             {/* Status messages */}
             {payStatus !== "idle" && (
               <div className={`payment-status status-${payStatus}`} role="status" aria-live="polite" aria-atomic="true">

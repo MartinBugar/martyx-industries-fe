@@ -17,6 +17,12 @@ type Props = {
     state: string;
     postalCode: string;
     country: string;
+    // B2B Customer fields (Slovak law compliance)
+    isCompany?: boolean;
+    companyName?: string;
+    companyId?: string; // IČO
+    taxId?: string;     // DIČ
+    vatId?: string;     // IČ DPH
   };
   onSuccess: (capture: unknown) => void;
   onError: (err: unknown) => void;
@@ -27,20 +33,20 @@ export default function PayPalCheckoutButton({ items, totalAmount, currency = "E
   // Create order on server
   const createOrder = useCallback(async () => {
     // Construct billing address string if provided
-    const billingAddressString = billingAddress ? 
-      `${billingAddress.street}, ${billingAddress.city}, ${billingAddress.state} ${billingAddress.postalCode}, ${billingAddress.country}` 
+    const billingAddressString = billingAddress ?
+      `${billingAddress.street}, ${billingAddress.city}, ${billingAddress.state} ${billingAddress.postalCode}, ${billingAddress.country}`
       : undefined;
 
     const payload = {
       orderItems: items.map(i => ({
-        product: { id: Number(i.product.id) },
+        product: { id: Number(i.product.variantId) }, // Using variantId as product ID
         quantity: i.quantity,
-        price: Number(i.product.price),
-        currency: (i.product.currency || currency).toUpperCase()
+        price: Number(i.product.priceWithVat),
+        currency: i.product.currency.toUpperCase()
       })),
       totalAmount: Number(totalAmount.toFixed(2)),
       currency: currency.toUpperCase(),
-      user: email && email.trim() ? { 
+      user: email && email.trim() ? {
         email,
         firstName: firstName || '',
         lastName: lastName || '',
@@ -48,7 +54,13 @@ export default function PayPalCheckoutButton({ items, totalAmount, currency = "E
         city: billingAddress?.city || '',
         state: billingAddress?.state || '',
         zipCode: billingAddress?.postalCode || '',
-        country: billingAddress?.country || ''
+        country: billingAddress?.country || '',
+        // B2B fields
+        isCompany: billingAddress?.isCompany || false,
+        companyName: billingAddress?.companyName || '',
+        companyId: billingAddress?.companyId || '',
+        taxId: billingAddress?.taxId || '',
+        vatId: billingAddress?.vatId || ''
       } : null,
       billingAddress: billingAddressString
     };

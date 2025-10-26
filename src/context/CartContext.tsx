@@ -50,11 +50,11 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const addToCart = (product: Product): 'added' | 'limit' => {
     let result: 'added' | 'limit' = 'added';
     setItems(prevItems => {
-      const existingItemIndex = prevItems.findIndex(item => item.product.id === product.id);
+      const existingItemIndex = prevItems.findIndex(item => item.product.variantId === product.variantId);
       if (existingItemIndex >= 0) {
         const existingItem = prevItems[existingItemIndex];
-        // If the product is DIGITAL, enforce max quantity of 1
-        if (existingItem.product.productType === 'DIGITAL') {
+        // If the variant is DIGITAL_ONLY, enforce max quantity of 1
+        if (existingItem.product.variantType === 'DIGITAL_ONLY') {
           result = 'limit';
           return prevItems;
         }
@@ -73,22 +73,22 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     return result;
   };
 
-  // Remove a product from the cart
-  const removeFromCart = (productId: string) => {
-    setItems(prevItems => prevItems.filter(item => item.product.id !== productId));
+  // Remove a product from the cart by variant ID
+  const removeFromCart = (variantId: string) => {
+    setItems(prevItems => prevItems.filter(item => item.product.variantId.toString() !== variantId));
   };
 
-  // Update the quantity of a product in the cart
-  const updateQuantity = (productId: string, quantity: number) => {
+  // Update the quantity of a product in the cart by variant ID
+  const updateQuantity = (variantId: string, quantity: number) => {
     if (quantity <= 0) {
-      removeFromCart(productId);
+      removeFromCart(variantId);
       return;
     }
 
-    setItems(prevItems => 
+    setItems(prevItems =>
       prevItems.map(item => {
-        if (item.product.id !== productId) return item;
-        const isDigital = item.product.productType === 'DIGITAL';
+        if (item.product.variantId.toString() !== variantId) return item;
+        const isDigital = item.product.variantType === 'DIGITAL_ONLY';
         const nextQty = isDigital ? 1 : quantity;
         return { ...item, quantity: nextQty };
       })
@@ -103,7 +103,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   // Memoize totals
   const totals = useMemo(() => {
     const totalItems = items.reduce((total, item) => total + item.quantity, 0);
-    const totalPrice = items.reduce((total, item) => total + (item.product.price * item.quantity), 0);
+    const totalPrice = items.reduce((total, item) => total + (item.product.priceWithVat * item.quantity), 0);
     return { totalItems, totalPrice };
   }, [items]);
 
