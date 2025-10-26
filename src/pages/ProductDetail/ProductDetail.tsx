@@ -5,7 +5,7 @@ import {type Product, type ProductTab, type ProductTabId} from '../../data/produ
 import {hybridProductService} from '../../services/hybridProductService';
 import ProductView from '../../components/ProductView/ProductView';
 import './ProductDetail.css';
-import {DetailsTab, DownloadTab, FeaturesTab, ReviewsTab, PrintInfoTab} from '../../components/ProductTabs';
+import {DetailsTab, DownloadTab, FeaturesTab, ReviewsTab, PrintInfoTab, IncludedTab} from '../../components/ProductTabs';
 import {useCart} from '../../context/useCart';
 import WishlistButton from '../../components/WishlistButton';
 import { getLCPPreloadAttributes, getBaseNameFromPath, isCDNEnabled } from '../../utils/cdnImages';
@@ -75,30 +75,9 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({product, onVariantChange
                     product.components
                         .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))
                         .map((component) => (
-                            <li key={component.id} style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-                                <span style={{
-                                    display: 'inline-block',
-                                    padding: '2px 8px',
-                                    borderRadius: '4px',
-                                    fontSize: '0.75rem',
-                                    fontWeight: 600,
-                                    backgroundColor: component.badgeColor === 'blue' ? '#eff6ff' :
-                                                    component.badgeColor === 'green' ? '#f0fdf4' :
-                                                    component.badgeColor === 'purple' ? '#faf5ff' :
-                                                    '#f3f4f6',
-                                    color: component.badgeColor === 'blue' ? '#1e40af' :
-                                           component.badgeColor === 'green' ? '#15803d' :
-                                           component.badgeColor === 'purple' ? '#7c3aed' :
-                                           '#4b5563'
-                                }}>
-                                    {component.label || component.componentType}
-                                </span>
-                                <span>
-                                    {component.quantity && component.quantity > 1 ? `${component.quantity}× ` : ''}
-                                    <strong>{component.componentName}</strong>
-                                    {component.description && <span style={{color: '#6b7280'}}> — {component.description}</span>}
-                                    {component.formattedFileSize && <span style={{color: '#9ca3af', fontSize: '0.875rem'}}> ({component.formattedFileSize})</span>}
-                                </span>
+                            <li key={component.id}>
+                                {component.quantity && component.quantity > 1 ? `${component.quantity}× ` : ''}
+                                {component.label || component.componentType}
                             </li>
                         ))
                 ) : (
@@ -214,6 +193,24 @@ const buildTabs = (p: Product): ProductTab[] => {
             if (printInfoTab?.content.kind === 'printInfo') {
                 console.log('🎉 PrintInfo tab has real data!', printInfoTab.content.data);
             }
+        }
+    }
+
+    // Add Included tab if product has components (right after Details)
+    if (p.components && p.components.length > 0 && !tabs.some(t => t.id === 'Included')) {
+        const detailsIndex = tabs.findIndex(t => t.id === 'Details');
+        const includedTab: ProductTab = {
+            id: 'Included',
+            label: 'Included',
+            content: {kind: 'text', text: JSON.stringify(p.components)}
+        };
+
+        if (detailsIndex !== -1) {
+            // Insert right after Details
+            tabs.splice(detailsIndex + 1, 0, includedTab);
+        } else {
+            // Fallback: add at beginning
+            tabs.unshift(includedTab);
         }
     }
 
@@ -549,6 +546,7 @@ const ProductDetail: React.FC = () => {
                         className="product-tab-panel"
                     >
                         {activeTab.id === 'Details' && <DetailsTab content={activeTab.content}/>}
+                        {activeTab.id === 'Included' && <IncludedTab content={activeTab.content}/>}
                         {activeTab.id === 'PrintInfo' && <PrintInfoTab content={activeTab.content}/>}
                         {activeTab.id === 'Download' && <DownloadTab content={activeTab.content}/>}
                         {activeTab.id === 'Features' && <FeaturesTab content={activeTab.content}/>}

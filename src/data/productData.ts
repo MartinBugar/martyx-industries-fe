@@ -7,7 +7,7 @@ import endeavourBuildPdf from '../assets/buildguide/1/endeavourBuild.pdf';
 
 // makeGallery function removed - gallery now loaded from database only
 
-export type ProductTabId = 'Details' | 'Download' | 'Features' | 'Reviews' | 'PrintInfo';
+export type ProductTabId = 'Details' | 'Download' | 'Features' | 'Reviews' | 'PrintInfo' | 'Included';
 
 export type TabImage = { src: string; alt?: string; caption?: string };
 export type TabDownloadItem = { label: string; url: string; size?: string; format?: string };
