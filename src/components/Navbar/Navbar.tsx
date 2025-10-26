@@ -201,11 +201,10 @@ export default function Navbar({cartCount = 0, onSearchSubmit, user, onLogout}: 
                 ))}
 
                 {/* Quick actions (mobile drawer) */}
-                <div style={{ display: "flex", gap: 8, marginTop: 16, marginBottom: 8 }}>
+                <div className="mi-drawer-quick-actions">
                   <Link
                     to="/wishlist"
-                    className="mi-btn mi-btn--ghost"
-                    style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}
+                    className="mi-btn mi-btn--ghost mi-drawer-action-btn"
                     onClick={handleCloseDrawer}
                   >
                     <WishlistIcon/>
@@ -214,8 +213,7 @@ export default function Navbar({cartCount = 0, onSearchSubmit, user, onLogout}: 
                   </Link>
                   <Link
                     to="/cart"
-                    className="mi-btn mi-btn--ghost"
-                    style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}
+                    className="mi-btn mi-btn--ghost mi-drawer-action-btn"
                     onClick={handleCloseDrawer}
                   >
                     <CartIcon/>
@@ -225,22 +223,22 @@ export default function Navbar({cartCount = 0, onSearchSubmit, user, onLogout}: 
                 </div>
 
                 {/* Auth / User actions (mobile drawer) */}
-                <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+                <div className="mi-drawer-auth-actions">
                   {!user ? (
                     <>
-                      <Link className="mi-btn mi-btn--ghost" to="/login" style={{ flex: 1 }} onClick={handleCloseDrawer}>
+                      <Link className="mi-btn mi-btn--ghost mi-drawer-btn-flex" to="/login" onClick={handleCloseDrawer}>
                         {t('nav:sign_in')}
                       </Link>
-                      <Link className="mi-btn mi-btn--primary" to="/register" style={{ flex: 1 }} onClick={handleCloseDrawer}>
+                      <Link className="mi-btn mi-btn--primary mi-drawer-btn-flex" to="/register" onClick={handleCloseDrawer}>
                         {t('nav:sign_up')}
                       </Link>
                     </>
                   ) : (
                     <>
-                      <Link className="mi-btn mi-btn--ghost" to="/account" style={{ flex: 1 }} onClick={handleCloseDrawer}>
+                      <Link className="mi-btn mi-btn--ghost mi-drawer-btn-flex" to="/account" onClick={handleCloseDrawer}>
                         {t('nav:account')}
                       </Link>
-                      <button type="button" className="mi-btn mi-btn--ghost" style={{ flex: 1 }} onClick={doLogout}>
+                      <button type="button" className="mi-btn mi-btn--ghost mi-drawer-btn-flex" onClick={doLogout}>
                         {t('nav:sign_out')}
                       </button>
                     </>
@@ -310,12 +308,7 @@ export default function Navbar({cartCount = 0, onSearchSubmit, user, onLogout}: 
                                             <img
                                                 src={user.avatarUrl}
                                                 alt="User avatar"
-                                                style={{
-                                                    width: '32px',
-                                                    height: '32px',
-                                                    borderRadius: '50%',
-                                                    objectFit: 'cover'
-                                                }}
+                                                className="mi-user-avatar"
                                             />
                                         ) : (
                                             <UserIcon />

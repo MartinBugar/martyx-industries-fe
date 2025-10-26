@@ -54,6 +54,24 @@
     margin-bottom: 1.25rem;
 }
 
+/* Hero image styling */
+.hero-image-full-width {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: var(--radius-lg);
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+/* Button wrapper for featured section */
+.button-wrapper-centered {
+    text-align: center;
+    margin-top: 1rem;
+}
+
 .row {
     display: flex;
     align-items: center;

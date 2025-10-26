@@ -400,6 +400,11 @@
   * { animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; }
 }
 
+/* Loading/Calculating state */
+.calculating-text {
+  opacity: 0.6;
+}
+
 /* Responsive */
 @media (max-width: 968px) {
   .cart-layout { grid-template-columns: 1fr; }

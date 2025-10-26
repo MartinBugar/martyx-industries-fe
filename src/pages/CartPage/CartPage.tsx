@@ -279,7 +279,7 @@ const CartPage: React.FC<CartPageProps> = ({
                   <span>{t('order_summary.shipping')}</span>
                   <span>
                     {isLoadingShipping ? (
-                      <span style={{ opacity: 0.6 }}>Calculating...</span>
+                      <span className="calculating-text">Calculating...</span>
                     ) : shipping !== null && shipping > 0 ? (
                       formatPrice(shipping)
                     ) : (

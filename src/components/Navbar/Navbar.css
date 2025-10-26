@@ -1084,6 +1084,40 @@ html.hydrated .shop-header .cart-icon {
     opacity: 1;
 }
 
+/* Drawer action containers and buttons */
+.mi-drawer-quick-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+    margin-bottom: 8px;
+}
+
+.mi-drawer-action-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.mi-drawer-auth-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.mi-drawer-btn-flex {
+    flex: 1;
+}
+
+/* User avatar styling */
+.mi-user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
 /* A11y helper */
 .visually-hidden {
     position: absolute !important;

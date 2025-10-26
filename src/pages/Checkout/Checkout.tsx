@@ -630,7 +630,7 @@ const Checkout: React.FC = () => {
                     required
                     placeholder="SK, CZ, DE, etc."
                     maxLength={2}
-                    style={{ textTransform: 'uppercase' }}
+                    className="text-uppercase"
                   />
                   <p className="field-hint">2-letter country code (e.g., SK for Slovakia)</p>
                 </div>

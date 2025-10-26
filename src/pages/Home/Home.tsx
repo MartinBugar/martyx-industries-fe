@@ -135,17 +135,7 @@ const Home: React.FC = () => {
                   src={heroSrc}
                   alt={heroAlt}
                   priority={true} // Hero obrázok má najvyššiu prioritu
-                  className="hero-image"
-                  style={{ 
-                    width: '100%', 
-                    height: 'auto', 
-                    display: 'block', 
-                    borderRadius: 'var(--radius-lg)',
-                    userSelect: 'none',
-                    WebkitUserSelect: 'none',
-                    MozUserSelect: 'none',
-                    msUserSelect: 'none'
-                  }}
+                  className="hero-image hero-image-full-width"
                 />
               ) : (
                 <div className="hero-image" role="img" aria-label={heroAlt} />
@@ -184,7 +174,7 @@ const Home: React.FC = () => {
         <div className="container">
           <div className="section-header">
             <h2>{t('featured.title')}</h2>
-            <div style={{textAlign: 'center', marginTop: '1rem'}}>
+            <div className="button-wrapper-centered">
               <Link className="btn primary" to="/products">{t('featured.view_all')}</Link>
             </div>
           </div>

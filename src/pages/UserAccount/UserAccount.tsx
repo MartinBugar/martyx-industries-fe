@@ -47,7 +47,7 @@ const UserAccount: React.FC = () => {
   
   return (
     <div className="account-page">
-      {/* Floating Account Cassandra */}
+      {/* Floating Account Cassdobre teraz prehladaj vsetky kompontenandra */}
       <div className="account-floating-mascot">
         <img 
           src="/cassandra/Account-Cass.png" 
