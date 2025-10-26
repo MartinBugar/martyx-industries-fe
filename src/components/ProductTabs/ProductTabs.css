@@ -1254,7 +1254,7 @@
   }
 }
 
-/* Included Tab Styles - Component Cards */
+/* Included Tab Styles - Numbered List */
 .included-components {
   margin: 0;
 }
@@ -1266,31 +1266,61 @@
   margin: 0 0 1.5rem 0;
 }
 
-.components-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+.components-list {
+  list-style: none;
+  counter-reset: component-counter;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
   gap: 1rem;
 }
 
-.component-card {
+.component-item {
   background: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
-  padding: 1.25rem;
+  padding: 0 1.25rem 1.25rem 0;
   transition: all 0.2s ease;
+  display: flex;
+  gap: 1.25rem;
+  align-items: flex-start;
+  counter-increment: component-counter;
+  position: relative;
 }
 
-.component-card:hover {
+.component-item::before {
+  content: counter(component-counter);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  background: #10b981;
+  color: white;
+  border-radius: 0 0 8px 0;
+  font-weight: 700;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  margin-right: 0rem;
+}
+
+.component-item:hover {
   border-color: #d1d5db;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.component-header {
+.component-content {
+  flex: 1;
+  padding-top: 1rem;
+}
+
+.component-title-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 0.75rem;
   margin-bottom: 0.75rem;
-  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .component-badge {
@@ -1324,7 +1354,7 @@
 .component-description {
   color: #6b7280;
   font-size: 0.875rem;
-  line-height: 1.5;
+  line-height: 1.6;
   margin: 0 0 0.75rem 0;
 }
 
@@ -1363,11 +1393,20 @@
 }
 
 @media (max-width: 768px) {
-  .components-grid {
-    grid-template-columns: 1fr;
+  .component-item {
+    flex-direction: column;
+    padding: 0;
+    gap: 0;
   }
 
-  .component-card {
+  .component-item::before {
+    width: 100%;
+    height: 2rem;
+    border-radius: 8px 8px 0 0;
+    font-size: 1rem;
+  }
+
+  .component-content {
     padding: 1rem;
   }
 }

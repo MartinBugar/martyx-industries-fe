@@ -22,45 +22,47 @@ const IncludedTab: React.FC<IncludedTabProps> = ({ content }) => {
         return (
           <div className="included-components">
             <h3>What's Included in This Package:</h3>
-            <div className="components-grid">
+            <ol className="components-list">
               {components
                 .sort((a: any, b: any) => (a.displayOrder || 0) - (b.displayOrder || 0))
-                .map((component: any) => (
-                  <div key={component.id} className="component-card">
-                    <div className="component-header">
-                      <span
-                        className="component-badge"
-                        style={{
-                          backgroundColor: component.badgeColor === 'blue' ? '#eff6ff' :
-                                          component.badgeColor === 'green' ? '#f0fdf4' :
-                                          component.badgeColor === 'purple' ? '#faf5ff' :
-                                          '#f3f4f6',
-                          color: component.badgeColor === 'blue' ? '#1e40af' :
-                                 component.badgeColor === 'green' ? '#15803d' :
-                                 component.badgeColor === 'purple' ? '#7c3aed' :
-                                 '#4b5563'
-                        }}
-                      >
-                        {component.label || component.componentType}
-                      </span>
-                      {component.quantity && component.quantity > 1 && (
-                        <span className="component-quantity">×{component.quantity}</span>
+                .map((component: any, index: number) => (
+                  <li key={component.id} className="component-item">
+                    <div className="component-content">
+                      <div className="component-title-row">
+                        <span
+                          className="component-badge"
+                          style={{
+                            backgroundColor: component.badgeColor === 'blue' ? '#eff6ff' :
+                                            component.badgeColor === 'green' ? '#f0fdf4' :
+                                            component.badgeColor === 'purple' ? '#faf5ff' :
+                                            '#f3f4f6',
+                            color: component.badgeColor === 'blue' ? '#1e40af' :
+                                   component.badgeColor === 'green' ? '#15803d' :
+                                   component.badgeColor === 'purple' ? '#7c3aed' :
+                                   '#4b5563'
+                          }}
+                        >
+                          {component.label || component.componentType}
+                        </span>
+                        {component.quantity && component.quantity > 1 && (
+                          <span className="component-quantity">×{component.quantity}</span>
+                        )}
+                      </div>
+                      <h4 className="component-name">{component.componentName}</h4>
+                      {component.description && (
+                        <p className="component-description">{component.description}</p>
                       )}
+                      <div className="component-meta">
+                        {component.digital && <span className="meta-tag digital">Digital</span>}
+                        {component.physical && <span className="meta-tag physical">Physical</span>}
+                        {component.formattedFileSize && (
+                          <span className="meta-size">{component.formattedFileSize}</span>
+                        )}
+                      </div>
                     </div>
-                    <h4 className="component-name">{component.componentName}</h4>
-                    {component.description && (
-                      <p className="component-description">{component.description}</p>
-                    )}
-                    <div className="component-meta">
-                      {component.digital && <span className="meta-tag digital">Digital</span>}
-                      {component.physical && <span className="meta-tag physical">Physical</span>}
-                      {component.formattedFileSize && (
-                        <span className="meta-size">{component.formattedFileSize}</span>
-                      )}
-                    </div>
-                  </div>
+                  </li>
                 ))}
-            </div>
+            </ol>
           </div>
         );
       }
