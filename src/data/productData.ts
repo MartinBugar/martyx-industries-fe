@@ -1,6 +1,7 @@
 // Product data for the 3D model e-shop
-import endeavourModel from '../assets/3dModels/endeavour.glb';
-import raketaModel from '../assets/3dModels/raketa.glb';
+// 3D Models now loaded from CDN via database (model_3d_viewer_url column)
+// import endeavourModel from '../assets/3dModels/endeavour.glb'; // REMOVED: Now using CDN
+// import raketaModel from '../assets/3dModels/raketa.glb'; // REMOVED: Now using CDN
 import endeavourBuildPdf from '../assets/buildguide/1/endeavourBuild.pdf';
 // CDN imports removed - gallery now loaded from database only
 
@@ -168,7 +169,7 @@ export const hardcodedProductsData: HardcodedProductData[] = [
             "Adjustable material properties",
             "Compatible with all major 3D software"
         ],
-        modelPath: endeavourModel,
+        modelPath: '', // Use CDN URL from database (model_3d_viewer_url column)
         gallery: [], // Gallery loaded from database
         interactionInstructions: baseInteractionInstructions,
         modelViewerSettings: defaultModelViewerSettings,
@@ -323,7 +324,7 @@ export const hardcodedProductsData: HardcodedProductData[] = [
             "CCCCCCCCCCCCCCCCCCCCCCCCCCC",
             "DDDDDDDDDDDDDDDDDDDDDDDDDDD"
         ],
-        modelPath: raketaModel,
+        modelPath: '', // Use CDN URL from database (model_3d_viewer_url column)
         gallery: [], // Gallery loaded from database
         interactionInstructions: baseInteractionInstructions,
         modelViewerSettings: defaultModelViewerSettings,

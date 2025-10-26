@@ -1,40 +1,32 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { Package, Plus, X, Save, Trash2 } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
-import { adminProductsService, type BaseProduct, type DigitalProduct, type PhysicalProduct } from '../../services/adminProductsService';
+import { adminProductsService, type MasterProductDto, type ProductVariantDto, type VariantComponentDto } from '../../services/adminProductsService';
+import { Button, Badge } from '../../components/ui';
 
 const AdminProductDetail: React.FC = () => {
   const { t } = useTranslation('common');
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  // Debug: Log when component mounts
-  React.useEffect(() => {
-    if (import.meta.env.DEV) {
-      console.log('🔧 AdminProductDetail mounted with ID:', id);
-      console.log('🔧 Current URL:', window.location.pathname);
-    }
-  }, [id]);
-
-  const [product, setProduct] = useState<BaseProduct | null>(null);
+  const [product, setProduct] = useState<MasterProductDto | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [saving, setSaving] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [savedMsg, setSavedMsg] = useState<string | null>(null);
 
-
-  const productType = String(product?.productType ?? 'DIGITAL').toUpperCase();
-  const phys: PhysicalProduct | null = productType === 'PHYSICAL' ? (product as PhysicalProduct) : null;
-  const digi: DigitalProduct | null = productType === 'DIGITAL' ? (product as DigitalProduct) : null;
+  // Active tab: product-info | variants
+  const [activeTab, setActiveTab] = useState<'product-info' | 'variants'>('product-info');
 
   const load = async () => {
     if (!id) return;
     setLoading(true);
     setError(null);
     try {
-      const data = await adminProductsService.getProductById(id);
+      const data = await adminProductsService.getMasterProductById(id);
       setProduct(data);
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Failed to load product';
@@ -49,7 +41,7 @@ const AdminProductDetail: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
-  const updateField = (key: string, value: unknown) => {
+  const updateField = (key: keyof MasterProductDto, value: unknown) => {
     setSavedMsg(null);
     setProduct(prev => (prev ? { ...prev, [key]: value } : prev));
   };
@@ -60,36 +52,17 @@ const AdminProductDetail: React.FC = () => {
     setError(null);
     setSavedMsg(null);
     try {
-      const payload: Record<string, unknown> = { ...product };
-      // Clean optional text fields: turn empty strings into undefined to avoid validation issues
-      ([
-        'sku',
-        'category',
-        'description',
-        'currency',
-        'imageUrl',
-        // physical
-        'dimensions', 'material', 'countryOfOrigin',
-        // digital
-        'downloadUrl', 'fileFormat', 'licenseInfo', 'version', 'fileName',
-      ] as const).forEach((k) => {
-        if (payload[k] === '') (payload as Record<string, unknown>)[k] = undefined;
-      });
-      // Strip read-only/large fields
+      const payload: MasterProductDto = { ...product };
+      // Clean timestamps (read-only)
       delete (payload as Record<string, unknown>)['createdAt'];
       delete (payload as Record<string, unknown>)['updatedAt'];
-      delete (payload as Record<string, unknown>)['fileContent'];
+      // Clean relationships (managed separately)
+      delete (payload as Record<string, unknown>)['variants'];
+      delete (payload as Record<string, unknown>)['gallery'];
 
-      let updated: BaseProduct;
-      const type = (product.productType as string)?.toUpperCase();
-      if (type === 'PHYSICAL') {
-        updated = await adminProductsService.updatePhysicalProduct(id, payload as PhysicalProduct);
-      } else {
-        // default to digital
-        updated = await adminProductsService.updateDigitalProduct(id, payload as DigitalProduct);
-      }
+      const updated = await adminProductsService.updateMasterProduct(id, payload);
       setProduct(updated);
-      setSavedMsg('Changes saved successfully.');
+      setSavedMsg('Master product updated successfully.');
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Failed to save product';
       setError(msg);
@@ -101,26 +74,45 @@ const AdminProductDetail: React.FC = () => {
 
   const handleDelete = async () => {
     if (!id) return;
-    if (!window.confirm(t('admin.confirm_delete_product'))) return;
+    if (!window.confirm('Are you sure you want to delete this master product and all its variants?')) return;
     setError(null);
     try {
-      await adminProductsService.deleteProduct(id);
+      await adminProductsService.deleteMasterProduct(id);
       navigate('/admin/products');
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : t('admin.failed_delete_product');
+      const msg = e instanceof Error ? e.message : 'Failed to delete product';
       setError(msg);
     }
+  };
+
+  const getCategoryLabel = (cat?: string | null): string => {
+    if (!cat) return '—';
+    const labels: Record<string, string> = {
+      MODEL_KIT: 'Model Kit',
+      MERCHANDISE: 'Merchandise',
+      ELECTRONICS: 'Electronics',
+      ACCESSORIES: 'Accessories',
+      DIGITAL_DOWNLOAD: 'Digital Download',
+    };
+    return labels[cat] || cat;
   };
 
   // Navigation tabs
   const navTabs = (
     <div className="admin-nav-tabs">
-      <Link
-        to={`/admin/products/${id}`}
-        className="admin-nav-tab active"
+      <button
+        onClick={() => setActiveTab('product-info')}
+        className={`admin-nav-tab ${activeTab === 'product-info' ? 'active' : ''}`}
       >
-        📝 Product Detail
-      </Link>
+        📝 Product Info
+      </button>
+      <button
+        onClick={() => setActiveTab('variants')}
+        className={`admin-nav-tab ${activeTab === 'variants' ? 'active' : ''}`}
+      >
+        <Package size={16} style={{ marginRight: 4 }} />
+        Variants ({product?.variants?.length || 0})
+      </button>
       <Link
         to={`/admin/products/${id}/gallery`}
         className="admin-nav-tab"
@@ -131,168 +123,428 @@ const AdminProductDetail: React.FC = () => {
   );
 
   return (
-    <AdminLayout title={`Product Detail`} navTabs={navTabs}>
+    <AdminLayout title={`Product: ${product?.name || 'Loading...'}`} navTabs={navTabs}>
       <div className="admin-page">
         <div className="admin-container">
           <div className="admin-header">
             <div>
-              <h2 className="admin-title">Product Detail</h2>
-              <p className="admin-subtitle">View and edit product information.</p>
+              <h2 className="admin-title">{product?.name || 'Loading...'}</h2>
+              <p className="admin-subtitle">Manage master product information and variants.</p>
             </div>
             <div>
-              <Link to="/admin/products" className="btn btn-outline">Back to Products</Link>
+              <Link to="/admin/products" className="btn btn-outline">← Back to Products</Link>
             </div>
           </div>
+
+          {error && <div className="alert alert-error">{error}</div>}
+          {savedMsg && <div className="alert alert-success">{savedMsg}</div>}
 
           {loading ? (
             <div className="admin-card">Loading product...</div>
           ) : !product ? (
             <div className="admin-card">Product not found.</div>
           ) : (
-            <div className="admin-card">
-              {error && <div className="alert alert-error">{error}</div>}
-              {savedMsg && <div className="alert alert-success">{savedMsg}</div>}
-              <div className="form-grid">
-                <div>
-                  <label className="form-label">Type</label>
-                  <select className="form-input" value={String(product.productType ?? 'DIGITAL')} disabled>
-                    <option value="DIGITAL">Digital</option>
-                    <option value="PHYSICAL">Physical</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="form-label">Name</label>
-                  <input className="form-input" value={String(product.name ?? '')} onChange={(e) => updateField('name', e.target.value)} />
-                </div>
-                <div>
-                  <label className="form-label">SKU</label>
-                  <input className="form-input" value={String(product.sku ?? '')} onChange={(e) => updateField('sku', e.target.value)} />
-                </div>
-                <div>
-                  <label className="form-label">Category</label>
-                  <input className="form-input" value={String(product.category ?? '')} onChange={(e) => updateField('category', e.target.value)} />
-                </div>
-                <div>
-                  <label className="form-label">Price</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    className="form-input"
-                    value={typeof product.price === 'number' ? product.price : ''}
-                    onChange={(e) => updateField('price', e.target.value === '' ? undefined : Number(e.target.value))}
-                  />
-                </div>
-                <div>
-                  <label className="form-label">Currency</label>
-                  <input className="form-input" value={String(product.currency ?? '')} onChange={(e) => updateField('currency', e.target.value)} />
-                </div>
-                <div>
-                  <label className="form-label">Image URL</label>
-                  <input className="form-input" value={String(product.imageUrl ?? '')} onChange={(e) => updateField('imageUrl', e.target.value)} placeholder="https://..." />
-                </div>
-                {product.imageUrl ? (
-                  <div>
-                    <label className="form-label">Preview</label>
-                    <img src={String(product.imageUrl)} alt="Preview" style={{ display: 'block', maxWidth: 180, maxHeight: 120, borderRadius: 6, border: '1px solid #e5e7eb' }} />
-                  </div>
-                ) : null}
-                <div style={{ gridColumn: '1 / -1' }}>
-                  <label className="form-label">Description</label>
-                  <textarea className="form-input" rows={4} value={String(product.description ?? '')} onChange={(e) => updateField('description', e.target.value)} />
-                </div>
-                <div>
-                  <label className="form-label">Active</label>
-                  <select className="form-input" value={String(product.active ?? true)} onChange={(e) => updateField('active', e.target.value === 'true')}>
-                    <option value="true">Yes</option>
-                    <option value="false">No</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="form-label">Created At</label>
-                  <input className="form-input" value={product.createdAt ? new Date(product.createdAt).toLocaleString() : ''} readOnly />
-                </div>
-                <div>
-                  <label className="form-label">Updated At</label>
-                  <input className="form-input" value={product.updatedAt ? new Date(product.updatedAt).toLocaleString() : ''} readOnly />
-                </div>
-              </div>
+            <>
+              {/* Product Info Tab */}
+              {activeTab === 'product-info' && (
+                <div className="admin-card">
+                  <h3 className="section-title">Master Product Information</h3>
+                  <div className="form-grid">
+                    <div>
+                      <label className="form-label">Name *</label>
+                      <input
+                        className="form-input"
+                        value={product.name}
+                        onChange={(e) => updateField('name', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <label className="form-label">Slug (URL)</label>
+                      <input
+                        className="form-input"
+                        value={product.slug || ''}
+                        onChange={(e) => updateField('slug', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <label className="form-label">Category</label>
+                      <select
+                        className="form-input"
+                        value={product.productCategory || 'MODEL_KIT'}
+                        onChange={(e) => updateField('productCategory', e.target.value)}
+                      >
+                        <option value="MODEL_KIT">Model Kit</option>
+                        <option value="MERCHANDISE">Merchandise</option>
+                        <option value="ELECTRONICS">Electronics</option>
+                        <option value="ACCESSORIES">Accessories</option>
+                        <option value="DIGITAL_DOWNLOAD">Digital Download</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="form-label">Manufacturer</label>
+                      <input
+                        className="form-input"
+                        value={product.manufacturer || ''}
+                        onChange={(e) => updateField('manufacturer', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <label className="form-label">Brand</label>
+                      <input
+                        className="form-input"
+                        value={product.brand || ''}
+                        onChange={(e) => updateField('brand', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <label className="form-label">Warranty (months)</label>
+                      <input
+                        type="number"
+                        className="form-input"
+                        value={product.warrantyMonths || 24}
+                        onChange={(e) => updateField('warrantyMonths', Number(e.target.value))}
+                      />
+                    </div>
+                    <div style={{ gridColumn: '1 / -1' }}>
+                      <label className="form-label">Short Description</label>
+                      <textarea
+                        className="form-input"
+                        rows={2}
+                        value={product.shortDescription || ''}
+                        onChange={(e) => updateField('shortDescription', e.target.value)}
+                      />
+                    </div>
+                    <div style={{ gridColumn: '1 / -1' }}>
+                      <label className="form-label">Long Description</label>
+                      <textarea
+                        className="form-input"
+                        rows={5}
+                        value={product.longDescription || ''}
+                        onChange={(e) => updateField('longDescription', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <label className="form-label">Featured Image URL</label>
+                      <input
+                        className="form-input"
+                        value={product.featuredImageUrl || ''}
+                        onChange={(e) => updateField('featuredImageUrl', e.target.value)}
+                        placeholder="https://..."
+                      />
+                    </div>
+                    <div>
+                      <label className="form-label">Video URL</label>
+                      <input
+                        className="form-input"
+                        value={product.videoUrl || ''}
+                        onChange={(e) => updateField('videoUrl', e.target.value)}
+                        placeholder="https://youtube.com/..."
+                      />
+                    </div>
+                    <div>
+                      <label className="form-label">3D Model URL (.glb)</label>
+                      <input
+                        className="form-input"
+                        value={product.model3dViewerUrl || ''}
+                        onChange={(e) => updateField('model3dViewerUrl', e.target.value)}
+                        placeholder="https://cdn.../model.glb"
+                      />
+                    </div>
+                    <div>
+                      <label className="form-label">Sort Order</label>
+                      <input
+                        type="number"
+                        className="form-input"
+                        value={product.sortOrder || 0}
+                        onChange={(e) => updateField('sortOrder', Number(e.target.value))}
+                      />
+                    </div>
 
-              {/* Conditional sections */}
-              {productType === 'PHYSICAL' ? (
-                <div className="admin-card" style={{ marginTop: 16 }}>
-                  <h3 className="section-title">Physical Product Details</h3>
-                  <div className="form-grid">
+                    {/* Status Flags */}
+                    <div style={{ gridColumn: '1 / -1', marginTop: 16 }}>
+                      <h4 className="form-label" style={{ marginBottom: 12 }}>Status & Marketing</h4>
+                      <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+                        <label className="form-label" style={{ display: 'flex', alignItems: 'center', marginBottom: 0 }}>
+                          <input
+                            type="checkbox"
+                            checked={product.active ?? true}
+                            onChange={(e) => updateField('active', e.target.checked)}
+                            style={{ marginRight: 8 }}
+                          />
+                          Active
+                        </label>
+                        <label className="form-label" style={{ display: 'flex', alignItems: 'center', marginBottom: 0 }}>
+                          <input
+                            type="checkbox"
+                            checked={product.featured ?? false}
+                            onChange={(e) => updateField('featured', e.target.checked)}
+                            style={{ marginRight: 8 }}
+                          />
+                          Featured
+                        </label>
+                        <label className="form-label" style={{ display: 'flex', alignItems: 'center', marginBottom: 0 }}>
+                          <input
+                            type="checkbox"
+                            checked={product.bestseller ?? false}
+                            onChange={(e) => updateField('bestseller', e.target.checked)}
+                            style={{ marginRight: 8 }}
+                          />
+                          Bestseller
+                        </label>
+                        <label className="form-label" style={{ display: 'flex', alignItems: 'center', marginBottom: 0 }}>
+                          <input
+                            type="checkbox"
+                            checked={product.newProduct ?? false}
+                            onChange={(e) => updateField('newProduct', e.target.checked)}
+                            style={{ marginRight: 8 }}
+                          />
+                          New Product
+                        </label>
+                        <label className="form-label" style={{ display: 'flex', alignItems: 'center', marginBottom: 0 }}>
+                          <input
+                            type="checkbox"
+                            checked={product.requiresCeMarking ?? false}
+                            onChange={(e) => updateField('requiresCeMarking', e.target.checked)}
+                            style={{ marginRight: 8 }}
+                          />
+                          Requires CE Marking
+                        </label>
+                      </div>
+                    </div>
+
+                    {/* Timestamps */}
                     <div>
-                      <label className="form-label">Stock Quantity</label>
-                      <input type="number" className="form-input" value={typeof phys?.stockQuantity === 'number' ? (phys?.stockQuantity ?? '') : ''} onChange={(e) => updateField('stockQuantity', e.target.value === '' ? undefined : Number(e.target.value))} />
+                      <label className="form-label">Created At</label>
+                      <input
+                        className="form-input"
+                        value={product.createdAt ? new Date(product.createdAt).toLocaleString() : ''}
+                        readOnly
+                      />
                     </div>
                     <div>
-                      <label className="form-label">Weight (g)</label>
-                      <input type="number" className="form-input" value={typeof phys?.weight === 'number' ? (phys?.weight ?? '') : ''} onChange={(e) => updateField('weight', e.target.value === '' ? undefined : Number(e.target.value))} />
-                    </div>
-                    <div>
-                      <label className="form-label">Dimensions (LxWxH cm)</label>
-                      <input className="form-input" value={String(phys?.dimensions ?? '')} onChange={(e) => updateField('dimensions', e.target.value)} />
-                    </div>
-                    <div>
-                      <label className="form-label">Material</label>
-                      <input className="form-input" value={String(phys?.material ?? '')} onChange={(e) => updateField('material', e.target.value)} />
-                    </div>
-                    <div>
-                      <label className="form-label">Country of Origin</label>
-                      <input className="form-input" value={String(phys?.countryOfOrigin ?? '')} onChange={(e) => updateField('countryOfOrigin', e.target.value)} />
-                    </div>
-                    <div>
-                      <label className="form-label">Shipping Time (days)</label>
-                      <input type="number" className="form-input" value={typeof phys?.shippingTime === 'number' ? (phys?.shippingTime ?? '') : ''} onChange={(e) => updateField('shippingTime', e.target.value === '' ? undefined : Number(e.target.value))} />
+                      <label className="form-label">Updated At</label>
+                      <input
+                        className="form-input"
+                        value={product.updatedAt ? new Date(product.updatedAt).toLocaleString() : ''}
+                        readOnly
+                      />
                     </div>
                   </div>
-                </div>
-              ) : (
-                <div className="admin-card" style={{ marginTop: 16 }}>
-                  <h3 className="section-title">Digital Product Details</h3>
-                  <div className="form-grid">
-                    <div>
-                      <label className="form-label">Download URL</label>
-                      <input className="form-input" value={String(digi?.downloadUrl ?? '')} onChange={(e) => updateField('downloadUrl', e.target.value)} placeholder="https://..." />
-                    </div>
-                    <div>
-                      <label className="form-label">File Size (bytes)</label>
-                      <input type="number" className="form-input" value={typeof digi?.fileSize === 'number' ? (digi?.fileSize ?? '') : ''} onChange={(e) => updateField('fileSize', e.target.value === '' ? undefined : Number(e.target.value))} />
-                    </div>
-                    <div>
-                      <label className="form-label">File Format</label>
-                      <input className="form-input" value={String(digi?.fileFormat ?? '')} onChange={(e) => updateField('fileFormat', e.target.value)} placeholder="PDF, MP3, ZIP..." />
-                    </div>
-                    <div>
-                      <label className="form-label">License Info</label>
-                      <input className="form-input" value={String(digi?.licenseInfo ?? '')} onChange={(e) => updateField('licenseInfo', e.target.value)} />
-                    </div>
-                    <div>
-                      <label className="form-label">Version</label>
-                      <input className="form-input" value={String(digi?.version ?? '')} onChange={(e) => updateField('version', e.target.value)} />
-                    </div>
-                    <div>
-                      <label className="form-label">File Name</label>
-                      <input className="form-input" value={String(digi?.fileName ?? '')} onChange={(e) => updateField('fileName', e.target.value)} placeholder="archive.zip" />
-                    </div>
-                    <div>
-                      <label className="form-label">File Content</label>
-                      <input className="form-input" value={digi?.fileContent ? 'Present' : ''} readOnly />
-                    </div>
+
+                  <div className="form-actions" style={{ marginTop: 24 }}>
+                    <Button variant="primary" onClick={handleSave} disabled={saving} loading={saving} icon={Save}>
+                      Save Changes
+                    </Button>
+                    <Button variant="danger" onClick={handleDelete} disabled={saving} icon={Trash2}>
+                      Delete Master Product
+                    </Button>
                   </div>
                 </div>
               )}
 
-              <div className="form-actions" style={{ marginTop: 24 }}>
-                <button className="btn btn-primary" onClick={handleSave} disabled={saving}>{saving ? 'Saving...' : 'Save Changes'}</button>
-                <button className="btn btn-danger" onClick={handleDelete} disabled={saving}>Delete</button>
-              </div>
-            </div>
+              {/* Variants Tab */}
+              {activeTab === 'variants' && (
+                <div>
+                  <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <p style={{ color: '#6b7280' }}>
+                      Manage product variants - different configurations with unique SKUs, pricing, and components.
+                    </p>
+                    <Button variant="primary" icon={Plus} disabled>
+                      Add Variant (Coming Soon)
+                    </Button>
+                  </div>
+
+                  {!product.variants || product.variants.length === 0 ? (
+                    <div className="admin-card" style={{ textAlign: 'center', padding: '48px 24px' }}>
+                      <Package size={48} style={{ margin: '0 auto 16px', color: '#9ca3af' }} />
+                      <h3 style={{ marginBottom: 8 }}>No Variants Yet</h3>
+                      <p style={{ color: '#6b7280', marginBottom: 24 }}>
+                        Create product variants to offer different configurations (e.g., Digital Edition, Full Kit).
+                      </p>
+                      <Button variant="primary" icon={Plus} disabled>
+                        Create First Variant (Coming Soon)
+                      </Button>
+                    </div>
+                  ) : (
+                    <div style={{ display: 'grid', gap: 16 }}>
+                      {product.variants.map((variant, idx) => (
+                        <VariantCard key={variant.id || idx} variant={variant} />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
     </AdminLayout>
+  );
+};
+
+// Component to display a single variant with its components
+const VariantCard: React.FC<{ variant: ProductVariantDto }> = ({ variant }) => {
+  const [expanded, setExpanded] = useState(false);
+
+  const getVariantTypeLabel = (type?: string | null): string => {
+    if (!type) return '—';
+    const labels: Record<string, string> = {
+      DIGITAL_ONLY: 'Digital Only',
+      PHYSICAL_ONLY: 'Physical Only',
+      HYBRID: 'Hybrid (Digital + Physical)',
+    };
+    return labels[type] || type;
+  };
+
+  const getFulfillmentTypeLabel = (type?: string | null): string => {
+    if (!type) return '—';
+    const labels: Record<string, string> = {
+      DIGITAL: 'Digital Delivery',
+      PHYSICAL: 'Physical Shipping',
+      MIXED: 'Mixed (Digital + Shipping)',
+    };
+    return labels[type] || type;
+  };
+
+  return (
+    <div className="admin-card" style={{ padding: 0, overflow: 'hidden' }}>
+      {/* Header */}
+      <div
+        style={{
+          padding: '16px 20px',
+          background: '#f9fafb',
+          borderBottom: '1px solid #e5e7eb',
+          cursor: 'pointer',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+        onClick={() => setExpanded(!expanded)}
+      >
+        <div style={{ flex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 4 }}>
+            <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 600 }}>{variant.variantName}</h4>
+            <Badge variant="info" size="sm">{variant.sku}</Badge>
+            <Badge variant={variant.active ? 'success' : 'warning'} size="sm">
+              {variant.active ? 'Active' : 'Inactive'}
+            </Badge>
+          </div>
+          <div style={{ display: 'flex', gap: 16, fontSize: '14px', color: '#6b7280' }}>
+            <span>€{variant.priceWithVat?.toFixed(2) || '0.00'} ({variant.currency})</span>
+            <span>•</span>
+            <span>{getVariantTypeLabel(variant.variantType)}</span>
+            {variant.stockQuantity !== undefined && variant.stockQuantity !== null && (
+              <>
+                <span>•</span>
+                <span>Stock: {variant.stockQuantity}</span>
+              </>
+            )}
+          </div>
+        </div>
+        <Button variant="outline" size="sm">
+          {expanded ? 'Collapse' : 'Expand'}
+        </Button>
+      </div>
+
+      {/* Expanded Details */}
+      {expanded && (
+        <div style={{ padding: '20px' }}>
+          <div className="form-grid" style={{ marginBottom: 24 }}>
+            <div>
+              <label className="form-label">Variant Type</label>
+              <div className="form-input" style={{ background: '#f9fafb' }}>
+                {getVariantTypeLabel(variant.variantType)}
+              </div>
+            </div>
+            <div>
+              <label className="form-label">Fulfillment</label>
+              <div className="form-input" style={{ background: '#f9fafb' }}>
+                {getFulfillmentTypeLabel(variant.fulfillmentType)}
+              </div>
+            </div>
+            <div>
+              <label className="form-label">Price (with VAT)</label>
+              <div className="form-input" style={{ background: '#f9fafb' }}>
+                €{variant.priceWithVat?.toFixed(2) || '0.00'}
+              </div>
+            </div>
+            <div>
+              <label className="form-label">Price (without VAT)</label>
+              <div className="form-input" style={{ background: '#f9fafb' }}>
+                €{variant.priceWithoutVat?.toFixed(2) || '0.00'}
+              </div>
+            </div>
+            <div>
+              <label className="form-label">VAT Rate</label>
+              <div className="form-input" style={{ background: '#f9fafb' }}>
+                {variant.vatRate || 0}%
+              </div>
+            </div>
+            <div>
+              <label className="form-label">Currency</label>
+              <div className="form-input" style={{ background: '#f9fafb' }}>
+                {variant.currency || 'EUR'}
+              </div>
+            </div>
+          </div>
+
+          {/* Components - What's Included */}
+          <div>
+            <h4 style={{ marginBottom: 12, fontSize: '14px', fontWeight: 600, color: '#374151' }}>
+              📦 What's Included in This Variant
+            </h4>
+            {!variant.components || variant.components.length === 0 ? (
+              <div style={{ padding: '12px', background: '#fef3c7', border: '1px solid #fde68a', borderRadius: '6px', fontSize: '14px' }}>
+                No components defined. Add components to specify what's included in this variant.
+              </div>
+            ) : (
+              <div style={{ display: 'grid', gap: 8 }}>
+                {variant.components.map((component, idx) => (
+                  <div
+                    key={component.id || idx}
+                    style={{
+                      padding: '12px 16px',
+                      background: '#f9fafb',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '6px',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 500, marginBottom: 2 }}>
+                        {component.quantity && component.quantity > 1 ? `${component.quantity}× ` : ''}
+                        {component.componentName}
+                      </div>
+                      {component.description && (
+                        <div style={{ fontSize: '13px', color: '#6b7280' }}>
+                          {component.description}
+                        </div>
+                      )}
+                    </div>
+                    {component.componentType && (
+                      <Badge
+                        variant={component.componentType === 'DIGITAL' ? 'info' : 'success'}
+                        size="sm"
+                      >
+                        {component.componentType}
+                      </Badge>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div style={{ marginTop: 20, paddingTop: 20, borderTop: '1px solid #e5e7eb' }}>
+            <Button variant="outline" size="sm" disabled>
+              Edit Variant (Coming Soon)
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

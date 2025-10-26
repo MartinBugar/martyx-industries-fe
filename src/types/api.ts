@@ -16,18 +16,54 @@ export interface ApiErrorResponse {
 
 // Master Product DTO - Product concept (e.g., "ENDEAVOUR Robot Model")
 export interface MasterProductDto {
+  // Basic Information
   id: number;
   name: string;
   slug: string;
-  description: string | null;
+  shortDescription: string | null;
   longDescription: string | null;
+
+  // Categorization
   productCategory: 'MODEL_KIT' | 'MERCHANDISE' | 'ELECTRONICS' | 'ACCESSORIES' | 'DIGITAL_DOWNLOAD';
   hasVariants: boolean;
-  isActive: boolean;
+
+  // SEO & Marketing
+  metaTitle: string | null;
+  metaDescription: string | null;
+  metaKeywords: string | null;
+  featured: boolean;
+  bestseller: boolean;
+  newProduct: boolean;
+  sortOrder: number | null;
+  featuredImageUrl: string | null;
+  videoUrl: string | null;
+
+  // Frontend Presentation (JSON fields from backend)
+  model3dViewerUrl: string | null;  // CDN URL to .glb file
+  featuresJson: string | null;  // JSON array: ["Feature 1", "Feature 2", ...]
+  interactionInstructionsJson: string | null;  // JSON array for 3D viewer
+  modelViewerSettingsJson: string | null;  // JSON object with viewer settings
+  tabsJson: string | null;  // JSON array of tab objects
+
+  // Legal & Compliance
+  manufacturer: string | null;
+  brand: string | null;
+  warrantyMonths: number | null;
+  countryOfManufacture: string | null;
+  requiresCeMarking: boolean;
+  safetyWarnings: string | null;
+
+  // Status
+  active: boolean;
   publishedAt: string | null;
+
+  // Timestamps
   createdAt: string;
   updatedAt: string;
-  // Associated variants loaded separately
+
+  // Relationships (loaded separately or included in response)
+  variants?: ProductVariantDto[];
+  gallery?: ProductGalleryDto[];
 }
 
 // Product Variant DTO - Sellable SKU (e.g., "Digital Edition €89.90")
@@ -70,7 +106,7 @@ export interface ProductVariantDto {
   heightCm: number | null;
 
   // Status
-  isActive: boolean;
+  active: boolean;  // Changed from isActive to match backend
   createdAt: string;
   updatedAt: string;
 }
@@ -97,6 +133,26 @@ export interface VariantComponentDto {
   // Ordering
   displayOrder: number;
   createdAt: string;
+}
+
+// Product Gallery DTO - Product images
+export interface ProductGalleryDto {
+  id: string; // UUID
+  productId: number | null; // Legacy products table
+  masterProductId: number | null; // New architecture
+  variantId: number | null; // Optional: variant-specific image
+  fileName: string;
+  originalName: string;
+  mimeType: string;
+  fileSize: number;
+  url: string; // Direct URL
+  cdnUrl: string; // CDN optimized URL
+  thumbnailUrl: string; // Thumbnail version
+  displayOrder: number | null;
+  primary: boolean; // Is primary/featured image?
+  folderName: string | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // Product Download DTO - Secure download tokens

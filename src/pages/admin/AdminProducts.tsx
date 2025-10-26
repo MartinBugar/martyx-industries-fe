@@ -1,29 +1,44 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Eye, Pencil, X, Search } from 'lucide-react';
+import { Eye, Pencil, X, Search, Package } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
-import { adminProductsService, type BaseProduct, type DigitalProduct, type PhysicalProduct, type PageResponse } from '../../services/adminProductsService';
+import { adminProductsService, type MasterProductDto, type PageResponse } from '../../services/adminProductsService';
 import { Button, Badge, SkeletonTable } from '../../components/ui';
 import { useDebounce } from '../../hooks/useDebounce';
 
-type CreateProduct = BaseProduct & { productType: 'DIGITAL' | 'PHYSICAL' };
+type CreateMasterProduct = {
+  name: string;
+  slug?: string;
+  shortDescription?: string;
+  longDescription?: string;
+  productCategory?: string;
+  active?: boolean;
+  featured?: boolean;
+  bestseller?: boolean;
+  newProduct?: boolean;
+  manufacturer?: string;
+  brand?: string;
+};
 
-const initialCreate: CreateProduct = {
+const initialCreate: CreateMasterProduct = {
   name: '',
-  sku: '',
-  category: '',
-  price: undefined,
-  currency: 'USD',
-  description: '',
+  slug: '',
+  shortDescription: '',
+  longDescription: '',
+  productCategory: 'MODEL_KIT',
   active: true,
-  productType: 'DIGITAL',
+  featured: false,
+  bestseller: false,
+  newProduct: false,
+  manufacturer: '',
+  brand: '',
 };
 
 const AdminProducts: React.FC = () => {
   const { t } = useTranslation('common');
-  const [products, setProducts] = useState<BaseProduct[]>([]);
+  const [products, setProducts] = useState<MasterProductDto[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -47,7 +62,7 @@ const AdminProducts: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const pageResponse: PageResponse<BaseProduct> = await adminProductsService.getProducts(
+      const pageResponse: PageResponse<MasterProductDto> = await adminProductsService.getMasterProducts(
         { search: search || undefined },
         pageNum,
         20,
@@ -91,19 +106,25 @@ const AdminProducts: React.FC = () => {
 
     setCreating(true);
     try {
-      let created: BaseProduct;
-      const payload: Record<string, unknown> = { ...createData };
-      // Clean empty strings to null/undefined to avoid backend validation issues
-      (['sku','category','description','currency'] as const).forEach((k) => {
-        if (payload[k] === '') (payload as Record<string, unknown>)[k] = undefined;
-      });
+      const payload: MasterProductDto = {
+        name: createData.name.trim(),
+        slug: createData.slug?.trim() || undefined,
+        shortDescription: createData.shortDescription?.trim() || undefined,
+        longDescription: createData.longDescription?.trim() || undefined,
+        productCategory: createData.productCategory || 'MODEL_KIT',
+        active: createData.active ?? true,
+        featured: createData.featured ?? false,
+        bestseller: createData.bestseller ?? false,
+        newProduct: createData.newProduct ?? false,
+        manufacturer: createData.manufacturer?.trim() || undefined,
+        brand: createData.brand?.trim() || undefined,
+      };
 
-      if (createData.productType === 'DIGITAL') {
-        created = await adminProductsService.createDigitalProduct(payload as DigitalProduct);
-      } else {
-        created = await adminProductsService.createPhysicalProduct(payload as PhysicalProduct);
-      }
-      setProducts(prev => [created, ...prev]);
+      await adminProductsService.createMasterProduct(payload);
+
+      // Reload products to show the new one
+      await loadProducts(0);
+
       resetCreate();
       setActiveTab('all-products');
     } catch (e: unknown) {
@@ -118,7 +139,7 @@ const AdminProducts: React.FC = () => {
     if (!window.confirm(t('common:admin.confirm_delete_product'))) return;
     setError(null);
     try {
-      await adminProductsService.deleteProduct(id);
+      await adminProductsService.deleteMasterProduct(id);
       setProducts(prev => prev.filter(p => p.id !== id));
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : t('common:admin.failed_delete_product');
@@ -126,9 +147,41 @@ const AdminProducts: React.FC = () => {
     }
   };
 
-  const getProductType = (p: BaseProduct): string => {
-    const t: unknown = p.productType ?? (p as Record<string, unknown>)['type'];
-    return typeof t === 'string' && t.trim() ? t : '—';
+  const getCategoryLabel = (cat?: string | null): string => {
+    if (!cat) return '—';
+    const labels: Record<string, string> = {
+      MODEL_KIT: 'Model Kit',
+      MERCHANDISE: 'Merchandise',
+      ELECTRONICS: 'Electronics',
+      ACCESSORIES: 'Accessories',
+      DIGITAL_DOWNLOAD: 'Digital Download',
+    };
+    return labels[cat] || cat;
+  };
+
+  const getVariantsSummary = (product: MasterProductDto): string => {
+    const variantCount = product.variants?.length || 0;
+    if (variantCount === 0) return 'No variants';
+    if (variantCount === 1) return '1 variant';
+    return `${variantCount} variants`;
+  };
+
+  const getPriceRange = (product: MasterProductDto): string => {
+    const variants = product.variants || [];
+    if (variants.length === 0) return '—';
+
+    const prices = variants
+      .map(v => v.priceWithVat)
+      .filter((p): p is number => typeof p === 'number' && p > 0);
+
+    if (prices.length === 0) return '—';
+
+    const min = Math.min(...prices);
+    const max = Math.max(...prices);
+    const currency = variants[0]?.currency || 'EUR';
+
+    if (min === max) return `€${min.toFixed(2)}`;
+    return `€${min.toFixed(2)} - €${max.toFixed(2)}`;
   };
 
   const navTabs = (
@@ -159,100 +212,138 @@ const AdminProducts: React.FC = () => {
           <div className="admin-header">
             <div>
               <h2 className="admin-title">Product Management</h2>
-              <p className="admin-subtitle">Manage your product inventory with ease. Create, edit, and organize all your products in one place.</p>
+              <p className="admin-subtitle">Manage your product catalog. Create master products and their variants with full pricing and inventory control.</p>
             </div>
           </div>
 
           {error && <div className="alert alert-error">{error}</div>}
 
-          {/* Create Product Tab */}
+          {/* Create Master Product Tab */}
           {activeTab === 'create-product' && (
           <div className="admin-card">
-            <h3 className="section-title">Create New Product</h3>
+            <h3 className="section-title">Create New Master Product</h3>
+            <p className="form-help-text" style={{ marginBottom: '20px', color: '#6b7280' }}>
+              Create a product concept (e.g., "ENDEAVOUR Robot Model"). You can add variants (Digital Edition, Full Kit) later in the product detail page.
+            </p>
             <form onSubmit={handleCreate} className="form-grid">
               <div>
-                <label className="form-label">Type</label>
-                <select
-                  className="form-input"
-                  value={createData.productType}
-                  onChange={(e) => setCreateData({ ...createData, productType: e.target.value as 'DIGITAL' | 'PHYSICAL' })}
-                >
-                  <option value="DIGITAL">Digital</option>
-                  <option value="PHYSICAL">Physical</option>
-                </select>
-              </div>
-              <div>
-                <label className="form-label">Name</label>
+                <label className="form-label">Name *</label>
                 <input
                   className="form-input"
                   value={createData.name}
                   onChange={(e) => setCreateData({ ...createData, name: e.target.value })}
-                  placeholder="Product name"
+                  placeholder="e.g., ENDEAVOUR Robot Model"
                   required
                 />
               </div>
               <div>
-                <label className="form-label">SKU</label>
+                <label className="form-label">Slug (URL)</label>
                 <input
                   className="form-input"
-                  value={String(createData.sku ?? '')}
-                  onChange={(e) => setCreateData({ ...createData, sku: e.target.value })}
-                  placeholder="Optional SKU"
+                  value={createData.slug || ''}
+                  onChange={(e) => setCreateData({ ...createData, slug: e.target.value })}
+                  placeholder="e.g., endeavour-robot-model"
                 />
               </div>
               <div>
                 <label className="form-label">Category</label>
+                <select
+                  className="form-input"
+                  value={createData.productCategory || 'MODEL_KIT'}
+                  onChange={(e) => setCreateData({ ...createData, productCategory: e.target.value })}
+                >
+                  <option value="MODEL_KIT">Model Kit</option>
+                  <option value="MERCHANDISE">Merchandise</option>
+                  <option value="ELECTRONICS">Electronics</option>
+                  <option value="ACCESSORIES">Accessories</option>
+                  <option value="DIGITAL_DOWNLOAD">Digital Download</option>
+                </select>
+              </div>
+              <div>
+                <label className="form-label">Manufacturer</label>
                 <input
                   className="form-input"
-                  value={String(createData.category ?? '')}
-                  onChange={(e) => setCreateData({ ...createData, category: e.target.value })}
-                  placeholder="Category"
+                  value={createData.manufacturer || ''}
+                  onChange={(e) => setCreateData({ ...createData, manufacturer: e.target.value })}
+                  placeholder="e.g., MartyX Industries"
                 />
               </div>
               <div>
-                <label className="form-label">Price</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  className="form-input"
-                  value={typeof createData.price === 'number' ? createData.price : ''}
-                  onChange={(e) => setCreateData({ ...createData, price: e.target.value === '' ? undefined : Number(e.target.value) })}
-                  placeholder="0.00"
-                />
-              </div>
-              <div>
-                <label className="form-label">Currency</label>
+                <label className="form-label">Brand</label>
                 <input
                   className="form-input"
-                  value={String(createData.currency ?? '')}
-                  onChange={(e) => setCreateData({ ...createData, currency: e.target.value })}
-                  placeholder="USD"
+                  value={createData.brand || ''}
+                  onChange={(e) => setCreateData({ ...createData, brand: e.target.value })}
+                  placeholder="e.g., MartyX"
                 />
               </div>
               <div style={{ gridColumn: '1 / -1' }}>
-                <label className="form-label">Description</label>
+                <label className="form-label">Short Description</label>
                 <textarea
                   className="form-input"
-                  rows={3}
-                  value={String(createData.description ?? '')}
-                  onChange={(e) => setCreateData({ ...createData, description: e.target.value })}
-                  placeholder="Description"
+                  rows={2}
+                  value={createData.shortDescription || ''}
+                  onChange={(e) => setCreateData({ ...createData, shortDescription: e.target.value })}
+                  placeholder="Brief product description (1-2 sentences)"
+                />
+              </div>
+              <div style={{ gridColumn: '1 / -1' }}>
+                <label className="form-label">Long Description</label>
+                <textarea
+                  className="form-input"
+                  rows={4}
+                  value={createData.longDescription || ''}
+                  onChange={(e) => setCreateData({ ...createData, longDescription: e.target.value })}
+                  placeholder="Detailed product description"
                 />
               </div>
               <div>
-                <label className="form-label">Active</label>
-                <select
-                  className="form-input"
-                  value={String(createData.active ?? true)}
-                  onChange={(e) => setCreateData({ ...createData, active: e.target.value === 'true' })}
-                >
-                  <option value="true">Yes</option>
-                  <option value="false">No</option>
-                </select>
+                <label className="form-label">
+                  <input
+                    type="checkbox"
+                    checked={createData.active ?? true}
+                    onChange={(e) => setCreateData({ ...createData, active: e.target.checked })}
+                    style={{ marginRight: '8px' }}
+                  />
+                  Active
+                </label>
               </div>
-              <div className="form-actions">
+              <div>
+                <label className="form-label">
+                  <input
+                    type="checkbox"
+                    checked={createData.featured ?? false}
+                    onChange={(e) => setCreateData({ ...createData, featured: e.target.checked })}
+                    style={{ marginRight: '8px' }}
+                  />
+                  Featured
+                </label>
+              </div>
+              <div>
+                <label className="form-label">
+                  <input
+                    type="checkbox"
+                    checked={createData.bestseller ?? false}
+                    onChange={(e) => setCreateData({ ...createData, bestseller: e.target.checked })}
+                    style={{ marginRight: '8px' }}
+                  />
+                  Bestseller
+                </label>
+              </div>
+              <div>
+                <label className="form-label">
+                  <input
+                    type="checkbox"
+                    checked={createData.newProduct ?? false}
+                    onChange={(e) => setCreateData({ ...createData, newProduct: e.target.checked })}
+                    style={{ marginRight: '8px' }}
+                  />
+                  New Product
+                </label>
+              </div>
+              <div className="form-actions" style={{ gridColumn: '1 / -1' }}>
                 <Button variant="primary" type="submit" disabled={creating} loading={creating}>
-                  Create Product
+                  Create Master Product
                 </Button>
                 <Button variant="outline" type="button" onClick={resetCreate} disabled={creating}>
                   Clear
@@ -271,7 +362,7 @@ const AdminProducts: React.FC = () => {
                 <input
                   type="text"
                   className="form-input"
-                  placeholder="Search products by name or SKU..."
+                  placeholder="Search products by name..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   style={{ paddingLeft: '40px' }}
@@ -319,43 +410,42 @@ const AdminProducts: React.FC = () => {
                     <div className="mobile-card-header">
                       <div>
                         <h4 className="mobile-card-title">{p.name}</h4>
-                        <p className="mobile-card-subtitle">ID: {p.id}</p>
+                        <p className="mobile-card-subtitle">{p.slug || `ID: ${p.id}`}</p>
                       </div>
                       <div className="mobile-card-actions">
-                        <Link to={`/admin/products/${p.id}/view`} className="btn btn-outline btn-sm" title="View product details">
+                        <Link to={`/admin/products/${p.id}`} className="btn btn-outline btn-sm" title="View/Edit product">
                           <Eye size={16} />
-                        </Link>
-                        <Link to={`/admin/products/${p.id}/edit`} className="btn btn-outline btn-sm" title="Edit product">
-                          <Pencil size={16} />
                         </Link>
                         <Button variant="danger" size="sm" icon={X} onClick={() => handleDelete(p.id!)} title="Delete product" />
                       </div>
                     </div>
                     <div className="mobile-card-body">
                       <div className="mobile-field">
-                        <span className="mobile-field-label">SKU:</span>
-                        <span className="mobile-field-value">{p.sku || '—'}</span>
-                      </div>
-                      <div className="mobile-field">
                         <span className="mobile-field-label">Category:</span>
-                        <span className="mobile-field-value">{p.category || '—'}</span>
+                        <span className="mobile-field-value">{getCategoryLabel(p.productCategory)}</span>
                       </div>
                       <div className="mobile-field">
-                        <span className="mobile-field-label">Type:</span>
+                        <span className="mobile-field-label">Variants:</span>
                         <span className="mobile-field-value">
-                          <Badge variant="info" size="sm">{getProductType(p)}</Badge>
+                          <Badge variant="info" size="sm">
+                            <Package size={12} style={{ marginRight: 4 }} />
+                            {getVariantsSummary(p)}
+                          </Badge>
                         </span>
                       </div>
                       <div className="mobile-field">
-                        <span className="mobile-field-label">Price:</span>
-                        <span className="mobile-field-value">{typeof p.price === 'number' ? `${p.price} ${p.currency ?? ''}` : '—'}</span>
+                        <span className="mobile-field-label">Price Range:</span>
+                        <span className="mobile-field-value">{getPriceRange(p)}</span>
                       </div>
                       <div className="mobile-field">
-                        <span className="mobile-field-label">Active:</span>
+                        <span className="mobile-field-label">Status:</span>
                         <span className="mobile-field-value">
                           <Badge variant={p.active ? 'success' : 'warning'} size="sm">
-                            {p.active ? 'Yes' : 'No'}
+                            {p.active ? 'Active' : 'Inactive'}
                           </Badge>
+                          {p.featured && <Badge variant="info" size="sm" style={{ marginLeft: 4 }}>Featured</Badge>}
+                          {p.bestseller && <Badge variant="success" size="sm" style={{ marginLeft: 4 }}>Bestseller</Badge>}
+                          {p.newProduct && <Badge variant="primary" size="sm" style={{ marginLeft: 4 }}>New</Badge>}
                         </span>
                       </div>
                     </div>
@@ -364,44 +454,59 @@ const AdminProducts: React.FC = () => {
               )}
             </div>
 
+            {/* Desktop Table Layout */}
             <div className="table-wrapper">
             <table className="admin-table">
               <thead>
                 <tr>
                   <th style={{ width: 70 }}>ID</th>
                   <th>Name</th>
-                  <th>SKU</th>
                   <th>Category</th>
-                  <th>Type</th>
-                  <th>Price</th>
-                  <th>Active</th>
-                  <th style={{ width: 240 }} className="text-right">Actions</th>
+                  <th>Variants</th>
+                  <th>Price Range</th>
+                  <th>Status</th>
+                  <th style={{ width: 180 }} className="text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan={8} className="table-empty">
-                    <SkeletonTable rows={5} columns={8} />
+                  <tr><td colSpan={7} className="table-empty">
+                    <SkeletonTable rows={5} columns={7} />
                   </td></tr>
                 ) : products.length === 0 ? (
-                  <tr><td colSpan={8} className="table-empty">No products found.</td></tr>
+                  <tr><td colSpan={7} className="table-empty">No products found.</td></tr>
                 ) : (
                   products.map(p => (
                     <tr key={p.id as React.Key}>
                       <td>{p.id}</td>
-                      <td>{p.name}</td>
-                      <td>{p.sku || '—'}</td>
-                      <td>{p.category || '—'}</td>
-                      <td><Badge variant="info" size="sm">{getProductType(p)}</Badge></td>
-                      <td>{typeof p.price === 'number' ? `${p.price} ${p.currency ?? ''}` : '—'}</td>
-                      <td><Badge variant={p.active ? 'success' : 'warning'} size="sm">{p.active ? 'Yes' : 'No'}</Badge></td>
+                      <td>
+                        <div>
+                          <div style={{ fontWeight: 500 }}>{p.name}</div>
+                          {p.slug && <div style={{ fontSize: '12px', color: '#6b7280' }}>{p.slug}</div>}
+                        </div>
+                      </td>
+                      <td>{getCategoryLabel(p.productCategory)}</td>
+                      <td>
+                        <Badge variant="info" size="sm">
+                          <Package size={12} style={{ marginRight: 4 }} />
+                          {getVariantsSummary(p)}
+                        </Badge>
+                      </td>
+                      <td>{getPriceRange(p)}</td>
+                      <td>
+                        <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                          <Badge variant={p.active ? 'success' : 'warning'} size="sm">
+                            {p.active ? 'Active' : 'Inactive'}
+                          </Badge>
+                          {p.featured && <Badge variant="info" size="sm">Featured</Badge>}
+                          {p.bestseller && <Badge variant="success" size="sm">Best</Badge>}
+                          {p.newProduct && <Badge variant="primary" size="sm">New</Badge>}
+                        </div>
+                      </td>
                       <td className="text-right">
                         <div className="action-buttons">
-                          <Link to={`/admin/products/${p.id}/view`} className="btn btn-outline btn-sm" title="View product details">
+                          <Link to={`/admin/products/${p.id}`} className="btn btn-outline btn-sm" title="View/Edit product">
                             <Eye size={16} />
-                          </Link>
-                          <Link to={`/admin/products/${p.id}/edit`} className="btn btn-outline btn-sm" title="Edit product">
-                            <Pencil size={16} />
                           </Link>
                           <Button variant="danger" size="sm" icon={X} onClick={() => handleDelete(p.id!)} title="Delete product" />
                         </div>

@@ -80,7 +80,21 @@ export class HybridProductService {
   }
 
   /**
-   * Merge MasterProduct + ProductVariant + HardcodedData into complete Product
+   * Parse JSON field with fallback
+   */
+  private parseJsonField<T>(jsonString: string | null, fallback: T): T {
+    if (!jsonString) return fallback;
+    try {
+      return JSON.parse(jsonString) as T;
+    } catch (error) {
+      console.error('Failed to parse JSON field:', error, 'Value:', jsonString);
+      return fallback;
+    }
+  }
+
+  /**
+   * Merge MasterProduct + ProductVariant into complete Product
+   * Now uses backend JSON fields instead of hardcoded data
    */
   private mergeProductData(
     masterProduct: MasterProductDto,
@@ -92,21 +106,36 @@ export class HybridProductService {
     console.log('🔀 MasterProduct:', masterProduct);
     console.log('🔀 Selected Variant:', variant);
     console.log('🔀 All Variants:', allVariants.length);
-    console.log('🔀 Hardcoded data:', hardcodedData);
 
-    // Default values for missing hardcoded data
-    const defaultHardcodedData: Partial<HardcodedProductData> = {
-      features: [],
-      modelPath: '',
-      gallery: [],
-      interactionInstructions: ['Click and drag to rotate', 'Scroll to zoom in/out', 'Right-click and drag to pan'],
-      modelViewerSettings: undefined,
-      videoUrl: undefined,
-      tabs: []
-    };
+    // Parse JSON fields from backend with fallbacks to hardcoded data
+    const features = this.parseJsonField<string[]>(
+      masterProduct.featuresJson,
+      hardcodedData?.features || []
+    );
 
-    const mergedHardcodedData = { ...defaultHardcodedData, ...hardcodedData };
-    console.log('🔀 Merged hardcoded data tabs:', mergedHardcodedData.tabs?.map(t => `${t.id}(${t.content.kind})`));
+    const interactionInstructions = this.parseJsonField<string[]>(
+      masterProduct.interactionInstructionsJson,
+      hardcodedData?.interactionInstructions || ['Click and drag to rotate', 'Scroll to zoom in/out', 'Right-click and drag to pan']
+    );
+
+    const modelViewerSettings = this.parseJsonField<any>(
+      masterProduct.modelViewerSettingsJson,
+      hardcodedData?.modelViewerSettings || undefined
+    );
+
+    const tabs = this.parseJsonField<any[]>(
+      masterProduct.tabsJson,
+      hardcodedData?.tabs || []
+    );
+
+    // Use model3dViewerUrl from backend, fallback to hardcoded modelPath
+    const modelPath = masterProduct.model3dViewerUrl || hardcodedData?.modelPath || '';
+
+    // Use videoUrl from backend, fallback to hardcoded
+    const videoUrl = masterProduct.videoUrl || hardcodedData?.videoUrl || undefined;
+
+    // Gallery from backend (already loaded) or empty array
+    const gallery = masterProduct.gallery?.map(img => img.cdnUrl || img.url) || [];
 
     // Convert all variants to simplified ProductVariant format
     const availableVariants = allVariants.map(v => this.convertToProductVariant(v));
@@ -116,7 +145,7 @@ export class HybridProductService {
       masterProductId: masterProduct.id,
       name: masterProduct.name,
       slug: masterProduct.slug,
-      description: masterProduct.description || '',
+      description: masterProduct.shortDescription || masterProduct.longDescription || '',
       longDescription: masterProduct.longDescription || undefined,
       productCategory: masterProduct.productCategory,
 
@@ -135,14 +164,14 @@ export class HybridProductService {
       availabilityStatus: variant.availabilityStatus,
       requiresShipping: variant.requiresShipping,
 
-      // From hardcoded frontend data
-      features: mergedHardcodedData.features!,
-      modelPath: mergedHardcodedData.modelPath!,
-      gallery: mergedHardcodedData.gallery!,
-      interactionInstructions: mergedHardcodedData.interactionInstructions!,
-      modelViewerSettings: mergedHardcodedData.modelViewerSettings,
-      tabs: mergedHardcodedData.tabs,
-      videoUrl: mergedHardcodedData.videoUrl,
+      // From backend JSON fields (with hardcoded fallback)
+      features: features,
+      modelPath: modelPath,
+      gallery: gallery,
+      interactionInstructions: interactionInstructions,
+      modelViewerSettings: modelViewerSettings,
+      tabs: tabs,
+      videoUrl: videoUrl,
 
       // All available variants for this product
       availableVariants: availableVariants
@@ -153,7 +182,11 @@ export class HybridProductService {
       variantId: result.variantId,
       variantName: result.variantName,
       price: result.priceWithVat,
-      availableVariantsCount: result.availableVariants?.length
+      availableVariantsCount: result.availableVariants?.length,
+      tabsCount: result.tabs?.length,
+      featuresCount: result.features?.length,
+      hasModelPath: !!result.modelPath,
+      hasVideoUrl: !!result.videoUrl
     });
 
     return result;
@@ -212,7 +245,7 @@ export class HybridProductService {
       }
 
       // Filter only active products
-      const activeMasterProducts = masterProducts.filter(mp => mp.isActive);
+      const activeMasterProducts = masterProducts.filter(mp => mp.active);
 
       // For each master product, fetch variants and merge data
       const hybridProducts: Product[] = [];
@@ -223,7 +256,7 @@ export class HybridProductService {
           const variants = await productService.getVariantsForMasterProduct(masterProduct.id, currentLanguage);
 
           // Filter only active variants
-          const activeVariants = variants.filter(v => v.isActive);
+          const activeVariants = variants.filter(v => v.active);
 
           if (activeVariants.length === 0) {
             console.warn(`Master product ${masterProduct.id} has no active variants, skipping`);
@@ -290,7 +323,7 @@ export class HybridProductService {
       const masterProduct = await productService.getMasterProduct(masterProductId, currentLanguage);
 
       // Check if master product is active
-      if (!masterProduct.isActive) {
+      if (!masterProduct.active) {
         const inactiveError: ProductError = new Error(`Master product ${masterProductId} is not active`);
         inactiveError.code = 'PRODUCT_INACTIVE';
         throw inactiveError;
@@ -300,7 +333,7 @@ export class HybridProductService {
       const variants = await productService.getVariantsForMasterProduct(masterProductId, currentLanguage);
 
       // Filter only active variants
-      const activeVariants = variants.filter(v => v.isActive);
+      const activeVariants = variants.filter(v => v.active);
 
       if (activeVariants.length === 0) {
         const noVariantsError: ProductError = new Error(`Master product ${masterProductId} has no active variants`);
@@ -356,20 +389,20 @@ export class HybridProductService {
       // Fetch the variant
       const variant = await productService.getVariant(variantId, currentLanguage);
 
-      if (!variant.isActive) {
+      if (!variant.active) {
         throw new Error(`Variant ${variantId} is not active`);
       }
 
       // Fetch the master product
       const masterProduct = await productService.getMasterProduct(variant.masterProductId, currentLanguage);
 
-      if (!masterProduct.isActive) {
+      if (!masterProduct.active) {
         throw new Error(`Master product ${variant.masterProductId} is not active`);
       }
 
       // Fetch all variants for this master product
       const allVariants = await productService.getVariantsForMasterProduct(variant.masterProductId, currentLanguage);
-      const activeVariants = allVariants.filter(v => v.isActive);
+      const activeVariants = allVariants.filter(v => v.active);
 
       // Get hardcoded data
       const hardcodedData = this.getHardcodedDataByMasterProductId(variant.masterProductId);

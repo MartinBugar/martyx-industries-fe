@@ -8,63 +8,17 @@ import './ProductDetail.css';
 import {DetailsTab, DownloadTab, FeaturesTab, ReviewsTab, PrintInfoTab} from '../../components/ProductTabs';
 import {useCart} from '../../context/useCart';
 import WishlistButton from '../../components/WishlistButton';
-import {reviewsService, type Review} from '../../services/reviewsService';
 import { getLCPPreloadAttributes, getBaseNameFromPath, isCDNEnabled } from '../../utils/cdnImages';
 import { productGalleryService } from '../../services/productGalleryService';
-
-// StarRating component for displaying average rating
-interface StarRatingProps {
-    rating: number;
-    totalReviews: number;
-    size?: 'small' | 'medium' | 'large';
-}
-
-const StarRating: React.FC<StarRatingProps> = ({ rating, totalReviews, size = 'medium' }) => {
-    const stars = [];
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 >= 0.5;
-    
-    // Size classes
-    const sizeClass = size === 'small' ? 'star-rating-small' : 
-                     size === 'large' ? 'star-rating-large' : 'star-rating-medium';
-    
-    for (let i = 0; i < 5; i++) {
-        if (i < fullStars) {
-            // Full star
-            stars.push(
-                <span key={i} className={`star star-full ${sizeClass}`}>★</span>
-            );
-        } else if (i === fullStars && hasHalfStar) {
-            // Half star
-            stars.push(
-                <span key={i} className={`star star-half ${sizeClass}`}>★</span>
-            );
-        } else {
-            // Empty star
-            stars.push(
-                <span key={i} className={`star star-empty ${sizeClass}`}>★</span>
-            );
-        }
-    }
-    
-    return (
-        <div className="product-rating">
-            <div className="stars-container">
-                {stars}
-            </div>
-            <span className="rating-text">
-                {rating.toFixed(1)} ({totalReviews} {totalReviews === 1 ? 'review' : 'reviews'})
-            </span>
-        </div>
-    );
-};
+import VariantSelector from '../../components/VariantSelector/VariantSelector';
 
 // Local inlined ProductDetails component (previously in components/ProductDetails/ProductDetails.tsx)
 interface ProductDetailsProps {
     product: Product;
+    onVariantChange?: (variantId: number) => void;
 }
 
-const ProductDetails: React.FC<ProductDetailsProps> = ({product}) => {
+const ProductDetails: React.FC<ProductDetailsProps> = ({product, onVariantChange}) => {
     const {addToCart} = useCart();
     const {t} = useTranslation('products');
 
@@ -74,40 +28,6 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({product}) => {
         variant: 'success'
     });
     const timerRef = React.useRef<number | null>(null);
-    
-    // Reviews state for rating display
-    const [reviews, setReviews] = React.useState<Array<Review & { displayName: string; createdAt: string }>>([]);
-    const [reviewsLoading, setReviewsLoading] = React.useState(true);
-    
-    // Calculate average rating
-    const averageRating = React.useMemo(() => {
-        if (!reviews.length) return 0;
-        const sum = reviews.reduce((acc, r) => acc + (r.rating ?? 0), 0);
-        return sum / reviews.length;
-    }, [reviews]);
-
-    // Load reviews for rating calculation
-    React.useEffect(() => {
-        let cancelled = false;
-        setReviewsLoading(true);
-
-        reviewsService.getReviews(product.masterProductId)
-            .then((data) => {
-                if (!cancelled) {
-                    setReviews(data);
-                    setReviewsLoading(false);
-                }
-            })
-            .catch((e: unknown) => {
-                if (!cancelled) {
-                    console.error('Failed to load reviews for rating:', e);
-                    setReviews([]);
-                    setReviewsLoading(false);
-                }
-            });
-
-        return () => { cancelled = true; };
-    }, [product.masterProductId]);
 
     React.useEffect(() => {
         return () => {
@@ -135,18 +55,16 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({product}) => {
     return (
         <div id="details" className="product-details">
             <h2>{product.name}</h2>
-            <div className="product-meta-row">
-                {!reviewsLoading && reviews.length > 0 && (
-                    <StarRating 
-                        rating={averageRating} 
-                        totalReviews={reviews.length}
-                        size="small"
-                    />
-                )}
-                <div className="product-type-compact">
-                    {product.variantType === 'DIGITAL_ONLY' ? 'DIGITAL' : (product.variantType === 'PHYSICAL_ONLY' ? 'PHYSICAL' : product.variantType)}
-                </div>
-            </div>
+
+            {/* Variant Selector */}
+            {product.availableVariants && product.availableVariants.length > 1 && onVariantChange && (
+                <VariantSelector
+                    variants={product.availableVariants}
+                    currentVariantId={product.variantId}
+                    onVariantChange={onVariantChange}
+                />
+            )}
+
             <div
                 className="price">{product.priceWithVat.toFixed(2)} {product.currency === 'EUR' ? '€' : product.currency}</div>
             <p className="description">{product.description}</p>
@@ -297,6 +215,31 @@ const ProductDetail: React.FC = () => {
             return buildTabs(product);
         }
         return [];
+    }, [product]);
+
+    // Handle variant change
+    const handleVariantChange = React.useCallback(async (variantId: number) => {
+        if (!product || variantId === product.variantId) return;
+
+        try {
+            console.log(`🔄 Switching to variant ${variantId}`);
+            setLoading(true);
+
+            // Fetch product with the selected variant
+            const updatedProduct = await hybridProductService.getProductByVariantId(variantId);
+            setProduct(updatedProduct);
+
+            // Clear gallery and reload for new variant
+            setHasLoadedGallery(false);
+            setGalleryImages([]);
+
+            console.log('✅ Variant switched successfully:', updatedProduct.variantName);
+        } catch (err) {
+            console.error('Failed to switch variant:', err);
+            // Don't change product on error, keep current variant
+        } finally {
+            setLoading(false);
+        }
     }, [product]);
 
     // Reset gallery loading flag when product ID changes (not language)
@@ -538,7 +481,7 @@ const ProductDetail: React.FC = () => {
         <div className="product-detail-page">
             <div className="product-container">
                 {productWithGallery && <ProductView product={productWithGallery} galleryData={galleryImages}/>}
-                <ProductDetails product={product}/>
+                <ProductDetails product={product} onVariantChange={handleVariantChange}/>
 
                 <nav className="product-bookmarks" aria-label="Product sections" role="tablist">
                     {import.meta.env.DEV && (() => {
