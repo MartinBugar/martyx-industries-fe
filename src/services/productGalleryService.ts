@@ -2,14 +2,15 @@ import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from '.
 
 export interface GalleryImage {
   id: string;
-  productId: string;
+  masterProductId: number;
+  variantId?: number | null;  // null = master-level (shared), non-null = variant-specific
   fileName: string;
   originalName: string;
   mimeType: string;
   size: number;
   url: string;
   cdnUrl?: string;
-  thumbnailUrl?: string;  // New field for thumbnail URL
+  thumbnailUrl?: string;
   order: number;
   folderName?: string;
   createdAt: string;
