@@ -201,46 +201,240 @@ const AdminProductDetail: React.FC = () => {
 
   return (
     <AdminLayout title={`Product: ${product?.name || 'Loading...'}`} navTabs={navTabs}>
-      <div className="admin-page">
-        <div className="admin-container">
-          <div className="admin-header">
-            <div>
-              <h2 className="admin-title">{product?.name || 'Loading...'}</h2>
-              <p className="admin-subtitle">Manage master product information and variants.</p>
+      <div style={{ background: '#0F1115', minHeight: '100vh', padding: '24px' }}>
+        <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+          {/* Modern Header */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+            marginBottom: '32px',
+            gap: '24px',
+            flexWrap: 'wrap'
+          }}>
+            <div style={{ flex: 1, minWidth: '300px' }}>
+              <h2 style={{
+                margin: '0 0 8px 0',
+                fontSize: '28px',
+                fontWeight: 700,
+                color: '#ffffff',
+                lineHeight: 1.2
+              }}>
+                {product?.name || 'Loading...'}
+              </h2>
+              <p style={{
+                margin: 0,
+                color: '#9CA3AF',
+                fontSize: '15px',
+                lineHeight: 1.5
+              }}>
+                Manage master product information and variants
+              </p>
             </div>
-            <div>
-              <Link to="/admin/products" className="btn btn-outline">← Back to Products</Link>
-            </div>
+            <Link
+              to="/admin/products"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '12px 20px',
+                borderRadius: '10px',
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                color: '#E5E7EB',
+                textDecoration: 'none',
+                fontSize: '14px',
+                fontWeight: 500,
+                transition: 'all 0.2s ease',
+                backdropFilter: 'blur(10px)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                e.currentTarget.style.transform = 'translateY(-1px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                e.currentTarget.style.transform = 'translateY(0)';
+              }}
+            >
+              ← Back to Products
+            </Link>
           </div>
 
-          {error && <div className="alert alert-error">{error}</div>}
-          {savedMsg && <div className="alert alert-success">{savedMsg}</div>}
+          {/* Modern Alerts */}
+          {error && (
+            <div style={{
+              padding: '16px 20px',
+              background: 'rgba(239, 68, 68, 0.1)',
+              border: '1px solid rgba(239, 68, 68, 0.3)',
+              borderRadius: '12px',
+              color: '#FCA5A5',
+              fontSize: '14px',
+              marginBottom: '24px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px'
+            }}>
+              <span style={{ fontSize: '18px' }}>⚠️</span>
+              {error}
+            </div>
+          )}
+          {savedMsg && (
+            <div style={{
+              padding: '16px 20px',
+              background: 'rgba(16, 185, 129, 0.1)',
+              border: '1px solid rgba(16, 185, 129, 0.3)',
+              borderRadius: '12px',
+              color: '#6EE7B7',
+              fontSize: '14px',
+              marginBottom: '24px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px'
+            }}>
+              <span style={{ fontSize: '18px' }}>✓</span>
+              {savedMsg}
+            </div>
+          )}
 
           {loading ? (
-            <div className="admin-card">Loading product...</div>
+            <div style={{
+              background: 'linear-gradient(135deg, #1F2538 0%, #1B2030 100%)',
+              borderRadius: '16px',
+              padding: '60px 24px',
+              textAlign: 'center',
+              border: '1px solid #374151',
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
+            }}>
+              <div style={{
+                width: '48px',
+                height: '48px',
+                border: '3px solid rgba(59, 130, 246, 0.3)',
+                borderTop: '3px solid #3B82F6',
+                borderRadius: '50%',
+                animation: 'spin 1s linear infinite',
+                margin: '0 auto 16px'
+              }} />
+              <p style={{ margin: 0, color: '#9CA3AF', fontSize: '15px' }}>Loading product...</p>
+            </div>
           ) : !product ? (
-            <div className="admin-card">Product not found.</div>
+            <div style={{
+              background: 'linear-gradient(135deg, #1F2538 0%, #1B2030 100%)',
+              borderRadius: '16px',
+              padding: '60px 24px',
+              textAlign: 'center',
+              border: '1px solid #374151',
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
+            }}>
+              <div style={{ fontSize: '48px', marginBottom: '16px' }}>📦</div>
+              <h3 style={{ margin: '0 0 8px 0', fontSize: '20px', fontWeight: 600, color: '#ffffff' }}>
+                Product not found
+              </h3>
+              <p style={{ margin: '0 0 24px 0', color: '#9CA3AF', fontSize: '14px' }}>
+                The product you're looking for doesn't exist or has been deleted.
+              </p>
+              <Link
+                to="/admin/products"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '12px 20px',
+                  borderRadius: '10px',
+                  background: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)',
+                  border: 'none',
+                  color: '#ffffff',
+                  textDecoration: 'none',
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)'
+                }}
+              >
+                ← Back to Products
+              </Link>
+            </div>
           ) : (
             <>
               {/* Product Info Tab */}
               {activeTab === 'product-info' && (
-                <div className="admin-card">
-                  <h3 className="section-title">Master Product Information</h3>
-                  <div className="form-grid">
+                <div style={{
+                  background: 'linear-gradient(135deg, #1F2538 0%, #1B2030 100%)',
+                  borderRadius: '16px',
+                  padding: '32px',
+                  border: '1px solid #374151',
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
+                }}>
+                  <h3 style={{
+                    margin: '0 0 28px 0',
+                    fontSize: '20px',
+                    fontWeight: 600,
+                    color: '#ffffff',
+                    paddingBottom: '16px',
+                    borderBottom: '1px solid #374151'
+                  }}>
+                    Master Product Information
+                  </h3>
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                    gap: '24px'
+                  }}>
                     <div>
-                      <label className="form-label">Name *</label>
+                      <label style={{
+                        display: 'block',
+                        fontSize: '14px',
+                        fontWeight: 500,
+                        color: '#9CA3AF',
+                        marginBottom: '8px'
+                      }}>
+                        Name *
+                      </label>
                       <input
-                        className="form-input"
+                        style={{
+                          width: '100%',
+                          padding: '12px 16px',
+                          borderRadius: '8px',
+                          border: '1px solid #374151',
+                          background: '#0F1115',
+                          color: '#ffffff',
+                          fontSize: '14px',
+                          outline: 'none',
+                          transition: 'border-color 0.2s ease'
+                        }}
                         value={product.name}
                         onChange={(e) => updateField('name', e.target.value)}
+                        onFocus={(e) => e.currentTarget.style.borderColor = '#3B82F6'}
+                        onBlur={(e) => e.currentTarget.style.borderColor = '#374151'}
                       />
                     </div>
                     <div>
-                      <label className="form-label">Slug (URL)</label>
+                      <label style={{
+                        display: 'block',
+                        fontSize: '14px',
+                        fontWeight: 500,
+                        color: '#9CA3AF',
+                        marginBottom: '8px'
+                      }}>
+                        Slug (URL)
+                      </label>
                       <input
-                        className="form-input"
+                        style={{
+                          width: '100%',
+                          padding: '12px 16px',
+                          borderRadius: '8px',
+                          border: '1px solid #374151',
+                          background: '#0F1115',
+                          color: '#ffffff',
+                          fontSize: '14px',
+                          outline: 'none',
+                          transition: 'border-color 0.2s ease'
+                        }}
                         value={product.slug || ''}
                         onChange={(e) => updateField('slug', e.target.value)}
+                        onFocus={(e) => e.currentTarget.style.borderColor = '#3B82F6'}
+                        onBlur={(e) => e.currentTarget.style.borderColor = '#374151'}
                       />
                     </div>
                     <div>
@@ -534,134 +728,207 @@ const VariantCard: React.FC<VariantCardProps> = ({
   };
 
   return (
-    <div className="admin-card" style={{ padding: 0, overflow: 'hidden' }}>
-      {/* Header */}
+    <div
+      style={{
+        background: 'linear-gradient(135deg, #1F2538 0%, #1B2030 100%)',
+        border: '1px solid #4B5563',
+        borderRadius: '12px',
+        overflow: 'hidden',
+        transition: 'all 0.2s ease',
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+      }}
+    >
+      {/* Header - Clickable */}
       <div
         style={{
-          padding: '16px 20px',
-          background: '#f9fafb',
-          borderBottom: '1px solid #e5e7eb',
+          padding: '20px 24px',
+          background: 'rgba(59, 130, 246, 0.05)',
+          borderBottom: '1px solid #4B5563',
           cursor: 'pointer',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
+          transition: 'background 0.2s ease',
         }}
         onClick={() => setExpanded(!expanded)}
+        onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(59, 130, 246, 0.08)'}
+        onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(59, 130, 246, 0.05)'}
       >
-        <div style={{ flex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 4 }}>
-            <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 600 }}>{variant.variantName}</h4>
-            <Badge variant="info" size="sm">{variant.sku}</Badge>
-            <Badge variant={variant.active ? 'success' : 'warning'} size="sm">
-              {variant.active ? 'Active' : 'Inactive'}
-            </Badge>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16 }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            {/* Title & Badges Row */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8, flexWrap: 'wrap' }}>
+              <h4 style={{ margin: 0, fontSize: '18px', fontWeight: 600, color: '#ffffff' }}>
+                {variant.variantName}
+              </h4>
+              <Badge variant="info" size="sm">{variant.sku}</Badge>
+              <Badge variant={variant.active ? 'success' : 'warning'} size="sm">
+                {variant.active ? 'Active' : 'Inactive'}
+              </Badge>
+            </div>
+
+            {/* Info Row */}
+            <div style={{ display: 'flex', gap: 16, fontSize: '14px', color: '#9CA3AF', flexWrap: 'wrap' }}>
+              <span style={{ fontWeight: 500, color: '#E5E7EB' }}>
+                €{variant.priceWithVat?.toFixed(2) || '0.00'}
+              </span>
+              <span>•</span>
+              <span>{getVariantTypeLabel(variant.variantType)}</span>
+              {variant.stockQuantity !== undefined && variant.stockQuantity !== null && (
+                <>
+                  <span>•</span>
+                  <span>Stock: {variant.stockQuantity}</span>
+                </>
+              )}
+            </div>
           </div>
-          <div style={{ display: 'flex', gap: 16, fontSize: '14px', color: '#6b7280' }}>
-            <span>€{variant.priceWithVat?.toFixed(2) || '0.00'} ({variant.currency})</span>
-            <span>•</span>
-            <span>{getVariantTypeLabel(variant.variantType)}</span>
-            {variant.stockQuantity !== undefined && variant.stockQuantity !== null && (
-              <>
-                <span>•</span>
-                <span>Stock: {variant.stockQuantity}</span>
-              </>
-            )}
-          </div>
-        </div>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <Button variant="outline" size="sm" icon={Edit} onClick={onEdit}>
+
+          {/* Action Button - Prevent click propagation */}
+          <Button
+            variant="outline"
+            size="sm"
+            icon={Edit}
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit();
+            }}
+          >
             Edit
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => setExpanded(!expanded)}>
-            {expanded ? 'Collapse' : 'Expand'}
           </Button>
         </div>
       </div>
 
       {/* Expanded Details */}
       {expanded && (
-        <div style={{ padding: '20px' }}>
-          <div className="form-grid" style={{ marginBottom: 24 }}>
-            <div>
-              <label className="form-label">Variant Type</label>
-              <div className="form-input" style={{ background: '#f9fafb' }}>
-                {getVariantTypeLabel(variant.variantType)}
+        <div style={{ padding: '24px' }}>
+          {/* Pricing & Details Grid */}
+          <div style={{ marginBottom: 32 }}>
+            <h5 style={{
+              margin: '0 0 16px 0',
+              fontSize: '14px',
+              fontWeight: 600,
+              color: '#9CA3AF',
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px'
+            }}>
+              Details
+            </h5>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+              gap: '16px',
+              background: 'rgba(15, 17, 21, 0.5)',
+              padding: '16px',
+              borderRadius: '8px',
+              border: '1px solid #374151'
+            }}>
+              <div>
+                <div style={{ fontSize: '12px', color: '#6B7280', marginBottom: 4 }}>Type</div>
+                <div style={{ fontSize: '14px', color: '#E5E7EB', fontWeight: 500 }}>
+                  {getVariantTypeLabel(variant.variantType)}
+                </div>
               </div>
-            </div>
-            <div>
-              <label className="form-label">Fulfillment</label>
-              <div className="form-input" style={{ background: '#f9fafb' }}>
-                {getFulfillmentTypeLabel(variant.fulfillmentType)}
+              <div>
+                <div style={{ fontSize: '12px', color: '#6B7280', marginBottom: 4 }}>Fulfillment</div>
+                <div style={{ fontSize: '14px', color: '#E5E7EB', fontWeight: 500 }}>
+                  {getFulfillmentTypeLabel(variant.fulfillmentType)}
+                </div>
               </div>
-            </div>
-            <div>
-              <label className="form-label">Price (with VAT)</label>
-              <div className="form-input" style={{ background: '#f9fafb' }}>
-                €{variant.priceWithVat?.toFixed(2) || '0.00'}
+              <div>
+                <div style={{ fontSize: '12px', color: '#6B7280', marginBottom: 4 }}>Price (with VAT)</div>
+                <div style={{ fontSize: '14px', color: '#10B981', fontWeight: 600 }}>
+                  €{variant.priceWithVat?.toFixed(2) || '0.00'}
+                </div>
               </div>
-            </div>
-            <div>
-              <label className="form-label">Price (without VAT)</label>
-              <div className="form-input" style={{ background: '#f9fafb' }}>
-                €{variant.priceWithoutVat?.toFixed(2) || '0.00'}
+              <div>
+                <div style={{ fontSize: '12px', color: '#6B7280', marginBottom: 4 }}>Price (no VAT)</div>
+                <div style={{ fontSize: '14px', color: '#E5E7EB', fontWeight: 500 }}>
+                  €{variant.priceWithoutVat?.toFixed(2) || '0.00'}
+                </div>
               </div>
-            </div>
-            <div>
-              <label className="form-label">VAT Rate</label>
-              <div className="form-input" style={{ background: '#f9fafb' }}>
-                {variant.vatRate || 0}%
+              <div>
+                <div style={{ fontSize: '12px', color: '#6B7280', marginBottom: 4 }}>VAT Rate</div>
+                <div style={{ fontSize: '14px', color: '#E5E7EB', fontWeight: 500 }}>
+                  {variant.vatRate || 0}%
+                </div>
               </div>
-            </div>
-            <div>
-              <label className="form-label">Currency</label>
-              <div className="form-input" style={{ background: '#f9fafb' }}>
-                {variant.currency || 'EUR'}
+              <div>
+                <div style={{ fontSize: '12px', color: '#6B7280', marginBottom: 4 }}>Currency</div>
+                <div style={{ fontSize: '14px', color: '#E5E7EB', fontWeight: 500 }}>
+                  {variant.currency || 'EUR'}
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Components - What's Included */}
+          {/* Components Section */}
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-              <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#374151' }}>
-                📦 What's Included in This Variant
-              </h4>
-              <Button variant="outline" size="sm" icon={Plus} onClick={onAddComponent}>
-                Add Component
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: 16
+            }}>
+              <h5 style={{
+                margin: 0,
+                fontSize: '14px',
+                fontWeight: 600,
+                color: '#9CA3AF',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px'
+              }}>
+                Components ({variant.components?.length || 0})
+              </h5>
+              <Button
+                variant="primary"
+                size="sm"
+                icon={Plus}
+                onClick={onAddComponent}
+              >
+                Add
               </Button>
             </div>
+
             {!variant.components || variant.components.length === 0 ? (
-              <div style={{ padding: '12px', background: '#fef3c7', border: '1px solid #fde68a', borderRadius: '6px', fontSize: '14px' }}>
-                No components defined. Add components to specify what's included in this variant.
+              <div style={{
+                padding: '24px',
+                background: 'rgba(245, 158, 11, 0.1)',
+                border: '1px solid rgba(245, 158, 11, 0.3)',
+                borderRadius: '8px',
+                fontSize: '14px',
+                color: '#FCD34D',
+                textAlign: 'center'
+              }}>
+                No components yet. Click "Add" to define what's included in this variant.
               </div>
             ) : (
-              <div style={{ display: 'grid', gap: 8 }}>
+              <div style={{ display: 'grid', gap: 10 }}>
                 {variant.components.map((component, idx) => (
                   <div
                     key={component.id || idx}
                     style={{
-                      padding: '12px 16px',
-                      background: '#f9fafb',
-                      border: '1px solid #e5e7eb',
-                      borderRadius: '6px',
+                      padding: '14px 16px',
+                      background: 'rgba(15, 17, 21, 0.5)',
+                      border: '1px solid #374151',
+                      borderRadius: '8px',
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center',
                       gap: 12,
+                      transition: 'border-color 0.2s ease',
                     }}
+                    onMouseEnter={(e) => e.currentTarget.style.borderColor = '#4B5563'}
+                    onMouseLeave={(e) => e.currentTarget.style.borderColor = '#374151'}
                   >
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 500, marginBottom: 2 }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontWeight: 500, marginBottom: 2, color: '#ffffff', fontSize: '14px' }}>
                         {component.quantity && component.quantity > 1 ? `${component.quantity}× ` : ''}
                         {component.componentName}
                       </div>
                       {component.description && (
-                        <div style={{ fontSize: '13px', color: '#6b7280' }}>
+                        <div style={{ fontSize: '13px', color: '#9CA3AF' }}>
                           {component.description}
                         </div>
                       )}
                     </div>
-                    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
                       {component.componentType && (
                         <Badge
                           variant={component.componentType.includes('DIGITAL') || component.componentType.includes('STL') || component.componentType.includes('SOFTWARE') || component.componentType.includes('GUIDE') || component.componentType.includes('BOM') ? 'info' : 'success'}
@@ -675,14 +942,12 @@ const VariantCard: React.FC<VariantCardProps> = ({
                         size="sm"
                         icon={Edit}
                         onClick={() => onEditComponent(component)}
-                        style={{ padding: '4px 8px' }}
                       />
                       <Button
                         variant="danger"
                         size="sm"
                         icon={Trash2}
                         onClick={() => component.id && onDeleteComponent(component.id)}
-                        style={{ padding: '4px 8px' }}
                       />
                     </div>
                   </div>
@@ -691,10 +956,14 @@ const VariantCard: React.FC<VariantCardProps> = ({
             )}
           </div>
 
-          <div style={{ marginTop: 20, paddingTop: 20, borderTop: '1px solid #e5e7eb', display: 'flex', gap: 8 }}>
-            <Button variant="outline" size="sm" icon={Edit} onClick={onEdit}>
-              Edit Variant
-            </Button>
+          {/* Delete Action */}
+          <div style={{
+            marginTop: 24,
+            paddingTop: 20,
+            borderTop: '1px solid #374151',
+            display: 'flex',
+            justifyContent: 'flex-end'
+          }}>
             <Button variant="danger" size="sm" icon={Trash2} onClick={onDelete}>
               Delete Variant
             </Button>

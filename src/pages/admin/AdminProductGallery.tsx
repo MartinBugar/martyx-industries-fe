@@ -52,6 +52,12 @@ const AdminProductGallery: React.FC = () => {
         📝 Product Detail
       </Link>
       <Link
+        to={`/admin/products/${id}`}
+        className="admin-nav-tab"
+      >
+        📦 Variants ({product?.variants?.length || 0})
+      </Link>
+      <Link
         to={`/admin/products/${id}/gallery`}
         className="admin-nav-tab active"
       >
