@@ -25,7 +25,7 @@ const IncludedTab: React.FC<IncludedTabProps> = ({ content }) => {
             <ol className="components-list">
               {components
                 .sort((a: any, b: any) => (a.displayOrder || 0) - (b.displayOrder || 0))
-                .map((component: any, index: number) => (
+                .map((component: any) => (
                   <li key={component.id} className="component-item">
                     <div className="component-content">
                       <div className="component-title-row">
