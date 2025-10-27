@@ -95,6 +95,7 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-lg);
   backdrop-filter: blur(10px);
+  flex: 1; /* Grow to fill available space, aligning bottom with form section */
 }
 
 .contact-info-section-left h4 {
