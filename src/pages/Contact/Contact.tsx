@@ -11,7 +11,11 @@ const Contact: React.FC = () => {
   const [formData, setFormData] = useState({
     email: '',
     subject: '',
-    text: ''
+    text: '',
+    // Anti-bot fields
+    website: '', // Honeypot field (hidden via CSS)
+    formStartTime: Date.now(), // Timestamp when form loaded
+    verificationToken: `verify_${Date.now()}_${Math.random().toString(36).substring(7)}` // Simple token
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
@@ -19,6 +23,7 @@ const Contact: React.FC = () => {
   const [apiError, setApiError] = useState<string | null>(null);
   const [companySettings, setCompanySettings] = useState<CompanySettingsDto | null>(null);
   const [isLoadingSettings, setIsLoadingSettings] = useState(true);
+  const [sliderVerified, setSliderVerified] = useState(false);
 
   // Fetch company settings on component mount
   useEffect(() => {
@@ -66,7 +71,15 @@ const Contact: React.FC = () => {
       
       // Success
       setSubmitStatus('success');
-      setFormData({ email: '', subject: '', text: '' });
+      setSliderVerified(false);
+      setFormData({
+        email: '',
+        subject: '',
+        text: '',
+        website: '',
+        formStartTime: Date.now(),
+        verificationToken: `verify_${Date.now()}_${Math.random().toString(36).substring(7)}`
+      });
     } catch (error: any) {
       console.error('Contact form submission error:', error);
       setSubmitStatus('error');
@@ -235,13 +248,58 @@ const Contact: React.FC = () => {
               />
             </div>
 
-            <button 
-              type="submit" 
-              className="submit-btn"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? t('form.sending') : t('form.submit')}
-            </button>
+            {/* Honeypot field - hidden from humans, but bots will fill it */}
+            <div className="honeypot-field" style={{ position: 'absolute', left: '-9999px', width: '1px', height: '1px' }}>
+              <label htmlFor="website">Website</label>
+              <input
+                type="text"
+                id="website"
+                name="website"
+                value={formData.website}
+                onChange={handleInputChange}
+                tabIndex={-1}
+                autoComplete="off"
+              />
+            </div>
+
+            {/* Slider and Submit Button Row */}
+            <div className="form-submit-row">
+              {/* Compact Slider verification */}
+              <div className="slider-verification-compact">
+                <div className="slider-track-compact">
+                  <div
+                    className={`slider-thumb-compact ${sliderVerified ? 'verified' : ''}`}
+                    draggable
+                    onDragStart={(e) => {
+                      e.dataTransfer.effectAllowed = 'move';
+                    }}
+                    onDragEnd={(e) => {
+                      const rect = e.currentTarget.parentElement?.getBoundingClientRect();
+                      if (rect) {
+                        const dragDistance = e.clientX - rect.left;
+                        const trackWidth = rect.width - 40; // 40px is thumb width
+                        if (dragDistance >= trackWidth * 0.9) {
+                          setSliderVerified(true);
+                        }
+                      }
+                    }}
+                  >
+                    {sliderVerified ? '✓' : '→'}
+                  </div>
+                  <span className="slider-label-compact">
+                    {sliderVerified ? t('form.slider_verified', 'Verified') : t('form.slider_instruction', 'Slide')}
+                  </span>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                className="submit-btn"
+                disabled={isSubmitting || !sliderVerified}
+              >
+                {isSubmitting ? t('form.sending') : t('form.submit')}
+              </button>
+            </div>
 
             {submitStatus === 'success' && (
               <div className="form-message success" role="alert">
