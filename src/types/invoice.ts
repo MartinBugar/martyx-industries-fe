@@ -34,6 +34,9 @@ export interface CompanySettingsDto {
   tax_id: string; // DIČ (Slovak tax ID)
   vat_id?: string; // IČ DPH (Slovak VAT ID)
   is_vat_payer: boolean;
+  vat_registration_paragraph?: string; // e.g., "§4"
+  vat_registration_date?: string; // ISO date string
+  company_founded_date?: string; // ISO date string
   street: string;
   city: string;
   postal_code: string;

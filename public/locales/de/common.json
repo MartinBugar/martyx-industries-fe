@@ -90,5 +90,28 @@
   },
   "placeholders": {
     "review_placeholder": "Teilen Sie Ihre Gedanken zu diesem Produkt..."
+  },
+  "company_info": {
+    "company_name": "Firmenname",
+    "company_id": "Firmennummer",
+    "tax_id": "Steuernummer",
+    "vat_id": "USt-IdNr",
+    "is_vat_payer": "Umsatzsteuerpflichtig",
+    "vat_registration_paragraph": "USt-Registrierung gemäß",
+    "vat_registration_date": "USt-Registrierungsdatum",
+    "company_founded_date": "Gründungsdatum",
+    "street": "Straße",
+    "city": "Stadt",
+    "postal_code": "Postleitzahl",
+    "country": "Land",
+    "email": "E-Mail",
+    "phone": "Telefon",
+    "website": "Webseite",
+    "bank_name": "Bank",
+    "bank_account": "Kontonummer",
+    "iban": "IBAN",
+    "swift_bic": "SWIFT/BIC",
+    "registration_court": "Registergericht",
+    "registration_number": "Registernummer"
   }
 }

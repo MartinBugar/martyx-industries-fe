@@ -90,5 +90,28 @@
   },
   "placeholders": {
     "review_placeholder": "Podeľte sa o svoje myšlienky o tomto produkte..."
+  },
+  "company_info": {
+    "company_name": "Názov spoločnosti",
+    "company_id": "IČO",
+    "tax_id": "DIČ",
+    "vat_id": "IČ DPH",
+    "is_vat_payer": "Je platca DPH",
+    "vat_registration_paragraph": "Registrácia DPH podľa",
+    "vat_registration_date": "Dátum registrácie DPH",
+    "company_founded_date": "Dátum založenia",
+    "street": "Ulica",
+    "city": "Mesto",
+    "postal_code": "PSČ",
+    "country": "Krajina",
+    "email": "E-mail",
+    "phone": "Telefón",
+    "website": "Webová stránka",
+    "bank_name": "Banka",
+    "bank_account": "Číslo účtu",
+    "iban": "IBAN",
+    "swift_bic": "SWIFT/BIC",
+    "registration_court": "Registrový súd",
+    "registration_number": "Registračné číslo"
   }
 }

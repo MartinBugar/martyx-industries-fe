@@ -90,5 +90,28 @@
   },
   "placeholders": {
     "review_placeholder": "Share your thoughts about this product..."
+  },
+  "company_info": {
+    "company_name": "Company Name",
+    "company_id": "Company ID",
+    "tax_id": "Tax ID",
+    "vat_id": "VAT ID",
+    "is_vat_payer": "Is VAT Payer",
+    "vat_registration_paragraph": "VAT Registration Under",
+    "vat_registration_date": "VAT Registration Date",
+    "company_founded_date": "Founded Date",
+    "street": "Street",
+    "city": "City",
+    "postal_code": "Postal Code",
+    "country": "Country",
+    "email": "Email",
+    "phone": "Phone",
+    "website": "Website",
+    "bank_name": "Bank",
+    "bank_account": "Account Number",
+    "iban": "IBAN",
+    "swift_bic": "SWIFT/BIC",
+    "registration_court": "Registration Court",
+    "registration_number": "Registration Number"
   }
 }

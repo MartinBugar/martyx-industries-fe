@@ -7,14 +7,14 @@
     "description": "We are specialists in RC models and components. Our company focuses on providing quality products and services for RC modeling enthusiasts.",
     "address": {
       "title": "Address",
-      "street": "Main Street 123",
-      "city": "Bratislava 811 01",
+      "street": "Mikovíniho 1625/13",
+      "city": "Bratislava 831 02",
       "country": "Slovakia"
     },
     "contact": {
       "title": "Contact Details",
       "phone": "+421 123 456 789",
-      "email": "info@martyx-industries.sk",
+      "email": "info@martyx.sk",
       "business_hours": "Mon - Fri: 9:00 - 17:00"
     }
   },
