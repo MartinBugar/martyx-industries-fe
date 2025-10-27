@@ -189,12 +189,8 @@ const AdminUserDetail: React.FC = () => {
     setCartLoading(true);
     setCartError(null);
     try {
-      const response = await adminAbandonedCartService.getUserCart(parseInt(id));
-      if (response.success && response.data) {
-        setCartData(response.data);
-      } else {
-        setCartData(null);
-      }
+      const cart = await adminAbandonedCartService.getUserCart(parseInt(id));
+      setCartData(cart);
     } catch (err: unknown) {
       // No cart found is not an error - just means user has no active cart
       setCartData(null);

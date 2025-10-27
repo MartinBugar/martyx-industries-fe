@@ -1,4 +1,4 @@
-import apiClient from '../utils/apiClient';
+import { apiClient } from './apiClient';
 
 export interface CartItem {
   id: number;
@@ -56,61 +56,60 @@ class AdminAbandonedCartService {
   /**
    * Gets the shopping cart for a specific user.
    */
-  async getUserCart(userId: number): Promise<ApiResponse<ShoppingCartDto>> {
+  async getUserCart(userId: number): Promise<ShoppingCartDto> {
     const response = await apiClient.get<ApiResponse<ShoppingCartDto>>(`${this.baseUrl}/user/${userId}`);
-    return response.data;
+    return response.data!;
   }
 
   /**
    * Sends a recovery email for a specific abandoned cart.
    */
-  async sendRecoveryEmail(cartId: number, discountCode?: string): Promise<ApiResponse<void>> {
-    const url = `${this.baseUrl}/${cartId}/send-recovery-email`;
-    const params = discountCode ? { discountCode } : {};
-    const response = await apiClient.post<ApiResponse<void>>(url, {}, { params });
-    return response.data;
+  async sendRecoveryEmail(cartId: number, discountCode?: string): Promise<void> {
+    const url = discountCode
+      ? `${this.baseUrl}/${cartId}/send-recovery-email?discountCode=${discountCode}`
+      : `${this.baseUrl}/${cartId}/send-recovery-email`;
+    await apiClient.post<ApiResponse<void>>(url, {});
   }
 
   /**
    * Detects and marks carts as abandoned.
    */
-  async detectAbandonedCarts(): Promise<ApiResponse<ShoppingCartDto[]>> {
+  async detectAbandonedCarts(): Promise<ShoppingCartDto[]> {
     const response = await apiClient.post<ApiResponse<ShoppingCartDto[]>>(`${this.baseUrl}/detect`);
-    return response.data;
+    return response.data!;
   }
 
   /**
    * Gets all carts ready for recovery emails.
    */
-  async getCartsForRecovery(): Promise<ApiResponse<ShoppingCartDto[]>> {
+  async getCartsForRecovery(): Promise<ShoppingCartDto[]> {
     const response = await apiClient.get<ApiResponse<ShoppingCartDto[]>>(`${this.baseUrl}/ready-for-recovery`);
-    return response.data;
+    return response.data!;
   }
 
   /**
    * Gets abandonment statistics for a date range.
    */
-  async getAbandonmentStats(startDate: string, endDate: string): Promise<ApiResponse<AbandonmentStatsDto>> {
-    const response = await apiClient.get<ApiResponse<AbandonmentStatsDto>>(`${this.baseUrl}/stats`, {
-      params: { startDate, endDate }
-    });
-    return response.data;
+  async getAbandonmentStats(startDate: string, endDate: string): Promise<AbandonmentStatsDto> {
+    const url = `${this.baseUrl}/stats?startDate=${startDate}&endDate=${endDate}`;
+    const response = await apiClient.get<ApiResponse<AbandonmentStatsDto>>(url);
+    return response.data!;
   }
 
   /**
    * Marks a cart as recovered.
    */
-  async markCartAsRecovered(cartId: number): Promise<ApiResponse<ShoppingCartDto>> {
+  async markCartAsRecovered(cartId: number): Promise<ShoppingCartDto> {
     const response = await apiClient.post<ApiResponse<ShoppingCartDto>>(`${this.baseUrl}/${cartId}/mark-recovered`);
-    return response.data;
+    return response.data!;
   }
 
   /**
    * Marks a cart as converted.
    */
-  async markCartAsConverted(cartId: number, orderId: number): Promise<ApiResponse<ShoppingCartDto>> {
+  async markCartAsConverted(cartId: number, orderId: number): Promise<ShoppingCartDto> {
     const response = await apiClient.post<ApiResponse<ShoppingCartDto>>(`${this.baseUrl}/${cartId}/mark-converted`, { orderId });
-    return response.data;
+    return response.data!;
   }
 }
 

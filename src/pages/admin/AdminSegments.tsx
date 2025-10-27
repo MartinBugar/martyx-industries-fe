@@ -170,11 +170,11 @@ const AdminSegments: React.FC = () => {
   };
 
   // Get segment type badge variant
-  const getSegmentTypeVariant = (type: string): 'default' | 'success' | 'warning' | 'error' => {
+  const getSegmentTypeVariant = (type: string): 'default' | 'success' | 'warning' | 'danger' => {
     switch (type) {
       case 'VALUE_BASED': return 'success';
       case 'BEHAVIORAL': return 'warning';
-      case 'RECENCY': return 'error';
+      case 'RECENCY': return 'danger';
       default: return 'default';
     }
   };

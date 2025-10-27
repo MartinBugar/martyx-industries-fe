@@ -109,7 +109,7 @@ class AdminSegmentsService {
   async deleteSegment(segmentId: number) {
     const url = `${this.baseUrl}/${segmentId}`;
     const response = await apiClient.delete<{ success: boolean; message: string }>(url);
-    return response.data;
+    return response;
   }
 
   /**
@@ -118,7 +118,7 @@ class AdminSegmentsService {
   async recalculateSegment(segmentId: number) {
     const url = `${this.baseUrl}/${segmentId}/recalculate`;
     const response = await apiClient.post<{ success: boolean; message: string }>(url, {});
-    return response.data;
+    return response;
   }
 
   /**
@@ -127,7 +127,7 @@ class AdminSegmentsService {
   async recalculateAllSegments() {
     const url = `${this.baseUrl}/recalculate-all`;
     const response = await apiClient.post<{ success: boolean; message: string }>(url, {});
-    return response.data;
+    return response;
   }
 
   /**
@@ -145,7 +145,7 @@ class AdminSegmentsService {
   async addUserToSegment(segmentId: number, userId: number) {
     const url = `${this.baseUrl}/${segmentId}/members/${userId}`;
     const response = await apiClient.post<{ success: boolean; message: string }>(url, {});
-    return response.data;
+    return response;
   }
 
   /**
@@ -154,7 +154,7 @@ class AdminSegmentsService {
   async removeUserFromSegment(segmentId: number, userId: number) {
     const url = `${this.baseUrl}/${segmentId}/members/${userId}`;
     const response = await apiClient.delete<{ success: boolean; message: string }>(url);
-    return response.data;
+    return response;
   }
 
   /**

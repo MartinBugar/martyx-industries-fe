@@ -117,13 +117,13 @@ const AdminCampaigns: React.FC = () => {
   };
 
   // Get campaign status badge variant
-  const getStatusVariant = (status: string): 'default' | 'success' | 'warning' | 'error' => {
+  const getStatusVariant = (status: string): 'default' | 'success' | 'warning' | 'danger' => {
     switch (status) {
       case 'SENT': return 'success';
       case 'SENDING': return 'warning';
       case 'SCHEDULED': return 'default';
       case 'DRAFT': return 'default';
-      case 'CANCELLED': return 'error';
+      case 'CANCELLED': return 'danger';
       default: return 'default';
     }
   };
