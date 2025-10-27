@@ -1,6 +1,4 @@
-import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+import { API_BASE_URL, handleResponse, withLangHeaders } from './apiUtils';
 
 export interface HomePageSetting {
   id: number;
@@ -24,114 +22,112 @@ class HomePageSettingsService {
    * Get all home page settings (admin only)
    */
   async getAllSettings(): Promise<HomePageSetting[]> {
-    const response = await axios.get<HomePageSetting[]>(
-      `${API_URL}/admin/home-page-settings`,
-      {
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        withCredentials: true
-      }
+    const response = await fetch(
+      `${API_BASE_URL}/api/admin/home-page-settings`,
+      withLangHeaders({
+        method: 'GET',
+        credentials: 'include'
+      })
     );
-    return response.data;
+    return handleResponse(response);
   }
 
   /**
    * Get only visible home page settings (public)
    */
   async getVisibleSettings(): Promise<HomePageSetting[]> {
-    const response = await axios.get<HomePageSetting[]>(
-      `${API_URL}/public/home-page-settings`,
-      {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }
+    const response = await fetch(
+      `${API_BASE_URL}/api/public/home-page-settings`,
+      withLangHeaders({
+        method: 'GET'
+      })
     );
-    return response.data;
+    return handleResponse(response);
   }
 
   /**
    * Get visibility map for quick lookups (public)
    */
   async getVisibilityMap(): Promise<VisibilityMap> {
-    const response = await axios.get<VisibilityMap>(
-      `${API_URL}/public/home-page-settings/visibility-map`,
-      {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }
+    const response = await fetch(
+      `${API_BASE_URL}/api/public/home-page-settings/visibility-map`,
+      withLangHeaders({
+        method: 'GET'
+      })
     );
-    return response.data;
+    return handleResponse(response);
   }
 
   /**
    * Update setting visibility (admin only)
    */
   async updateVisibility(id: number, isVisible: boolean): Promise<HomePageSetting> {
-    const response = await axios.patch<HomePageSetting>(
-      `${API_URL}/admin/home-page-settings/${id}/visibility`,
-      { isVisible },
-      {
+    const response = await fetch(
+      `${API_BASE_URL}/api/admin/home-page-settings/${id}/visibility`,
+      withLangHeaders({
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json'
         },
-        withCredentials: true
-      }
+        credentials: 'include',
+        body: JSON.stringify({ isVisible })
+      })
     );
-    return response.data;
+    return handleResponse(response);
   }
 
   /**
    * Update setting display order (admin only)
    */
   async updateDisplayOrder(id: number, displayOrder: number): Promise<HomePageSetting> {
-    const response = await axios.patch<HomePageSetting>(
-      `${API_URL}/admin/home-page-settings/${id}/order`,
-      { displayOrder },
-      {
+    const response = await fetch(
+      `${API_BASE_URL}/api/admin/home-page-settings/${id}/order`,
+      withLangHeaders({
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json'
         },
-        withCredentials: true
-      }
+        credentials: 'include',
+        body: JSON.stringify({ displayOrder })
+      })
     );
-    return response.data;
+    return handleResponse(response);
   }
 
   /**
    * Update complete setting (admin only)
    */
   async updateSetting(id: number, setting: Partial<HomePageSetting>): Promise<HomePageSetting> {
-    const response = await axios.put<HomePageSetting>(
-      `${API_URL}/admin/home-page-settings/${id}`,
-      setting,
-      {
+    const response = await fetch(
+      `${API_BASE_URL}/api/admin/home-page-settings/${id}`,
+      withLangHeaders({
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
         },
-        withCredentials: true
-      }
+        credentials: 'include',
+        body: JSON.stringify(setting)
+      })
     );
-    return response.data;
+    return handleResponse(response);
   }
 
   /**
    * Bulk update multiple settings (admin only)
    */
   async bulkUpdateSettings(settings: HomePageSetting[]): Promise<HomePageSetting[]> {
-    const response = await axios.put<HomePageSetting[]>(
-      `${API_URL}/admin/home-page-settings/bulk`,
-      settings,
-      {
+    const response = await fetch(
+      `${API_BASE_URL}/api/admin/home-page-settings/bulk`,
+      withLangHeaders({
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
         },
-        withCredentials: true
-      }
+        credentials: 'include',
+        body: JSON.stringify(settings)
+      })
     );
-    return response.data;
+    return handleResponse(response);
   }
 }
 

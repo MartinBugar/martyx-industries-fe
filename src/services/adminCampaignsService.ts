@@ -1,4 +1,4 @@
-import apiClient from './api';
+import { apiClient } from './apiClient';
 
 const ADMIN_API_BASE = '/api/admin';
 
@@ -137,7 +137,7 @@ class AdminCampaignsService {
   async sendCampaign(campaignId: number) {
     const url = `${this.baseUrl}/${campaignId}/send`;
     const response = await apiClient.post<{ success: boolean; message: string }>(url, {});
-    return response.data;
+    return response;
   }
 
   /**
@@ -164,7 +164,7 @@ class AdminCampaignsService {
   async archiveCampaign(campaignId: number) {
     const url = `${this.baseUrl}/${campaignId}/archive`;
     const response = await apiClient.post<{ success: boolean; message: string }>(url, {});
-    return response.data;
+    return response;
   }
 
   /**

@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Users, RefreshCw, Plus, Edit, Trash2, TrendingUp, Filter } from 'lucide-react';
+import { Users, RefreshCw, Plus, Edit, Trash2 } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import { Button, Badge } from '../../components/ui';
 import {
   adminSegmentsService,
   type CustomerSegment,
   type CreateSegmentRequest,
-  type SegmentCriteria,
 } from '../../services/adminSegmentsService';
 import './AdminSegments.css';
 

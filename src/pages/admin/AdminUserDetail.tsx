@@ -6,6 +6,7 @@ import './AdminUsers.css';
 import { adminUsersService, type AdminUser } from '../../services/adminUsersService';
 import { userGalleryService } from '../../services/userGalleryService';
 import { adminGalleryService, type AdminUserPhotosResponse, type AdminModelInfo } from '../../services/adminGalleryService';
+import { adminAbandonedCartService, type ShoppingCartDto } from '../../services/adminAbandonedCartService';
 import type { UserGalleryDetail } from '../../types/userGallery';
 
 type AdminUserTab = 'details' | 'gallery';
@@ -37,6 +38,12 @@ const AdminUserDetail: React.FC = () => {
   const [selectedPhotos, setSelectedPhotos] = useState<Set<number>>(new Set());
   const [bulkActionLoading, setBulkActionLoading] = useState<boolean>(false);
   const [modelActionLoading, setModelActionLoading] = useState<Set<string>>(new Set());
+
+  // Abandoned cart state
+  const [cartData, setCartData] = useState<ShoppingCartDto | null>(null);
+  const [cartLoading, setCartLoading] = useState<boolean>(false);
+  const [cartError, setCartError] = useState<string | null>(null);
+  const [sendingRecoveryEmail, setSendingRecoveryEmail] = useState<boolean>(false);
 
   const loadUser = async () => {
     if (!id) return;
@@ -176,6 +183,27 @@ const AdminUserDetail: React.FC = () => {
     }
   }, [id]);
 
+  // Load abandoned cart
+  const loadCart = async () => {
+    if (!id) return;
+    setCartLoading(true);
+    setCartError(null);
+    try {
+      const response = await adminAbandonedCartService.getUserCart(parseInt(id));
+      if (response.success && response.data) {
+        setCartData(response.data);
+      } else {
+        setCartData(null);
+      }
+    } catch (err: unknown) {
+      // No cart found is not an error - just means user has no active cart
+      setCartData(null);
+      setCartError(null);
+    } finally {
+      setCartLoading(false);
+    }
+  };
+
   useEffect(() => {
     loadUser();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -190,6 +218,13 @@ const AdminUserDetail: React.FC = () => {
       loadAdminGallery();
     }
   }, [activeTab, galleryData, galleryLoading, adminGalleryData, adminGalleryLoading, loadAdminGallery]);
+
+  // Load cart when tab changes to details
+  useEffect(() => {
+    if (activeTab === 'details' && !cartData && !cartLoading) {
+      loadCart();
+    }
+  }, [activeTab]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSave = async () => {
     if (!id) return;
@@ -266,6 +301,22 @@ const AdminUserDetail: React.FC = () => {
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : t('admin.failed_delete_user');
       setError(msg);
+    }
+  };
+
+  const handleSendRecoveryEmail = async (cartId: number) => {
+    const discountCode = window.prompt('Enter discount code (optional):');
+    setSendingRecoveryEmail(true);
+    setCartError(null);
+    try {
+      await adminAbandonedCartService.sendRecoveryEmail(cartId, discountCode || undefined);
+      alert('Recovery email sent successfully!');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to send recovery email';
+      setCartError(msg);
+      alert(`Error: ${msg}`);
+    } finally {
+      setSendingRecoveryEmail(false);
     }
   };
 
@@ -457,6 +508,134 @@ const AdminUserDetail: React.FC = () => {
       </AdminLayout>
     );
   }
+
+  // Render cart section
+  const renderCartSection = () => {
+    if (cartLoading) {
+      return (
+        <div className="cart-section" style={{ marginTop: '24px', padding: '20px', background: '#2a2a2a', borderRadius: '8px' }}>
+          <h3 style={{ marginTop: 0, color: '#d4af37' }}>🛒 Shopping Cart</h3>
+          <div style={{ textAlign: 'center', padding: '20px', color: '#999' }}>
+            Loading cart...
+          </div>
+        </div>
+      );
+    }
+
+    if (cartError) {
+      return (
+        <div className="cart-section" style={{ marginTop: '24px', padding: '20px', background: '#2a2a2a', borderRadius: '8px' }}>
+          <h3 style={{ marginTop: 0, color: '#d4af37' }}>🛒 Shopping Cart</h3>
+          <div style={{ textAlign: 'center', padding: '20px', color: '#e74c3c' }}>
+            Error: {cartError}
+          </div>
+        </div>
+      );
+    }
+
+    if (!cartData) {
+      return (
+        <div className="cart-section" style={{ marginTop: '24px', padding: '20px', background: '#2a2a2a', borderRadius: '8px' }}>
+          <h3 style={{ marginTop: 0, color: '#d4af37' }}>🛒 Shopping Cart</h3>
+          <div style={{ textAlign: 'center', padding: '20px', color: '#999' }}>
+            No active cart found for this user
+          </div>
+        </div>
+      );
+    }
+
+    const cartAge = new Date().getTime() - new Date(cartData.lastActivityAt).getTime();
+    const hoursAgo = Math.floor(cartAge / (1000 * 60 * 60));
+    const minutesAgo = Math.floor((cartAge % (1000 * 60 * 60)) / (1000 * 60));
+
+    return (
+      <div className="cart-section" style={{ marginTop: '24px', padding: '20px', background: '#2a2a2a', borderRadius: '8px', border: cartData.isAbandoned ? '2px solid #e74c3c' : '1px solid #444' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+          <div>
+            <h3 style={{ marginTop: 0, color: '#d4af37', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              🛒 Shopping Cart
+              {cartData.isAbandoned && (
+                <span style={{ fontSize: '14px', background: '#e74c3c', color: 'white', padding: '4px 12px', borderRadius: '12px' }}>
+                  ABANDONED
+                </span>
+              )}
+            </h3>
+            <div style={{ fontSize: '14px', color: '#999', marginTop: '8px' }}>
+              <div>Cart ID: {cartData.id}</div>
+              <div>Total: €{cartData.total.toFixed(2)}</div>
+              <div>Last activity: {hoursAgo > 0 ? `${hoursAgo}h ` : ''}{minutesAgo}m ago</div>
+              <div>Created: {new Date(cartData.createdAt).toLocaleString()}</div>
+            </div>
+          </div>
+          {cartData.isAbandoned && (
+            <button
+              onClick={() => handleSendRecoveryEmail(cartData.id)}
+              disabled={sendingRecoveryEmail}
+              style={{
+                background: '#3498db',
+                color: 'white',
+                border: 'none',
+                padding: '10px 20px',
+                borderRadius: '6px',
+                cursor: sendingRecoveryEmail ? 'not-allowed' : 'pointer',
+                opacity: sendingRecoveryEmail ? 0.6 : 1,
+                fontSize: '14px'
+              }}
+            >
+              {sendingRecoveryEmail ? 'Sending...' : '📧 Send Recovery Email'}
+            </button>
+          )}
+        </div>
+
+        {cartData.items && cartData.items.length > 0 ? (
+          <div style={{ marginTop: '16px' }}>
+            <h4 style={{ color: '#d4af37', marginBottom: '12px' }}>Cart Items:</h4>
+            <div style={{ display: 'grid', gap: '12px' }}>
+              {cartData.items.map((item) => (
+                <div
+                  key={item.id}
+                  style={{
+                    background: '#1a1a1a',
+                    padding: '12px',
+                    borderRadius: '6px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px'
+                  }}
+                >
+                  {item.imageUrl && (
+                    <img
+                      src={item.imageUrl}
+                      alt={item.productName}
+                      style={{
+                        width: '60px',
+                        height: '60px',
+                        objectFit: 'cover',
+                        borderRadius: '4px'
+                      }}
+                    />
+                  )}
+                  <div style={{ flex: 1 }}>
+                    <div style={{ color: '#f0f0f0', fontWeight: 'bold' }}>{item.productName}</div>
+                    {item.variantName && (
+                      <div style={{ color: '#999', fontSize: '13px' }}>Variant: {item.variantName}</div>
+                    )}
+                    <div style={{ color: '#d4af37', marginTop: '4px' }}>
+                      {item.quantity} × €{item.unitPrice.toFixed(2)} = €{item.totalPrice.toFixed(2)}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div style={{ marginTop: '16px', padding: '12px', background: '#1a1a1a', borderRadius: '6px', textAlign: 'center', color: '#999' }}>
+            No items in cart
+          </div>
+        )}
+      </div>
+    );
+  };
 
   // Render admin gallery content with full management capabilities
   const renderAdminGalleryContent = () => {
@@ -695,6 +874,9 @@ const AdminUserDetail: React.FC = () => {
                       </tbody>
                     </table>
                   </div>
+
+                  {/* Shopping Cart Section */}
+                  {renderCartSection()}
                 </div>
               ) : (
                 <div>

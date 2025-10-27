@@ -1,4 +1,4 @@
-import apiClient from './api';
+import { apiClient } from './apiClient';
 
 const ADMIN_API_BASE = '/api/admin';
 

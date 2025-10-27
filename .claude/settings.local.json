@@ -33,7 +33,8 @@
       "Bash(netstat:*)",
       "Bash(curl:*)",
       "Bash(taskkill:*)",
-      "Bash(mvn flyway:*)"
+      "Bash(mvn flyway:*)",
+      "Bash(mvn flyway:migrate:*)"
     ],
     "deny": [],
     "ask": []
