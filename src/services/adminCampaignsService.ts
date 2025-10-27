@@ -110,8 +110,9 @@ class AdminCampaignsService {
     if (params?.type) queryParams.append('type', params.type);
 
     const url = `${this.baseUrl}${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
-    const response = await apiClient.get<{ success: boolean; data: EmailCampaign[] }>(url);
-    return response.data;
+    const response = await apiClient.get<{ success: boolean; data: { content: EmailCampaign[] } }>(url);
+    // Extract content array from Spring Page object
+    return response.data?.content || [];
   }
 
   /**
@@ -153,7 +154,7 @@ class AdminCampaignsService {
    * Get campaign performance/analytics
    */
   async getCampaignPerformance(campaignId: number) {
-    const url = `${this.baseUrl}/${campaignId}/performance`;
+    const url = `${this.baseUrl}/${campaignId}`;
     const response = await apiClient.get<{ success: boolean; data: CampaignPerformance }>(url);
     return response.data;
   }
