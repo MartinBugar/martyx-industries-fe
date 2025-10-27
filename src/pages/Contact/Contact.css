@@ -553,7 +553,6 @@
   letter-spacing: 0.5px;
   min-width: fit-content;
   white-space: nowrap;
-  box-shadow: 0 4px 14px rgba(40, 193, 255, 0.25);
 }
 
 /* Mobile: Full width button */
@@ -566,14 +565,11 @@
 }
 
 .submit-btn:hover:not(:disabled) {
-  background: #00d4ff;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(40, 193, 255, 0.4);
+  opacity: 0.9;
 }
 
 .submit-btn:active:not(:disabled) {
-  transform: translateY(0);
-  box-shadow: 0 4px 12px rgba(40, 193, 255, 0.35);
+  opacity: 0.95;
 }
 
 .submit-btn:disabled {
