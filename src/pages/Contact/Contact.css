@@ -85,8 +85,8 @@
 .contact-info-section-left {
   display: flex;
   flex-direction: column;
-  gap: clamp(0.5rem, 1.25vw, 0.75rem);
-  padding: clamp(0.875rem, 2vw, 1rem);
+  gap: clamp(0.375rem, 1vw, 0.5rem);
+  padding: clamp(0.75rem, 1.75vw, 0.875rem);
   background: linear-gradient(135deg, rgba(15, 23, 42, 0.6) 0%, rgba(30, 41, 59, 0.4) 100%);
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: clamp(14px, 2.5vw, 20px);
