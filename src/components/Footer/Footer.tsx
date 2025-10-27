@@ -16,37 +16,7 @@ const Footer: React.FC = () => {
               <img src={logoImg} alt="Martyx Industries" className="brand-logo-img" />
             </Link>
             <p className="brand-tagline">Špecialisti na RC modely a 3D tlač. Kvalitné STL súbory a kity pre RC nadšencov.</p>
-            
-            <div className="company-highlights">
-              <div className="highlight-item">
-                <div className="highlight-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                  </svg>
-                </div>
-                <span>500+ modelov</span>
-              </div>
-              <div className="highlight-item">
-                <div className="highlight-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                    <circle cx="9" cy="7" r="4"/>
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                  </svg>
-                </div>
-                <span>10k+ spokojných zákazníkov</span>
-              </div>
-              <div className="highlight-item">
-                <div className="highlight-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-                  </svg>
-                </div>
-                <span>Okamžité stiahnutie</span>
-              </div>
-            </div>
-            
+
             <div className="social-links" aria-label="Social media">
               <a href="#" aria-label="YouTube" className="social-link" title="YouTube - RC modely a návody">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">

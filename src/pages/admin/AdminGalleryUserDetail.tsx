@@ -34,6 +34,21 @@ const AdminGalleryUserDetail: React.FC = () => {
   const [isBulkDeleting, setIsBulkDeleting] = useState<boolean>(false);
   const [isUpdatingModelStatus, setIsUpdatingModelStatus] = useState<boolean>(false);
 
+  // Notification preferences
+  const [notifyOnDelete, setNotifyOnDelete] = useState<boolean>(true);
+  const [notifyOnBulkDelete, setNotifyOnBulkDelete] = useState<boolean>(true);
+  const [notifyOnStatusChange, setNotifyOnStatusChange] = useState<boolean>(true);
+
+  // Confirmation dialog state
+  const [deleteConfirmDialog, setDeleteConfirmDialog] = useState<{ photoId: number; show: boolean } | null>(null);
+  const [bulkDeleteConfirmDialog, setBulkDeleteConfirmDialog] = useState<boolean>(false);
+  const [statusChangeDialog, setStatusChangeDialog] = useState<{
+    productId: string;
+    action: 'visibility' | 'completion';
+    currentStatus: boolean;
+    show: boolean;
+  } | null>(null);
+
   // Fetch user photos
   const loadUserPhotos = async () => {
     if (!userId) {
@@ -85,9 +100,10 @@ const AdminGalleryUserDetail: React.FC = () => {
     try {
       await adminGalleryService.deletePhoto(photoId, {
         reason: 'Removed by admin',
-        notifyUser: true,
+        notifyUser: notifyOnDelete,
       });
       setSelectedPhotos(new Set());
+      setDeleteConfirmDialog(null);
       await loadUserPhotos(); // Reload data
     } catch (e: unknown) {
       alert(e instanceof Error ? e.message : 'Failed to delete photo');
@@ -104,9 +120,10 @@ const AdminGalleryUserDetail: React.FC = () => {
         action: 'delete',
         photoIds,
         reason: 'Bulk removal by admin',
-        notifyUsers: true,
+        notifyUsers: notifyOnBulkDelete,
       });
       setSelectedPhotos(new Set());
+      setBulkDeleteConfirmDialog(false);
       await loadUserPhotos(); // Reload data
     } catch (e: unknown) {
       alert(e instanceof Error ? e.message : 'Failed to delete photos');
@@ -131,8 +148,9 @@ const AdminGalleryUserDetail: React.FC = () => {
       await adminGalleryService.updateModelStatus(parseInt(userId), productId, {
         isPublic,
         isCompleted,
-        notifyUser: true,
+        notifyUser: notifyOnStatusChange,
       });
+      setStatusChangeDialog(null);
       await loadUserPhotos(); // Reload data
     } catch (e: unknown) {
       alert(e instanceof Error ? e.message : 'Failed to update model status');
@@ -161,15 +179,11 @@ const AdminGalleryUserDetail: React.FC = () => {
   };
 
   const handleDeletePhoto = async (photoId: number) => {
-    if (window.confirm('Are you sure you want to delete this photo?')) {
-      await deletePhoto(photoId);
-    }
+    setDeleteConfirmDialog({ photoId, show: true });
   };
 
   const handleBulkDelete = async () => {
-    if (window.confirm(`Delete ${selectedPhotos.size} selected photos?`)) {
-      await bulkDelete(Array.from(selectedPhotos));
-    }
+    setBulkDeleteConfirmDialog(true);
   };
 
   const handleBulkMakePublic = async () => {
@@ -179,16 +193,20 @@ const AdminGalleryUserDetail: React.FC = () => {
   };
 
   const handleToggleModelVisibility = async (productId: string, currentStatus: boolean) => {
-    await updateModelStatus({
+    setStatusChangeDialog({
       productId,
-      isPublic: !currentStatus,
+      action: 'visibility',
+      currentStatus,
+      show: true,
     });
   };
 
   const handleToggleModelCompletion = async (productId: string, currentStatus: boolean) => {
-    await updateModelStatus({
+    setStatusChangeDialog({
       productId,
-      isCompleted: !currentStatus,
+      action: 'completion',
+      currentStatus,
+      show: true,
     });
   };
 
@@ -470,6 +488,196 @@ const AdminGalleryUserDetail: React.FC = () => {
                   <div style={{ fontSize: '12px', opacity: 0.7 }}>
                     {formatFileSize(lightboxPhoto.fileSize)} • Uploaded {formatDate(lightboxPhoto.uploadDate)}
                   </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Delete Photo Confirmation Dialog */}
+          {deleteConfirmDialog?.show && (
+            <div
+              className="lightbox-overlay"
+              onClick={() => setDeleteConfirmDialog(null)}
+              style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: 'rgba(0, 0, 0, 0.8)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 10000,
+              }}
+            >
+              <div
+                onClick={(e) => e.stopPropagation()}
+                style={{
+                  background: '#1a1a1a',
+                  border: '1px solid #2a2a2a',
+                  borderRadius: '12px',
+                  padding: '24px',
+                  maxWidth: '400px',
+                  width: '90%',
+                }}
+              >
+                <h3 style={{ marginBottom: '16px', color: '#ffffff' }}>Delete Photo</h3>
+                <p style={{ marginBottom: '20px', color: '#999' }}>
+                  Are you sure you want to delete this photo?
+                </p>
+                <label style={{ display: 'flex', alignItems: 'center', marginBottom: '20px', cursor: 'pointer' }}>
+                  <input
+                    type="checkbox"
+                    checked={notifyOnDelete}
+                    onChange={(e) => setNotifyOnDelete(e.target.checked)}
+                    style={{ marginRight: '8px', cursor: 'pointer' }}
+                  />
+                  <span style={{ color: '#d4af37', fontSize: '14px' }}>Notify user via email</span>
+                </label>
+                <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                  <Button variant="outline" onClick={() => setDeleteConfirmDialog(null)}>
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="primary"
+                    onClick={() => deletePhoto(deleteConfirmDialog.photoId)}
+                    disabled={isDeleting}
+                  >
+                    {isDeleting ? 'Deleting...' : 'Delete'}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Bulk Delete Confirmation Dialog */}
+          {bulkDeleteConfirmDialog && (
+            <div
+              className="lightbox-overlay"
+              onClick={() => setBulkDeleteConfirmDialog(false)}
+              style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: 'rgba(0, 0, 0, 0.8)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 10000,
+              }}
+            >
+              <div
+                onClick={(e) => e.stopPropagation()}
+                style={{
+                  background: '#1a1a1a',
+                  border: '1px solid #2a2a2a',
+                  borderRadius: '12px',
+                  padding: '24px',
+                  maxWidth: '400px',
+                  width: '90%',
+                }}
+              >
+                <h3 style={{ marginBottom: '16px', color: '#ffffff' }}>Delete Multiple Photos</h3>
+                <p style={{ marginBottom: '20px', color: '#999' }}>
+                  Are you sure you want to delete {selectedPhotos.size} selected photos?
+                </p>
+                <label style={{ display: 'flex', alignItems: 'center', marginBottom: '20px', cursor: 'pointer' }}>
+                  <input
+                    type="checkbox"
+                    checked={notifyOnBulkDelete}
+                    onChange={(e) => setNotifyOnBulkDelete(e.target.checked)}
+                    style={{ marginRight: '8px', cursor: 'pointer' }}
+                  />
+                  <span style={{ color: '#d4af37', fontSize: '14px' }}>Notify user via email</span>
+                </label>
+                <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                  <Button variant="outline" onClick={() => setBulkDeleteConfirmDialog(false)}>
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="primary"
+                    onClick={() => bulkDelete(Array.from(selectedPhotos))}
+                    disabled={isBulkDeleting}
+                  >
+                    {isBulkDeleting ? 'Deleting...' : 'Delete All'}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Model Status Change Confirmation Dialog */}
+          {statusChangeDialog?.show && (
+            <div
+              className="lightbox-overlay"
+              onClick={() => setStatusChangeDialog(null)}
+              style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: 'rgba(0, 0, 0, 0.8)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 10000,
+              }}
+            >
+              <div
+                onClick={(e) => e.stopPropagation()}
+                style={{
+                  background: '#1a1a1a',
+                  border: '1px solid #2a2a2a',
+                  borderRadius: '12px',
+                  padding: '24px',
+                  maxWidth: '400px',
+                  width: '90%',
+                }}
+              >
+                <h3 style={{ marginBottom: '16px', color: '#ffffff' }}>
+                  {statusChangeDialog.action === 'visibility' ? 'Change Model Visibility' : 'Change Model Status'}
+                </h3>
+                <p style={{ marginBottom: '20px', color: '#999' }}>
+                  {statusChangeDialog.action === 'visibility'
+                    ? `Make this model ${statusChangeDialog.currentStatus ? 'private' : 'public'}?`
+                    : `Mark this model as ${statusChangeDialog.currentStatus ? 'in progress' : 'completed'}?`}
+                </p>
+                <label style={{ display: 'flex', alignItems: 'center', marginBottom: '20px', cursor: 'pointer' }}>
+                  <input
+                    type="checkbox"
+                    checked={notifyOnStatusChange}
+                    onChange={(e) => setNotifyOnStatusChange(e.target.checked)}
+                    style={{ marginRight: '8px', cursor: 'pointer' }}
+                  />
+                  <span style={{ color: '#d4af37', fontSize: '14px' }}>Notify user via email</span>
+                </label>
+                <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                  <Button variant="outline" onClick={() => setStatusChangeDialog(null)}>
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="primary"
+                    onClick={() => {
+                      if (statusChangeDialog.action === 'visibility') {
+                        updateModelStatus({
+                          productId: statusChangeDialog.productId,
+                          isPublic: !statusChangeDialog.currentStatus,
+                        });
+                      } else {
+                        updateModelStatus({
+                          productId: statusChangeDialog.productId,
+                          isCompleted: !statusChangeDialog.currentStatus,
+                        });
+                      }
+                    }}
+                    disabled={isUpdatingModelStatus}
+                  >
+                    {isUpdatingModelStatus ? 'Updating...' : 'Confirm'}
+                  </Button>
                 </div>
               </div>
             </div>
