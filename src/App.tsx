@@ -76,6 +76,7 @@ import {
   AdminCassandra,
   AdminCampaigns,
   AdminSegments,
+  AdminAbandonedCarts,
   AdminHomeSettings,
   ConstellationParticles
 } from './utils/lazyImports'
@@ -284,6 +285,11 @@ const MainContent = React.memo(() => {
             <Route path="/admin/segments" element={
               <RequireAdmin>
                 <AdminSegments />
+              </RequireAdmin>
+            } />
+            <Route path="/admin/abandoned-carts" element={
+              <RequireAdmin>
+                <AdminAbandonedCarts />
               </RequireAdmin>
             } />
             <Route path="/admin/home-settings" element={
