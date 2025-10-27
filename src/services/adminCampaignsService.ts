@@ -133,6 +133,15 @@ class AdminCampaignsService {
   }
 
   /**
+   * Update existing campaign (only DRAFT campaigns can be updated)
+   */
+  async updateCampaign(campaignId: number, request: CreateCampaignRequest) {
+    const url = `${this.baseUrl}/${campaignId}`;
+    const response = await apiClient.put<{ success: boolean; data: EmailCampaign }>(url, request);
+    return response.data;
+  }
+
+  /**
    * Send campaign immediately
    */
   async sendCampaign(campaignId: number) {

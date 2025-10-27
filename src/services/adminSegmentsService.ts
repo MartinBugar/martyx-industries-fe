@@ -22,6 +22,7 @@ export interface CustomerSegment {
   updatedAt?: string;
 }
 
+// Internal interface for form data (camelCase)
 export interface CreateSegmentRequest {
   segmentName: string;
   segmentCode: string;
@@ -31,6 +32,17 @@ export interface CreateSegmentRequest {
   autoUpdateEnabled?: boolean;
 }
 
+// Backend API request format (snake_case)
+interface CreateSegmentApiRequest {
+  segment_name: string;
+  segment_code: string;
+  segment_type: string;
+  description?: string;
+  criteria: string;
+  auto_update_enabled?: boolean;
+}
+
+// Internal interface for form data (camelCase)
 export interface UpdateSegmentRequest {
   segmentName?: string;
   segmentCode?: string;
@@ -39,6 +51,17 @@ export interface UpdateSegmentRequest {
   criteria?: string;
   autoUpdateEnabled?: boolean;
   isActive?: boolean;
+}
+
+// Backend API request format (snake_case)
+interface UpdateSegmentApiRequest {
+  segment_name?: string;
+  segment_code?: string;
+  segment_type?: string;
+  description?: string;
+  criteria?: string;
+  auto_update_enabled?: boolean;
+  is_active?: boolean;
 }
 
 export interface SegmentMember {
@@ -90,7 +113,16 @@ class AdminSegmentsService {
    * Create new segment
    */
   async createSegment(request: CreateSegmentRequest) {
-    const response = await apiClient.post<{ success: boolean; data: CustomerSegment }>(this.baseUrl, request);
+    // Transform camelCase to snake_case for backend API
+    const apiRequest: CreateSegmentApiRequest = {
+      segment_name: request.segmentName,
+      segment_code: request.segmentCode,
+      segment_type: request.segmentType,
+      criteria: request.criteria,
+      description: request.description,
+      auto_update_enabled: request.autoUpdateEnabled,
+    };
+    const response = await apiClient.post<{ success: boolean; data: CustomerSegment }>(this.baseUrl, apiRequest);
     return response.data;
   }
 
@@ -98,8 +130,18 @@ class AdminSegmentsService {
    * Update segment
    */
   async updateSegment(segmentId: number, request: UpdateSegmentRequest) {
+    // Transform camelCase to snake_case for backend API
+    const apiRequest: UpdateSegmentApiRequest = {};
+    if (request.segmentName !== undefined) apiRequest.segment_name = request.segmentName;
+    if (request.segmentCode !== undefined) apiRequest.segment_code = request.segmentCode;
+    if (request.segmentType !== undefined) apiRequest.segment_type = request.segmentType;
+    if (request.description !== undefined) apiRequest.description = request.description;
+    if (request.criteria !== undefined) apiRequest.criteria = request.criteria;
+    if (request.autoUpdateEnabled !== undefined) apiRequest.auto_update_enabled = request.autoUpdateEnabled;
+    if (request.isActive !== undefined) apiRequest.is_active = request.isActive;
+
     const url = `${this.baseUrl}/${segmentId}`;
-    const response = await apiClient.put<{ success: boolean; data: CustomerSegment }>(url, request);
+    const response = await apiClient.put<{ success: boolean; data: CustomerSegment }>(url, apiRequest);
     return response.data;
   }
 

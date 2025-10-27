@@ -44,6 +44,7 @@ export const AdminCampaigns = lazy(() => import('../pages/admin/AdminCampaigns')
 export const AdminSegments = lazy(() => import('../pages/admin/AdminSegments'));
 export const AdminAbandonedCarts = lazy(() => import('../pages/admin/AdminAbandonedCarts'));
 export const AdminHomeSettings = lazy(() => import('../pages/admin/AdminHomeSettings'));
+export const AdminDiscounts = lazy(() => import('../pages/admin/AdminDiscounts'));
 
 // Components - lazy loaded for non-critical features
 export const EmailConfirmation = lazy(() => import('../components/EmailConfirmation/EmailConfirmation'));

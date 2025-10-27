@@ -78,6 +78,7 @@ import {
   AdminSegments,
   AdminAbandonedCarts,
   AdminHomeSettings,
+  AdminDiscounts,
   ConstellationParticles
 } from './utils/lazyImports'
 
@@ -280,6 +281,11 @@ const MainContent = React.memo(() => {
             <Route path="/admin/campaigns" element={
               <RequireAdmin>
                 <AdminCampaigns />
+              </RequireAdmin>
+            } />
+            <Route path="/admin/discounts" element={
+              <RequireAdmin>
+                <AdminDiscounts />
               </RequireAdmin>
             } />
             <Route path="/admin/segments" element={

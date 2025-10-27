@@ -23,7 +23,10 @@ const AdminCampaigns: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
 
-  // Form state for creating campaign
+  // Edit state
+  const [editingCampaignId, setEditingCampaignId] = useState<number | null>(null);
+
+  // Form state for creating/editing campaign
   const [formData, setFormData] = useState<CreateCampaignRequest>({
     campaignName: '',
     campaignCode: '',
@@ -67,13 +70,52 @@ const AdminCampaigns: React.FC = () => {
     }
   };
 
-  // Create campaign
-  const handleCreateCampaign = async (e: React.FormEvent) => {
+  // Start editing a campaign
+  const handleEditCampaign = (campaign: EmailCampaign) => {
+    setEditingCampaignId(campaign.id);
+    setFormData({
+      campaignName: campaign.campaignName,
+      campaignCode: campaign.campaignCode,
+      subjectLine: campaign.subjectLine,
+      campaignType: campaign.campaignType,
+      fromEmail: campaign.fromEmail || '',
+      fromName: campaign.fromName || 'Martyx Industries',
+      segmentId: campaign.segmentId,
+    });
+    setActiveTab('create');
+  };
+
+  // Cancel editing
+  const handleCancelEdit = () => {
+    setEditingCampaignId(null);
+    setFormData({
+      campaignName: '',
+      campaignCode: '',
+      subjectLine: '',
+      campaignType: 'NEWSLETTER',
+      fromEmail: '',
+      fromName: 'Martyx Industries',
+    });
+    setActiveTab('campaigns');
+  };
+
+  // Create or update campaign
+  const handleSubmitCampaign = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      await adminCampaignsService.createCampaign(formData);
-      alert('Campaign created successfully!');
+      if (editingCampaignId) {
+        // Update existing campaign
+        await adminCampaignsService.updateCampaign(editingCampaignId, formData);
+        alert('Campaign updated successfully!');
+      } else {
+        // Create new campaign
+        await adminCampaignsService.createCampaign(formData);
+        alert('Campaign created successfully!');
+      }
+
+      // Reset form
+      setEditingCampaignId(null);
       setFormData({
         campaignName: '',
         campaignCode: '',
@@ -85,7 +127,7 @@ const AdminCampaigns: React.FC = () => {
       await loadCampaigns();
       setActiveTab('campaigns');
     } catch (e: unknown) {
-      alert(e instanceof Error ? e.message : 'Failed to create campaign');
+      alert(e instanceof Error ? e.message : `Failed to ${editingCampaignId ? 'update' : 'create'} campaign`);
     } finally {
       setIsLoading(false);
     }
@@ -234,13 +276,23 @@ const AdminCampaigns: React.FC = () => {
 
                     <div className="campaign-actions">
                       {campaign.campaignStatus === 'DRAFT' && (
-                        <Button
-                          size="sm"
-                          onClick={() => handleSendCampaign(campaign.id)}
-                        >
-                          <Send size={14} />
-                          Send Now
-                        </Button>
+                        <>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleEditCampaign(campaign)}
+                          >
+                            <Mail size={14} />
+                            Edit
+                          </Button>
+                          <Button
+                            size="sm"
+                            onClick={() => handleSendCampaign(campaign.id)}
+                          >
+                            <Send size={14} />
+                            Send Now
+                          </Button>
+                        </>
                       )}
                       {campaign.campaignStatus === 'SENT' && (
                         <Button
@@ -264,11 +316,11 @@ const AdminCampaigns: React.FC = () => {
           </div>
         )}
 
-        {/* CREATE CAMPAIGN TAB */}
+        {/* CREATE/EDIT CAMPAIGN TAB */}
         {activeTab === 'create' && (
           <div className="create-campaign">
-            <form onSubmit={handleCreateCampaign} className="campaign-form">
-              <h2>Create New Campaign</h2>
+            <form onSubmit={handleSubmitCampaign} className="campaign-form">
+              <h2>{editingCampaignId ? 'Edit Campaign' : 'Create New Campaign'}</h2>
 
               <div className="form-group">
                 <label htmlFor="campaignName">Campaign Name *</label>
@@ -353,11 +405,11 @@ const AdminCampaigns: React.FC = () => {
               </div>
 
               <div className="form-actions">
-                <Button type="button" variant="outline" onClick={() => setActiveTab('campaigns')}>
+                <Button type="button" variant="outline" onClick={handleCancelEdit}>
                   Cancel
                 </Button>
                 <Button type="submit" disabled={isLoading}>
-                  {isLoading ? 'Creating...' : 'Create Campaign'}
+                  {isLoading ? (editingCampaignId ? 'Updating...' : 'Creating...') : (editingCampaignId ? 'Update Campaign' : 'Create Campaign')}
                 </Button>
               </div>
             </form>
@@ -414,17 +466,90 @@ const AdminCampaigns: React.FC = () => {
                 <Button variant="outline" onClick={() => {
                   setSelectedCampaign(null);
                   setCampaignPerformance(null);
-                  setActiveTab('campaigns');
                 }}>
-                  Back to Campaigns
+                  View Different Campaign
                 </Button>
               </>
             ) : (
-              <div className="empty-state">
-                <BarChart3 size={48} />
-                <h3>No campaign selected</h3>
-                <p>Select a sent campaign to view analytics</p>
-              </div>
+              <>
+                <h2 style={{ marginBottom: '2rem' }}>Campaign Analytics</h2>
+                <p style={{ color: '#999', marginBottom: '2rem' }}>
+                  Select a sent campaign to view detailed performance metrics
+                </p>
+
+                {campaigns.filter(c => c.campaignStatus === 'SENT').length === 0 ? (
+                  <div className="empty-state">
+                    <BarChart3 size={48} />
+                    <h3>No sent campaigns yet</h3>
+                    <p>Send a campaign to view analytics</p>
+                    <Button onClick={() => setActiveTab('campaigns')}>
+                      View Campaigns
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="campaigns-grid">
+                    {campaigns.filter(c => c.campaignStatus === 'SENT').map((campaign) => (
+                      <div key={campaign.id} className="campaign-card">
+                        <div className="campaign-header">
+                          <h3>{campaign.campaignName}</h3>
+                          <Badge variant="success">SENT</Badge>
+                        </div>
+
+                        <div className="campaign-meta">
+                          <div className="meta-item">
+                            <Mail size={14} />
+                            <span>{campaign.subjectLine}</span>
+                          </div>
+                          <div className="meta-item">
+                            <Clock size={14} />
+                            <span>{formatDate(campaign.sentAt)}</span>
+                          </div>
+                        </div>
+
+                        {campaign.totalSent > 0 && (
+                          <div className="campaign-stats">
+                            <div className="stat">
+                              <span className="stat-label">Sent</span>
+                              <span className="stat-value">{campaign.totalSent}</span>
+                            </div>
+                            <div className="stat">
+                              <span className="stat-label">Opened</span>
+                              <span className="stat-value">
+                                {campaign.openRate ? `${campaign.openRate.toFixed(1)}%` : '—'}
+                              </span>
+                            </div>
+                            <div className="stat">
+                              <span className="stat-label">Clicked</span>
+                              <span className="stat-value">
+                                {campaign.clickRate ? `${campaign.clickRate.toFixed(1)}%` : '—'}
+                              </span>
+                            </div>
+                            <div className="stat">
+                              <span className="stat-label">Revenue</span>
+                              <span className="stat-value">
+                                {campaign.revenueGenerated ? `€${campaign.revenueGenerated.toFixed(2)}` : '—'}
+                              </span>
+                            </div>
+                          </div>
+                        )}
+
+                        <div className="campaign-actions">
+                          <Button
+                            size="sm"
+                            onClick={() => {
+                              setSelectedCampaign(campaign);
+                              loadPerformance(campaign.id);
+                            }}
+                          >
+                            <TrendingUp size={14} />
+                            View Full Analytics
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
             )}
           </div>
         )}
