@@ -7,6 +7,7 @@ import WishlistButton from '../../components/WishlistButton';
 import OptimizedImage from '../../components/OptimizedImage/OptimizedImage';
 import { getBestImageUrl, getBaseNameFromPath, isCDNEnabled } from '../../utils/cdnImages';
 import { productGalleryService } from '../../services/productGalleryService';
+import { homePageSettingsService, type VisibilityMap } from '../../services/homePageSettingsService';
 import './Home.css';
 
 // Helper function to get price display with "Od" prefix if multiple variants
@@ -26,14 +27,34 @@ const getPriceDisplay = (product: Product): { prefix: string; price: number } =>
 const Home: React.FC = () => {
   const { t, i18n } = useTranslation('home');
   const [products, setProducts] = useState<Product[]>([]);
+  const [visibilityMap, setVisibilityMap] = useState<VisibilityMap>({});
   const featured = useMemo(() => products.slice(0, 6), [products]);
-
-  const [subscribed, setSubscribed] = useState(false);
 
   // Try to import hero image via bundler; fallback to CSS placeholder if not present
   const heroAlt = t('hero.image_alt');
   const heroMap = import.meta.glob('../../assets/home/tank.png', { eager: true, as: 'url' });
   const heroSrc = (heroMap['../../assets/home/tank.png'] as string) || '/assets/hero-tank.png';
+
+  // Load visibility settings for homepage sections
+  useEffect(() => {
+    const loadVisibilitySettings = async () => {
+      try {
+        const visibility = await homePageSettingsService.getVisibilityMap();
+        setVisibilityMap(visibility);
+      } catch (error) {
+        console.warn('Failed to load home page visibility settings, showing all sections:', error);
+        // Default to showing all sections if settings can't be loaded
+        setVisibilityMap({
+          hero: true,
+          how_it_works: true,
+          featured_products: true,
+          testimonials: true
+        });
+      }
+    };
+
+    loadVisibilitySettings();
+  }, []);
 
   // Load products with database gallery from hybrid service
   useEffect(() => {
@@ -101,6 +122,7 @@ const Home: React.FC = () => {
   return (
     <div className="home-root" aria-label="Home Page">
       {/* 1) Hero */}
+      {visibilityMap.hero !== false && (
       <section className="hero-section" aria-label="Hero">
         <div className="container">
           <div className="hero-grid">
@@ -144,8 +166,10 @@ const Home: React.FC = () => {
           </div>
         </div>
       </section>
+      )}
 
       {/* 2) How it works */}
+      {visibilityMap.how_it_works !== false && (
       <section className="how-section" aria-label={t('how_it_works.title')}>
         <div className="container">
           <div className="section-header"><h2>{t('how_it_works.title')}</h2></div>
@@ -168,8 +192,10 @@ const Home: React.FC = () => {
           </div>
         </div>
       </section>
+      )}
 
       {/* 3) Featured */}
+      {visibilityMap.featured_products !== false && (
       <section className="home-section featured-section" aria-label={t('featured.title')}>
         <div className="container">
           <div className="section-header">
@@ -226,8 +252,10 @@ const Home: React.FC = () => {
           </div>
         </div>
       </section>
+      )}
 
       {/* 6) Testimonials */}
+      {visibilityMap.testimonials !== false && (
       <section className="home-section testimonials" aria-label={t('testimonials.title')}>
         <div className="container">
           <div className="section-header">
@@ -397,98 +425,7 @@ const Home: React.FC = () => {
           </div>
         </div>
       </section>
-
-      {/* 7) Newsletter */}
-      <section className="home-section newsletter" aria-label={t('newsletter.title')}>
-        <div className="container">
-          <div className="newsletter-container">
-            <div className="newsletter-content">
-              <div className="newsletter-header">
-                <div className="newsletter-icon">
-                  <svg viewBox="0 0 24 24" fill="none">
-                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <polyline points="22,6 12,13 2,6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </div>
-                <h2 className="newsletter-title">{t('newsletter.title')}</h2>
-                <p className="newsletter-description">
-                  {t('newsletter.description')}
-                </p>
-              </div>
-              
-              <div className="newsletter-benefits">
-                <div className="benefit-item">
-                  <div className="benefit-icon">
-                    <svg viewBox="0 0 24 24" fill="none">
-                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </div>
-                  <span>{t('newsletter.benefits.early_access')}</span>
-                </div>
-                <div className="benefit-item">
-                  <div className="benefit-icon">
-                    <svg viewBox="0 0 24 24" fill="none">
-                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </div>
-                  <span>{t('newsletter.benefits.exclusive_guides')}</span>
-                </div>
-                <div className="benefit-item">
-                  <div className="benefit-icon">
-                    <svg viewBox="0 0 24 24" fill="none">
-                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </div>
-                  <span>{t('newsletter.benefits.member_discounts')}</span>
-                </div>
-              </div>
-            </div>
-            
-            <div className="newsletter-form-container">
-              <form className="newsletter-form" onSubmit={(e) => { e.preventDefault(); setSubscribed(true); console.log('newsletter_subscribed'); }}>
-                <div className="form-group">
-                  <label htmlFor="newsletter-email" className="form-label">{t('newsletter.email_label')}</label>
-                  <div className="input-wrapper">
-                    <input 
-                      id="newsletter-email" 
-                      name="email" 
-                      type="email" 
-                      required 
-                      placeholder={t('newsletter.email_placeholder')} 
-                      className="newsletter-input"
-                      aria-label={t('newsletter.subscribe_button')}
-                    />
-                    <button type="submit" className="newsletter-submit" aria-label={t('newsletter.subscribe_button')}>
-                      <svg viewBox="0 0 24 24" fill="none">
-                        <path d="M22 2L11 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-                <p className="form-note">
-                  {t('newsletter.privacy_note')}
-                </p>
-              </form>
-              
-              {subscribed && (
-                <div className="newsletter-success" role="status" aria-live="polite">
-                  <div className="success-icon">
-                    <svg viewBox="0 0 24 24" fill="none">
-                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      <polyline points="22,4 12,14.01 9,11.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </div>
-                  <div className="success-content">
-                    <h3>{t('newsletter.success_title')}</h3>
-                    <p>{t('newsletter.success_message')}</p>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </section>
+      )}
     </div>
   );
 };

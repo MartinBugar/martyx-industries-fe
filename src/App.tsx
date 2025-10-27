@@ -75,6 +75,8 @@ import {
   AdminGalleryUserDetail,
   AdminCassandra,
   AdminCampaigns,
+  AdminSegments,
+  AdminHomeSettings,
   ConstellationParticles
 } from './utils/lazyImports'
 
@@ -279,6 +281,16 @@ const MainContent = React.memo(() => {
                 <AdminCampaigns />
               </RequireAdmin>
             } />
+            <Route path="/admin/segments" element={
+              <RequireAdmin>
+                <AdminSegments />
+              </RequireAdmin>
+            } />
+            <Route path="/admin/home-settings" element={
+              <RequireAdmin>
+                <AdminHomeSettings />
+              </RequireAdmin>
+            } />
             <Route path="/admin/cassandra" element={
               <RequireAdmin>
                 <AdminCassandra />
@@ -287,7 +299,7 @@ const MainContent = React.memo(() => {
           </Routes>
         </Suspense>
       </main>
-      
+
       {!isAdminRoute && <Footer />}
       {!isAdminRoute && <SessionExpiredNotification />}
       {!isAdminRoute && <CookieConsent />}
