@@ -167,6 +167,82 @@ export interface ProductGalleryDto {
   updatedAt: string;
 }
 
+// Product Tab DTO - Configurable product tabs
+export interface ProductTabDto {
+  id: number;
+
+  // Ownership (exactly one will be set)
+  masterProductId: number | null;
+  variantId: number | null;
+
+  // Identification
+  tabKey: string; // e.g., 'details', 'features', 'specs'
+  tabLabel: string; // Display label shown to users
+
+  // Content
+  contentType: 'HTML' | 'MARKDOWN' | 'JSON' | 'COMPONENT';
+  contentHtml: string | null;
+  contentMarkdown: string | null;
+  contentJson: string | null;
+  componentName: string | null;
+
+  // Display Settings
+  displayOrder: number;
+  iconName: string | null;
+  isActive: boolean;
+
+  // Visibility Rules
+  showForVariantType: string | null;
+  requiresAuthentication: boolean;
+
+  // Internationalization
+  locale: string; // e.g., 'en', 'sk'
+
+  // Metadata
+  description: string | null;
+  cssClass: string | null;
+
+  // Audit Fields
+  createdAt: string;
+  updatedAt: string;
+  createdBy: number | null;
+  updatedBy: number | null;
+}
+
+// Product Tab Create/Update Request
+export interface ProductTabCreateRequest {
+  // Ownership (exactly one must be provided)
+  masterProductId?: number | null;
+  variantId?: number | null;
+
+  // Identification
+  tabKey: string;
+  tabLabel: string;
+
+  // Content
+  contentType: 'HTML' | 'MARKDOWN' | 'JSON' | 'COMPONENT';
+  contentHtml?: string | null;
+  contentMarkdown?: string | null;
+  contentJson?: string | null;
+  componentName?: string | null;
+
+  // Display Settings
+  displayOrder: number;
+  iconName?: string | null;
+  isActive?: boolean;
+
+  // Visibility Rules
+  showForVariantType?: string | null;
+  requiresAuthentication?: boolean;
+
+  // Internationalization
+  locale: string;
+
+  // Metadata
+  description?: string | null;
+  cssClass?: string | null;
+}
+
 // Product Download DTO - Secure download tokens
 export interface ProductDownloadDto {
   id: number;

@@ -1,0 +1,178 @@
+/**
+ * Dynamic Product Tabs Component
+ *
+ * Loads tabs from API and renders them dynamically.
+ * Supports HTML, Markdown, JSON, and custom React components.
+ */
+
+import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import type { ProductTabDto } from '../../types/api';
+import { getTabsForMasterProduct, getTabsForVariant, canViewTab, renderTabContent } from '../../services/productTabService';
+import { useAuth } from '../../context/AuthContext';
+import './ProductTabs.css';
+
+// Import existing tab components
+import DetailsTab from './DetailsTab';
+import DownloadTab from './DownloadTab';
+import FeaturesTab from './FeaturesTab';
+import ReviewsTab from './ReviewsTab';
+import PrintInfoTab from './PrintInfoTab';
+import IncludedTab from './IncludedTab';
+
+interface DynamicProductTabsProps {
+  masterProductId?: number;
+  variantId?: number;
+  locale?: string;
+}
+
+const DynamicProductTabs: React.FC<DynamicProductTabsProps> = ({
+  masterProductId,
+  variantId,
+  locale = 'en'
+}) => {
+  const { i18n } = useTranslation();
+  const { isAuthenticated } = useAuth();
+  const [tabs, setTabs] = useState<ProductTabDto[]>([]);
+  const [activeTab, setActiveTab] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Load tabs from API
+  useEffect(() => {
+    const loadTabs = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        let loadedTabs: ProductTabDto[] = [];
+
+        if (masterProductId) {
+          loadedTabs = await getTabsForMasterProduct(masterProductId, locale);
+        } else if (variantId) {
+          loadedTabs = await getTabsForVariant(variantId, locale);
+        }
+
+        // Filter tabs based on visibility rules
+        const visibleTabs = loadedTabs.filter(tab => canViewTab(tab, isAuthenticated()));
+
+        setTabs(visibleTabs);
+
+        // Set first tab as active
+        if (visibleTabs.length > 0) {
+          setActiveTab(0);
+        }
+      } catch (err) {
+        console.error('Error loading product tabs:', err);
+        setError('Failed to load product tabs');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadTabs();
+  }, [masterProductId, variantId, locale, isAuthenticated]);
+
+  // Render component based on componentName
+  const renderCustomComponent = (componentName: string): JSX.Element | null => {
+    switch (componentName) {
+      case 'DetailsTab':
+        return <DetailsTab content={{ kind: 'text', text: '' }} />;
+      case 'DownloadTab':
+        return <DownloadTab downloads={[]} />;
+      case 'FeaturesTab':
+        return <FeaturesTab features={[]} />;
+      case 'ReviewsTab':
+        return <ReviewsTab productId={masterProductId || 0} />;
+      case 'PrintInfoTab':
+        return <PrintInfoTab printInfo={{ printSettings: { printTime: '', layerHeight: '', infill: '', supports: false, materials: [] }, rcComponents: [] }} />;
+      case 'IncludedTab':
+        return <IncludedTab components={[]} />;
+      default:
+        return <div>Component not found: {componentName}</div>;
+    }
+  };
+
+  // Render tab content
+  const renderContent = (tab: ProductTabDto): JSX.Element => {
+    const { type, content } = renderTabContent(tab);
+
+    switch (type) {
+      case 'html':
+        return (
+          <div
+            className={`rich-text ${tab.cssClass || ''}`}
+            dangerouslySetInnerHTML={{ __html: content as string }}
+          />
+        );
+
+      case 'markdown':
+        // For now, render as plain text. You can add a markdown library later
+        return (
+          <div className={`markdown-content ${tab.cssClass || ''}`}>
+            <pre>{content as string}</pre>
+          </div>
+        );
+
+      case 'json':
+        // Render structured JSON data
+        return (
+          <div className={`json-content ${tab.cssClass || ''}`}>
+            <pre>{JSON.stringify(content, null, 2)}</pre>
+          </div>
+        );
+
+      case 'component':
+        return renderCustomComponent(content as string) || <div>Component not available</div>;
+
+      default:
+        return <div>Unsupported content type</div>;
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="product-tabs-loading">
+        <p>Loading tabs...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="product-tabs-error">
+        <p>{error}</p>
+      </div>
+    );
+  }
+
+  if (tabs.length === 0) {
+    return null; // No tabs to display
+  }
+
+  return (
+    <div className="product-tabs-wrapper">
+      {/* Tab Navigation */}
+      <div className="product-tabs">
+        {tabs.map((tab, index) => (
+          <button
+            key={tab.id}
+            className={`tab-button ${activeTab === index ? 'active' : ''}`}
+            onClick={() => setActiveTab(index)}
+            aria-label={tab.tabLabel}
+          >
+            {tab.iconName && <span className="tab-icon">{tab.iconName}</span>}
+            {tab.tabLabel}
+          </button>
+        ))}
+      </div>
+
+      {/* Tab Content */}
+      <div className="tab-content">
+        {tabs[activeTab] && renderContent(tabs[activeTab])}
+      </div>
+    </div>
+  );
+};
+
+export default DynamicProductTabs;
