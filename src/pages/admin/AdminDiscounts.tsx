@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Ticket, X, Search, Plus, TrendingUp, Clock, CheckCircle, XCircle } from 'lucide-react';
+import React, {useEffect, useState} from 'react';
+import {Clock, Plus, Ticket, X, XCircle} from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import './AdminDiscounts.css';
-import { adminDiscountService, type PageResponse } from '../../services/adminDiscountService';
-import type { DiscountCodeDto, DiscountCodeCreateDto } from '../../types/discounts';
-import { Button, Badge, SkeletonTable } from '../../components/ui';
-import { useDebounce } from '../../hooks/useDebounce';
+import {adminDiscountService, type PageResponse} from '../../services/adminDiscountService';
+import type {DiscountCodeCreateDto, DiscountCodeDto} from '../../types/discounts';
+import {Badge, Button, SkeletonTable} from '../../components/ui';
 
 type CreateDiscountData = {
   code: string;
@@ -39,7 +37,6 @@ const initialCreate: CreateDiscountData = {
 };
 
 const AdminDiscounts: React.FC = () => {
-  const { t } = useTranslation('common');
   const [discounts, setDiscounts] = useState<DiscountCodeDto[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -60,9 +57,9 @@ const AdminDiscounts: React.FC = () => {
   const [creating, setCreating] = useState<boolean>(false);
   const [editingId, setEditingId] = useState<number | null>(null);
 
-  // Search with debounce
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const debouncedSearch = useDebounce(searchQuery, 500);
+  // Search with debounce (for future implementation)
+  // const [searchQuery, setSearchQuery] = useState<string>('');
+  // const debouncedSearch = useDebounce(searchQuery, 500);
 
   const loadDiscounts = async (pageNum: number = page, activeStatus?: boolean) => {
     setLoading(true);
@@ -530,7 +527,7 @@ const AdminDiscounts: React.FC = () => {
                             Edit
                           </Button>
                           {d.is_active && !isExpired(d) && (
-                            <Button variant="warning" size="sm" onClick={() => handleDeactivate(d.id)} title="Deactivate">
+                            <Button variant="outline" size="sm" onClick={() => handleDeactivate(d.id)} title="Deactivate">
                               Deactivate
                             </Button>
                           )}
@@ -612,7 +609,7 @@ const AdminDiscounts: React.FC = () => {
                                 Edit
                               </Button>
                               {d.is_active && !isExpired(d) && (
-                                <Button variant="warning" size="sm" onClick={() => handleDeactivate(d.id)} title="Deactivate">
+                                <Button variant="outline" size="sm" onClick={() => handleDeactivate(d.id)} title="Deactivate">
                                   Deactivate
                                 </Button>
                               )}
