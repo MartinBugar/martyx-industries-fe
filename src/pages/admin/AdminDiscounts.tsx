@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from 'react';
-import {Clock, Plus, Ticket, X, XCircle} from 'lucide-react';
+import {Clock, Plus, Ticket, X, XCircle, BarChart3, TrendingUp, Users, DollarSign} from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import './AdminDiscounts.css';
 import {adminDiscountService, type PageResponse} from '../../services/adminDiscountService';
-import type {DiscountCodeCreateDto, DiscountCodeDto} from '../../types/discounts';
+import type {DiscountCodeCreateDto, DiscountCodeDto, DiscountUsageStatsDto} from '../../types/discounts';
 import {Badge, Button, SkeletonTable} from '../../components/ui';
 
 type CreateDiscountData = {
@@ -56,6 +56,11 @@ const AdminDiscounts: React.FC = () => {
   const [createData, setCreateData] = useState<CreateDiscountData>({ ...initialCreate });
   const [creating, setCreating] = useState<boolean>(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+
+  // Stats modal state
+  const [showStatsModal, setShowStatsModal] = useState<boolean>(false);
+  const [selectedStats, setSelectedStats] = useState<DiscountUsageStatsDto | null>(null);
+  const [loadingStats, setLoadingStats] = useState<boolean>(false);
 
   // Search with debounce (for future implementation)
   // const [searchQuery, setSearchQuery] = useState<string>('');
@@ -189,6 +194,23 @@ const AdminDiscounts: React.FC = () => {
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Failed to deactivate discount';
       setError(msg);
+    }
+  };
+
+  const handleViewStats = async (id: number) => {
+    setLoadingStats(true);
+    setShowStatsModal(true);
+    setSelectedStats(null);
+    setError(null);
+    try {
+      const stats = await adminDiscountService.getUsageStats(id);
+      setSelectedStats(stats);
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Failed to load statistics';
+      setError(msg);
+      setShowStatsModal(false);
+    } finally {
+      setLoadingStats(false);
     }
   };
 
@@ -523,6 +545,9 @@ const AdminDiscounts: React.FC = () => {
                           <p className="mobile-card-subtitle">{getDiscountValueDisplay(d)}</p>
                         </div>
                         <div className="mobile-card-actions">
+                          <Button variant="outline" size="sm" icon={BarChart3} onClick={() => handleViewStats(d.id)} title="View Statistics">
+                            Stats
+                          </Button>
                           <Button variant="outline" size="sm" onClick={() => handleEdit(d)} title="Edit discount">
                             Edit
                           </Button>
@@ -605,6 +630,9 @@ const AdminDiscounts: React.FC = () => {
                           <td>{getStatusBadge(d)}</td>
                           <td className="text-right">
                             <div className="action-buttons">
+                              <Button variant="outline" size="sm" icon={BarChart3} onClick={() => handleViewStats(d.id)} title="View Statistics">
+                                Stats
+                              </Button>
                               <Button variant="outline" size="sm" onClick={() => handleEdit(d)} title="Edit discount">
                                 Edit
                               </Button>
@@ -656,6 +684,107 @@ const AdminDiscounts: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Stats Modal */}
+      {showStatsModal && (
+        <div className="modal-overlay" onClick={() => setShowStatsModal(false)}>
+          <div className="modal-content stats-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3 className="modal-title">
+                <BarChart3 size={24} />
+                Discount Code Statistics
+              </h3>
+              <button className="modal-close" onClick={() => setShowStatsModal(false)} aria-label="Close">
+                <XCircle size={24} />
+              </button>
+            </div>
+
+            {loadingStats ? (
+              <div className="modal-body" style={{ textAlign: 'center', padding: '48px' }}>
+                <p>Loading statistics...</p>
+              </div>
+            ) : selectedStats ? (
+              <div className="modal-body">
+                <div className="stats-header">
+                  <h4 className="stats-code">{selectedStats.code}</h4>
+                </div>
+
+                <div className="stats-grid">
+                  <div className="stat-card">
+                    <div className="stat-icon" style={{ background: '#3b82f6' }}>
+                      <Ticket size={24} color="white" />
+                    </div>
+                    <div className="stat-content">
+                      <div className="stat-label">Total Uses</div>
+                      <div className="stat-value">{selectedStats.totalUsages}</div>
+                    </div>
+                  </div>
+
+                  <div className="stat-card">
+                    <div className="stat-icon" style={{ background: '#8b5cf6' }}>
+                      <Users size={24} color="white" />
+                    </div>
+                    <div className="stat-content">
+                      <div className="stat-label">Unique Users</div>
+                      <div className="stat-value">{selectedStats.uniqueUsers}</div>
+                    </div>
+                  </div>
+
+                  <div className="stat-card">
+                    <div className="stat-icon" style={{ background: '#10b981' }}>
+                      <DollarSign size={24} color="white" />
+                    </div>
+                    <div className="stat-content">
+                      <div className="stat-label">Total Order Value</div>
+                      <div className="stat-value">€{selectedStats.totalOrderValue.toFixed(2)}</div>
+                    </div>
+                  </div>
+
+                  <div className="stat-card">
+                    <div className="stat-icon" style={{ background: '#f59e0b' }}>
+                      <TrendingUp size={24} color="white" />
+                    </div>
+                    <div className="stat-content">
+                      <div className="stat-label">Avg Order Value</div>
+                      <div className="stat-value">€{selectedStats.averageOrderValue.toFixed(2)}</div>
+                    </div>
+                  </div>
+
+                  <div className="stat-card">
+                    <div className="stat-icon" style={{ background: '#ef4444" }}>
+                      <DollarSign size={24} color="white" />
+                    </div>
+                    <div className="stat-content">
+                      <div className="stat-label">Total Discount Given</div>
+                      <div className="stat-value">€{selectedStats.totalDiscountAmount.toFixed(2)}</div>
+                    </div>
+                  </div>
+
+                  <div className="stat-card">
+                    <div className="stat-icon" style={{ background: '#06b6d4" }}>
+                      <TrendingUp size={24} color="white" />
+                    </div>
+                    <div className="stat-content">
+                      <div className="stat-label">Avg Discount Amount</div>
+                      <div className="stat-value">€{selectedStats.averageDiscountAmount.toFixed(2)}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="modal-footer">
+                  <Button variant="primary" onClick={() => setShowStatsModal(false)}>
+                    Close
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="modal-body" style={{ textAlign: 'center', padding: '48px' }}>
+                <p>No statistics available</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </AdminLayout>
   );
 };

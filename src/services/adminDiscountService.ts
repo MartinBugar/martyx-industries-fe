@@ -1,7 +1,8 @@
 import { API_BASE_URL, defaultHeaders, handleResponse } from './apiUtils';
 import type {
   DiscountCodeDto,
-  DiscountCodeCreateDto
+  DiscountCodeCreateDto,
+  DiscountUsageStatsDto
 } from '../types/discounts';
 
 /**
@@ -146,15 +147,15 @@ export const adminDiscountService = {
   /**
    * Get usage statistics for a discount code
    * @param id - Discount code ID
-   * @returns Usage statistics
+   * @returns Usage statistics including order value and averages
    */
-  async getUsageStats(id: number): Promise<Record<string, any>> {
+  async getUsageStats(id: number): Promise<DiscountUsageStatsDto> {
     const resp = await fetch(`${API_BASE_URL}/api/admin/discounts/${id}/usage`, {
       method: 'GET',
       headers: jsonHeaders(),
     });
 
-    return await handleResponse(resp);
+    return await handleResponse(resp) as DiscountUsageStatsDto;
   },
 
   /**

@@ -111,6 +111,21 @@ export interface DiscountValidationDto {
 }
 
 /**
+ * Discount Usage Statistics
+ * Analytics data for discount code usage and performance
+ */
+export interface DiscountUsageStatsDto {
+  discountCodeId: number;
+  code: string;
+  totalUsages: number;
+  uniqueUsers: number;
+  totalDiscountAmount: number;
+  totalOrderValue: number;
+  averageDiscountAmount: number;
+  averageOrderValue: number;
+}
+
+/**
  * Promotional Campaign details
  * Marketing campaign information with performance metrics
  */
