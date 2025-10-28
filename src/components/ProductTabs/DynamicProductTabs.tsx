@@ -54,7 +54,7 @@ const DynamicProductTabs: React.FC<DynamicProductTabsProps> = ({
         }
 
         // Filter tabs based on visibility rules
-        const visibleTabs = loadedTabs.filter(tab => canViewTab(tab, isAuthenticated()));
+        const visibleTabs = loadedTabs.filter(tab => canViewTab(tab, isAuthenticated));
 
         setTabs(visibleTabs);
 
