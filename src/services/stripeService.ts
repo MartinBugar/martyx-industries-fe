@@ -96,7 +96,7 @@ export class StripeService {
       throw new Error('Invalid session ID format');
     }
 
-    const response = await fetch(`${API_BASE_URL}/api/stripe/success?session_id=${encodeURIComponent(trimmedSessionId)}`, withLangHeaders({
+    const response = await fetch(`${API_BASE_URL}/api/stripe/payment-details?session_id=${encodeURIComponent(trimmedSessionId)}`, withLangHeaders({
       method: 'GET',
       headers: defaultHeaders as HeadersInit,
     }));

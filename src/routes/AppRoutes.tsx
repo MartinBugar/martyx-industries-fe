@@ -16,6 +16,10 @@ const UserAccount = React.lazy(() => import('../pages/UserAccount/UserAccount'))
 const AdminLogin = React.lazy(() => import('../pages/admin/AdminLogin'));
 const AdminDashboard = React.lazy(() => import('../pages/admin/AdminDashboard'));
 
+// Payment success/cancel screens
+const StripeSuccess = React.lazy(() => import('../pages/Payments/StripeSuccess'));
+const StripeCancel = React.lazy(() => import('../pages/Payments/StripeCancel'));
+
 // Loading component s vašimi farbami
 const PageLoader: React.FC = () => (
   <div style={{
@@ -43,6 +47,10 @@ const AppRoutes: React.FC = () => {
         <Route path="/account" element={<UserAccount />} />
         <Route path="/admin" element={<AdminLogin />} />
         <Route path="/admin/panel" element={<AdminDashboard />} />
+
+        {/* Payment Success/Cancel Routes */}
+        <Route path="/stripe/success" element={<StripeSuccess />} />
+        <Route path="/payment/cancelled" element={<StripeCancel />} />
       </Routes>
     </Suspense>
   );
