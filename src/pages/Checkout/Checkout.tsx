@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useCart } from '../../context/useCart';
 import { useAuth } from '../../context/useAuth';
 import './Checkout.css';
-import PayPalCheckoutButton from '../../components/PayPalCheckoutButton';
+import StripeCheckoutButton from '../../components/StripeCheckoutButton';
 import { shippingService } from '../../services/shippingService';
 import { discountService } from '../../services/discountService';
 import type { ShippingOptionDto } from '../../types/shipping';
@@ -206,106 +206,9 @@ const Checkout: React.FC = () => {
     setDiscountError('');
   };
 
-  // PayPal success handler
-  const handlePayPalSuccess = (capture: unknown) => {
-    console.log('Payment capture response:', capture);
-
-    // Normalize capture data into a flexible shape and check backend status
-    type PayPalCaptureLoose = {
-      id?: string;
-      transactionId?: string;
-      amount?: number;
-      orderId?: number | string;
-      payerEmail?: string;
-      payer?: { email_address?: string };
-      purchase_units?: Array<{
-        amount?: { currency_code?: string; value?: string };
-        payments?: { captures?: Array<{ id?: string }> };
-      }>;
-      currency?: string;
-      order?: { id?: number | string };
-      status?: string;
-      orderNumber?: string;
-      downloadUrl?: string;
-      downloadUrls?: string[];
-      downloadToken?: string;
-      downloadTokens?: string[];
-      downloadLinks?: Array<{
-        productId?: string | number;
-        productName?: string;
-        downloadUrl?: string;
-        downloadToken?: string;
-      }>;
-      orderItems?: Array<{
-        productId?: string | number;
-        productName?: string;
-        quantity?: number;
-        price?: number;
-        downloadUrl?: string;
-        downloadToken?: string;
-      }>;
-      invoiceDownloadUrl?: string;
-      invoiceDownloadUrls?: string[];
-      invoiceDownloadToken?: string;
-      invoiceDownloadTokens?: string[];
-    };
-
-    const c = capture as PayPalCaptureLoose;
-    const backendStatus = (c?.status || '').toString().toUpperCase();
-
-    if (backendStatus !== 'PAID' && backendStatus !== 'COMPLETED') {
-      console.error('Capture not successful, aborting success navigation. Status:', c?.status);
-      setPayStatus('error');
-      alert(t('payment.not_completed'));
-      return;
-    }
-
-    if (formData.email) {
-      sessionStorage.setItem('customerEmail', formData.email);
-      localStorage.setItem('customerEmail', formData.email);
-    }
-
-    const txId = c?.transactionId || c?.id || c?.purchase_units?.[0]?.payments?.captures?.[0]?.id || undefined;
-    const payerEmail = c?.payer?.email_address || c?.payerEmail || formData.email || undefined;
-    const orderId = c?.orderId ?? c?.order?.id ?? undefined;
-    const currency = (c?.currency || c?.purchase_units?.[0]?.amount?.currency_code || 'EUR') as string;
-    const totals = calculateTotals();
-    const amount = typeof c?.amount === 'number' ? c.amount : Number(c?.purchase_units?.[0]?.amount?.value) || totals.total;
-
-    const paymentState = {
-      status: 'COMPLETED',
-      amount,
-      currency,
-      paymentMethod: 'PAYPAL',
-      transactionId: txId,
-      payerEmail,
-      orderId,
-      orderNumber: c?.orderNumber,
-      downloadUrl: c?.downloadUrl,
-      downloadUrls: Array.isArray(c?.downloadUrls) ? c.downloadUrls : undefined,
-      downloadToken: c?.downloadToken,
-      downloadTokens: Array.isArray(c?.downloadTokens) ? c.downloadTokens : undefined,
-      downloadLinks: Array.isArray(c?.downloadLinks) ? c.downloadLinks : undefined,
-      orderItems: Array.isArray(c?.orderItems) ? c.orderItems : undefined,
-      invoiceDownloadUrl: c?.invoiceDownloadUrl,
-      invoiceDownloadUrls: Array.isArray(c?.invoiceDownloadUrls) ? c.invoiceDownloadUrls : undefined,
-      invoiceDownloadToken: c?.invoiceDownloadToken,
-      invoiceDownloadTokens: Array.isArray(c?.invoiceDownloadTokens) ? c.invoiceDownloadTokens : undefined,
-    } as const;
-
-    try {
-      sessionStorage.setItem('paypalCaptureRaw', JSON.stringify(capture));
-    } catch (err) {
-      console.warn('[Checkout] Failed to persist raw PayPal capture response', err);
-    }
-
-    setPayStatus('success');
-    navigate('/payment/paypal/success', { state: { payment: paymentState } });
-  };
-
-  // PayPal error handler
-  const handlePayPalError = (err: unknown) => {
-    console.error('PayPal payment error:', err);
+  // Stripe error handler
+  const handleStripeError = (err: unknown) => {
+    console.error('Stripe payment error:', err);
     setPayStatus("error");
     alert(t('payment.failed'));
   };
@@ -344,7 +247,7 @@ const Checkout: React.FC = () => {
     <main className="checkout-container" role="main" aria-labelledby="checkout-title">
       <div className="checkout-header">
         <h1 id="checkout-title">Secure Checkout</h1>
-        <p className="checkout-subtitle">Complete your order securely with PayPal</p>
+        <p className="checkout-subtitle">Complete your order securely with Stripe</p>
       </div>
 
       <div className="checkout-content">
@@ -755,15 +658,14 @@ const Checkout: React.FC = () => {
               </div>
 
               <div className="payment-method-card">
-                <div className="paypal-container">
-                  <PayPalCheckoutButton
+                <div className="stripe-container">
+                  <StripeCheckoutButton
                     items={items}
                     totalAmount={totals.total}
                     currency={derivedCurrency}
                     email={formData.email}
                     firstName={formData.firstName}
                     lastName={formData.lastName}
-                    cartHash={cartHash}
                     billingAddress={{
                       street: formData.billingStreet,
                       city: formData.billingCity,
@@ -777,12 +679,12 @@ const Checkout: React.FC = () => {
                       vatId: formData.isCompany && formData.vatId ? formData.vatId : undefined,
                       isCompany: formData.isCompany
                     }}
-                    onSuccess={handlePayPalSuccess}
-                    onError={handlePayPalError}
+                    onError={handleStripeError}
+                    disabled={!formData.email || !formData.firstName || !formData.lastName || !formData.billingStreet || !formData.billingCity || !formData.billingPostalCode || !formData.billingCountry}
                   />
                 </div>
                 <p className="payment-note">
-                  Pay securely with PayPal. You can use your PayPal account or pay with a credit/debit card.
+                  Pay securely with Stripe. You'll be redirected to a secure checkout page to complete your payment.
                 </p>
               </div>
             </div>

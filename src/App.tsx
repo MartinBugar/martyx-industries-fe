@@ -11,7 +11,6 @@
 import './App.css'
 import React, { useState, useCallback, Suspense, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom'
-import { PayPalScriptProvider } from '@paypal/react-paypal-js'
 
 // Core providers and security
 import SecurityErrorBoundary from './components/security/SecurityErrorBoundary'
@@ -52,8 +51,8 @@ import {
   ResetPassword,
   ResetPasswordRedirect,
   Checkout,
-  PayPalSuccess,
-  PayPalCancel,
+  StripeSuccess,
+  StripeCancel,
   CartPage,
   Wishlist,
   UserAccount,
@@ -81,13 +80,6 @@ import {
   AdminDiscounts,
   ConstellationParticles
 } from './utils/lazyImports'
-
-// PayPal configuration - memoized to prevent recreation
-const paypalOptions = {
-  clientId: "Ae8bJdL8EaBJQtmDskm-esvEkUNfollfToURcmnNN4XCTl2j48YGAUQNUkUs6zthKZRndlKwSESyvFnh",
-  currency: "EUR",
-  intent: "capture"
-} as const;
 
 // Loading fallback component
 const PageLoader = () => (
@@ -131,17 +123,15 @@ function AppWrapper() {
 
   return (
     <BrowserRouter>
-      <PayPalScriptProvider options={paypalOptions}>
-        <SecurityErrorBoundary>
-          <AuthProvider>
-            <CartProvider>
-              <WishlistProvider>
-                <AppContent />
-              </WishlistProvider>
-            </CartProvider>
-          </AuthProvider>
-        </SecurityErrorBoundary>
-      </PayPalScriptProvider>
+      <SecurityErrorBoundary>
+        <AuthProvider>
+          <CartProvider>
+            <WishlistProvider>
+              <AppContent />
+            </WishlistProvider>
+          </CartProvider>
+        </AuthProvider>
+      </SecurityErrorBoundary>
     </BrowserRouter>
   );
 }
@@ -212,8 +202,8 @@ const MainContent = React.memo(() => {
             <Route path="/cart" element={<CartPage />} />
             <Route path="/wishlist" element={<Wishlist />} />
             <Route path="/checkout" element={<Checkout />} />
-            <Route path="/payment/paypal/success" element={<PayPalSuccess />} />
-            <Route path="/payment/paypal/cancel" element={<PayPalCancel />} />
+            <Route path="/payment/stripe/success" element={<StripeSuccess />} />
+            <Route path="/payment/stripe/cancel" element={<StripeCancel />} />
             <Route path="/account" element={<UserAccount />} />
             <Route path="/gallery" element={<UserGallery />} />
             <Route path="/gallery/:userId" element={<UserGalleryDetail />} />

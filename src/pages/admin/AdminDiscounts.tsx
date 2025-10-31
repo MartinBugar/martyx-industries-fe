@@ -751,7 +751,7 @@ const AdminDiscounts: React.FC = () => {
                   </div>
 
                   <div className="stat-card">
-                    <div className="stat-icon" style={{ background: '#ef4444" }}>
+                    <div className="stat-icon" style={{ background: '#ef4444' }}>
                       <DollarSign size={24} color="white" />
                     </div>
                     <div className="stat-content">
@@ -761,7 +761,7 @@ const AdminDiscounts: React.FC = () => {
                   </div>
 
                   <div className="stat-card">
-                    <div className="stat-icon" style={{ background: '#06b6d4" }}>
+                    <div className="stat-icon" style={{ background: '#06b6d4' }}>
                       <TrendingUp size={24} color="white" />
                     </div>
                     <div className="stat-content">
