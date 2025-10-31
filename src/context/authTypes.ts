@@ -85,6 +85,7 @@ export interface User {
 // Define the authentication response from the backend
 export interface AuthResponse {
   token: string;
+  refreshToken?: string; // Refresh token for extended sessions (30 days)
   id: string;
   email: string;
   emailConfirmed?: boolean;

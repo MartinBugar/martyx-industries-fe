@@ -16,6 +16,7 @@ export interface CartContextType {
   clearCart: () => void;
   getTotalItems: () => number;
   getTotalPrice: () => number;
+  mergeCart: () => Promise<boolean>;
 }
 
 // Create the context with a default value

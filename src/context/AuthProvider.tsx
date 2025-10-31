@@ -7,6 +7,7 @@ import { profileService } from '../services/profileService';
 import { isTokenExpired } from '../services/apiUtils';
 import { ordersService } from '../services/ordersService';
 import { secureLocalStorage, loginRateLimiter } from '../utils/security';
+import { startTokenRefresh, stopTokenRefresh, refreshAccessToken } from '../utils/tokenRefresh';
 
 // Props for the AuthProvider component
 interface AuthProviderProps {
@@ -61,19 +62,42 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (token && typeof token === 'string') {
         // Check if token is expired
         if (isTokenExpired(token)) {
-          console.log('❌ Token has expired, logging out user');
-          // Clear expired token and user data
-          secureLocalStorage.remove('user');
-          secureLocalStorage.remove('token');
-          localStorage.removeItem('user');
-          localStorage.removeItem('token');
-          removeAuthToken();
-          setUser(null);
+          console.log('❌ Access token has expired, attempting refresh');
+          const refreshSuccess = await refreshAccessToken();
+
+          if (refreshSuccess && storedUser) {
+            console.log('✅ Token refreshed successfully, setting user');
+            setUser(storedUser as User);
+
+            // Start auto-refresh timer
+            startTokenRefresh();
+          } else {
+            console.log('❌ Token refresh failed, logging out user');
+            // Clear expired token and user data including refresh token
+            secureLocalStorage.remove('user');
+            secureLocalStorage.remove('token');
+            secureLocalStorage.remove('refreshToken');
+            localStorage.removeItem('user');
+            localStorage.removeItem('token');
+            localStorage.removeItem('refreshToken');
+            removeAuthToken();
+            stopTokenRefresh();
+            setUser(null);
+          }
         } else {
           console.log('✅ Token is valid, setting auth');
           // Token is valid, set it for API requests
           setAuthToken(token);
-          
+
+          // Check if refresh token exists and start auto-refresh
+          const refreshToken = secureLocalStorage.get('refreshToken', null) ||
+            (localStorage.getItem('refreshToken') ? JSON.parse(localStorage.getItem('refreshToken')!) : null);
+
+          if (refreshToken) {
+            console.log('🔄 Starting auto-refresh timer');
+            startTokenRefresh();
+          }
+
           // If user exists, set it in state
           if (storedUser && typeof storedUser === 'object') {
             try {
@@ -83,14 +107,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               console.error('❌ Failed to parse stored user:', error);
               secureLocalStorage.remove('user');
               secureLocalStorage.remove('token');
+              secureLocalStorage.remove('refreshToken');
               localStorage.removeItem('user');
               localStorage.removeItem('token');
+              localStorage.removeItem('refreshToken');
               removeAuthToken();
+              stopTokenRefresh();
             }
           } else {
             console.log('⚠️ No stored user found');
           }
-          
+
           // Defer fetching orders until the user opens the Order History tab
         }
       } else {
@@ -109,14 +136,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const handleAuthLogout = (event: CustomEvent) => {
       const reason = event.detail?.reason || 'unknown';
       console.log('Received auth:logout event, updating authentication state. Reason:', reason);
+      stopTokenRefresh();
       setUser(null);
+      secureLocalStorage.remove('user');
+      secureLocalStorage.remove('token');
+      secureLocalStorage.remove('refreshToken');
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
+      removeAuthToken();
     };
 
     window.addEventListener('auth:logout', handleAuthLogout as EventListener);
 
-    // Cleanup event listener on component unmount
+    // Cleanup event listener and stop refresh timer on component unmount
     return () => {
       window.removeEventListener('auth:logout', handleAuthLogout as EventListener);
+      stopTokenRefresh();
     };
   }, []);
 
@@ -137,13 +173,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const response = await authApi.login(email, password);
 
       // Extract data from response
-      const { token, id, email: userEmail, emailConfirmed } = response;
+      const { token, refreshToken, id, email: userEmail, emailConfirmed } = response;
 
       // Check if email is confirmed
       if (emailConfirmed === false) {
-        return { 
-          error: 'Please confirm your email address before logging in. Check your email for the confirmation link.', 
-          type: 'email_not_confirmed' 
+        return {
+          error: 'Please confirm your email address before logging in. Check your email for the confirmation link.',
+          type: 'email_not_confirmed'
         };
       }
 
@@ -160,21 +196,35 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.log('💾 Storing user:', newUser);
       secureLocalStorage.set('user', newUser);
       localStorage.setItem('user', JSON.stringify(newUser)); // Also store in regular localStorage
-      
-      // Store token in localStorage
-      console.log('🔑 Storing token:', token);
+
+      // Store access token in localStorage
+      console.log('🔑 Storing access token');
       secureLocalStorage.set('token', token);
       localStorage.setItem('token', JSON.stringify(token)); // Also store in regular localStorage
-      
+
+      // Store refresh token if provided
+      if (refreshToken) {
+        console.log('🔄 Storing refresh token');
+        secureLocalStorage.set('refreshToken', refreshToken);
+        localStorage.setItem('refreshToken', JSON.stringify(refreshToken));
+
+        // Start auto-refresh timer
+        startTokenRefresh();
+      }
+
       // Reset rate limiter on successful login
       loginRateLimiter.reset(identifier);
-      
+
       // Set auth token for future API requests
       setAuthToken(token);
 
       // Defer fetching user's orders until the Order History tab is opened
       setHasLoadedOrders(false);
-      
+
+      // Dispatch cart merge event (CartContext will handle merging)
+      console.log('🛒 Dispatching cart:merge event');
+      window.dispatchEvent(new CustomEvent('cart:merge'));
+
       return true;
     } catch (error) {
       console.error('Login error:', error);
@@ -197,9 +247,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Logout function - makes an API call to the backend if a token exists
   const logout = async () => {
     try {
+      // Stop auto-refresh timer
+      stopTokenRefresh();
+
       // Get token from secureLocalStorage
       const token = secureLocalStorage.get('token', null);
-      
+
       // If token exists, call the logout API endpoint
       if (token) {
         await authApi.logout(token);
@@ -211,13 +264,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(null);
       secureLocalStorage.remove('user');
       secureLocalStorage.remove('token');
+      secureLocalStorage.remove('refreshToken');
       localStorage.removeItem('user'); // Also clear regular localStorage
       localStorage.removeItem('token'); // Also clear regular localStorage
-      
+      localStorage.removeItem('refreshToken'); // Also clear refresh token
+
       // Reset orders loading flags
       setOrdersLoading(false);
       setHasLoadedOrders(false);
-      
+
       // Remove auth token from future API requests
       removeAuthToken();
     }

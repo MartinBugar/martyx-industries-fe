@@ -65,10 +65,26 @@ export const authApi = {
         headers: defaultHeaders as HeadersInit,
         body: JSON.stringify({ token, password }),
       }));
-      
+
       return await handleResponse(response) as ResetPasswordResponse;
     } catch (error) {
       console.error('Reset password API error:', error);
+      throw error;
+    }
+  },
+
+  // Refresh access token using refresh token
+  refreshToken: async (refreshToken: string): Promise<AuthResponse> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/refresh`, withLangHeaders({
+        method: 'POST',
+        headers: defaultHeaders as HeadersInit,
+        body: JSON.stringify({ refreshToken }),
+      }));
+
+      return await handleResponse(response) as AuthResponse;
+    } catch (error) {
+      console.error('Refresh token API error:', error);
       throw error;
     }
   },
