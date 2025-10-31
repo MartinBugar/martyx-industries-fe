@@ -25,11 +25,7 @@ export const useStripeCheckout = () => {
     try {
       setState(prev => ({ ...prev, loading: true, error: null }));
 
-      console.log('Creating Stripe Checkout Session:', request);
-
       const sessionResponse = await stripeService.createCheckoutSession(request);
-
-      console.log('Stripe Checkout Session created:', sessionResponse);
 
       setState(prev => ({
         ...prev,

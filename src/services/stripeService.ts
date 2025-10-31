@@ -1,8 +1,19 @@
 import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
-import type { CreatePaymentRequest } from '../types/api';
+import type { BillingAddress } from '../types/api';
 
-export interface CreateCheckoutSessionRequest extends CreatePaymentRequest {
-  // Inherits all fields from CreatePaymentRequest
+export interface CreateCheckoutSessionRequest {
+  orderItems: Array<{
+    product: { id: number };
+    quantity: number;
+    price: number;
+    currency: string;
+  }>;
+  totalAmount: number;
+  currency: string;
+  user?: BillingAddress; // Optional for guest checkout
+  discountCode?: string;
+  shippingRateId?: number;
+  shippingCost?: number;
 }
 
 export interface CreateCheckoutSessionResponse {
@@ -65,11 +76,27 @@ export class StripeService {
 
   /**
    * Get payment success details from session
-   * @param sessionId - Stripe Checkout Session ID
+   * @param sessionId - Stripe Checkout Session ID (format: cs_xxx)
    * @returns Promise<StripeSuccessResponse>
+   * @throws Error if sessionId is invalid
    */
   async getSuccessDetails(sessionId: string): Promise<StripeSuccessResponse> {
-    const response = await fetch(`${API_BASE_URL}/api/stripe/success?session_id=${sessionId}`, withLangHeaders({
+    // Validate session ID format (Stripe session IDs start with "cs_")
+    if (!sessionId || typeof sessionId !== 'string') {
+      throw new Error('Session ID is required');
+    }
+
+    const trimmedSessionId = sessionId.trim();
+    if (trimmedSessionId.length === 0) {
+      throw new Error('Session ID cannot be empty');
+    }
+
+    // Basic format validation - Stripe session IDs start with cs_ and contain alphanumeric + underscore
+    if (!/^cs_[a-zA-Z0-9_]+$/.test(trimmedSessionId)) {
+      throw new Error('Invalid session ID format');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/api/stripe/success?session_id=${encodeURIComponent(trimmedSessionId)}`, withLangHeaders({
       method: 'GET',
       headers: defaultHeaders as HeadersInit,
     }));

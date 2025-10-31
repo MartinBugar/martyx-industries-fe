@@ -69,11 +69,7 @@ export default function StripeCheckoutButton({
         }
       );
 
-      console.log('Creating Stripe Checkout Session...', request);
-
       const sessionResponse = await stripeService.createCheckoutSession(request);
-
-      console.log('Session created, redirecting to Stripe...', sessionResponse);
 
       // Redirect to Stripe Checkout
       if (sessionResponse.url) {

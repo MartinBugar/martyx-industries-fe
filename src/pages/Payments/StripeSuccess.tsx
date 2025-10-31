@@ -3,6 +3,35 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { stripeService, type StripeSuccessResponse } from '../../services/stripeService';
 import { useCart } from '../../context/useCart';
 
+/**
+ * Validates and sanitizes download URLs to prevent injection attacks.
+ * Only allows URLs starting with /api/download/
+ *
+ * @param url - The URL to validate
+ * @returns Validated full URL or null if invalid
+ */
+const validateDownloadUrl = (url: string | undefined): string | null => {
+  if (!url || typeof url !== 'string') {
+    return null;
+  }
+
+  const trimmedUrl = url.trim();
+
+  // Only allow URLs starting with /api/download/ or /api/download/invoice/
+  if (!trimmedUrl.startsWith('/api/download/')) {
+    console.error('Invalid download URL format:', trimmedUrl);
+    return null;
+  }
+
+  // Prevent directory traversal attacks
+  if (trimmedUrl.includes('..') || trimmedUrl.includes('//')) {
+    console.error('Potential directory traversal in URL:', trimmedUrl);
+    return null;
+  }
+
+  return `${window.location.origin}${trimmedUrl}`;
+};
+
 const StripeSuccess: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -14,8 +43,16 @@ const StripeSuccess: React.FC = () => {
   useEffect(() => {
     const sessionId = searchParams.get('session_id');
 
+    // Validate session ID format before making API call
     if (!sessionId) {
       setError('No payment session found');
+      setLoading(false);
+      return;
+    }
+
+    // Validate Stripe session ID format (cs_xxx)
+    if (!/^cs_[a-zA-Z0-9_]+$/.test(sessionId)) {
+      setError('Invalid payment session ID');
       setLoading(false);
       return;
     }
@@ -23,14 +60,16 @@ const StripeSuccess: React.FC = () => {
     // Fetch payment details from backend
     const fetchPaymentDetails = async () => {
       try {
-        console.log('Fetching payment details for session:', sessionId);
         const details = await stripeService.getSuccessDetails(sessionId);
-        console.log('Payment details received:', details);
 
         setPaymentData(details);
 
-        // Clear cart after successful payment
-        clearCart();
+        // Clear cart ONLY if payment was successful
+        // Check payment status before clearing cart to prevent data loss
+        if (details.status === 'COMPLETED' || details.status === 'PAID') {
+          clearCart();
+        }
+
         setLoading(false);
       } catch (err) {
         console.error('Failed to fetch payment details:', err);
@@ -166,45 +205,52 @@ const StripeSuccess: React.FC = () => {
             Your Digital Products
           </h3>
           <div style={{ display: 'grid', gap: '12px' }}>
-            {paymentData.downloadLinks.map((link, index) => (
-              <a
-                key={index}
-                href={`${window.location.origin}${link.url}`}
-                download
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '16px',
-                  backgroundColor: 'white',
-                  borderRadius: '8px',
-                  textDecoration: 'none',
-                  color: '#333',
-                  border: '1px solid #E5E7EB',
-                  transition: 'all 0.2s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(99, 91, 255, 0.15)';
-                  e.currentTarget.style.borderColor = '#635BFF';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow = 'none';
-                  e.currentTarget.style.borderColor = '#E5E7EB';
-                }}
-              >
-                <span style={{ fontWeight: '500' }}>{link.productName || 'Download'}</span>
-                <span style={{ color: '#635BFF', fontWeight: '600' }}>Download →</span>
-              </a>
-            ))}
+            {paymentData.downloadLinks
+              .filter(link => validateDownloadUrl(link.url) !== null)
+              .map((link, index) => {
+                const validatedUrl = validateDownloadUrl(link.url);
+                if (!validatedUrl) return null;
+
+                return (
+                  <a
+                    key={index}
+                    href={validatedUrl}
+                    download
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '16px',
+                      backgroundColor: 'white',
+                      borderRadius: '8px',
+                      textDecoration: 'none',
+                      color: '#333',
+                      border: '1px solid #E5E7EB',
+                      transition: 'all 0.2s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(99, 91, 255, 0.15)';
+                      e.currentTarget.style.borderColor = '#635BFF';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.boxShadow = 'none';
+                      e.currentTarget.style.borderColor = '#E5E7EB';
+                    }}
+                  >
+                    <span style={{ fontWeight: '500' }}>{link.productName || 'Download'}</span>
+                    <span style={{ color: '#635BFF', fontWeight: '600' }}>Download →</span>
+                  </a>
+                );
+              })}
           </div>
         </div>
       )}
 
       {/* Invoice Download */}
-      {paymentData?.invoiceDownloadUrl && (
+      {paymentData?.invoiceDownloadUrl && validateDownloadUrl(paymentData.invoiceDownloadUrl) && (
         <div style={{ marginBottom: '24px' }}>
           <a
-            href={`${window.location.origin}${paymentData.invoiceDownloadUrl}`}
+            href={validateDownloadUrl(paymentData.invoiceDownloadUrl) || '#'}
             download
             style={{
               display: 'flex',
