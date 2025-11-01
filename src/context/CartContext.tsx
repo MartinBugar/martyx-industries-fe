@@ -84,13 +84,17 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         if (backendCart.cart_items) {
           try {
             const parsedItems = JSON.parse(backendCart.cart_items) as CartItem[];
-            if (Array.isArray(parsedItems) && parsedItems.length > 0) {
+            if (Array.isArray(parsedItems)) {
               console.log('[Cart] Synced from backend:', parsedItems.length, 'items');
-              setItems(parsedItems);
+              setItems(parsedItems); // Update even if empty (e.g., after payment)
             }
           } catch (parseError) {
             console.warn('[Cart] Failed to parse backend cart_items:', parseError);
           }
+        } else {
+          // Backend returned no cart_items (cart doesn't exist or is empty)
+          console.log('[Cart] No cart in backend, clearing local cart');
+          setItems([]);
         }
       } catch (error) {
         console.warn('[Cart] Failed to sync with backend, using localStorage:', error);

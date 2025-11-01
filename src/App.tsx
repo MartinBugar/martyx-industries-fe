@@ -202,8 +202,8 @@ const MainContent = React.memo(() => {
             <Route path="/cart" element={<CartPage />} />
             <Route path="/wishlist" element={<Wishlist />} />
             <Route path="/checkout" element={<Checkout />} />
-            <Route path="/payment/stripe/success" element={<StripeSuccess />} />
-            <Route path="/payment/stripe/cancel" element={<StripeCancel />} />
+            <Route path="/stripe/success" element={<StripeSuccess />} />
+            <Route path="/payment/cancelled" element={<StripeCancel />} />
             <Route path="/account" element={<UserAccount />} />
             <Route path="/gallery" element={<UserGallery />} />
             <Route path="/gallery/:userId" element={<UserGalleryDetail />} />

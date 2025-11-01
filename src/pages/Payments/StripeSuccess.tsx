@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { stripeService, type StripeSuccessResponse } from '../../services/stripeService';
 import { useCart } from '../../context/useCart';
+import { API_BASE_URL } from '../../services/apiUtils';
 
 /**
  * Validates and sanitizes download URLs to prevent injection attacks.
@@ -29,7 +30,8 @@ const validateDownloadUrl = (url: string | undefined): string | null => {
     return null;
   }
 
-  return `${window.location.origin}${trimmedUrl}`;
+  // Use backend API URL instead of frontend URL
+  return `${API_BASE_URL}${trimmedUrl}`;
 };
 
 const StripeSuccess: React.FC = () => {
@@ -64,11 +66,9 @@ const StripeSuccess: React.FC = () => {
 
         setPaymentData(details);
 
-        // Clear cart ONLY if payment was successful
-        // Check payment status before clearing cart to prevent data loss
-        if (details.status === 'COMPLETED' || details.status === 'PAID') {
-          clearCart();
-        }
+        // NOTE: Cart clearing is handled automatically by the backend after successful payment
+        // No need to manually clear cart here - backend deletes the cart in OrderEventListener
+        // Keeping the clearCart() call here would create race conditions with backend deletion
 
         setLoading(false);
       } catch (err) {
@@ -79,7 +79,8 @@ const StripeSuccess: React.FC = () => {
     };
 
     fetchPaymentDetails();
-  }, [searchParams, clearCart]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run once on mount - sessionId comes from URL and won't change
 
   if (loading) {
     return (
