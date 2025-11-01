@@ -13,8 +13,7 @@ import {
   adminCreateTab,
   adminUpdateTab,
   adminDeleteTab,
-  adminDuplicateTab,
-  adminReorderTabs
+  adminDuplicateTab
 } from '../../services/productTabService';
 import './AdminProductTabs.css';
 

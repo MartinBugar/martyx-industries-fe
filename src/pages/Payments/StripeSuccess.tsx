@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { stripeService, type StripeSuccessResponse } from '../../services/stripeService';
-import { useCart } from '../../context/useCart';
 import { API_BASE_URL } from '../../services/apiUtils';
 
 /**
@@ -37,7 +36,6 @@ const validateDownloadUrl = (url: string | undefined): string | null => {
 const StripeSuccess: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { clearCart } = useCart();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [paymentData, setPaymentData] = useState<StripeSuccessResponse | null>(null);

@@ -6,7 +6,6 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import type { ProductTabDto } from '../../types/api';
 import { getTabsForMasterProduct, getTabsForVariant, canViewTab, renderTabContent } from '../../services/productTabService';
 import { useAuth } from '../../context/useAuth';
@@ -31,7 +30,6 @@ const DynamicProductTabs: React.FC<DynamicProductTabsProps> = ({
   variantId,
   locale = 'en'
 }) => {
-  const { i18n } = useTranslation();
   const { isAuthenticated } = useAuth();
   const [tabs, setTabs] = useState<ProductTabDto[]>([]);
   const [activeTab, setActiveTab] = useState<number>(0);
@@ -74,27 +72,27 @@ const DynamicProductTabs: React.FC<DynamicProductTabsProps> = ({
   }, [masterProductId, variantId, locale, isAuthenticated]);
 
   // Render component based on componentName
-  const renderCustomComponent = (componentName: string): JSX.Element | null => {
+  const renderCustomComponent = (componentName: string): React.ReactElement | null => {
     switch (componentName) {
       case 'DetailsTab':
         return <DetailsTab content={{ kind: 'text', text: '' }} />;
       case 'DownloadTab':
-        return <DownloadTab downloads={[]} />;
+        return <DownloadTab content={{ kind: 'text', text: '' }} />;
       case 'FeaturesTab':
-        return <FeaturesTab features={[]} />;
+        return <FeaturesTab content={{ kind: 'text', text: '' }} />;
       case 'ReviewsTab':
-        return <ReviewsTab productId={masterProductId || 0} />;
+        return <ReviewsTab content={{ kind: 'text', text: '' }} productId={masterProductId || 0} />;
       case 'PrintInfoTab':
-        return <PrintInfoTab printInfo={{ printSettings: { printTime: '', layerHeight: '', infill: '', supports: false, materials: [] }, rcComponents: [] }} />;
+        return <PrintInfoTab content={{ kind: 'printInfo', data: { printSettings: { printTime: '', layerHeight: '', infill: '', supports: false, materials: [] }, rcComponents: [] } }} />;
       case 'IncludedTab':
-        return <IncludedTab components={[]} />;
+        return <IncludedTab content={{ kind: 'text', text: '' }} />;
       default:
         return <div>Component not found: {componentName}</div>;
     }
   };
 
   // Render tab content
-  const renderContent = (tab: ProductTabDto): JSX.Element => {
+  const renderContent = (tab: ProductTabDto): React.ReactElement => {
     const { type, content } = renderTabContent(tab);
 
     switch (type) {

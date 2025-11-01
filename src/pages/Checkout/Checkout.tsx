@@ -81,12 +81,6 @@ const Checkout: React.FC = () => {
     }, 0);
   };
 
-  // Compute cartHash that changes when cart total or items change
-  const cartHash = useMemo(() => {
-    const totalCents = Math.round(getTotalPrice() * 100);
-    return `${totalCents}:${items.length}`;
-  }, [getTotalPrice, items.length]);
-
   // Derive currency from cart items (from product data). Fallback to EUR if not available.
   const derivedCurrency = useMemo(() => {
     const currencies = items
