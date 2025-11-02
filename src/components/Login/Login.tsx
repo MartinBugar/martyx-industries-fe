@@ -1,14 +1,17 @@
 /**
- * Login komponent - Optimalizovaná verzia
+ * Login komponent - Refactored with react-hook-form + zod
  * Používa zdieľané komponenty a utility funkcie pre lepšiu údržbu kódu
  */
 
 import React, { useState, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '../../context/useAuth';
 import { registrationService } from '../../services/registrationService';
 import type { LoginErrorResponse } from '../../context/authTypes';
+import { loginSchema, type LoginFormData } from '../../schemas/formSchemas';
 import './Login.css';
 
 // Zdieľané komponenty a utility
@@ -20,7 +23,6 @@ import {
   EyeOffIcon,
   ErrorIcon,
 } from '../shared/FormComponents';
-import { useAuthForm } from '../../hooks/useAuthForm';
 
 // ===== INTERFACES =====
 type ConfirmationStatus = 'success' | 'failed';
@@ -119,23 +121,46 @@ const Login: React.FC<LoginProps> = ({ confirmationStatus = null }) => {
   const { t } = useTranslation('auth');
   const { login } = useAuth();
   const navigate = useNavigate();
-  
+
   // Lokálny stav pre špecifické login funkcie
   const [showResendConfirmation, setShowResendConfirmation] = useState(false);
   const [isResending, setIsResending] = useState(false);
   const [generalError, setGeneralError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+
+  // React Hook Form setup with zod validation
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    getValues
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    mode: 'onBlur', // Validate on blur for better UX
+    defaultValues: {
+      email: '',
+      password: ''
+    }
+  });
+
+  /**
+   * Toggle password visibility
+   */
+  const togglePasswordVisibility = useCallback(() => {
+    setShowPassword(prev => !prev);
+  }, []);
 
   /**
    * Spracovanie login požiadavky
    * Optimalizované s async/await a proper error handling
    */
-  const handleLoginSubmit = useCallback(async (formData: { email: string; password: string }) => {
+  const handleLoginSubmit = useCallback(async (formData: LoginFormData) => {
     setGeneralError(null);
     setShowResendConfirmation(false);
-    
+
     try {
       const result: boolean | LoginErrorResponse = await login(formData.email, formData.password);
-      
+
       if (result === true) {
         // Úspešné prihlásenie - presmerovanie na domovskú stránku
         navigate('/');
@@ -153,31 +178,18 @@ const Login: React.FC<LoginProps> = ({ confirmationStatus = null }) => {
     }
   }, [login, navigate]);
 
-  // Používanie custom hook pre správu formulára
-  const {
-    data,
-    handleInputChange,
-    handleSubmit,
-    showPassword,
-    togglePasswordVisibility,
-    isProcessing
-  } = useAuthForm({
-    formType: 'login',
-    onSubmit: handleLoginSubmit,
-    enableRealTimeValidation: true
-  });
-
   /**
    * Spracovanie opätovného odoslania potvrdzovacieho emailu
    * Optimalizované pre lepší UX s loading stavmi
    */
   const handleResendConfirmation = useCallback(async () => {
-    if (!data.email) return;
-    
+    const email = getValues('email');
+    if (!email) return;
+
     setIsResending(true);
     try {
-      const result = await registrationService.resendConfirmation(data.email);
-      
+      const result = await registrationService.resendConfirmation(email);
+
       if (result.success) {
         setGeneralError('Potvrdzovací email bol odoslaný! Skontrolujte svoj email a kliknite na potvrdzovací link.');
         setShowResendConfirmation(false);
@@ -190,7 +202,7 @@ const Login: React.FC<LoginProps> = ({ confirmationStatus = null }) => {
     } finally {
       setIsResending(false);
     }
-  }, [data.email]);
+  }, [getValues]);
 
   /**
    * Ikona pre login (user avatar)
@@ -248,7 +260,7 @@ const Login: React.FC<LoginProps> = ({ confirmationStatus = null }) => {
           )}
           
           {/* Login formulár */}
-          <form className="login-form" onSubmit={handleSubmit}>
+          <form className="login-form" onSubmit={handleSubmit(handleLoginSubmit)}>
             <div className="form-group">
               <label htmlFor="email" className="form-label">
                 <EmailIcon size={18} />
@@ -257,14 +269,14 @@ const Login: React.FC<LoginProps> = ({ confirmationStatus = null }) => {
               <input
                 type="email"
                 id="email"
-                name="email"
-                value={data.email}
-                onChange={handleInputChange}
                 placeholder="Zadajte váš email"
-                className="form-input"
-                required
+                className={`form-input ${errors.email ? 'error' : ''}`}
                 autoComplete="email"
+                {...register('email')}
               />
+              {errors.email && (
+                <span className="field-error">{errors.email.message}</span>
+              )}
             </div>
 
             <div className="form-group">
@@ -276,13 +288,10 @@ const Login: React.FC<LoginProps> = ({ confirmationStatus = null }) => {
                 <input
                   type={showPassword ? 'text' : 'password'}
                   id="password"
-                  name="password"
-                  value={data.password}
-                  onChange={handleInputChange}
                   placeholder="Zadajte vaše heslo"
-                  className="form-input"
-                  required
+                  className={`form-input ${errors.password ? 'error' : ''}`}
                   autoComplete="current-password"
+                  {...register('password')}
                 />
                 <button
                   type="button"
@@ -293,6 +302,9 @@ const Login: React.FC<LoginProps> = ({ confirmationStatus = null }) => {
                   {showPassword ? <EyeOffIcon size={18} /> : <EyeIcon size={18} />}
                 </button>
               </div>
+              {errors.password && (
+                <span className="field-error">{errors.password.message}</span>
+              )}
             </div>
 
             {/* Zabudnuté heslo link */}
@@ -301,14 +313,14 @@ const Login: React.FC<LoginProps> = ({ confirmationStatus = null }) => {
                 Zabudli ste heslo?
               </Link>
             </div>
-            
+
             {/* Submit tlačidlo */}
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="form-submit-btn"
-              disabled={isProcessing}
+              disabled={isSubmitting}
             >
-              {isProcessing ? (
+              {isSubmitting ? (
                 <>
                   <div className="btn-spinner"></div>
                   {t('login.loading')}

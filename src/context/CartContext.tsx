@@ -34,10 +34,35 @@ type UnknownRecord = Record<string, unknown>;
 function isRecord(value: unknown): value is UnknownRecord {
   return typeof value === 'object' && value !== null;
 }
+
+/**
+ * Check if an item is expired (older than 30 days)
+ */
+function isItemExpired(item: CartItem): boolean {
+  if (!item.addedAt) return true; // If no timestamp, consider it expired (legacy data)
+  const now = Date.now();
+  const age = now - item.addedAt;
+  return age > CART_EXPIRATION_MS;
+}
+
+/**
+ * Type guard for CartItem with backward compatibility
+ */
 function isCartItem(value: unknown): value is CartItem {
   if (!isRecord(value)) return false;
   const rec = value as UnknownRecord;
-  return 'product' in rec && 'quantity' in rec && typeof rec['quantity'] === 'number';
+
+  // Must have product and quantity
+  if (!('product' in rec) || !('quantity' in rec) || typeof rec['quantity'] !== 'number') {
+    return false;
+  }
+
+  // If addedAt is missing, add it (backward compatibility with old cart data)
+  if (!('addedAt' in rec) || typeof rec['addedAt'] !== 'number') {
+    (rec as unknown as CartItem).addedAt = Date.now();
+  }
+
+  return true;
 }
 
 function safeLoad(): CartItem[] {
@@ -46,8 +71,31 @@ function safeLoad(): CartItem[] {
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
-    // Basic validation
-    return parsed.filter(isCartItem);
+
+    // Filter valid items
+    const validItems = parsed.filter(isCartItem);
+
+    // Filter out expired items
+    const activeItems = validItems.filter(item => !isItemExpired(item));
+    const expiredItems = validItems.filter(item => isItemExpired(item));
+
+    // Log expired items if any
+    if (expiredItems.length > 0) {
+      console.log(`[Cart] Removed ${expiredItems.length} expired item(s) (older than ${CART_EXPIRATION_DAYS} days)`);
+      expiredItems.forEach(item => {
+        const daysOld = Math.floor((Date.now() - item.addedAt) / (24 * 60 * 60 * 1000));
+        console.log(`[Cart] Expired: ${item.product.name} (${daysOld} days old)`);
+      });
+
+      // Update localStorage with only active items
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(activeItems));
+      } catch (e) {
+        console.warn('[Cart] Failed to update cart after removing expired items:', e);
+      }
+    }
+
+    return activeItems;
   } catch (e) {
     console.warn('[Cart] Failed to load persisted cart:', e);
     return [];
@@ -208,7 +256,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         }
 
         result = 'added';
-        const updatedItems = [...prevItems, { product, quantity: 1 }];
+        const updatedItems = [...prevItems, { product, quantity: 1, addedAt: Date.now() }];
 
         // Sync to backend (non-blocking)
         void cartService

@@ -1,5 +1,22 @@
 import { useEffect, useRef, useState } from 'react';
 
+// Type declarations for Google Maps (minimal subset needed)
+declare global {
+  interface Window {
+    google?: {
+      maps?: {
+        places?: {
+          Autocomplete: any;
+          PlaceResult: any;
+        };
+        event?: {
+          clearInstanceListeners: (instance: any) => void;
+        };
+      };
+    };
+  }
+}
+
 /**
  * Google Places API configuration
  * Add your Google Maps API key to .env as VITE_GOOGLE_MAPS_API_KEY
@@ -69,7 +86,7 @@ const loadGoogleMapsScript = (): Promise<void> => {
 /**
  * Parse Google Place result into structured address
  */
-const parseAddressComponents = (place: google.maps.places.PlaceResult): ParsedAddress | null => {
+const parseAddressComponents = (place: any): ParsedAddress | null => {
   if (!place.address_components) {
     return null;
   }
@@ -86,7 +103,7 @@ const parseAddressComponents = (place: google.maps.places.PlaceResult): ParsedAd
   let streetNumber = '';
   let route = '';
 
-  place.address_components.forEach(component => {
+  place.address_components.forEach((component: any) => {
     const types = component.types;
 
     if (types.includes('street_number')) {
@@ -132,7 +149,7 @@ export const useGooglePlacesAutocomplete = (
   onAddressSelect: (address: ParsedAddress) => void
 ) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
+  const autocompleteRef = useRef<any>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -142,12 +159,12 @@ export const useGooglePlacesAutocomplete = (
         // Load Google Maps API
         await loadGoogleMapsScript();
 
-        if (!inputRef.current) {
+        if (!inputRef.current || !window.google?.maps?.places) {
           return;
         }
 
         // Initialize autocomplete
-        const autocomplete = new google.maps.places.Autocomplete(inputRef.current, {
+        const autocomplete = new window.google.maps.places.Autocomplete(inputRef.current, {
           types: ['address'],
           fields: ['address_components', 'formatted_address', 'geometry']
         });
@@ -182,8 +199,8 @@ export const useGooglePlacesAutocomplete = (
 
     // Cleanup
     return () => {
-      if (autocompleteRef.current) {
-        google.maps.event.clearInstanceListeners(autocompleteRef.current);
+      if (autocompleteRef.current && window.google?.maps?.event) {
+        window.google.maps.event.clearInstanceListeners(autocompleteRef.current);
         autocompleteRef.current = null;
       }
     };
@@ -195,12 +212,3 @@ export const useGooglePlacesAutocomplete = (
     error
   };
 };
-
-/**
- * Type declaration for Google Maps
- */
-declare global {
-  interface Window {
-    google: typeof google;
-  }
-}

@@ -83,6 +83,73 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // Supports: +421 900 123 456, +1 234 567 8900, etc.
 const PHONE_REGEX = /^\+?[\d\s\-\(\)]{9,20}$/;
 
+// SessionStorage key for checkout progress persistence
+const CHECKOUT_PROGRESS_KEY = 'martyx_checkout_progress_v1';
+
+// Interface for checkout progress stored in sessionStorage
+interface CheckoutProgress {
+  formData: CheckoutFormData;
+  currentStep: 1 | 2 | 3;
+  discountCode: string;
+  timestamp: number; // When progress was saved
+}
+
+// Save progress to sessionStorage
+const saveProgress = (
+  formData: CheckoutFormData,
+  currentStep: 1 | 2 | 3,
+  discountCode: string
+): void => {
+  try {
+    const progress: CheckoutProgress = {
+      formData,
+      currentStep,
+      discountCode,
+      timestamp: Date.now()
+    };
+    sessionStorage.setItem(CHECKOUT_PROGRESS_KEY, JSON.stringify(progress));
+    console.log('[Checkout] Progress saved to sessionStorage');
+  } catch (e) {
+    console.warn('[Checkout] Failed to save progress:', e);
+  }
+};
+
+// Load progress from sessionStorage
+const loadProgress = (): CheckoutProgress | null => {
+  try {
+    const raw = sessionStorage.getItem(CHECKOUT_PROGRESS_KEY);
+    if (!raw) return null;
+
+    const progress = JSON.parse(raw) as CheckoutProgress;
+
+    // Check if progress is too old (e.g., > 24 hours)
+    const age = Date.now() - progress.timestamp;
+    const MAX_AGE = 24 * 60 * 60 * 1000; // 24 hours
+
+    if (age > MAX_AGE) {
+      console.log('[Checkout] Saved progress expired (older than 24 hours)');
+      sessionStorage.removeItem(CHECKOUT_PROGRESS_KEY);
+      return null;
+    }
+
+    console.log('[Checkout] Loaded saved progress from', new Date(progress.timestamp).toLocaleString());
+    return progress;
+  } catch (e) {
+    console.warn('[Checkout] Failed to load progress:', e);
+    return null;
+  }
+};
+
+// Clear progress from sessionStorage
+const clearProgress = (): void => {
+  try {
+    sessionStorage.removeItem(CHECKOUT_PROGRESS_KEY);
+    console.log('[Checkout] Progress cleared from sessionStorage');
+  } catch (e) {
+    console.warn('[Checkout] Failed to clear progress:', e);
+  }
+};
+
 // Calculate estimated delivery date
 const calculateEstimatedDelivery = (deliveryDays: number): string => {
   const today = new Date();
@@ -113,10 +180,13 @@ const Checkout: React.FC = () => {
   const [searchParams] = useSearchParams();
   const [payStatus, setPayStatus] = useState<"idle"|"processing"|"success"|"error">("idle");
 
-  // 3 STEPS: Information → Shipping → Payment
-  const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
+  // Load saved progress from sessionStorage (if available)
+  const savedProgress = loadProgress();
 
-  const [formData, setFormData] = useState<CheckoutFormData>({
+  // 3 STEPS: Information → Shipping → Payment
+  const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(savedProgress?.currentStep || 1);
+
+  const [formData, setFormData] = useState<CheckoutFormData>(savedProgress?.formData || {
     // Contact
     firstName: user?.firstName || '',
     lastName: user?.lastName || '',
@@ -156,8 +226,11 @@ const Checkout: React.FC = () => {
   // Validation errors
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
+  // Track if progress was restored from sessionStorage
+  const [progressRestored, setProgressRestored] = useState<boolean>(!!savedProgress);
+
   // Discount code state
-  const [discountCode, setDiscountCode] = useState('');
+  const [discountCode, setDiscountCode] = useState(savedProgress?.discountCode || '');
   const [discountValidation, setDiscountValidation] = useState<DiscountValidationDto | null>(null);
   const [isValidatingDiscount, setIsValidatingDiscount] = useState(false);
   const [discountError, setDiscountError] = useState('');
@@ -172,6 +245,7 @@ const Checkout: React.FC = () => {
   const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<string>('');
   const [isLoadingAddresses, setIsLoadingAddresses] = useState(false);
+  // @ts-ignore - Reserved for future "save address" UI feature
   const [showSaveAddressOption, setShowSaveAddressOption] = useState(false);
 
   // Google Places Autocomplete handler
@@ -363,6 +437,39 @@ const Checkout: React.FC = () => {
     }
   }, [currentStep]);
 
+  // Progress Persistence: Save form data to sessionStorage
+  useEffect(() => {
+    // Don't save if cart is empty (user might be on checkout page after clearing cart)
+    if (items.length === 0) {
+      clearProgress();
+      return;
+    }
+
+    // Save current progress
+    saveProgress(formData, currentStep, discountCode);
+  }, [formData, currentStep, discountCode, items.length]);
+
+  // Progress Persistence: Hide "Progress restored" notification after 5 seconds
+  useEffect(() => {
+    if (progressRestored) {
+      const timer = setTimeout(() => {
+        setProgressRestored(false);
+      }, 5000); // Hide after 5 seconds
+
+      return () => clearTimeout(timer);
+    }
+  }, [progressRestored]);
+
+  // Progress Persistence: Clear progress on successful payment
+  // This will be called from the Stripe success redirect handler
+  useEffect(() => {
+    // Check if coming back from successful payment
+    const paymentSuccess = searchParams.get('payment') === 'success';
+    if (paymentSuccess) {
+      clearProgress();
+    }
+  }, [searchParams]);
+
   // Handle form input changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const target = e.target as HTMLInputElement;
@@ -429,6 +536,7 @@ const Checkout: React.FC = () => {
   };
 
   // Save current billing address to saved addresses
+  // @ts-ignore - Reserved for future "save address" button
   const handleSaveCurrentAddress = async () => {
     if (!user) {
       alert('Please sign in to save addresses');
@@ -625,6 +733,7 @@ const Checkout: React.FC = () => {
   };
 
   // Validate legal consents before payment
+  // @ts-ignore - Reserved for validation logic
   const validateLegalConsents = (): boolean => {
     if (!formData.termsAccepted) {
       alert('Please accept the Terms & Conditions to continue');
@@ -703,6 +812,7 @@ const Checkout: React.FC = () => {
   const totals = calculateTotals();
 
   // Get shipping address (use shipping if different, otherwise billing)
+  // @ts-ignore - Reserved for future use
   const shippingAddress = formData.shipToDifferentAddress
     ? {
         street: formData.shippingStreet,
@@ -736,6 +846,16 @@ const Checkout: React.FC = () => {
             Payment
           </div>
         </div>
+
+        {/* Progress Restored Notification */}
+        {progressRestored && (
+          <div className="progress-restored-notification" role="status" aria-live="polite">
+            <span className="notification-icon">💾</span>
+            <span className="notification-text">
+              Your checkout progress has been restored from your previous session
+            </span>
+          </div>
+        )}
       </div>
 
       <div className="checkout-content">

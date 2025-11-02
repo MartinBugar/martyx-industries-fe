@@ -1,12 +1,15 @@
 /**
- * Registration komponent - Optimalizovaná verzia
+ * Registration komponent - Refactored with react-hook-form + zod
  * Používa zdieľané komponenty a utility funkcie pre lepšiu údržbu kódu
  */
 
 import React, {useState, useCallback, useEffect, useRef} from 'react';
 import {useNavigate, Link} from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {registrationService} from '../../services/registrationService';
+import { registrationSchema, type RegistrationFormData } from '../../schemas/formSchemas';
 import './Registration.css';
 
 // Zdieľané komponenty a utility
@@ -18,7 +21,6 @@ import {
     EyeOffIcon,
     ErrorIcon,
 } from '../shared/FormComponents';
-import {useAuthForm} from '../../hooks/useAuthForm';
 
 // ===== INTERFACES =====
 // (Interfaces sú definované v zdieľaných komponentoch)
@@ -36,12 +38,29 @@ const Registration: React.FC = () => {
     // Lokálny stav pre špecifické registračné funkcie
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [generalError, setGeneralError] = useState<string | null>(null);
-    const [gdprConsent, setGdprConsent] = useState<boolean>(false);
-    const [marketingConsent, setMarketingConsent] = useState<boolean>(false);
-    const [gdprValidationError, setGdprValidationError] = useState<boolean>(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     // Ref pre focus management po úspešnej registrácii
     const loginBtnRef = useRef<HTMLButtonElement | null>(null);
+
+    // React Hook Form setup with zod validation
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isSubmitting },
+        reset
+    } = useForm<RegistrationFormData>({
+        resolver: zodResolver(registrationSchema),
+        mode: 'onBlur',
+        defaultValues: {
+            email: '',
+            password: '',
+            confirmPassword: '',
+            gdprConsent: false,
+            marketingConsent: false
+        }
+    });
 
     /**
      * Focus management - presun fokusu na login tlačidlo po úspešnej registrácii
@@ -54,30 +73,32 @@ const Registration: React.FC = () => {
     }, [successMessage]);
 
     /**
+     * Toggle password visibility
+     */
+    const togglePasswordVisibility = useCallback(() => {
+        setShowPassword(prev => !prev);
+    }, []);
+
+    /**
+     * Toggle confirm password visibility
+     */
+    const toggleConfirmPasswordVisibility = useCallback(() => {
+        setShowConfirmPassword(prev => !prev);
+    }, []);
+
+    /**
      * Spracovanie registračnej požiadavky
      * Optimalizované s async/await a proper error handling
      */
-    const handleRegistrationSubmit = useCallback(async (formData: {
-        email: string;
-        password: string;
-        confirmPassword?: string
-    }) => {
+    const handleRegistrationSubmit = useCallback(async (formData: RegistrationFormData) => {
         setGeneralError(null);
-        setGdprValidationError(false);
-
-        // Validácia GDPR súhlasu
-        if (!gdprConsent) {
-            setGeneralError('Musíte súhlasiť s podmienkami ochrany osobných údajov.');
-            setGdprValidationError(true);
-            return;
-        }
 
         try {
             const success = await registrationService.register(
                 formData.email,
                 formData.password,
-                gdprConsent,
-                marketingConsent
+                formData.gdprConsent,
+                formData.marketingConsent || false
             );
 
             if (success) {
@@ -88,9 +109,7 @@ const Registration: React.FC = () => {
                 );
 
                 // Vyčistenie formulára po úspešnej registrácii
-                resetForm();
-                setGdprConsent(false);
-                setMarketingConsent(false);
+                reset();
             } else {
                 setGeneralError(t('register.error', 'Registrácia zlyhala. Skúste to znovu.'));
             }
@@ -105,7 +124,7 @@ const Registration: React.FC = () => {
             }
             console.error('Registration error:', error);
         }
-    }, [gdprConsent, marketingConsent, t, resetForm]);
+    }, [t, reset]);
 
     /**
      * Navigácia na login stránku
@@ -113,33 +132,6 @@ const Registration: React.FC = () => {
     const handleGoToLogin = useCallback(() => {
         navigate('/login');
     }, [navigate]);
-
-    /**
-     * Handler pre zmenu GDPR súhlasu - vymaže validačnú chybu
-     */
-    const handleGdprConsentChange = useCallback((checked: boolean) => {
-        setGdprConsent(checked);
-        if (checked) {
-            setGdprValidationError(false);
-        }
-    }, []);
-
-    // Používanie custom hook pre správu formulára
-    const {
-        data,
-        handleInputChange,
-        handleSubmit,
-        showPassword,
-        showConfirmPassword,
-        togglePasswordVisibility,
-        toggleConfirmPasswordVisibility,
-        isProcessing,
-        resetForm
-    } = useAuthForm({
-        formType: 'registration',
-        onSubmit: handleRegistrationSubmit,
-        enableRealTimeValidation: true
-    });
 
     /**
      * Ikona pre registráciu (user plus)

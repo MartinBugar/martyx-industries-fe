@@ -63,7 +63,7 @@ export const initializeGA4 = (): void => {
   window.dataLayer = window.dataLayer || [];
   window.gtag = function gtag() {
     // eslint-disable-next-line prefer-rest-params
-    window.dataLayer.push(arguments);
+    window.dataLayer?.push(arguments);
   };
 
   window.gtag('js', new Date());
@@ -80,14 +80,14 @@ export const initializeGA4 = (): void => {
  */
 const productToGA4Item = (product: Product, quantity: number = 1): GA4Item => {
   return {
-    item_id: product.variantId,
+    item_id: product.variantId.toString(),
     item_name: product.name,
     item_brand: 'Martyx Industries',
-    item_category: product.category || 'Uncategorized',
-    item_variant: product.variant || undefined,
-    price: product.price,
+    item_category: product.productCategory || 'Uncategorized',
+    item_variant: product.variantName || undefined,
+    price: product.priceWithVat,
     quantity: quantity,
-    currency: 'EUR',
+    currency: product.currency || 'EUR',
   };
 };
 
@@ -129,8 +129,8 @@ export const trackViewItem = (product: Product): void => {
   const item = productToGA4Item(product);
 
   window.gtag('event', 'view_item', {
-    currency: 'EUR',
-    value: product.price,
+    currency: product.currency || 'EUR',
+    value: product.priceWithVat,
     items: [item],
   });
 
@@ -147,8 +147,8 @@ export const trackAddToCart = (product: Product, quantity: number = 1): void => 
   const item = productToGA4Item(product, quantity);
 
   window.gtag('event', 'add_to_cart', {
-    currency: 'EUR',
-    value: product.price * quantity,
+    currency: product.currency || 'EUR',
+    value: product.priceWithVat * quantity,
     items: [item],
   });
 
@@ -165,8 +165,8 @@ export const trackRemoveFromCart = (product: Product, quantity: number = 1): voi
   const item = productToGA4Item(product, quantity);
 
   window.gtag('event', 'remove_from_cart', {
-    currency: 'EUR',
-    value: product.price * quantity,
+    currency: product.currency || 'EUR',
+    value: product.priceWithVat * quantity,
     items: [item],
   });
 
@@ -299,11 +299,11 @@ export const trackPageView = (pagePath: string, pageTitle?: string): void => {
  */
 declare global {
   interface Window {
-    gtag: (
+    gtag?: (
       command: 'config' | 'event' | 'js',
       targetId: string | Date,
       config?: Record<string, any>
     ) => void;
-    dataLayer: any[];
+    dataLayer?: any[];
   }
 }

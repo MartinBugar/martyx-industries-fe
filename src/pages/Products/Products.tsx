@@ -1,13 +1,14 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Link, useSearchParams} from 'react-router-dom';
 import {useTranslation} from 'react-i18next';
-import {type Product} from '../../data/productData';
+import {type Product, type ProductVariant} from '../../data/productData';
 import {hybridProductService} from '../../services/hybridProductService';
 import {useCart} from '../../context/useCart';
 import WishlistButton from '../../components/WishlistButton';
 import OptimizedImage from '../../components/OptimizedImage/OptimizedImage';
 import { getBestImageUrl, getBaseNameFromPath, isCDNEnabled } from '../../utils/cdnImages';
 import { productGalleryService } from '../../services/productGalleryService';
+import VariantSelectorModal from '../../components/VariantSelectorModal/VariantSelectorModal';
 import './Products.css';
 
 // Helper function to get price display with "Od" prefix if multiple variants
@@ -37,6 +38,10 @@ const Products: React.FC = () => {
     type Popup = { visible: boolean; message: string; variant: 'success' | 'warning' };
     const [popups, setPopups] = useState<Record<string, Popup>>({});
     const timersRef = useRef<Record<string, number>>({});
+
+    // Variant Selector Modal state
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
     // Load products with database gallery from hybrid service
     useEffect(() => {
@@ -113,13 +118,58 @@ const Products: React.FC = () => {
         };
     }, []);
 
+    // Handle "Add to Cart" button click
     const handleAdd = (p: Product) => () => {
-        const status = addToCart(p);
+        const hasMultipleVariants = p.availableVariants && p.availableVariants.length > 1;
+
+        if (hasMultipleVariants) {
+            // Open modal for variant selection
+            setSelectedProduct(p);
+            setIsModalOpen(true);
+        } else {
+            // Direct add to cart for single variant products
+            const status = addToCart(p);
+            showPopup(p.variantId.toString(), status);
+        }
+    };
+
+    // Handle add to cart from modal (with selected variant and quantity)
+    const handleAddFromModal = (selectedVariant: ProductVariant, quantity: number) => {
+        if (!selectedProduct) return;
+
+        // Create a temporary product object with the selected variant data
+        const productWithVariant: Product = {
+            ...selectedProduct,
+            variantId: selectedVariant.variantId,
+            variantName: selectedVariant.variantName,
+            sku: selectedVariant.sku,
+            priceWithVat: selectedVariant.priceWithVat,
+            priceWithoutVat: selectedVariant.priceWithoutVat,
+            currency: selectedVariant.currency,
+            variantType: selectedVariant.variantType,
+            stockQuantity: selectedVariant.stockQuantity,
+            availabilityStatus: selectedVariant.availabilityStatus
+        };
+
+        // Add to cart multiple times for quantity
+        let overallStatus: 'added' | 'limit' | 'out_of_stock' | 'discontinued' | 'pre_order' = 'added';
+        for (let i = 0; i < quantity; i++) {
+            const status = addToCart(productWithVariant);
+            if (status !== 'added') {
+                overallStatus = status;
+                break;
+            }
+        }
+
+        showPopup(selectedVariant.variantId.toString(), overallStatus);
+    };
+
+    // Show popup notification
+    const showPopup = (key: string, status: 'added' | 'limit' | 'out_of_stock' | 'discontinued' | 'pre_order') => {
         const isLimit = status === 'limit';
         const message = isLimit ? t('cart.add_limit') : t('cart.add_success');
         const variant: Popup['variant'] = isLimit ? 'warning' : 'success';
 
-        const key = p.variantId.toString();
         setPopups(prev => ({...prev, [key]: {visible: true, message, variant}}));
 
         const existing = timersRef.current[key];
@@ -313,14 +363,29 @@ const Products: React.FC = () => {
                           </span>
                                                 ) : (
                                                     <span className="add-to-cart-text">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                 strokeWidth="2">
-                              <circle cx="8" cy="21" r="1"></circle>
-                              <circle cx="19" cy="21" r="1"></circle>
-                              <path
-                                  d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57L20.6 7H6"></path>
-                            </svg>
-                            {t('cart.add_to_cart')}
+                            {p.availableVariants && p.availableVariants.length > 1 ? (
+                                <>
+                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                       strokeWidth="2">
+                                    <rect x="3" y="3" width="7" height="7"></rect>
+                                    <rect x="14" y="3" width="7" height="7"></rect>
+                                    <rect x="14" y="14" width="7" height="7"></rect>
+                                    <rect x="3" y="14" width="7" height="7"></rect>
+                                  </svg>
+                                  Select Options
+                                </>
+                            ) : (
+                                <>
+                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                       strokeWidth="2">
+                                    <circle cx="8" cy="21" r="1"></circle>
+                                    <circle cx="19" cy="21" r="1"></circle>
+                                    <path
+                                        d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57L20.6 7H6"></path>
+                                  </svg>
+                                  {t('cart.add_to_cart')}
+                                </>
+                            )}
                           </span>
                                                 )}
                                             </button>
@@ -346,12 +411,22 @@ const Products: React.FC = () => {
             {/* Floating Products Cassandra */}
             <div className="products-floating-mascot">
                 <OptimizedImage
-                    src="/cassandra/Products-Cass.png" 
+                    src="/cassandra/Products-Cass.png"
                     alt="Cassandra - váš sprievodca produktmi"
                     className="floating-mascot-image-products"
                     priority={true} // Mascot je vždy viditeľný, má prioritu
                 />
             </div>
+
+            {/* Variant Selector Modal */}
+            {selectedProduct && (
+                <VariantSelectorModal
+                    product={selectedProduct}
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    onAddToCart={handleAddFromModal}
+                />
+            )}
         </div>
     );
 };
