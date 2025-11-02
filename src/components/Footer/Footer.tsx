@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './Footer.css';
 import logoImg from '../../assets/logo/logo.png';
-import paypalImg from '../../assets/logo/paypal.png';
+import stripeImg from '../../assets/logo/stripe.png';
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
@@ -77,8 +77,8 @@ const Footer: React.FC = () => {
           <div className="payment-methods" aria-label="Accepted payment methods">
             <span className="payment-label">Akceptujeme:</span>
             <div className="payment-logos">
-              <div className="payment-logo" title="PayPal">
-                <img src={paypalImg} alt="PayPal" className="payment-logo-img" />
+              <div className="payment-logo" title="Stripe">
+                <img src={stripeImg} alt="Stripe" className="payment-logo-img" />
               </div>
             </div>
           </div>

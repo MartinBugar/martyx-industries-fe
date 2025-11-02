@@ -503,3 +503,27 @@ select:-webkit-autofill {
 * {
     -webkit-tap-highlight-color: transparent;
 }
+
+/* Prevent text selection cursor on UI elements */
+body, button, a, label, h1, h2, h3, h4, h5, h6,
+.btn, .primary-btn, .secondary-btn, .add-to-cart-btn,
+.product-card-title, .product-card-price, .product-title, .product-price,
+nav, header, footer, .navbar, .footer {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Allow text selection only where needed */
+input, textarea,
+.product-card-description, .product-description,
+.testimonial-content,
+article p,
+.content-area,
+pre, code {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+}
