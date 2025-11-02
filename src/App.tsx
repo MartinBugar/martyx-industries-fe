@@ -212,6 +212,7 @@ const MainContent = React.memo(() => {
             <Route path="/api/auth/reset-password" element={<ResetPasswordRedirect />} />
             <Route path="/confirm-email" element={<EmailConfirmation />} />
             <Route path="/wishlist" element={<Wishlist />} />
+            <Route path="/cart" element={<CartPage />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/stripe/success" element={<StripeSuccess />} />
             <Route path="/payment/cancelled" element={<StripeCancel />} />

@@ -1,0 +1,441 @@
+/* PWA Installation Component */
+/* Color scheme:
+   - Accent: #ffcc00
+   - Background: #0a0a0a
+   - Card BG: #1a1a1a
+   - Border: #333
+   - Text: #ffffff
+   - Text Muted: #999
+*/
+
+.pwa-install-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+/* Header */
+.pwa-header {
+    margin-bottom: 1.5rem;
+}
+
+.pwa-header-title {
+    font-size: 1.5rem;
+    color: #ffffff;
+    margin: 0 0 0.5rem 0;
+    font-weight: 700;
+}
+
+.pwa-header-description {
+    color: #999;
+    font-size: 0.875rem;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Main Card */
+.pwa-card {
+    background: #1a1a1a;
+    border-radius: 16px;
+    border: 1px solid #333;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+    padding: 2rem;
+}
+
+/* Status Container */
+.pwa-status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+}
+
+.pwa-status-icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+    transition: all 0.2s ease;
+}
+
+.pwa-status-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+    width: 100%;
+}
+
+.pwa-status-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.pwa-status-description {
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    margin: 0;
+    max-width: 600px;
+}
+
+/* PWA Installed State */
+.pwa-installed {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(5, 150, 105, 0.08) 100%);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.pwa-installed .pwa-status-icon {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(5, 150, 105, 0.15) 100%);
+    color: #10b981;
+}
+
+.pwa-installed .pwa-status-title {
+    color: #10b981;
+}
+
+.pwa-installed .pwa-status-description {
+    color: #6ee7b7;
+}
+
+/* PWA Available State */
+.pwa-available {
+    background: linear-gradient(135deg, rgba(255, 204, 0, 0.08) 0%, rgba(230, 184, 0, 0.08) 100%);
+    border: 1px solid rgba(255, 204, 0, 0.2);
+}
+
+.pwa-available .pwa-status-icon {
+    background: linear-gradient(135deg, rgba(255, 204, 0, 0.15) 0%, rgba(230, 184, 0, 0.15) 100%);
+    color: #ffcc00;
+}
+
+.pwa-available .pwa-status-title {
+    color: #ffcc00;
+}
+
+.pwa-available .pwa-status-description {
+    color: #e6b800;
+}
+
+/* PWA Not Available State */
+.pwa-not-available {
+    background: rgba(100, 100, 100, 0.08);
+    border: 1px solid rgba(100, 100, 100, 0.2);
+}
+
+.pwa-not-available .pwa-status-icon {
+    background: rgba(100, 100, 100, 0.15);
+    color: #999;
+}
+
+.pwa-not-available .pwa-status-title {
+    color: #999;
+}
+
+.pwa-not-available .pwa-status-description {
+    color: #666;
+}
+
+/* Benefits List */
+.pwa-benefits-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 400px;
+    margin-top: 0.5rem;
+}
+
+.pwa-benefit {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.pwa-installed .pwa-benefit {
+    background: rgba(16, 185, 129, 0.1);
+}
+
+.pwa-available .pwa-benefit {
+    background: rgba(255, 204, 0, 0.1);
+}
+
+.pwa-benefit-icon {
+    flex-shrink: 0;
+}
+
+.pwa-installed .pwa-benefit-icon {
+    color: #10b981;
+}
+
+.pwa-available .pwa-benefit-icon {
+    color: #ffcc00;
+}
+
+.pwa-benefit span {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #ffffff;
+}
+
+/* Install Button */
+.pwa-install-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 300px;
+    margin-top: 1rem;
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, #ffcc00 0%, #e6b800 100%);
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #0a0a0a;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(255, 204, 0, 0.3);
+}
+
+.pwa-install-button:hover:not(:disabled) {
+    background: linear-gradient(135deg, #e6b800 0%, #d4a600 100%);
+    box-shadow: 0 6px 16px rgba(255, 204, 0, 0.4);
+    transform: translateY(-2px);
+}
+
+.pwa-install-button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.pwa-install-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Button Spinner */
+.pwa-button-spinner {
+    animation: spin 1s linear infinite;
+}
+
+.spinner-circle {
+    stroke: currentColor;
+    stroke-dasharray: 50;
+    stroke-dashoffset: 25;
+    stroke-linecap: round;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Help Text */
+.pwa-help-text {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    text-align: left;
+}
+
+.pwa-help-text p {
+    font-size: 0.875rem;
+    color: #999;
+    margin: 0 0 0.5rem 0;
+}
+
+.pwa-help-text strong {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.pwa-help-text ul {
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0;
+}
+
+.pwa-help-text li {
+    font-size: 0.8125rem;
+    color: #999;
+    padding-left: 1.25rem;
+    position: relative;
+    line-height: 1.6;
+    margin-bottom: 0.375rem;
+}
+
+.pwa-help-text li::before {
+    content: "•";
+    position: absolute;
+    left: 0.375rem;
+    color: #666;
+    font-weight: bold;
+}
+
+/* Info Section */
+.pwa-info-section {
+    background: #1a1a1a;
+    border-radius: 12px;
+    border: 1px solid #333;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.pwa-info-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 0.75rem 0;
+}
+
+.pwa-info-description {
+    font-size: 0.875rem;
+    color: #999;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .pwa-install-container {
+        padding: 0;
+    }
+
+    .pwa-header {
+        margin-bottom: 1.25rem;
+    }
+
+    .pwa-header-title {
+        font-size: 1.375rem;
+    }
+
+    .pwa-header-description {
+        font-size: 0.8125rem;
+    }
+
+    .pwa-card {
+        padding: 1.5rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .pwa-status {
+        padding: 1.25rem;
+        gap: 1.25rem;
+    }
+
+    .pwa-status-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 16px;
+    }
+
+    .pwa-status-title {
+        font-size: 1.125rem;
+    }
+
+    .pwa-status-description {
+        font-size: 0.875rem;
+    }
+
+    .pwa-benefits-list {
+        max-width: 100%;
+    }
+
+    .pwa-install-button {
+        max-width: 100%;
+        padding: 0.875rem 1.25rem;
+        font-size: 0.9375rem;
+    }
+
+    .pwa-info-section {
+        padding: 1.25rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .pwa-info-title {
+        font-size: 1rem;
+    }
+
+    .pwa-info-description {
+        font-size: 0.8125rem;
+    }
+}
+
+@media (max-width: 430px) {
+    .pwa-header-title {
+        font-size: 1.25rem;
+    }
+
+    .pwa-header-description {
+        font-size: 0.8125rem;
+    }
+
+    .pwa-card {
+        padding: 1.25rem;
+    }
+
+    .pwa-status {
+        padding: 1rem;
+        gap: 1rem;
+    }
+
+    .pwa-status-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 14px;
+    }
+
+    .pwa-status-title {
+        font-size: 1rem;
+    }
+
+    .pwa-status-description {
+        font-size: 0.8125rem;
+    }
+
+    .pwa-benefit {
+        padding: 0.625rem 0.875rem;
+    }
+
+    .pwa-benefit span {
+        font-size: 0.8125rem;
+    }
+
+    .pwa-install-button {
+        padding: 1rem;
+        font-size: 0.875rem;
+    }
+
+    .pwa-info-section {
+        padding: 1rem;
+    }
+
+    .pwa-info-title {
+        font-size: 0.9375rem;
+    }
+
+    .pwa-info-description {
+        font-size: 0.8125rem;
+    }
+}

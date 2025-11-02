@@ -642,7 +642,7 @@
 
 /* Delete Warning Box */
 .delete-warning-box {
-    border-top: 1px solid #333;
+    border-bottom: 1px solid #333;
     background: rgba(220, 38, 38, 0.05);
     padding: 1rem 1.25rem;
 }
@@ -936,5 +936,320 @@
 
     .modal-actions .btn {
         width: 100%;
+    }
+}
+
+/* Profile Information Card */
+.profile-info-card {
+    background: #1a1a1a;
+    border-radius: 16px;
+    border: 1px solid #333;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    margin-bottom: 1.25rem;
+}
+
+.profile-card-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #333;
+}
+
+.profile-card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 0.5rem 0;
+}
+
+.profile-form {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.profile-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.profile-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.profile-input {
+    padding: 0.75rem 1rem;
+    border: 1px solid #333;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    color: #ffffff;
+    background: #0f0f0f;
+    transition: all 0.2s;
+}
+
+.profile-input:focus {
+    outline: none;
+    border-color: #ffcc00;
+    box-shadow: 0 0 0 3px rgba(255, 204, 0, 0.1);
+}
+
+.profile-input:disabled {
+    background: #0a0a0a;
+    color: #999;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.profile-hint {
+    font-size: 0.75rem;
+    color: #999;
+    margin: 0;
+}
+
+.profile-message {
+    padding: 0.875rem 1rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.profile-message.success {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.profile-message.error {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+@media (max-width: 768px) {
+    .profile-card-header {
+        padding: 1.25rem;
+    }
+
+    .profile-form {
+        padding: 1.25rem;
+        gap: 1.25rem;
+    }
+
+    .profile-card-title {
+        font-size: 1.125rem;
+    }
+}
+
+@media (max-width: 430px) {
+    .profile-card-header {
+        padding: 1rem;
+    }
+
+    .profile-form {
+        padding: 1rem;
+        gap: 1rem;
+    }
+
+    .profile-card-title {
+        font-size: 1rem;
+    }
+
+    .profile-label {
+        font-size: 0.8125rem;
+    }
+
+    .profile-input {
+        padding: 0.875rem;
+        font-size: 1rem;
+    }
+
+    .profile-hint {
+        font-size: 0.7rem;
+    }
+}
+
+/* PWA Installation Card */
+.pwa-card .profile-form {
+    gap: 0;
+}
+
+.pwa-status {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.pwa-status-icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+}
+
+.pwa-status-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+
+.pwa-status-title {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.pwa-status-description {
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    margin: 0;
+}
+
+/* PWA Installed State */
+.pwa-installed {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(5, 150, 105, 0.08) 100%);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.pwa-installed .pwa-status-icon {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(5, 150, 105, 0.15) 100%);
+    color: #10b981;
+}
+
+.pwa-installed .pwa-status-title {
+    color: #10b981;
+}
+
+.pwa-installed .pwa-status-description {
+    color: #6ee7b7;
+}
+
+/* PWA Available State */
+.pwa-available {
+    background: linear-gradient(135deg, rgba(255, 204, 0, 0.08) 0%, rgba(230, 184, 0, 0.08) 100%);
+    border: 1px solid rgba(255, 204, 0, 0.2);
+    flex-wrap: wrap;
+}
+
+.pwa-available .pwa-status-icon {
+    background: linear-gradient(135deg, rgba(255, 204, 0, 0.15) 0%, rgba(230, 184, 0, 0.15) 100%);
+    color: #ffcc00;
+}
+
+.pwa-available .pwa-status-title {
+    color: #ffcc00;
+}
+
+.pwa-available .pwa-status-description {
+    color: #e6b800;
+}
+
+.pwa-install-button {
+    width: 100%;
+    margin-top: 0.75rem;
+    padding: 0.75rem 1.25rem;
+    background: linear-gradient(135deg, #ffcc00 0%, #e6b800 100%);
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #0a0a0a;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(255, 204, 0, 0.2);
+}
+
+.pwa-install-button:hover:not(:disabled) {
+    background: linear-gradient(135deg, #e6b800 0%, #d4a600 100%);
+    box-shadow: 0 4px 12px rgba(255, 204, 0, 0.3);
+    transform: translateY(-1px);
+}
+
+.pwa-install-button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.pwa-install-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* PWA Not Available State */
+.pwa-not-available {
+    background: rgba(100, 100, 100, 0.08);
+    border: 1px solid rgba(100, 100, 100, 0.2);
+}
+
+.pwa-not-available .pwa-status-icon {
+    background: rgba(100, 100, 100, 0.15);
+    color: #999;
+}
+
+.pwa-not-available .pwa-status-title {
+    color: #999;
+}
+
+.pwa-not-available .pwa-status-description {
+    color: #666;
+}
+
+@media (max-width: 768px) {
+    .pwa-status {
+        padding: 0.875rem;
+    }
+
+    .pwa-status-icon {
+        width: 44px;
+        height: 44px;
+    }
+
+    .pwa-status-title {
+        font-size: 0.875rem;
+    }
+
+    .pwa-status-description {
+        font-size: 0.8125rem;
+    }
+
+    .pwa-install-button {
+        padding: 0.875rem 1.125rem;
+    }
+}
+
+@media (max-width: 430px) {
+    .pwa-status {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 1rem;
+    }
+
+    .pwa-status-icon {
+        width: 56px;
+        height: 56px;
+    }
+
+    .pwa-status-title {
+        font-size: 0.875rem;
+    }
+
+    .pwa-status-description {
+        font-size: 0.75rem;
+    }
+
+    .pwa-install-button {
+        padding: 1rem;
+        font-size: 0.875rem;
     }
 }

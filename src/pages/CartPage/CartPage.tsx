@@ -28,6 +28,15 @@ const CartPage: React.FC<CartPageProps> = ({
   // Shipping state - fetch real shipping costs from backend
   const [cheapestShipping, setCheapestShipping] = useState<number | null>(null);
   const [isLoadingShipping, setIsLoadingShipping] = useState(false);
+
+  // Discount code state
+  const [discountCode, setDiscountCode] = useState('');
+  const [appliedDiscount, setAppliedDiscount] = useState<{
+    code: string;
+    amount: number;
+    type: 'PERCENTAGE' | 'FIXED_AMOUNT' | 'FREE_SHIPPING';
+  } | null>(null);
+  const [discountError, setDiscountError] = useState('');
   
   const handleCheckout = () => {
     if (isModal && onCheckout) {
@@ -35,6 +44,49 @@ const CartPage: React.FC<CartPageProps> = ({
     } else {
       navigate('/checkout');
     }
+  };
+
+  const handleApplyDiscount = async () => {
+    if (!discountCode.trim()) {
+      setDiscountError(t('cart.discount_code_required', 'Please enter a discount code'));
+      return;
+    }
+
+    // TODO: Replace with actual API call to backend
+    // Mock discount validation for now
+    const mockDiscounts: Record<string, { type: 'PERCENTAGE' | 'FIXED_AMOUNT' | 'FREE_SHIPPING'; value: number }> = {
+      'SUMMER10': { type: 'PERCENTAGE', value: 10 },
+      'SAVE20': { type: 'FIXED_AMOUNT', value: 20 },
+      'FREESHIP': { type: 'FREE_SHIPPING', value: 0 },
+    };
+
+    const discount = mockDiscounts[discountCode.toUpperCase()];
+
+    if (discount) {
+      let discountAmount = 0;
+      if (discount.type === 'PERCENTAGE') {
+        discountAmount = (subtotal * discount.value) / 100;
+      } else if (discount.type === 'FIXED_AMOUNT') {
+        discountAmount = discount.value;
+      }
+
+      setAppliedDiscount({
+        code: discountCode.toUpperCase(),
+        amount: discountAmount,
+        type: discount.type,
+      });
+      setDiscountError('');
+      setDiscountCode('');
+    } else {
+      setDiscountError(t('cart.invalid_discount_code', 'Invalid discount code'));
+      setAppliedDiscount(null);
+    }
+  };
+
+  const handleRemoveDiscount = () => {
+    setAppliedDiscount(null);
+    setDiscountCode('');
+    setDiscountError('');
   };
 
   // Modal-specific functionality
@@ -126,9 +178,34 @@ const CartPage: React.FC<CartPageProps> = ({
   const hasPhysicalProducts = items.some(i => i.product.requiresShipping);
   // Use fetched shipping cost instead of hardcoded value
   // While loading, use null to show loading state; otherwise use fetched value or 0
-  const shipping = isLoadingShipping ? null : (cheapestShipping ?? 0);
-  const total = subtotal + (shipping ?? 0);
+  let shipping = isLoadingShipping ? null : (cheapestShipping ?? 0);
+
+  // Apply discount
+  const discountAmount = appliedDiscount?.amount ?? 0;
+  const subtotalAfterDiscount = Math.max(0, subtotal - discountAmount);
+
+  // Free shipping discount
+  if (appliedDiscount?.type === 'FREE_SHIPPING') {
+    shipping = 0;
+  }
+
+  // VAT calculation - use VAT rate from products (Slovak VAT is 23%)
+  // Get VAT rate from first product (assuming all products have same VAT rate)
+  const VAT_RATE = items.length > 0 ? (items[0].product.vatRate / 100) : 0.23;
+  const VAT_PERCENTAGE = Math.round(VAT_RATE * 100);
+
+  // Calculate subtotal without VAT and VAT amount
+  const subtotalWithoutVat = subtotalAfterDiscount / (1 + VAT_RATE);
+  const vatAmount = subtotalAfterDiscount - subtotalWithoutVat;
+
+  const total = subtotalAfterDiscount + (shipping ?? 0);
   const isEmpty = items.length === 0;
+
+  // Free shipping calculation
+  const FREE_SHIPPING_THRESHOLD = 50; // €50
+  const amountToFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal);
+  const freeShippingProgress = Math.min(100, (subtotal / FREE_SHIPPING_THRESHOLD) * 100);
+  const hasFreeShipping = subtotal >= FREE_SHIPPING_THRESHOLD || appliedDiscount?.type === 'FREE_SHIPPING';
 
   const onQty = (variantId: string, next: number, isDigital: boolean) => {
     if (next < 1) return removeFromCart(variantId);
@@ -215,11 +292,55 @@ const CartPage: React.FC<CartPageProps> = ({
                     <div className="item-details">
                       <div className="item-name">{item.product.name}</div>
 
-                      <div className="item-type" aria-label={isDigital ? t('cart.digital_product') : t('cart.physical_product')}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M5 12.5L10 17.5L20 6.5"/>
-                        </svg>
-                        {isDigital ? 'DIGITAL' : 'PHYSICAL'}
+                      {item.product.variantName && item.product.variantName !== item.product.name && (
+                        <div className="item-variant-name">{item.product.variantName}</div>
+                      )}
+
+                      {item.product.sku && (
+                        <div className="item-sku">SKU: {item.product.sku}</div>
+                      )}
+
+                      <div className="item-badges">
+                        <div className="item-type" aria-label={isDigital ? t('cart.digital_product') : t('cart.physical_product')}>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M5 12.5L10 17.5L20 6.5"/>
+                          </svg>
+                          {isDigital ? 'DIGITAL' : 'PHYSICAL'}
+                        </div>
+
+                        {/* Stock Availability Badge */}
+                        {item.product.availabilityStatus === 'IN_STOCK' && (
+                          <div className="stock-badge stock-in-stock">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <circle cx="12" cy="12" r="10"/>
+                              <path d="M9 12l2 2l4-4"/>
+                            </svg>
+                            {item.product.stockQuantity <= 10 && item.product.stockQuantity > 0
+                              ? `${t('cart.low_stock', 'Low stock')} (${item.product.stockQuantity} ${t('cart.left', 'left')})`
+                              : t('cart.in_stock', 'In Stock')}
+                          </div>
+                        )}
+
+                        {item.product.availabilityStatus === 'OUT_OF_STOCK' && (
+                          <div className="stock-badge stock-out-of-stock">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <circle cx="12" cy="12" r="10"/>
+                              <line x1="15" y1="9" x2="9" y2="15"/>
+                              <line x1="9" y1="9" x2="15" y2="15"/>
+                            </svg>
+                            {t('cart.out_of_stock', 'Out of Stock')}
+                          </div>
+                        )}
+
+                        {item.product.availabilityStatus === 'PRE_ORDER' && (
+                          <div className="stock-badge stock-pre-order">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <circle cx="12" cy="12" r="10"/>
+                              <path d="M12 6v6l4 2"/>
+                            </svg>
+                            {t('cart.pre_order', 'Pre-Order')}
+                          </div>
+                        )}
                       </div>
                     </div>
 
@@ -241,7 +362,8 @@ const CartPage: React.FC<CartPageProps> = ({
                       </div>
 
                       <div className="item-price">
-                        {formatPrice(item.product.priceWithVat * item.quantity, item.product.currency)}
+                        <div className="unit-price">{formatPrice(item.product.priceWithVat, item.product.currency)} × {item.quantity}</div>
+                        <div className="total-price">{formatPrice(item.product.priceWithVat * item.quantity, item.product.currency)}</div>
                       </div>
 
                       <button
@@ -257,21 +379,95 @@ const CartPage: React.FC<CartPageProps> = ({
                 );
               })}
 
-              <a className="continue-shopping" onClick={handleBackToShopping} href="#stay" aria-label={t('cart.continue_shopping')}>
+              <button className="continue-shopping" onClick={handleBackToShopping} aria-label={t('cart.continue_shopping')}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M19 12H5M5 12l7 7m-7-7l7-7"/>
                 </svg>
                 {t('cart.continue_shopping')}
-              </a>
+              </button>
             </section>
 
             {/* SUMMARY */}
             <aside className="order-summary" aria-label={t('order_summary.title')}>
               <h2 className="summary-title">{t('order_summary.title')}</h2>
 
+              {/* Free Shipping Progress Bar */}
+              {hasPhysicalProducts && !hasFreeShipping && (
+                <div className="free-shipping-banner">
+                  <div className="free-shipping-text">
+                    🚚 {t('cart.add_more_for_free_shipping', 'Add')} {formatPrice(amountToFreeShipping)} {t('cart.more_for_free_shipping', 'more for FREE shipping!')}
+                  </div>
+                  <div className="free-shipping-progress-bar">
+                    <div
+                      className="free-shipping-progress-fill"
+                      style={{ width: `${freeShippingProgress}%` }}
+                    />
+                  </div>
+                  <div className="free-shipping-percentage">{Math.round(freeShippingProgress)}%</div>
+                </div>
+              )}
+
+              {hasPhysicalProducts && hasFreeShipping && (
+                <div className="free-shipping-banner free-shipping-achieved">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M5 12.5L10 17.5L20 6.5"/>
+                  </svg>
+                  🎉 {t('cart.free_shipping_unlocked', 'You\'ve unlocked FREE shipping!')}
+                </div>
+              )}
+
+              {/* Discount Code Section */}
+              <div className="discount-section">
+                {appliedDiscount ? (
+                  <div className="applied-discount">
+                    <div className="discount-badge">
+                      🎉 {appliedDiscount.code} {t('cart.applied', 'Applied')}
+                    </div>
+                    <button
+                      className="remove-discount-btn"
+                      onClick={handleRemoveDiscount}
+                      aria-label={t('cart.remove_discount', 'Remove discount')}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ) : (
+                  <div className="discount-input-wrapper">
+                    <input
+                      type="text"
+                      className="discount-input"
+                      placeholder={t('cart.enter_discount_code', 'Enter discount code')}
+                      value={discountCode}
+                      onChange={(e) => setDiscountCode(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && handleApplyDiscount()}
+                    />
+                    <button
+                      className="apply-discount-btn"
+                      onClick={handleApplyDiscount}
+                      aria-label={t('cart.apply_discount', 'Apply discount')}
+                    >
+                      {t('cart.apply', 'Apply')}
+                    </button>
+                  </div>
+                )}
+                {discountError && <div className="discount-error">{discountError}</div>}
+              </div>
+
               <div className="summary-row">
                 <span>{t('order_summary.subtotal')} ({getTotalItems()} {t('cart.item_count', { count: getTotalItems() })})</span>
-                <span>{formatPrice(subtotal)}</span>
+                <span>{formatPrice(subtotal / (1 + VAT_RATE))}</span>
+              </div>
+
+              {appliedDiscount && appliedDiscount.type !== 'FREE_SHIPPING' && (
+                <div className="summary-row discount-row">
+                  <span>{t('order_summary.discount', 'Discount')} ({appliedDiscount.code})</span>
+                  <span className="discount-amount">-{formatPrice(discountAmount / (1 + VAT_RATE))}</span>
+                </div>
+              )}
+
+              <div className="summary-row">
+                <span>{t('order_summary.vat', 'VAT')} ({VAT_PERCENTAGE}%)</span>
+                <span>{formatPrice(vatAmount)}</span>
               </div>
 
               {hasPhysicalProducts ? (
@@ -304,6 +500,12 @@ const CartPage: React.FC<CartPageProps> = ({
                 <span>{formatPrice(total)}</span>
               </div>
 
+              {appliedDiscount && discountAmount > 0 && (
+                <div className="savings-message">
+                  🎉 {t('cart.you_saved', 'You saved')} {formatPrice(discountAmount)}!
+                </div>
+              )}
+
               {isModal && (
                 <button className="view-cart-btn" onClick={handleViewFullCart}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -328,6 +530,28 @@ const CartPage: React.FC<CartPageProps> = ({
                   <path d="M12 11V7a5 5 0 010-10"/>
                 </svg>
                 {t('cart.secure_payment')}
+              </div>
+
+              {/* Trust Badges */}
+              <div className="trust-badges">
+                <div className="trust-badges-title">{t('cart.we_accept', 'We accept:')}</div>
+                <div className="payment-methods">
+                  <div className="payment-badge" title="Stripe">
+                    <svg viewBox="0 0 60 40" width="60" height="40">
+                      <rect width="60" height="40" rx="6" fill="#635BFF"/>
+                      <text x="30" y="26" textAnchor="middle" fill="white" fontSize="16" fontWeight="600" fontFamily="system-ui, -apple-system, sans-serif">stripe</text>
+                    </svg>
+                  </div>
+                </div>
+                <div className="security-badges">
+                  <div className="security-badge">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2">
+                      <rect x="5" y="11" width="14" height="10" rx="2"/>
+                      <path d="M12 11V7a5 5 0 010-10"/>
+                    </svg>
+                    <span>{t('cart.ssl_encrypted', '256-bit SSL encrypted')}</span>
+                  </div>
+                </div>
               </div>
             </aside>
           </div>

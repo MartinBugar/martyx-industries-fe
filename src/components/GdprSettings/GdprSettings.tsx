@@ -8,7 +8,7 @@ import './GdprSettings.css';
  * Card-based layout for GDPR compliance actions
  */
 const GdprSettings: React.FC = () => {
-    const { logout } = useAuth();
+    const { logout, user } = useAuth();
     const [consentStatus, setConsentStatus] = useState<{
         gdpr: boolean;
         marketing: boolean;
@@ -19,6 +19,7 @@ const GdprSettings: React.FC = () => {
     const [success, setSuccess] = useState<string | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [confirmationEmail, setConfirmationEmail] = useState('');
+    const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
     // Load consent status on component mount
     useEffect(() => {
@@ -107,11 +108,6 @@ const GdprSettings: React.FC = () => {
 
     return (
         <div className="gdpr-settings">
-            <div className="settings-header">
-                <h2>GDPR a ochrana osobných údajov</h2>
-                <p>Spravujte vaše súhlasy a osobné údaje podľa GDPR legislatívy</p>
-            </div>
-
             {/* Error/Success Messages */}
             {error && (
                 <div className="alert alert-error" role="alert">
@@ -126,6 +122,33 @@ const GdprSettings: React.FC = () => {
                     <span>{success}</span>
                 </div>
             )}
+
+            {/* Personal Information Card */}
+            <div className="profile-info-card">
+                <div className="profile-card-header">
+                    <h2 className="profile-card-title">Osobné informácie</h2>
+                </div>
+
+                <div className="profile-form">
+                    <div className="profile-form-group">
+                        <label className="profile-label">Email</label>
+                        <input
+                            type="email"
+                            className="profile-input"
+                            value={user?.email || ''}
+                            disabled
+                            placeholder="email@example.com"
+                        />
+                        <p className="profile-hint">Email nie je možné zmeniť</p>
+                    </div>
+
+                    {message && (
+                        <div className={`profile-message ${message.type}`}>
+                            {message.text}
+                        </div>
+                    )}
+                </div>
+            </div>
 
             {/* Privacy & GDPR - Minimal Card */}
             <div className="gdpr-card-compact">
@@ -195,6 +218,27 @@ const GdprSettings: React.FC = () => {
 
             {/* Delete Account Card - Minimal Design */}
             <div className="delete-account-card">
+                {/* Warning Box */}
+                <div className="delete-warning-box">
+                    <div className="delete-warning-content">
+                        <svg className="delete-warning-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                        <div className="delete-warning-text">
+                            <h4 className="delete-warning-title">Toto je nevratná akcia</h4>
+                            <p className="delete-warning-description">
+                                Po zmazaní účtu nebudete môcť obnoviť žiadne dáta. Všetky vaše predplatné, platby a osobné informácie budú natrvalo odstránené.
+                            </p>
+                            <ul className="delete-warning-list">
+                                <li>30-dňová lehota na zrušenie žiadosti</li>
+                                <li>Aktívne predplatné bude automaticky zrušené</li>
+                                <li>Faktúry budú anonymizované (zachované pre účtovné účely)</li>
+                                <li>Email s potvrdením bude odoslaný</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
                 <div className="delete-account-content">
                     <div className="delete-account-header">
                         <svg className="delete-account-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -215,27 +259,6 @@ const GdprSettings: React.FC = () => {
                     >
                         <span>Zmazať účet</span>
                     </button>
-                </div>
-
-                {/* Warning Box */}
-                <div className="delete-warning-box">
-                    <div className="delete-warning-content">
-                        <svg className="delete-warning-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                        </svg>
-                        <div className="delete-warning-text">
-                            <h4 className="delete-warning-title">Toto je nevratná akcia</h4>
-                            <p className="delete-warning-description">
-                                Po zmazaní účtu nebudete môcť obnoviť žiadne dáta. Všetky vaše predplatné, platby a osobné informácie budú natrvalo odstránené.
-                            </p>
-                            <ul className="delete-warning-list">
-                                <li>30-dňová lehota na zrušenie žiadosti</li>
-                                <li>Aktívne predplatné bude automaticky zrušené</li>
-                                <li>Faktúry budú anonymizované (zachované pre účtovné účely)</li>
-                                <li>Email s potvrdením bude odoslaný</li>
-                            </ul>
-                        </div>
-                    </div>
                 </div>
             </div>
 
