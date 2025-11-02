@@ -82,17 +82,25 @@ export const handleResponse = async (response: Response) => {
 
     // Handle 401 Unauthorized responses (expired/invalid tokens)
     if (response.status === 401) {
-      console.log('Received 401 Unauthorized, clearing authentication data');
-      // Clear expired token and user data
-      localStorage.removeItem('user');
-      localStorage.removeItem('token');
-      localStorage.removeItem('adminAuthed');
-      // Remove authorization header
-      delete defaultHeaders['Authorization'];
-      // Dispatch logout event with api_error reason to distinguish from token expiration
-      window.dispatchEvent(new CustomEvent('auth:logout', {
-        detail: { reason: 'api_error' }
-      }));
+      // Don't auto-logout for GDPR consent status endpoint
+      // This endpoint is called on Settings page load and shouldn't trigger logout
+      const isGdprConsentStatus = response.url.includes('/api/gdpr/consent/status');
+
+      if (!isGdprConsentStatus) {
+        console.log('Received 401 Unauthorized, clearing authentication data');
+        // Clear expired token and user data
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+        localStorage.removeItem('adminAuthed');
+        // Remove authorization header
+        delete defaultHeaders['Authorization'];
+        // Dispatch logout event with api_error reason to distinguish from token expiration
+        window.dispatchEvent(new CustomEvent('auth:logout', {
+          detail: { reason: 'api_error' }
+        }));
+      } else {
+        console.warn('GDPR consent status request returned 401 - token may be invalid or expired');
+      }
     }
 
     // Throw error with unified contract data

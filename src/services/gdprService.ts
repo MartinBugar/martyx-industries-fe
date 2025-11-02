@@ -3,12 +3,11 @@ import { API_BASE_URL, defaultHeaders, handleResponse } from './apiUtils';
 
 /**
  * Get auth headers with JWT token
+ * Uses defaultHeaders from apiUtils which already handles token parsing correctly
  */
 const getAuthHeaders = (): HeadersInit => {
-    const token = localStorage.getItem('token');
     return {
         ...defaultHeaders,
-        'Authorization': token ? `Bearer ${token}` : '',
     } as HeadersInit;
 };
 
