@@ -86,6 +86,9 @@
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease;
+  font-size: 20px;
+  font-weight: 300;
+  line-height: 1;
 }
 
 .variant-modal-close:hover {
@@ -260,6 +263,9 @@
   cursor: pointer;
   transition: all 0.2s ease;
   flex-shrink: 0;
+  font-size: 20px;
+  font-weight: 300;
+  line-height: 1;
 }
 
 .quantity-btn:hover:not(:disabled) {
@@ -362,6 +368,21 @@
   justify-content: center;
   gap: 0.5rem;
   border: none;
+}
+
+.variant-modal-btn svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+.variant-modal-btn svg path,
+.variant-modal-btn svg circle {
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
 }
 
 .variant-modal-btn-secondary {
