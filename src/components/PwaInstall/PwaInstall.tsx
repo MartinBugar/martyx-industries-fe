@@ -17,7 +17,33 @@ const PwaInstall: React.FC = () => {
         if (window.matchMedia('(display-mode: standalone)').matches) {
             setIsInstalled(true);
             setIsPWACapable(true);
+            return; // No need to continue if already installed
         }
+
+        // Check if PWA is capable by checking for service worker and manifest support
+        const checkPWACapability = async () => {
+            // Check if browser supports service workers
+            const supportsServiceWorker = 'serviceWorker' in navigator;
+
+            // Check if manifest exists and is valid
+            let hasValidManifest = false;
+            try {
+                const manifestLink = document.querySelector('link[rel="manifest"]');
+                if (manifestLink) {
+                    hasValidManifest = true;
+                }
+            } catch (error) {
+                console.error('Error checking manifest:', error);
+            }
+
+            // If browser supports PWA features, mark as capable
+            if (supportsServiceWorker && hasValidManifest) {
+                setIsPWACapable(true);
+            }
+        };
+
+        // Run capability check
+        checkPWACapability();
 
         // Listen for beforeinstallprompt event
         const handleBeforeInstallPrompt = (e: Event) => {
@@ -170,25 +196,25 @@ const PwaInstall: React.FC = () => {
                             </div>
                         </div>
                     ) : (
-                        <div className="pwa-status pwa-not-available">
+                        <div className="pwa-status pwa-manual-install">
                             <div className="pwa-status-icon">
                                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="48" height="48">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                             </div>
                             <div className="pwa-status-content">
-                                <h3 className="pwa-status-title">PWA nie je k dispozícii</h3>
+                                <h3 className="pwa-status-title">Aplikácia je dostupná na inštaláciu</h3>
                                 <p className="pwa-status-description">
-                                    Inštalácia aplikácie nie je momentálne dostupná vo vašom prehliadači alebo zariadení.
+                                    Aplikáciu môžete nainštalovať manuálne z ponuky prehliadača.
                                 </p>
                                 <div className="pwa-help-text">
-                                    <p><strong>Možné príčiny:</strong></p>
+                                    <p><strong>Ako nainštalovať:</strong></p>
                                     <ul>
-                                        <li>Používate prehliadač, ktorý nepodporuje PWA</li>
-                                        <li>Aplikácia je už nainštalovaná v inom prehliadači</li>
-                                        <li>Zariadenie nepodporuje inštaláciu webových aplikácií</li>
+                                        <li><strong>Chrome/Edge:</strong> Kliknite na ikonu inštalácie (⊕) v adresnom riadku alebo v ponuke (⋮) vyberte "Nainštalovať aplikáciu"</li>
+                                        <li><strong>Safari (iOS):</strong> Kliknite na ikonu zdieľania a vyberte "Pridať na plochu"</li>
+                                        <li><strong>Safari (macOS):</strong> V ponuke File vyberte "Add to Dock"</li>
                                     </ul>
-                                    <p><strong>Odporúčané prehliadače:</strong> Chrome, Edge, Safari (iOS)</p>
+                                    <p><strong>Výhody inštalácie:</strong> Rýchlejší prístup, offline režim, push notifikácie</p>
                                 </div>
                             </div>
                         </div>
