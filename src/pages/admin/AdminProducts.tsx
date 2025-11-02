@@ -502,11 +502,9 @@ const AdminProducts: React.FC = () => {
                         <div className="action-buttons">
                           <Link to={`/admin/products/${p.id}`} className="btn btn-outline btn-sm" title="View/Edit product">
                             <Eye size={14} />
-                            View
                           </Link>
                           <Button variant="danger" size="sm" onClick={() => handleDelete(p.id!)} title="Delete product">
                             <X size={14} />
-                            Delete
                           </Button>
                         </div>
                       </td>

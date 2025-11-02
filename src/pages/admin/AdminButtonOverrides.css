@@ -1,23 +1,43 @@
-/* Admin Action Buttons - Force Visibility */
+/* Action buttons container - ensure horizontal layout */
+.action-buttons {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  gap: 4px !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+}
 
-/* Target all buttons in action-buttons container - DESKTOP */
+/* Admin Action Buttons - Icon only, compact */
 .action-buttons .btn,
 .action-buttons a.btn,
 .action-buttons button {
-  padding: 6px 10px !important;
-  font-size: 12px !important;
+  padding: 7px !important;
   font-weight: 600 !important;
-  line-height: 1.2 !important;
+  line-height: 1 !important;
   min-height: 32px !important;
-  min-width: auto !important;
-  max-width: none !important;
-  width: auto !important;
+  min-width: 32px !important;
+  max-width: 32px !important;
+  width: 32px !important;
+  height: 32px !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 4px !important;
+  gap: 0 !important;
   white-space: nowrap !important;
   border-radius: 6px !important;
+  flex-shrink: 0 !important;
+}
+
+/* Hide text content but keep icons visible */
+.action-buttons .btn .btn-text,
+.action-buttons a.btn .btn-text,
+.action-buttons button .btn-text {
+  font-size: 0 !important;
+  line-height: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
 /* Outline variant - high contrast */
@@ -51,21 +71,13 @@
   color: #ffffff !important;
 }
 
-/* Text inside buttons - make sure it's visible */
-.action-buttons .btn .btn-text,
-.action-buttons a.btn .btn-text,
-.action-buttons button .btn-text {
-  color: inherit !important;
-  font-size: inherit !important;
-  font-weight: inherit !important;
-  display: inline !important;
-}
 
-/* Icon sizing */
+/* Icon sizing - larger for icon-only buttons */
 .action-buttons svg {
   width: 16px !important;
   height: 16px !important;
   flex-shrink: 0 !important;
+  margin: 0 !important;
 }
 
 /* Mobile: hide text, show only icons */

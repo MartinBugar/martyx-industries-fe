@@ -711,7 +711,6 @@ const AdminOrders: React.FC = () => {
                                                                     title={String(expandedId) === String(id) ? 'Hide details' : 'View details'}
                                                                 >
                                                                     <Eye size={14} />
-                                                                    {String(expandedId) === String(id) ? 'Hide' : 'View'}
                                                                 </Button>
                                                                 <Button
                                                                     variant="outline"
@@ -720,7 +719,6 @@ const AdminOrders: React.FC = () => {
                                                                     title="Edit order"
                                                                 >
                                                                     <Pencil size={14} />
-                                                                    Edit
                                                                 </Button>
                                                                 <Button
                                                                     variant="danger"
@@ -729,7 +727,6 @@ const AdminOrders: React.FC = () => {
                                                                     title="Delete order"
                                                                 >
                                                                     <X size={14} />
-                                                                    Delete
                                                                 </Button>
                                                             </div>
                                                         </td>

@@ -626,21 +626,17 @@ const AdminDiscounts: React.FC = () => {
                             <div className="action-buttons">
                               <Button variant="outline" size="sm" onClick={() => handleViewStats(d.id)} title="View Statistics">
                                 <BarChart3 size={14} />
-                                Stats
                               </Button>
                               <Button variant="outline" size="sm" onClick={() => handleEdit(d)} title="Edit discount">
                                 <Edit size={14} />
-                                Edit
                               </Button>
                               {d.is_active && !isExpired(d) && (
                                 <Button variant="outline" size="sm" onClick={() => handleDeactivate(d.id)} title="Deactivate">
                                   <XCircle size={14} />
-                                  Deactivate
                                 </Button>
                               )}
                               <Button variant="danger" size="sm" onClick={() => handleDelete(d.id)} title="Delete">
                                 <X size={14} />
-                                Delete
                               </Button>
                             </div>
                           </td>

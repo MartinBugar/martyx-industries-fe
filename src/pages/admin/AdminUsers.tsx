@@ -484,15 +484,12 @@ const AdminUsers: React.FC = () => {
                                 <>
                                   <Link to={`/admin/users/${user.id}`} className="btn btn-outline btn-sm" title="View user details">
                                     <Eye size={14} />
-                                    View
                                   </Link>
                                   <Button variant="outline" size="sm" onClick={() => startEdit(user)} title="Edit user">
                                     <Pencil size={14} />
-                                    Edit
                                   </Button>
                                   <Button variant="danger" size="sm" onClick={() => handleDelete(user.id)} title="Delete user">
                                     <X size={14} />
-                                    Delete
                                   </Button>
                                 </>
                               )}
