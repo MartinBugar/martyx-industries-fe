@@ -1,24 +1,25 @@
 /**
- * ForgotPassword komponent - Optimalizovaná verzia
+ * ForgotPassword komponent - Refactored with react-hook-form + zod
  * Používa zdieľané komponenty a utility funkcie pre lepšiu údržbu kódu
  */
 
 import React, { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '../../context/useAuth';
+import { forgotPasswordSchema, type ForgotPasswordFormData } from '../../schemas/formSchemas';
 import './ForgotPassword.css';
 
 // Zdieľané komponenty a utility
 import {
   AuthContainer,
   AuthHeader,
-  FormField,
   ErrorMessage,
   SuccessMessage,
   SubmitButton,
   EmailIcon
 } from '../shared/FormComponents';
-import { useAuthForm } from '../../hooks/useAuthForm';
 
 // ===== HLAVNÝ KOMPONENT =====
 
@@ -28,29 +29,43 @@ import { useAuthForm } from '../../hooks/useAuthForm';
  */
 const ForgotPassword: React.FC = () => {
   const { forgotPassword } = useAuth();
-  
+
   // Lokálny stav pre špecifické forgot password funkcie
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [generalError, setGeneralError] = useState<string | null>(null);
+
+  // React Hook Form setup with zod validation
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset
+  } = useForm<ForgotPasswordFormData>({
+    resolver: zodResolver(forgotPasswordSchema),
+    mode: 'onBlur',
+    defaultValues: {
+      email: ''
+    }
+  });
 
   /**
    * Spracovanie požiadavky na obnovenie hesla
    * Optimalizované s async/await a proper error handling
    */
-  const handleForgotPasswordSubmit = useCallback(async (formData: { email: string }) => {
+  const handleForgotPasswordSubmit = useCallback(async (formData: ForgotPasswordFormData) => {
     setGeneralError(null);
-    
+
     try {
       const result = await forgotPassword(formData.email);
-      
+
       if (result.success) {
         // Úspešné odoslanie - zobrazenie potvrdzovacej správy
-        setSuccessMessage(result.message || 
+        setSuccessMessage(result.message ||
           'Email s pokynmi na obnovenie hesla bol odoslaný. Skontrolujte svoj email.'
         );
-        
+
         // Vyčistenie formulára po úspešnom odoslaní
-        resetForm();
+        reset();
       } else {
         setGeneralError(result.message || 'Nepodarilo sa odoslať email. Skúste to znovu.');
       }
@@ -58,20 +73,7 @@ const ForgotPassword: React.FC = () => {
       setGeneralError('Nastala chyba. Skúste to znovu.');
       console.error('Forgot password error:', error);
     }
-  }, [forgotPassword]);
-
-  // Používanie custom hook pre správu formulára
-  const {
-    data,
-    handleInputChange,
-    handleSubmit,
-    isProcessing,
-    resetForm
-  } = useAuthForm({
-    formType: 'forgot-password',
-    onSubmit: handleForgotPasswordSubmit,
-    enableRealTimeValidation: true
-  });
+  }, [forgotPassword, reset]);
 
   /**
    * Ikona pre reset hesla (zámok)
@@ -123,24 +125,28 @@ const ForgotPassword: React.FC = () => {
       )}
       
       {/* Forgot password formulár */}
-      <form className="modern-forgot-form" onSubmit={handleSubmit}>
-        <FormField
-          label="Emailová adresa"
-          id="email"
-          name="email"
-          type="email"
-          value={data.email}
-          onChange={handleInputChange}
-          placeholder="Zadajte váš email"
-          required
-          autoComplete="email"
-          inputMode="email"
-          icon={<EmailIcon />}
-        />
-        
+      <form className="modern-forgot-form" onSubmit={handleSubmit(handleForgotPasswordSubmit)}>
+        <div className="form-group">
+          <label htmlFor="email" className="form-label">
+            <EmailIcon />
+            Emailová adresa
+          </label>
+          <input
+            type="email"
+            id="email"
+            placeholder="Zadajte váš email"
+            className={`form-input ${errors.email ? 'error' : ''}`}
+            autoComplete="email"
+            {...register('email')}
+          />
+          {errors.email && (
+            <span className="field-error">{errors.email.message}</span>
+          )}
+        </div>
+
         {/* Submit tlačidlo */}
         <SubmitButton
-          isLoading={isProcessing}
+          isLoading={isSubmitting}
           loadingText="Odosielam..."
           defaultText="Odoslať pokyny"
           className="forgot-submit-btn"

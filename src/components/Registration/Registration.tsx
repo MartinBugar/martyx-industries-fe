@@ -229,7 +229,7 @@ const Registration: React.FC = () => {
                     )}
 
                     {/* Nový registračný formulár */}
-                    <form className="registration-form" onSubmit={handleSubmit}>
+                    <form className="registration-form" onSubmit={handleSubmit(handleRegistrationSubmit)}>
                         <div className="form-group">
                             <label htmlFor="email" className="form-label">
                                 <EmailIcon size={18} />
@@ -238,14 +238,14 @@ const Registration: React.FC = () => {
                             <input
                                 type="email"
                                 id="email"
-                                name="email"
-                                value={data.email}
-                                onChange={handleInputChange}
                                 placeholder="Zadajte váš email"
-                                className="form-input"
-                                required
+                                className={`form-input ${errors.email ? 'error' : ''}`}
                                 autoComplete="email"
+                                {...register('email')}
                             />
+                            {errors.email && (
+                                <span className="field-error">{errors.email.message}</span>
+                            )}
                         </div>
 
                         <div className="form-group">
@@ -257,14 +257,10 @@ const Registration: React.FC = () => {
                                 <input
                                     type={showPassword ? 'text' : 'password'}
                                     id="password"
-                                    name="password"
-                                    value={data.password}
-                                    onChange={handleInputChange}
                                     placeholder="Zadajte heslo (min. 6 znakov)"
-                                    className="form-input"
-                                    required
-                                    minLength={6}
+                                    className={`form-input ${errors.password ? 'error' : ''}`}
                                     autoComplete="new-password"
+                                    {...register('password')}
                                 />
                                 <button
                                     type="button"
@@ -275,6 +271,9 @@ const Registration: React.FC = () => {
                                     {showPassword ? <EyeOffIcon size={18} /> : <EyeIcon size={18} />}
                                 </button>
                             </div>
+                            {errors.password && (
+                                <span className="field-error">{errors.password.message}</span>
+                            )}
                         </div>
 
                         <div className="form-group">
@@ -286,13 +285,10 @@ const Registration: React.FC = () => {
                                 <input
                                     type={showConfirmPassword ? 'text' : 'password'}
                                     id="confirmPassword"
-                                    name="confirmPassword"
-                                    value={data.confirmPassword || ''}
-                                    onChange={handleInputChange}
                                     placeholder="Potvrďte vaše heslo"
-                                    className="form-input"
-                                    required
+                                    className={`form-input ${errors.confirmPassword ? 'error' : ''}`}
                                     autoComplete="new-password"
+                                    {...register('confirmPassword')}
                                 />
                                 <button
                                     type="button"
@@ -303,6 +299,9 @@ const Registration: React.FC = () => {
                                     {showConfirmPassword ? <EyeOffIcon size={18} /> : <EyeIcon size={18} />}
                                 </button>
                             </div>
+                            {errors.confirmPassword && (
+                                <span className="field-error">{errors.confirmPassword.message}</span>
+                            )}
                         </div>
 
                         {/* GDPR Consent Checkbox - POVINNÝ */}
@@ -311,19 +310,16 @@ const Registration: React.FC = () => {
                                 <input
                                     type="checkbox"
                                     id="gdpr-consent"
-                                    name="gdprConsent"
-                                    checked={gdprConsent}
-                                    onChange={(e) => handleGdprConsentChange(e.target.checked)}
                                     className="checkbox-input"
-                                    required
-                                    aria-required="true"
-                                    aria-invalid={gdprValidationError}
-                                    aria-describedby={gdprValidationError ? "registration-error" : undefined}
+                                    {...register('gdprConsent')}
                                 />
                                 <span className="checkbox-text">
                                     Súhlasím so <Link to="/privacy-policy" target="_blank" className="link-inline" rel="noopener noreferrer">spracovaním osobných údajov</Link> a <Link to="/terms-of-service" target="_blank" className="link-inline" rel="noopener noreferrer">obchodnými podmienkami</Link> *
                                 </span>
                             </label>
+                            {errors.gdprConsent && (
+                                <span className="field-error">{errors.gdprConsent.message}</span>
+                            )}
                         </div>
 
                         {/* Marketing Consent Checkbox - VOLITEĽNÝ */}
@@ -332,11 +328,8 @@ const Registration: React.FC = () => {
                                 <input
                                     type="checkbox"
                                     id="marketing-consent"
-                                    name="marketingConsent"
-                                    checked={marketingConsent}
-                                    onChange={(e) => setMarketingConsent(e.target.checked)}
                                     className="checkbox-input"
-                                    aria-required="false"
+                                    {...register('marketingConsent')}
                                 />
                                 <span className="checkbox-text">
                                     Chcem dostávať novinky, špeciálne ponuky a marketingové materiály
@@ -348,9 +341,9 @@ const Registration: React.FC = () => {
                         <button
                             type="submit"
                             className="form-submit-btn"
-                            disabled={isProcessing}
+                            disabled={isSubmitting}
                         >
-                            {isProcessing ? (
+                            {isSubmitting ? (
                                 <>
                                     <div className="btn-spinner"></div>
                                     {t('register.loading')}

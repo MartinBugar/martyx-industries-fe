@@ -6,31 +6,31 @@
 /* ===== CSS CUSTOM PROPERTIES ===== */
 :root {
   /* Registration Layout */
-  --registration-max-width: 1200px;
-  --registration-padding: 3rem;
-  --registration-gap: 4rem;
-  
+  --registration-max-width: 900px;
+  --registration-padding: 2rem;
+  --registration-gap: 2rem;
+
   /* Form Design */
-  --form-width: 520px;
-  --form-padding: 2.5rem;
-  --form-border-radius: 20px;
-  --form-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  
+  --form-width: 380px;
+  --form-padding: 1.5rem;
+  --form-border-radius: 12px;
+  --form-shadow: 0 10px 30px -8px rgba(0, 0, 0, 0.2);
+
   /* Input Fields */
-  --input-height: 52px;
-  --input-padding: 0 1rem 0 3rem;
-  --input-border-radius: 12px;
+  --input-height: 42px;
+  --input-padding: 0 0.75rem 0 2.5rem;
+  --input-border-radius: 8px;
   --input-border: 1px solid rgba(255, 255, 255, 0.1);
   --input-focus-border: 1px solid var(--accent);
   --input-bg: rgba(255, 255, 255, 0.05);
   --input-focus-bg: rgba(255, 255, 255, 0.08);
-  
+
   /* Button Design */
-  --btn-height: 52px;
-  --btn-border-radius: 12px;
+  --btn-height: 42px;
+  --btn-border-radius: 8px;
   --btn-gradient: linear-gradient(135deg, var(--accent) 0%, #e6b82d 100%);
-  --btn-shadow: 0 8px 25px rgba(246, 200, 69, 0.3);
-  --btn-hover-shadow: 0 12px 35px rgba(246, 200, 69, 0.4);
+  --btn-shadow: 0 4px 12px rgba(246, 200, 69, 0.25);
+  --btn-hover-shadow: 0 6px 18px rgba(246, 200, 69, 0.35);
   
   /* Animations */
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -70,10 +70,10 @@
 
 .mascot-image-register {
   width: 100%;
-  max-width: 450px;
+  max-width: 320px;
   height: auto;
   object-fit: contain;
-  filter: drop-shadow(0 20px 40px rgba(246, 200, 69, 0.15));
+  filter: drop-shadow(0 10px 20px rgba(246, 200, 69, 0.12));
 }
 
 
@@ -104,65 +104,45 @@
 /* ===== FORM HEADER ===== */
 .form-header {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.25rem;
 }
 
 .form-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 64px;
-  height: 64px;
-  background: var(--btn-gradient);
-  border-radius: 16px;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 8px 25px rgba(246, 200, 69, 0.3);
-  color: #0B0F14;
-  transition: var(--transition);
-}
-
-.form-icon.success {
-  background: linear-gradient(135deg, var(--accent) 0%, #e6b82d 100%);
-  box-shadow: 0 8px 25px rgba(246, 200, 69, 0.3);
-}
-
-.form-icon:hover {
-  transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 12px 35px rgba(246, 200, 69, 0.4);
+  display: none;
 }
 
 .form-title {
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: var(--text-primary);
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.35rem 0;
   line-height: 1.2;
 }
 
 .form-subtitle {
   color: var(--text-muted);
-  font-size: 1rem;
+  font-size: 0.875rem;
   margin: 0;
-  line-height: 1.5;
+  line-height: 1.4;
 }
 
 /* ===== FORM ERROR ===== */
 .form-error {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 1rem 1.25rem;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
   background: rgba(239, 68, 68, 0.1);
   border: 1px solid rgba(239, 68, 68, 0.2);
-  border-radius: 12px;
+  border-radius: 8px;
   color: #ef4444;
-  margin-bottom: 1.5rem;
-  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
 }
 
 .form-error svg {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   flex-shrink: 0;
 }
 
@@ -170,28 +150,28 @@
 .registration-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 0.875rem;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.35rem;
 }
 
 .form-label {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.9rem;
+  gap: 0.4rem;
+  font-size: 0.8125rem;
   font-weight: 600;
   color: var(--text-primary);
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.15rem;
 }
 
 .form-label svg {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   color: var(--accent);
 }
 
@@ -203,7 +183,7 @@
   border: var(--input-border);
   border-radius: var(--input-border-radius);
   color: var(--text-primary);
-  font-size: 1rem;
+  font-size: 0.875rem;
   transition: var(--transition);
   outline: none;
 }
@@ -211,12 +191,13 @@
 .form-input::placeholder {
   color: var(--text-muted);
   opacity: 0.7;
+  font-size: 0.8125rem;
 }
 
 .form-input:focus {
   border: var(--input-focus-border);
   background: var(--input-focus-bg);
-  box-shadow: 0 0 0 3px rgba(246, 200, 69, 0.1);
+  box-shadow: 0 0 0 2px rgba(246, 200, 69, 0.1);
   transform: translateY(-1px);
 }
 
@@ -228,18 +209,18 @@
 }
 
 .input-with-toggle .form-input {
-  padding-right: 3rem;
+  padding-right: 2.5rem;
 }
 
 .password-toggle-btn {
   position: absolute;
-  right: 1rem;
+  right: 0.75rem;
   background: none;
   border: none;
   color: var(--text-muted);
   cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 8px;
+  padding: 0.35rem;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -259,21 +240,21 @@
 
 /* ===== CHECKBOX GROUP ===== */
 .checkbox-group {
-  margin: 0.75rem 0;
+  margin: 0.5rem 0;
 }
 
 .checkbox-label {
   display: flex;
   align-items: flex-start;
-  gap: 0.75rem;
+  gap: 0.5rem;
   cursor: pointer;
   user-select: none;
 }
 
 .checkbox-input {
   flex-shrink: 0;
-  width: 20px;
-  height: 20px;
+  width: 17px;
+  height: 17px;
   margin-top: 2px;
   cursor: pointer;
   accent-color: var(--accent);
@@ -288,8 +269,8 @@
 .checkbox-text {
   flex: 1;
   color: var(--text-muted);
-  font-size: 0.9rem;
-  line-height: 1.5;
+  font-size: 0.8125rem;
+  line-height: 1.4;
 }
 
 .checkbox-text .link-inline {
@@ -312,14 +293,14 @@
   color: #0B0F14;
   border: none;
   border-radius: var(--btn-border-radius);
-  font-size: 1rem;
+  font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
+  gap: 0.4rem;
+  margin-top: 0.4rem;
   box-shadow: var(--btn-shadow);
   transition: var(--transition);
   position: relative;
@@ -366,8 +347,8 @@
 }
 
 .btn-arrow {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   transition: var(--transition);
 }
 
@@ -376,8 +357,8 @@
 }
 
 .btn-spinner {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-top: 2px solid currentColor;
   border-radius: 50%;
@@ -391,23 +372,23 @@
 
 /* ===== FORM FOOTER ===== */
 .form-footer {
-  margin-top: 2rem;
+  margin-top: 1.25rem;
   text-align: center;
-  padding-top: 1.5rem;
+  padding-top: 1rem;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .footer-text {
   color: var(--text-muted);
-  font-size: 0.9rem;
-  margin-right: 0.5rem;
+  font-size: 0.8125rem;
+  margin-right: 0.4rem;
 }
 
 .footer-link {
   color: var(--accent);
   text-decoration: none;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.8125rem;
   transition: var(--transition);
 }
 
@@ -420,22 +401,22 @@
 .success-message {
   background: rgba(246, 200, 69, 0.1);
   border: 1px solid rgba(246, 200, 69, 0.2);
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
 }
 
 .success-content h3 {
   color: var(--accent);
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 600;
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.4rem 0;
 }
 
 .success-content p {
   color: var(--text-muted);
-  font-size: 0.9rem;
-  line-height: 1.5;
+  font-size: 0.8125rem;
+  line-height: 1.4;
   margin: 0;
 }
 
