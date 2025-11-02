@@ -372,12 +372,14 @@ const AdminOrders: React.FC = () => {
                                                 </div>
                                                 <div className="mobile-card-actions">
                                                     <Link to={`/admin/orders/${order.id}/view`} className="btn btn-outline btn-sm" title="View order details">
-                                                        <Eye size={16} />
+                                                        <Eye size={14} />
                                                     </Link>
                                                     <Link to={`/admin/orders/${order.id}/edit`} className="btn btn-outline btn-sm" title="Edit order">
-                                                        <Pencil size={16} />
+                                                        <Pencil size={14} />
                                                     </Link>
-                                                    <Button variant="danger" size="sm" icon={X} onClick={() => handleDelete(order.id!)} title="Delete order" />
+                                                    <Button variant="danger" size="sm" onClick={() => handleDelete(order.id!)} title="Delete order">
+                                                        <X size={14} />
+                                                    </Button>
                                                 </div>
                                             </div>
                                             <div className="mobile-card-body">
@@ -712,24 +714,30 @@ const AdminOrders: React.FC = () => {
                                                                 <Button
                                                                     variant="outline"
                                                                     size="sm"
-                                                                    icon={Eye}
                                                                     onClick={() => toggleExpanded(id as string | number)}
                                                                     title={String(expandedId) === String(id) ? 'Hide details' : 'View details'}
-                                                                />
+                                                                >
+                                                                    <Eye size={14} style={{ marginRight: 4 }} />
+                                                                    {String(expandedId) === String(id) ? 'Hide' : 'View'}
+                                                                </Button>
                                                                 <Button
                                                                     variant="outline"
                                                                     size="sm"
-                                                                    icon={Pencil}
                                                                     onClick={() => startEdit(o)}
                                                                     title="Edit order"
-                                                                />
+                                                                >
+                                                                    <Pencil size={14} style={{ marginRight: 4 }} />
+                                                                    Edit
+                                                                </Button>
                                                                 <Button
                                                                     variant="danger"
                                                                     size="sm"
-                                                                    icon={X}
                                                                     onClick={() => handleDelete(o.id!)}
                                                                     title="Delete order"
-                                                                />
+                                                                >
+                                                                    <X size={14} style={{ marginRight: 4 }} />
+                                                                    Delete
+                                                                </Button>
                                                             </div>
                                                         </td>
                                                     </tr>

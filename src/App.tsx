@@ -35,6 +35,7 @@ import { useEffectOnce } from './hooks/useOptimizedEffect'
 import { visitorService } from './services/visitorService'
 import DevelopmentGate from './components/DevelopmentGate/DevelopmentGate'
 import RateLimitNotification, { type RateLimitError } from './components/RateLimitNotification/RateLimitNotification'
+import { initializeGA4 } from './services/analyticsService'
 // import { useRoutePrefetch } from './hooks/useRoutePrefetch'
 // import { advancedCache } from './utils/advancedCache'
 
@@ -78,6 +79,7 @@ import {
   AdminAbandonedCarts,
   AdminHomeSettings,
   AdminDiscounts,
+  AdminEmailTemplates,
   ConstellationParticles
 } from './utils/lazyImports'
 
@@ -209,7 +211,6 @@ const MainContent = React.memo(() => {
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/api/auth/reset-password" element={<ResetPasswordRedirect />} />
             <Route path="/confirm-email" element={<EmailConfirmation />} />
-            <Route path="/cart" element={<CartPage />} />
             <Route path="/wishlist" element={<Wishlist />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/stripe/success" element={<StripeSuccess />} />
@@ -308,6 +309,11 @@ const MainContent = React.memo(() => {
                 <AdminCassandra />
               </RequireAdmin>
             } />
+            <Route path="/admin/email-templates" element={
+              <RequireAdmin>
+                <AdminEmailTemplates />
+              </RequireAdmin>
+            } />
           </Routes>
         </Suspense>
       </main>
@@ -337,6 +343,17 @@ function AppContent() {
     window.addEventListener('api:rateLimit', handleRateLimit);
     return () => window.removeEventListener('api:rateLimit', handleRateLimit);
   }, []);
+
+  // Initialize Google Analytics 4 - once per session
+  useEffectOnce(() => {
+    try {
+      initializeGA4();
+    } catch (e) {
+      if (import.meta.env.DEV) {
+        console.warn('GA4 initialization failed:', e);
+      }
+    }
+  });
 
   // Track visitor - once per session
   useEffectOnce(() => {

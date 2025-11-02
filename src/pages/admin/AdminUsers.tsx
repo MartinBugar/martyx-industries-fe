@@ -296,16 +296,24 @@ const AdminUsers: React.FC = () => {
                         <div className="mobile-card-actions">
                           {editingId === user.id ? (
                             <>
-                              <Button variant="primary" size="sm" icon={Save} onClick={saveEdit} disabled={saving} loading={saving} />
-                              <Button variant="outline" size="sm" icon={X} onClick={cancelEdit} disabled={saving} />
+                              <Button variant="primary" size="sm" onClick={saveEdit} disabled={saving} loading={saving}>
+                                <Save size={14} />
+                              </Button>
+                              <Button variant="outline" size="sm" onClick={cancelEdit} disabled={saving}>
+                                <X size={14} />
+                              </Button>
                             </>
                           ) : (
                             <>
                               <Link to={`/admin/users/${user.id}`} className="btn btn-outline btn-sm" title="View user details">
-                                <Eye size={16} />
+                                <Eye size={14} />
                               </Link>
-                              <Button variant="outline" size="sm" icon={Pencil} onClick={() => startEdit(user)} title="Edit user" />
-                              <Button variant="danger" size="sm" icon={X} onClick={() => handleDelete(user.id)} title="Delete user" />
+                              <Button variant="outline" size="sm" onClick={() => startEdit(user)} title="Edit user">
+                                <Pencil size={14} />
+                              </Button>
+                              <Button variant="danger" size="sm" onClick={() => handleDelete(user.id)} title="Delete user">
+                                <X size={14} />
+                              </Button>
                             </>
                           )}
                         </div>
@@ -469,20 +477,29 @@ const AdminUsers: React.FC = () => {
                             <div className="action-buttons">
                               {editingId === user.id ? (
                                 <>
-                                  <Button variant="primary" size="sm" icon={Save} onClick={saveEdit} disabled={saving} loading={saving}>
+                                  <Button variant="primary" size="sm" onClick={saveEdit} disabled={saving} loading={saving}>
+                                    <Save size={14} style={{ marginRight: 4 }} />
                                     Save
                                   </Button>
                                   <Button variant="outline" size="sm" onClick={cancelEdit} disabled={saving}>
+                                    <X size={14} style={{ marginRight: 4 }} />
                                     Cancel
                                   </Button>
                                 </>
                               ) : (
                                 <>
                                   <Link to={`/admin/users/${user.id}`} className="btn btn-outline btn-sm" title="View user details">
-                                    <Eye size={16} />
+                                    <Eye size={14} style={{ marginRight: 4 }} />
+                                    View
                                   </Link>
-                                  <Button variant="outline" size="sm" icon={Pencil} onClick={() => startEdit(user)} title="Edit user" />
-                                  <Button variant="danger" size="sm" icon={X} onClick={() => handleDelete(user.id)} title="Delete user" />
+                                  <Button variant="outline" size="sm" onClick={() => startEdit(user)} title="Edit user">
+                                    <Pencil size={14} style={{ marginRight: 4 }} />
+                                    Edit
+                                  </Button>
+                                  <Button variant="danger" size="sm" onClick={() => handleDelete(user.id)} title="Delete user">
+                                    <X size={14} style={{ marginRight: 4 }} />
+                                    Delete
+                                  </Button>
                                 </>
                               )}
                             </div>

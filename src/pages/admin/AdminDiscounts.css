@@ -1,6 +1,7 @@
 /* ========================================
    ADMIN DISCOUNTS PAGE
    ======================================== */
+@import '../../styles/admin-theme.css';
 
 .admin-discounts {
   padding: 2rem;
@@ -17,6 +18,15 @@
   align-items: center;
   margin-bottom: 20px;
   flex-wrap: wrap;
+}
+
+.admin-header-actions .btn,
+.admin-header-actions .btn-sm {
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  min-height: 40px;
 }
 
 /* ========================================
@@ -38,20 +48,18 @@
 }
 
 .mobile-table-card {
-  background: linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(20, 20, 20, 0.98) 100%);
-  border: 1px solid rgba(212, 175, 55, 0.15);
-  border-radius: 16px;
+  background: var(--admin-bg-primary);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-md);
   padding: 1.5rem;
   margin-bottom: 1rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(10px);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
 .mobile-table-card:hover {
-  border-color: rgba(212, 175, 55, 0.4);
-  box-shadow:
-    0 8px 24px rgba(212, 175, 55, 0.12),
-    0 4px 12px rgba(0, 0, 0, 0.4);
+  border-color: var(--admin-accent);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   transform: translateY(-2px);
 }
 
@@ -62,20 +70,20 @@
   margin-bottom: 1rem;
   gap: 1rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+  border-bottom: 1px solid var(--admin-border);
 }
 
 .mobile-card-title {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--admin-primary);
   margin: 0;
   letter-spacing: -0.02em;
 }
 
 .mobile-card-subtitle {
   font-size: 0.875rem;
-  color: #b3b3b3;
+  color: var(--admin-secondary);
   margin: 0.25rem 0 0 0;
 }
 
@@ -99,12 +107,12 @@
 }
 
 .mobile-field-label {
-  color: #999;
+  color: var(--admin-secondary);
   font-weight: 500;
 }
 
 .mobile-field-value {
-  color: #ffffff;
+  color: var(--admin-primary);
   font-weight: 600;
   text-align: right;
 }
@@ -115,10 +123,10 @@
 
 .table-wrapper {
   overflow-x: auto;
-  background: linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(20, 20, 20, 0.98) 100%);
-  border: 1px solid rgba(212, 175, 55, 0.15);
-  border-radius: 16px;
-  backdrop-filter: blur(10px);
+  background: var(--admin-bg-primary);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-md);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
 .admin-table {
@@ -128,18 +136,20 @@
 }
 
 .admin-table thead {
-  background: linear-gradient(135deg, rgba(15, 15, 15, 0.8) 0%, rgba(10, 10, 10, 0.95) 100%);
-  border-bottom: 2px solid rgba(212, 175, 55, 0.2);
+  background: var(--admin-bg-secondary);
+  border-bottom: 2px solid var(--admin-border);
 }
 
 .admin-table thead th {
-  padding: 1rem 1.25rem;
+  padding: 0.75rem 0.75rem;
   text-align: left;
   font-weight: 700;
-  color: #d4af37;
+  color: var(--admin-primary);
   text-transform: uppercase;
-  font-size: 0.75rem;
-  letter-spacing: 1px;
+  font-size: 0.6875rem;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  min-width: fit-content;
 }
 
 .admin-table thead th.text-right {
@@ -147,12 +157,12 @@
 }
 
 .admin-table tbody tr {
-  border-bottom: 1px solid rgba(212, 175, 55, 0.08);
+  border-bottom: 1px solid var(--admin-border);
   transition: all 0.2s ease;
 }
 
 .admin-table tbody tr:hover {
-  background: rgba(212, 175, 55, 0.05);
+  background: var(--admin-bg-secondary);
 }
 
 .admin-table tbody tr:last-child {
@@ -160,9 +170,10 @@
 }
 
 .admin-table tbody td {
-  padding: 1rem 1.25rem;
-  color: #ffffff;
+  padding: 0.75rem 0.75rem;
+  color: var(--admin-primary);
   vertical-align: middle;
+  font-size: 0.8125rem;
 }
 
 .admin-table tbody td.text-right {
@@ -172,7 +183,7 @@
 .table-empty {
   text-align: center;
   padding: 4rem 2rem;
-  color: #999;
+  color: var(--admin-secondary);
   font-size: 1rem;
 }
 
@@ -182,9 +193,34 @@
 
 .action-buttons {
   display: flex;
-  gap: 0.5rem;
+  gap: 6px;
   justify-content: flex-end;
   flex-wrap: wrap;
+}
+
+/* Action buttons specific styling - make them fit better */
+.action-buttons .btn,
+.action-buttons .btn-sm {
+  padding: 8px 14px;
+  font-size: 13px;
+  white-space: nowrap;
+  min-width: 36px;
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+/* Icon-only buttons (no text children) */
+.action-buttons .btn:not(:has(svg + *)),
+.action-buttons .btn-sm:not(:has(svg + *)) {
+  padding: 8px;
+}
+
+.action-buttons .btn svg,
+.action-buttons .btn-sm svg {
+  flex-shrink: 0;
 }
 
 /* ========================================
@@ -192,27 +228,20 @@
    ======================================== */
 
 .admin-card {
-  background: linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(20, 20, 20, 0.98) 100%);
-  border: 1px solid rgba(212, 175, 55, 0.15);
-  border-radius: 20px;
+  background: var(--admin-bg-primary);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-md);
   padding: 2.5rem;
-  backdrop-filter: blur(10px);
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.3),
-    0 2px 8px rgba(212, 175, 55, 0.1);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   margin-bottom: 2rem;
 }
 
 .section-title {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--admin-primary);
   margin-bottom: 2rem;
   letter-spacing: -0.03em;
-  background: linear-gradient(135deg, #ffffff 0%, #d4af37 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 .form-grid {
@@ -225,7 +254,7 @@
   display: block;
   font-size: 0.75rem;
   font-weight: 600;
-  color: #d4af37;
+  color: var(--admin-primary);
   margin-bottom: 0.65rem;
   letter-spacing: 0.3px;
   text-transform: uppercase;
@@ -234,30 +263,27 @@
 .form-input {
   width: 100%;
   padding: 0.9rem 1.2rem;
-  background: linear-gradient(135deg, rgba(15, 15, 15, 0.8) 0%, rgba(10, 10, 10, 0.95) 100%);
-  border: 1.5px solid rgba(212, 175, 55, 0.2);
-  border-radius: 12px;
-  color: #ffffff;
+  background: var(--admin-bg-primary);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-md);
+  color: var(--admin-primary);
   font-size: 0.95rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-family: inherit;
 }
 
 .form-input:hover {
-  border-color: rgba(212, 175, 55, 0.35);
+  border-color: var(--admin-divider);
 }
 
 .form-input:focus {
   outline: none;
-  border-color: #d4af37;
-  box-shadow:
-    0 0 0 4px rgba(212, 175, 55, 0.15),
-    0 4px 12px rgba(212, 175, 55, 0.1);
-  background: rgba(15, 15, 15, 0.95);
+  border-color: var(--admin-accent);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .form-input::placeholder {
-  color: #666;
+  color: var(--admin-secondary);
 }
 
 .form-input:disabled {
@@ -268,7 +294,7 @@
 .form-input[type="checkbox"] {
   width: auto;
   margin-right: 0.5rem;
-  accent-color: #d4af37;
+  accent-color: var(--admin-accent);
 }
 
 .form-actions {
@@ -277,7 +303,7 @@
   justify-content: flex-start;
   margin-top: 2rem;
   padding-top: 2rem;
-  border-top: 1px solid rgba(212, 175, 55, 0.1);
+  border-top: 1px solid var(--admin-border);
 }
 
 /* ========================================
@@ -290,10 +316,10 @@
   align-items: center;
   margin-top: 2rem;
   padding: 1.5rem;
-  background: linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(20, 20, 20, 0.98) 100%);
-  border: 1px solid rgba(212, 175, 55, 0.15);
-  border-radius: 16px;
-  backdrop-filter: blur(10px);
+  background: var(--admin-bg-primary);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-md);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
 /* ========================================
@@ -302,7 +328,7 @@
 
 .alert {
   padding: 1rem 1.5rem;
-  border-radius: 12px;
+  border-radius: var(--admin-radius-md);
   margin-bottom: 1.5rem;
   font-size: 0.95rem;
   font-weight: 500;
@@ -312,21 +338,21 @@
 }
 
 .alert-error {
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  color: #fca5a5;
+  background: var(--admin-error-bg);
+  border: 1px solid var(--admin-error);
+  color: var(--admin-error);
 }
 
 .alert-success {
-  background: rgba(34, 197, 94, 0.1);
-  border: 1px solid rgba(34, 197, 94, 0.3);
-  color: #86efac;
+  background: var(--admin-success-bg);
+  border: 1px solid var(--admin-success);
+  color: var(--admin-success);
 }
 
 .alert-warning {
-  background: rgba(251, 191, 36, 0.1);
-  border: 1px solid rgba(251, 191, 36, 0.3);
-  color: #fde047;
+  background: var(--admin-warning-bg);
+  border: 1px solid var(--admin-warning);
+  color: var(--admin-warning);
 }
 
 /* ========================================
@@ -340,18 +366,14 @@
 .admin-title {
   font-size: 2rem;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--admin-primary);
   margin-bottom: 0.5rem;
   letter-spacing: -0.03em;
-  background: linear-gradient(135deg, #ffffff 0%, #d4af37 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 .admin-subtitle {
   font-size: 1rem;
-  color: #999;
+  color: var(--admin-secondary);
   margin: 0;
   max-width: 600px;
 }
@@ -419,13 +441,13 @@
 .stats-header {
   margin-bottom: 24px;
   padding-bottom: 16px;
-  border-bottom: 2px solid #e5e7eb;
+  border-bottom: 2px solid var(--admin-border);
 }
 
 .stats-code {
   font-size: 24px;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--admin-primary);
   margin: 0;
   text-align: center;
 }
@@ -442,9 +464,9 @@
   align-items: center;
   gap: 16px;
   padding: 20px;
-  background: #f9fafb;
+  background: var(--admin-bg-secondary);
   border-radius: 12px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--admin-border);
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
@@ -470,7 +492,7 @@
 .stat-label {
   font-size: 12px;
   font-weight: 500;
-  color: #6b7280;
+  color: var(--admin-secondary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 4px;
@@ -479,7 +501,7 @@
 .stat-value {
   font-size: 24px;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--admin-primary);
 }
 
 @media (max-width: 640px) {

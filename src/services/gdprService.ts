@@ -1,91 +1,141 @@
+// GDPR Service - Communication with backend GDPR API
 import { API_BASE_URL, defaultHeaders, handleResponse } from './apiUtils';
-import type { GdprConsentDto, GdprDataExportDto } from '../types/gdpr';
 
 /**
- * Service for public GDPR compliance operations
+ * Get auth headers with JWT token
  */
+const getAuthHeaders = (): HeadersInit => {
+    const token = localStorage.getItem('token');
+    return {
+        ...defaultHeaders,
+        'Authorization': token ? `Bearer ${token}` : '',
+    } as HeadersInit;
+};
 
-const jsonHeaders = () => defaultHeaders as HeadersInit;
-
+/**
+ * GDPR Service for managing user consent, data export, and account deletion
+ * Implements GDPR Articles 7, 15, and 17
+ */
 export const gdprService = {
-  /**
-   * Retrieves all GDPR consents for the authenticated user
-   * @returns List of user's consents
-   */
-  async getMyConsents(): Promise<GdprConsentDto[]> {
-    const resp = await fetch(`${API_BASE_URL}/api/gdpr/consents/me`, {
-      method: 'GET',
-      headers: jsonHeaders(),
-    });
+    // =========================================================================
+    // CONSENT MANAGEMENT (GDPR Article 7)
+    // =========================================================================
 
-    return await handleResponse(resp) as GdprConsentDto[];
-  },
+    /**
+     * Get current consent status for authenticated user
+     */
+    getConsentStatus: async (): Promise<{
+        gdpr: boolean;
+        marketing: boolean;
+        confirmed: boolean;
+    }> => {
+        const response = await fetch(`${API_BASE_URL}/api/gdpr/consent/status`, {
+            method: 'GET',
+            headers: getAuthHeaders(),
+        });
+        return handleResponse(response);
+    },
 
-  /**
-   * Records a new GDPR consent
-   * @param dto - Consent data
-   * @returns Created consent
-   */
-  async recordConsent(dto: GdprConsentDto): Promise<GdprConsentDto> {
-    const resp = await fetch(`${API_BASE_URL}/api/gdpr/consents`, {
-      method: 'POST',
-      headers: jsonHeaders(),
-      body: JSON.stringify(dto),
-    });
+    /**
+     * Get consent history for authenticated user
+     */
+    getConsentHistory: async (): Promise<any[]> => {
+        const response = await fetch(`${API_BASE_URL}/api/gdpr/consent/history`, {
+            method: 'GET',
+            headers: getAuthHeaders(),
+        });
+        return handleResponse(response);
+    },
 
-    return await handleResponse(resp) as GdprConsentDto;
-  },
+    /**
+     * Withdraw marketing consent (GDPR Article 7(3) - Right to withdraw consent)
+     */
+    withdrawMarketingConsent: async (): Promise<{ message: string }> => {
+        const response = await fetch(`${API_BASE_URL}/api/gdpr/consent/withdraw-marketing`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+        });
+        return handleResponse(response);
+    },
 
-  /**
-   * Withdraws a user's consent for a specific type
-   * @param type - Consent type (MARKETING, ANALYTICS, PREFERENCES)
-   * @returns Success response
-   */
-  async withdrawConsent(type: string): Promise<{ message: string }> {
-    const resp = await fetch(`${API_BASE_URL}/api/gdpr/consents/${type}/withdraw`, {
-      method: 'PUT',
-      headers: jsonHeaders(),
-    });
+    /**
+     * Grant marketing consent (GDPR Article 7 - Consent)
+     * Allows users to re-enable marketing consent after withdrawing it
+     */
+    grantMarketingConsent: async (): Promise<{ message: string }> => {
+        const response = await fetch(`${API_BASE_URL}/api/gdpr/consent/grant-marketing`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+        });
+        return handleResponse(response);
+    },
 
-    return await handleResponse(resp);
-  },
+    // =========================================================================
+    // DATA EXPORT (GDPR Article 15 - Right to Access)
+    // =========================================================================
 
-  /**
-   * Requests a data export (GDPR Right to Access)
-   * @returns Created data export request
-   */
-  async requestDataExport(): Promise<GdprDataExportDto> {
-    const resp = await fetch(`${API_BASE_URL}/api/gdpr/export-request`, {
-      method: 'POST',
-      headers: jsonHeaders(),
-    });
+    /**
+     * Request data export (GDPR Article 15 - Right to Access)
+     * User will receive email when export is ready
+     */
+    requestDataExport: async (): Promise<{ message: string }> => {
+        const response = await fetch(`${API_BASE_URL}/api/gdpr/consent/data-export/request`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+        });
+        return handleResponse(response);
+    },
 
-    return await handleResponse(resp) as GdprDataExportDto;
-  },
+    /**
+     * Get data export request history
+     */
+    getDataExportHistory: async (): Promise<any[]> => {
+        const response = await fetch(`${API_BASE_URL}/api/gdpr/consent/data-export/history`, {
+            method: 'GET',
+            headers: getAuthHeaders(),
+        });
+        return handleResponse(response);
+    },
 
-  /**
-   * Requests account deletion (GDPR Right to be Forgotten)
-   * @returns Created deletion request
-   */
-  async requestDeletion(): Promise<GdprDataExportDto> {
-    const resp = await fetch(`${API_BASE_URL}/api/gdpr/deletion-request`, {
-      method: 'POST',
-      headers: jsonHeaders(),
-    });
+    /**
+     * Download data export (immediate export)
+     * Downloads all user data as JSON file
+     */
+    downloadDataExport: async (): Promise<any> => {
+        const response = await fetch(`${API_BASE_URL}/api/gdpr/consent/data-export/download`, {
+            method: 'GET',
+            headers: getAuthHeaders(),
+        });
+        const data = await handleResponse(response);
 
-    return await handleResponse(resp) as GdprDataExportDto;
-  },
+        // Trigger download
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `gdpr-data-export-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
 
-  /**
-   * Retrieves all data export and deletion requests
-   * @returns List of user's data requests
-   */
-  async getMyDataRequests(): Promise<GdprDataExportDto[]> {
-    const resp = await fetch(`${API_BASE_URL}/api/gdpr/requests/me`, {
-      method: 'GET',
-      headers: jsonHeaders(),
-    });
+        return data;
+    },
 
-    return await handleResponse(resp) as GdprDataExportDto[];
-  },
+    // =========================================================================
+    // ACCOUNT DELETION (GDPR Article 17 - Right to Erasure)
+    // =========================================================================
+
+    /**
+     * Delete user account (GDPR Article 17 - Right to Erasure / Right to be Forgotten)
+     * @param confirmationEmail - Email address for confirmation (security measure)
+     */
+    deleteAccount: async (confirmationEmail: string): Promise<{ message: string }> => {
+        const response = await fetch(`${API_BASE_URL}/api/gdpr/consent/account/delete`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({ confirmationEmail }),
+        });
+        return handleResponse(response);
+    },
 };

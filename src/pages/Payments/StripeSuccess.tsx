@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { stripeService, type StripeSuccessResponse } from '../../services/stripeService';
 import { API_BASE_URL } from '../../services/apiUtils';
+import './StripeSuccess.css';
 
 /**
  * Validates and sanitizes download URLs to prevent injection attacks.
@@ -80,60 +81,29 @@ const StripeSuccess: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Only run once on mount - sessionId comes from URL and won't change
 
+  // Loading State
   if (loading) {
     return (
-      <div className="payment-status-container" style={{ textAlign: 'center', padding: '60px 20px' }}>
-        <div style={{
-          display: 'inline-block',
-          width: '48px',
-          height: '48px',
-          border: '4px solid #f3f3f3',
-          borderTop: '4px solid #635BFF',
-          borderRadius: '50%',
-          animation: 'spin 1s linear infinite'
-        }} />
-        <h2 style={{ marginTop: '24px', color: '#333' }}>Verifying payment...</h2>
-        <p style={{ color: '#666', marginTop: '8px' }}>Please wait while we confirm your order</p>
-        <style>{`
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        `}</style>
+      <div className="status-container">
+        <div className="loading-spinner" role="status" aria-label="Loading"></div>
+        <h2>Verifying payment...</h2>
+        <p>Please wait while we confirm your order</p>
       </div>
     );
   }
 
+  // Error State
   if (error) {
     return (
-      <div className="payment-status-container" style={{ textAlign: 'center', padding: '60px 20px' }}>
-        <div style={{
-          width: '72px',
-          height: '72px',
-          margin: '0 auto',
-          backgroundColor: '#FEE2E2',
-          borderRadius: '50%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}>
-          <span style={{ fontSize: '36px', color: '#DC2626' }}>✕</span>
+      <div className="status-container error">
+        <div className="status-icon error">
+          <span>✕</span>
         </div>
-        <h2 style={{ marginTop: '24px', color: '#DC2626' }}>Payment Verification Failed</h2>
-        <p style={{ color: '#666', marginTop: '12px', maxWidth: '500px', margin: '12px auto' }}>{error}</p>
+        <h2>Payment Verification Failed</h2>
+        <p>{error}</p>
         <button
           onClick={() => navigate('/products')}
-          style={{
-            marginTop: '32px',
-            padding: '12px 32px',
-            backgroundColor: '#635BFF',
-            color: 'white',
-            border: 'none',
-            borderRadius: '8px',
-            fontSize: '16px',
-            fontWeight: '600',
-            cursor: 'pointer'
-          }}
+          className="btn-primary"
         >
           Back to Shop
         </button>
@@ -142,68 +112,106 @@ const StripeSuccess: React.FC = () => {
   }
 
   return (
-    <div className="payment-success-container" style={{ maxWidth: '800px', margin: '0 auto', padding: '60px 20px' }}>
-      {/* Success Icon */}
-      <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-        <div style={{
-          width: '96px',
-          height: '96px',
-          margin: '0 auto',
-          backgroundColor: '#D1FAE5',
-          borderRadius: '50%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          animation: 'successPulse 0.6s ease-out'
-        }}>
-          <span style={{ fontSize: '48px', color: '#059669' }}>✓</span>
+    <main className="order-confirmation-container" role="main">
+      {/* Success Header */}
+      <div className="success-header">
+        <div className="success-icon">
+          <span>✓</span>
         </div>
-        <h1 style={{ marginTop: '24px', color: '#059669', fontSize: '32px', fontWeight: 'bold' }}>
-          Payment Successful!
-        </h1>
-        <p style={{ color: '#666', marginTop: '12px', fontSize: '18px' }}>
-          Thank you for your purchase
-        </p>
+        <h1>Payment Successful!</h1>
+        <p>Thank you for your purchase</p>
       </div>
 
-      {/* Order Details */}
-      <div style={{ backgroundColor: '#F9FAFB', borderRadius: '12px', padding: '24px', marginBottom: '24px' }}>
-        <h3 style={{ marginBottom: '16px', color: '#333', fontSize: '20px', fontWeight: '600' }}>
-          Order Details
-        </h3>
-        <div style={{ display: 'grid', gap: '12px' }}>
-          {paymentData?.orderNumber && (
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: '#666' }}>Order Number:</span>
-              <span style={{ fontWeight: '600', color: '#333' }}>{paymentData.orderNumber}</span>
-            </div>
-          )}
-          {paymentData?.amount && paymentData?.currency && (
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: '#666' }}>Amount Paid:</span>
-              <span style={{ fontWeight: '600', color: '#333' }}>
-                {paymentData.currency} {paymentData.amount.toFixed(2)}
-              </span>
-            </div>
-          )}
-          {paymentData?.transactionId && (
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: '#666' }}>Transaction ID:</span>
-              <span style={{ fontFamily: 'monospace', fontSize: '14px', color: '#666' }}>
-                {paymentData.transactionId.substring(0, 24)}...
-              </span>
-            </div>
-          )}
+      {/* Order Details Card */}
+      <div className="confirmation-card">
+        <div className="card-header">
+          <span className="card-icon">📋</span>
+          <h2>Order Details</h2>
         </div>
+
+        <div className="detail-row">
+          <span className="detail-label">Order Number:</span>
+          <span className="detail-value">
+            {paymentData?.orderNumber || 'N/A'}
+          </span>
+        </div>
+
+        {paymentData?.payerEmail && (
+          <div className="detail-row">
+            <span className="detail-label">Email:</span>
+            <span className="detail-value">{paymentData.payerEmail}</span>
+          </div>
+        )}
+
+        {paymentData?.amount && paymentData?.currency && (
+          <div className="detail-row">
+            <span className="detail-label">Amount Paid:</span>
+            <span className="detail-value amount">
+              {paymentData.currency.toUpperCase()} {paymentData.amount.toFixed(2)}
+            </span>
+          </div>
+        )}
+
+        {paymentData?.status && (
+          <div className="detail-row">
+            <span className="detail-label">Payment Status:</span>
+            <span className="detail-value">{paymentData.status}</span>
+          </div>
+        )}
+
+        {paymentData?.transactionId && (
+          <div className="detail-row">
+            <span className="detail-label">Transaction ID:</span>
+            <span className="detail-value mono">
+              {paymentData.transactionId.substring(0, 32)}...
+            </span>
+          </div>
+        )}
       </div>
 
-      {/* Download Links */}
+      {/* Order Items Card */}
+      {paymentData?.orderItems && paymentData.orderItems.length > 0 && (
+        <div className="confirmation-card">
+          <div className="card-header">
+            <span className="card-icon">🛍️</span>
+            <h2>Order Items</h2>
+          </div>
+
+          <div className="order-items-list">
+            {paymentData.orderItems.map((item, index) => {
+              const quantity = item.quantity || 1;
+              const price = item.price || 0;
+              const lineTotal = quantity * price;
+
+              return (
+                <div key={index} className="order-item">
+                  <div className="item-details">
+                    <div className="item-name">
+                      {item.productName || 'Product'}
+                    </div>
+                    <div className="item-quantity">
+                      Quantity: {quantity}
+                    </div>
+                  </div>
+                  <div className="item-price">
+                    €{lineTotal.toFixed(2)}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Download Links Card - Only show if there are digital products */}
       {paymentData?.downloadLinks && paymentData.downloadLinks.length > 0 && (
-        <div style={{ backgroundColor: '#EEF2FF', borderRadius: '12px', padding: '24px', marginBottom: '24px' }}>
-          <h3 style={{ marginBottom: '16px', color: '#333', fontSize: '20px', fontWeight: '600' }}>
-            Your Digital Products
-          </h3>
-          <div style={{ display: 'grid', gap: '12px' }}>
+        <div className="confirmation-card downloads-card">
+          <div className="card-header">
+            <span className="card-icon">📦</span>
+            <h2>Your Digital Products</h2>
+          </div>
+
+          <div className="order-items-list">
             {paymentData.downloadLinks
               .filter(link => validateDownloadUrl(link.url) !== null)
               .map((link, index) => {
@@ -215,29 +223,20 @@ const StripeSuccess: React.FC = () => {
                     key={index}
                     href={validatedUrl}
                     download
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      padding: '16px',
-                      backgroundColor: 'white',
-                      borderRadius: '8px',
-                      textDecoration: 'none',
-                      color: '#333',
-                      border: '1px solid #E5E7EB',
-                      transition: 'all 0.2s ease'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(99, 91, 255, 0.15)';
-                      e.currentTarget.style.borderColor = '#635BFF';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.boxShadow = 'none';
-                      e.currentTarget.style.borderColor = '#E5E7EB';
-                    }}
+                    className="download-link"
                   >
-                    <span style={{ fontWeight: '500' }}>{link.productName || 'Download'}</span>
-                    <span style={{ color: '#635BFF', fontWeight: '600' }}>Download →</span>
+                    <div className="download-link-icon">
+                      <span>📥</span>
+                    </div>
+                    <div className="download-link-info">
+                      <div className="download-link-name">
+                        {link.productName || 'Download'}
+                      </div>
+                      <div className="download-link-hint">
+                        Click to download
+                      </div>
+                    </div>
+                    <span className="download-link-action">Download →</span>
                   </a>
                 );
               })}
@@ -247,94 +246,66 @@ const StripeSuccess: React.FC = () => {
 
       {/* Invoice Download */}
       {paymentData?.invoiceDownloadUrl && validateDownloadUrl(paymentData.invoiceDownloadUrl) && (
-        <div style={{ marginBottom: '24px' }}>
-          <a
-            href={validateDownloadUrl(paymentData.invoiceDownloadUrl) || '#'}
-            download
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px',
-              padding: '14px 24px',
-              backgroundColor: 'white',
-              color: '#635BFF',
-              border: '2px solid #635BFF',
-              borderRadius: '8px',
-              textDecoration: 'none',
-              fontWeight: '600',
-              fontSize: '16px',
-              transition: 'all 0.2s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#635BFF';
-              e.currentTarget.style.color = 'white';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'white';
-              e.currentTarget.style.color = '#635BFF';
-            }}
-          >
-            📄 Download Invoice
-          </a>
-        </div>
+        <a
+          href={validateDownloadUrl(paymentData.invoiceDownloadUrl) || '#'}
+          download
+          className="invoice-btn"
+        >
+          📄 Download Invoice
+        </a>
       )}
 
       {/* Email Confirmation Notice */}
-      <div style={{
-        padding: '16px',
-        backgroundColor: '#FEF3C7',
-        borderRadius: '8px',
-        marginBottom: '32px',
-        border: '1px solid #FCD34D'
-      }}>
-        <p style={{ margin: 0, color: '#92400E', fontSize: '14px' }}>
-          📧 A confirmation email with your download links has been sent to your email address.
+      <div className="info-box success">
+        <span className="info-box-icon">📧</span>
+        <div className="info-box-content">
+          <p>
+            <strong>Confirmation email sent!</strong><br />
+            A confirmation email with your order details and download links has been sent to <strong>{paymentData?.payerEmail || 'your email address'}</strong>.
+          </p>
+        </div>
+      </div>
+
+      {/* Delivery Information */}
+      {paymentData?.orderItems && paymentData.orderItems.some(() => true) && (
+        <div className="info-box">
+          <span className="info-box-icon">🚚</span>
+          <div className="info-box-content">
+            <p>
+              <strong>Physical items delivery:</strong><br />
+              Your physical items will be shipped to the address provided during checkout. You will receive tracking information via email once your order ships.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Customer Support Section */}
+      <div className="support-section">
+        <h3>Need Help?</h3>
+        <p>
+          If you have any questions about your order or need assistance, please contact our support team.
         </p>
+        <a href="/contact" className="support-link">
+          Contact Support
+        </a>
       </div>
 
       {/* Action Buttons */}
-      <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+      <div className="action-buttons">
         <button
           onClick={() => navigate('/products')}
-          style={{
-            padding: '14px 32px',
-            backgroundColor: '#635BFF',
-            color: 'white',
-            border: 'none',
-            borderRadius: '8px',
-            fontSize: '16px',
-            fontWeight: '600',
-            cursor: 'pointer',
-            transition: 'all 0.2s ease'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = '#5147EC';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = '#635BFF';
-          }}
+          className="btn-primary"
         >
           Continue Shopping
         </button>
+        <button
+          onClick={() => navigate('/account')}
+          className="btn-secondary"
+        >
+          View My Orders
+        </button>
       </div>
-
-      <style>{`
-        @keyframes successPulse {
-          0% {
-            transform: scale(0);
-            opacity: 0;
-          }
-          50% {
-            transform: scale(1.1);
-          }
-          100% {
-            transform: scale(1);
-            opacity: 1;
-          }
-        }
-      `}</style>
-    </div>
+    </main>
   );
 };
 

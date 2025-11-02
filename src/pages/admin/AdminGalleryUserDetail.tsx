@@ -233,7 +233,8 @@ const AdminGalleryUserDetail: React.FC = () => {
             <div className="alert alert-error">
               {error instanceof Error ? error.message : 'Failed to load user gallery'}
             </div>
-            <Button variant="outline" icon={ArrowLeft} onClick={() => navigate('/admin/gallery')}>
+            <Button variant="outline" onClick={() => navigate('/admin/gallery')}>
+              <ArrowLeft size={14} style={{ marginRight: 4 }} />
               Back to Gallery
             </Button>
           </div>
@@ -248,7 +249,8 @@ const AdminGalleryUserDetail: React.FC = () => {
         <div className="admin-container">
           {/* Header with Back Button */}
           <div className="admin-header" style={{ marginBottom: '24px' }}>
-            <Button variant="outline" icon={ArrowLeft} onClick={() => navigate('/admin/gallery')}>
+            <Button variant="outline" onClick={() => navigate('/admin/gallery')}>
+              <ArrowLeft size={14} style={{ marginRight: 4 }} />
               Back to Users
             </Button>
           </div>
@@ -390,19 +392,19 @@ const AdminGalleryUserDetail: React.FC = () => {
                       <Button
                         variant={isPublic ? 'outline' : 'primary'}
                         size="sm"
-                        icon={isPublic ? Lock : Globe}
                         onClick={() => handleToggleModelVisibility(productId, isPublic)}
                         disabled={isUpdatingModelStatus}
                       >
+                        {isPublic ? <Lock size={14} style={{ marginRight: 4 }} /> : <Globe size={14} style={{ marginRight: 4 }} />}
                         {isPublic ? 'Make Private' : 'Make Public'}
                       </Button>
                       <Button
                         variant={isCompleted ? 'outline' : 'primary'}
                         size="sm"
-                        icon={isCompleted ? XCircle : CheckCircle}
                         onClick={() => handleToggleModelCompletion(productId, isCompleted)}
                         disabled={isUpdatingModelStatus}
                       >
+                        {isCompleted ? <XCircle size={14} style={{ marginRight: 4 }} /> : <CheckCircle size={14} style={{ marginRight: 4 }} />}
                         {isCompleted ? 'Mark In Progress' : 'Mark Completed'}
                       </Button>
                     </div>

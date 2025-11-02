@@ -224,7 +224,8 @@ const AdminSegments: React.FC = () => {
           <div className="segments-list">
             <div className="segments-header">
               <h2>Customer Segments</h2>
-              <Button variant="outline" onClick={handleRecalculateAll} icon={RefreshCw}>
+              <Button variant="outline" onClick={handleRecalculateAll}>
+                <RefreshCw size={14} style={{ marginRight: 4 }} />
                 Recalculate All
               </Button>
             </div>
@@ -284,26 +285,26 @@ const AdminSegments: React.FC = () => {
                         <Button
                           size="sm"
                           variant="outline"
-                          icon={RefreshCw}
                           onClick={() => handleRecalculateSegment(segment.id)}
                           disabled={isRecalculating === segment.id}
                         >
+                          <RefreshCw size={14} style={{ marginRight: 4 }} />
                           {isRecalculating === segment.id ? 'Recalculating...' : 'Recalculate'}
                         </Button>
                         <Button
                           size="sm"
                           variant="outline"
-                          icon={Edit}
                           onClick={() => handleEditSegment(segment)}
                         >
+                          <Edit size={14} style={{ marginRight: 4 }} />
                           Edit
                         </Button>
                         <Button
                           size="sm"
                           variant="outline"
-                          icon={Trash2}
                           onClick={() => handleDeleteSegment(segment.id)}
                         >
+                          <Trash2 size={14} style={{ marginRight: 4 }} />
                           Delete
                         </Button>
                       </div>

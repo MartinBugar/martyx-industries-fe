@@ -1,0 +1,130 @@
+.privacy-policy-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: var(--card-bg, #1a1a1a);
+    border: 1px solid var(--border, #333);
+    border-radius: 12px;
+}
+
+.privacy-policy-content {
+    color: var(--text, #fff);
+    line-height: 1.8;
+}
+
+.privacy-policy-content h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--accent, #ffcc00);
+    border-bottom: 3px solid var(--accent, #ffcc00);
+    padding-bottom: 1rem;
+}
+
+.last-updated,
+.version {
+    font-size: 0.9rem;
+    color: var(--text-muted, #aaa);
+    margin: 0.5rem 0;
+}
+
+.policy-section {
+    margin: 2.5rem 0;
+    padding: 1.5rem;
+    background: var(--bg, #0f0f0f);
+    border-left: 4px solid var(--accent, #ffcc00);
+    border-radius: 8px;
+}
+
+.policy-section h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    color: var(--accent, #ffcc00);
+}
+
+.policy-section h3 {
+    font-size: 1.3rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.8rem;
+    color: var(--text, #fff);
+}
+
+.policy-section p {
+    margin: 0.8rem 0;
+    color: var(--text-muted, #ddd);
+}
+
+.policy-section ul {
+    margin: 1rem 0;
+    padding-left: 2rem;
+}
+
+.policy-section li {
+    margin: 0.5rem 0;
+    color: var(--text-muted, #ddd);
+}
+
+.policy-section a {
+    color: var(--accent, #ffcc00);
+    text-decoration: underline;
+    transition: color 0.2s;
+}
+
+.policy-section a:hover {
+    color: var(--accent-hover, #e6b800);
+}
+
+.purpose-item,
+.right-item {
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background: rgba(255, 204, 0, 0.05);
+    border-radius: 6px;
+    border-left: 3px solid var(--accent, #ffcc00);
+}
+
+.purpose-item h3,
+.right-item h3 {
+    margin-top: 0;
+    font-size: 1.2rem;
+}
+
+.purpose-item p,
+.right-item p {
+    margin: 0.5rem 0;
+}
+
+.purpose-item strong,
+.right-item strong {
+    color: var(--accent, #ffcc00);
+}
+
+.policy-footer {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 2px solid var(--border, #333);
+    text-align: center;
+    color: var(--text-muted, #aaa);
+}
+
+.policy-footer strong {
+    color: var(--accent, #ffcc00);
+}
+
+@media (max-width: 768px) {
+    .privacy-policy-container {
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+
+    .privacy-policy-content h1 {
+        font-size: 2rem;
+    }
+
+    .policy-section h2 {
+        font-size: 1.5rem;
+    }
+
+    .policy-section {
+        padding: 1rem;
+    }
+}

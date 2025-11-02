@@ -36,6 +36,9 @@ const Registration: React.FC = () => {
     // Lokálny stav pre špecifické registračné funkcie
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [generalError, setGeneralError] = useState<string | null>(null);
+    const [gdprConsent, setGdprConsent] = useState<boolean>(false);
+    const [marketingConsent, setMarketingConsent] = useState<boolean>(false);
+    const [gdprValidationError, setGdprValidationError] = useState<boolean>(false);
 
     // Ref pre focus management po úspešnej registrácii
     const loginBtnRef = useRef<HTMLButtonElement | null>(null);
@@ -60,9 +63,22 @@ const Registration: React.FC = () => {
         confirmPassword?: string
     }) => {
         setGeneralError(null);
+        setGdprValidationError(false);
+
+        // Validácia GDPR súhlasu
+        if (!gdprConsent) {
+            setGeneralError('Musíte súhlasiť s podmienkami ochrany osobných údajov.');
+            setGdprValidationError(true);
+            return;
+        }
 
         try {
-            const success = await registrationService.register(formData.email, formData.password);
+            const success = await registrationService.register(
+                formData.email,
+                formData.password,
+                gdprConsent,
+                marketingConsent
+            );
 
             if (success) {
                 // Úspešná registrácia - zobrazenie potvrdzovacej správy
@@ -73,6 +89,8 @@ const Registration: React.FC = () => {
 
                 // Vyčistenie formulára po úspešnej registrácii
                 resetForm();
+                setGdprConsent(false);
+                setMarketingConsent(false);
             } else {
                 setGeneralError(t('register.error', 'Registrácia zlyhala. Skúste to znovu.'));
             }
@@ -87,7 +105,7 @@ const Registration: React.FC = () => {
             }
             console.error('Registration error:', error);
         }
-    }, []);
+    }, [gdprConsent, marketingConsent, t, resetForm]);
 
     /**
      * Navigácia na login stránku
@@ -95,6 +113,16 @@ const Registration: React.FC = () => {
     const handleGoToLogin = useCallback(() => {
         navigate('/login');
     }, [navigate]);
+
+    /**
+     * Handler pre zmenu GDPR súhlasu - vymaže validačnú chybu
+     */
+    const handleGdprConsentChange = useCallback((checked: boolean) => {
+        setGdprConsent(checked);
+        if (checked) {
+            setGdprValidationError(false);
+        }
+    }, []);
 
     // Používanie custom hook pre správu formulára
     const {
@@ -202,7 +230,7 @@ const Registration: React.FC = () => {
 
                     {/* Chybové správy */}
                     {generalError && (
-                        <div className="form-error">
+                        <div className="form-error" id="registration-error" role="alert" aria-live="polite">
                             <ErrorIcon />
                             <span>{generalError}</span>
                         </div>
@@ -285,9 +313,48 @@ const Registration: React.FC = () => {
                             </div>
                         </div>
 
+                        {/* GDPR Consent Checkbox - POVINNÝ */}
+                        <div className="form-group checkbox-group">
+                            <label className="checkbox-label" htmlFor="gdpr-consent">
+                                <input
+                                    type="checkbox"
+                                    id="gdpr-consent"
+                                    name="gdprConsent"
+                                    checked={gdprConsent}
+                                    onChange={(e) => handleGdprConsentChange(e.target.checked)}
+                                    className="checkbox-input"
+                                    required
+                                    aria-required="true"
+                                    aria-invalid={gdprValidationError}
+                                    aria-describedby={gdprValidationError ? "registration-error" : undefined}
+                                />
+                                <span className="checkbox-text">
+                                    Súhlasím so <Link to="/privacy-policy" target="_blank" className="link-inline" rel="noopener noreferrer">spracovaním osobných údajov</Link> a <Link to="/terms-of-service" target="_blank" className="link-inline" rel="noopener noreferrer">obchodnými podmienkami</Link> *
+                                </span>
+                            </label>
+                        </div>
+
+                        {/* Marketing Consent Checkbox - VOLITEĽNÝ */}
+                        <div className="form-group checkbox-group">
+                            <label className="checkbox-label" htmlFor="marketing-consent">
+                                <input
+                                    type="checkbox"
+                                    id="marketing-consent"
+                                    name="marketingConsent"
+                                    checked={marketingConsent}
+                                    onChange={(e) => setMarketingConsent(e.target.checked)}
+                                    className="checkbox-input"
+                                    aria-required="false"
+                                />
+                                <span className="checkbox-text">
+                                    Chcem dostávať novinky, špeciálne ponuky a marketingové materiály
+                                </span>
+                            </label>
+                        </div>
+
                         {/* Submit tlačidlo */}
-                        <button 
-                            type="submit" 
+                        <button
+                            type="submit"
                             className="form-submit-btn"
                             disabled={isProcessing}
                         >

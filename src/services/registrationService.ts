@@ -4,12 +4,22 @@ import { handleResponse, API_BASE_URL, defaultHeaders, withLangHeaders } from '.
 // Registration service
 export const registrationService = {
   // Register a new user
-    register: async (email: string, password: string): Promise<boolean> => {
+    register: async (
+        email: string,
+        password: string,
+        gdprConsent: boolean,
+        marketingConsent: boolean
+    ): Promise<boolean> => {
         try {
             const response = await fetch(`${API_BASE_URL}/api/auth/register`, withLangHeaders({
                 method: 'POST',
                 headers: defaultHeaders as HeadersInit,
-                body: JSON.stringify({ email, password }),
+                body: JSON.stringify({
+                    email,
+                    password,
+                    gdprConsent,
+                    marketingConsent
+                }),
             }));
 
             // Handle success
@@ -34,6 +44,16 @@ export const registrationService = {
             if (response.status === 409 || /(already\s*(in)?\s*use|already.*(exist|registered))/i.test(message)) {
                 const err = new Error(message || 'Email is already in use') as Error & { code?: string };
                 err.code = 'EMAIL_ALREADY_REGISTERED';
+                throw err;
+            }
+
+            // Detect GDPR validation error
+            if (response.status === 400 &&
+                (message.toLowerCase().includes('privacy policy') ||
+                 message.toLowerCase().includes('gdprconsent') ||
+                 message.toLowerCase().includes('terms of service'))) {
+                const err = new Error(message || 'GDPR consent is required') as Error & { code?: string };
+                err.code = 'GDPR_CONSENT_REQUIRED';
                 throw err;
             }
 

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Clock, Plus, Ticket, X, XCircle, BarChart3, TrendingUp, Users, DollarSign} from 'lucide-react';
+import {Clock, Plus, Ticket, X, XCircle, BarChart3, TrendingUp, Users, DollarSign, Edit} from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import './AdminDiscounts.css';
 import {adminDiscountService, type PageResponse} from '../../services/adminDiscountService';
@@ -545,8 +545,8 @@ const AdminDiscounts: React.FC = () => {
                           <p className="mobile-card-subtitle">{getDiscountValueDisplay(d)}</p>
                         </div>
                         <div className="mobile-card-actions">
-                          <Button variant="outline" size="sm" icon={BarChart3} onClick={() => handleViewStats(d.id)} title="View Statistics">
-                            Stats
+                          <Button variant="outline" size="sm" onClick={() => handleViewStats(d.id)} title="View Statistics">
+                            <BarChart3 size={14} />
                           </Button>
                           <Button variant="outline" size="sm" onClick={() => handleEdit(d)} title="Edit discount">
                             Edit
@@ -556,7 +556,9 @@ const AdminDiscounts: React.FC = () => {
                               Deactivate
                             </Button>
                           )}
-                          <Button variant="danger" size="sm" icon={X} onClick={() => handleDelete(d.id)} title="Delete" />
+                          <Button variant="danger" size="sm" onClick={() => handleDelete(d.id)} title="Delete">
+                            <X size={14} />
+                          </Button>
                         </div>
                       </div>
                       <div className="mobile-card-body">
@@ -596,7 +598,7 @@ const AdminDiscounts: React.FC = () => {
                       <th>Valid From</th>
                       <th>Valid Until</th>
                       <th>Status</th>
-                      <th style={{ width: 200 }} className="text-right">Actions</th>
+                      <th style={{ width: 160 }} className="text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -630,18 +632,20 @@ const AdminDiscounts: React.FC = () => {
                           <td>{getStatusBadge(d)}</td>
                           <td className="text-right">
                             <div className="action-buttons">
-                              <Button variant="outline" size="sm" icon={BarChart3} onClick={() => handleViewStats(d.id)} title="View Statistics">
-                                Stats
+                              <Button variant="outline" size="sm" onClick={() => handleViewStats(d.id)} title="View Statistics">
+                                <BarChart3 size={14} />
                               </Button>
                               <Button variant="outline" size="sm" onClick={() => handleEdit(d)} title="Edit discount">
-                                Edit
+                                <Edit size={14} />
                               </Button>
                               {d.is_active && !isExpired(d) && (
                                 <Button variant="outline" size="sm" onClick={() => handleDeactivate(d.id)} title="Deactivate">
-                                  Deactivate
+                                  <XCircle size={14} />
                                 </Button>
                               )}
-                              <Button variant="danger" size="sm" icon={X} onClick={() => handleDelete(d.id)} title="Delete" />
+                              <Button variant="danger" size="sm" onClick={() => handleDelete(d.id)} title="Delete">
+                                <X size={14} />
+                              </Button>
                             </div>
                           </td>
                         </tr>

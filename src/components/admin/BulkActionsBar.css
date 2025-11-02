@@ -1,4 +1,6 @@
 /* Bulk Actions Bar */
+@import '../../styles/admin-theme.css';
+
 .bulk-actions-bar {
   position: fixed;
   bottom: 20px;
@@ -7,9 +9,10 @@
   max-width: 600px;
   width: calc(100% - 40px);
   padding: 16px 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+  background: var(--admin-bg-primary);
+  border-radius: var(--admin-radius-lg);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--admin-border);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -30,7 +33,7 @@
 }
 
 .bulk-actions-info {
-  color: white;
+  color: var(--admin-primary);
   font-size: 15px;
   font-weight: 500;
 }
@@ -48,16 +51,15 @@
 
 /* Override button styles for bulk bar */
 .bulk-actions-bar .btn {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(10px);
+  background: var(--admin-bg-secondary);
+  color: var(--admin-primary);
+  border: 1px solid var(--admin-border);
   font-weight: 500;
 }
 
 .bulk-actions-bar .btn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.3);
-  border-color: rgba(255, 255, 255, 0.5);
+  background: var(--admin-bg-tertiary);
+  border-color: var(--admin-divider);
   transform: translateY(-2px);
 }
 
@@ -66,13 +68,15 @@
 }
 
 .bulk-actions-bar .btn-danger {
-  background: rgba(239, 68, 68, 0.9);
-  border-color: rgba(239, 68, 68, 1);
+  background: var(--admin-error);
+  color: #FFFFFF;
+  border-color: var(--admin-error);
 }
 
 .bulk-actions-bar .btn-danger:hover:not(:disabled) {
-  background: rgba(239, 68, 68, 1);
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+  background: var(--admin-error);
+  border-color: var(--admin-error);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
 /* Mobile responsive */

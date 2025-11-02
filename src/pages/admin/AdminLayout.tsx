@@ -10,18 +10,6 @@ interface AdminLayoutProps {
   navTabs?: React.ReactNode;
 }
 
-const sidebarLinkStyle: React.CSSProperties = {
-  display: 'block',
-  padding: '10px 12px',
-  color: '#f0f0f0',
-  textDecoration: 'none',
-  borderRadius: 6,
-  marginBottom: 6,
-};
-
-const activeLinkStyle: React.CSSProperties = {
-  background: '#334155',
-};
 
 const AdminLayout: React.FC<AdminLayoutProps> = ({ title, children, navTabs }) => {
   const navigate = useNavigate();
@@ -57,19 +45,20 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ title, children, navTabs }) =
       <aside className={`admin-sidebar${sidebarOpen ? ' is-open' : ''}`} id="admin-sidebar" aria-label="Admin navigation">
         <div className="admin-sidebar-title">Admin Panel</div>
         <nav>
-          <Link to="/admin/panel" style={{ ...sidebarLinkStyle, ...(location.pathname === '/admin/panel' ? activeLinkStyle : {}) }}>Dashboard</Link>
-          <Link to="/admin/users" style={{ ...sidebarLinkStyle, ...(location.pathname.startsWith('/admin/users') ? activeLinkStyle : {}) }}>Users</Link>
-          <Link to="/admin/products" style={{ ...sidebarLinkStyle, ...(location.pathname.startsWith('/admin/products') ? activeLinkStyle : {}) }}>Products</Link>
-          <Link to="/admin/orders" style={{ ...sidebarLinkStyle, ...(location.pathname.startsWith('/admin/orders') ? activeLinkStyle : {}) }}>Orders</Link>
-          <Link to="/admin/gallery" style={{ ...sidebarLinkStyle, ...(location.pathname.startsWith('/admin/gallery') ? activeLinkStyle : {}) }}>Gallery</Link>
-          <Link to="/admin/campaigns" style={{ ...sidebarLinkStyle, ...(location.pathname.startsWith('/admin/campaigns') ? activeLinkStyle : {}) }}>Campaigns</Link>
-          <Link to="/admin/discounts" style={{ ...sidebarLinkStyle, ...(location.pathname.startsWith('/admin/discounts') ? activeLinkStyle : {}) }}>Discount Codes</Link>
-          <Link to="/admin/segments" style={{ ...sidebarLinkStyle, ...(location.pathname.startsWith('/admin/segments') ? activeLinkStyle : {}) }}>Segments</Link>
-          <Link to="/admin/abandoned-carts" style={{ ...sidebarLinkStyle, ...(location.pathname.startsWith('/admin/abandoned-carts') ? activeLinkStyle : {}) }}>Abandoned Carts</Link>
-          <Link to="/admin/cassandra" style={{ ...sidebarLinkStyle, ...(location.pathname === '/admin/cassandra' ? activeLinkStyle : {}) }}>CASSANDRA</Link>
+          <Link to="/admin/panel" className={location.pathname === '/admin/panel' ? 'admin-link-active' : ''}>Dashboard</Link>
+          <Link to="/admin/users" className={location.pathname.startsWith('/admin/users') ? 'admin-link-active' : ''}>Users</Link>
+          <Link to="/admin/products" className={location.pathname.startsWith('/admin/products') ? 'admin-link-active' : ''}>Products</Link>
+          <Link to="/admin/orders" className={location.pathname.startsWith('/admin/orders') ? 'admin-link-active' : ''}>Orders</Link>
+          <Link to="/admin/gallery" className={location.pathname.startsWith('/admin/gallery') ? 'admin-link-active' : ''}>Gallery</Link>
+          <Link to="/admin/campaigns" className={location.pathname.startsWith('/admin/campaigns') ? 'admin-link-active' : ''}>Campaigns</Link>
+          <Link to="/admin/discounts" className={location.pathname.startsWith('/admin/discounts') ? 'admin-link-active' : ''}>Discount Codes</Link>
+          <Link to="/admin/segments" className={location.pathname.startsWith('/admin/segments') ? 'admin-link-active' : ''}>Segments</Link>
+          <Link to="/admin/abandoned-carts" className={location.pathname.startsWith('/admin/abandoned-carts') ? 'admin-link-active' : ''}>Abandoned Carts</Link>
+          <Link to="/admin/email-templates" className={location.pathname.startsWith('/admin/email-templates') ? 'admin-link-active' : ''}>Email Templates</Link>
+          <Link to="/admin/cassandra" className={location.pathname === '/admin/cassandra' ? 'admin-link-active' : ''}>CASSANDRA</Link>
         </nav>
         <div className="admin-logout-wrap">
-          <button onClick={handleLogout} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: 6, cursor: 'pointer' }}>Logout</button>
+          <button onClick={handleLogout}>Logout</button>
         </div>
       </aside>
 

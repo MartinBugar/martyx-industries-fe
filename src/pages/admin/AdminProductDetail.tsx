@@ -603,10 +603,12 @@ const AdminProductDetail: React.FC = () => {
                   </div>
 
                   <div className="form-actions" style={{ marginTop: 24 }}>
-                    <Button variant="primary" onClick={handleSave} disabled={saving} loading={saving} icon={Save}>
+                    <Button variant="primary" onClick={handleSave} disabled={saving} loading={saving}>
+                      <Save size={14} style={{ marginRight: 4 }} />
                       Save Changes
                     </Button>
-                    <Button variant="danger" onClick={handleDelete} disabled={saving} icon={Trash2}>
+                    <Button variant="danger" onClick={handleDelete} disabled={saving}>
+                      <Trash2 size={14} style={{ marginRight: 4 }} />
                       Delete Master Product
                     </Button>
                   </div>
@@ -620,7 +622,8 @@ const AdminProductDetail: React.FC = () => {
                     <p style={{ color: '#6b7280' }}>
                       Manage product variants - different configurations with unique SKUs, pricing, and components.
                     </p>
-                    <Button variant="primary" icon={Plus} onClick={handleCreateVariant}>
+                    <Button variant="primary" onClick={handleCreateVariant}>
+                      <Plus size={14} style={{ marginRight: 4 }} />
                       Add Variant
                     </Button>
                   </div>
@@ -632,7 +635,8 @@ const AdminProductDetail: React.FC = () => {
                       <p style={{ color: '#6b7280', marginBottom: 24 }}>
                         Create product variants to offer different configurations (e.g., Digital Edition, Full Kit).
                       </p>
-                      <Button variant="primary" icon={Plus} onClick={handleCreateVariant}>
+                      <Button variant="primary" onClick={handleCreateVariant}>
+                        <Plus size={14} style={{ marginRight: 4 }} />
                         Create First Variant
                       </Button>
                     </div>
@@ -784,12 +788,12 @@ const VariantCard: React.FC<VariantCardProps> = ({
           <Button
             variant="outline"
             size="sm"
-            icon={Edit}
             onClick={(e) => {
               e.stopPropagation();
               onEdit();
             }}
           >
+            <Edit size={14} style={{ marginRight: 4 }} />
             Edit
           </Button>
         </div>
@@ -879,9 +883,9 @@ const VariantCard: React.FC<VariantCardProps> = ({
               <Button
                 variant="primary"
                 size="sm"
-                icon={Plus}
                 onClick={onAddComponent}
               >
+                <Plus size={14} style={{ marginRight: 4 }} />
                 Add
               </Button>
             </div>
@@ -940,15 +944,17 @@ const VariantCard: React.FC<VariantCardProps> = ({
                       <Button
                         variant="outline"
                         size="sm"
-                        icon={Edit}
                         onClick={() => onEditComponent(component)}
-                      />
+                      >
+                        <Edit size={14} />
+                      </Button>
                       <Button
                         variant="danger"
                         size="sm"
-                        icon={Trash2}
                         onClick={() => component.id && onDeleteComponent(component.id)}
-                      />
+                      >
+                        <Trash2 size={14} />
+                      </Button>
                     </div>
                   </div>
                 ))}
@@ -964,7 +970,8 @@ const VariantCard: React.FC<VariantCardProps> = ({
             display: 'flex',
             justifyContent: 'flex-end'
           }}>
-            <Button variant="danger" size="sm" icon={Trash2} onClick={onDelete}>
+            <Button variant="danger" size="sm" onClick={onDelete}>
+              <Trash2 size={14} style={{ marginRight: 4 }} />
               Delete Variant
             </Button>
           </div>

@@ -413,9 +413,11 @@ const AdminProducts: React.FC = () => {
                       </div>
                       <div className="mobile-card-actions">
                         <Link to={`/admin/products/${p.id}`} className="btn btn-outline btn-sm" title="View/Edit product">
-                          <Eye size={16} />
+                          <Eye size={14} />
                         </Link>
-                        <Button variant="danger" size="sm" icon={X} onClick={() => handleDelete(p.id!)} title="Delete product" />
+                        <Button variant="danger" size="sm" onClick={() => handleDelete(p.id!)} title="Delete product">
+                          <X size={14} />
+                        </Button>
                       </div>
                     </div>
                     <div className="mobile-card-body">
@@ -505,9 +507,13 @@ const AdminProducts: React.FC = () => {
                       <td className="text-right">
                         <div className="action-buttons">
                           <Link to={`/admin/products/${p.id}`} className="btn btn-outline btn-sm" title="View/Edit product">
-                            <Eye size={16} />
+                            <Eye size={14} style={{ marginRight: 4 }} />
+                            View
                           </Link>
-                          <Button variant="danger" size="sm" icon={X} onClick={() => handleDelete(p.id!)} title="Delete product" />
+                          <Button variant="danger" size="sm" onClick={() => handleDelete(p.id!)} title="Delete product">
+                            <X size={14} style={{ marginRight: 4 }} />
+                            Delete
+                          </Button>
                         </div>
                       </td>
                     </tr>

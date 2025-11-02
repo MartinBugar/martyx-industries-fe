@@ -5,12 +5,13 @@ import type { Product } from '../data/productData';
 export interface CartItem {
   product: Product;
   quantity: number;
+  addedAt: number; // Unix timestamp (ms) when item was added to cart
 }
 
 // Define the shape of the cart context
 export interface CartContextType {
   items: CartItem[];
-  addToCart: (product: Product) => 'added' | 'limit';
+  addToCart: (product: Product) => 'added' | 'limit' | 'out_of_stock' | 'discontinued' | 'pre_order';
   removeFromCart: (variantId: string) => void;
   updateQuantity: (variantId: string, quantity: number) => void;
   clearCart: () => void;

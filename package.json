@@ -27,6 +27,7 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-i18next": "^15.7.3",
+    "react-quill": "^2.0.0",
     "react-router-dom": "^7.7.1",
     "three": "^0.172.0"
   },

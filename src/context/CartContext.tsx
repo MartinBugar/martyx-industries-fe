@@ -3,6 +3,7 @@ import type { Product } from '../data/productData';
 import { CartContext, type CartItem } from './cartContextTypes';
 import { cartService } from '../services/cartService';
 import { useAuth } from './useAuth';
+import { trackAddToCart, trackRemoveFromCart } from '../services/analyticsService';
 
 // Props for the CartProvider component
 interface CartProviderProps {
@@ -11,6 +12,8 @@ interface CartProviderProps {
 
 const STORAGE_KEY = 'martyx_cart_v1';
 const SESSION_ID_KEY = 'martyx_session_id';
+const CART_EXPIRATION_DAYS = 30; // Cart items expire after 30 days
+const CART_EXPIRATION_MS = CART_EXPIRATION_DAYS * 24 * 60 * 60 * 1000; // 30 days in milliseconds
 
 // Generate a unique session ID for guest users
 function generateSessionId(): string {
@@ -74,6 +77,9 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         setIsSyncing(true);
         console.log('[Cart] Syncing with backend...');
 
+        // Get current localStorage cart
+        const localItems = safeLoad();
+
         // For authenticated users, don't pass sessionId (backend uses JWT)
         // For guests, pass sessionId
         const backendCart = await cartService.getCart(
@@ -86,18 +92,45 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
             const parsedItems = JSON.parse(backendCart.cart_items) as CartItem[];
             if (Array.isArray(parsedItems)) {
               console.log('[Cart] Synced from backend:', parsedItems.length, 'items');
-              setItems(parsedItems); // Update even if empty (e.g., after payment)
+              setItems(parsedItems);
             }
           } catch (parseError) {
             console.warn('[Cart] Failed to parse backend cart_items:', parseError);
           }
         } else {
-          // Backend returned no cart_items (cart doesn't exist or is empty)
-          console.log('[Cart] No cart in backend, clearing local cart');
-          setItems([]);
+          // Backend has no cart
+          if (localItems.length > 0) {
+            // But localStorage has items - push them to backend instead of clearing
+            console.log('[Cart] No cart in backend, but localStorage has', localItems.length, 'items. Syncing localStorage → backend...');
+            setItems(localItems);
+
+            // Push each item to backend
+            for (const item of localItems) {
+              try {
+                await cartService.addItem(
+                  item.product.variantId,
+                  item.quantity,
+                  isAuthenticated ? undefined : sessionId
+                );
+              } catch (err) {
+                console.warn('[Cart] Failed to sync item to backend:', err);
+              }
+            }
+            console.log('[Cart] Successfully synced localStorage cart to backend');
+          } else {
+            // Both backend and localStorage are empty
+            console.log('[Cart] No cart in backend and localStorage is empty');
+            setItems([]);
+          }
         }
       } catch (error) {
         console.warn('[Cart] Failed to sync with backend, using localStorage:', error);
+        // If backend fails, keep localStorage cart
+        const localItems = safeLoad();
+        if (localItems.length > 0) {
+          console.log('[Cart] Using localStorage cart with', localItems.length, 'items');
+          setItems(localItems);
+        }
       } finally {
         setIsSyncing(false);
       }
@@ -109,22 +142,52 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     }
   }, [isAuthenticated]); // Re-sync when auth state changes
 
-  // Add a product to the cart
-  const addToCart = (product: Product): 'added' | 'limit' => {
-    let result: 'added' | 'limit' = 'added';
+  // Add a product to the cart with stock validation
+  const addToCart = (product: Product): 'added' | 'limit' | 'out_of_stock' | 'discontinued' | 'pre_order' => {
+    // Check availability status first
+    if (product.availabilityStatus === 'OUT_OF_STOCK') {
+      console.warn('[Cart] Product is out of stock:', product.name);
+      return 'out_of_stock';
+    }
+
+    if (product.availabilityStatus === 'DISCONTINUED') {
+      console.warn('[Cart] Product is discontinued:', product.name);
+      return 'discontinued';
+    }
+
+    // Digital products can be sold even when stock is 0 (they don't deplete)
+    const isDigitalProduct = product.variantType === 'DIGITAL_ONLY';
+
+    // For physical products, check stock quantity
+    if (!isDigitalProduct && product.stockQuantity <= 0) {
+      console.warn('[Cart] Product stock is 0:', product.name, 'Stock:', product.stockQuantity);
+      return 'out_of_stock';
+    }
+
+    let result: 'added' | 'limit' | 'out_of_stock' | 'discontinued' | 'pre_order' = 'added';
     setItems(prevItems => {
       const existingItemIndex = prevItems.findIndex(item => item.product.variantId === product.variantId);
       if (existingItemIndex >= 0) {
         const existingItem = prevItems[existingItemIndex];
+
         // If the variant is DIGITAL_ONLY, enforce max quantity of 1
         if (existingItem.product.variantType === 'DIGITAL_ONLY') {
           result = 'limit';
           return prevItems;
         }
+
+        // Check if adding one more would exceed available stock
+        const newQuantity = existingItem.quantity + 1;
+        if (!isDigitalProduct && newQuantity > product.stockQuantity) {
+          console.warn('[Cart] Cannot add more items. Stock limit reached:', product.stockQuantity);
+          result = 'limit';
+          return prevItems;
+        }
+
         const updatedItems = [...prevItems];
         updatedItems[existingItemIndex] = {
           ...existingItem,
-          quantity: existingItem.quantity + 1
+          quantity: newQuantity
         };
         result = 'added';
 
@@ -133,8 +196,17 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
           .addItem(product.variantId, 1, isAuthenticated ? undefined : sessionId)
           .catch(err => console.warn('[Cart] Failed to add to backend:', err));
 
+        // Track analytics
+        trackAddToCart(product, 1);
+
         return updatedItems;
       } else {
+        // Adding product for the first time - check if stock allows at least 1
+        if (!isDigitalProduct && product.stockQuantity < 1) {
+          result = 'out_of_stock';
+          return prevItems;
+        }
+
         result = 'added';
         const updatedItems = [...prevItems, { product, quantity: 1 }];
 
@@ -142,6 +214,9 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         void cartService
           .addItem(product.variantId, 1, isAuthenticated ? undefined : sessionId)
           .catch(err => console.warn('[Cart] Failed to add to backend:', err));
+
+        // Track analytics
+        trackAddToCart(product, 1);
 
         return updatedItems;
       }
@@ -152,6 +227,9 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   // Remove a product from the cart by variant ID
   const removeFromCart = (variantId: string) => {
     setItems(prevItems => {
+      // Find the item being removed for analytics
+      const itemToRemove = prevItems.find(item => item.product.variantId.toString() === variantId);
+
       const filtered = prevItems.filter(item => item.product.variantId.toString() !== variantId);
 
       // Sync to backend (non-blocking)
@@ -160,6 +238,11 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         void cartService
           .removeItem(variantIdNum, isAuthenticated ? undefined : sessionId)
           .catch(err => console.warn('[Cart] Failed to remove from backend:', err));
+      }
+
+      // Track analytics
+      if (itemToRemove) {
+        trackRemoveFromCart(itemToRemove.product, itemToRemove.quantity);
       }
 
       return filtered;

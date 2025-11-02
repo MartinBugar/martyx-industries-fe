@@ -212,7 +212,7 @@ export default function Navbar({cartCount = 0, onSearchSubmit, user, onLogout}: 
                     {wishlistItems.length > 0 && <span className="mi-badge">{wishlistItems.length}</span>}
                   </Link>
                   <Link
-                    to="/cart"
+                    to="/checkout"
                     className="mi-btn mi-btn--ghost mi-drawer-action-btn"
                     onClick={handleCloseDrawer}
                   >
@@ -331,7 +331,7 @@ export default function Navbar({cartCount = 0, onSearchSubmit, user, onLogout}: 
                             </Link>
 
                             {/* Cart (always visible) */}
-                            <Link to="/cart" className="mi-iconbtn" aria-label={t('nav:cart')}>
+                            <Link to="/checkout" className="mi-iconbtn" aria-label={t('nav:cart')}>
                                 <CartIcon/>
                                 {cartCount > 0 && <span className="mi-badge" aria-live="polite">{cartCount}</span>}
                                 <span className="visually-hidden">{t('nav:cart')}</span>

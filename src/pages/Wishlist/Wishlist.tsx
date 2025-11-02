@@ -70,14 +70,25 @@ const Wishlist: React.FC = () => {
             try {
               const galleryData = await productGalleryService.getProductImages(product.masterProductId.toString());
 
-              // Sort by order and get URLs (prefer CDN URLs) - image with order 0 will be first
-              const sortedGallery = galleryData.sort((a, b) => (a.order || 0) - (b.order || 0));
+              // Sort: PRIMARY image first, then by order (same logic as Products page)
+              const sortedGallery = galleryData.sort((a, b) => {
+                // Primary image always goes first
+                if (a.isPrimary && !b.isPrimary) return -1;
+                if (!a.isPrimary && b.isPrimary) return 1;
+                // Otherwise sort by order
+                return (a.order || 0) - (b.order || 0);
+              });
               const galleryUrls = sortedGallery.map(img => img.cdnUrl || img.url).filter(Boolean);
 
               if (import.meta.env.DEV) {
                 console.log(`🏷️ Wishlist: Product ${product.masterProductId} (${product.name}) gallery loaded:`, {
                   galleryCount: galleryUrls.length,
-                  mainImage: galleryUrls[0] || 'none'
+                  mainImage: galleryUrls[0] || 'none',
+                  orderInfo: sortedGallery.slice(0, 3).map(img => ({
+                    fileName: img.fileName,
+                    order: img.order,
+                    isPrimary: img.isPrimary
+                  }))
                 });
               }
 
