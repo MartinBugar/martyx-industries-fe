@@ -18,6 +18,7 @@ interface UploadedImage {
   error?: string;
   order?: number;
   galleryImageId?: string; // Database ID for reordering
+  isPrimary?: boolean; // true = hlavný obrázok produktu
 }
 
 const ProductGalleryUpload: React.FC<ProductGalleryUploadProps> = ({
@@ -72,7 +73,8 @@ const ProductGalleryUpload: React.FC<ProductGalleryUploadProps> = ({
           id: `gallery-${galleryImg.id}`,
           url: galleryImg.cdnUrl || galleryImg.url,
           order: galleryImg.order || index,
-          galleryImageId: galleryImg.id
+          galleryImageId: galleryImg.id,
+          isPrimary: galleryImg.isPrimary || false
         }));
 
       // Fallback to existingImages prop if database loading fails (only on first load)
@@ -369,7 +371,7 @@ const ProductGalleryUpload: React.FC<ProductGalleryUploadProps> = ({
 
   const handleReorderDrop = async (e: React.DragEvent, dropIndex: number) => {
     e.preventDefault();
-    
+
     if (draggedIndex === null || draggedIndex === dropIndex) {
       setDraggedIndex(null);
       return;
@@ -377,21 +379,21 @@ const ProductGalleryUpload: React.FC<ProductGalleryUploadProps> = ({
 
     try {
       setReordering(true);
-      
+
       // Reorder images locally
       const newImages = [...images];
       const draggedImage = newImages[draggedIndex];
       newImages.splice(draggedIndex, 1);
       newImages.splice(dropIndex, 0, draggedImage);
-      
+
       // Update order values
       const reorderedImages = newImages.map((img, index) => ({
         ...img,
         order: index
       }));
-      
+
       setImages(reorderedImages);
-      
+
       // Update backend if we have gallery IDs
       const imageOrders = reorderedImages
         .filter(img => img.galleryImageId)
@@ -411,15 +413,43 @@ const ProductGalleryUpload: React.FC<ProductGalleryUploadProps> = ({
           console.error('❌ Failed to update order on backend:', error);
         }
       }
-      
+
       // Update parent component
       onImagesChange?.(reorderedImages.map(img => img.url));
-      
+
     } catch (error) {
       console.error('❌ Failed to reorder images:', error);
     } finally {
       setReordering(false);
       setDraggedIndex(null);
+    }
+  };
+
+  const handleSetPrimary = async (imageId: string) => {
+    try {
+      console.log('⭐ Setting image as primary:', imageId);
+
+      // Call backend API to set image as primary
+      const updatedImage = await productGalleryService.setPrimaryImage(
+        Number(productId),
+        null, // variantId = null for master product
+        imageId
+      );
+
+      // Update local state - clear all primary flags and set new one
+      setImages(prev => prev.map(img => ({
+        ...img,
+        isPrimary: img.galleryImageId === imageId
+      })));
+
+      console.log('✅ Successfully set image as primary');
+
+      // Refresh gallery to ensure sync with backend
+      await loadGalleryImages(true);
+
+    } catch (error) {
+      console.error('❌ Failed to set primary image:', error);
+      alert('Failed to set image as primary. Please try again.');
     }
   };
 
@@ -533,6 +563,15 @@ const ProductGalleryUpload: React.FC<ProductGalleryUploadProps> = ({
                       >
                         ⋮⋮
                       </button>
+                      {image.galleryImageId && !image.isPrimary && (
+                        <button
+                          className="btn-icon btn-primary"
+                          onClick={() => handleSetPrimary(image.galleryImageId!)}
+                          title="Set as main image"
+                        >
+                          ⭐
+                        </button>
+                      )}
                       <button
                         className="btn-icon btn-danger"
                         onClick={() => handleRemoveImage(image.id)}
@@ -546,7 +585,7 @@ const ProductGalleryUpload: React.FC<ProductGalleryUploadProps> = ({
 
                 <div className="image-info">
                   <span className="image-order">#{index + 1}</span>
-                  {index === 0 && <span className="main-badge">Main</span>}
+                  {image.isPrimary && <span className="main-badge">Main</span>}
                   {image.galleryImageId && <span className="db-badge">DB</span>}
                 </div>
               </div>

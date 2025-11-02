@@ -12,6 +12,7 @@ export interface GalleryImage {
   cdnUrl?: string;
   thumbnailUrl?: string;
   order: number;
+  isPrimary?: boolean;  // true = hlavný obrázok produktu
   folderName?: string;
   createdAt: string;
   updatedAt?: string;
@@ -618,6 +619,32 @@ export class ProductGalleryService {
         'Content-Type': 'application/json',
       } as HeadersInit,
     }));
+
+    return handleResponse(response);
+  }
+
+  /**
+   * Set image as primary (main) for master product or variant
+   */
+  async setPrimaryImage(masterProductId: number, variantId: number | null, imageId: string): Promise<GalleryImage> {
+    const endpoint = variantId
+      ? `${API_BASE_URL}/api/master-products/${masterProductId}/variants/${variantId}/gallery/${imageId}/set-primary`
+      : `${API_BASE_URL}/api/master-products/${masterProductId}/gallery/${imageId}/set-primary`;
+
+    const headers = { ...defaultHeaders };
+    const token = localStorage.getItem('token');
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(endpoint, withLangHeaders({
+      method: 'PUT',
+      headers: headers as HeadersInit,
+    }));
+
+    if (!response.ok) {
+      throw new Error(`Failed to set primary image: ${response.status}`);
+    }
 
     return handleResponse(response);
   }

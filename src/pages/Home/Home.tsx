@@ -1,8 +1,9 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { type Product } from '../../data/productData';
 import { hybridProductService } from '../../services/hybridProductService';
+import { useCart } from '../../context/useCart';
 import WishlistButton from '../../components/WishlistButton';
 import OptimizedImage from '../../components/OptimizedImage/OptimizedImage';
 import { getBestImageUrl, getBaseNameFromPath, isCDNEnabled } from '../../utils/cdnImages';
@@ -25,10 +26,15 @@ const getPriceDisplay = (product: Product): { prefix: string; price: number } =>
 };
 
 const Home: React.FC = () => {
+  const { addToCart } = useCart();
   const { t, i18n } = useTranslation('home');
   const [products, setProducts] = useState<Product[]>([]);
   const [visibilityMap, setVisibilityMap] = useState<VisibilityMap>({});
   const featured = useMemo(() => products.slice(0, 6), [products]);
+
+  type Popup = { visible: boolean; message: string; variant: 'success' | 'warning' };
+  const [popups, setPopups] = useState<Record<string, Popup>>({});
+  const timersRef = useRef<Record<string, number>>({});
 
   // Try to import hero image via bundler; fallback to CSS placeholder if not present
   const heroAlt = t('hero.image_alt');
@@ -68,8 +74,14 @@ const Home: React.FC = () => {
             try {
               const galleryData = await productGalleryService.getProductImages(product.masterProductId.toString());
 
-              // Sort by order and get URLs (prefer CDN URLs)
-              const sortedGallery = galleryData.sort((a, b) => (a.order || 0) - (b.order || 0));
+              // Sort: PRIMARY image first, then by order
+              const sortedGallery = galleryData.sort((a, b) => {
+                // Primary image always goes first
+                if (a.isPrimary && !b.isPrimary) return -1;
+                if (!a.isPrimary && b.isPrimary) return 1;
+                // Otherwise sort by order
+                return (a.order || 0) - (b.order || 0);
+              });
               const galleryUrls = sortedGallery.map(img => img.cdnUrl || img.url).filter(Boolean);
 
               if (import.meta.env.DEV) {
@@ -118,6 +130,36 @@ const Home: React.FC = () => {
     document.head.appendChild(link);
     return () => { if (link.parentNode) document.head.removeChild(link); };
   }, [heroSrc]);
+
+  // Cleanup timers on unmount
+  useEffect(() => {
+    return () => {
+      // cleanup all timers on unmount
+      Object.values(timersRef.current).forEach(id => window.clearTimeout(id));
+      timersRef.current = {};
+    };
+  }, []);
+
+  const handleAdd = (p: Product) => () => {
+    const status = addToCart(p);
+    const isLimit = status === 'limit';
+    const message = isLimit ? t('cart.add_limit', { ns: 'products' }) : t('cart.add_success', { ns: 'products' });
+    const variant: Popup['variant'] = isLimit ? 'warning' : 'success';
+
+    const key = p.variantId.toString();
+    setPopups(prev => ({ ...prev, [key]: { visible: true, message, variant } }));
+
+    const existing = timersRef.current[key];
+    if (existing) window.clearTimeout(existing);
+
+    timersRef.current[key] = window.setTimeout(() => {
+      setPopups(prev => ({
+        ...prev,
+        [key]: { ...(prev[key] || { message: '', variant: 'success' }), visible: false }
+      }));
+      delete timersRef.current[key];
+    }, 2000);
+  };
 
   return (
     <div className="home-root" aria-label="Home Page">
@@ -205,50 +247,83 @@ const Home: React.FC = () => {
             </div>
           </div>
           <div className="featured-grid">
-            {featured.map((p, index) => (
-              <article key={p.variantId} className="product-card">
-                <div className="product-card-image-container">
+            {featured.map((p, index) => {
+              const popupKey = p.variantId.toString();
+              return (
+                <article key={p.variantId} className="product-card">
                   <Link to={`/products/${p.masterProductId}`} className="product-card-link">
-                    <OptimizedImage
-                      src={(() => {
-                        if (!p.gallery?.[0]) return '/assets/kit-01.png';
-                        const mainImage = p.gallery[0];
-                        // If the image URL is already a CDN URL, use it directly
-                        const isCDNUrl = mainImage.includes('digitaloceanspaces.com') || mainImage.includes(import.meta.env.VITE_CDN_BASE || '');
-                        const finalSrc = isCDNUrl ? mainImage : (isCDNEnabled() ? getBestImageUrl(getBaseNameFromPath(mainImage), 800) : mainImage);
-                        if (import.meta.env.DEV && p.masterProductId === 1) {
-                          console.log(`🏠 Homepage card for ${p.name} - Original:`, mainImage, '→ Final:', finalSrc, '(CDN URL detected:', isCDNUrl, ')');
-                        }
-                        return finalSrc;
-                      })()}
-                      alt={p.name}
-                      className="product-image"
-                      priority={index < 3} // Prvé 3 featured produkty majú prioritu
-                      placeholder="/images/product-placeholder.svg"
-                    />
-                  </Link>
-                  <div className="product-card-wishlist">
-                    <WishlistButton
-                      productId={p.masterProductId}
-                      size="small"
-                      variant="icon"
-                    />
-                  </div>
-                </div>
-                <Link to={`/products/${p.masterProductId}`} className="product-card-link">
-                  <div className="product-info">
-                    <h3 className="product-title">{p.name}</h3>
-                    <div className="product-price">
-                      {(() => {
-                        const { prefix, price } = getPriceDisplay(p);
-                        return `${prefix}${price.toFixed(2)} ${p.currency === 'EUR' ? '€' : p.currency}`;
-                      })()}
+                    <div className="product-card-image-container">
+                      <OptimizedImage
+                        src={(() => {
+                          if (!p.gallery?.[0]) return '/assets/kit-01.png';
+                          const mainImage = p.gallery[0];
+                          // If the image URL is already a CDN URL, use it directly
+                          const isCDNUrl = mainImage.includes('digitaloceanspaces.com') || mainImage.includes(import.meta.env.VITE_CDN_BASE || '');
+                          const finalSrc = isCDNUrl ? mainImage : (isCDNEnabled() ? getBestImageUrl(getBaseNameFromPath(mainImage), 800) : mainImage);
+                          if (import.meta.env.DEV && p.masterProductId === 1) {
+                            console.log(`🏠 Homepage card for ${p.name} - Original:`, mainImage, '→ Final:', finalSrc, '(CDN URL detected:', isCDNUrl, ')');
+                          }
+                          return finalSrc;
+                        })()}
+                        alt={p.name}
+                        className="product-image"
+                        priority={index < 3} // Prvé 3 featured produkty majú prioritu
+                        placeholder="/images/product-placeholder.svg"
+                      />
+                      <div className="product-card-wishlist">
+                        <WishlistButton
+                          productId={p.masterProductId}
+                          size="small"
+                          variant="icon"
+                        />
+                      </div>
                     </div>
-                    <p className="product-description">{p.description}</p>
+
+                    <div className="product-info">
+                      <h3 className="product-title">{p.name}</h3>
+                      <div className="product-price">
+                        {(() => {
+                          const { prefix, price } = getPriceDisplay(p);
+                          return `${prefix}${price.toFixed(2)} ${p.currency === 'EUR' ? '€' : p.currency}`;
+                        })()}
+                      </div>
+                      <p className="product-description">{p.description}</p>
+                    </div>
+                  </Link>
+
+                  <div className="product-card-actions">
+                    <button
+                      className={`add-to-cart-btn${popups[popupKey]?.visible ? ` is-popup ${popups[popupKey].variant}` : ''}`}
+                      onClick={handleAdd(p)}
+                      disabled={!!popups[popupKey]?.visible}
+                      aria-live="polite"
+                    >
+                      {popups[popupKey]?.visible ? (
+                        <span className="popup-message">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            {popups[popupKey].variant === 'success' ? (
+                              <polyline points="20,6 9,17 4,12"></polyline>
+                            ) : (
+                              <circle cx="12" cy="12" r="10"></circle>
+                            )}
+                          </svg>
+                          {popups[popupKey].message}
+                        </span>
+                      ) : (
+                        <span className="add-to-cart-text">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <circle cx="8" cy="21" r="1"></circle>
+                            <circle cx="19" cy="21" r="1"></circle>
+                            <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57L20.6 7H6"></path>
+                          </svg>
+                          {t('cart.add_to_cart', { ns: 'products' })}
+                        </span>
+                      )}
+                    </button>
                   </div>
-                </Link>
-              </article>
-            ))}
+                </article>
+              );
+            })}
           </div>
         </div>
       </section>

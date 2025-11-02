@@ -185,15 +185,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       // Create user object from response data
       const newUser: User = {
-        id: id,
+        id: String(id), // Convert id to string
         email: userEmail,
         orders: [] // Initialize empty orders array
       };
 
+      console.log('🔐 Login response:', { token, refreshToken, id, userEmail, emailConfirmed });
+      console.log('👤 Created user object:', newUser);
 
       // Store user data in state and localStorage
       setUser(newUser);
-      console.log('💾 Storing user:', newUser);
+      console.log('💾 Stored user in state:', newUser);
+      console.log('✅ isAuthenticated should now be:', !!newUser);
       secureLocalStorage.set('user', newUser);
       localStorage.setItem('user', JSON.stringify(newUser)); // Also store in regular localStorage
 

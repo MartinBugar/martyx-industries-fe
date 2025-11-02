@@ -139,11 +139,21 @@ function AppWrapper() {
 // Memoized main content component
 const MainContent = React.memo(() => {
   const { getTotalItems } = useCart();
-  const { user, logout } = useAuth();
+  const { user, logout, isAuthenticated } = useAuth();
   const [showCart, setShowCart] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
+
+  // Debug log whenever user changes
+  React.useEffect(() => {
+    console.log('🎯 MainContent - Auth state:', {
+      user,
+      isAuthenticated,
+      userId: user?.id,
+      userEmail: user?.email
+    });
+  }, [user, isAuthenticated]);
 
   // Memoized callbacks to prevent unnecessary re-renders
   const toggleCart = useCallback(() => {
