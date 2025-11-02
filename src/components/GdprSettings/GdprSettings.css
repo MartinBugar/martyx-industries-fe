@@ -323,6 +323,403 @@
     font-style: italic;
 }
 
+/* Compact GDPR Card - Minimal Design */
+.gdpr-card-compact {
+    background: #1a1a1a;
+    border-radius: 12px;
+    border: 1px solid #333;
+    overflow: hidden;
+    margin-bottom: 1.25rem;
+}
+
+.gdpr-message {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.875rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.gdpr-message.success {
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    color: #065f46;
+    border-bottom: 1px solid #6ee7b7;
+}
+
+.gdpr-message.error {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    color: #991b1b;
+    border-bottom: 1px solid #fca5a5;
+}
+
+.gdpr-message-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem;
+    color: currentColor;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+    flex-shrink: 0;
+}
+
+.gdpr-message-close:hover {
+    opacity: 1;
+}
+
+.gdpr-content-compact {
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.gdpr-header-compact {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+}
+
+.gdpr-icon-compact {
+    width: 36px;
+    height: 36px;
+    padding: 8px;
+    background: linear-gradient(135deg, rgba(255, 204, 0, 0.1) 0%, rgba(230, 184, 0, 0.1) 100%);
+    color: #ffcc00;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.gdpr-header-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+}
+
+.gdpr-title-compact {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0;
+}
+
+.gdpr-subtitle-compact {
+    font-size: 0.75rem;
+    color: #999;
+    margin: 0;
+}
+
+.gdpr-actions-compact {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.gdpr-action-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.875rem;
+    background: #0a0a0a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.gdpr-action-button:hover:not(:disabled) {
+    border-color: #ffcc00;
+    background: rgba(255, 204, 0, 0.05);
+    transform: translateY(-1px);
+}
+
+.gdpr-action-button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.gdpr-action-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.gdpr-action-button svg {
+    width: 16px;
+    height: 16px;
+}
+
+.gdpr-toggle-group {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.5rem 0.875rem;
+    background: #0a0a0a;
+    border: 1px solid #333;
+    border-radius: 8px;
+}
+
+.gdpr-toggle-label {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: #ffffff;
+}
+
+.modern-toggle {
+    position: relative;
+    display: inline-block;
+    width: 42px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.modern-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.modern-toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #cbd5e1;
+    transition: 0.3s;
+    border-radius: 24px;
+}
+
+.modern-toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.modern-toggle input:checked + .modern-toggle-slider {
+    background: linear-gradient(135deg, #ffcc00 0%, #e6b800 100%);
+}
+
+.modern-toggle input:checked + .modern-toggle-slider:before {
+    transform: translateX(18px);
+}
+
+.modern-toggle input:disabled + .modern-toggle-slider {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+    .gdpr-content-compact {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .gdpr-actions-compact {
+        width: 100%;
+    }
+
+    .gdpr-action-button,
+    .gdpr-toggle-group {
+        flex: 1;
+        justify-content: center;
+    }
+}
+
+/* Delete Account Card - Minimal Design */
+.delete-account-card {
+    background: #1a1a1a;
+    border-radius: 12px;
+    border: 1px solid #333;
+    margin-bottom: 1.25rem;
+}
+
+.delete-account-content {
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.delete-account-header {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    flex: 1;
+    min-width: 240px;
+}
+
+.delete-account-icon {
+    width: 36px;
+    height: 36px;
+    padding: 8px;
+    background: rgba(100, 100, 100, 0.1);
+    color: #999;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.delete-account-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.delete-account-title {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0;
+}
+
+.delete-account-subtitle {
+    font-size: 0.75rem;
+    color: #999;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.delete-account-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.875rem;
+    background: #dc2626;
+    border: 1px solid #dc2626;
+    border-radius: 8px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.delete-account-button:hover:not(:disabled) {
+    background: #b91c1c;
+    border-color: #b91c1c;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+    transform: translateY(-1px);
+}
+
+.delete-account-button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.delete-account-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Delete Warning Box */
+.delete-warning-box {
+    border-top: 1px solid #333;
+    background: rgba(220, 38, 38, 0.05);
+    padding: 1rem 1.25rem;
+}
+
+.delete-warning-content {
+    display: flex;
+    gap: 0.875rem;
+}
+
+.delete-warning-icon {
+    width: 24px;
+    height: 24px;
+    color: #dc2626;
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+}
+
+.delete-warning-text {
+    flex: 1;
+}
+
+.delete-warning-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #ef4444;
+    margin: 0 0 0.5rem 0;
+}
+
+.delete-warning-description {
+    font-size: 0.8125rem;
+    color: #fca5a5;
+    line-height: 1.5;
+    margin: 0 0 0.75rem 0;
+}
+
+.delete-warning-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+
+.delete-warning-list li {
+    font-size: 0.75rem;
+    color: #fca5a5;
+    padding-left: 1.25rem;
+    position: relative;
+    line-height: 1.4;
+}
+
+.delete-warning-list li::before {
+    content: "•";
+    position: absolute;
+    left: 0.375rem;
+    color: #dc2626;
+    font-weight: bold;
+}
+
+@media (max-width: 768px) {
+    .delete-account-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .delete-account-header {
+        min-width: auto;
+        width: 100%;
+    }
+
+    .delete-account-button {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
 /* Modal */
 .modal-overlay {
     position: fixed;

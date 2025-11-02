@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Package, Plus, Save, Trash2, Edit } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
+import './AdminButtonOverrides.css';
 import { adminProductsService, type MasterProductDto, type ProductVariantDto, type VariantComponentDto } from '../../services/adminProductsService';
 import { Button, Badge } from '../../components/ui';
 import VariantEditor from '../../components/admin/VariantEditor';
@@ -201,157 +202,37 @@ const AdminProductDetail: React.FC = () => {
 
   return (
     <AdminLayout title={`Product: ${product?.name || 'Loading...'}`} navTabs={navTabs}>
-      <div style={{ background: '#0F1115', minHeight: '100vh', padding: '24px' }}>
-        <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-          {/* Modern Header */}
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'flex-start',
-            marginBottom: '32px',
-            gap: '24px',
-            flexWrap: 'wrap'
-          }}>
-            <div style={{ flex: 1, minWidth: '300px' }}>
-              <h2 style={{
-                margin: '0 0 8px 0',
-                fontSize: '28px',
-                fontWeight: 700,
-                color: '#ffffff',
-                lineHeight: 1.2
-              }}>
-                {product?.name || 'Loading...'}
-              </h2>
-              <p style={{
-                margin: 0,
-                color: '#9CA3AF',
-                fontSize: '15px',
-                lineHeight: 1.5
-              }}>
-                Manage master product information and variants
-              </p>
+      <div className="admin-page">
+        <div className="admin-container">
+          {/* Header */}
+          <div className="admin-header">
+            <div className="header-actions">
+              <Link to="/admin/products" className="btn btn-outline">
+                ← Back to Products
+              </Link>
             </div>
-            <Link
-              to="/admin/products"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '12px 20px',
-                borderRadius: '10px',
-                background: 'rgba(255, 255, 255, 0.05)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                color: '#E5E7EB',
-                textDecoration: 'none',
-                fontSize: '14px',
-                fontWeight: 500,
-                transition: 'all 0.2s ease',
-                backdropFilter: 'blur(10px)'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-                e.currentTarget.style.transform = 'translateY(-1px)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
-                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
-                e.currentTarget.style.transform = 'translateY(0)';
-              }}
-            >
-              ← Back to Products
-            </Link>
           </div>
 
-          {/* Modern Alerts */}
+          {/* Alerts */}
           {error && (
-            <div style={{
-              padding: '16px 20px',
-              background: 'rgba(239, 68, 68, 0.1)',
-              border: '1px solid rgba(239, 68, 68, 0.3)',
-              borderRadius: '12px',
-              color: '#FCA5A5',
-              fontSize: '14px',
-              marginBottom: '24px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px'
-            }}>
-              <span style={{ fontSize: '18px' }}>⚠️</span>
-              {error}
-            </div>
+            <div className="alert alert-error">{error}</div>
           )}
           {savedMsg && (
-            <div style={{
-              padding: '16px 20px',
-              background: 'rgba(16, 185, 129, 0.1)',
-              border: '1px solid rgba(16, 185, 129, 0.3)',
-              borderRadius: '12px',
-              color: '#6EE7B7',
-              fontSize: '14px',
-              marginBottom: '24px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px'
-            }}>
-              <span style={{ fontSize: '18px' }}>✓</span>
-              {savedMsg}
-            </div>
+            <div className="alert alert-success">{savedMsg}</div>
           )}
 
           {loading ? (
-            <div style={{
-              background: 'linear-gradient(135deg, #1F2538 0%, #1B2030 100%)',
-              borderRadius: '16px',
-              padding: '60px 24px',
-              textAlign: 'center',
-              border: '1px solid #374151',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
-            }}>
-              <div style={{
-                width: '48px',
-                height: '48px',
-                border: '3px solid rgba(59, 130, 246, 0.3)',
-                borderTop: '3px solid #3B82F6',
-                borderRadius: '50%',
-                animation: 'spin 1s linear infinite',
-                margin: '0 auto 16px'
-              }} />
-              <p style={{ margin: 0, color: '#9CA3AF', fontSize: '15px' }}>Loading product...</p>
+            <div className="admin-card" style={{ textAlign: 'center', padding: '40px' }}>
+              <div style={{ fontSize: '18px', color: '#666' }}>Loading product...</div>
             </div>
           ) : !product ? (
-            <div style={{
-              background: 'linear-gradient(135deg, #1F2538 0%, #1B2030 100%)',
-              borderRadius: '16px',
-              padding: '60px 24px',
-              textAlign: 'center',
-              border: '1px solid #374151',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
-            }}>
+            <div className="admin-card" style={{ textAlign: 'center', padding: '40px' }}>
               <div style={{ fontSize: '48px', marginBottom: '16px' }}>📦</div>
-              <h3 style={{ margin: '0 0 8px 0', fontSize: '20px', fontWeight: 600, color: '#ffffff' }}>
-                Product not found
-              </h3>
-              <p style={{ margin: '0 0 24px 0', color: '#9CA3AF', fontSize: '14px' }}>
+              <h3 style={{ margin: '0 0 8px 0' }}>Product not found</h3>
+              <p style={{ color: '#6b7280', marginBottom: '24px' }}>
                 The product you're looking for doesn't exist or has been deleted.
               </p>
-              <Link
-                to="/admin/products"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '12px 20px',
-                  borderRadius: '10px',
-                  background: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)',
-                  border: 'none',
-                  color: '#ffffff',
-                  textDecoration: 'none',
-                  fontSize: '14px',
-                  fontWeight: 500,
-                  boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)'
-                }}
-              >
+              <Link to="/admin/products" className="btn btn-primary">
                 ← Back to Products
               </Link>
             </div>
@@ -359,82 +240,23 @@ const AdminProductDetail: React.FC = () => {
             <>
               {/* Product Info Tab */}
               {activeTab === 'product-info' && (
-                <div style={{
-                  background: 'linear-gradient(135deg, #1F2538 0%, #1B2030 100%)',
-                  borderRadius: '16px',
-                  padding: '32px',
-                  border: '1px solid #374151',
-                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
-                }}>
-                  <h3 style={{
-                    margin: '0 0 28px 0',
-                    fontSize: '20px',
-                    fontWeight: 600,
-                    color: '#ffffff',
-                    paddingBottom: '16px',
-                    borderBottom: '1px solid #374151'
-                  }}>
-                    Master Product Information
-                  </h3>
-                  <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-                    gap: '24px'
-                  }}>
+                <div className="admin-card">
+                  <h3 className="section-title">Master Product Information</h3>
+                  <div className="form-grid">
                     <div>
-                      <label style={{
-                        display: 'block',
-                        fontSize: '14px',
-                        fontWeight: 500,
-                        color: '#9CA3AF',
-                        marginBottom: '8px'
-                      }}>
-                        Name *
-                      </label>
+                      <label className="form-label">Name *</label>
                       <input
-                        style={{
-                          width: '100%',
-                          padding: '12px 16px',
-                          borderRadius: '8px',
-                          border: '1px solid #374151',
-                          background: '#0F1115',
-                          color: '#ffffff',
-                          fontSize: '14px',
-                          outline: 'none',
-                          transition: 'border-color 0.2s ease'
-                        }}
+                        className="form-input"
                         value={product.name}
                         onChange={(e) => updateField('name', e.target.value)}
-                        onFocus={(e) => e.currentTarget.style.borderColor = '#3B82F6'}
-                        onBlur={(e) => e.currentTarget.style.borderColor = '#374151'}
                       />
                     </div>
                     <div>
-                      <label style={{
-                        display: 'block',
-                        fontSize: '14px',
-                        fontWeight: 500,
-                        color: '#9CA3AF',
-                        marginBottom: '8px'
-                      }}>
-                        Slug (URL)
-                      </label>
+                      <label className="form-label">Slug (URL)</label>
                       <input
-                        style={{
-                          width: '100%',
-                          padding: '12px 16px',
-                          borderRadius: '8px',
-                          border: '1px solid #374151',
-                          background: '#0F1115',
-                          color: '#ffffff',
-                          fontSize: '14px',
-                          outline: 'none',
-                          transition: 'border-color 0.2s ease'
-                        }}
+                        className="form-input"
                         value={product.slug || ''}
                         onChange={(e) => updateField('slug', e.target.value)}
-                        onFocus={(e) => e.currentTarget.style.borderColor = '#3B82F6'}
-                        onBlur={(e) => e.currentTarget.style.borderColor = '#374151'}
                       />
                     </div>
                     <div>
@@ -732,34 +554,24 @@ const VariantCard: React.FC<VariantCardProps> = ({
   };
 
   return (
-    <div
-      style={{
-        background: 'linear-gradient(135deg, #1F2538 0%, #1B2030 100%)',
-        border: '1px solid #4B5563',
-        borderRadius: '12px',
-        overflow: 'hidden',
-        transition: 'all 0.2s ease',
-        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-      }}
-    >
+    <div className="admin-card" style={{ marginBottom: '16px' }}>
       {/* Header - Clickable */}
       <div
         style={{
           padding: '20px 24px',
-          background: 'rgba(59, 130, 246, 0.05)',
-          borderBottom: '1px solid #4B5563',
+          borderBottom: '1px solid #e2e8f0',
           cursor: 'pointer',
           transition: 'background 0.2s ease',
         }}
         onClick={() => setExpanded(!expanded)}
-        onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(59, 130, 246, 0.08)'}
-        onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(59, 130, 246, 0.05)'}
+        onMouseEnter={(e) => e.currentTarget.style.background = '#f8fafc'}
+        onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16 }}>
           <div style={{ flex: 1, minWidth: 0 }}>
             {/* Title & Badges Row */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8, flexWrap: 'wrap' }}>
-              <h4 style={{ margin: 0, fontSize: '18px', fontWeight: 600, color: '#ffffff' }}>
+              <h4 style={{ margin: 0, fontSize: '18px', fontWeight: 600, color: '#1f2937' }}>
                 {variant.variantName}
               </h4>
               <Badge variant="info" size="sm">{variant.sku}</Badge>
@@ -769,8 +581,8 @@ const VariantCard: React.FC<VariantCardProps> = ({
             </div>
 
             {/* Info Row */}
-            <div style={{ display: 'flex', gap: 16, fontSize: '14px', color: '#9CA3AF', flexWrap: 'wrap' }}>
-              <span style={{ fontWeight: 500, color: '#E5E7EB' }}>
+            <div style={{ display: 'flex', gap: 16, fontSize: '14px', color: '#6b7280', flexWrap: 'wrap' }}>
+              <span style={{ fontWeight: 500, color: '#374151' }}>
                 €{variant.priceWithVat?.toFixed(2) || '0.00'}
               </span>
               <span>•</span>
@@ -804,58 +616,51 @@ const VariantCard: React.FC<VariantCardProps> = ({
         <div style={{ padding: '24px' }}>
           {/* Pricing & Details Grid */}
           <div style={{ marginBottom: 32 }}>
-            <h5 style={{
-              margin: '0 0 16px 0',
-              fontSize: '14px',
-              fontWeight: 600,
-              color: '#9CA3AF',
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px'
-            }}>
+            <h5 className="section-title" style={{ fontSize: '14px' }}>
               Details
             </h5>
             <div style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
               gap: '16px',
-              background: 'rgba(15, 17, 21, 0.5)',
+              background: '#f9fafb',
               padding: '16px',
               borderRadius: '8px',
-              border: '1px solid #374151'
+              border: '1px solid #e5e7eb'
             }}>
               <div>
-                <div style={{ fontSize: '12px', color: '#6B7280', marginBottom: 4 }}>Type</div>
-                <div style={{ fontSize: '14px', color: '#E5E7EB', fontWeight: 500 }}>
+                <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: 4 }}>Type</div>
+                <div style={{ fontSize: '14px', color: '#1f2937', fontWeight: 500 }}>
                   {getVariantTypeLabel(variant.variantType)}
                 </div>
               </div>
               <div>
-                <div style={{ fontSize: '12px', color: '#6B7280', marginBottom: 4 }}>Fulfillment</div>
-                <div style={{ fontSize: '14px', color: '#E5E7EB', fontWeight: 500 }}>
+                <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: 4 }}>Fulfillment</div>
+                <div style={{ fontSize: '14px', color: '#1f2937', fontWeight: 500 }}>
                   {getFulfillmentTypeLabel(variant.fulfillmentType)}
                 </div>
               </div>
               <div>
-                <div style={{ fontSize: '12px', color: '#6B7280', marginBottom: 4 }}>Price (with VAT)</div>
+                <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: 4 }}>Price (with VAT)</div>
                 <div style={{ fontSize: '14px', color: '#10B981', fontWeight: 600 }}>
                   €{variant.priceWithVat?.toFixed(2) || '0.00'}
                 </div>
               </div>
               <div>
-                <div style={{ fontSize: '12px', color: '#6B7280', marginBottom: 4 }}>Price (no VAT)</div>
-                <div style={{ fontSize: '14px', color: '#E5E7EB', fontWeight: 500 }}>
+                <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: 4 }}>Price (no VAT)</div>
+                <div style={{ fontSize: '14px', color: '#1f2937', fontWeight: 500 }}>
                   €{variant.priceWithoutVat?.toFixed(2) || '0.00'}
                 </div>
               </div>
               <div>
-                <div style={{ fontSize: '12px', color: '#6B7280', marginBottom: 4 }}>VAT Rate</div>
-                <div style={{ fontSize: '14px', color: '#E5E7EB', fontWeight: 500 }}>
+                <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: 4 }}>VAT Rate</div>
+                <div style={{ fontSize: '14px', color: '#1f2937', fontWeight: 500 }}>
                   {variant.vatRate || 0}%
                 </div>
               </div>
               <div>
-                <div style={{ fontSize: '12px', color: '#6B7280', marginBottom: 4 }}>Currency</div>
-                <div style={{ fontSize: '14px', color: '#E5E7EB', fontWeight: 500 }}>
+                <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: 4 }}>Currency</div>
+                <div style={{ fontSize: '14px', color: '#1f2937', fontWeight: 500 }}>
                   {variant.currency || 'EUR'}
                 </div>
               </div>
@@ -870,14 +675,7 @@ const VariantCard: React.FC<VariantCardProps> = ({
               alignItems: 'center',
               marginBottom: 16
             }}>
-              <h5 style={{
-                margin: 0,
-                fontSize: '14px',
-                fontWeight: 600,
-                color: '#9CA3AF',
-                textTransform: 'uppercase',
-                letterSpacing: '0.5px'
-              }}>
+              <h5 className="section-title" style={{ fontSize: '14px' }}>
                 Components ({variant.components?.length || 0})
               </h5>
               <Button
@@ -893,11 +691,11 @@ const VariantCard: React.FC<VariantCardProps> = ({
             {!variant.components || variant.components.length === 0 ? (
               <div style={{
                 padding: '24px',
-                background: 'rgba(245, 158, 11, 0.1)',
-                border: '1px solid rgba(245, 158, 11, 0.3)',
+                background: '#fef3c7',
+                border: '1px solid #fbbf24',
                 borderRadius: '8px',
                 fontSize: '14px',
-                color: '#FCD34D',
+                color: '#92400e',
                 textAlign: 'center'
               }}>
                 No components yet. Click "Add" to define what's included in this variant.
@@ -909,8 +707,8 @@ const VariantCard: React.FC<VariantCardProps> = ({
                     key={component.id || idx}
                     style={{
                       padding: '14px 16px',
-                      background: 'rgba(15, 17, 21, 0.5)',
-                      border: '1px solid #374151',
+                      background: '#f9fafb',
+                      border: '1px solid #e5e7eb',
                       borderRadius: '8px',
                       display: 'flex',
                       justifyContent: 'space-between',
@@ -918,16 +716,16 @@ const VariantCard: React.FC<VariantCardProps> = ({
                       gap: 12,
                       transition: 'border-color 0.2s ease',
                     }}
-                    onMouseEnter={(e) => e.currentTarget.style.borderColor = '#4B5563'}
-                    onMouseLeave={(e) => e.currentTarget.style.borderColor = '#374151'}
+                    onMouseEnter={(e) => e.currentTarget.style.borderColor = '#d1d5db'}
+                    onMouseLeave={(e) => e.currentTarget.style.borderColor = '#e5e7eb'}
                   >
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontWeight: 500, marginBottom: 2, color: '#ffffff', fontSize: '14px' }}>
+                      <div style={{ fontWeight: 500, marginBottom: 2, color: '#1f2937', fontSize: '14px' }}>
                         {component.quantity && component.quantity > 1 ? `${component.quantity}× ` : ''}
                         {component.componentName}
                       </div>
                       {component.description && (
-                        <div style={{ fontSize: '13px', color: '#9CA3AF' }}>
+                        <div style={{ fontSize: '13px', color: '#6b7280' }}>
                           {component.description}
                         </div>
                       )}
@@ -966,7 +764,7 @@ const VariantCard: React.FC<VariantCardProps> = ({
           <div style={{
             marginTop: 24,
             paddingTop: 20,
-            borderTop: '1px solid #374151',
+            borderTop: '1px solid #e5e7eb',
             display: 'flex',
             justifyContent: 'flex-end'
           }}>

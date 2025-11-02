@@ -1,3 +1,23 @@
+/* Normal buttons outside of tables - reset to default */
+.admin-header .action-buttons .btn,
+.admin-header .action-buttons button {
+  padding: 10px 16px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  min-width: auto !important;
+  max-width: none !important;
+  width: auto !important;
+  height: auto !important;
+  gap: 8px !important;
+}
+
+.admin-header .action-buttons .btn .btn-text,
+.admin-header .action-buttons button .btn-text {
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+  display: inline !important;
+}
+
 /* Action buttons container - ONLY in tables */
 .admin-table .action-buttons,
 .mobile-table-cards .action-buttons {

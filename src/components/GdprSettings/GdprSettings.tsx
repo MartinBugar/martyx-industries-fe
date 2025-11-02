@@ -127,126 +127,115 @@ const GdprSettings: React.FC = () => {
                 </div>
             )}
 
-            {/* Marketing Consent Card */}
-            <div className="gdpr-card">
-                <div className="card-header">
-                    <div className="card-icon">📧</div>
-                    <div>
-                        <h3 className="card-title">Marketing súhlas</h3>
-                        <p className="card-description">
-                            Zasielanie marketingových emailov a noviniek
-                        </p>
-                    </div>
-                </div>
-
-                <div className="card-body">
-                    {consentStatus ? (
-                        <>
-                            <div className="consent-status">
-                                <div className={`status-badge ${consentStatus.marketing ? 'active' : 'inactive'}`}>
-                                    {consentStatus.marketing ? '✅ Aktívny' : '❌ Neaktívny'}
-                                </div>
-                                <p className="status-text">
-                                    {consentStatus.marketing
-                                        ? 'Súhlasíte so zasielaním marketingových materiálov'
-                                        : 'Neprijímate marketingové emaily'}
-                                </p>
-                            </div>
-
-                            <button
-                                className={`btn ${consentStatus.marketing ? 'btn-warning' : 'btn-success'}`}
-                                onClick={handleToggleMarketingConsent}
-                                disabled={loading}
-                            >
-                                {loading ? (
-                                    <span>Ukladám...</span>
-                                ) : consentStatus.marketing ? (
-                                    <span>Odvolať súhlas</span>
-                                ) : (
-                                    <span>Povoliť súhlas</span>
-                                )}
-                            </button>
-                        </>
-                    ) : (
-                        <div className="loading-text">Načítavam...</div>
-                    )}
-                </div>
-
-                <div className="card-footer">
-                    <small>GDPR Článok 7(3) - Súhlas môžete kedykoľvek odvolať</small>
-                </div>
-            </div>
-
-            {/* Export Personal Data Card */}
-            <div className="gdpr-card">
-                <div className="card-header">
-                    <div className="card-icon">📊</div>
-                    <div>
-                        <h3 className="card-title">Export osobných údajov</h3>
-                        <p className="card-description">
-                            Stiahnite si všetky vaše osobné údaje vo formáte JSON
-                        </p>
-                    </div>
-                </div>
-
-                <div className="card-body">
-                    <p className="info-text">
-                        Máte právo získať kópiu všetkých vašich osobných údajov, ktoré o vás uchovávame.
-                        Export obsahuje vaše osobné údaje, históriu objednávok, súhlasy a ďalšie informácie.
-                    </p>
-
-                    <button
-                        className="btn btn-primary"
-                        onClick={handleDownloadDataExport}
-                        disabled={loading}
-                    >
-                        📥 Stiahnuť moje dáta
-                    </button>
-                </div>
-
-                <div className="card-footer">
-                    <small>GDPR Článok 15 - Právo na prístup k osobným údajom</small>
-                </div>
-            </div>
-
-            {/* Delete Account Card */}
-            <div className="gdpr-card danger-card">
-                <div className="card-header">
-                    <div className="card-icon danger-icon">🗑️</div>
-                    <div>
-                        <h3 className="card-title">Zmazanie účtu</h3>
-                        <p className="card-description">
-                            Trvalo vymazať váš účet a osobné údaje
-                        </p>
-                    </div>
-                </div>
-
-                <div className="card-body">
-                    <div className="danger-box">
-                        <div className="danger-icon-wrapper">
-                            <svg className="danger-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            {/* Privacy & GDPR - Minimal Card */}
+            <div className="gdpr-card-compact">
+                {success && (
+                    <div className="gdpr-message success">
+                        <span>{success}</span>
+                        <button onClick={() => setSuccess(null)} className="gdpr-message-close">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                             </svg>
+                        </button>
+                    </div>
+                )}
+
+                <div className="gdpr-content-compact">
+                    <div className="gdpr-header-compact">
+                        <svg className="gdpr-icon-compact" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                        <div className="gdpr-header-text">
+                            <h3 className="gdpr-title-compact">Súkromie & údaje</h3>
+                            <p className="gdpr-subtitle-compact">Export, marketing súhlas</p>
                         </div>
-                        <div>
-                            <p className="danger-title">Toto je nevratná akcia</p>
-                            <p className="danger-text">
-                                Všetky vaše osobné údaje budú trvalo vymazané. História objednávok bude zachovaná
-                                po dobu 10 rokov (zákonná povinnosť pre účtovné účely podľa Zákona č. 431/2002 Z. z.).
+                    </div>
+
+                    <div className="gdpr-actions-compact">
+                        <button
+                            onClick={handleDownloadDataExport}
+                            disabled={loading}
+                            className="gdpr-action-button"
+                            title="Stiahnuť všetky osobné údaje (JSON)"
+                        >
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            <span>{loading ? 'Exportujem...' : 'Export'}</span>
+                        </button>
+
+                        {consentStatus && (
+                            <div className="gdpr-toggle-group">
+                                <span className="gdpr-toggle-label">Marketing</span>
+                                <label className="modern-toggle">
+                                    <input
+                                        type="checkbox"
+                                        checked={consentStatus.marketing || false}
+                                        onChange={(e) => {
+                                            const isGranting = e.target.checked;
+                                            if (window.confirm(
+                                                isGranting
+                                                    ? 'Chcete povoliť zasielanie marketingových emailov?'
+                                                    : 'Naozaj chcete odvolať marketing consent?'
+                                            )) {
+                                                handleToggleMarketingConsent();
+                                            } else {
+                                                e.target.checked = !isGranting;
+                                            }
+                                        }}
+                                        disabled={loading}
+                                    />
+                                    <span className="modern-toggle-slider"></span>
+                                </label>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            {/* Delete Account Card - Minimal Design */}
+            <div className="delete-account-card">
+                <div className="delete-account-content">
+                    <div className="delete-account-header">
+                        <svg className="delete-account-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        <div className="delete-account-text">
+                            <h3 className="delete-account-title">Zmazanie účtu</h3>
+                            <p className="delete-account-subtitle">
+                                Trvalo vymazať váš účet a osobné údaje
                             </p>
                         </div>
                     </div>
 
                     <button
-                        className="btn btn-danger"
+                        className="delete-account-button"
                         onClick={() => setShowDeleteModal(true)}
+                        disabled={loading}
                     >
-                        Zmazať môj účet
+                        <span>Zmazať účet</span>
                     </button>
                 </div>
 
-                <div className="card-footer">
-                    <small>GDPR Článok 17 - Právo na výmaz ("Právo byť zabudnutý")</small>
+                {/* Warning Box */}
+                <div className="delete-warning-box">
+                    <div className="delete-warning-content">
+                        <svg className="delete-warning-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                        <div className="delete-warning-text">
+                            <h4 className="delete-warning-title">Toto je nevratná akcia</h4>
+                            <p className="delete-warning-description">
+                                Po zmazaní účtu nebudete môcť obnoviť žiadne dáta. Všetky vaše predplatné, platby a osobné informácie budú natrvalo odstránené.
+                            </p>
+                            <ul className="delete-warning-list">
+                                <li>30-dňová lehota na zrušenie žiadosti</li>
+                                <li>Aktívne predplatné bude automaticky zrušené</li>
+                                <li>Faktúry budú anonymizované (zachované pre účtovné účely)</li>
+                                <li>Email s potvrdením bude odoslaný</li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
 
