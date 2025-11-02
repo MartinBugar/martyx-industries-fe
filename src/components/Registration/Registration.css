@@ -40,7 +40,7 @@
 /* ===== MAIN LAYOUT ===== */
 .registration-page {
   min-height: 100vh;
-  background: var(--background);
+  background: transparent;
   display: flex;
   align-items: flex-start;
   justify-content: center;
