@@ -430,7 +430,7 @@ const ProductGalleryUpload: React.FC<ProductGalleryUploadProps> = ({
       console.log('⭐ Setting image as primary:', imageId);
 
       // Call backend API to set image as primary
-      const updatedImage = await productGalleryService.setPrimaryImage(
+      await productGalleryService.setPrimaryImage(
         Number(productId),
         null, // variantId = null for master product
         imageId

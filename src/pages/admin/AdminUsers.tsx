@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Eye, Pencil, Save, X, Search } from 'lucide-react';
 import AdminLayout from './AdminLayout';
-import './AdminUsers.css'; // Updated button styling
+import './AdminUsers.css';
+import './AdminButtonOverrides.css'; // Force button visibility
 import { adminUsersService, type AdminUser, type AdminSignupRequest, type PageResponse } from '../../services/adminUsersService';
 import { Button, Badge, SkeletonTable } from '../../components/ui';
 import { useDebounce } from '../../hooks/useDebounce';

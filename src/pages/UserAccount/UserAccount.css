@@ -2,19 +2,19 @@
 .account-page {
   min-height: calc(100vh - 4rem);
   background: var(--bg, #0a0a0a);
-  padding: 2rem 1rem;
+  padding: 1rem 1rem;
   position: relative;
 }
 
 @media (min-width: 640px) {
   .account-page {
-    padding: 2rem 1.5rem;
+    padding: 1rem 1.5rem;
   }
 }
 
 @media (min-width: 1024px) {
   .account-page {
-    padding: 3rem 2rem;
+    padding: 1rem 2rem;
   }
 }
 
@@ -111,7 +111,6 @@
   width: 120px;
   height: auto;
   filter: drop-shadow(0 4px 12px rgba(255, 204, 0, 0.3));
-  animation: float 3s ease-in-out infinite;
 }
 
 @keyframes float {
@@ -129,13 +128,13 @@
   margin: 0 auto;
 }
 
-/* Account Header */
+/* Account Header - Compact */
 .account-header {
   background: var(--card-bg, #1a1a1a);
   border: 1px solid var(--border, #333);
-  border-radius: 16px;
-  padding: 2rem;
-  margin-bottom: 2rem;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
@@ -143,14 +142,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 2rem;
+  gap: 1rem;
   flex-wrap: wrap;
 }
 
 .user-welcome {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 0.75rem;
   flex: 1;
   min-width: 280px;
 }
@@ -165,17 +164,17 @@
 }
 
 .user-avatar {
-  width: 80px;
-  height: 80px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--accent, #ffcc00) 0%, #e6b800 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: #000;
-  border: 3px solid var(--accent, #ffcc00);
+  border: 2px solid var(--accent, #ffcc00);
   box-shadow: 0 4px 12px rgba(255, 204, 0, 0.3);
   overflow: hidden;
   transition: all 0.3s ease;
@@ -188,21 +187,21 @@
 
 .avatar-status {
   position: absolute;
-  bottom: 4px;
-  right: 4px;
-  width: 18px;
-  height: 18px;
+  bottom: 1px;
+  right: 1px;
+  width: 12px;
+  height: 12px;
   background: #4caf50;
   border-radius: 50%;
-  border: 3px solid var(--card-bg, #1a1a1a);
+  border: 2px solid var(--card-bg, #1a1a1a);
 }
 
 .avatar-edit-badge {
   position: absolute;
-  top: -4px;
-  right: -4px;
-  width: 32px;
-  height: 32px;
+  top: -3px;
+  right: -3px;
+  width: 24px;
+  height: 24px;
   background: var(--accent, #ffcc00);
   border-radius: 50%;
   display: flex;
@@ -215,6 +214,11 @@
   transition: all 0.2s ease;
 }
 
+.avatar-edit-badge svg {
+  width: 14px;
+  height: 14px;
+}
+
 .avatar-wrapper:hover .avatar-edit-badge {
   opacity: 1;
   transform: scale(1);
@@ -225,10 +229,11 @@
 }
 
 .welcome-title {
-  font-size: 1.75rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--text, #ffffff);
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.125rem 0;
+  line-height: 1.3;
 }
 
 .user-name {
@@ -236,17 +241,18 @@
 }
 
 .user-email {
-  font-size: 1rem;
+  font-size: 0.85rem;
   color: var(--text-muted, #999);
   margin: 0;
+  line-height: 1.3;
 }
 
 .session-card {
   background: rgba(255, 204, 0, 0.05);
   border: 1px solid rgba(255, 204, 0, 0.2);
-  border-radius: 12px;
-  padding: 1rem;
-  min-width: 220px;
+  border-radius: 10px;
+  padding: 0.625rem 0.875rem;
+  min-width: 160px;
 }
 
 /* Content Wrapper - Grid Layout (like expiro-fe) */
@@ -388,28 +394,30 @@
   }
 
   .account-header {
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
+    padding: 1rem;
+    margin-bottom: 1.25rem;
   }
 
   .header-content {
     flex-direction: column;
     align-items: flex-start;
+    gap: 0.75rem;
   }
 
   .user-welcome {
     flex-direction: column;
     align-items: flex-start;
+    gap: 0.5rem;
   }
 
   .user-avatar {
-    width: 64px;
-    height: 64px;
-    font-size: 1.5rem;
+    width: 48px;
+    height: 48px;
+    font-size: 1.125rem;
   }
 
   .welcome-title {
-    font-size: 1.5rem;
+    font-size: 1.125rem;
   }
 
   .session-card {
