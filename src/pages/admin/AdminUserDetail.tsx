@@ -30,7 +30,7 @@ const AdminUserDetail: React.FC = () => {
   const [activeTab, setActiveTab] = useState<AdminUserTab>('details');
   const [galleryData, setGalleryData] = useState<UserGalleryDetail | null>(null);
   const [galleryLoading, setGalleryLoading] = useState<boolean>(false);
-  // const [galleryError, setGalleryError] = useState<string | null>(null);
+  const [galleryError, setGalleryError] = useState<string | null>(null);
 
   // Admin gallery state
   const [adminGalleryData, setAdminGalleryData] = useState<AdminUserPhotosResponse | null>(null);
@@ -84,13 +84,15 @@ const AdminUserDetail: React.FC = () => {
   const loadUserGallery = async () => {
     if (!id) return;
     setGalleryLoading(true);
-    // setGalleryError(null);
+    setGalleryError(null);
     try {
       const data = await userGalleryService.getUserGallery(parseInt(id));
       setGalleryData(data);
+      setGalleryError(null);
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to load user gallery';
       console.error(msg);
+      setGalleryError(msg);
     } finally {
       setGalleryLoading(false);
     }
@@ -208,13 +210,13 @@ const AdminUserDetail: React.FC = () => {
 
   // Load gallery when tab changes to gallery
   useEffect(() => {
-    if (activeTab === 'gallery' && !galleryData && !galleryLoading) {
+    if (activeTab === 'gallery' && !galleryData && !galleryLoading && !galleryError) {
       loadUserGallery();
     }
     if (activeTab === 'gallery' && !adminGalleryData && !adminGalleryLoading) {
       loadAdminGallery();
     }
-  }, [activeTab, galleryData, galleryLoading, adminGalleryData, adminGalleryLoading, loadAdminGallery]);
+  }, [activeTab, galleryData, galleryLoading, galleryError, adminGalleryData, adminGalleryLoading, loadAdminGallery]);
 
   // Load cart when tab changes to details
   useEffect(() => {
@@ -559,7 +561,7 @@ const AdminUserDetail: React.FC = () => {
             </h3>
             <div style={{ fontSize: '14px', color: '#999', marginTop: '8px' }}>
               <div>Cart ID: {cartData.id}</div>
-              <div>Total: €{cartData.total.toFixed(2)}</div>
+              <div>Total: €{(cartData.total ?? 0).toFixed(2)}</div>
               <div>Last activity: {hoursAgo > 0 ? `${hoursAgo}h ` : ''}{minutesAgo}m ago</div>
               <div>Created: {new Date(cartData.createdAt).toLocaleString()}</div>
             </div>
@@ -618,7 +620,7 @@ const AdminUserDetail: React.FC = () => {
                       <div style={{ color: '#999', fontSize: '13px' }}>Variant: {item.variantName}</div>
                     )}
                     <div style={{ color: '#d4af37', marginTop: '4px' }}>
-                      {item.quantity} × €{item.unitPrice.toFixed(2)} = €{item.totalPrice.toFixed(2)}
+                      {item.quantity} × €{(item.unitPrice ?? 0).toFixed(2)} = €{(item.totalPrice ?? 0).toFixed(2)}
                     </div>
                   </div>
                 </div>

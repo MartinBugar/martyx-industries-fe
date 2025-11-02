@@ -135,7 +135,18 @@ export class HybridProductService {
     const videoUrl = masterProduct.videoUrl || hardcodedData?.videoUrl || undefined;
 
     // Gallery from backend (already loaded) or empty array
-    const gallery = masterProduct.gallery?.map(img => img.cdnUrl || img.url) || [];
+    // Sort gallery: PRIMARY image first, then by displayOrder (same logic as Home.tsx and Products.tsx)
+    let gallery: string[] = [];
+    if (masterProduct.gallery && masterProduct.gallery.length > 0) {
+      const sortedGallery = [...masterProduct.gallery].sort((a, b) => {
+        // Primary image always goes first
+        if (a.primary && !b.primary) return -1;
+        if (!a.primary && b.primary) return 1;
+        // Otherwise sort by displayOrder
+        return (a.displayOrder || 0) - (b.displayOrder || 0);
+      });
+      gallery = sortedGallery.map(img => img.cdnUrl || img.url);
+    }
 
     // Convert all variants to simplified ProductVariant format
     const availableVariants = allVariants.map(v => this.convertToProductVariant(v));
