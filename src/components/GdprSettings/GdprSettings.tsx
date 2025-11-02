@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/useAuth';
 import { gdprService } from '../../services/gdprService';
 import './GdprSettings.css';
@@ -248,54 +247,6 @@ const GdprSettings: React.FC = () => {
 
                 <div className="card-footer">
                     <small>GDPR Článok 17 - Právo na výmaz ("Právo byť zabudnutý")</small>
-                </div>
-            </div>
-
-            {/* Additional GDPR Information Card */}
-            <div className="gdpr-card info-card">
-                <div className="card-header">
-                    <div className="card-icon info-icon">ℹ️</div>
-                    <div>
-                        <h3 className="card-title">Vaše GDPR práva</h3>
-                        <p className="card-description">
-                            Kompletné informácie o ochrane vašich osobných údajov
-                        </p>
-                    </div>
-                </div>
-
-                <div className="card-body">
-                    <ul className="gdpr-rights-list">
-                        <li>
-                            <strong>Právo na prístup</strong> - Získať kópiu vašich osobných údajov
-                        </li>
-                        <li>
-                            <strong>Právo na opravu</strong> - Opraviť nesprávne alebo neúplné údaje
-                        </li>
-                        <li>
-                            <strong>Právo na výmaz</strong> - Požiadať o vymazanie vašich údajov
-                        </li>
-                        <li>
-                            <strong>Právo odvolať súhlas</strong> - Kedykoľvek odvolať marketingový súhlas
-                        </li>
-                    </ul>
-
-                    <div className="gdpr-links">
-                        <Link to="/privacy-policy" className="link-button">
-                            📄 Politika ochrany osobných údajov
-                        </Link>
-                        <Link to="/terms-of-service" className="link-button">
-                            📜 Obchodné podmienky
-                        </Link>
-                        <Link to="/gdpr-management" className="link-button">
-                            🔍 Podrobné GDPR nastavenia
-                        </Link>
-                    </div>
-                </div>
-
-                <div className="card-footer">
-                    <small>
-                        V prípade otázok kontaktujte: <a href="mailto:gdpr@martyx-industries.com">gdpr@martyx-industries.com</a>
-                    </small>
                 </div>
             </div>
 

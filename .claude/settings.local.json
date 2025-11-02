@@ -34,7 +34,8 @@
       "Bash(curl:*)",
       "Bash(taskkill:*)",
       "Bash(mvn flyway:*)",
-      "Bash(mvn flyway:migrate:*)"
+      "Bash(mvn flyway:migrate:*)",
+      "Read(//c/Users/Martin/Desktop/obrazky/**)"
     ],
     "deny": [],
     "ask": []

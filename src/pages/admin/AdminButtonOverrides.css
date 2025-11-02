@@ -1,5 +1,6 @@
-/* Action buttons container - ensure horizontal layout */
-.action-buttons {
+/* Action buttons container - ONLY in tables */
+.admin-table .action-buttons,
+.mobile-table-cards .action-buttons {
   display: flex !important;
   flex-direction: row !important;
   flex-wrap: nowrap !important;
@@ -8,10 +9,13 @@
   justify-content: flex-end !important;
 }
 
-/* Admin Action Buttons - Icon only, compact */
-.action-buttons .btn,
-.action-buttons a.btn,
-.action-buttons button {
+/* Admin Action Buttons - Icon only, compact - ONLY in tables */
+.admin-table .action-buttons .btn,
+.admin-table .action-buttons a.btn,
+.admin-table .action-buttons button,
+.mobile-table-cards .action-buttons .btn,
+.mobile-table-cards .action-buttons a.btn,
+.mobile-table-cards .action-buttons button {
   padding: 7px !important;
   font-weight: 600 !important;
   line-height: 1 !important;
@@ -29,10 +33,13 @@
   flex-shrink: 0 !important;
 }
 
-/* Hide text content but keep icons visible */
-.action-buttons .btn .btn-text,
-.action-buttons a.btn .btn-text,
-.action-buttons button .btn-text {
+/* Hide text content but keep icons visible - ONLY in tables */
+.admin-table .action-buttons .btn .btn-text,
+.admin-table .action-buttons a.btn .btn-text,
+.admin-table .action-buttons button .btn-text,
+.mobile-table-cards .action-buttons .btn .btn-text,
+.mobile-table-cards .action-buttons a.btn .btn-text,
+.mobile-table-cards .action-buttons button .btn-text {
   font-size: 0 !important;
   line-height: 0 !important;
   display: inline-flex !important;
@@ -40,51 +47,69 @@
   justify-content: center !important;
 }
 
-/* Outline variant - high contrast */
-.action-buttons .btn-outline,
-.action-buttons a.btn-outline,
-.action-buttons button.btn-outline {
+/* Outline variant - high contrast - ONLY in tables */
+.admin-table .action-buttons .btn-outline,
+.admin-table .action-buttons a.btn-outline,
+.admin-table .action-buttons button.btn-outline,
+.mobile-table-cards .action-buttons .btn-outline,
+.mobile-table-cards .action-buttons a.btn-outline,
+.mobile-table-cards .action-buttons button.btn-outline {
   background: #ffffff !important;
   border: 1px solid #6b7280 !important;
   color: #1f2937 !important;
 }
 
-.action-buttons .btn-outline:hover {
+.admin-table .action-buttons .btn-outline:hover,
+.mobile-table-cards .action-buttons .btn-outline:hover {
   background: #f9fafb !important;
   border-color: #374151 !important;
   color: #111827 !important;
 }
 
-/* Primary variant */
-.action-buttons .btn-primary,
-.action-buttons button.btn-primary {
+/* Primary variant - ONLY in tables */
+.admin-table .action-buttons .btn-primary,
+.admin-table .action-buttons button.btn-primary,
+.mobile-table-cards .action-buttons .btn-primary,
+.mobile-table-cards .action-buttons button.btn-primary {
   background: #3b82f6 !important;
   border: 1px solid #3b82f6 !important;
   color: #ffffff !important;
 }
 
-/* Danger variant */
-.action-buttons .btn-danger,
-.action-buttons button.btn-danger {
+/* Danger variant - ONLY in tables */
+.admin-table .action-buttons .btn-danger,
+.admin-table .action-buttons button.btn-danger,
+.mobile-table-cards .action-buttons .btn-danger,
+.mobile-table-cards .action-buttons button.btn-danger {
   background: #ef4444 !important;
   border: 1px solid #ef4444 !important;
   color: #ffffff !important;
 }
 
 
-/* Icon sizing - larger for icon-only buttons */
-.action-buttons svg {
+/* Icon sizing - make sure icons are visible - ONLY in tables */
+.admin-table .action-buttons svg,
+.admin-table .action-buttons .btn svg,
+.admin-table .action-buttons .btn-text svg,
+.mobile-table-cards .action-buttons svg,
+.mobile-table-cards .action-buttons .btn svg,
+.mobile-table-cards .action-buttons .btn-text svg {
   width: 16px !important;
   height: 16px !important;
   flex-shrink: 0 !important;
   margin: 0 !important;
+  display: inline-block !important;
+  vertical-align: middle !important;
 }
 
-/* Mobile: hide text, show only icons */
+/* Mobile: hide text, show only icons - ONLY in tables */
 @media (max-width: 767px) {
-  .action-buttons .btn,
-  .action-buttons a.btn,
-  .action-buttons button {
+  .admin-table .action-buttons .btn,
+  .admin-table .action-buttons a.btn,
+  .admin-table .action-buttons button,
+  .mobile-table-cards .action-buttons .btn,
+  .mobile-table-cards .action-buttons a.btn,
+  .mobile-table-cards .action-buttons button {
     padding: 8px !important;
     min-width: 36px !important;
     max-width: 36px !important;
@@ -94,9 +119,12 @@
     font-size: 0 !important;
   }
 
-  .action-buttons .btn svg,
-  .action-buttons a.btn svg,
-  .action-buttons button svg {
+  .admin-table .action-buttons .btn svg,
+  .admin-table .action-buttons a.btn svg,
+  .admin-table .action-buttons button svg,
+  .mobile-table-cards .action-buttons .btn svg,
+  .mobile-table-cards .action-buttons a.btn svg,
+  .mobile-table-cards .action-buttons button svg {
     width: 16px !important;
     height: 16px !important;
   }
