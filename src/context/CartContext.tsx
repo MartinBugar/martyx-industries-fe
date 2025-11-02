@@ -152,16 +152,27 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
             console.log('[Cart] No cart in backend, but localStorage has', localItems.length, 'items. Syncing localStorage → backend...');
             setItems(localItems);
 
-            // Push each item to backend
+            // Push each item to backend using updateQuantity to SET quantity, not ADD
             for (const item of localItems) {
               try {
-                await cartService.addItem(
+                // Use updateQuantity instead of addItem to SET the exact quantity
+                // This prevents duplication on multiple syncs
+                await cartService.updateQuantity(
                   item.product.variantId,
                   item.quantity,
                   isAuthenticated ? undefined : sessionId
                 );
               } catch (err) {
-                console.warn('[Cart] Failed to sync item to backend:', err);
+                // If updateQuantity fails (item doesn't exist), try addItem
+                try {
+                  await cartService.addItem(
+                    item.product.variantId,
+                    item.quantity,
+                    isAuthenticated ? undefined : sessionId
+                  );
+                } catch (addErr) {
+                  console.warn('[Cart] Failed to sync item to backend:', addErr);
+                }
               }
             }
             console.log('[Cart] Successfully synced localStorage cart to backend');
