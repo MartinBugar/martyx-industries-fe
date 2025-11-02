@@ -8,7 +8,7 @@ import './GdprSettings.css';
  * Card-based layout for GDPR compliance actions
  */
 const GdprSettings: React.FC = () => {
-    const { logout, user } = useAuth();
+    const { logout } = useAuth();
     const [consentStatus, setConsentStatus] = useState<{
         gdpr: boolean;
         marketing: boolean;

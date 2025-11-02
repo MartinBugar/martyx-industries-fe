@@ -35,7 +35,8 @@
       "Bash(taskkill:*)",
       "Bash(mvn flyway:*)",
       "Bash(mvn flyway:migrate:*)",
-      "Read(//c/Users/Martin/Desktop/obrazky/**)"
+      "Read(//c/Users/Martin/Desktop/obrazky/**)",
+      "Bash(mvn clean:*)"
     ],
     "deny": [],
     "ask": []

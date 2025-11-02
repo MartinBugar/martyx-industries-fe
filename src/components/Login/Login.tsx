@@ -236,11 +236,7 @@ const Login: React.FC<LoginProps> = ({ confirmationStatus = null }) => {
           )}
 
           <div className="form-header">
-            <div className="form-icon">
-              <LoginIcon />
-            </div>
             <h1 className="form-title">{t('login.title')}</h1>
-            <p className="form-subtitle">{t('login.subtitle', 'Prihláste sa do svojho účtu')}</p>
           </div>
 
           {/* Chybové správy */}

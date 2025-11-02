@@ -1,6 +1,4 @@
-import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
 
 export interface CassandraImageDto {
     id?: number;
@@ -18,16 +16,22 @@ export interface CassandraImageDto {
  * Public API - Get all active Cassandra images
  */
 export const getActiveImages = async (): Promise<CassandraImageDto[]> => {
-    const response = await axios.get(`${API_URL}/cassandra/images`);
-    return response.data;
+    const response = await fetch(`${API_BASE_URL}/api/cassandra/images`, withLangHeaders({
+        method: 'GET',
+        headers: defaultHeaders as HeadersInit,
+    }));
+    return handleResponse(response);
 };
 
 /**
  * Public API - Get Cassandra image by ID
  */
 export const getImageById = async (id: number): Promise<CassandraImageDto> => {
-    const response = await axios.get(`${API_URL}/cassandra/images/${id}`);
-    return response.data;
+    const response = await fetch(`${API_BASE_URL}/api/cassandra/images/${id}`, withLangHeaders({
+        method: 'GET',
+        headers: defaultHeaders as HeadersInit,
+    }));
+    return handleResponse(response);
 };
 
 /**
@@ -35,12 +39,16 @@ export const getImageById = async (id: number): Promise<CassandraImageDto> => {
  */
 export const getAllImages = async (): Promise<CassandraImageDto[]> => {
     const token = localStorage.getItem('token');
-    const response = await axios.get(`${API_URL}/admin/cassandra/images`, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    });
-    return response.data;
+    const headers = { ...defaultHeaders };
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${API_BASE_URL}/api/admin/cassandra/images`, withLangHeaders({
+        method: 'GET',
+        headers: headers as HeadersInit,
+    }));
+    return handleResponse(response);
 };
 
 /**
@@ -48,12 +56,17 @@ export const getAllImages = async (): Promise<CassandraImageDto[]> => {
  */
 export const createImage = async (image: CassandraImageDto): Promise<CassandraImageDto> => {
     const token = localStorage.getItem('token');
-    const response = await axios.post(`${API_URL}/admin/cassandra/images`, image, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    });
-    return response.data;
+    const headers = { ...defaultHeaders };
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${API_BASE_URL}/api/admin/cassandra/images`, withLangHeaders({
+        method: 'POST',
+        headers: headers as HeadersInit,
+        body: JSON.stringify(image),
+    }));
+    return handleResponse(response);
 };
 
 /**
@@ -61,12 +74,17 @@ export const createImage = async (image: CassandraImageDto): Promise<CassandraIm
  */
 export const updateImage = async (id: number, image: CassandraImageDto): Promise<CassandraImageDto> => {
     const token = localStorage.getItem('token');
-    const response = await axios.put(`${API_URL}/admin/cassandra/images/${id}`, image, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    });
-    return response.data;
+    const headers = { ...defaultHeaders };
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${API_BASE_URL}/api/admin/cassandra/images/${id}`, withLangHeaders({
+        method: 'PUT',
+        headers: headers as HeadersInit,
+        body: JSON.stringify(image),
+    }));
+    return handleResponse(response);
 };
 
 /**
@@ -74,11 +92,19 @@ export const updateImage = async (id: number, image: CassandraImageDto): Promise
  */
 export const deleteImage = async (id: number): Promise<void> => {
     const token = localStorage.getItem('token');
-    await axios.delete(`${API_URL}/admin/cassandra/images/${id}`, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    });
+    const headers = { ...defaultHeaders };
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${API_BASE_URL}/api/admin/cassandra/images/${id}`, withLangHeaders({
+        method: 'DELETE',
+        headers: headers as HeadersInit,
+    }));
+
+    if (!response.ok) {
+        throw new Error(`Failed to delete image: ${response.status}`);
+    }
 };
 
 /**
@@ -86,12 +112,16 @@ export const deleteImage = async (id: number): Promise<void> => {
  */
 export const toggleActiveStatus = async (id: number): Promise<CassandraImageDto> => {
     const token = localStorage.getItem('token');
-    const response = await axios.patch(`${API_URL}/admin/cassandra/images/${id}/toggle-active`, {}, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    });
-    return response.data;
+    const headers = { ...defaultHeaders };
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${API_BASE_URL}/api/admin/cassandra/images/${id}/toggle-active`, withLangHeaders({
+        method: 'PATCH',
+        headers: headers as HeadersInit,
+    }));
+    return handleResponse(response);
 };
 
 /**
@@ -157,14 +187,22 @@ export const uploadImageJson = async (file: File, order?: number): Promise<Uploa
         };
 
         const token = localStorage.getItem('token');
-        const response = await axios.post(`${API_URL}/admin/cassandra/images/upload-json`, jsonRequest, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-        });
+        const headers = { ...defaultHeaders };
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
 
-        return response.data;
+        const response = await fetch(`${API_BASE_URL}/api/admin/cassandra/images/upload-json`, withLangHeaders({
+            method: 'POST',
+            headers: headers as HeadersInit,
+            body: JSON.stringify(jsonRequest),
+        }));
+
+        if (!response.ok) {
+            throw new Error(`Upload failed: ${response.status}`);
+        }
+
+        return handleResponse(response);
     } catch (error) {
         console.error('Upload failed:', error);
         throw error;

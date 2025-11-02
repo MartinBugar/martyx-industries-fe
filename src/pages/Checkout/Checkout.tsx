@@ -269,8 +269,9 @@ const Checkout: React.FC = () => {
   const calculateTotals = () => {
     const subtotalWithVAT = getTotalPrice(); // Prices already include VAT
 
-    // VAT calculation (standard rate 20% for Slovakia)
-    const VAT_RATE = 0.20;
+    // VAT calculation - use VAT rate from products (Slovak VAT is 23%)
+    // Get VAT rate from first product (assuming all products have same VAT rate)
+    const VAT_RATE = items.length > 0 ? (items[0].product.vatRate / 100) : 0.23;
     const subtotalWithoutVAT = subtotalWithVAT / (1 + VAT_RATE);
     const vatAmount = subtotalWithVAT - subtotalWithoutVAT;
 
@@ -720,16 +721,6 @@ const Checkout: React.FC = () => {
             Payment
           </div>
         </div>
-
-        {/* Progress Restored Notification */}
-        {progressRestored && (
-          <div className="progress-restored-notification" role="status" aria-live="polite">
-            <span className="notification-icon">💾</span>
-            <span className="notification-text">
-              Your checkout progress has been restored from your previous session
-            </span>
-          </div>
-        )}
       </div>
 
       <div className="checkout-content">
