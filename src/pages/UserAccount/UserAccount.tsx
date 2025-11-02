@@ -5,6 +5,7 @@ import UserProfile from '../../components/UserProfile/UserProfile';
 import OrderHistory from '../../components/OrderHistory/OrderHistory';
 import ModelCollection from '../../components/ModelCollection/ModelCollection';
 import GdprSettings from '../../components/GdprSettings/GdprSettings';
+import PwaInstall from '../../components/PwaInstall/PwaInstall';
 import TokenExpirationTimer from '../../components/TokenExpirationTimer/TokenExpirationTimer';
 import AvatarSelector from '../../components/AvatarSelector/AvatarSelector';
 import type { Avatar } from '../../services/avatarService';
@@ -12,7 +13,7 @@ import './UserAccount.css';
 
 const UserAccount: React.FC = () => {
   const { user, isAuthenticated, isLoading, fetchProfile } = useAuth();
-  const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'collection' | 'settings'>('profile');
+  const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'collection' | 'settings' | 'app'>('profile');
   const [showAvatarSelector, setShowAvatarSelector] = useState(false);
   const [userAvatar, setUserAvatar] = useState<string | null>(user?.avatar?.imageUrl || null);
 
@@ -155,6 +156,18 @@ const UserAccount: React.FC = () => {
               </div>
               <span className="tab-label">Settings</span>
             </button>
+
+            <button
+              className={`sidebar-tab ${activeTab === 'app' ? 'active' : ''}`}
+              onClick={() => setActiveTab('app')}
+            >
+              <div className="tab-icon">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              <span className="tab-label">Aplikácia</span>
+            </button>
           </aside>
 
           {/* Mobile Tabs */}
@@ -212,6 +225,18 @@ const UserAccount: React.FC = () => {
               </span>
               <span className="mobile-tab-label">Settings</span>
             </button>
+
+            <button
+              className={`mobile-tab ${activeTab === 'app' ? 'active' : ''}`}
+              onClick={() => setActiveTab('app')}
+            >
+              <span className="mobile-tab-icon">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </span>
+              <span className="mobile-tab-label">App</span>
+            </button>
           </nav>
 
           {/* Main Content Area */}
@@ -220,6 +245,7 @@ const UserAccount: React.FC = () => {
             {activeTab === 'orders' && <OrderHistory />}
             {activeTab === 'collection' && <ModelCollection />}
             {activeTab === 'settings' && <GdprSettings />}
+            {activeTab === 'app' && <PwaInstall />}
           </main>
         </div>
       </div>

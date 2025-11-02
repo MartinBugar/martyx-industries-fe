@@ -230,17 +230,6 @@ const CartPage: React.FC<CartPageProps> = ({
             </button>
           </div>
         )}
-        
-        {!isModal && (
-          <header className="header">
-            <h1>{t('cart.title')}</h1>
-            <p>
-              {isEmpty
-                ? t('cart.empty_message')
-                : `${getTotalItems()} ${t('cart.item_count', { count: getTotalItems() })} ${t('cart.item_prepared', { count: getTotalItems() })}`}
-            </p>
-          </header>
-        )}
 
         {isEmpty ? (
           <section className="cart-items" role="region" aria-labelledby="empty">
@@ -269,115 +258,141 @@ const CartPage: React.FC<CartPageProps> = ({
           </section>
         ) : (
           <div className="cart-layout">
-            {/* ITEMS */}
+            {/* ITEMS TABLE */}
             <section className="cart-items" aria-label={t('cart.items_in_cart')}>
-              {items.map(item => {
-                const isDigital = item.product.variantType === 'DIGITAL_ONLY';
-                const thumb = item.product.gallery?.[0];
+              <table className="cart-items-table">
+                <thead>
+                  <tr>
+                    <th>{t('cart.product', 'Product')}</th>
+                    <th style={{width: '140px', textAlign: 'center'}}>{t('cart.quantity', 'Quantity')}</th>
+                    <th style={{width: '180px', textAlign: 'right'}}>{t('cart.price', 'Price')}</th>
+                    <th style={{width: '60px'}}></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {items.map(item => {
+                    const isDigital = item.product.variantType === 'DIGITAL_ONLY';
+                    const thumb = item.product.gallery?.[0];
 
-                return (
-                  <div key={item.product.variantId} className="cart-item">
-                    <div className="item-image" aria-hidden="true">
-                      {thumb ? (
-                        <img src={thumb} alt={item.product.name}/>
-                      ) : (
-                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <rect x="3" y="3" width="18" height="18" rx="2"/>
-                          <path d="M3 9h18"/>
-                          <path d="M9 21V9"/>
-                        </svg>
-                      )}
-                    </div>
+                    return (
+                      <tr key={item.product.variantId} className="cart-item">
+                        {/* Product Cell */}
+                        <td>
+                          <div className="product-cell">
+                            <div className="item-image" aria-hidden="true">
+                              {thumb ? (
+                                <img src={thumb} alt={item.product.name}/>
+                              ) : (
+                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                  <path d="M3 9h18"/>
+                                  <path d="M9 21V9"/>
+                                </svg>
+                              )}
+                            </div>
 
-                    <div className="item-details">
-                      <div className="item-name">{item.product.name}</div>
+                            <div className="item-details">
+                              <div className="item-name">{item.product.name}</div>
 
-                      {item.product.variantName && item.product.variantName !== item.product.name && (
-                        <div className="item-variant-name">{item.product.variantName}</div>
-                      )}
+                              {item.product.variantName && item.product.variantName !== item.product.name && (
+                                <div className="item-variant-name">{item.product.variantName}</div>
+                              )}
 
-                      {item.product.sku && (
-                        <div className="item-sku">SKU: {item.product.sku}</div>
-                      )}
+                              {item.product.sku && (
+                                <div className="item-sku">SKU: {item.product.sku}</div>
+                              )}
 
-                      <div className="item-badges">
-                        <div className="item-type" aria-label={isDigital ? t('cart.digital_product') : t('cart.physical_product')}>
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M5 12.5L10 17.5L20 6.5"/>
-                          </svg>
-                          {isDigital ? 'DIGITAL' : 'PHYSICAL'}
-                        </div>
+                              <div className="item-badges">
+                                <div className="item-type" aria-label={isDigital ? t('cart.digital_product') : t('cart.physical_product')}>
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M5 12.5L10 17.5L20 6.5"/>
+                                  </svg>
+                                  {isDigital ? 'DIGITAL' : 'PHYSICAL'}
+                                </div>
 
-                        {/* Stock Availability Badge */}
-                        {item.product.availabilityStatus === 'IN_STOCK' && (
-                          <div className="stock-badge stock-in-stock">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <circle cx="12" cy="12" r="10"/>
-                              <path d="M9 12l2 2l4-4"/>
-                            </svg>
-                            {item.product.stockQuantity <= 10 && item.product.stockQuantity > 0
-                              ? `${t('cart.low_stock', 'Low stock')} (${item.product.stockQuantity} ${t('cart.left', 'left')})`
-                              : t('cart.in_stock', 'In Stock')}
+                                {/* Stock Availability Badge */}
+                                {item.product.availabilityStatus === 'IN_STOCK' && (
+                                  <div className="stock-badge stock-in-stock">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                      <circle cx="12" cy="12" r="10"/>
+                                      <path d="M9 12l2 2l4-4"/>
+                                    </svg>
+                                    {item.product.stockQuantity <= 10 && item.product.stockQuantity > 0
+                                      ? `${t('cart.low_stock', 'Low stock')} (${item.product.stockQuantity} ${t('cart.left', 'left')})`
+                                      : t('cart.in_stock', 'In Stock')}
+                                  </div>
+                                )}
+
+                                {item.product.availabilityStatus === 'OUT_OF_STOCK' && (
+                                  <div className="stock-badge stock-out-of-stock">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                      <circle cx="12" cy="12" r="10"/>
+                                      <line x1="15" y1="9" x2="9" y2="15"/>
+                                      <line x1="9" y1="9" x2="15" y2="15"/>
+                                    </svg>
+                                    {t('cart.out_of_stock', 'Out of Stock')}
+                                  </div>
+                                )}
+
+                                {item.product.availabilityStatus === 'PRE_ORDER' && (
+                                  <div className="stock-badge stock-pre-order">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                      <circle cx="12" cy="12" r="10"/>
+                                      <path d="M12 6v6l4 2"/>
+                                    </svg>
+                                    {t('cart.pre_order', 'Pre-Order')}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
                           </div>
-                        )}
+                        </td>
 
-                        {item.product.availabilityStatus === 'OUT_OF_STOCK' && (
-                          <div className="stock-badge stock-out-of-stock">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <circle cx="12" cy="12" r="10"/>
-                              <line x1="15" y1="9" x2="9" y2="15"/>
-                              <line x1="9" y1="9" x2="15" y2="15"/>
-                            </svg>
-                            {t('cart.out_of_stock', 'Out of Stock')}
+                        {/* Quantity Cell */}
+                        <td>
+                          <div className="quantity-control" aria-label={t('cart.adjust_quantity', { product: item.product.name })}>
+                            <button
+                              className="quantity-btn"
+                              aria-label={t('cart.decrease_quantity')}
+                              onClick={() => onQty(item.product.variantId.toString(), item.quantity - 1, isDigital)}
+                              disabled={item.quantity <= 1}
+                              title={item.quantity <= 1 ? t('cart.minimum_quantity', 'Minimum quantity is 1') : undefined}
+                            >−</button>
+                            <span className="quantity" aria-live="polite">{item.quantity}</span>
+                            <button
+                              className="quantity-btn"
+                              aria-label={t('cart.increase_quantity')}
+                              onClick={() => onQty(item.product.variantId.toString(), item.quantity + 1, isDigital)}
+                              disabled={isDigital && item.quantity >= 1}
+                              title={isDigital && item.quantity >= 1 ? t('cart.digital_product_limit', 'Digital products are limited to 1 per order') : undefined}
+                            >+</button>
                           </div>
-                        )}
+                        </td>
 
-                        {item.product.availabilityStatus === 'PRE_ORDER' && (
-                          <div className="stock-badge stock-pre-order">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <circle cx="12" cy="12" r="10"/>
-                              <path d="M12 6v6l4 2"/>
-                            </svg>
-                            {t('cart.pre_order', 'Pre-Order')}
+                        {/* Price Cell */}
+                        <td>
+                          <div className="item-price">
+                            <div className="unit-price">{formatPrice(item.product.priceWithVat, item.product.currency)} × {item.quantity}</div>
+                            <div className="total-price">{formatPrice(item.product.priceWithVat * item.quantity, item.product.currency)}</div>
                           </div>
-                        )}
-                      </div>
-                    </div>
+                        </td>
 
-                    <div className="item-price-section">
-                      <div className="quantity-control" aria-label={t('cart.adjust_quantity', { product: item.product.name })}>
-                        <button
-                          className="quantity-btn"
-                          aria-label={t('cart.decrease_quantity')}
-                          onClick={() => onQty(item.product.variantId.toString(), item.quantity - 1, isDigital)}
-                          disabled={item.quantity <= 1}
-                        >−</button>
-                        <span className="quantity" aria-live="polite">{item.quantity}</span>
-                        <button
-                          className="quantity-btn"
-                          aria-label={t('cart.increase_quantity')}
-                          onClick={() => onQty(item.product.variantId.toString(), item.quantity + 1, isDigital)}
-                          disabled={isDigital && item.quantity >= 1}
-                        >+</button>
-                      </div>
-
-                      <div className="item-price">
-                        <div className="unit-price">{formatPrice(item.product.priceWithVat, item.product.currency)} × {item.quantity}</div>
-                        <div className="total-price">{formatPrice(item.product.priceWithVat * item.quantity, item.product.currency)}</div>
-                      </div>
-
-                      <button
-                        className="remove-btn"
-                        aria-label={t('cart.remove_item', { product: item.product.name })}
-                        onClick={() => removeFromCart(item.product.variantId.toString())}
-                        title={t('cart.remove')}
-                      >
-                        ×
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
+                        {/* Remove Cell */}
+                        <td>
+                          <button
+                            className="remove-btn"
+                            aria-label={t('cart.remove_item', { product: item.product.name })}
+                            onClick={() => removeFromCart(item.product.variantId.toString())}
+                            title={t('cart.remove')}
+                          >
+                            ×
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
 
               <button className="continue-shopping" onClick={handleBackToShopping} aria-label={t('cart.continue_shopping')}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

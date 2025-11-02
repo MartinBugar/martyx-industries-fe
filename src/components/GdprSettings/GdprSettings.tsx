@@ -19,7 +19,6 @@ const GdprSettings: React.FC = () => {
     const [success, setSuccess] = useState<string | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [confirmationEmail, setConfirmationEmail] = useState('');
-    const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
     // Load consent status on component mount
     useEffect(() => {
@@ -122,33 +121,6 @@ const GdprSettings: React.FC = () => {
                     <span>{success}</span>
                 </div>
             )}
-
-            {/* Personal Information Card */}
-            <div className="profile-info-card">
-                <div className="profile-card-header">
-                    <h2 className="profile-card-title">Osobné informácie</h2>
-                </div>
-
-                <div className="profile-form">
-                    <div className="profile-form-group">
-                        <label className="profile-label">Email</label>
-                        <input
-                            type="email"
-                            className="profile-input"
-                            value={user?.email || ''}
-                            disabled
-                            placeholder="email@example.com"
-                        />
-                        <p className="profile-hint">Email nie je možné zmeniť</p>
-                    </div>
-
-                    {message && (
-                        <div className={`profile-message ${message.type}`}>
-                            {message.text}
-                        </div>
-                    )}
-                </div>
-            </div>
 
             {/* Privacy & GDPR - Minimal Card */}
             <div className="gdpr-card-compact">
