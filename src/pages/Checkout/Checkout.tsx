@@ -1,6 +1,8 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useCart } from '../../context/useCart';
 import { useAuth } from '../../context/useAuth';
 import './Checkout.css';
@@ -16,6 +18,7 @@ import {
   trackAddShippingInfo,
   trackAddPaymentInfo
 } from '../../services/analyticsService';
+import { checkoutFormSchema, type CheckoutFormData } from '../../schemas/formSchemas';
 
 // Country list for dropdown
 const COUNTRIES = [
@@ -39,49 +42,7 @@ const COUNTRIES = [
   { code: 'US', name: 'United States' },
 ];
 
-interface CheckoutFormData {
-  // Contact Information
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-
-  // Billing Address
-  billingStreet: string;
-  billingCity: string;
-  billingState: string;
-  billingPostalCode: string;
-  billingCountry: string;
-
-  // Shipping Address (if different)
-  shipToDifferentAddress: boolean;
-  shippingStreet: string;
-  shippingCity: string;
-  shippingState: string;
-  shippingPostalCode: string;
-  shippingCountry: string;
-
-  // B2B Customer fields
-  isCompany: boolean;
-  companyName: string;
-  companyId: string; // IČO
-  taxId: string;     // DIČ
-  vatId: string;     // IČ DPH
-
-  // Marketing
-  newsletterOptIn: boolean;
-
-  // Legal consents
-  termsAccepted: boolean;
-  privacyAccepted: boolean;
-}
-
-// Email validation regex
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-// Phone validation regex (international format: +XXX XXX XXX XXX)
-// Supports: +421 900 123 456, +1 234 567 8900, etc.
-const PHONE_REGEX = /^\+?[\d\s\-\(\)]{9,20}$/;
+// CheckoutFormData type now imported from formSchemas.ts
 
 // SessionStorage key for checkout progress persistence
 const CHECKOUT_PROGRESS_KEY = 'martyx_checkout_progress_v1';
@@ -186,45 +147,57 @@ const Checkout: React.FC = () => {
   // 3 STEPS: Information → Shipping → Payment
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(savedProgress?.currentStep || 1);
 
-  const [formData, setFormData] = useState<CheckoutFormData>(savedProgress?.formData || {
-    // Contact
-    firstName: user?.firstName || '',
-    lastName: user?.lastName || '',
-    email: user?.email || '',
-    phone: '',
+  // React Hook Form setup with zod validation
+  const {
+    register,
+    formState: { errors },
+    watch,
+    setValue,
+    trigger,
+    getValues
+  } = useForm<CheckoutFormData>({
+    resolver: zodResolver(checkoutFormSchema),
+    mode: 'onBlur',
+    defaultValues: savedProgress?.formData || {
+      // Contact
+      firstName: user?.firstName || '',
+      lastName: user?.lastName || '',
+      email: user?.email || '',
+      phone: '',
 
-    // Billing Address
-    billingStreet: '',
-    billingCity: '',
-    billingState: '',
-    billingPostalCode: '',
-    billingCountry: 'SK',
+      // Billing Address
+      billingStreet: '',
+      billingCity: '',
+      billingState: '',
+      billingPostalCode: '',
+      billingCountry: 'SK',
 
-    // Shipping Address
-    shipToDifferentAddress: false,
-    shippingStreet: '',
-    shippingCity: '',
-    shippingState: '',
-    shippingPostalCode: '',
-    shippingCountry: 'SK',
+      // Shipping Address
+      shipToDifferentAddress: false,
+      shippingStreet: '',
+      shippingCity: '',
+      shippingState: '',
+      shippingPostalCode: '',
+      shippingCountry: 'SK',
 
-    // B2B
-    isCompany: false,
-    companyName: '',
-    companyId: '',
-    taxId: '',
-    vatId: '',
+      // B2B
+      isCompany: false,
+      companyName: '',
+      companyId: '',
+      taxId: '',
+      vatId: '',
 
-    // Marketing
-    newsletterOptIn: false,
+      // Marketing
+      newsletterOptIn: false,
 
-    // Legal consents
-    termsAccepted: false,
-    privacyAccepted: false,
+      // Legal consents
+      termsAccepted: false,
+      privacyAccepted: false,
+    }
   });
 
-  // Validation errors
-  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  // Watch all form values for progress persistence
+  const formData = watch();
 
   // Track if progress was restored from sessionStorage
   const [progressRestored, setProgressRestored] = useState<boolean>(!!savedProgress);
@@ -252,24 +225,14 @@ const Checkout: React.FC = () => {
   const handlePlaceSelect = (address: ParsedAddress) => {
     console.log('[Checkout] Google Places address selected:', address);
 
-    setFormData(prev => ({
-      ...prev,
-      billingStreet: address.street,
-      billingCity: address.city,
-      billingState: address.state,
-      billingPostalCode: address.zipCode,
-      billingCountry: address.countryCode
-    }));
+    setValue('billingStreet', address.street);
+    setValue('billingCity', address.city);
+    setValue('billingState', address.state);
+    setValue('billingPostalCode', address.zipCode);
+    setValue('billingCountry', address.countryCode);
 
-    // Clear validation errors
-    setValidationErrors(prev => ({
-      ...prev,
-      billingStreet: '',
-      billingCity: '',
-      billingState: '',
-      billingPostalCode: '',
-      billingCountry: ''
-    }));
+    // Trigger validation for updated fields
+    trigger(['billingStreet', 'billingCity', 'billingState', 'billingPostalCode', 'billingCountry']);
 
     // Deselect any saved address since user is using autocomplete
     setSelectedAddressId('');
@@ -470,51 +433,16 @@ const Checkout: React.FC = () => {
     }
   }, [searchParams]);
 
-  // Handle form input changes
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const target = e.target as HTMLInputElement;
-    const { name, value, type } = target;
-    const checked = target.checked;
-
-    setFormData({
-      ...formData,
-      [name]: type === 'checkbox' ? checked : value
-    });
-
-    // Clear validation error for this field
-    if (validationErrors[name]) {
-      setValidationErrors({
-        ...validationErrors,
-        [name]: ''
-      });
-    }
-
-    // If user manually changes address fields, unselect saved address
-    if (name.startsWith('billing') && selectedAddressId) {
-      setSelectedAddressId('');
-    }
-  };
-
   // Apply saved address to form
   const applyAddress = (address: SavedAddress) => {
-    setFormData(prev => ({
-      ...prev,
-      billingStreet: address.street,
-      billingCity: address.city,
-      billingState: address.state || '',
-      billingPostalCode: address.zipCode,
-      billingCountry: address.country
-    }));
+    setValue('billingStreet', address.street);
+    setValue('billingCity', address.city);
+    setValue('billingState', address.state || '');
+    setValue('billingPostalCode', address.zipCode);
+    setValue('billingCountry', address.country);
 
-    // Clear any validation errors for address fields
-    setValidationErrors(prev => ({
-      ...prev,
-      billingStreet: '',
-      billingCity: '',
-      billingState: '',
-      billingPostalCode: '',
-      billingCountry: ''
-    }));
+    // Trigger validation for updated fields
+    trigger(['billingStreet', 'billingCity', 'billingState', 'billingPostalCode', 'billingCountry']);
 
     console.log('[Checkout] Applied address:', address.label || 'Unnamed address');
   };
@@ -553,7 +481,7 @@ const Checkout: React.FC = () => {
       const addressToSave: Omit<SavedAddress, 'id'> = {
         street: formData.billingStreet,
         city: formData.billingCity,
-        state: formData.billingState,
+        state: formData.billingState || '',
         zipCode: formData.billingPostalCode,
         country: formData.billingCountry
       };
@@ -601,89 +529,34 @@ const Checkout: React.FC = () => {
     }
   };
 
-  // Validate email format
-  const validateEmail = (email: string): boolean => {
-    return EMAIL_REGEX.test(email);
-  };
+  // Validate Step 1 (Information) using react-hook-form
+  const validateStep1 = async (): Promise<boolean> => {
+    // Trigger validation for all step 1 fields
+    const result = await trigger([
+      'firstName',
+      'lastName',
+      'email',
+      'phone',
+      'billingStreet',
+      'billingCity',
+      'billingState',
+      'billingPostalCode',
+      'billingCountry',
+      'isCompany',
+      'companyName',
+      'companyId',
+      'taxId',
+      'vatId',
+      'shipToDifferentAddress',
+      'shippingStreet',
+      'shippingCity',
+      'shippingState',
+      'shippingPostalCode',
+      'shippingCountry',
+      'newsletterOptIn'
+    ]);
 
-  // Validate phone format
-  const validatePhone = (phone: string): boolean => {
-    return PHONE_REGEX.test(phone);
-  };
-
-  // Validate Step 1 (Information)
-  const validateStep1 = (): boolean => {
-    const errors: Record<string, string> = {};
-
-    // Contact info
-    if (!formData.email.trim()) {
-      errors.email = 'Email is required';
-    } else if (!validateEmail(formData.email)) {
-      errors.email = 'Please enter a valid email address';
-    }
-
-    if (!formData.phone.trim()) {
-      errors.phone = 'Phone number is required';
-    } else if (!validatePhone(formData.phone)) {
-      errors.phone = 'Please enter a valid phone number (e.g., +421 900 123 456)';
-    }
-
-    if (!formData.firstName.trim()) {
-      errors.firstName = 'First name is required';
-    }
-
-    if (!formData.lastName.trim()) {
-      errors.lastName = 'Last name is required';
-    }
-
-    // Billing address
-    if (!formData.billingStreet.trim()) {
-      errors.billingStreet = 'Street address is required';
-    }
-
-    if (!formData.billingCity.trim()) {
-      errors.billingCity = 'City is required';
-    }
-
-    if (!formData.billingPostalCode.trim()) {
-      errors.billingPostalCode = 'Postal code is required';
-    }
-
-    if (!formData.billingCountry.trim()) {
-      errors.billingCountry = 'Country is required';
-    }
-
-    // B2B validation
-    if (formData.isCompany) {
-      if (!formData.companyName.trim()) {
-        errors.companyName = 'Company name is required';
-      }
-      if (!formData.companyId.trim()) {
-        errors.companyId = 'Company ID (IČO) is required';
-      }
-      if (!formData.taxId.trim()) {
-        errors.taxId = 'Tax ID (DIČ) is required';
-      }
-    }
-
-    // Shipping address (if different)
-    if (formData.shipToDifferentAddress) {
-      if (!formData.shippingStreet.trim()) {
-        errors.shippingStreet = 'Shipping street address is required';
-      }
-      if (!formData.shippingCity.trim()) {
-        errors.shippingCity = 'Shipping city is required';
-      }
-      if (!formData.shippingPostalCode.trim()) {
-        errors.shippingPostalCode = 'Shipping postal code is required';
-      }
-      if (!formData.shippingCountry.trim()) {
-        errors.shippingCountry = 'Shipping country is required';
-      }
-    }
-
-    setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
+    return result;
   };
 
   // Handle discount code validation
@@ -747,10 +620,11 @@ const Checkout: React.FC = () => {
   };
 
   // Navigation handlers
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentStep === 1) {
       // Validate Information step
-      if (!validateStep1()) {
+      const isValid = await validateStep1();
+      if (!isValid) {
         alert('Please fill in all required fields correctly');
         return;
       }
@@ -890,16 +764,14 @@ const Checkout: React.FC = () => {
                 <input
                   type="email"
                   id="email"
-                  name="email"
                   autoComplete="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
                   required
                   placeholder="your.email@example.com"
-                  className={validationErrors.email ? 'error' : ''}
+                  className={errors.email ? 'error' : ''}
+                  {...register('email')}
                 />
-                {validationErrors.email && (
-                  <span className="field-error">{validationErrors.email}</span>
+                {errors.email && (
+                  <span className="field-error">{errors.email.message}</span>
                 )}
               </div>
 
@@ -909,16 +781,14 @@ const Checkout: React.FC = () => {
                   <input
                     type="text"
                     id="firstName"
-                    name="firstName"
                     autoComplete="given-name"
-                    value={formData.firstName}
-                    onChange={handleInputChange}
                     required
                     placeholder="John"
-                    className={validationErrors.firstName ? 'error' : ''}
+                    className={errors.firstName ? 'error' : ''}
+                    {...register('firstName')}
                   />
-                  {validationErrors.firstName && (
-                    <span className="field-error">{validationErrors.firstName}</span>
+                  {errors.firstName && (
+                    <span className="field-error">{errors.firstName.message}</span>
                   )}
                 </div>
 
@@ -927,16 +797,14 @@ const Checkout: React.FC = () => {
                   <input
                     type="text"
                     id="lastName"
-                    name="lastName"
                     autoComplete="family-name"
-                    value={formData.lastName}
-                    onChange={handleInputChange}
                     required
                     placeholder="Doe"
-                    className={validationErrors.lastName ? 'error' : ''}
+                    className={errors.lastName ? 'error' : ''}
+                    {...register('lastName')}
                   />
-                  {validationErrors.lastName && (
-                    <span className="field-error">{validationErrors.lastName}</span>
+                  {errors.lastName && (
+                    <span className="field-error">{errors.lastName.message}</span>
                   )}
                 </div>
               </div>
@@ -946,16 +814,14 @@ const Checkout: React.FC = () => {
                 <input
                   type="tel"
                   id="phone"
-                  name="phone"
                   autoComplete="tel"
-                  value={formData.phone}
-                  onChange={handleInputChange}
                   required
                   placeholder="+421 900 123 456"
-                  className={validationErrors.phone ? 'error' : ''}
+                  className={errors.phone ? 'error' : ''}
+                  {...register('phone')}
                 />
-                {validationErrors.phone && (
-                  <span className="field-error">{validationErrors.phone}</span>
+                {errors.phone && (
+                  <span className="field-error">{errors.phone.message}</span>
                 )}
               </div>
 
@@ -964,31 +830,26 @@ const Checkout: React.FC = () => {
                 <label className="checkbox-label">
                   <input
                     type="checkbox"
-                    name="isCompany"
-                    checked={formData.isCompany}
-                    onChange={handleInputChange}
+                    {...register('isCompany')}
                   />
                   <span>I'm purchasing as a company (B2B)</span>
                 </label>
               </div>
 
               {/* B2B Fields */}
-              {formData.isCompany && (
+              {watch('isCompany') && (
                 <div className="b2b-fields">
                   <div className="form-field">
                     <label htmlFor="companyName">Company Name *</label>
                     <input
                       type="text"
                       id="companyName"
-                      name="companyName"
-                      value={formData.companyName}
-                      onChange={handleInputChange}
-                      required={formData.isCompany}
                       placeholder="Company s.r.o."
-                      className={validationErrors.companyName ? 'error' : ''}
+                      className={errors.companyName ? 'error' : ''}
+                      {...register('companyName')}
                     />
-                    {validationErrors.companyName && (
-                      <span className="field-error">{validationErrors.companyName}</span>
+                    {errors.companyName && (
+                      <span className="field-error">{errors.companyName.message}</span>
                     )}
                   </div>
 
@@ -998,15 +859,12 @@ const Checkout: React.FC = () => {
                       <input
                         type="text"
                         id="companyId"
-                        name="companyId"
-                        value={formData.companyId}
-                        onChange={handleInputChange}
-                        required={formData.isCompany}
                         placeholder="12345678"
-                        className={validationErrors.companyId ? 'error' : ''}
+                        className={errors.companyId ? 'error' : ''}
+                        {...register('companyId')}
                       />
-                      {validationErrors.companyId && (
-                        <span className="field-error">{validationErrors.companyId}</span>
+                      {errors.companyId && (
+                        <span className="field-error">{errors.companyId.message}</span>
                       )}
                     </div>
 
@@ -1015,15 +873,12 @@ const Checkout: React.FC = () => {
                       <input
                         type="text"
                         id="taxId"
-                        name="taxId"
-                        value={formData.taxId}
-                        onChange={handleInputChange}
-                        required={formData.isCompany}
                         placeholder="1234567890"
-                        className={validationErrors.taxId ? 'error' : ''}
+                        className={errors.taxId ? 'error' : ''}
+                        {...register('taxId')}
                       />
-                      {validationErrors.taxId && (
-                        <span className="field-error">{validationErrors.taxId}</span>
+                      {errors.taxId && (
+                        <span className="field-error">{errors.taxId.message}</span>
                       )}
                     </div>
                   </div>
@@ -1033,10 +888,8 @@ const Checkout: React.FC = () => {
                     <input
                       type="text"
                       id="vatId"
-                      name="vatId"
-                      value={formData.vatId}
-                      onChange={handleInputChange}
                       placeholder="SK1234567890"
+                      {...register('vatId')}
                     />
                   </div>
                 </div>
@@ -1102,19 +955,35 @@ const Checkout: React.FC = () => {
                   {isAutocompleteLoaded && <span className="autocomplete-badge">🌍 Autocomplete</span>}
                 </label>
                 <input
-                  ref={autocompleteInputRef}
                   type="text"
                   id="billingStreet"
-                  name="billingStreet"
                   autoComplete="street-address"
-                  value={formData.billingStreet}
-                  onChange={handleInputChange}
                   required
                   placeholder={isAutocompleteLoaded ? "Start typing address..." : "123 Main Street"}
-                  className={validationErrors.billingStreet ? 'error' : ''}
+                  className={errors.billingStreet ? 'error' : ''}
+                  {...register('billingStreet', {
+                    onChange: () => {
+                      // Deselect saved address when manually typing
+                      if (selectedAddressId) {
+                        setSelectedAddressId('');
+                      }
+                    },
+                    setValueAs: (value) => {
+                      // Pass ref to autocomplete
+                      return value;
+                    }
+                  })}
+                  ref={(el) => {
+                    // Set both refs
+                    const { ref } = register('billingStreet');
+                    ref(el);
+                    if (autocompleteInputRef && typeof autocompleteInputRef !== 'function') {
+                      autocompleteInputRef.current = el;
+                    }
+                  }}
                 />
-                {validationErrors.billingStreet && (
-                  <span className="field-error">{validationErrors.billingStreet}</span>
+                {errors.billingStreet && (
+                  <span className="field-error">{errors.billingStreet.message}</span>
                 )}
                 {autocompleteError && !isAutocompleteLoaded && (
                   <span className="field-hint text-warning">Address autocomplete unavailable. Please enter manually.</span>
@@ -1127,16 +996,14 @@ const Checkout: React.FC = () => {
                   <input
                     type="text"
                     id="billingCity"
-                    name="billingCity"
                     autoComplete="address-level2"
-                    value={formData.billingCity}
-                    onChange={handleInputChange}
                     required
                     placeholder="Bratislava"
-                    className={validationErrors.billingCity ? 'error' : ''}
+                    className={errors.billingCity ? 'error' : ''}
+                    {...register('billingCity')}
                   />
-                  {validationErrors.billingCity && (
-                    <span className="field-error">{validationErrors.billingCity}</span>
+                  {errors.billingCity && (
+                    <span className="field-error">{errors.billingCity.message}</span>
                   )}
                 </div>
 
@@ -1145,16 +1012,14 @@ const Checkout: React.FC = () => {
                   <input
                     type="text"
                     id="billingPostalCode"
-                    name="billingPostalCode"
                     autoComplete="postal-code"
-                    value={formData.billingPostalCode}
-                    onChange={handleInputChange}
                     required
                     placeholder="81101"
-                    className={validationErrors.billingPostalCode ? 'error' : ''}
+                    className={errors.billingPostalCode ? 'error' : ''}
+                    {...register('billingPostalCode')}
                   />
-                  {validationErrors.billingPostalCode && (
-                    <span className="field-error">{validationErrors.billingPostalCode}</span>
+                  {errors.billingPostalCode && (
+                    <span className="field-error">{errors.billingPostalCode.message}</span>
                   )}
                 </div>
               </div>
@@ -1165,11 +1030,9 @@ const Checkout: React.FC = () => {
                   <input
                     type="text"
                     id="billingState"
-                    name="billingState"
                     autoComplete="address-level1"
-                    value={formData.billingState}
-                    onChange={handleInputChange}
                     placeholder="Bratislava Region"
+                    {...register('billingState')}
                   />
                 </div>
 
@@ -1177,12 +1040,10 @@ const Checkout: React.FC = () => {
                   <label htmlFor="billingCountry">Country *</label>
                   <select
                     id="billingCountry"
-                    name="billingCountry"
                     autoComplete="country"
-                    value={formData.billingCountry}
-                    onChange={handleInputChange}
                     required
-                    className={validationErrors.billingCountry ? 'error' : ''}
+                    className={errors.billingCountry ? 'error' : ''}
+                    {...register('billingCountry')}
                   >
                     <option value="">Select a country</option>
                     {COUNTRIES.map(country => (
@@ -1191,8 +1052,8 @@ const Checkout: React.FC = () => {
                       </option>
                     ))}
                   </select>
-                  {validationErrors.billingCountry && (
-                    <span className="field-error">{validationErrors.billingCountry}</span>
+                  {errors.billingCountry && (
+                    <span className="field-error">{errors.billingCountry.message}</span>
                   )}
                 </div>
               </div>
@@ -1204,16 +1065,14 @@ const Checkout: React.FC = () => {
                 <label className="checkbox-label">
                   <input
                     type="checkbox"
-                    name="shipToDifferentAddress"
-                    checked={formData.shipToDifferentAddress}
-                    onChange={handleInputChange}
+                    {...register('shipToDifferentAddress')}
                   />
                   <span>Ship to a different address?</span>
                 </label>
               </div>
 
               {/* Shipping Address Fields */}
-              {formData.shipToDifferentAddress && (
+              {watch('shipToDifferentAddress') && (
                 <div className="shipping-address-fields">
                   <h3 className="subsection-title">Shipping Address</h3>
 
@@ -1222,16 +1081,13 @@ const Checkout: React.FC = () => {
                     <input
                       type="text"
                       id="shippingStreet"
-                      name="shippingStreet"
                       autoComplete="shipping street-address"
-                      value={formData.shippingStreet}
-                      onChange={handleInputChange}
-                      required
                       placeholder="456 Delivery Street"
-                      className={validationErrors.shippingStreet ? 'error' : ''}
+                      className={errors.shippingStreet ? 'error' : ''}
+                      {...register('shippingStreet')}
                     />
-                    {validationErrors.shippingStreet && (
-                      <span className="field-error">{validationErrors.shippingStreet}</span>
+                    {errors.shippingStreet && (
+                      <span className="field-error">{errors.shippingStreet.message}</span>
                     )}
                   </div>
 
@@ -1241,16 +1097,13 @@ const Checkout: React.FC = () => {
                       <input
                         type="text"
                         id="shippingCity"
-                        name="shippingCity"
                         autoComplete="shipping address-level2"
-                        value={formData.shippingCity}
-                        onChange={handleInputChange}
-                        required
                         placeholder="Prague"
-                        className={validationErrors.shippingCity ? 'error' : ''}
+                        className={errors.shippingCity ? 'error' : ''}
+                        {...register('shippingCity')}
                       />
-                      {validationErrors.shippingCity && (
-                        <span className="field-error">{validationErrors.shippingCity}</span>
+                      {errors.shippingCity && (
+                        <span className="field-error">{errors.shippingCity.message}</span>
                       )}
                     </div>
 
@@ -1259,16 +1112,13 @@ const Checkout: React.FC = () => {
                       <input
                         type="text"
                         id="shippingPostalCode"
-                        name="shippingPostalCode"
                         autoComplete="shipping postal-code"
-                        value={formData.shippingPostalCode}
-                        onChange={handleInputChange}
-                        required
                         placeholder="11000"
-                        className={validationErrors.shippingPostalCode ? 'error' : ''}
+                        className={errors.shippingPostalCode ? 'error' : ''}
+                        {...register('shippingPostalCode')}
                       />
-                      {validationErrors.shippingPostalCode && (
-                        <span className="field-error">{validationErrors.shippingPostalCode}</span>
+                      {errors.shippingPostalCode && (
+                        <span className="field-error">{errors.shippingPostalCode.message}</span>
                       )}
                     </div>
                   </div>
@@ -1279,11 +1129,9 @@ const Checkout: React.FC = () => {
                       <input
                         type="text"
                         id="shippingState"
-                        name="shippingState"
                         autoComplete="shipping address-level1"
-                        value={formData.shippingState}
-                        onChange={handleInputChange}
                         placeholder="Prague Region"
+                        {...register('shippingState')}
                       />
                     </div>
 
@@ -1291,12 +1139,9 @@ const Checkout: React.FC = () => {
                       <label htmlFor="shippingCountry">Country *</label>
                       <select
                         id="shippingCountry"
-                        name="shippingCountry"
                         autoComplete="shipping country"
-                        value={formData.shippingCountry}
-                        onChange={handleInputChange}
-                        required
-                        className={validationErrors.shippingCountry ? 'error' : ''}
+                        className={errors.shippingCountry ? 'error' : ''}
+                        {...register('shippingCountry')}
                       >
                         <option value="">Select a country</option>
                         {COUNTRIES.map(country => (
@@ -1305,8 +1150,8 @@ const Checkout: React.FC = () => {
                           </option>
                         ))}
                       </select>
-                      {validationErrors.shippingCountry && (
-                        <span className="field-error">{validationErrors.shippingCountry}</span>
+                      {errors.shippingCountry && (
+                        <span className="field-error">{errors.shippingCountry.message}</span>
                       )}
                     </div>
                   </div>
@@ -1320,9 +1165,7 @@ const Checkout: React.FC = () => {
                 <label className="checkbox-label">
                   <input
                     type="checkbox"
-                    name="newsletterOptIn"
-                    checked={formData.newsletterOptIn}
-                    onChange={handleInputChange}
+                    {...register('newsletterOptIn')}
                   />
                   <span>Send me news and special offers</span>
                 </label>
@@ -1506,30 +1349,32 @@ const Checkout: React.FC = () => {
                   <label className="checkbox-label legal-checkbox">
                     <input
                       type="checkbox"
-                      name="termsAccepted"
-                      checked={formData.termsAccepted}
-                      onChange={handleInputChange}
                       required
+                      {...register('termsAccepted')}
                     />
                     <span>
                       I agree to the <a href="/terms-of-service" target="_blank" rel="noopener noreferrer">Terms & Conditions</a> *
                     </span>
                   </label>
+                  {errors.termsAccepted && (
+                    <span className="field-error">{errors.termsAccepted.message}</span>
+                  )}
                 </div>
 
                 <div className="form-field checkbox-field">
                   <label className="checkbox-label legal-checkbox">
                     <input
                       type="checkbox"
-                      name="privacyAccepted"
-                      checked={formData.privacyAccepted}
-                      onChange={handleInputChange}
                       required
+                      {...register('privacyAccepted')}
                     />
                     <span>
                       I agree to the <a href="/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a> *
                     </span>
                   </label>
+                  {errors.privacyAccepted && (
+                    <span className="field-error">{errors.privacyAccepted.message}</span>
+                  )}
                 </div>
               </div>
 
@@ -1538,23 +1383,23 @@ const Checkout: React.FC = () => {
                   items={items}
                   totalAmount={totals.total}
                   currency={derivedCurrency}
-                  email={formData.email}
-                  firstName={formData.firstName}
-                  lastName={formData.lastName}
+                  email={getValues('email')}
+                  firstName={getValues('firstName')}
+                  lastName={getValues('lastName')}
                   billingAddress={{
-                    street: formData.billingStreet,
-                    city: formData.billingCity,
-                    state: formData.billingState,
-                    postalCode: formData.billingPostalCode,
-                    country: formData.billingCountry,
-                    companyName: formData.isCompany ? formData.companyName : undefined,
-                    companyId: formData.isCompany ? formData.companyId : undefined,
-                    taxId: formData.isCompany ? formData.taxId : undefined,
-                    vatId: formData.isCompany && formData.vatId ? formData.vatId : undefined,
-                    isCompany: formData.isCompany
+                    street: getValues('billingStreet'),
+                    city: getValues('billingCity'),
+                    state: getValues('billingState') || '',
+                    postalCode: getValues('billingPostalCode'),
+                    country: getValues('billingCountry'),
+                    companyName: getValues('isCompany') ? getValues('companyName') : undefined,
+                    companyId: getValues('isCompany') ? getValues('companyId') : undefined,
+                    taxId: getValues('isCompany') ? getValues('taxId') : undefined,
+                    vatId: getValues('isCompany') && getValues('vatId') ? getValues('vatId') : undefined,
+                    isCompany: getValues('isCompany')
                   }}
                   onError={handleStripeError}
-                  disabled={!formData.termsAccepted || !formData.privacyAccepted}
+                  disabled={!watch('termsAccepted') || !watch('privacyAccepted')}
                 />
               </div>
 

@@ -70,18 +70,6 @@ const AdminProductGallery: React.FC = () => {
     <AdminLayout title="Product Gallery Management" navTabs={navTabs}>
       <div className="admin-page">
         <div className="admin-container">
-          <div className="admin-header">
-            <div>
-              <h2 className="admin-title">📸 Product Gallery Management</h2>
-              <p className="admin-subtitle">
-                Manage product images for: <strong>{product?.name || `Product ${id}`}</strong>
-              </p>
-            </div>
-            <div>
-              <Link to="/admin/products" className="btn btn-outline">Back to Products</Link>
-            </div>
-          </div>
-
           {loading ? (
             <div className="admin-card">Loading product...</div>
           ) : !product ? (

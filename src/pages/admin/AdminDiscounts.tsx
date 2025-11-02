@@ -297,15 +297,6 @@ const AdminDiscounts: React.FC = () => {
     <AdminLayout title="Discount Codes" navTabs={navTabs}>
       <div className="admin-page">
         <div className="admin-container">
-          <div className="admin-header">
-            <div>
-              <h2 className="admin-title">Discount Code Management</h2>
-              <p className="admin-subtitle">
-                Create and manage discount codes, track usage, and set expiration dates.
-              </p>
-            </div>
-          </div>
-
           {error && <div className="alert alert-error">{error}</div>}
 
           {/* Create/Edit Discount Tab */}
@@ -634,17 +625,21 @@ const AdminDiscounts: React.FC = () => {
                             <div className="action-buttons">
                               <Button variant="outline" size="sm" onClick={() => handleViewStats(d.id)} title="View Statistics">
                                 <BarChart3 size={14} />
+                                Stats
                               </Button>
                               <Button variant="outline" size="sm" onClick={() => handleEdit(d)} title="Edit discount">
                                 <Edit size={14} />
+                                Edit
                               </Button>
                               {d.is_active && !isExpired(d) && (
                                 <Button variant="outline" size="sm" onClick={() => handleDeactivate(d.id)} title="Deactivate">
                                   <XCircle size={14} />
+                                  Deactivate
                                 </Button>
                               )}
                               <Button variant="danger" size="sm" onClick={() => handleDelete(d.id)} title="Delete">
                                 <X size={14} />
+                                Delete
                               </Button>
                             </div>
                           </td>

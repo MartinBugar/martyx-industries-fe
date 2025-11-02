@@ -208,13 +208,6 @@ const AdminProducts: React.FC = () => {
     <AdminLayout title="Products" navTabs={navTabs}>
       <div className="admin-page">
         <div className="admin-container">
-          <div className="admin-header">
-            <div>
-              <h2 className="admin-title">Product Management</h2>
-              <p className="admin-subtitle">Manage your product catalog. Create master products and their variants with full pricing and inventory control.</p>
-            </div>
-          </div>
-
           {error && <div className="alert alert-error">{error}</div>}
 
           {/* Create Master Product Tab */}
@@ -507,11 +500,11 @@ const AdminProducts: React.FC = () => {
                       <td className="text-right">
                         <div className="action-buttons">
                           <Link to={`/admin/products/${p.id}`} className="btn btn-outline btn-sm" title="View/Edit product">
-                            <Eye size={14} style={{ marginRight: 4 }} />
+                            <Eye size={14} />
                             View
                           </Link>
                           <Button variant="danger" size="sm" onClick={() => handleDelete(p.id!)} title="Delete product">
-                            <X size={14} style={{ marginRight: 4 }} />
+                            <X size={14} />
                             Delete
                           </Button>
                         </div>

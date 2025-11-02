@@ -1,29 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { contactService } from '../../services/contactService';
 import { companySettingsService } from '../../services/companySettingsService';
-import type { ContactFormRequest } from '../../types/api';
+import { contactSchema, type ContactFormData } from '../../schemas/formSchemas';
 import type { CompanySettingsDto } from '../../types/invoice';
 import './Contact.css';
 
 const Contact: React.FC = () => {
   const { t } = useTranslation('contact');
-  const [formData, setFormData] = useState({
-    email: '',
-    subject: '',
-    text: '',
-    // Anti-bot fields
-    website: '', // Honeypot field (hidden via CSS)
-    formStartTime: Date.now(), // Timestamp when form loaded
-    verificationToken: `verify_${Date.now()}_${Math.random().toString(36).substring(7)}` // Simple token
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
-  const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [apiError, setApiError] = useState<string | null>(null);
   const [companySettings, setCompanySettings] = useState<CompanySettingsDto | null>(null);
   const [isLoadingSettings, setIsLoadingSettings] = useState(true);
   const [sliderVerified, setSliderVerified] = useState(false);
+
+  // React Hook Form setup with zod validation
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset
+  } = useForm<ContactFormData>({
+    resolver: zodResolver(contactSchema),
+    mode: 'onBlur',
+    defaultValues: {
+      email: '',
+      subject: '',
+      text: '',
+      website: '',
+      formStartTime: Date.now(),
+      verificationToken: `verify_${Date.now()}_${Math.random().toString(36).substring(7)}`
+    }
+  });
 
   // Fetch company settings on component mount
   useEffect(() => {
@@ -42,37 +52,41 @@ const Contact: React.FC = () => {
     fetchCompanySettings();
   }, []);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+  const handleContactSubmit = async (formData: ContactFormData) => {
     setSubmitStatus('idle');
-    setValidationErrors([]);
     setApiError(null);
 
     try {
-      // Frontend validation
-      const errors = contactService.validateContactForm(formData as ContactFormRequest);
-      if (errors.length > 0) {
-        setValidationErrors(errors);
+      // Anti-bot validation: honeypot should be empty
+      if (formData.website && formData.website.length > 0) {
+        console.warn('[Contact] Bot detected - honeypot field filled');
         setSubmitStatus('error');
+        setApiError('Invalid submission detected');
         return;
       }
 
-      // Submit to backend
-      await contactService.sendMessage(formData as ContactFormRequest);
-      
+      // Anti-bot validation: form should take at least 2 seconds to fill
+      if (formData.formStartTime) {
+        const timeSpent = Date.now() - formData.formStartTime;
+        if (timeSpent < 2000) {
+          console.warn('[Contact] Bot detected - form filled too quickly');
+          setSubmitStatus('error');
+          setApiError('Please take your time to fill out the form');
+          return;
+        }
+      }
+
+      // Submit to backend (only required fields)
+      await contactService.sendMessage({
+        email: formData.email,
+        subject: formData.subject,
+        text: formData.text
+      });
+
       // Success
       setSubmitStatus('success');
       setSliderVerified(false);
-      setFormData({
+      reset({
         email: '',
         subject: '',
         text: '',
@@ -83,15 +97,13 @@ const Contact: React.FC = () => {
     } catch (error: any) {
       console.error('Contact form submission error:', error);
       setSubmitStatus('error');
-      
+
       // Handle API error with message from backend
       if (error.errorData && error.errorData.message) {
         setApiError(error.errorData.message);
       } else {
         setApiError(t('form.error'));
       }
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -190,19 +202,20 @@ const Contact: React.FC = () => {
           <h2 id="contact-form-title">{t('form.title')}</h2>
           <p className="form-subtitle">{t('form.subtitle')}</p>
 
-          <form className="contact-form" onSubmit={handleSubmit}>
+          <form className="contact-form" onSubmit={handleSubmit(handleContactSubmit)}>
             <div className="form-group">
               <label htmlFor="email">{t('form.fields.email.label')}</label>
               <input
                 type="email"
                 id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
                 placeholder={t('form.fields.email.placeholder')}
-                required
+                className={errors.email ? 'error' : ''}
                 disabled={isSubmitting}
+                {...register('email')}
               />
+              {errors.email && (
+                <span className="field-error">{errors.email.message}</span>
+              )}
             </div>
 
             <div className="form-group">
@@ -210,27 +223,29 @@ const Contact: React.FC = () => {
               <input
                 type="text"
                 id="subject"
-                name="subject"
-                value={formData.subject}
-                onChange={handleInputChange}
                 placeholder={t('form.fields.subject.placeholder')}
-                required
+                className={errors.subject ? 'error' : ''}
                 disabled={isSubmitting}
+                {...register('subject')}
               />
+              {errors.subject && (
+                <span className="field-error">{errors.subject.message}</span>
+              )}
             </div>
 
             <div className="form-group">
               <label htmlFor="text">{t('form.fields.text.label')}</label>
               <textarea
                 id="text"
-                name="text"
-                value={formData.text}
-                onChange={handleInputChange}
                 placeholder={t('form.fields.text.placeholder')}
                 rows={6}
-                required
+                className={errors.text ? 'error' : ''}
                 disabled={isSubmitting}
+                {...register('text')}
               />
+              {errors.text && (
+                <span className="field-error">{errors.text.message}</span>
+              )}
             </div>
 
             {/* Honeypot field - hidden from humans, but bots will fill it */}
@@ -239,11 +254,9 @@ const Contact: React.FC = () => {
               <input
                 type="text"
                 id="website"
-                name="website"
-                value={formData.website}
-                onChange={handleInputChange}
                 tabIndex={-1}
                 autoComplete="off"
+                {...register('website')}
               />
             </div>
 
@@ -294,24 +307,15 @@ const Contact: React.FC = () => {
 
             {submitStatus === 'error' && (
               <div className="form-message error" role="alert">
-                {/* Show validation errors */}
-                {validationErrors.length > 0 && (
-                  <ul className="validation-errors">
-                    {validationErrors.map((error, index) => (
-                      <li key={index}>{t(`form.${error}`)}</li>
-                    ))}
-                  </ul>
-                )}
-                
                 {/* Show API error */}
                 {apiError && (
                   <div className="api-error">
                     {apiError}
                   </div>
                 )}
-                
-                {/* Show generic error if no specific errors */}
-                {validationErrors.length === 0 && !apiError && (
+
+                {/* Show generic error if no specific error */}
+                {!apiError && (
                   <div>{t('form.error')}</div>
                 )}
               </div>

@@ -509,7 +509,7 @@
 
     .dashboard-tab {
         background: transparent;
-        border: 1px solid var(--admin-primary);
+        border: 1px solid var(--admin-border);
         color: var(--admin-secondary);
         padding: 8px 16px;
         border-radius: var(--admin-radius-md);
@@ -528,12 +528,6 @@
         height: 16px;
         background-size: 16px 16px;
         opacity: 0.7;
-    }
-
-    .dashboard-tab:hover {
-        background: var(--admin-primary);
-        color: #ffffff;
-        border-color: var(--admin-primary);
     }
 
     .dashboard-tab.active {
@@ -894,7 +888,7 @@
 
 .dashboard-tab {
     background: transparent;
-    border: 1px solid var(--admin-primary);
+    border: 1px solid var(--admin-border);
     color: var(--admin-secondary);
     padding: 8px 16px;
     border-radius: var(--admin-radius-md);
@@ -910,6 +904,7 @@
     min-height: auto;
     position: relative;
     white-space: nowrap;
+    text-decoration: none;
 }
 
 .dashboard-tab::before {
@@ -935,16 +930,6 @@
     background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="%239CA3AF"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" /></svg>');
 }
 
-.dashboard-tab:hover {
-    background: var(--admin-primary);
-    color: #ffffff;
-    border-color: #4B5563;
-}
-
-.dashboard-tab:hover::before {
-    opacity: 0.9;
-    filter: brightness(0) saturate(100%) invert(100%);
-}
 
 .dashboard-tab.active {
     background: var(--admin-accent);
@@ -1039,15 +1024,6 @@
         transition: opacity 0.2s ease;
     }
 
-    .dashboard-tab:hover {
-        background: transparent;
-        color: #ffffff;
-    }
-
-    .dashboard-tab:hover::before {
-        opacity: 1;
-        filter: brightness(0) saturate(100%) invert(100%);
-    }
 
     .dashboard-tab.active {
         background: transparent;
@@ -1287,6 +1263,9 @@
   }
 
   .dashboard-tab {
+    background: transparent;
+    border: 1px solid var(--admin-border);
+    color: var(--admin-secondary);
     padding: 10px 20px;
     font-size: 15px;
     font-weight: 600;
@@ -1296,20 +1275,16 @@
     overflow: hidden;
   }
 
-  .dashboard-tab:hover {
-    background: #F1F5F9;
-    color: var(--admin-primary);
-    border-color: var(--admin-divider);
-    transform: translateY(-1px);
-    box-shadow: var(--admin-shadow-sm);
+  .dashboard-tab::before {
+    width: 16px;
+    height: 16px;
+    background-size: 16px 16px;
   }
 
   .dashboard-tab.active {
     background: var(--admin-accent);
     color: #FFFFFF;
     border-color: #3B82F6;
-    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
-    transform: translateY(-1px);
   }
 
   /* Enhanced section headers */

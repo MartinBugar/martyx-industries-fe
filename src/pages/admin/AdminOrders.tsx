@@ -235,14 +235,6 @@ const AdminOrders: React.FC = () => {
         <AdminLayout title="Orders" navTabs={navTabs}>
             <div className="admin-page">
                 <div className="admin-container">
-                    <div className="admin-header">
-                        <div>
-                            <h2 className="admin-title">Order Management</h2>
-                            <p className="admin-subtitle">Manage customer orders, track status, and process payments
-                                efficiently.</p>
-                        </div>
-                    </div>
-
                     {error && <div className="alert alert-error">{error}</div>}
 
                     {/* Create Order Tab */}
@@ -717,7 +709,7 @@ const AdminOrders: React.FC = () => {
                                                                     onClick={() => toggleExpanded(id as string | number)}
                                                                     title={String(expandedId) === String(id) ? 'Hide details' : 'View details'}
                                                                 >
-                                                                    <Eye size={14} style={{ marginRight: 4 }} />
+                                                                    <Eye size={14} />
                                                                     {String(expandedId) === String(id) ? 'Hide' : 'View'}
                                                                 </Button>
                                                                 <Button
@@ -726,7 +718,7 @@ const AdminOrders: React.FC = () => {
                                                                     onClick={() => startEdit(o)}
                                                                     title="Edit order"
                                                                 >
-                                                                    <Pencil size={14} style={{ marginRight: 4 }} />
+                                                                    <Pencil size={14} />
                                                                     Edit
                                                                 </Button>
                                                                 <Button
@@ -735,7 +727,7 @@ const AdminOrders: React.FC = () => {
                                                                     onClick={() => handleDelete(o.id!)}
                                                                     title="Delete order"
                                                                 >
-                                                                    <X size={14} style={{ marginRight: 4 }} />
+                                                                    <X size={14} />
                                                                     Delete
                                                                 </Button>
                                                             </div>

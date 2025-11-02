@@ -100,13 +100,6 @@ const AdminGallery: React.FC = () => {
     <AdminLayout title="Gallery Management" navTabs={navTabs}>
       <div className="admin-page">
         <div className="admin-container">
-          <div className="admin-header">
-            <div>
-              <h2 className="admin-title">Gallery Management</h2>
-              <p className="admin-subtitle">Manage user-uploaded model photos, moderation, and visibility.</p>
-            </div>
-          </div>
-
           {error && (
             <div className="alert alert-error" style={{ marginBottom: '20px' }}>
               <AlertCircle size={16} />

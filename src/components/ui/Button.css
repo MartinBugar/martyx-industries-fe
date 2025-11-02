@@ -29,8 +29,9 @@
 
 /* Button Sizes */
 .btn-sm {
-  padding: 6px 12px;
-  font-size: 13px;
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 600;
   border-radius: 6px;
 }
 
@@ -50,6 +51,7 @@
   background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   color: white;
   border-color: transparent;
+  font-weight: 600;
 }
 
 .btn-primary:active:not(:disabled) {
@@ -65,15 +67,22 @@
 
 .btn-outline {
   background: white;
-  color: #374151;
-  border-color: #d1d5db;
+  color: #1f2937;
+  border-color: #9ca3af;
+  font-weight: 600;
 }
 
+.btn-outline:hover:not(:disabled) {
+  background: #f9fafb;
+  border-color: #6b7280;
+  color: #111827;
+}
 
 .btn-danger {
   background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   color: white;
   border-color: transparent;
+  font-weight: 600;
 }
 
 
@@ -98,6 +107,15 @@
 
 .btn-full-width {
   width: 100%;
+}
+
+/* Button Text */
+.btn-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: inherit;
+  color: inherit;
 }
 
 /* Button Icon */

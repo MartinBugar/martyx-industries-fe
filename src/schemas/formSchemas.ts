@@ -30,15 +30,15 @@ export const passwordSchema = z
 
 /**
  * Phone number validation schema
- * - Slovak phone number format: +421XXXXXXXXX or 0XXXXXXXXX
- * - International formats also allowed
+ * - International format: +XXX XXX XXX XXX
+ * - Allows spaces, dashes, parentheses
  */
 export const phoneSchema = z
   .string()
-  .min(1, { message: 'Telefónne číslo je povinné' })
+  .min(1, { message: 'Phone number is required' })
   .regex(
-    /^(\+421|0)?[0-9]{9}$/,
-    { message: 'Neplatný formát telefónneho čísla (napr. +421901234567 alebo 0901234567)' }
+    /^\+?[\d\s\-\(\)]{9,20}$/,
+    { message: 'Please enter a valid phone number (e.g., +421 900 123 456)' }
   );
 
 // ===== AUTH FORM SCHEMAS =====
@@ -129,112 +129,211 @@ export type ContactFormData = z.infer<typeof contactSchema>;
 // ===== CHECKOUT FORM SCHEMAS =====
 
 /**
- * Billing/Shipping address schema
+ * Checkout form schema (flat structure matching Checkout.tsx)
+ * - Contact information
+ * - Billing address
+ * - Optional shipping address
+ * - B2B company fields
+ * - Legal consents
  */
-export const addressSchema = z.object({
-  firstName: z
-    .string()
-    .min(2, { message: 'Meno musí mať minimálne 2 znaky' })
-    .max(50, { message: 'Meno môže mať maximálne 50 znakov' }),
-  lastName: z
-    .string()
-    .min(2, { message: 'Priezvisko musí mať minimálne 2 znaky' })
-    .max(50, { message: 'Priezvisko môže mať maximálne 50 znakov' }),
-  email: emailSchema,
-  phone: phoneSchema,
-  street: z
-    .string()
-    .min(5, { message: 'Ulica musí mať minimálne 5 znakov' })
-    .max(100, { message: 'Ulica môže mať maximálne 100 znakov' }),
-  city: z
-    .string()
-    .min(2, { message: 'Mesto musí mať minimálne 2 znaky' })
-    .max(100, { message: 'Mesto môže mať maximálne 100 znakov' }),
-  postalCode: z
-    .string()
-    .min(5, { message: 'PSČ musí mať minimálne 5 znakov' })
-    .max(10, { message: 'PSČ môže mať maximálne 10 znakov' })
-    .regex(/^[0-9\s-]+$/, { message: 'PSČ môže obsahovať iba čísla, medzery a pomlčky' }),
-  country: z
-    .string()
-    .min(2, { message: 'Krajina je povinná' })
-    .max(100, { message: 'Krajina môže mať maximálne 100 znakov' })
-});
+export const checkoutFormSchema = z.object({
+  // Contact Information
+  firstName: z.string().min(1, { message: 'First name is required' }),
+  lastName: z.string().min(1, { message: 'Last name is required' }),
+  email: z.string().min(1, { message: 'Email is required' }).email({ message: 'Please enter a valid email address' }),
+  phone: z.string().min(1, { message: 'Phone number is required' }).regex(/^\+?[\d\s\-\(\)]{9,20}$/, { message: 'Please enter a valid phone number (e.g., +421 900 123 456)' }),
 
-export type AddressFormData = z.infer<typeof addressSchema>;
+  // Billing Address
+  billingStreet: z.string().min(1, { message: 'Street address is required' }),
+  billingCity: z.string().min(1, { message: 'City is required' }),
+  billingState: z.string().optional(),
+  billingPostalCode: z.string().min(1, { message: 'Postal code is required' }),
+  billingCountry: z.string().min(1, { message: 'Country is required' }),
 
-/**
- * Checkout form schema
- * - Billing address required
- * - Shipping address optional (if different from billing)
- * - Terms and conditions consent required
- * - Privacy policy consent required
- */
-export const checkoutSchema = z.object({
-  // Billing address
-  billingAddress: addressSchema,
+  // Shipping Address (conditional)
+  shipToDifferentAddress: z.boolean().optional(),
+  shippingStreet: z.string().optional(),
+  shippingCity: z.string().optional(),
+  shippingState: z.string().optional(),
+  shippingPostalCode: z.string().optional(),
+  shippingCountry: z.string().optional(),
 
-  // Shipping address (optional, used when different from billing)
-  useDifferentShippingAddress: z.boolean().optional(),
-  shippingAddress: addressSchema.optional(),
+  // B2B Customer fields
+  isCompany: z.boolean().optional(),
+  companyName: z.string().optional(),
+  companyId: z.string().optional(),
+  taxId: z.string().optional(),
+  vatId: z.string().optional(),
 
-  // Legal consents
-  termsAccepted: z.boolean().refine((val) => val === true, {
-    message: 'Musíte súhlasiť s obchodnými podmienkami'
-  }),
-  privacyAccepted: z.boolean().refine((val) => val === true, {
-    message: 'Musíte súhlasiť so spracovaním osobných údajov'
-  }),
+  // Marketing
+  newsletterOptIn: z.boolean().optional(),
 
-  // Optional fields
-  orderNotes: z.string().max(500, { message: 'Poznámka môže mať maximálne 500 znakov' }).optional()
-}).refine((data) => {
-  // If using different shipping address, it must be provided
-  if (data.useDifferentShippingAddress && !data.shippingAddress) {
-    return false;
+  // Legal consents - REQUIRED
+  termsAccepted: z.boolean(),
+  privacyAccepted: z.boolean()
+}).superRefine((data, ctx) => {
+  // Validate legal consents - REQUIRED for payment
+  if (!data.termsAccepted || data.termsAccepted !== true) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Please accept the Terms & Conditions to continue',
+      path: ['termsAccepted']
+    });
   }
-  return true;
-}, {
-  message: 'Dodacia adresa je povinná',
-  path: ['shippingAddress']
-});
 
-export type CheckoutFormData = z.infer<typeof checkoutSchema>;
-
-// ===== PARTIAL SCHEMAS FOR MULTI-STEP FORMS =====
-
-/**
- * Step 1: Billing info only
- */
-export const billingStepSchema = z.object({
-  billingAddress: addressSchema,
-  termsAccepted: z.boolean().refine((val) => val === true, {
-    message: 'Musíte súhlasiť s obchodnými podmienkami'
-  }),
-  privacyAccepted: z.boolean().refine((val) => val === true, {
-    message: 'Musíte súhlasiť so spracovaním osobných údajov'
-  })
-});
-
-export type BillingStepFormData = z.infer<typeof billingStepSchema>;
-
-/**
- * Step 2: Shipping info (if different from billing)
- */
-export const shippingStepSchema = z.object({
-  useDifferentShippingAddress: z.boolean(),
-  shippingAddress: addressSchema.optional()
-}).refine((data) => {
-  if (data.useDifferentShippingAddress && !data.shippingAddress) {
-    return false;
+  if (!data.privacyAccepted || data.privacyAccepted !== true) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Please accept the Privacy Policy to continue',
+      path: ['privacyAccepted']
+    });
   }
-  return true;
-}, {
-  message: 'Dodacia adresa je povinná',
-  path: ['shippingAddress']
+
+  // Validate shipping address if different
+  if (data.shipToDifferentAddress) {
+    if (!data.shippingStreet || data.shippingStreet.trim() === '') {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Shipping street address is required',
+        path: ['shippingStreet']
+      });
+    }
+    if (!data.shippingCity || data.shippingCity.trim() === '') {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Shipping city is required',
+        path: ['shippingCity']
+      });
+    }
+    if (!data.shippingPostalCode || data.shippingPostalCode.trim() === '') {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Shipping postal code is required',
+        path: ['shippingPostalCode']
+      });
+    }
+    if (!data.shippingCountry || data.shippingCountry.trim() === '') {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Shipping country is required',
+        path: ['shippingCountry']
+      });
+    }
+  }
+
+  // Validate B2B fields if company
+  if (data.isCompany) {
+    if (!data.companyName || data.companyName.trim() === '') {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Company name is required',
+        path: ['companyName']
+      });
+    }
+    if (!data.companyId || data.companyId.trim() === '') {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Company ID (IČO) is required',
+        path: ['companyId']
+      });
+    }
+    if (!data.taxId || data.taxId.trim() === '') {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Tax ID (DIČ) is required',
+        path: ['taxId']
+      });
+    }
+  }
 });
 
-export type ShippingStepFormData = z.infer<typeof shippingStepSchema>;
+export type CheckoutFormData = z.infer<typeof checkoutFormSchema>;
+
+/**
+ * Step 1 validation (Information) - All contact and address fields
+ */
+export const checkoutStep1Schema = checkoutFormSchema.pick({
+  firstName: true,
+  lastName: true,
+  email: true,
+  phone: true,
+  billingStreet: true,
+  billingCity: true,
+  billingState: true,
+  billingPostalCode: true,
+  billingCountry: true,
+  shipToDifferentAddress: true,
+  shippingStreet: true,
+  shippingCity: true,
+  shippingState: true,
+  shippingPostalCode: true,
+  shippingCountry: true,
+  isCompany: true,
+  companyName: true,
+  companyId: true,
+  taxId: true,
+  vatId: true,
+  newsletterOptIn: true
+}).superRefine((data, ctx) => {
+  // Validate shipping address if different
+  if (data.shipToDifferentAddress) {
+    if (!data.shippingStreet || data.shippingStreet.trim() === '') {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Shipping street address is required',
+        path: ['shippingStreet']
+      });
+    }
+    if (!data.shippingCity || data.shippingCity.trim() === '') {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Shipping city is required',
+        path: ['shippingCity']
+      });
+    }
+    if (!data.shippingPostalCode || data.shippingPostalCode.trim() === '') {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Shipping postal code is required',
+        path: ['shippingPostalCode']
+      });
+    }
+    if (!data.shippingCountry || data.shippingCountry.trim() === '') {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Shipping country is required',
+        path: ['shippingCountry']
+      });
+    }
+  }
+
+  // Validate B2B fields if company
+  if (data.isCompany) {
+    if (!data.companyName || data.companyName.trim() === '') {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Company name is required',
+        path: ['companyName']
+      });
+    }
+    if (!data.companyId || data.companyId.trim() === '') {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Company ID (IČO) is required',
+        path: ['companyId']
+      });
+    }
+    if (!data.taxId || data.taxId.trim() === '') {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Tax ID (DIČ) is required',
+        path: ['taxId']
+      });
+    }
+  }
+});
+
+export type CheckoutStep1FormData = z.infer<typeof checkoutStep1Schema>;
 
 // ===== HELPER FUNCTIONS =====
 

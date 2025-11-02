@@ -1,4 +1,110 @@
 import { API_BASE_URL, defaultHeaders } from './apiUtils';
+import { apiClient } from './apiClient';
+
+// ===== TYPE DEFINITIONS =====
+
+export interface OrderItem {
+  variantId: number;
+  productName: string;
+  variantName?: string;
+  quantity: number;
+  pricePerUnit: number;
+  totalPrice: number;
+  imageUrl?: string;
+}
+
+export interface Address {
+  street: string;
+  city: string;
+  state?: string;
+  postalCode: string;
+  country: string;
+}
+
+export interface Order {
+  id: number;
+  orderNumber: string;
+  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  totalAmount: number;
+  currency: string;
+  createdAt: string;
+  items: OrderItem[];
+  billingAddress: Address;
+  shippingAddress: Address;
+  trackingNumber?: string;
+  trackingUrl?: string;
+  carrier?: string;
+  invoiceUrl?: string;
+  shippedAt?: string;
+  deliveredAt?: string;
+  cancelledAt?: string;
+  cancellationReason?: string;
+}
+
+export interface OrderListParams {
+  page?: number;
+  limit?: number;
+  status?: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  dateFrom?: string;
+  dateTo?: string;
+  sortBy?: 'date' | 'total' | 'status';
+  sortOrder?: 'asc' | 'desc';
+}
+
+export interface OrderListResponse {
+  orders: Order[];
+  total: number;
+  page: number;
+  totalPages: number;
+}
+
+export interface TrackingEvent {
+  date: string;
+  location: string;
+  description: string;
+}
+
+export interface TrackingInfo {
+  trackingNumber: string;
+  carrier: string;
+  status: string;
+  estimatedDelivery: string;
+  trackingEvents: TrackingEvent[];
+}
+
+export interface ReorderResponse {
+  success: boolean;
+  newOrderId?: number;
+  unavailableItems?: {
+    variantId: number;
+    productName: string;
+    reason: string;
+  }[];
+}
+
+export interface CancelOrderResponse {
+  success: boolean;
+  refundAmount?: number;
+  message: string;
+}
+
+export interface ReturnItem {
+  variantId: number;
+  quantity: number;
+  reason: string;
+}
+
+export interface ReturnOrderRequest {
+  items: ReturnItem[];
+  refundMethod: 'original' | 'store_credit';
+}
+
+export interface ReturnOrderResponse {
+  success: boolean;
+  returnId: number;
+  returnLabel: string;
+  message: string;
+}
 
 export const orderService = {
   downloadProduct: async (orderId: number | string, productId: number | string, productName?: string): Promise<void> => {
@@ -122,5 +228,130 @@ export const orderService = {
     link.click();
     link.remove();
     window.URL.revokeObjectURL(blobUrl);
+  },
+
+  // ===== ORDER HISTORY METHODS =====
+
+  /**
+   * Get all orders for a specific user
+   * @param userId - User ID
+   * @param params - Query parameters for filtering, sorting, pagination
+   */
+  getUserOrders: async (userId: number, params?: OrderListParams): Promise<OrderListResponse> => {
+    let url = `/api/orders/user/${userId}`;
+    if (params) {
+      const queryParams = new URLSearchParams();
+      if (params.page) queryParams.append('page', params.page.toString());
+      if (params.limit) queryParams.append('limit', params.limit.toString());
+      if (params.status) queryParams.append('status', params.status);
+      if (params.dateFrom) queryParams.append('dateFrom', params.dateFrom);
+      if (params.dateTo) queryParams.append('dateTo', params.dateTo);
+      if (params.sortBy) queryParams.append('sortBy', params.sortBy);
+      if (params.sortOrder) queryParams.append('sortOrder', params.sortOrder);
+      const queryString = queryParams.toString();
+      if (queryString) url += `?${queryString}`;
+    }
+    return await apiClient.get<OrderListResponse>(url);
+  },
+
+  /**
+   * Get details of a specific order
+   * @param orderId - Order ID
+   */
+  getOrderDetails: async (orderId: number): Promise<Order> => {
+    return await apiClient.get<Order>(`/api/orders/${orderId}`);
+  },
+
+  /**
+   * Get tracking information for an order
+   * @param orderId - Order ID
+   */
+  getTracking: async (orderId: number): Promise<TrackingInfo> => {
+    return await apiClient.get<TrackingInfo>(`/api/orders/${orderId}/tracking`);
+  },
+
+  /**
+   * Reorder items from a previous order
+   * @param orderId - Original order ID
+   */
+  reorder: async (orderId: number): Promise<ReorderResponse> => {
+    return await apiClient.post<ReorderResponse>(`/api/orders/${orderId}/reorder`);
+  },
+
+  /**
+   * Cancel an order
+   * @param orderId - Order ID
+   * @param reason - Cancellation reason
+   */
+  cancelOrder: async (orderId: number, reason: string): Promise<CancelOrderResponse> => {
+    return await apiClient.post<CancelOrderResponse>(`/api/orders/${orderId}/cancel`, { reason });
+  },
+
+  /**
+   * Initiate a return for order items
+   * @param orderId - Order ID
+   * @param data - Return request data
+   */
+  initiateReturn: async (orderId: number, data: ReturnOrderRequest): Promise<ReturnOrderResponse> => {
+    return await apiClient.post<ReturnOrderResponse>(`/api/orders/${orderId}/return`, data);
+  },
+
+  // ===== HELPER METHODS =====
+
+  /**
+   * Format order status for display
+   * @param status - Order status
+   */
+  formatOrderStatus: (status: Order['status']): string => {
+    const statusMap = {
+      pending: 'Pending',
+      processing: 'Processing',
+      shipped: 'Shipped',
+      delivered: 'Delivered',
+      cancelled: 'Cancelled'
+    };
+    return statusMap[status] || status;
+  },
+
+  /**
+   * Get status color for UI
+   * @param status - Order status
+   */
+  getStatusColor: (status: Order['status']): string => {
+    const colorMap = {
+      pending: '#FFA500',      // Orange
+      processing: '#3B82F6',   // Blue
+      shipped: '#8B5CF6',      // Purple
+      delivered: '#10B981',    // Green
+      cancelled: '#EF4444'     // Red
+    };
+    return colorMap[status] || '#6B7280';
+  },
+
+  /**
+   * Check if order can be cancelled
+   * @param order - Order object
+   */
+  canCancelOrder: (order: Order): boolean => {
+    // Only pending and processing orders can be cancelled
+    return ['pending', 'processing'].includes(order.status);
+  },
+
+  /**
+   * Check if order can be returned
+   * @param order - Order object
+   */
+  canReturnOrder: (order: Order): boolean => {
+    // Only delivered orders can be returned
+    // And within 30 days of delivery
+    if (order.status !== 'delivered' || !order.deliveredAt) {
+      return false;
+    }
+
+    const deliveredDate = new Date(order.deliveredAt);
+    const now = new Date();
+    const daysSinceDelivery = Math.floor((now.getTime() - deliveredDate.getTime()) / (1000 * 60 * 60 * 24));
+
+    return daysSinceDelivery <= 30;
   }
 };

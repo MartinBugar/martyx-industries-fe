@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Eye, Pencil, Save, X, Search } from 'lucide-react';
 import AdminLayout from './AdminLayout';
-import './AdminUsers.css';
+import './AdminUsers.css'; // Updated button styling
 import { adminUsersService, type AdminUser, type AdminSignupRequest, type PageResponse } from '../../services/adminUsersService';
 import { Button, Badge, SkeletonTable } from '../../components/ui';
 import { useDebounce } from '../../hooks/useDebounce';
@@ -223,13 +223,6 @@ const AdminUsers: React.FC = () => {
     <AdminLayout title="Users" navTabs={navTabs}>
       <div className="admin-page">
         <div className="admin-container">
-          <div className="admin-header">
-            <div>
-              <h2 className="admin-title">User Management</h2>
-              <p className="admin-subtitle">Manage application users. Create, edit, view and delete.</p>
-            </div>
-          </div>
-
           {error && <div className="alert alert-error">{error}</div>}
 
           {/* All Users Tab */}
@@ -478,26 +471,26 @@ const AdminUsers: React.FC = () => {
                               {editingId === user.id ? (
                                 <>
                                   <Button variant="primary" size="sm" onClick={saveEdit} disabled={saving} loading={saving}>
-                                    <Save size={14} style={{ marginRight: 4 }} />
+                                    <Save size={14} />
                                     Save
                                   </Button>
                                   <Button variant="outline" size="sm" onClick={cancelEdit} disabled={saving}>
-                                    <X size={14} style={{ marginRight: 4 }} />
+                                    <X size={14} />
                                     Cancel
                                   </Button>
                                 </>
                               ) : (
                                 <>
                                   <Link to={`/admin/users/${user.id}`} className="btn btn-outline btn-sm" title="View user details">
-                                    <Eye size={14} style={{ marginRight: 4 }} />
+                                    <Eye size={14} />
                                     View
                                   </Link>
                                   <Button variant="outline" size="sm" onClick={() => startEdit(user)} title="Edit user">
-                                    <Pencil size={14} style={{ marginRight: 4 }} />
+                                    <Pencil size={14} />
                                     Edit
                                   </Button>
                                   <Button variant="danger" size="sm" onClick={() => handleDelete(user.id)} title="Delete user">
-                                    <X size={14} style={{ marginRight: 4 }} />
+                                    <X size={14} />
                                     Delete
                                   </Button>
                                 </>

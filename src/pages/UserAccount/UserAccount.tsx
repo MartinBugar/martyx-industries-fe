@@ -4,6 +4,7 @@ import { useAuth } from '../../context/useAuth';
 import UserProfile from '../../components/UserProfile/UserProfile';
 import OrderHistory from '../../components/OrderHistory/OrderHistory';
 import ModelCollection from '../../components/ModelCollection/ModelCollection';
+import GdprSettings from '../../components/GdprSettings/GdprSettings';
 import TokenExpirationTimer from '../../components/TokenExpirationTimer/TokenExpirationTimer';
 import AvatarSelector from '../../components/AvatarSelector/AvatarSelector';
 import type { Avatar } from '../../services/avatarService';
@@ -19,7 +20,7 @@ const UserAccount: React.FC = () => {
   useEffect(() => {
     setUserAvatar(user?.avatar?.imageUrl || null);
   }, [user?.avatar?.imageUrl]);
-  
+
   // Show loading while authentication state is being restored
   if (isLoading) {
     return (
@@ -39,27 +40,28 @@ const UserAccount: React.FC = () => {
       </div>
     );
   }
-  
+
   // Redirect to login if not authenticated (only after loading is complete)
   if (!isAuthenticated) {
     return <Navigate to="/login" />;
   }
-  
+
   return (
     <div className="account-page">
-      {/* Floating Account Cassdobre teraz prehladaj vsetky kompontenandra */}
+      {/* Floating Account Cassandra */}
       <div className="account-floating-mascot">
-        <img 
-          src="/cassandra/Account-Cass.png" 
+        <img
+          src="/cassandra/Account-Cass.png"
           alt="Cassandra - váš sprievodca účtom"
           className="floating-mascot-image-account"
           loading="lazy"
           decoding="async"
         />
       </div>
-      
+
+      {/* Main Centered Container */}
       <div className="account-container">
-        {/* Compact Header with User Info */}
+        {/* Account Header */}
         <header className="account-header">
           <div className="header-content">
             <div className="user-welcome">
@@ -88,7 +90,7 @@ const UserAccount: React.FC = () => {
                 <p className="user-email">{user?.email}</p>
               </div>
             </div>
-            
+
             {/* Session Timer Card */}
             <div className="session-card">
               <TokenExpirationTimer />
@@ -96,164 +98,128 @@ const UserAccount: React.FC = () => {
           </div>
         </header>
 
-        {/* Unified Tabbed Interface */}
-        <div className="account-tabbed-interface">
-          <nav className="account-navigation" role="tablist">
-            <div className="nav-tabs">
-              <button 
-                className={`nav-tab ${activeTab === 'profile' ? 'active' : ''}`}
-                onClick={() => setActiveTab('profile')}
-                role="tab"
-                aria-selected={activeTab === 'profile'}
-                aria-controls="profile-panel"
-              >
-                <div className="tab-icon">
-                  <svg viewBox="0 0 24 24" fill="none">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </div>
-                <span className="tab-label">Profile</span>
-              </button>
-              
-              <button
-                className={`nav-tab ${activeTab === 'orders' ? 'active' : ''}`}
-                onClick={() => setActiveTab('orders')}
-                role="tab"
-                aria-selected={activeTab === 'orders'}
-                aria-controls="orders-panel"
-              >
-                <div className="tab-icon">
-                  <svg viewBox="0 0 24 24" fill="none">
-                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" stroke="currentColor" strokeWidth="2"/>
-                    <path d="M9 9h6m-6 4h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                  </svg>
-                </div>
-                <span className="tab-label">Orders</span>
-              </button>
+        {/* Content Wrapper - Grid Layout */}
+        <div className="account-content-wrapper">
+          {/* Desktop Sidebar Navigation */}
+          <aside className="account-sidebar">
+            <button
+              className={`sidebar-tab ${activeTab === 'profile' ? 'active' : ''}`}
+              onClick={() => setActiveTab('profile')}
+            >
+              <div className="tab-icon">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              <span className="tab-label">Profile</span>
+            </button>
 
-              <button
-                className={`nav-tab ${activeTab === 'collection' ? 'active' : ''}`}
-                onClick={() => setActiveTab('collection')}
-                role="tab"
-                aria-selected={activeTab === 'collection'}
-                aria-controls="collection-panel"
-              >
-                <div className="tab-icon">
-                  <svg viewBox="0 0 24 24" fill="none">
-                    <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2"/>
-                    <rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2"/>
-                    <rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2"/>
-                    <rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2"/>
-                  </svg>
-                </div>
-                <span className="tab-label">Moja zbierka</span>
-              </button>
+            <button
+              className={`sidebar-tab ${activeTab === 'orders' ? 'active' : ''}`}
+              onClick={() => setActiveTab('orders')}
+            >
+              <div className="tab-icon">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2" stroke="currentColor" strokeWidth="2"/>
+                  <path d="M9 9h6m-6 4h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                </svg>
+              </div>
+              <span className="tab-label">Orders</span>
+            </button>
 
+            <button
+              className={`sidebar-tab ${activeTab === 'collection' ? 'active' : ''}`}
+              onClick={() => setActiveTab('collection')}
+            >
+              <div className="tab-icon">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2"/>
+                  <rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2"/>
+                  <rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2"/>
+                  <rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2"/>
+                </svg>
+              </div>
+              <span className="tab-label">Moja zbierka</span>
+            </button>
 
-              <button
-                className={`nav-tab ${activeTab === 'settings' ? 'active' : ''}`}
-                onClick={() => setActiveTab('settings')}
-                role="tab"
-                aria-selected={activeTab === 'settings'}
-                aria-controls="settings-panel"
-              >
-                <div className="tab-icon">
-                  <svg viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2"/>
-                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" stroke="currentColor" strokeWidth="2"/>
-                  </svg>
-                </div>
-                <span className="tab-label">Settings</span>
-              </button>
-            </div>
-            
-            {/* Action Buttons */}
-            <div className="nav-actions">
-              {activeTab === 'profile' && (
-                <button 
-                  className="nav-action-button edit-profile-btn"
-                  onClick={() => {
-                    // Trigger edit mode in UserProfile component
-                    const event = new CustomEvent('editProfile');
-                    window.dispatchEvent(event);
-                  }}
-                  aria-label="Edit profile"
-                >
-                  <svg viewBox="0 0 24 24" fill="none">
-                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                  <span>Edit</span>
-                </button>
-              )}
-              
-              {activeTab === 'orders' && (
-                <button 
-                  className="nav-action-button refresh-orders-btn"
-                  onClick={() => {
-                    // Trigger refresh in OrderHistory component
-                    const event = new CustomEvent('refreshOrders');
-                    window.dispatchEvent(event);
-                  }}
-                  aria-label="Refresh orders"
-                >
-                  <svg viewBox="0 0 24 24" fill="none">
-                    <path d="M23 4v6h-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M1 20v-6h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                  <span>Refresh</span>
-                </button>
-              )}
-            </div>
+            <button
+              className={`sidebar-tab ${activeTab === 'settings' ? 'active' : ''}`}
+              onClick={() => setActiveTab('settings')}
+            >
+              <div className="tab-icon">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2"/>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" stroke="currentColor" strokeWidth="2"/>
+                </svg>
+              </div>
+              <span className="tab-label">Settings</span>
+            </button>
+          </aside>
+
+          {/* Mobile Tabs */}
+          <nav className="mobile-tabs">
+            <button
+              className={`mobile-tab ${activeTab === 'profile' ? 'active' : ''}`}
+              onClick={() => setActiveTab('profile')}
+            >
+              <span className="mobile-tab-icon">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </span>
+              <span className="mobile-tab-label">Profile</span>
+            </button>
+
+            <button
+              className={`mobile-tab ${activeTab === 'orders' ? 'active' : ''}`}
+              onClick={() => setActiveTab('orders')}
+            >
+              <span className="mobile-tab-icon">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2" stroke="currentColor" strokeWidth="2"/>
+                  <path d="M9 9h6m-6 4h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                </svg>
+              </span>
+              <span className="mobile-tab-label">Orders</span>
+            </button>
+
+            <button
+              className={`mobile-tab ${activeTab === 'collection' ? 'active' : ''}`}
+              onClick={() => setActiveTab('collection')}
+            >
+              <span className="mobile-tab-icon">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2"/>
+                  <rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2"/>
+                  <rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2"/>
+                  <rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2"/>
+                </svg>
+              </span>
+              <span className="mobile-tab-label">Zbierka</span>
+            </button>
+
+            <button
+              className={`mobile-tab ${activeTab === 'settings' ? 'active' : ''}`}
+              onClick={() => setActiveTab('settings')}
+            >
+              <span className="mobile-tab-icon">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2"/>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" stroke="currentColor" strokeWidth="2"/>
+                </svg>
+              </span>
+              <span className="mobile-tab-label">Settings</span>
+            </button>
           </nav>
 
-          {/* Content Panels */}
-          <main className="account-content">
-            <div 
-              className={`content-panel ${activeTab === 'profile' ? 'active' : ''}`}
-              id="profile-panel"
-              role="tabpanel"
-              aria-labelledby="profile-tab"
-            >
-              {activeTab === 'profile' && <UserProfile />}
-            </div>
-            
-            <div
-              className={`content-panel ${activeTab === 'orders' ? 'active' : ''}`}
-              id="orders-panel"
-              role="tabpanel"
-              aria-labelledby="orders-tab"
-            >
-              {activeTab === 'orders' && <OrderHistory />}
-            </div>
-
-            <div
-              className={`content-panel ${activeTab === 'collection' ? 'active' : ''}`}
-              id="collection-panel"
-              role="tabpanel"
-              aria-labelledby="collection-tab"
-            >
-              {activeTab === 'collection' && <ModelCollection />}
-            </div>
-
-
-            <div
-              className={`content-panel ${activeTab === 'settings' ? 'active' : ''}`}
-              id="settings-panel"
-              role="tabpanel"
-              aria-labelledby="settings-tab"
-            >
-              {activeTab === 'settings' && (
-                <div className="settings-content">
-                  <div className="settings-card">
-                    <h2>Account Settings</h2>
-                    <p>Advanced settings and preferences coming soon...</p>
-                  </div>
-                </div>
-              )}
-            </div>
+          {/* Main Content Area */}
+          <main className="account-main">
+            {activeTab === 'profile' && <UserProfile />}
+            {activeTab === 'orders' && <OrderHistory />}
+            {activeTab === 'collection' && <ModelCollection />}
+            {activeTab === 'settings' && <GdprSettings />}
           </main>
         </div>
       </div>

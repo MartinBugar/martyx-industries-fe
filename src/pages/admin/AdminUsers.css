@@ -62,35 +62,108 @@
 /* Action Buttons Container */
 .action-buttons {
   display: flex;
-  gap: 6px;
+  gap: 8px;
   align-items: center;
   justify-content: flex-end;
   flex-wrap: wrap;
 }
 
-/* Action buttons specific styling - make them fit better */
+/* Action buttons specific styling - improved visibility */
 .action-buttons .btn,
-.action-buttons .btn-sm {
-  padding: 8px 14px;
-  font-size: 13px;
+.action-buttons .btn-sm,
+.action-buttons button.btn,
+.action-buttons button.btn-sm,
+.action-buttons a.btn,
+.action-buttons a.btn-sm {
+  padding: 8px 14px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
   white-space: nowrap;
-  min-width: 36px;
+  min-width: fit-content;
   min-height: 36px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   gap: 6px;
+  border-radius: 8px !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
 }
 
-/* Icon-only buttons (no text children) */
+/* Button variants in action buttons */
+.action-buttons .btn-outline,
+.action-buttons button.btn-outline,
+.action-buttons a.btn-outline {
+  background: var(--admin-bg-primary) !important;
+  border: 1px solid var(--admin-border) !important;
+  color: var(--admin-primary) !important;
+}
+
+.action-buttons .btn-outline:hover:not(:disabled),
+.action-buttons button.btn-outline:hover:not(:disabled),
+.action-buttons a.btn-outline:hover {
+  background: var(--admin-bg-secondary) !important;
+  border-color: var(--admin-accent) !important;
+  color: var(--admin-accent) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1) !important;
+}
+
+.action-buttons .btn-primary,
+.action-buttons button.btn-primary {
+  background: var(--admin-accent) !important;
+  border: 1px solid var(--admin-accent) !important;
+  color: white !important;
+}
+
+.action-buttons .btn-primary:hover:not(:disabled),
+.action-buttons button.btn-primary:hover:not(:disabled) {
+  background: #2563eb !important;
+  border-color: #2563eb !important;
+  color: white !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px 0 rgba(59, 130, 246, 0.3) !important;
+}
+
+.action-buttons .btn-danger,
+.action-buttons button.btn-danger {
+  background: var(--admin-error) !important;
+  border: 1px solid var(--admin-error) !important;
+  color: white !important;
+}
+
+.action-buttons .btn-danger:hover:not(:disabled),
+.action-buttons button.btn-danger:hover:not(:disabled) {
+  background: #dc2626 !important;
+  border-color: #dc2626 !important;
+  color: white !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px 0 rgba(239, 68, 68, 0.3) !important;
+}
+
+/* Icon-only buttons (no text) */
 .action-buttons .btn:not(:has(svg + *)),
 .action-buttons .btn-sm:not(:has(svg + *)) {
   padding: 8px;
+  min-width: 36px;
+  max-width: 36px;
 }
 
+/* Better spacing between icon and text */
 .action-buttons .btn svg,
 .action-buttons .btn-sm svg {
   flex-shrink: 0;
+}
+
+/* Link styled as button in action buttons */
+.action-buttons a.btn,
+.action-buttons a.btn-sm {
+  text-decoration: none;
+}
+
+.action-buttons a.btn:hover,
+.action-buttons a.btn-sm:hover {
+  transform: translateY(-1px);
 }
 
 .mr-8 { margin-right: 8px; }
@@ -367,6 +440,7 @@
   align-items: center;
   gap: 6px;
   position: relative;
+  text-decoration: none;
 }
 
 .dashboard-tab::before {
@@ -724,15 +798,6 @@
   background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="%2364748B"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>');
 }
 
-.dashboard-tab:hover {
-  background: var(--admin-bg-tertiary);
-  color: var(--admin-primary);
-  border-color: var(--admin-secondary);
-}
-
-.dashboard-tab:hover::before {
-  opacity: 0.9;
-}
 
 .dashboard-tab.active {
   background: var(--admin-accent);
@@ -1750,18 +1815,27 @@
     min-width: 200px;
   }
 
-  .btn-sm {
-    min-width: 44px;
-    max-width: 44px;
-    height: 44px;
-    border-radius: 10px;
-    font-size: 16px;
+  .action-buttons .btn,
+  .action-buttons .btn-sm {
+    padding: 10px 16px;
+    font-size: 14px;
     font-weight: 600;
+    border-radius: 10px;
+    min-height: 44px;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .btn-sm:hover {
-    transform: translateY(-2px) scale(1.05);
+  /* Icon-only buttons */
+  .action-buttons .btn:not(:has(svg + *)),
+  .action-buttons .btn-sm:not(:has(svg + *)) {
+    min-width: 44px;
+    max-width: 44px;
+    padding: 10px;
+  }
+
+  .action-buttons .btn:hover,
+  .action-buttons .btn-sm:hover {
+    transform: translateY(-2px);
   }
 
   /* Enhanced dashboard tabs */
@@ -1781,34 +1855,15 @@
   }
 
   .dashboard-tab::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
-    transition: left 0.3s ease;
-  }
-
-  .dashboard-tab:hover::before {
-    left: 100%;
-  }
-
-  .dashboard-tab:hover {
-    background: rgba(59, 130, 246, 0.1);
-    color: var(--admin-primary);
-    border-color: rgba(59, 130, 246, 0.3);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+    width: 16px;
+    height: 16px;
+    background-size: 16px 16px;
   }
 
   .dashboard-tab.active {
     background: var(--admin-accent);
     color: var(--admin-bg-primary);
     border-color: var(--admin-accent);
-    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
-    transform: translateY(-1px);
   }
 
   /* Enhanced card styling */
