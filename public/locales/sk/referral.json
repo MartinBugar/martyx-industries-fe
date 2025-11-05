@@ -1,0 +1,72 @@
+{
+  "title": "Odporučte a zarobte",
+  "subtitle": "Zdieľajte Martyx Industries s priateľmi a zarábajte odmeny spolu!",
+  "yourCode": "Váš referenčný kód",
+  "copyCode": "Kopírovať kód",
+  "copyLink": "Kopírovať odkaz",
+  "copied": "Skopírované!",
+  "shareViaEmail": "Zdieľať cez email",
+  "emailPlaceholder": "priatel@example.com",
+  "send": "Odoslať pozvánku",
+  "shareSuccess": "Pozvánka úspešne odoslaná!",
+  "shareFailed": "Nepodarilo sa odoslať pozvánku. Skúste znova.",
+  "howItWorks": "Ako to funguje",
+  "step1": {
+    "title": "Zdieľajte svoj kód",
+    "description": "Pošlite svoj jedinečný referenčný kód priateľom cez email alebo sociálne siete."
+  },
+  "step2": {
+    "title": "Priateľ sa zaregistruje",
+    "description": "Váš priateľ sa zaregistruje pomocou vášho kódu a získa 10% zľavu na prvú objednávku."
+  },
+  "step3": {
+    "title": "Získajte €10 kredit",
+    "description": "Keď váš priateľ urobí prvú objednávku, zarobíte €10 v kreditoch!"
+  },
+  "step4": {
+    "title": "Bonusové odmeny",
+    "description": "Získajte ďalších €20, keď váš priateľ dokončí svoju 3. objednávku."
+  },
+  "availableCredits": "Dostupné kredity",
+  "successfulReferrals": "Úspešné odporúčania",
+  "totalEarnings": "Celkové výnosy",
+  "pendingCredits": "Čakajúce kredity",
+  "tabs": {
+    "overview": "Prehľad",
+    "referrals": "Odporúčania",
+    "credits": "Kredity"
+  },
+  "yourReferrals": "Vaše odporúčania",
+  "noReferralsYet": "Zatiaľ ste nikoho neodporučili. Začnite zdieľať svoj kód!",
+  "creditHistory": "História transakcií kreditov",
+  "noTransactions": "Žiadne transakcie.",
+  "pending": "Čaká",
+  "table": {
+    "email": "Email",
+    "status": "Stav",
+    "orders": "Objednávky",
+    "earned": "Zarobené",
+    "date": "Dátum",
+    "type": "Typ",
+    "amount": "Suma",
+    "balance": "Zostatok",
+    "description": "Popis"
+  },
+  "status": {
+    "pending": "Čaká",
+    "registered": "Registrovaný",
+    "firstOrder": "Prvá objednávka",
+    "active": "Aktívny",
+    "bonusEarned": "Bonus získaný",
+    "cancelled": "Zrušený",
+    "expired": "Vypršal"
+  },
+  "txType": {
+    "REFERRAL_REWARD": "Referenčná odmena",
+    "REFERRAL_BONUS": "Referenčný bonus",
+    "ORDER_CREDIT_APPLIED": "Aplikované na objednávku",
+    "ADMIN_ADJUSTMENT": "Úprava administrátorom",
+    "REFUND": "Vrátenie",
+    "EXPIRY": "Vypršalo"
+  }
+}

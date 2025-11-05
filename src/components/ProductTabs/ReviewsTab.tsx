@@ -5,6 +5,8 @@ import { type TabContent } from '../../data/productData';
 import { reviewsService, type Review as ReviewModel } from '../../services/reviewsService';
 import { useAuth } from '../../context/useAuth';
 import { adminService } from '../../services/adminService';
+import { profileService } from '../../services/profileService';
+import UsernamePromptModal from '../UsernamePromptModal';
 import './ProductTabs.css';
 
 interface ReviewsTabProps {
@@ -123,6 +125,7 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ content, productId }) => {
   const [submitting, setSubmitting] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [deletingId, setDeletingId] = useState<string | number | null>(null);
+  const [showUsernameModal, setShowUsernameModal] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -164,6 +167,20 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ content, productId }) => {
       setError('Please provide both rating and review text.');
       return;
     }
+
+    // Check if user has username before submitting review
+    try {
+      const { hasUsername } = await profileService.checkHasUsername();
+      if (!hasUsername) {
+        // Show username prompt modal
+        setShowUsernameModal(true);
+        return;
+      }
+    } catch (err) {
+      console.error('Failed to check username:', err);
+      // Continue anyway - backend will handle it
+    }
+
     setSubmitting(true);
     setError(null);
     try {
@@ -176,6 +193,16 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ content, productId }) => {
       setError(e instanceof Error ? e.message : 'Failed to submit review');
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleUsernameModalSuccess = () => {
+    // User set username or skipped - close modal and retry submit
+    setShowUsernameModal(false);
+    // Trigger submit again (username is now set or auto-generated)
+    const form = document.getElementById('write-review-form') as HTMLFormElement;
+    if (form) {
+      form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
     }
   };
 
@@ -205,6 +232,11 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ content, productId }) => {
   return (
     <>
       {body}
+      <UsernamePromptModal
+        isOpen={showUsernameModal}
+        onClose={() => setShowUsernameModal(false)}
+        onSuccess={handleUsernameModalSuccess}
+      />
       <div className="reviews-section">
         <div className="reviews-header">
           <div className="reviews-title-row">

@@ -67,10 +67,61 @@ export const profileService = {
         headers: defaultHeaders as HeadersInit,
         body: JSON.stringify(profileData),
       }));
-      
+
       return await handleResponse(response);
     } catch (error) {
       console.error('Update profile API error:', error);
+      throw error;
+    }
+  },
+
+  // Check if current user has username set
+  checkHasUsername: async (): Promise<{ hasUsername: boolean; username: string }> => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      const headers = {
+        ...defaultHeaders,
+        'Authorization': `Bearer ${token}`,
+      };
+
+      const response = await fetch(`${API_BASE_URL}/api/users/me/has-username`, withLangHeaders({
+        method: 'GET',
+        headers: headers as HeadersInit,
+      }));
+
+      return await handleResponse(response);
+    } catch (error) {
+      console.error('Check username API error:', error);
+      throw error;
+    }
+  },
+
+  // Set username for current user
+  setUsername: async (username: string): Promise<{ success: boolean; message: string; username: string }> => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      const headers = {
+        ...defaultHeaders,
+        'Authorization': `Bearer ${token}`,
+      };
+
+      const response = await fetch(`${API_BASE_URL}/api/users/me/username`, withLangHeaders({
+        method: 'PUT',
+        headers: headers as HeadersInit,
+        body: JSON.stringify({ username }),
+      }));
+
+      return await handleResponse(response);
+    } catch (error) {
+      console.error('Set username API error:', error);
       throw error;
     }
   },

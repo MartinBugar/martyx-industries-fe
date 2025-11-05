@@ -1,0 +1,17 @@
+{
+  "title": "Account Credits",
+  "availableBalance": "Available Balance",
+  "available": "Available",
+  "pending": "Pending (14 days)",
+  "applyCredits": "Apply Credits to Order",
+  "appliedCredits": "Applied Credits",
+  "apply": "Apply",
+  "remove": "Remove",
+  "max": "Max",
+  "infoText": "You can use your credits to reduce the total order amount. Credits are earned through our referral program.",
+  "error": {
+    "invalidAmount": "Please enter a valid amount",
+    "insufficientBalance": "Insufficient credit balance",
+    "exceedsTotal": "Amount exceeds order total"
+  }
+}

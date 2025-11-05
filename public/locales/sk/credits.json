@@ -1,0 +1,17 @@
+{
+  "title": "Kredity účtu",
+  "availableBalance": "Dostupný zostatok",
+  "available": "Dostupné",
+  "pending": "Čaká (14 dní)",
+  "applyCredits": "Použiť kredity na objednávku",
+  "appliedCredits": "Použité kredity",
+  "apply": "Použiť",
+  "remove": "Odstrániť",
+  "max": "Maximum",
+  "infoText": "Môžete použiť svoje kredity na zníženie celkovej sumy objednávky. Kredity získavate cez náš referenčný program.",
+  "error": {
+    "invalidAmount": "Zadajte platnú sumu",
+    "insufficientBalance": "Nedostatočný zostatok kreditov",
+    "exceedsTotal": "Suma presahuje celkovú sumu objednávky"
+  }
+}

@@ -1,0 +1,218 @@
+.install-pwa-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.install-pwa-banner {
+  background: linear-gradient(135deg, #1a1f2e 0%, #0b0f14 100%);
+  border-top: 2px solid #2a3f5f;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+  padding: 1.5rem;
+  position: relative;
+}
+
+/* Desktop styles */
+@media (min-width: 768px) {
+  .install-pwa-container {
+    bottom: 20px;
+    left: 20px;
+    right: auto;
+    max-width: 450px;
+  }
+
+  .install-pwa-banner {
+    border-radius: 12px;
+    border: 2px solid #2a3f5f;
+  }
+}
+
+.install-pwa-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  color: #8b9dc3;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.install-pwa-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.install-pwa-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.install-pwa-icon {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.install-pwa-text {
+  flex: 1;
+}
+
+.install-pwa-text h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 0.5px;
+}
+
+.install-pwa-text p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #8b9dc3;
+  line-height: 1.5;
+}
+
+.install-pwa-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.install-pwa-button-dismiss,
+.install-pwa-button-install {
+  padding: 0.625rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  outline: none;
+}
+
+.install-pwa-button-dismiss {
+  background: transparent;
+  color: #8b9dc3;
+  border: 1px solid #2a3f5f;
+}
+
+.install-pwa-button-dismiss:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: #3b5278;
+  color: #fff;
+}
+
+.install-pwa-button-install {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.install-pwa-button-install:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  transform: translateY(-1px);
+}
+
+.install-pwa-button-install:active {
+  transform: translateY(0);
+}
+
+/* Mobile adjustments */
+@media (max-width: 767px) {
+  .install-pwa-banner {
+    padding: 1rem;
+  }
+
+  .install-pwa-content {
+    margin-bottom: 0.75rem;
+  }
+
+  .install-pwa-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .install-pwa-text h3 {
+    font-size: 1rem;
+  }
+
+  .install-pwa-text p {
+    font-size: 0.8125rem;
+  }
+
+  .install-pwa-actions {
+    flex-direction: column-reverse;
+  }
+
+  .install-pwa-button-dismiss,
+  .install-pwa-button-install {
+    width: 100%;
+    padding: 0.75rem 1rem;
+  }
+}
+
+/* Dark mode support (if you add theme switching later) */
+@media (prefers-color-scheme: light) {
+  .install-pwa-banner {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-top-color: #cbd5e1;
+  }
+
+  .install-pwa-close {
+    color: #64748b;
+  }
+
+  .install-pwa-close:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: #1e293b;
+  }
+
+  .install-pwa-text h3 {
+    color: #1e293b;
+  }
+
+  .install-pwa-text p {
+    color: #64748b;
+  }
+
+  .install-pwa-button-dismiss {
+    color: #64748b;
+    border-color: #cbd5e1;
+  }
+
+  .install-pwa-button-dismiss:hover {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: #94a3b8;
+    color: #1e293b;
+  }
+}

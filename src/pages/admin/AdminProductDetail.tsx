@@ -8,6 +8,7 @@ import { adminProductsService, type MasterProductDto, type ProductVariantDto, ty
 import { Button, Badge } from '../../components/ui';
 import VariantEditor from '../../components/admin/VariantEditor';
 import ComponentEditor from '../../components/admin/ComponentEditor';
+import AdminProductTabs from '../../components/AdminProductTabs/AdminProductTabs';
 
 const AdminProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -19,8 +20,8 @@ const AdminProductDetail: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [savedMsg, setSavedMsg] = useState<string | null>(null);
 
-  // Active tab: product-info | variants
-  const [activeTab, setActiveTab] = useState<'product-info' | 'variants'>('product-info');
+  // Active tab: product-info | variants | product-tabs
+  const [activeTab, setActiveTab] = useState<'product-info' | 'variants' | 'product-tabs'>('product-info');
 
   // Variant editor state
   const [showVariantEditor, setShowVariantEditor] = useState(false);
@@ -190,6 +191,12 @@ const AdminProductDetail: React.FC = () => {
       >
         <Package size={16} style={{ marginRight: 4 }} />
         Variants ({product?.variants?.length || 0})
+      </button>
+      <button
+        onClick={() => setActiveTab('product-tabs')}
+        className={`admin-nav-tab ${activeTab === 'product-tabs' ? 'active' : ''}`}
+      >
+        📋 Product Tabs
       </button>
       <Link
         to={`/admin/products/${id}/gallery`}
@@ -477,6 +484,21 @@ const AdminProductDetail: React.FC = () => {
                       ))}
                     </div>
                   )}
+                </div>
+              )}
+
+              {/* Product Tabs Tab */}
+              {activeTab === 'product-tabs' && (
+                <div>
+                  <div style={{ marginBottom: 16 }}>
+                    <p style={{ color: '#6b7280' }}>
+                      Configure custom tabs for this product. Each variant can have its own tabs.
+                    </p>
+                  </div>
+                  <AdminProductTabs
+                    masterProductId={Number(id)}
+                    locale="en"
+                  />
                 </div>
               )}
             </>

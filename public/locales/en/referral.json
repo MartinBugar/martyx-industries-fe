@@ -1,0 +1,72 @@
+{
+  "title": "Refer & Earn",
+  "subtitle": "Share Martyx Industries with friends and earn rewards together!",
+  "yourCode": "Your Referral Code",
+  "copyCode": "Copy Code",
+  "copyLink": "Copy Link",
+  "copied": "Copied!",
+  "shareViaEmail": "Share via Email",
+  "emailPlaceholder": "friend@example.com",
+  "send": "Send Invitation",
+  "shareSuccess": "Invitation sent successfully!",
+  "shareFailed": "Failed to send invitation. Please try again.",
+  "howItWorks": "How It Works",
+  "step1": {
+    "title": "Share Your Code",
+    "description": "Send your unique referral code to friends via email or social media."
+  },
+  "step2": {
+    "title": "Friend Registers",
+    "description": "Your friend signs up using your code and gets 10% off their first order."
+  },
+  "step3": {
+    "title": "Earn €10 Credit",
+    "description": "When your friend places their first order, you earn €10 in credits!"
+  },
+  "step4": {
+    "title": "Bonus Rewards",
+    "description": "Earn an extra €20 when your friend completes their 3rd order."
+  },
+  "availableCredits": "Available Credits",
+  "successfulReferrals": "Successful Referrals",
+  "totalEarnings": "Total Earnings",
+  "pendingCredits": "Pending Credits",
+  "tabs": {
+    "overview": "Overview",
+    "referrals": "Referrals",
+    "credits": "Credits"
+  },
+  "yourReferrals": "Your Referrals",
+  "noReferralsYet": "You haven't referred anyone yet. Start sharing your code!",
+  "creditHistory": "Credit Transaction History",
+  "noTransactions": "No transactions yet.",
+  "pending": "Pending",
+  "table": {
+    "email": "Email",
+    "status": "Status",
+    "orders": "Orders",
+    "earned": "Earned",
+    "date": "Date",
+    "type": "Type",
+    "amount": "Amount",
+    "balance": "Balance",
+    "description": "Description"
+  },
+  "status": {
+    "pending": "Pending",
+    "registered": "Registered",
+    "firstOrder": "First Order",
+    "active": "Active",
+    "bonusEarned": "Bonus Earned",
+    "cancelled": "Cancelled",
+    "expired": "Expired"
+  },
+  "txType": {
+    "REFERRAL_REWARD": "Referral Reward",
+    "REFERRAL_BONUS": "Referral Bonus",
+    "ORDER_CREDIT_APPLIED": "Applied to Order",
+    "ADMIN_ADJUSTMENT": "Admin Adjustment",
+    "REFUND": "Refund",
+    "EXPIRY": "Expired"
+  }
+}

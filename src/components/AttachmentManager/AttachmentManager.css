@@ -1,0 +1,183 @@
+.attachment-manager {
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+.attachment-manager h4 {
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.upload-form {
+  background: white;
+  padding: 15px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.upload-form h5 {
+  margin-bottom: 10px;
+  color: #555;
+}
+
+.upload-form input[type="file"] {
+  display: block;
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 8px;
+  border: 2px dashed #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.upload-form input[type="file"]:hover {
+  border-color: #007bff;
+}
+
+.selected-file {
+  padding: 8px;
+  background: #e8f4f8;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: #0056b3;
+}
+
+.upload-form input[type="text"],
+.upload-form textarea {
+  display: block;
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: inherit;
+}
+
+.upload-form input[type="text"]:focus,
+.upload-form textarea:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.upload-form button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.upload-form button:hover:not(:disabled) {
+  background: #0056b3;
+}
+
+.upload-form button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.attachments-list {
+  background: white;
+  padding: 15px;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.attachments-list h5 {
+  margin-bottom: 15px;
+  color: #555;
+}
+
+.attachment-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.attachment-item:last-child {
+  border-bottom: none;
+}
+
+.attachment-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+}
+
+.attachment-info strong {
+  font-size: 14px;
+  color: #333;
+}
+
+.file-name {
+  font-size: 12px;
+  color: #666;
+  font-family: monospace;
+}
+
+.file-size {
+  font-size: 11px;
+  color: #999;
+}
+
+.attachment-description {
+  font-size: 12px;
+  color: #555;
+  margin: 5px 0 0 0;
+  font-style: italic;
+}
+
+.attachment-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.attachment-actions a {
+  padding: 6px 12px;
+  background: #28a745;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  font-size: 12px;
+  transition: background 0.2s;
+}
+
+.attachment-actions a:hover {
+  background: #218838;
+}
+
+.btn-delete {
+  padding: 6px 12px;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background 0.2s;
+}
+
+.btn-delete:hover {
+  background: #c82333;
+}
+
+.error-message {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  border: 1px solid #f5c6cb;
+}

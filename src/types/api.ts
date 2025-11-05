@@ -380,3 +380,44 @@ export interface ContactFormRequest {
 export interface ContactFormResponse {
   message: string;
 }
+
+// ============================================================================
+// PRODUCT ATTACHMENTS - Public Files (Assembly Guides, Manuals, etc.)
+// ============================================================================
+
+export interface ProductAttachmentDto {
+  id: number;
+  masterProductId?: number | null;
+  variantId?: number | null;
+
+  // File Info
+  fileName: string;
+  fileUrl: string;
+  cdnUrl?: string | null;
+  fileSizeBytes?: number | null;
+  fileFormat?: string | null;
+  mimeType?: string | null;
+  formattedFileSize?: string | null;
+
+  // Display
+  displayLabel: string;
+  description?: string | null;
+  attachmentType?: string | null;
+  iconName?: string | null;
+
+  // Ordering
+  displayOrder: number;
+  active: boolean;
+  featured: boolean;
+
+  // Tracking
+  downloadCount?: number;
+  lastDownloadedAt?: string;
+
+  // I18n
+  locale: string;
+
+  // Audit
+  createdAt: string;
+  updatedAt: string;
+}
