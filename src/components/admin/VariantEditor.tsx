@@ -2,6 +2,8 @@ import React, {useEffect, useState} from 'react';
 import {Save, X} from 'lucide-react';
 import {Button} from '../ui';
 import type {ProductVariantDto} from '../../services/adminProductsService';
+import AdminProductTabs from '../AdminProductTabs/AdminProductTabs';
+import AttachmentManager from '../AttachmentManager/AttachmentManager';
 
 interface VariantEditorProps {
   variant?: ProductVariantDto | null;
@@ -761,6 +763,21 @@ export const VariantEditor: React.FC<VariantEditorProps> = ({
             {variant ? 'Save Changes' : 'Create Variant'}
           </Button>
         </div>
+
+        {showTabsManager && formData.id && (
+          <div style={{ marginTop: '20px' }}>
+            <AdminProductTabs
+              variantId={formData.id}
+              locale="en"
+            />
+          </div>
+        )}
+
+        {showAttachmentsManager && formData.id && (
+          <div style={{ marginTop: '20px' }}>
+            <AttachmentManager variantId={formData.id} />
+          </div>
+        )}
       </div>
     </div>
   );

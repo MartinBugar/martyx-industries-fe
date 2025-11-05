@@ -44,7 +44,6 @@ const DownloadTab: React.FC<DownloadTabProps> = ({ content, variantId }) => {
     }
   };
 
-  // If we have attachments from API, use those
   if (attachments.length > 0) {
     return (
       <section className="downloads-section" aria-label="Available downloads">
@@ -82,7 +81,6 @@ const DownloadTab: React.FC<DownloadTabProps> = ({ content, variantId }) => {
     );
   }
 
-  // Fallback to hardcoded content
   switch (content.kind) {
     case 'text':
       return (
