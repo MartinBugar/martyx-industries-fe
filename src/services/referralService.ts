@@ -107,7 +107,7 @@ class ReferralService {
   /**
    * Get all referrals for current user (paginated)
    */
-  async getMyReferrals(page: number = 0, size: number = 20): Promise<ReferralDto[]> {
+  async getMyReferrals(_page: number = 0, _size: number = 20): Promise<ReferralDto[]> {
     return apiClient.get<ReferralDto[]>(`${this.BASE_URL}/my-referrals`, {
       cache: true,
       cacheType: 'user-data'

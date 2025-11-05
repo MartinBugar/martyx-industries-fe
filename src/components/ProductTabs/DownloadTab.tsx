@@ -58,7 +58,7 @@ const DownloadTab: React.FC<DownloadTabProps> = ({ content, variantId }) => {
                   <button
                     className="download-btn"
                     onClick={() => handleDownload(att)}
-                    aria-label={\`Download \${att.displayLabel}\`}
+                    aria-label={`Download ${att.displayLabel}`}
                   >
                     {t('downloads.download_button', 'Download')}
                   </button>
@@ -71,7 +71,7 @@ const DownloadTab: React.FC<DownloadTabProps> = ({ content, variantId }) => {
                 {(att.formattedFileSize || att.fileFormat) && (
                   <div className="download-meta">
                     {att.fileFormat ? att.fileFormat : ''}
-                    {att.formattedFileSize ? \` · \${att.formattedFileSize}\` : ''}
+                    {att.formattedFileSize ? ` · ${att.formattedFileSize}` : ''}
                   </div>
                 )}
               </div>
@@ -120,7 +120,7 @@ const DownloadTab: React.FC<DownloadTabProps> = ({ content, variantId }) => {
                   {(d.size || d.format) && (
                     <div className="download-meta">
                       {d.format ? d.format : ''}
-                      {d.size ? \` · \${d.size}\` : ''}
+                      {d.size ? ` · ${d.size}` : ''}
                     </div>
                   )}
                 </div>

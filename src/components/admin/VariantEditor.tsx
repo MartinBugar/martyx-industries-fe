@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { X, Save } from 'lucide-react';
-import { Button } from '../ui';
-import type { ProductVariantDto } from '../../services/adminProductsService';
-import AdminProductTabs from '../AdminProductTabs/AdminProductTabs';
-import AttachmentManager from '../AttachmentManager/AttachmentManager';
+import React, {useEffect, useState} from 'react';
+import {Save, X} from 'lucide-react';
+import {Button} from '../ui';
+import type {ProductVariantDto} from '../../services/adminProductsService';
 
 interface VariantEditorProps {
   variant?: ProductVariantDto | null;
