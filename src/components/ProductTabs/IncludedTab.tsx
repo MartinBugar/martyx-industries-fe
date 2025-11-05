@@ -1,5 +1,6 @@
 import React from 'react';
 import { type TabContent } from '../../data/productData';
+import DOMPurify from 'dompurify';
 import './ProductTabs.css';
 
 interface IncludedTabProps {
@@ -68,7 +69,8 @@ const IncludedTab: React.FC<IncludedTabProps> = ({ content }) => {
       }
     } catch (e) {
       // If not JSON, just display as text
-      return <div className="tab-content" dangerouslySetInnerHTML={{ __html: content.text }} />;
+      const sanitizedHtml = DOMPurify.sanitize(content.text);
+      return <div className="tab-content" dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />;
     }
   }
 

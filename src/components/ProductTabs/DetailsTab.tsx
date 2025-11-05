@@ -1,5 +1,6 @@
 import React from 'react';
 import { type TabContent } from '../../data/productData';
+import DOMPurify from 'dompurify';
 import './ProductTabs.css';
 
 interface DetailsTabProps {
@@ -9,10 +10,11 @@ interface DetailsTabProps {
 const DetailsTab: React.FC<DetailsTabProps> = ({ content }) => {
   switch (content.kind) {
     case 'text':
+      const sanitizedHtml = DOMPurify.sanitize(content.text);
       return (
         <div
           className="rich-text"
-          dangerouslySetInnerHTML={{ __html: content.text }}
+          dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
         />
       );
     case 'list':

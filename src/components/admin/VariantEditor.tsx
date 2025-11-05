@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { X, Save } from 'lucide-react';
 import { Button } from '../ui';
 import type { ProductVariantDto } from '../../services/adminProductsService';
+import AdminProductTabs from '../AdminProductTabs/AdminProductTabs';
+import AttachmentManager from '../AttachmentManager/AttachmentManager';
 
 interface VariantEditorProps {
   variant?: ProductVariantDto | null;
@@ -58,6 +60,8 @@ export const VariantEditor: React.FC<VariantEditorProps> = ({
   const [activeTab, setActiveTab] = useState<'basic' | 'inventory' | 'physical' | 'digital' | 'advanced'>('basic');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showTabsManager, setShowTabsManager] = useState(false);
+  const [showAttachmentsManager, setShowAttachmentsManager] = useState(false);
 
   useEffect(() => {
     if (variant) {
@@ -704,6 +708,47 @@ export const VariantEditor: React.FC<VariantEditorProps> = ({
             flexShrink: 0,
           }}
         >
+          {formData.id && (
+            <>
+              <button
+                type="button"
+                onClick={() => setShowTabsManager(!showTabsManager)}
+                style={{
+                  padding: '8px 16px',
+                  background: '#6c757d',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                }}
+              >
+                📋 {showTabsManager ? 'Hide' : 'Manage'} Tabs
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowAttachmentsManager(!showAttachmentsManager)}
+                style={{
+                  padding: '8px 16px',
+                  background: '#6c757d',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                }}
+              >
+                📎 {showAttachmentsManager ? 'Hide' : 'Manage'} Attachments
+              </button>
+            </>
+          )}
           <Button variant="outline" type="button" onClick={onCancel} disabled={saving}>
             Cancel
           </Button>

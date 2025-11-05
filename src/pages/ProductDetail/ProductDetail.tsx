@@ -556,7 +556,7 @@ const ProductDetail: React.FC = () => {
                         {activeTab.id === 'Details' && <DetailsTab content={activeTab.content}/>}
                         {activeTab.id === 'Included' && <IncludedTab content={activeTab.content}/>}
                         {activeTab.id === 'PrintInfo' && <PrintInfoTab content={activeTab.content}/>}
-                        {activeTab.id === 'Download' && <DownloadTab content={activeTab.content}/>}
+                        {activeTab.id === 'Download' && <DownloadTab content={activeTab.content} variantId={product.variantId}/>}
                         {activeTab.id === 'Features' && <FeaturesTab content={activeTab.content}/>}
                         {activeTab.id === 'Reviews' && <ReviewsTab content={activeTab.content} productId={product.masterProductId}/>}
                     </div>
