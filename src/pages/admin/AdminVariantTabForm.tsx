@@ -7,15 +7,21 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Save, Download } from 'lucide-react';
+import { ArrowLeft, Save, Download, Plus, X, FileText } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import type { ProductTabCreateRequest, ProductTabTemplate } from '../../types/api';
 import {
   adminGetTabById,
   adminCreateTab,
   adminUpdateTab,
-  adminGetTabTemplates
+  adminGetTabTemplates,
+  adminGetTabAttachments,
+  adminAddAttachmentToTab,
+  adminRemoveAttachmentFromTab
 } from '../../services/productTabService';
+import {
+  adminGetAttachmentsForVariant
+} from '../../services/productAttachmentService';
 import { Button } from '../../components/ui';
 import { apiClient } from '../../services/apiClient';
 import './AdminUsers.css';
@@ -35,6 +41,11 @@ const AdminVariantTabForm: React.FC = () => {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [templates, setTemplates] = useState<ProductTabTemplate[]>([]);
   const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(null);
+
+  // Attachments state
+  const [availableAttachments, setAvailableAttachments] = useState<any[]>([]);
+  const [tabAttachments, setTabAttachments] = useState<any[]>([]);
+  const [loadingAttachments, setLoadingAttachments] = useState(false);
 
   const [formData, setFormData] = useState<ProductTabCreateRequest>({
     masterProductId: null,
@@ -75,6 +86,35 @@ const AdminVariantTabForm: React.FC = () => {
       loadTab(Number(tabId));
     }
   }, [tabId, isEditMode]);
+
+  // Load attachments when editing a ProductDownloads tab
+  useEffect(() => {
+    if (isEditMode && tabId && variantId &&
+        formData.contentType === 'COMPONENT' &&
+        formData.componentName === 'ProductDownloads') {
+      loadAttachments();
+    }
+  }, [isEditMode, tabId, variantId, formData.contentType, formData.componentName]);
+
+  const loadAttachments = async () => {
+    if (!tabId || !variantId) return;
+
+    try {
+      setLoadingAttachments(true);
+
+      // Load all available attachments for this variant
+      const allAttachments = await adminGetAttachmentsForVariant(Number(variantId));
+      setAvailableAttachments(allAttachments);
+
+      // Load attachments already assigned to this tab
+      const assigned = await adminGetTabAttachments(Number(tabId));
+      setTabAttachments(assigned);
+    } catch (err) {
+      console.error('Error loading attachments:', err);
+    } finally {
+      setLoadingAttachments(false);
+    }
+  };
 
   const loadTab = async (id: number) => {
     try {
@@ -188,6 +228,30 @@ const AdminVariantTabForm: React.FC = () => {
 
     setError(null);
     setFieldErrors({});
+  };
+
+  const handleAddAttachment = async (attachmentId: number) => {
+    if (!tabId) return;
+
+    try {
+      await adminAddAttachmentToTab(Number(tabId), attachmentId, 0);
+      await loadAttachments(); // Reload to show updated list
+    } catch (err) {
+      console.error('Error adding attachment:', err);
+      setError('Failed to add attachment to tab');
+    }
+  };
+
+  const handleRemoveAttachment = async (attachmentId: number) => {
+    if (!tabId) return;
+
+    try {
+      await adminRemoveAttachmentFromTab(Number(tabId), attachmentId);
+      await loadAttachments(); // Reload to show updated list
+    } catch (err) {
+      console.error('Error removing attachment:', err);
+      setError('Failed to remove attachment from tab');
+    }
   };
 
   if (loading) {
@@ -521,6 +585,176 @@ const AdminVariantTabForm: React.FC = () => {
                   </div>
                 </div>
               </div>
+
+              {/* Attachments Management (only for ProductDownloads component in edit mode) */}
+              {isEditMode &&
+               formData.contentType === 'COMPONENT' &&
+               formData.componentName === 'ProductDownloads' && (
+                <div style={{ marginBottom: 32 }}>
+                  <h4 style={{ fontSize: '16px', fontWeight: 600, marginBottom: 16, color: '#374151' }}>
+                    Attachments Management
+                  </h4>
+
+                  {loadingAttachments ? (
+                    <div style={{ textAlign: 'center', padding: '20px', color: '#6b7280' }}>
+                      Loading attachments...
+                    </div>
+                  ) : (
+                    <div style={{ display: 'grid', gap: 20 }}>
+                      {/* Currently assigned attachments */}
+                      <div>
+                        <label className="form-label" style={{ marginBottom: 12, display: 'block' }}>
+                          Assigned Attachments ({tabAttachments.length})
+                        </label>
+                        {tabAttachments.length === 0 ? (
+                          <div style={{
+                            padding: '16px',
+                            border: '1px dashed #d1d5db',
+                            borderRadius: '8px',
+                            textAlign: 'center',
+                            color: '#6b7280',
+                            fontSize: '14px'
+                          }}>
+                            <FileText size={32} style={{ margin: '0 auto 8px', opacity: 0.3 }} />
+                            <div>No attachments assigned to this tab yet.</div>
+                            <div style={{ fontSize: '13px', marginTop: '4px' }}>
+                              Add attachments from the available list below.
+                            </div>
+                          </div>
+                        ) : (
+                          <div style={{ display: 'grid', gap: 8 }}>
+                            {tabAttachments.map((attachment: any) => (
+                              <div
+                                key={attachment.id}
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: 12,
+                                  padding: '12px',
+                                  border: '1px solid #e5e7eb',
+                                  borderRadius: '8px',
+                                  background: '#f9fafb'
+                                }}
+                              >
+                                <FileText size={20} style={{ color: '#3b82f6', flexShrink: 0 }} />
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                  <div style={{ fontWeight: 500, fontSize: '14px', color: '#374151' }}>
+                                    {attachment.displayLabel}
+                                  </div>
+                                  {attachment.description && (
+                                    <div style={{ fontSize: '13px', color: '#6b7280', marginTop: '2px' }}>
+                                      {attachment.description}
+                                    </div>
+                                  )}
+                                  <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '4px' }}>
+                                    {attachment.fileName} • {attachment.fileFormat?.toUpperCase()}
+                                  </div>
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveAttachment(attachment.id)}
+                                  style={{
+                                    padding: '6px',
+                                    border: '1px solid #ef4444',
+                                    borderRadius: '6px',
+                                    background: '#fff',
+                                    color: '#ef4444',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 6,
+                                    fontSize: '13px',
+                                    fontWeight: 500
+                                  }}
+                                  title="Remove from tab"
+                                >
+                                  <X size={16} />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Available attachments to add */}
+                      <div>
+                        <label className="form-label" style={{ marginBottom: 12, display: 'block' }}>
+                          Available Attachments
+                        </label>
+                        {availableAttachments.filter(
+                          att => !tabAttachments.find(ta => ta.id === att.id)
+                        ).length === 0 ? (
+                          <div style={{
+                            padding: '12px',
+                            border: '1px solid #e5e7eb',
+                            borderRadius: '8px',
+                            textAlign: 'center',
+                            color: '#6b7280',
+                            fontSize: '13px'
+                          }}>
+                            All available attachments are already assigned to this tab.
+                          </div>
+                        ) : (
+                          <div style={{ display: 'grid', gap: 8 }}>
+                            {availableAttachments
+                              .filter(att => !tabAttachments.find(ta => ta.id === att.id))
+                              .map((attachment: any) => (
+                                <div
+                                  key={attachment.id}
+                                  style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 12,
+                                    padding: '12px',
+                                    border: '1px solid #e5e7eb',
+                                    borderRadius: '8px',
+                                    background: '#fff'
+                                  }}
+                                >
+                                  <FileText size={20} style={{ color: '#9ca3af', flexShrink: 0 }} />
+                                  <div style={{ flex: 1, minWidth: 0 }}>
+                                    <div style={{ fontWeight: 500, fontSize: '14px', color: '#374151' }}>
+                                      {attachment.displayLabel}
+                                    </div>
+                                    {attachment.description && (
+                                      <div style={{ fontSize: '13px', color: '#6b7280', marginTop: '2px' }}>
+                                        {attachment.description}
+                                      </div>
+                                    )}
+                                    <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '4px' }}>
+                                      {attachment.fileName} • {attachment.fileFormat?.toUpperCase()}
+                                    </div>
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleAddAttachment(attachment.id)}
+                                    style={{
+                                      padding: '6px 12px',
+                                      border: '1px solid #3b82f6',
+                                      borderRadius: '6px',
+                                      background: '#fff',
+                                      color: '#3b82f6',
+                                      cursor: 'pointer',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: 6,
+                                      fontSize: '13px',
+                                      fontWeight: 500
+                                    }}
+                                    title="Add to tab"
+                                  >
+                                    <Plus size={16} />
+                                    Add
+                                  </button>
+                                </div>
+                              ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Advanced Settings */}
               <div style={{ marginBottom: 32 }}>

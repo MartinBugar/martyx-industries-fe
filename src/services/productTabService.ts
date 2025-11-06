@@ -211,6 +211,69 @@ export async function adminGetTabTemplates(): Promise<ProductTabTemplate[]> {
 }
 
 // ============================================================================
+// TAB ATTACHMENTS MANAGEMENT
+// ============================================================================
+
+/**
+ * Get all attachments assigned to a tab (admin)
+ *
+ * @param tabId - The tab ID
+ * @returns Promise<ProductAttachmentDto[]>
+ */
+export async function adminGetTabAttachments(tabId: number): Promise<any[]> {
+  return apiClient.request<any[]>(
+    `/api/admin/product-tabs/${tabId}/attachments`,
+    {
+      method: 'GET'
+    }
+  );
+}
+
+/**
+ * Add an attachment to a tab (admin)
+ *
+ * @param tabId - The tab ID
+ * @param attachmentId - The attachment ID to add
+ * @param displayOrder - Display order (optional, defaults to 0)
+ * @returns Promise<{message: string}>
+ */
+export async function adminAddAttachmentToTab(
+  tabId: number,
+  attachmentId: number,
+  displayOrder: number = 0
+): Promise<{message: string}> {
+  return apiClient.request<{message: string}>(
+    `/api/admin/product-tabs/${tabId}/attachments`,
+    {
+      method: 'POST',
+      body: {
+        attachmentId,
+        displayOrder
+      }
+    }
+  );
+}
+
+/**
+ * Remove an attachment from a tab (admin)
+ *
+ * @param tabId - The tab ID
+ * @param attachmentId - The attachment ID to remove
+ * @returns Promise<{message: string}>
+ */
+export async function adminRemoveAttachmentFromTab(
+  tabId: number,
+  attachmentId: number
+): Promise<{message: string}> {
+  return apiClient.request<{message: string}>(
+    `/api/admin/product-tabs/${tabId}/attachments/${attachmentId}`,
+    {
+      method: 'DELETE'
+    }
+  );
+}
+
+// ============================================================================
 // UTILITY FUNCTIONS
 // ============================================================================
 
