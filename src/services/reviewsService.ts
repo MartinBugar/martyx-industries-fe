@@ -36,10 +36,11 @@ export interface ReviewCreateRequest {
 }
 
 const toReviewDisplay = (r: Review) => {
-  const displayName = r.user?.name
-    || [r.user?.firstName, r.user?.lastName].filter(Boolean).join(' ').trim()
+  const displayName = r.username
+    || r.user?.username
     || r.userName
-    || r.username
+    || r.user?.name
+    || [r.user?.firstName, r.user?.lastName].filter(Boolean).join(' ').trim()
     || r.user?.email
     || 'Anonymous';
 
