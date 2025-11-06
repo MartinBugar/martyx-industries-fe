@@ -2,7 +2,6 @@
 // 3D Models now loaded from CDN via database (model_3d_viewer_url column)
 // import endeavourModel from '../assets/3dModels/endeavour.glb'; // REMOVED: Now using CDN
 // import raketaModel from '../assets/3dModels/raketa.glb'; // REMOVED: Now using CDN
-import endeavourBuildPdf from '../assets/buildguide/1/endeavourBuild.pdf';
 // CDN imports removed - gallery now loaded from database only
 
 // makeGallery function removed - gallery now loaded from database only

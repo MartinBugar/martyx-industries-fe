@@ -9,7 +9,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Save, Download } from 'lucide-react';
 import AdminLayout from './AdminLayout';
-import type { ProductTabDto, ProductTabCreateRequest, ProductTabTemplate } from '../../types/api';
+import type { ProductTabCreateRequest, ProductTabTemplate } from '../../types/api';
 import {
   adminGetTabById,
   adminCreateTab,

@@ -132,7 +132,7 @@ const ProductDownloads: React.FC<ProductDownloadsProps> = ({
             onClick={() => handleDownload(attachment)}
           >
             <div className="download-icon">
-              {getFileIcon(attachment.fileFormat)}
+              {getFileIcon(attachment.fileFormat || undefined)}
             </div>
 
             <div className="download-content">
@@ -149,7 +149,7 @@ const ProductDownloads: React.FC<ProductDownloadsProps> = ({
                 {attachment.formattedFileSize && (
                   <span className="download-size">{attachment.formattedFileSize}</span>
                 )}
-                {attachment.downloadCount > 0 && (
+                {attachment.downloadCount !== undefined && attachment.downloadCount > 0 && (
                   <span className="download-count">
                     {attachment.downloadCount} downloads
                   </span>

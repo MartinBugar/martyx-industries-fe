@@ -9,14 +9,11 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Plus, Edit, Trash2, Copy, GripVertical } from 'lucide-react';
 import AdminLayout from './AdminLayout';
-import type { ProductTabDto, ProductTabCreateRequest } from '../../types/api';
+import type { ProductTabDto } from '../../types/api';
 import {
   adminGetTabsForMasterProduct,
-  adminCreateTab,
-  adminUpdateTab,
   adminDeleteTab,
-  adminDuplicateTab,
-  adminReorderTabs
+  adminDuplicateTab
 } from '../../services/productTabService';
 import { Button } from '../../components/ui';
 import { apiClient } from '../../services/apiClient';
@@ -29,8 +26,6 @@ const AdminMasterProductTabs: React.FC = () => {
   const [tabs, setTabs] = useState<ProductTabDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [editingTab, setEditingTab] = useState<ProductTabDto | null>(null);
-  const [isCreating, setIsCreating] = useState(false);
 
   // Load tabs
   const loadTabs = async () => {
