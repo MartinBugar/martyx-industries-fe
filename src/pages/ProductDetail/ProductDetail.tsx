@@ -6,6 +6,7 @@ import {hybridProductService} from '../../services/hybridProductService';
 import ProductView from '../../components/ProductView/ProductView';
 import './ProductDetail.css';
 import {DetailsTab, DownloadTab, FeaturesTab, ReviewsTab, PrintInfoTab, IncludedTab} from '../../components/ProductTabs';
+import ProductDownloads from '../../components/ProductTabs/ProductDownloads';
 import {useCart} from '../../context/useCart';
 import WishlistButton from '../../components/WishlistButton';
 import { getLCPPreloadAttributes, getBaseNameFromPath, isCDNEnabled } from '../../utils/cdnImages';
@@ -540,6 +541,8 @@ const DynamicTabRenderer: React.FC<DynamicTabRendererProps> = ({ tab, product })
                 return <FeaturesTab content={{ kind: 'list', items: product.features || [] }} />;
             case 'ReviewsTab':
                 return <ReviewsTab content={{ kind: 'text', text: '' }} productId={product.masterProductId} />;
+            case 'ProductDownloads':
+                return <ProductDownloads masterProductId={product.masterProductId} variantId={product.variantId} />;
             default:
                 console.warn(`Unknown component: ${componentName}, falling back to HTML render`);
                 return <div dangerouslySetInnerHTML={{ __html: tab.contentHtml || '' }} />;
