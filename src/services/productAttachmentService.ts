@@ -1,7 +1,6 @@
-import axios from 'axios';
+import { apiClient } from './apiClient';
+import { API_BASE_URL } from './apiUtils';
 import type { ProductAttachmentDto } from '../types/api';
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
 // ============================================================================
 // PUBLIC API (pre všetkých userov)
@@ -13,10 +12,14 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 export const getAttachmentsForMasterProduct = async (
   masterProductId: number
 ): Promise<ProductAttachmentDto[]> => {
-  const response = await axios.get(
-    `${API_BASE_URL}/api/public/product-attachments/master-product/${masterProductId}`
+  return apiClient.request<ProductAttachmentDto[]>(
+    `/api/public/product-attachments/master-product/${masterProductId}`,
+    {
+      method: 'GET',
+      cache: true,
+      cacheType: 'api-responses'
+    }
   );
-  return response.data;
 };
 
 /**
@@ -25,18 +28,25 @@ export const getAttachmentsForMasterProduct = async (
 export const getAttachmentsForVariant = async (
   variantId: number
 ): Promise<ProductAttachmentDto[]> => {
-  const response = await axios.get(
-    `${API_BASE_URL}/api/public/product-attachments/variant/${variantId}`
+  return apiClient.request<ProductAttachmentDto[]>(
+    `/api/public/product-attachments/variant/${variantId}`,
+    {
+      method: 'GET',
+      cache: true,
+      cacheType: 'api-responses'
+    }
   );
-  return response.data;
 };
 
 /**
  * Track download (increment counter)
  */
 export const trackDownload = async (attachmentId: number): Promise<void> => {
-  await axios.post(
-    `${API_BASE_URL}/api/public/product-attachments/${attachmentId}/download`
+  return apiClient.request<void>(
+    `/api/public/product-attachments/${attachmentId}/download`,
+    {
+      method: 'POST'
+    }
   );
 };
 
@@ -76,17 +86,21 @@ export const adminUploadAttachment = async (
   if (data.featured !== undefined) formData.append('featured', data.featured.toString());
   if (data.locale) formData.append('locale', data.locale);
 
-  const response = await axios.post(
-    `${API_BASE_URL}/api/admin/product-attachments`,
-    formData,
-    {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    }
-  );
+  // Use fetch directly for multipart/form-data with auth token
+  const token = localStorage.getItem('token');
+  const response = await fetch(`${API_BASE_URL}/api/admin/product-attachments`, {
+    method: 'POST',
+    headers: {
+      'Authorization': token ? `Bearer ${token}` : '',
+    },
+    body: formData
+  });
 
-  return response.data;
+  if (!response.ok) {
+    throw new Error(`Upload failed: ${response.statusText}`);
+  }
+
+  return response.json();
 };
 
 /**
@@ -105,18 +119,25 @@ export const adminUpdateAttachment = async (
     locale?: string;
   }
 ): Promise<ProductAttachmentDto> => {
-  const response = await axios.put(
-    `${API_BASE_URL}/api/admin/product-attachments/${id}`,
-    data
+  return apiClient.request<ProductAttachmentDto>(
+    `/api/admin/product-attachments/${id}`,
+    {
+      method: 'PUT',
+      body: data
+    }
   );
-  return response.data;
 };
 
 /**
  * Delete attachment
  */
 export const adminDeleteAttachment = async (id: number): Promise<void> => {
-  await axios.delete(`${API_BASE_URL}/api/admin/product-attachments/${id}`);
+  return apiClient.request<void>(
+    `/api/admin/product-attachments/${id}`,
+    {
+      method: 'DELETE'
+    }
+  );
 };
 
 /**
@@ -125,10 +146,12 @@ export const adminDeleteAttachment = async (id: number): Promise<void> => {
 export const adminGetAttachmentsForMasterProduct = async (
   masterProductId: number
 ): Promise<ProductAttachmentDto[]> => {
-  const response = await axios.get(
-    `${API_BASE_URL}/api/admin/product-attachments/master-product/${masterProductId}`
+  return apiClient.request<ProductAttachmentDto[]>(
+    `/api/admin/product-attachments/master-product/${masterProductId}`,
+    {
+      method: 'GET'
+    }
   );
-  return response.data;
 };
 
 /**
@@ -137,10 +160,12 @@ export const adminGetAttachmentsForMasterProduct = async (
 export const adminGetAttachmentsForVariant = async (
   variantId: number
 ): Promise<ProductAttachmentDto[]> => {
-  const response = await axios.get(
-    `${API_BASE_URL}/api/admin/product-attachments/variant/${variantId}`
+  return apiClient.request<ProductAttachmentDto[]>(
+    `/api/admin/product-attachments/variant/${variantId}`,
+    {
+      method: 'GET'
+    }
   );
-  return response.data;
 };
 
 /**
@@ -149,8 +174,10 @@ export const adminGetAttachmentsForVariant = async (
 export const adminGetAttachmentById = async (
   id: number
 ): Promise<ProductAttachmentDto> => {
-  const response = await axios.get(
-    `${API_BASE_URL}/api/admin/product-attachments/${id}`
+  return apiClient.request<ProductAttachmentDto>(
+    `/api/admin/product-attachments/${id}`,
+    {
+      method: 'GET'
+    }
   );
-  return response.data;
 };

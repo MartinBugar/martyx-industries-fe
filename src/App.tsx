@@ -74,6 +74,8 @@ import {
   AdminVariantTabForm,
   AdminMasterProductTabs,
   AdminMasterProductTabForm,
+  AdminProductAttachments,
+  AdminProductAttachmentForm,
   AdminOrders,
   AdminGallery,
   AdminGalleryUserDetail,
@@ -297,6 +299,21 @@ const MainContent = React.memo(() => {
             <Route path="/admin/products/:productId/variants/:variantId/tabs/:tabId/edit" element={
               <RequireAdmin>
                 <AdminVariantTabForm />
+              </RequireAdmin>
+            } />
+            <Route path="/admin/products/:productId/attachments" element={
+              <RequireAdmin>
+                <AdminProductAttachments />
+              </RequireAdmin>
+            } />
+            <Route path="/admin/products/:productId/attachments/new" element={
+              <RequireAdmin>
+                <AdminProductAttachmentForm />
+              </RequireAdmin>
+            } />
+            <Route path="/admin/products/:productId/attachments/:attachmentId/edit" element={
+              <RequireAdmin>
+                <AdminProductAttachmentForm />
               </RequireAdmin>
             } />
             <Route path="/admin/orders" element={

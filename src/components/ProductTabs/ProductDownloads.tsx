@@ -1,0 +1,176 @@
+/**
+ * ProductDownloads Component
+ *
+ * Displays all attachments for a product (master product or variant)
+ * Used in product tabs with contentType: COMPONENT and componentName: ProductDownloads
+ */
+
+import React, { useEffect, useState } from 'react';
+import { Download, FileText, File, AlertCircle } from 'lucide-react';
+import {
+  getAttachmentsForMasterProduct,
+  getAttachmentsForVariant,
+  trackDownload
+} from '../../services/productAttachmentService';
+import type { ProductAttachmentDto } from '../../types/api';
+import './ProductDownloads.css';
+
+interface ProductDownloadsProps {
+  masterProductId?: number;
+  variantId?: number;
+}
+
+const ProductDownloads: React.FC<ProductDownloadsProps> = ({
+  masterProductId,
+  variantId
+}) => {
+  const [attachments, setAttachments] = useState<ProductAttachmentDto[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadAttachments();
+  }, [masterProductId, variantId]);
+
+  const loadAttachments = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      let data: ProductAttachmentDto[];
+      if (variantId) {
+        data = await getAttachmentsForVariant(variantId);
+      } else if (masterProductId) {
+        data = await getAttachmentsForMasterProduct(masterProductId);
+      } else {
+        throw new Error('No product ID provided');
+      }
+
+      setAttachments(data);
+    } catch (err) {
+      console.error('Error loading attachments:', err);
+      setError('Failed to load downloads');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDownload = async (attachment: ProductAttachmentDto) => {
+    try {
+      // Track download
+      await trackDownload(attachment.id);
+
+      // Open file in new tab
+      const url = attachment.cdnUrl || attachment.fileUrl;
+      window.open(url, '_blank');
+    } catch (err) {
+      console.error('Error tracking download:', err);
+      // Still open the file even if tracking fails
+      const url = attachment.cdnUrl || attachment.fileUrl;
+      window.open(url, '_blank');
+    }
+  };
+
+  const getFileIcon = (fileFormat?: string) => {
+    if (!fileFormat) return <File size={24} />;
+
+    const format = fileFormat.toLowerCase();
+    if (format === 'pdf') return <FileText size={24} />;
+    if (['zip', 'rar', '7z'].includes(format)) return <Download size={24} />;
+
+    return <File size={24} />;
+  };
+
+  if (loading) {
+    return (
+      <div className="product-downloads">
+        <div className="downloads-loading">
+          <div className="spinner"></div>
+          <p>Loading downloads...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="product-downloads">
+        <div className="downloads-error">
+          <AlertCircle size={24} />
+          <p>{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (attachments.length === 0) {
+    return (
+      <div className="product-downloads">
+        <div className="downloads-empty">
+          <Download size={48} />
+          <h3>No Downloads Available</h3>
+          <p>There are currently no downloadable files for this product.</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="product-downloads">
+      <div className="downloads-header">
+        <h2>Available Downloads</h2>
+        <p className="downloads-subtitle">
+          Click on any file to download or view it
+        </p>
+      </div>
+
+      <div className="downloads-grid">
+        {attachments.map((attachment) => (
+          <div
+            key={attachment.id}
+            className="download-card"
+            onClick={() => handleDownload(attachment)}
+          >
+            <div className="download-icon">
+              {getFileIcon(attachment.fileFormat)}
+            </div>
+
+            <div className="download-content">
+              <h3 className="download-title">{attachment.displayLabel}</h3>
+
+              {attachment.description && (
+                <p className="download-description">{attachment.description}</p>
+              )}
+
+              <div className="download-meta">
+                {attachment.fileFormat && (
+                  <span className="download-format">{attachment.fileFormat}</span>
+                )}
+                {attachment.formattedFileSize && (
+                  <span className="download-size">{attachment.formattedFileSize}</span>
+                )}
+                {attachment.downloadCount > 0 && (
+                  <span className="download-count">
+                    {attachment.downloadCount} downloads
+                  </span>
+                )}
+              </div>
+
+              {attachment.attachmentType && attachment.attachmentType !== 'OTHER' && (
+                <span className="download-type-badge">
+                  {attachment.attachmentType.replace(/_/g, ' ')}
+                </span>
+              )}
+            </div>
+
+            <div className="download-action">
+              <Download size={20} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default ProductDownloads;

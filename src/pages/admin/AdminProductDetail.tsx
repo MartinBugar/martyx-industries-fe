@@ -198,6 +198,12 @@ const AdminProductDetail: React.FC = () => {
         📋 Manage Tabs
       </Link>
       <Link
+        to={`/admin/products/${id}/attachments`}
+        className="admin-nav-tab"
+      >
+        📎 Manage Attachments
+      </Link>
+      <Link
         to={`/admin/products/${id}/gallery`}
         className="admin-nav-tab"
       >
