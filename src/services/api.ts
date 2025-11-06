@@ -1,5 +1,5 @@
 // Import common API utilities
-import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
+import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders, updateAuthorizationHeader } from './apiUtils';
 import type {
   AuthResponse,
   ResetPasswordResponse
@@ -92,10 +92,10 @@ export const authApi = {
 
 // Function to add auth token to requests
 export const setAuthToken = (token: string) => {
-  defaultHeaders['Authorization'] = `Bearer ${token}`;
+  updateAuthorizationHeader(token);
 };
 
 // Function to remove auth token from requests
 export const removeAuthToken = () => {
-  delete defaultHeaders['Authorization'];
+  updateAuthorizationHeader(null);
 };

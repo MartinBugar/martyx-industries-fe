@@ -36,12 +36,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (!token) {
         const tokenRaw = localStorage.getItem('token');
         if (tokenRaw) {
-          try {
-            const parsed = JSON.parse(tokenRaw);
-            token = typeof parsed === 'string' ? parsed : null;
-          } catch {
-            token = tokenRaw;
-          }
+          // Token is now stored as plain string, no JSON parsing needed
+          token = tokenRaw;
         }
       }
       
@@ -91,7 +87,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
           // Check if refresh token exists and start auto-refresh
           const refreshToken = secureLocalStorage.get('refreshToken', null) ||
-            (localStorage.getItem('refreshToken') ? JSON.parse(localStorage.getItem('refreshToken')!) : null);
+            localStorage.getItem('refreshToken');
 
           if (refreshToken) {
             console.log('🔄 Starting auto-refresh timer');
@@ -200,16 +196,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       secureLocalStorage.set('user', newUser);
       localStorage.setItem('user', JSON.stringify(newUser)); // Also store in regular localStorage
 
-      // Store access token in localStorage
+      // Store access token in localStorage (as plain string, not JSON)
       console.log('🔑 Storing access token');
       secureLocalStorage.set('token', token);
-      localStorage.setItem('token', JSON.stringify(token)); // Also store in regular localStorage
+      localStorage.setItem('token', token); // Store as plain string, not JSON
 
       // Store refresh token if provided
       if (refreshToken) {
         console.log('🔄 Storing refresh token');
         secureLocalStorage.set('refreshToken', refreshToken);
-        localStorage.setItem('refreshToken', JSON.stringify(refreshToken));
+        localStorage.setItem('refreshToken', refreshToken); // Store as plain string, not JSON
 
         // Start auto-refresh timer
         startTokenRefresh();

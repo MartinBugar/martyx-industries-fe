@@ -92,8 +92,8 @@ export const handleResponse = async (response: Response) => {
         localStorage.removeItem('user');
         localStorage.removeItem('token');
         localStorage.removeItem('adminAuthed');
-        // Remove authorization header
-        delete defaultHeaders['Authorization'];
+        // Remove authorization header using centralized function
+        updateAuthorizationHeader(null);
         // Dispatch logout event with api_error reason to distinguish from token expiration
         window.dispatchEvent(new CustomEvent('auth:logout', {
           detail: { reason: 'api_error' }
@@ -167,13 +167,13 @@ const formatLanguageForBackend = (lang: string): string => {
 export const withLangHeaders = (init?: RequestInit): RequestInit => {
   const headers = new Headers(init?.headers);
   const formattedLang = formatLanguageForBackend(getCurrentLanguage());
-  
+
   headers.set('Accept-Language', formattedLang);
-  
+
   if (import.meta.env.VITE_DEBUG_I18N) {
     console.log(`🌐 withLangHeaders: language="${formattedLang}"`);
   }
-  
+
   return {
     ...init,
     headers,
@@ -187,48 +187,33 @@ export const defaultHeaders: ApiHeaders = {
 
 // Accept-Language header is handled dynamically by withLangHeaders()
 
+// Helper function to update Authorization header
+export const updateAuthorizationHeader = (token: string | null) => {
+  if (token && typeof token === 'string') {
+    defaultHeaders['Authorization'] = `Bearer ${token}`;
+  } else {
+    delete defaultHeaders['Authorization'];
+  }
+};
+
 // Bootstrap Authorization header from stored token on module load to survive refreshes
 try {
   if (typeof window !== 'undefined') {
-    console.log('🚀 apiUtils bootstrap started');
-    const tokenRaw = window.localStorage.getItem('token');
-    console.log('📦 Raw token from localStorage:', tokenRaw);
-    
-    if (tokenRaw) {
-      let token: string;
-      try {
-        // Parse token (stored as JSON string by secureLocalStorage)
-        token = JSON.parse(tokenRaw);
-        console.log('✅ Token parsed from JSON');
-      } catch {
-        // Fallback for plain string tokens
-        token = tokenRaw;
-        console.log('⚠️ Using raw token (not JSON)');
-      }
-      
-      console.log('🔍 Final token type:', typeof token);
-      
-      if (typeof token === 'string') {
-        const payload = decodeJWT(token);
-        const now = Math.floor(Date.now() / 1000);
-        console.log('🕒 Token check:', { hasPayload: !!payload, exp: payload?.exp, now });
-        
-        if (payload && typeof payload.exp === 'number' && payload.exp > now) {
-          // Token valid: set Authorization header for immediate API calls
-          console.log('✅ Token valid, setting Authorization header');
-          defaultHeaders['Authorization'] = `Bearer ${token}`;
-        } else {
-          // Expired/invalid token: cleanup
-          console.log('❌ Token expired/invalid, cleaning up');
-          window.localStorage.removeItem('token');
-          window.localStorage.removeItem('user');
-          window.localStorage.removeItem('adminAuthed');
-        }
+    const token = window.localStorage.getItem('token');
+
+    if (token && typeof token === 'string' && token.length > 0) {
+      const payload = decodeJWT(token);
+      const now = Math.floor(Date.now() / 1000);
+
+      if (payload && typeof payload.exp === 'number' && payload.exp > now) {
+        // Token valid: set Authorization header for immediate API calls
+        updateAuthorizationHeader(token);
       } else {
-        console.log('❌ Token is not a string');
+        // Expired/invalid token: cleanup
+        window.localStorage.removeItem('token');
+        window.localStorage.removeItem('user');
+        window.localStorage.removeItem('adminAuthed');
       }
-    } else {
-      console.log('🚫 No token found in localStorage');
     }
   }
 } catch (e) {

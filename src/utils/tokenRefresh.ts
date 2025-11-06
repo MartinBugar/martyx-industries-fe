@@ -53,13 +53,13 @@ export const refreshAccessToken = async (): Promise<boolean> => {
     // Update access token
     const newAccessToken = response.token;
     secureLocalStorage.set('token', newAccessToken);
-    localStorage.setItem('token', JSON.stringify(newAccessToken));
+    localStorage.setItem('token', newAccessToken);
     setAuthToken(newAccessToken);
 
     // If backend returned new refresh token, update it too
     if (response.refreshToken) {
       secureLocalStorage.set('refreshToken', response.refreshToken);
-      localStorage.setItem('refreshToken', JSON.stringify(response.refreshToken));
+      localStorage.setItem('refreshToken', response.refreshToken);
     }
 
     console.log('✅ Access token refreshed successfully');
