@@ -1,7 +1,7 @@
 import React from 'react';
 import {useParams} from 'react-router-dom';
 import {useTranslation} from 'react-i18next';
-import {type Product, type ProductTab, type ProductTabId} from '../../data/productData';
+import {type Product} from '../../data/productData';
 import {hybridProductService} from '../../services/hybridProductService';
 import ProductView from '../../components/ProductView/ProductView';
 import './ProductDetail.css';
@@ -11,6 +11,9 @@ import WishlistButton from '../../components/WishlistButton';
 import { getLCPPreloadAttributes, getBaseNameFromPath, isCDNEnabled } from '../../utils/cdnImages';
 import { productGalleryService } from '../../services/productGalleryService';
 import VariantSelector from '../../components/VariantSelector/VariantSelector';
+import { getTabsForVariant, canViewTab, renderTabContent } from '../../services/productTabService';
+import type { ProductTabDto } from '../../types/api';
+import { useAuth } from '../../context/useAuth';
 
 // Local inlined ProductDetails component (previously in components/ProductDetails/ProductDetails.tsx)
 interface ProductDetailsProps {
@@ -133,126 +136,54 @@ const toYouTubeEmbedUrl = (url: string): string => {
     return url;
 };
 
-const buildTabs = (p: Product): ProductTab[] => {
-    if (import.meta.env.DEV) {
-        console.log('🔧 Building tabs for product:', p.masterProductId, 'has custom tabs:', p.tabs?.length);
-    }
-    let tabs: ProductTab[];
-    if (p.tabs && p.tabs.length > 0) {
-        // Use product's custom tabs as-is
-        tabs = [...p.tabs];
-        if (import.meta.env.DEV) {
-            console.log('✅ Using custom tabs:', tabs.map(t => `${t.id}(${t.content.kind})`));
-            // Debug: check if PrintInfo tab exists and what content it has
-            const printInfoTab = tabs.find(t => t.id === 'PrintInfo');
-            if (printInfoTab) {
-                console.log('🔍 PrintInfo tab found in custom tabs:', printInfoTab.content.kind);
-                if (printInfoTab.content.kind === 'printInfo') {
-                    console.log('🎉 PrintInfo has correct data type!');
-                } else {
-                    console.log('❌ PrintInfo has wrong content type:', printInfoTab.content);
-                }
-            } else {
-                console.log('❌ PrintInfo tab NOT found in custom tabs!');
-            }
-        }
-    } else {
-        // Create default tabs for products without custom tabs
-        tabs = [
-            {id: 'Details', label: 'Details', content: {kind: 'text', text: p.description}},
-            {id: 'PrintInfo', label: 'Print Info', content: {kind: 'text', text: 'Print information not available for this product.'}},
-            {id: 'Features', label: 'Features', content: {kind: 'list', items: p.features}}
-        ];
-
-        if (p.variantType === 'DIGITAL_ONLY') {
-            tabs.splice(2, 0, {
-                id: 'Download',
-                label: 'Download',
-                content: {kind: 'text', text: 'Files available for download after purchase.'}
-            });
-        }
-    }
-
-    // ALWAYS ensure PrintInfo tab exists - add it if missing (but only add fallback if no custom data exists)
-    if (!tabs.some(t => t.id === 'PrintInfo')) {
-        if (import.meta.env.DEV) {
-            console.log('⚠️ PrintInfo tab missing, adding fallback for product', p.masterProductId);
-        }
-        // Find the index of Details tab and insert PrintInfo right after it
-        const detailsIndex = tabs.findIndex(t => t.id === 'Details');
-        if (detailsIndex !== -1) {
-            tabs.splice(detailsIndex + 1, 0, {
-                id: 'PrintInfo',
-                label: 'Print Info',
-                content: {kind: 'text', text: 'Print information not available for this product.'}
-            });
-        } else {
-            // If no Details tab, add PrintInfo at the beginning
-            tabs.unshift({
-                id: 'PrintInfo',
-                label: 'Print Info',
-                content: {kind: 'text', text: 'Print information not available for this product.'}
-            });
-        }
-    } else {
-        if (import.meta.env.DEV) {
-            const printInfoTab = tabs.find(t => t.id === 'PrintInfo');
-            console.log('✅ PrintInfo tab exists with content kind:', printInfoTab?.content.kind);
-            if (printInfoTab?.content.kind === 'printInfo') {
-                console.log('🎉 PrintInfo tab has real data!', printInfoTab.content.data);
-            }
-        }
-    }
-
-    // Add Included tab if product has components (right after Details)
-    if (p.components && p.components.length > 0 && !tabs.some(t => t.id === 'Included')) {
-        const detailsIndex = tabs.findIndex(t => t.id === 'Details');
-        const includedTab: ProductTab = {
-            id: 'Included',
-            label: 'Included',
-            content: {kind: 'text', text: JSON.stringify(p.components)}
-        };
-
-        if (detailsIndex !== -1) {
-            // Insert right after Details
-            tabs.splice(detailsIndex + 1, 0, includedTab);
-        } else {
-            // Fallback: add at beginning
-            tabs.unshift(includedTab);
-        }
-    }
-
-    // Ensure Reviews tab exists but do not source its content from static data
-    if (!tabs.some(t => t.id === 'Reviews')) {
-        tabs.push({id: 'Reviews', label: 'Reviews', content: {kind: 'text', text: ''}});
-    }
-
-    if (import.meta.env.DEV) {
-        console.log('🎯 Final tabs built:', tabs.map(t => `${t.id}(${t.content.kind})`));
-    }
-    return tabs;
-};
+// REMOVED: buildTabs() function - tabs now loaded from backend API per variant
 
 const ProductDetail: React.FC = () => {
     const {id} = useParams<{ id: string }>();
     const { i18n } = useTranslation('products');
+    const { user } = useAuth();
     const [product, setProduct] = React.useState<Product | null>(null);
     const [loading, setLoading] = React.useState(true);
     const [error, setError] = React.useState<string | null>(null);
     const [isProductInactive, setIsProductInactive] = React.useState(false);
     const [galleryImages, setGalleryImages] = React.useState<Array<{ url: string; thumbnailUrl?: string }>>([]);
     const [hasLoadedGallery, setHasLoadedGallery] = React.useState(false);
-    const [active, setActive] = React.useState<ProductTabId>('Details');
 
-    const tabs = React.useMemo(() => {
-        if (product) {
-            if (import.meta.env.DEV) {
-                console.log('🔍 Product loaded:', product.masterProductId, 'has tabs:', !!product.tabs);
+    // Backend tabs state
+    const [backendTabs, setBackendTabs] = React.useState<ProductTabDto[]>([]);
+    const [tabsLoading, setTabsLoading] = React.useState(false);
+    const [active, setActive] = React.useState<string>(''); // Now using tabKey from backend instead of ProductTabId
+
+    // Load tabs from backend API when variant changes
+    React.useEffect(() => {
+        const loadTabs = async () => {
+            if (!product?.variantId) return;
+
+            setTabsLoading(true);
+            try {
+                console.log(`📋 Loading tabs for variant ${product.variantId}`);
+                const tabs = await getTabsForVariant(product.variantId, i18n.language);
+
+                // Filter tabs based on user authentication
+                const visibleTabs = tabs.filter(tab => canViewTab(tab, !!user));
+
+                console.log(`✅ Loaded ${visibleTabs.length} tabs (${tabs.length} total)`);
+                setBackendTabs(visibleTabs);
+
+                // Set first tab as active
+                if (visibleTabs.length > 0 && !active) {
+                    setActive(visibleTabs[0].tabKey);
+                }
+            } catch (err) {
+                console.error('❌ Failed to load tabs:', err);
+                setBackendTabs([]);
+            } finally {
+                setTabsLoading(false);
             }
-            return buildTabs(product);
-        }
-        return [];
-    }, [product]);
+        };
+
+        loadTabs();
+    }, [product?.variantId, i18n.language, user]);
 
     // Handle variant change
     const handleVariantChange = React.useCallback(async (variantId: number) => {
@@ -269,6 +200,9 @@ const ProductDetail: React.FC = () => {
             // Clear gallery and reload for new variant
             setHasLoadedGallery(false);
             setGalleryImages([]);
+
+            // Reset active tab
+            setActive('');
 
             console.log('✅ Variant switched successfully:', updatedProduct.variantName);
         } catch (err) {
@@ -380,13 +314,7 @@ const ProductDetail: React.FC = () => {
         loadGalleryImages();
     }, [product, id, hasLoadedGallery]);
 
-    React.useEffect(() => {
-        const firstTabId = tabs[0]?.id ?? 'Details';
-        if (import.meta.env.DEV) {
-            console.log('🎯 Setting active tab to:', firstTabId, 'available tabs:', tabs.map(t => t.id));
-        }
-        setActive(firstTabId);
-    }, [tabs]);
+    // REMOVED: Setting active tab from hardcoded tabs - now handled in tab loading useEffect
 
     // LCP preloading for hero image
     React.useEffect(() => {
@@ -419,9 +347,9 @@ const ProductDetail: React.FC = () => {
         };
     }, [galleryImages, product]);
 
-    const activeTab = tabs.find(t => t.id === active) ?? tabs[0];
+    const activeTab = backendTabs.find(t => t.tabKey === active);
     if (import.meta.env.DEV && activeTab) {
-        console.log('📋 Active tab:', active, 'content kind:', activeTab.content.kind);
+        console.log('📋 Active tab:', active, 'content type:', activeTab.contentType);
     }
 
     // Create an updated product object with database gallery images ONLY
@@ -520,45 +448,41 @@ const ProductDetail: React.FC = () => {
                 {productWithGallery && <ProductView product={productWithGallery} galleryData={galleryImages}/>}
                 <ProductDetails product={product} onVariantChange={handleVariantChange}/>
 
+                {/* Tab Navigation */}
                 <nav className="product-bookmarks" aria-label="Product sections" role="tablist">
-                    {import.meta.env.DEV && (() => {
-                        console.log('🗂️ Rendering tabs:', tabs.map(t => `${t.id}:${t.label}`));
-                        return null;
-                    })()}
-                    {tabs.length === 0 && import.meta.env.DEV && (
+                    {tabsLoading && (
+                        <div className="dev-warning">Loading tabs...</div>
+                    )}
+                    {!tabsLoading && backendTabs.length === 0 && (
                         <div className="dev-warning">
-                            ⚠️ No tabs found! Product: {product?.masterProductId}
+                            ⚠️ No tabs configured for this variant. Please configure tabs in admin panel.
                         </div>
                     )}
-                    {tabs.map((t) => (
+                    {backendTabs.map((tab) => (
                         <button
-                            key={t.id}
-                            id={`tab-${t.id}`}
+                            key={tab.id}
+                            id={`tab-${tab.tabKey}`}
                             type="button"
                             role="tab"
-                            aria-selected={t.id === active}
-                            aria-controls={`panel-${t.id}`}
-                            onClick={() => setActive(t.id)}
-                            className={t.id === active ? 'active' : ''}
+                            aria-selected={tab.tabKey === active}
+                            aria-controls={`panel-${tab.tabKey}`}
+                            onClick={() => setActive(tab.tabKey)}
+                            className={tab.tabKey === active ? 'active' : ''}
                         >
-                            {t.label}
+                            {tab.tabLabel}
                         </button>
                     ))}
                 </nav>
 
+                {/* Tab Content */}
                 {activeTab && (
                     <div
-                        id={`panel-${activeTab.id}`}
+                        id={`panel-${activeTab.tabKey}`}
                         role="tabpanel"
-                        aria-labelledby={`tab-${activeTab.id}`}
+                        aria-labelledby={`tab-${activeTab.tabKey}`}
                         className="product-tab-panel"
                     >
-                        {activeTab.id === 'Details' && <DetailsTab content={activeTab.content}/>}
-                        {activeTab.id === 'Included' && <IncludedTab content={activeTab.content}/>}
-                        {activeTab.id === 'PrintInfo' && <PrintInfoTab content={activeTab.content}/>}
-                        {activeTab.id === 'Download' && <DownloadTab content={activeTab.content} variantId={product.variantId}/>}
-                        {activeTab.id === 'Features' && <FeaturesTab content={activeTab.content}/>}
-                        {activeTab.id === 'Reviews' && <ReviewsTab content={activeTab.content} productId={product.masterProductId}/>}
+                        <DynamicTabRenderer tab={activeTab} product={product} />
                     </div>
                 )}
 
@@ -578,6 +502,67 @@ const ProductDetail: React.FC = () => {
             </div>
         </div>
     );
+};
+
+// Dynamic Tab Renderer - renders tabs based on backend configuration
+interface DynamicTabRendererProps {
+    tab: ProductTabDto;
+    product: Product;
+}
+
+const DynamicTabRenderer: React.FC<DynamicTabRendererProps> = ({ tab, product }) => {
+    const rendered = renderTabContent(tab);
+
+    // If tab specifies a component name, try to render the matching component
+    if (rendered.type === 'component' && typeof rendered.content === 'string') {
+        const componentName = rendered.content;
+
+        // Map component names to actual components
+        switch (componentName) {
+            case 'DetailsTab':
+                return <DetailsTab content={{ kind: 'text', text: tab.contentHtml || '' }} />;
+            case 'IncludedTab':
+                return <IncludedTab content={{ kind: 'text', text: JSON.stringify(product.components || []) }} />;
+            case 'PrintInfoTab':
+                // Try to parse JSON content for print info
+                try {
+                    const printData = tab.contentJson ? JSON.parse(tab.contentJson) : null;
+                    if (printData) {
+                        return <PrintInfoTab content={{ kind: 'printInfo', data: printData }} />;
+                    }
+                } catch (e) {
+                    console.error('Failed to parse PrintInfo JSON:', e);
+                }
+                return <PrintInfoTab content={{ kind: 'text', text: tab.contentHtml || 'Print information not available.' }} />;
+            case 'DownloadTab':
+                return <DownloadTab content={{ kind: 'text', text: '' }} variantId={product.variantId} />;
+            case 'FeaturesTab':
+                return <FeaturesTab content={{ kind: 'list', items: product.features || [] }} />;
+            case 'ReviewsTab':
+                return <ReviewsTab content={{ kind: 'text', text: '' }} productId={product.masterProductId} />;
+            default:
+                console.warn(`Unknown component: ${componentName}, falling back to HTML render`);
+                return <div dangerouslySetInnerHTML={{ __html: tab.contentHtml || '' }} />;
+        }
+    }
+
+    // Render HTML content
+    if (rendered.type === 'html' && typeof rendered.content === 'string') {
+        return <div dangerouslySetInnerHTML={{ __html: rendered.content }} />;
+    }
+
+    // Render Markdown content
+    if (rendered.type === 'markdown' && typeof rendered.content === 'string') {
+        // For now, just render as plain text - could add markdown parser later
+        return <div>{rendered.content}</div>;
+    }
+
+    // Render JSON content
+    if (rendered.type === 'json') {
+        return <pre>{JSON.stringify(rendered.content, null, 2)}</pre>;
+    }
+
+    return <div>No content available for this tab.</div>;
 };
 
 export default ProductDetail;

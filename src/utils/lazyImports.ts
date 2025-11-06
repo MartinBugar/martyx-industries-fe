@@ -36,6 +36,10 @@ export const AdminUserDetail = lazy(() => import('../pages/admin/AdminUserDetail
 export const AdminProducts = lazy(() => import('../pages/admin/AdminProducts'));
 export const AdminProductDetail = lazy(() => import('../pages/admin/AdminProductDetail'));
 export const AdminProductGallery = lazy(() => import('../pages/admin/AdminProductGallery'));
+export const AdminVariantTabs = lazy(() => import('../pages/admin/AdminVariantTabs'));
+export const AdminVariantTabForm = lazy(() => import('../pages/admin/AdminVariantTabForm'));
+export const AdminMasterProductTabs = lazy(() => import('../pages/admin/AdminMasterProductTabs'));
+export const AdminMasterProductTabForm = lazy(() => import('../pages/admin/AdminMasterProductTabForm'));
 export const AdminOrders = lazy(() => import('../pages/admin/AdminOrders'));
 export const AdminGallery = lazy(() => import('../pages/admin/AdminGallery'));
 export const AdminGalleryUserDetail = lazy(() => import('../pages/admin/AdminGalleryUserDetail'));

@@ -56,7 +56,7 @@ export class HybridProductService {
     };
 
     if (import.meta.env.DEV) {
-      console.log('🔧 HybridService: getHardcodedDataByMasterProductId for', masterProductId, 'tabs count:', result.tabs?.length, 'tab ids:', result.tabs?.map(t => t.id));
+      console.log('🔧 HybridService: getHardcodedDataByMasterProductId for', masterProductId);
     }
 
     return result;
@@ -123,10 +123,8 @@ export class HybridProductService {
       hardcodedData?.modelViewerSettings || undefined
     );
 
-    const tabs = this.parseJsonField<any[]>(
-      masterProduct.tabsJson,
-      hardcodedData?.tabs || []
-    );
+    // TABS NOW LOADED FROM BACKEND API PER VARIANT - NOT FROM HARDCODED DATA
+    // tabs field removed from Product interface
 
     // Use model3dViewerUrl from backend, fallback to hardcoded modelPath
     const modelPath = masterProduct.model3dViewerUrl || hardcodedData?.modelPath || '';
@@ -181,7 +179,6 @@ export class HybridProductService {
       gallery: gallery,
       interactionInstructions: interactionInstructions,
       modelViewerSettings: modelViewerSettings,
-      tabs: tabs,
       videoUrl: videoUrl,
 
       // From selected ProductVariant components (What's Included)
@@ -197,7 +194,6 @@ export class HybridProductService {
       variantName: result.variantName,
       price: result.priceWithVat,
       availableVariantsCount: result.availableVariants?.length,
-      tabsCount: result.tabs?.length,
       featuresCount: result.features?.length,
       hasModelPath: !!result.modelPath,
       hasVideoUrl: !!result.videoUrl

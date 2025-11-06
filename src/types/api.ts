@@ -243,6 +243,27 @@ export interface ProductTabCreateRequest {
   cssClass?: string | null;
 }
 
+// Product Tab Template - Reusable tab blueprints
+export interface ProductTabTemplate {
+  id: number;
+  templateName: string;
+  templateKey: string;
+  defaultTabKey: string;
+  defaultTabLabel: string;
+  contentType: 'HTML' | 'MARKDOWN' | 'JSON' | 'COMPONENT';
+  defaultContentHtml: string | null;
+  defaultContentMarkdown: string | null;
+  defaultContentJson: string | null;
+  defaultComponentName: string | null;
+  defaultIconName: string | null;
+  defaultDisplayOrder: number;
+  description: string | null;
+  category: string | null;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 // Product Download DTO - Secure download tokens
 export interface ProductDownloadDto {
   id: number;

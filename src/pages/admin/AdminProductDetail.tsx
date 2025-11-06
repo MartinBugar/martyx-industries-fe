@@ -8,7 +8,6 @@ import { adminProductsService, type MasterProductDto, type ProductVariantDto, ty
 import { Button, Badge } from '../../components/ui';
 import VariantEditor from '../../components/admin/VariantEditor';
 import ComponentEditor from '../../components/admin/ComponentEditor';
-import AdminProductTabs from '../../components/AdminProductTabs/AdminProductTabs';
 
 const AdminProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -20,8 +19,8 @@ const AdminProductDetail: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [savedMsg, setSavedMsg] = useState<string | null>(null);
 
-  // Active tab: product-info | variants | product-tabs
-  const [activeTab, setActiveTab] = useState<'product-info' | 'variants' | 'product-tabs'>('product-info');
+  // Active tab: product-info | variants
+  const [activeTab, setActiveTab] = useState<'product-info' | 'variants'>('product-info');
 
   // Variant editor state
   const [showVariantEditor, setShowVariantEditor] = useState(false);
@@ -192,12 +191,12 @@ const AdminProductDetail: React.FC = () => {
         <Package size={16} style={{ marginRight: 4 }} />
         Variants ({product?.variants?.length || 0})
       </button>
-      <button
-        onClick={() => setActiveTab('product-tabs')}
-        className={`admin-nav-tab ${activeTab === 'product-tabs' ? 'active' : ''}`}
+      <Link
+        to={`/admin/products/${id}/tabs`}
+        className="admin-nav-tab"
       >
-        📋 Product Tabs
-      </button>
+        📋 Manage Tabs
+      </Link>
       <Link
         to={`/admin/products/${id}/gallery`}
         className="admin-nav-tab"
@@ -449,7 +448,7 @@ const AdminProductDetail: React.FC = () => {
                 <div>
                   <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <p style={{ color: '#6b7280' }}>
-                      Manage product variants - different configurations with unique SKUs, pricing, and components.
+                      Manage product variants - different configurations with unique SKUs, pricing, components, and tabs.
                     </p>
                     <Button variant="primary" onClick={handleCreateVariant}>
                       <Plus size={14} style={{ marginRight: 4 }} />
@@ -475,6 +474,7 @@ const AdminProductDetail: React.FC = () => {
                         <VariantCard
                           key={variant.id || idx}
                           variant={variant}
+                          productId={id!}
                           onEdit={() => handleEditVariant(variant)}
                           onDelete={() => variant.id && handleDeleteVariant(variant.id)}
                           onAddComponent={() => variant.id && handleAddComponent(variant.id)}
@@ -484,21 +484,6 @@ const AdminProductDetail: React.FC = () => {
                       ))}
                     </div>
                   )}
-                </div>
-              )}
-
-              {/* Product Tabs Tab */}
-              {activeTab === 'product-tabs' && (
-                <div>
-                  <div style={{ marginBottom: 16 }}>
-                    <p style={{ color: '#6b7280' }}>
-                      Configure custom tabs for this product. Each variant can have its own tabs.
-                    </p>
-                  </div>
-                  <AdminProductTabs
-                    masterProductId={Number(id)}
-                    locale="en"
-                  />
                 </div>
               )}
             </>
@@ -538,6 +523,7 @@ const AdminProductDetail: React.FC = () => {
 // Component to display a single variant with its components
 interface VariantCardProps {
   variant: ProductVariantDto;
+  productId: string;
   onEdit: () => void;
   onDelete: () => void;
   onAddComponent: () => void;
@@ -547,6 +533,7 @@ interface VariantCardProps {
 
 const VariantCard: React.FC<VariantCardProps> = ({
   variant,
+  productId,
   onEdit,
   onDelete,
   onAddComponent,
@@ -618,18 +605,24 @@ const VariantCard: React.FC<VariantCardProps> = ({
             </div>
           </div>
 
-          {/* Action Button - Prevent click propagation */}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={(e) => {
-              e.stopPropagation();
-              onEdit();
-            }}
-          >
-            <Edit size={14} style={{ marginRight: 4 }} />
-            Edit
-          </Button>
+          {/* Action Buttons - Prevent click propagation */}
+          <div style={{ display: 'flex', gap: 8 }} onClick={(e) => e.stopPropagation()}>
+            <Link
+              to={`/admin/products/${productId}/variants/${variant.id}/tabs`}
+              className="btn btn-info btn-sm"
+              style={{ textDecoration: 'none' }}
+            >
+              📋 Manage Tabs
+            </Link>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onEdit}
+            >
+              <Edit size={14} style={{ marginRight: 4 }} />
+              Edit
+            </Button>
+          </div>
         </div>
       </div>
 

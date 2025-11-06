@@ -6,8 +6,6 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
 import type { ProductTabDto, ProductTabCreateRequest } from '../../types/api';
 import {
   adminGetTabsForMasterProduct,
@@ -261,20 +259,12 @@ const AdminProductTabs: React.FC<AdminProductTabsProps> = ({
             {formData.contentType === 'HTML' && (
               <div className="form-group">
                 <label>HTML Content</label>
-                <ReactQuill
-                  theme="snow"
+                <textarea
                   value={formData.contentHtml || ''}
-                  onChange={(value) => setFormData({ ...formData, contentHtml: value })}
-                  modules={{
-                    toolbar: [
-                      [{ 'header': [1, 2, 3, false] }],
-                      ['bold', 'italic', 'underline', 'strike'],
-                      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                      ['link', 'image'],
-                      ['clean']
-                    ]
-                  }}
-                  style={{ height: '300px', marginBottom: '50px' }}
+                  onChange={(e) => setFormData({ ...formData, contentHtml: e.target.value })}
+                  rows={15}
+                  placeholder="Enter HTML content..."
+                  style={{ fontFamily: 'monospace', fontSize: '13px' }}
                 />
               </div>
             )}

@@ -5,7 +5,7 @@
  */
 
 import { apiClient } from './apiClient';
-import type { ProductTabDto, ProductTabCreateRequest } from '../types/api';
+import type { ProductTabDto, ProductTabCreateRequest, ProductTabTemplate } from '../types/api';
 
 // ============================================================================
 // PUBLIC ENDPOINTS (No auth required)
@@ -192,6 +192,20 @@ export async function adminReorderTabs(
     {
       method: 'PUT',
       body: { tabIds }
+    }
+  );
+}
+
+/**
+ * Get all active tab templates (admin)
+ *
+ * @returns Promise<ProductTabTemplate[]>
+ */
+export async function adminGetTabTemplates(): Promise<ProductTabTemplate[]> {
+  return apiClient.request<ProductTabTemplate[]>(
+    `/api/admin/product-tabs/templates`,
+    {
+      method: 'GET'
     }
   );
 }

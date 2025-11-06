@@ -70,6 +70,10 @@ import {
   AdminProducts,
   AdminProductDetail,
   AdminProductGallery,
+  AdminVariantTabs,
+  AdminVariantTabForm,
+  AdminMasterProductTabs,
+  AdminMasterProductTabForm,
   AdminOrders,
   AdminGallery,
   AdminGalleryUserDetail,
@@ -263,6 +267,36 @@ const MainContent = React.memo(() => {
             <Route path="/admin/products/:id/gallery" element={
               <RequireAdmin>
                 <AdminProductGallery />
+              </RequireAdmin>
+            } />
+            <Route path="/admin/products/:productId/tabs" element={
+              <RequireAdmin>
+                <AdminMasterProductTabs />
+              </RequireAdmin>
+            } />
+            <Route path="/admin/products/:productId/tabs/new" element={
+              <RequireAdmin>
+                <AdminMasterProductTabForm />
+              </RequireAdmin>
+            } />
+            <Route path="/admin/products/:productId/tabs/:tabId/edit" element={
+              <RequireAdmin>
+                <AdminMasterProductTabForm />
+              </RequireAdmin>
+            } />
+            <Route path="/admin/products/:productId/variants/:variantId/tabs" element={
+              <RequireAdmin>
+                <AdminVariantTabs />
+              </RequireAdmin>
+            } />
+            <Route path="/admin/products/:productId/variants/:variantId/tabs/new" element={
+              <RequireAdmin>
+                <AdminVariantTabForm />
+              </RequireAdmin>
+            } />
+            <Route path="/admin/products/:productId/variants/:variantId/tabs/:tabId/edit" element={
+              <RequireAdmin>
+                <AdminVariantTabForm />
               </RequireAdmin>
             } />
             <Route path="/admin/orders" element={
