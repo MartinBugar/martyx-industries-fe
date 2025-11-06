@@ -18,6 +18,39 @@
   color: var(--text-muted);
 }
 
+/* Compact Floating Edit Button */
+.edit-profile-button-floating {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #28c1ff 0%, #1e9ad6 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(40, 193, 255, 0.3);
+  z-index: 10;
+}
+
+.edit-profile-button-floating:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(40, 193, 255, 0.5);
+}
+
+.edit-profile-button-floating:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.edit-profile-button-floating svg {
+  flex-shrink: 0;
+}
+
 /* Profile View Mode */
 
 .profile-sections {
@@ -381,7 +414,13 @@
 }
 
 @media (max-width: 768px) {
-  
+
+  .edit-profile-button-floating {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+  }
+
   .form-header {
     flex-direction: column;
     align-items: stretch;
@@ -547,6 +586,19 @@
   .profile-container {
     max-width: 1350px;
     margin: 0 auto;
+  }
+
+  /* Enhanced floating edit button */
+  .edit-profile-button-floating {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    box-shadow: 0 6px 20px rgba(40, 193, 255, 0.4);
+  }
+
+  .edit-profile-button-floating:hover {
+    transform: translateY(-3px) scale(1.08);
+    box-shadow: 0 12px 35px rgba(40, 193, 255, 0.6);
   }
 
   /* Enhanced profile sections */

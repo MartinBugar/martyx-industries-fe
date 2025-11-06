@@ -120,6 +120,7 @@ const UserProfile: React.FC = () => {
         setSuccessMessage('Profile updated successfully!');
         // Exit edit mode
         setIsEditing(false);
+        window.dispatchEvent(new Event('profile:editEnd'));
       } else {
         setError('Failed to update profile. Please try again.');
       }
@@ -133,10 +134,13 @@ const UserProfile: React.FC = () => {
 
   // Toggle edit mode
   const toggleEditMode = () => {
-    setIsEditing(!isEditing);
-    
-    // Reset form data and clear messages when entering edit mode
-    if (!isEditing) {
+    const newEditingState = !isEditing;
+    setIsEditing(newEditingState);
+
+    // Dispatch edit state change events
+    if (newEditingState) {
+      window.dispatchEvent(new Event('profile:editStart'));
+      // Reset form data and clear messages when entering edit mode
       setFormData({
         firstName: user?.firstName || '',
         lastName: user?.lastName || '',
@@ -150,10 +154,32 @@ const UserProfile: React.FC = () => {
       });
       setError(null);
       setSuccessMessage(null);
+    } else {
+      window.dispatchEvent(new Event('profile:editEnd'));
     }
   };
 
-  // Listen for edit profile event from navigation
+  // Cancel edit mode
+  const cancelEdit = () => {
+    setIsEditing(false);
+    window.dispatchEvent(new Event('profile:editEnd'));
+    // Reset form data
+    setFormData({
+      firstName: user?.firstName || '',
+      lastName: user?.lastName || '',
+      username: user?.username || '',
+      phone: user?.phone || '',
+      street: user?.address?.street || '',
+      city: user?.address?.city || '',
+      state: user?.address?.state || '',
+      zipCode: user?.address?.zipCode || '',
+      country: user?.address?.country || ''
+    });
+    setError(null);
+    setSuccessMessage(null);
+  };
+
+  // Listen for edit/save/cancel profile events from header
   useEffect(() => {
     const handleEditProfile = () => {
       if (!isEditing) {
@@ -161,8 +187,31 @@ const UserProfile: React.FC = () => {
       }
     };
 
+    const handleSaveProfile = () => {
+      if (isEditing) {
+        // Trigger form submission
+        const form = document.querySelector('.profile-form') as HTMLFormElement;
+        if (form) {
+          form.requestSubmit();
+        }
+      }
+    };
+
+    const handleCancelProfile = () => {
+      if (isEditing) {
+        cancelEdit();
+      }
+    };
+
     window.addEventListener('editProfile', handleEditProfile);
-    return () => window.removeEventListener('editProfile', handleEditProfile);
+    window.addEventListener('saveProfile', handleSaveProfile);
+    window.addEventListener('cancelProfile', handleCancelProfile);
+
+    return () => {
+      window.removeEventListener('editProfile', handleEditProfile);
+      window.removeEventListener('saveProfile', handleSaveProfile);
+      window.removeEventListener('cancelProfile', handleCancelProfile);
+    };
   }, [isEditing]);
 
   if (!user) {
@@ -263,27 +312,6 @@ const UserProfile: React.FC = () => {
         </>
       ) : (
         <form className="profile-form" onSubmit={handleSubmit}>
-          <div className="form-header">
-            <h3>Edit Profile</h3>
-            <div className="form-actions">
-              <button 
-                type="submit" 
-                className="save-button"
-                disabled={isLoading}
-              >
-                {isLoading ? 'Saving...' : 'Save'}
-              </button>
-              <button 
-                type="button" 
-                className="cancel-button"
-                onClick={toggleEditMode}
-                disabled={isLoading}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-
           {/* Show error message in form if there's an error */}
           {error && (
             <div className="form-error-message">

@@ -6,7 +6,6 @@ import OrderHistory from '../../components/OrderHistory/OrderHistory';
 import ModelCollection from '../../components/ModelCollection/ModelCollection';
 import GdprSettings from '../../components/GdprSettings/GdprSettings';
 import PwaInstall from '../../components/PwaInstall/PwaInstall';
-import TokenExpirationTimer from '../../components/TokenExpirationTimer/TokenExpirationTimer';
 import AvatarSelector from '../../components/AvatarSelector/AvatarSelector';
 import type { Avatar } from '../../services/avatarService';
 import './UserAccount.css';
@@ -16,6 +15,21 @@ const UserAccount: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'collection' | 'settings' | 'app'>('profile');
   const [showAvatarSelector, setShowAvatarSelector] = useState(false);
   const [userAvatar, setUserAvatar] = useState<string | null>(user?.avatar?.imageUrl || null);
+  const [isProfileEditing, setIsProfileEditing] = useState(false);
+
+  // Listen for profile edit state changes
+  useEffect(() => {
+    const handleProfileEditStart = () => setIsProfileEditing(true);
+    const handleProfileEditEnd = () => setIsProfileEditing(false);
+
+    window.addEventListener('profile:editStart', handleProfileEditStart);
+    window.addEventListener('profile:editEnd', handleProfileEditEnd);
+
+    return () => {
+      window.removeEventListener('profile:editStart', handleProfileEditStart);
+      window.removeEventListener('profile:editEnd', handleProfileEditEnd);
+    };
+  }, []);
 
   // Update userAvatar when user object changes
   useEffect(() => {
@@ -92,10 +106,48 @@ const UserAccount: React.FC = () => {
               </div>
             </div>
 
-            {/* Session Timer Card */}
-            <div className="session-card">
-              <TokenExpirationTimer />
-            </div>
+            {/* Profile Edit Actions - shown only when profile tab is active */}
+            {activeTab === 'profile' && (
+              <div className="profile-actions">
+                {!isProfileEditing ? (
+                  <button
+                    className="edit-button"
+                    onClick={() => window.dispatchEvent(new Event('editProfile'))}
+                    aria-label="Edit profile"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    Edit
+                  </button>
+                ) : (
+                  <div className="edit-actions-group">
+                    <button
+                      className="save-button"
+                      onClick={() => window.dispatchEvent(new Event('saveProfile'))}
+                      aria-label="Save changes"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <polyline points="20 6 9 17 4 12" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      Save
+                    </button>
+                    <button
+                      className="cancel-button"
+                      onClick={() => window.dispatchEvent(new Event('cancelProfile'))}
+                      aria-label="Cancel editing"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <line x1="18" y1="6" x2="6" y2="18" strokeLinecap="round" strokeLinejoin="round"/>
+                        <line x1="6" y1="6" x2="18" y2="18" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      Cancel
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </header>
 
