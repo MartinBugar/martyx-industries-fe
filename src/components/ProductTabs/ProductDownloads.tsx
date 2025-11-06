@@ -1,8 +1,11 @@
 /**
  * ProductDownloads Component
  *
- * Displays all attachments for a product (master product or variant)
+ * Displays attachments for a product (master product or variant)
  * Used in product tabs with contentType: COMPONENT and componentName: ProductDownloads
+ *
+ * If tabId is provided, shows only attachments assigned to that specific tab.
+ * Otherwise, shows all product attachments.
  */
 
 import React, { useEffect, useState } from 'react';
@@ -12,25 +15,29 @@ import {
   getAttachmentsForVariant,
   trackDownload
 } from '../../services/productAttachmentService';
+import { getAttachmentsForTab } from '../../services/productTabService';
 import type { ProductAttachmentDto } from '../../types/api';
 import './ProductDownloads.css';
 
 interface ProductDownloadsProps {
   masterProductId?: number;
   variantId?: number;
+  tabId?: number; // If provided, load only attachments assigned to this tab
 }
 
 const ProductDownloads: React.FC<ProductDownloadsProps> = ({
   masterProductId,
-  variantId
+  variantId,
+  tabId
 }) => {
   const [attachments, setAttachments] = useState<ProductAttachmentDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    console.log('[ProductDownloads] Props received:', { masterProductId, variantId, tabId });
     loadAttachments();
-  }, [masterProductId, variantId]);
+  }, [masterProductId, variantId, tabId]);
 
   const loadAttachments = async () => {
     try {
@@ -38,12 +45,22 @@ const ProductDownloads: React.FC<ProductDownloadsProps> = ({
       setError(null);
 
       let data: ProductAttachmentDto[];
-      if (variantId) {
+
+      // If tabId is provided, load only attachments assigned to this tab
+      if (tabId) {
+        console.log('[ProductDownloads] Loading attachments for tabId:', tabId);
+        data = await getAttachmentsForTab(tabId);
+        console.log('[ProductDownloads] Loaded tab attachments:', data.length);
+      }
+      // Otherwise, load all attachments for the product
+      else if (variantId) {
+        console.log('[ProductDownloads] Loading attachments for variantId:', variantId);
         data = await getAttachmentsForVariant(variantId);
       } else if (masterProductId) {
+        console.log('[ProductDownloads] Loading attachments for masterProductId:', masterProductId);
         data = await getAttachmentsForMasterProduct(masterProductId);
       } else {
-        throw new Error('No product ID provided');
+        throw new Error('No product ID or tab ID provided');
       }
 
       setAttachments(data);

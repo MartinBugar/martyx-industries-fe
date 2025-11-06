@@ -33,6 +33,23 @@ export async function getTabsForMasterProduct(
 }
 
 /**
+ * Get attachments assigned to a tab (public endpoint)
+ *
+ * @param tabId - The tab ID
+ * @returns Promise<ProductAttachmentDto[]>
+ */
+export async function getAttachmentsForTab(tabId: number): Promise<any[]> {
+  return apiClient.request<any[]>(
+    `/api/public/product-tabs/${tabId}/attachments`,
+    {
+      method: 'GET',
+      cache: true,
+      cacheType: 'api-responses'
+    }
+  );
+}
+
+/**
  * Get all active tabs for a product variant
  *
  * @param variantId - The product variant ID

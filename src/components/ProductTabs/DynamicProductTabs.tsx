@@ -18,6 +18,7 @@ import FeaturesTab from './FeaturesTab';
 import ReviewsTab from './ReviewsTab';
 import PrintInfoTab from './PrintInfoTab';
 import IncludedTab from './IncludedTab';
+import ProductDownloads from './ProductDownloads';
 
 interface DynamicProductTabsProps {
   masterProductId?: number;
@@ -72,12 +73,21 @@ const DynamicProductTabs: React.FC<DynamicProductTabsProps> = ({
   }, [masterProductId, variantId, locale, isAuthenticated]);
 
   // Render component based on componentName
-  const renderCustomComponent = (componentName: string): React.ReactElement | null => {
+  const renderCustomComponent = (componentName: string, tabId?: number): React.ReactElement | null => {
+    console.log('[DynamicProductTabs] renderCustomComponent called:', { componentName, tabId, masterProductId, variantId });
+
     switch (componentName) {
       case 'DetailsTab':
         return <DetailsTab content={{ kind: 'text', text: '' }} />;
       case 'DownloadTab':
         return <DownloadTab content={{ kind: 'text', text: '' }} />;
+      case 'ProductDownloads':
+        console.log('[DynamicProductTabs] Rendering ProductDownloads with props:', { masterProductId, variantId, tabId });
+        return <ProductDownloads
+          masterProductId={masterProductId}
+          variantId={variantId}
+          tabId={tabId}
+        />;
       case 'FeaturesTab':
         return <FeaturesTab content={{ kind: 'text', text: '' }} />;
       case 'ReviewsTab':
@@ -93,6 +103,7 @@ const DynamicProductTabs: React.FC<DynamicProductTabsProps> = ({
 
   // Render tab content
   const renderContent = (tab: ProductTabDto): React.ReactElement => {
+    console.log('[DynamicProductTabs] renderContent called for tab:', { id: tab.id, tabLabel: tab.tabLabel, contentType: tab.contentType });
     const { type, content } = renderTabContent(tab);
 
     switch (type) {
@@ -121,7 +132,8 @@ const DynamicProductTabs: React.FC<DynamicProductTabsProps> = ({
         );
 
       case 'component':
-        return renderCustomComponent(content as string) || <div>Component not available</div>;
+        console.log('[DynamicProductTabs] Rendering component type, passing tabId:', tab.id);
+        return renderCustomComponent(content as string, tab.id) || <div>Component not available</div>;
 
       default:
         return <div>Unsupported content type</div>;

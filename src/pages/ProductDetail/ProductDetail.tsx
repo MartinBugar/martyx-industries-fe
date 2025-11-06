@@ -542,7 +542,7 @@ const DynamicTabRenderer: React.FC<DynamicTabRendererProps> = ({ tab, product })
             case 'ReviewsTab':
                 return <ReviewsTab content={{ kind: 'text', text: '' }} productId={product.masterProductId} />;
             case 'ProductDownloads':
-                return <ProductDownloads masterProductId={product.masterProductId} variantId={product.variantId} />;
+                return <ProductDownloads masterProductId={product.masterProductId} variantId={product.variantId} tabId={tab.id} />;
             default:
                 console.warn(`Unknown component: ${componentName}, falling back to HTML render`);
                 return <div dangerouslySetInnerHTML={{ __html: tab.contentHtml || '' }} />;
