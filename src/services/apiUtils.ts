@@ -110,8 +110,28 @@ export const handleResponse = async (response: Response) => {
   }
 
   // Parse successful response
-  const data = await response.json();
-  return data;
+  // Don't try to parse empty responses (204 No Content or empty body)
+  if (response.status === 204) {
+    return null;
+  }
+
+  // Check if response has content
+  const contentType = response.headers.get('content-type');
+  const contentLength = response.headers.get('content-length');
+
+  // If no content or content-length is 0, return null
+  if (contentLength === '0' || !contentType) {
+    return null;
+  }
+
+  // Only parse JSON if content-type indicates JSON
+  if (contentType && contentType.includes('application/json')) {
+    const data = await response.json();
+    return data;
+  }
+
+  // For other content types, return null (we don't handle them)
+  return null;
 };
 
 // API base URL - shared across services

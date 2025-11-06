@@ -77,14 +77,41 @@ const ProductDownloads: React.FC<ProductDownloadsProps> = ({
       // Track download
       await trackDownload(attachment.id);
 
-      // Open file in new tab
-      const url = attachment.cdnUrl || attachment.fileUrl;
-      window.open(url, '_blank');
+      // Prepare download URL
+      let url = attachment.cdnUrl || attachment.fileUrl;
+
+      // Ensure URL has protocol (https://)
+      if (url && !url.startsWith('http://') && !url.startsWith('https://')) {
+        url = 'https://' + url;
+      }
+
+      // Trigger download without opening new tab
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = attachment.displayLabel || 'download'; // Suggest filename
+      link.target = '_blank'; // Fallback for browsers that don't support download attribute
+      link.rel = 'noopener noreferrer';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     } catch (err) {
       console.error('Error tracking download:', err);
-      // Still open the file even if tracking fails
-      const url = attachment.cdnUrl || attachment.fileUrl;
-      window.open(url, '_blank');
+      // Still try to download the file even if tracking fails
+      let url = attachment.cdnUrl || attachment.fileUrl;
+
+      // Ensure URL has protocol
+      if (url && !url.startsWith('http://') && !url.startsWith('https://')) {
+        url = 'https://' + url;
+      }
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = attachment.displayLabel || 'download';
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
   };
 
