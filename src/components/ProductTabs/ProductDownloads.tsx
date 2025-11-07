@@ -17,6 +17,7 @@ import {
 } from '../../services/productAttachmentService';
 import { getAttachmentsForTab } from '../../services/productTabService';
 import type { ProductAttachmentDto } from '../../types/api';
+import { downloadFile } from '../../services/download';
 import './ProductDownloads.css';
 
 interface ProductDownloadsProps {
@@ -85,33 +86,14 @@ const ProductDownloads: React.FC<ProductDownloadsProps> = ({
         url = 'https://' + url;
       }
 
-      // Trigger download without opening new tab
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = attachment.displayLabel || 'download'; // Suggest filename
-      link.target = '_blank'; // Fallback for browsers that don't support download attribute
-      link.rel = 'noopener noreferrer';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      // Use downloadFile service for reliable cross-origin downloads
+      await downloadFile(url, {
+        suggestedName: attachment.displayLabel || attachment.fileName || 'download',
+        withCredentials: false, // CDN URLs don't need credentials
+      });
     } catch (err) {
-      console.error('Error tracking download:', err);
-      // Still try to download the file even if tracking fails
-      let url = attachment.cdnUrl || attachment.fileUrl;
-
-      // Ensure URL has protocol
-      if (url && !url.startsWith('http://') && !url.startsWith('https://')) {
-        url = 'https://' + url;
-      }
-
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = attachment.displayLabel || 'download';
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      console.error('Error downloading file:', err);
+      alert('Failed to download file. Please try again.');
     }
   };
 

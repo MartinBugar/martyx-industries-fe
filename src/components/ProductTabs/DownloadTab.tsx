@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { type TabContent } from '../../data/productData';
 import { getAttachmentsForVariant, trackDownload } from '../../services/productAttachmentService';
 import type { ProductAttachmentDto } from '../../types/api';
+import { downloadFile } from '../../services/download';
 import './ProductTabs.css';
 
 interface DownloadTabProps {
@@ -37,10 +38,18 @@ const DownloadTab: React.FC<DownloadTabProps> = ({ content, variantId }) => {
 
   const handleDownload = async (attachment: ProductAttachmentDto) => {
     try {
+      // Track the download
       await trackDownload(attachment.id);
-      window.open(attachment.cdnUrl || attachment.fileUrl, '_blank');
+
+      // Download file using downloadFile service (works for cross-origin URLs)
+      const url = attachment.cdnUrl || attachment.fileUrl;
+      await downloadFile(url, {
+        suggestedName: attachment.displayLabel || attachment.fileName || 'download',
+        withCredentials: false, // CDN URLs don't need credentials
+      });
     } catch (error) {
-      console.error('Download tracking failed', error);
+      console.error('Download failed', error);
+      alert('Failed to download file. Please try again.');
     }
   };
 
