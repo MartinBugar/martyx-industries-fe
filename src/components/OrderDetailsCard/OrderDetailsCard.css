@@ -156,9 +156,9 @@
   font-size: 0.875rem;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: #00d4ff !important;
+  color: #ffd700 !important;
   font-weight: 700;
-  text-shadow: 0 0 8px rgba(0, 212, 255, 0.4);
+  text-shadow: none;
 }
 
 /* Detail rows */
