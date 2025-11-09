@@ -59,6 +59,12 @@
   border-color: rgba(255, 215, 0, 0.2);
 }
 
+.order-card.expanded:hover {
+  transform: none;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 215, 0, 0.2);
+}
+
 .order-header {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -1052,6 +1058,12 @@
   }
 
   .order-card.expanded {
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+    border-color: rgba(255, 215, 0, 0.3);
+  }
+
+  .order-card.expanded:hover {
+    transform: none;
     box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
     border-color: rgba(255, 215, 0, 0.3);
   }
