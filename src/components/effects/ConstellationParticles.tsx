@@ -4,7 +4,7 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import { useUserSettings } from '../../context/UserSettingsContext';
+import { useUserSettings } from '../../context/useUserSettings';
 
 interface Particle {
   x: number;

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/useAuth';
 import { gdprService } from '../../services/gdprService';
-import { useUserSettings } from '../../context/UserSettingsContext';
+import { useUserSettings } from '../../context/useUserSettings';
 import './GdprSettings.css';
 
 /**

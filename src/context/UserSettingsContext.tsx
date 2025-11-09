@@ -3,17 +3,10 @@
  * Provides immediate updates without page refresh
  */
 
-import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import React, { useState, useEffect, type ReactNode } from 'react';
 import { userSettingsService } from '../services/userSettingsService';
 import { useAuth } from './useAuth';
-
-interface UserSettingsContextType {
-    particlesEnabled: boolean;
-    setParticlesEnabled: (enabled: boolean) => Promise<void>;
-    loading: boolean;
-}
-
-const UserSettingsContext = createContext<UserSettingsContextType | undefined>(undefined);
+import { UserSettingsContext } from './UserSettingsContextDef';
 
 export const UserSettingsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const { isAuthenticated } = useAuth();
@@ -71,12 +64,4 @@ export const UserSettingsProvider: React.FC<{ children: ReactNode }> = ({ childr
             {children}
         </UserSettingsContext.Provider>
     );
-};
-
-export const useUserSettings = () => {
-    const context = useContext(UserSettingsContext);
-    if (context === undefined) {
-        throw new Error('useUserSettings must be used within a UserSettingsProvider');
-    }
-    return context;
 };
