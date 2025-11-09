@@ -174,15 +174,6 @@ const AdminSuppliers: React.FC = () => {
     }
   };
 
-  const formatDate = (dateStr?: string): string => {
-    if (!dateStr) return '—';
-    return new Date(dateStr).toLocaleDateString('sk-SK', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
-
   const navTabs = (
     <nav className="dashboard-tabs">
       <button

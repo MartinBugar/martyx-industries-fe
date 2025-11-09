@@ -204,7 +204,7 @@ const AdminReturnRequests: React.FC = () => {
   };
 
   const getReturnTypeBadge = (type: string): React.ReactNode => {
-    const variants: Record<string, 'default' | 'success' | 'warning'> = {
+    const variants: Record<string, 'default' | 'success' | 'warning' | 'info'> = {
       REFUND: 'warning',
       EXCHANGE: 'info',
       REPAIR: 'default',
@@ -352,7 +352,7 @@ const AdminReturnRequests: React.FC = () => {
                                   </Button>
                                   {returnRequest.return_status === 'REQUESTED' && (
                                     <>
-                                      <Button variant="success" size="sm" onClick={() => handleApprove(returnRequest.id)}>
+                                      <Button variant="primary" size="sm" onClick={() => handleApprove(returnRequest.id)}>
                                         <CheckCircle size={14} />
                                       </Button>
                                       <Button variant="outline" size="sm" onClick={() => handleReject(returnRequest.id)}>
@@ -366,7 +366,7 @@ const AdminReturnRequests: React.FC = () => {
                                     </Button>
                                   )}
                                   {returnRequest.return_status === 'RECEIVED' && (
-                                    <Button variant="warning" size="sm" onClick={() => handleProcessRefund(returnRequest.id)}>
+                                    <Button variant="info" size="sm" onClick={() => handleProcessRefund(returnRequest.id)}>
                                       <DollarSign size={14} />
                                     </Button>
                                   )}
@@ -441,7 +441,7 @@ const AdminReturnRequests: React.FC = () => {
                               <Button variant="outline" size="sm" onClick={() => handleViewReturn(returnRequest)}>
                                 <Eye size={14} />
                               </Button>
-                              <Button variant="success" size="sm" onClick={() => handleApprove(returnRequest.id)}>
+                              <Button variant="primary" size="sm" onClick={() => handleApprove(returnRequest.id)}>
                                 <CheckCircle size={14} />
                               </Button>
                               <Button variant="outline" size="sm" onClick={() => handleReject(returnRequest.id)}>
@@ -502,7 +502,7 @@ const AdminReturnRequests: React.FC = () => {
                 <div style={{ display: 'flex', gap: '12px', marginBottom: '24px', flexWrap: 'wrap' }}>
                   {viewingReturn.return_status === 'REQUESTED' && (
                     <>
-                      <Button variant="success" onClick={() => handleApprove(viewingReturn.id)}>
+                      <Button variant="primary" onClick={() => handleApprove(viewingReturn.id)}>
                         <CheckCircle size={16} /> Approve Return
                       </Button>
                       <Button variant="outline" onClick={() => handleReject(viewingReturn.id)}>
@@ -516,12 +516,12 @@ const AdminReturnRequests: React.FC = () => {
                     </Button>
                   )}
                   {viewingReturn.return_status === 'RECEIVED' && (
-                    <Button variant="warning" onClick={() => handleProcessRefund(viewingReturn.id)}>
+                    <Button variant="info" onClick={() => handleProcessRefund(viewingReturn.id)}>
                       <DollarSign size={16} /> Process Refund
                     </Button>
                   )}
                   {viewingReturn.return_status === 'PROCESSING' && (
-                    <Button variant="success" onClick={() => handleComplete(viewingReturn.id)}>
+                    <Button variant="primary" onClick={() => handleComplete(viewingReturn.id)}>
                       <CheckCircle size={16} /> Complete Return
                     </Button>
                   )}

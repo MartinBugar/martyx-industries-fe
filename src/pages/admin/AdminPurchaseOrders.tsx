@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Package, Plus, X, Edit, Eye, CheckCircle, Truck, FileText, Calendar } from 'lucide-react';
+import { Package, Plus, X, Eye, CheckCircle, Truck, FileText, Calendar } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import './AdminDiscounts.css';
 import './AdminButtonOverrides.css';
 import { adminSupplierService, type PageResponse } from '../../services/adminSupplierService';
 import { adminProductsService, type ProductVariantDto } from '../../services/adminProductsService';
-import type { PurchaseOrderDto, PurchaseOrderCreateDto, SupplierDto, PurchaseOrderStatus, PaymentStatus } from '../../types/inventory';
+import type { PurchaseOrderDto, PurchaseOrderCreateDto, SupplierDto } from '../../types/inventory';
 import { Badge, Button, SkeletonTable } from '../../components/ui';
 
 type TabType = 'all-orders' | 'create-order' | 'view-details';
@@ -665,7 +665,7 @@ const AdminPurchaseOrders: React.FC = () => {
                             <Eye size={14} />
                           </Button>
                           {po.order_status !== 'RECEIVED' && po.order_status !== 'CANCELLED' && (
-                            <Button variant="success" size="sm" onClick={() => handleReceive(po.id)} title="Receive">
+                            <Button variant="primary" size="sm" onClick={() => handleReceive(po.id)} title="Receive">
                               <CheckCircle size={14} />
                             </Button>
                           )}
@@ -749,7 +749,7 @@ const AdminPurchaseOrders: React.FC = () => {
                                 <Eye size={14} />
                               </Button>
                               {po.order_status !== 'RECEIVED' && po.order_status !== 'CANCELLED' && (
-                                <Button variant="success" size="sm" onClick={() => handleReceive(po.id)} title="Receive order">
+                                <Button variant="primary" size="sm" onClick={() => handleReceive(po.id)} title="Receive order">
                                   <CheckCircle size={14} />
                                 </Button>
                               )}
@@ -800,7 +800,7 @@ const AdminPurchaseOrders: React.FC = () => {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
                 <h3 className="section-title" style={{ margin: 0 }}>Purchase Order Details</h3>
                 {viewingPO.order_status !== 'RECEIVED' && viewingPO.order_status !== 'CANCELLED' && (
-                  <Button variant="success" onClick={() => handleReceive(viewingPO.id)}>
+                  <Button variant="primary" onClick={() => handleReceive(viewingPO.id)}>
                     <CheckCircle size={16} /> Receive Order
                   </Button>
                 )}

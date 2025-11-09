@@ -180,8 +180,8 @@ const StripeSuccess: React.FC = () => {
           <div className="order-items-list">
             {paymentData.orderItems.map((item, index) => {
               const quantity = item.quantity || 1;
-              const price = item.price || 0;
-              const lineTotal = quantity * price;
+              const unitPrice = item.unitPrice || 0;
+              const lineTotal = quantity * unitPrice;
 
               return (
                 <div key={index} className="order-item">

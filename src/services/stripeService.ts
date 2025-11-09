@@ -47,7 +47,7 @@ export interface StripeSuccessResponse {
     productId?: string | number;
     productName?: string;
     quantity?: number;
-    price?: number;
+    unitPrice?: number;
   }>;
   invoiceDownloadUrl?: string;
   invoiceDownloadUrls?: string[];

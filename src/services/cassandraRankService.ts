@@ -1,17 +1,7 @@
 import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
 
-// Rank enum matching backend
-export enum Rank {
-    PRIVATE = 'PRIVATE',
-    CORPORAL = 'CORPORAL',
-    SERGEANT = 'SERGEANT',
-    LIEUTENANT = 'LIEUTENANT',
-    CAPTAIN = 'CAPTAIN',
-    MAJOR = 'MAJOR',
-    COLONEL = 'COLONEL',
-    GENERAL = 'GENERAL',
-    FIELD_MARSHAL = 'FIELD_MARSHAL'
-}
+// Rank type matching backend
+export type Rank = 'PRIVATE' | 'CORPORAL' | 'SERGEANT' | 'LIEUTENANT' | 'CAPTAIN' | 'MAJOR' | 'COLONEL' | 'GENERAL' | 'FIELD_MARSHAL';
 
 // DTO matching backend CassandraRankImageDto
 export interface CassandraRankImageDto {

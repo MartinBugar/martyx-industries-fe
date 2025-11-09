@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Globe, Plus, X, Edit, MapPin, Package, Truck } from 'lucide-react';
+import { Globe, Plus, X, Edit, Package, Truck } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import './AdminDiscounts.css';
 import './AdminButtonOverrides.css';

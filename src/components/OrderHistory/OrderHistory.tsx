@@ -125,11 +125,12 @@ const OrderHistory: React.FC = () => {
               </div>
 
               <div className="order-header-center">
-                <div className={getStatusBadgeClass(order.status)}>
-                  {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                </div>
-                {order.status.toLowerCase() === 'paid' && (
+                {order.status.toLowerCase() === 'paid' ? (
                   <div className="status-badge status-completed">ORDER COMPLETED</div>
+                ) : (
+                  <div className={getStatusBadgeClass(order.status)}>
+                    {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                  </div>
                 )}
               </div>
 

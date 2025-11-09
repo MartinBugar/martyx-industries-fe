@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Mail, Plus, X, Eye, Send, Calendar, Archive, BarChart2, TrendingUp, Users, MousePointer } from 'lucide-react';
+import { Mail, Plus, Eye, Send, Archive, BarChart2, TrendingUp, MousePointer } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import './AdminDiscounts.css';
 import './AdminButtonOverrides.css';
@@ -408,7 +408,7 @@ const AdminEmailCampaigns: React.FC = () => {
                             <Eye size={14} />
                           </Button>
                           {campaign.campaignStatus === 'DRAFT' && (
-                            <Button variant="success" size="sm" onClick={() => handleSendNow(campaign.id)} title="Send now">
+                            <Button variant="primary" size="sm" onClick={() => handleSendNow(campaign.id)} title="Send now">
                               <Send size={14} />
                             </Button>
                           )}
@@ -518,7 +518,7 @@ const AdminEmailCampaigns: React.FC = () => {
                                 <Eye size={14} />
                               </Button>
                               {campaign.campaignStatus === 'DRAFT' && (
-                                <Button variant="success" size="sm" onClick={() => handleSendNow(campaign.id)} title="Send now">
+                                <Button variant="primary" size="sm" onClick={() => handleSendNow(campaign.id)} title="Send now">
                                   <Send size={14} />
                                 </Button>
                               )}

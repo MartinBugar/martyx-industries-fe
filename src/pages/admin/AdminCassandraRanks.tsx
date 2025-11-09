@@ -201,7 +201,7 @@ const AdminCassandraRanks: React.FC = () => {
                                         {isUploading ? '⏳ Uploading...' : '📤 Upload'}
                                     </Button>
                                     <input
-                                        ref={el => fileInputRefs.current[rankData.rankName] = el}
+                                        ref={el => { fileInputRefs.current[rankData.rankName] = el; }}
                                         type="file"
                                         accept="image/*"
                                         onChange={(e) => {

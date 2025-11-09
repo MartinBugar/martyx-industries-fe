@@ -54,55 +54,8 @@ const MyCassandra: React.FC = () => {
 
     return (
         <div className="my-cassandra-container">
-            {/* Current Rank & Progress Section */}
-            <div className="rank-progress-section">
-                <div className="current-rank-display">
-                    <div className="rank-badge-large">{cassandraData.currentRankName}</div>
-                    <div className="rank-level">Level {cassandraData.currentRankLevel}</div>
-                </div>
-
-                <div className="xp-progress-card">
-                    <div className="progress-header">
-                        <div className="progress-info">
-                            <span className="current-xp">{cassandraData.totalXp.toLocaleString()} XP</span>
-                            {!cassandraData.isMaxRank && cassandraData.nextRankName && (
-                                <span className="next-rank-info">
-                                    Next: <strong>{cassandraData.nextRankName}</strong> ({cassandraData.nextRankRequiredXp?.toLocaleString()} XP)
-                                </span>
-                            )}
-                        </div>
-                    </div>
-
-                    {!cassandraData.isMaxRank && cassandraData.progressPercentage !== undefined && (
-                        <>
-                            <div className="progress-bar">
-                                <div
-                                    className="progress-fill"
-                                    style={{ width: `${cassandraData.progressPercentage}%` }}
-                                >
-                                    <span className="progress-percentage">
-                                        {cassandraData.progressPercentage}%
-                                    </span>
-                                </div>
-                            </div>
-                            <p className="progress-text">
-                                {cassandraData.xpNeededForNextRank?.toLocaleString()} XP needed to reach {cassandraData.nextRankName}
-                            </p>
-                        </>
-                    )}
-
-                    {cassandraData.isMaxRank && (
-                        <div className="max-rank-badge">
-                            <span className="max-rank-icon">🏆</span>
-                            <span className="max-rank-text">Maximum Rank Achieved!</span>
-                        </div>
-                    )}
-                </div>
-            </div>
-
             {/* Current Cassandra Display */}
             <div className="cassandra-display-section">
-                <h3 className="section-title">Current Cassandra</h3>
                 <div className="cassandra-card">
                     {cassandraData.currentRankImageUrl ? (
                         <div className="cassandra-image-wrapper">

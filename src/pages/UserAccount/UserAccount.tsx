@@ -8,6 +8,7 @@ import GdprSettings from '../../components/GdprSettings/GdprSettings';
 import PwaInstall from '../../components/PwaInstall/PwaInstall';
 import MyCassandra from '../../components/MyCassandra/MyCassandra';
 import AvatarSelector from '../../components/AvatarSelector/AvatarSelector';
+import cassandraRankService, { type UserCassandraDto } from '../../services/cassandraRankService';
 import type { Avatar } from '../../services/avatarService';
 import './UserAccount.css';
 
@@ -17,6 +18,7 @@ const UserAccount: React.FC = () => {
   const [showAvatarSelector, setShowAvatarSelector] = useState(false);
   const [userAvatar, setUserAvatar] = useState<string | null>(user?.avatar?.imageUrl || null);
   const [isProfileEditing, setIsProfileEditing] = useState(false);
+  const [cassandraData, setCassandraData] = useState<UserCassandraDto | null>(null);
 
   // Listen for profile edit state changes
   useEffect(() => {
@@ -36,6 +38,21 @@ const UserAccount: React.FC = () => {
   useEffect(() => {
     setUserAvatar(user?.avatar?.imageUrl || null);
   }, [user?.avatar?.imageUrl]);
+
+  // Load Cassandra data when cassandra tab is active
+  useEffect(() => {
+    if (activeTab === 'cassandra' && !cassandraData) {
+      const loadCassandraData = async () => {
+        try {
+          const data = await cassandraRankService.getUserCassandraInfo();
+          setCassandraData(data);
+        } catch (error) {
+          console.error('Failed to load Cassandra data:', error);
+        }
+      };
+      loadCassandraData();
+    }
+  }, [activeTab, cassandraData]);
 
   // Show loading while authentication state is being restored
   if (isLoading) {
@@ -64,17 +81,6 @@ const UserAccount: React.FC = () => {
 
   return (
     <div className="account-page">
-      {/* Floating Account Cassandra */}
-      <div className="account-floating-mascot">
-        <img
-          src="/cassandra/Account-Cass.png"
-          alt="Cassandra - váš sprievodca účtom"
-          className="floating-mascot-image-account"
-          loading="lazy"
-          decoding="async"
-        />
-      </div>
-
       {/* Main Centered Container */}
       <div className="account-container">
         {/* Account Header */}
@@ -145,6 +151,42 @@ const UserAccount: React.FC = () => {
                       </svg>
                       Cancel
                     </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Cassandra Rank Progress - shown only when cassandra tab is active */}
+            {activeTab === 'cassandra' && cassandraData && (
+              <div className="cassandra-rank-section">
+                <div className="cassandra-rank-header">
+                  <div className="rank-badges-compact">
+                    <span className="rank-label">Rank:</span>
+                    <span className="rank-badge-compact">{cassandraData.currentRankName}</span>
+                    <span className="level-badge-compact">Lvl {cassandraData.currentRankLevel}</span>
+                  </div>
+                  <div className="xp-display-compact">
+                    <span className="xp-current">{cassandraData.totalXp.toLocaleString()} XP</span>
+                    {!cassandraData.isMaxRank && cassandraData.nextRankName && (
+                      <span className="xp-next">→ {cassandraData.nextRankName} ({cassandraData.nextRankRequiredXp?.toLocaleString()} XP)</span>
+                    )}
+                    {cassandraData.isMaxRank && (
+                      <span className="xp-max">🏆 Max Rank</span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Progress bar - shown only if not max rank */}
+                {!cassandraData.isMaxRank && cassandraData.progressPercentage !== undefined && (
+                  <div className="rank-progress-bar-wrapper">
+                    <div className="rank-progress-bar">
+                      <div
+                        className="rank-progress-fill"
+                        style={{ width: `${cassandraData.progressPercentage}%` }}
+                      >
+                        <span className="rank-progress-text">{cassandraData.progressPercentage}%</span>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
