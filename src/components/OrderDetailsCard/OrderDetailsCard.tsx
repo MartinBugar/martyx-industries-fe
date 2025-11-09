@@ -82,7 +82,7 @@ const OrderDetailsCard: React.FC<OrderDetailsCardProps> = ({
   };
 
   // Check if product is digital and downloadable
-  const isDigitalProduct = (item: any) => {
+  const isDigitalProduct = (item: Order['items'][number]) => {
     return item.productType?.toLowerCase() === 'digital';
   };
 
