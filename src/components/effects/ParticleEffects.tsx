@@ -3,7 +3,7 @@
  * Rozšírený systém pre rôzne typy particles efektov
  */
 
-import React, { useEffect, useRef, useCallback } from 'react';
+import React, { useEffect, useRef, useCallback, useState } from 'react';
 import './ClickParticles.css';
 
 export type ParticleType = 'default' | 'sparkle' | 'heart' | 'star' | 'confetti' | 'ripple';
@@ -39,7 +39,7 @@ interface ParticleEffectsProps {
 }
 
 const ParticleEffects: React.FC<ParticleEffectsProps> = ({
-  enabled = true,
+  enabled: enabledProp = true,
   type = 'default',
   particleCount = 15,
   colors = ['#F6C845', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#ec4899'],
@@ -54,6 +54,25 @@ const ParticleEffects: React.FC<ParticleEffectsProps> = ({
   const particlesRef = useRef<Particle[]>([]);
   const animationRef = useRef<number | undefined>(undefined);
   const particleIdRef = useRef(0);
+  const [enabled, setEnabled] = useState(enabledProp);
+
+  // Listen to user settings changes
+  useEffect(() => {
+    const handleSettingsChange = (event: CustomEvent) => {
+      setEnabled(event.detail.particlesEnabled);
+    };
+
+    window.addEventListener('userSettings:particlesChanged', handleSettingsChange as EventListener);
+
+    return () => {
+      window.removeEventListener('userSettings:particlesChanged', handleSettingsChange as EventListener);
+    };
+  }, []);
+
+  // Update enabled state when prop changes
+  useEffect(() => {
+    setEnabled(enabledProp);
+  }, [enabledProp]);
 
   // Utility funkcie
   const random = (min: number, max: number) => Math.random() * (max - min) + min;

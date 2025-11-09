@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/useAuth';
 import { gdprService } from '../../services/gdprService';
+import { useUserSettings } from '../../context/UserSettingsContext';
 import './GdprSettings.css';
 
 /**
  * GDPR Settings Component for User Account Settings Tab
- * Card-based layout for GDPR compliance actions
+ * Card-based layout for GDPR compliance actions and UI preferences
  */
 const GdprSettings: React.FC = () => {
     const { logout } = useAuth();
+    const { particlesEnabled, setParticlesEnabled: updateParticlesEnabled, loading: settingsLoading } = useUserSettings();
     const [consentStatus, setConsentStatus] = useState<{
         gdpr: boolean;
         marketing: boolean;
@@ -31,6 +33,17 @@ const GdprSettings: React.FC = () => {
             setConsentStatus(status);
         } catch (err) {
             console.error('Failed to load consent status:', err);
+        }
+    };
+
+    const handleToggleParticles = async () => {
+        const newValue = !particlesEnabled;
+
+        try {
+            await updateParticlesEnabled(newValue);
+            // No success message - silent update for better UX
+        } catch (err: any) {
+            setError(err.message || 'Nepodarilo sa zmeniť nastavenie particles');
         }
     };
 
@@ -121,6 +134,36 @@ const GdprSettings: React.FC = () => {
                     <span>{success}</span>
                 </div>
             )}
+
+            {/* UI Preferences - Visual Effects */}
+            <div className="gdpr-card-compact">
+                <div className="gdpr-content-compact">
+                    <div className="gdpr-header-compact">
+                        <svg className="gdpr-icon-compact" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                        </svg>
+                        <div className="gdpr-header-text">
+                            <h3 className="gdpr-title-compact">Vizuálne efekty</h3>
+                            <p className="gdpr-subtitle-compact">Nastavenia UI animácií</p>
+                        </div>
+                    </div>
+
+                    <div className="gdpr-actions-compact">
+                        <div className="gdpr-toggle-group">
+                            <span className="gdpr-toggle-label">Particles pri kliknutí</span>
+                            <label className="modern-toggle">
+                                <input
+                                    type="checkbox"
+                                    checked={particlesEnabled}
+                                    onChange={handleToggleParticles}
+                                    disabled={settingsLoading}
+                                />
+                                <span className="modern-toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             {/* Privacy & GDPR - Minimal Card */}
             <div className="gdpr-card-compact">

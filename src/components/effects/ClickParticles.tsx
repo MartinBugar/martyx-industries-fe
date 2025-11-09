@@ -3,7 +3,7 @@
  * Vytvára vizuálne particles efekty pri kliknutí myšou
  */
 
-import React, { useEffect, useRef, useCallback } from 'react';
+import React, { useEffect, useRef, useCallback, useState } from 'react';
 import './ClickParticles.css';
 
 interface Particle {
@@ -31,7 +31,7 @@ interface ClickParticlesProps {
 }
 
 const ClickParticles: React.FC<ClickParticlesProps> = ({
-  enabled = true,
+  enabled: enabledProp = true,
   particleCount = 12,
   colors = ['#F6C845', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'],
   minSize = 4,
@@ -43,6 +43,25 @@ const ClickParticles: React.FC<ClickParticlesProps> = ({
   const particlesRef = useRef<Particle[]>([]);
   const animationRef = useRef<number | undefined>(undefined);
   const particleIdRef = useRef(0);
+  const [enabled, setEnabled] = useState(enabledProp);
+
+  // Listen to user settings changes
+  useEffect(() => {
+    const handleSettingsChange = (event: CustomEvent) => {
+      setEnabled(event.detail.particlesEnabled);
+    };
+
+    window.addEventListener('userSettings:particlesChanged', handleSettingsChange as EventListener);
+
+    return () => {
+      window.removeEventListener('userSettings:particlesChanged', handleSettingsChange as EventListener);
+    };
+  }, []);
+
+  // Update enabled state when prop changes
+  useEffect(() => {
+    setEnabled(enabledProp);
+  }, [enabledProp]);
 
   // Utility funkcie
   const random = (min: number, max: number) => Math.random() * (max - min) + min;

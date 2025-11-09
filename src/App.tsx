@@ -18,6 +18,7 @@ import { setupCSPReporting, initializeCSRFToken } from './utils/security'
 import { CartProvider } from './context/CartContext'
 import { AuthProvider } from './context/AuthProvider'
 import { WishlistProvider } from './context/WishlistContext'
+import { UserSettingsProvider } from './context/UserSettingsContext'
 import { useCart } from './context/useCart'
 
 // Core components (not lazy loaded as they're needed immediately)
@@ -133,11 +134,13 @@ function AppWrapper() {
     <BrowserRouter>
       <SecurityErrorBoundary>
         <AuthProvider>
-          <CartProvider>
-            <WishlistProvider>
-              <AppContent />
-            </WishlistProvider>
-          </CartProvider>
+          <UserSettingsProvider>
+            <CartProvider>
+              <WishlistProvider>
+                <AppContent />
+              </WishlistProvider>
+            </CartProvider>
+          </UserSettingsProvider>
         </AuthProvider>
       </SecurityErrorBoundary>
     </BrowserRouter>
