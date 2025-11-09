@@ -3,7 +3,7 @@
  * Provides immediate updates without page refresh
  */
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { userSettingsService } from '../services/userSettingsService';
 import { useAuth } from './useAuth';
 
