@@ -1,0 +1,566 @@
+/* ============================================================================
+   MY CASSANDRA - User Component Styles
+   ============================================================================ */
+
+.my-cassandra-container {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* ============================================================================
+   LOADING & ERROR STATES
+   ============================================================================ */
+
+.cassandra-loading,
+.cassandra-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+    gap: 16px;
+}
+
+.loading-spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid #e5e7eb;
+    border-top-color: #3b82f6;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.cassandra-loading p {
+    font-size: 16px;
+    color: #6b7280;
+}
+
+.error-icon {
+    font-size: 48px;
+}
+
+.cassandra-error p {
+    font-size: 16px;
+    color: #ef4444;
+    margin: 0;
+}
+
+.retry-button {
+    margin-top: 12px;
+    padding: 10px 24px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.retry-button:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
+}
+
+/* ============================================================================
+   HEADER
+   ============================================================================ */
+
+.cassandra-header {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.cassandra-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 12px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.title-icon {
+    font-size: 36px;
+}
+
+.cassandra-subtitle {
+    font-size: 16px;
+    color: #6b7280;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* ============================================================================
+   RANK & PROGRESS SECTION
+   ============================================================================ */
+
+.rank-progress-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 28px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+}
+
+.current-rank-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.rank-badge-large {
+    background: rgba(255, 255, 255, 0.95);
+    color: #667eea;
+    padding: 12px 32px;
+    border-radius: 12px;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.rank-level {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    color: white;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+/* XP Progress Card */
+.xp-progress-card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.progress-header {
+    margin-bottom: 16px;
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    color: white;
+}
+
+.current-xp {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.next-rank-info {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.next-rank-info strong {
+    font-weight: 700;
+}
+
+/* Progress Bar */
+.progress-bar {
+    width: 100%;
+    height: 32px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+    border-radius: 16px;
+    transition: width 0.6s ease;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 12px;
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-fill::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+    );
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+.progress-percentage {
+    font-size: 13px;
+    font-weight: 700;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    position: relative;
+    z-index: 1;
+}
+
+.progress-text {
+    margin-top: 12px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Max Rank Badge */
+.max-rank-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 16px;
+    background: rgba(255, 215, 0, 0.2);
+    border: 2px solid rgba(255, 215, 0, 0.5);
+    border-radius: 12px;
+}
+
+.max-rank-icon {
+    font-size: 28px;
+}
+
+.max-rank-text {
+    color: white;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+/* ============================================================================
+   CASSANDRA DISPLAY SECTION
+   ============================================================================ */
+
+.cassandra-display-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.section-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.preview-icon {
+    font-size: 24px;
+}
+
+.cassandra-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.cassandra-image-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+    border-radius: 12px;
+    padding: 40px;
+    min-height: 400px;
+}
+
+.cassandra-image {
+    max-width: 100%;
+    max-height: 500px;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.15));
+}
+
+.no-cassandra {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 60px 20px;
+    text-align: center;
+}
+
+.no-cassandra-icon {
+    font-size: 64px;
+    opacity: 0.5;
+}
+
+.no-cassandra p {
+    font-size: 16px;
+    color: #6b7280;
+    margin: 0;
+}
+
+.no-cassandra-hint {
+    font-size: 14px;
+    color: #9ca3af;
+    font-style: italic;
+}
+
+.cassandra-description {
+    padding: 20px;
+    background: #f9fafb;
+    border-left: 4px solid #3b82f6;
+    border-radius: 8px;
+}
+
+.cassandra-description p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #374151;
+    margin: 0;
+    font-style: italic;
+}
+
+/* ============================================================================
+   NEXT CASSANDRA PREVIEW
+   ============================================================================ */
+
+.next-cassandra-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.next-cassandra-card {
+    background: white;
+    border: 2px dashed #d1d5db;
+    border-radius: 16px;
+    padding: 32px;
+}
+
+.next-cassandra-preview {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+}
+
+.next-cassandra-image {
+    max-width: 300px;
+    max-height: 300px;
+    object-fit: contain;
+    opacity: 0.8;
+    filter: grayscale(30%) drop-shadow(0 4px 16px rgba(0, 0, 0, 0.1));
+    transition: all 0.3s ease;
+}
+
+.next-cassandra-image:hover {
+    opacity: 1;
+    filter: grayscale(0%) drop-shadow(0 6px 20px rgba(0, 0, 0, 0.15));
+    transform: scale(1.05);
+}
+
+.next-cassandra-description {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #6b7280;
+    text-align: center;
+    font-style: italic;
+    max-width: 600px;
+}
+
+.no-next-cassandra {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.no-next-icon {
+    font-size: 48px;
+    opacity: 0.5;
+}
+
+.no-next-cassandra p {
+    font-size: 15px;
+    color: #9ca3af;
+    margin: 0;
+}
+
+/* ============================================================================
+   INFO SECTION
+   ============================================================================ */
+
+.cassandra-info-section {
+    margin-top: 8px;
+}
+
+.info-card {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border: 1px solid #fbbf24;
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    gap: 20px;
+}
+
+.info-icon {
+    font-size: 36px;
+    flex-shrink: 0;
+}
+
+.info-content {
+    flex: 1;
+}
+
+.info-content h4 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #92400e;
+    margin: 0 0 12px 0;
+}
+
+.info-content ul {
+    margin: 0 0 12px 0;
+    padding-left: 20px;
+    color: #78350f;
+}
+
+.info-content li {
+    margin-bottom: 6px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.info-note {
+    font-size: 13px;
+    color: #92400e;
+    font-style: italic;
+    margin: 0;
+    padding-top: 8px;
+    border-top: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+/* ============================================================================
+   RESPONSIVE
+   ============================================================================ */
+
+@media (max-width: 768px) {
+    .my-cassandra-container {
+        padding: 16px;
+        gap: 20px;
+    }
+
+    .cassandra-title {
+        font-size: 26px;
+    }
+
+    .title-icon {
+        font-size: 28px;
+    }
+
+    .rank-progress-section {
+        padding: 20px;
+    }
+
+    .rank-badge-large {
+        font-size: 20px;
+        padding: 10px 24px;
+    }
+
+    .cassandra-card,
+    .next-cassandra-card {
+        padding: 20px;
+    }
+
+    .cassandra-image-wrapper {
+        padding: 24px;
+        min-height: 300px;
+    }
+
+    .cassandra-image {
+        max-height: 350px;
+    }
+
+    .info-card {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .info-icon {
+        font-size: 32px;
+    }
+}
+
+@media (max-width: 480px) {
+    .my-cassandra-container {
+        padding: 12px;
+    }
+
+    .cassandra-title {
+        font-size: 22px;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .progress-info {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .current-xp {
+        font-size: 18px;
+    }
+
+    .next-rank-info {
+        font-size: 13px;
+    }
+}

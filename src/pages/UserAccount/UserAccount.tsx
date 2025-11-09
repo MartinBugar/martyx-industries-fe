@@ -6,13 +6,14 @@ import OrderHistory from '../../components/OrderHistory/OrderHistory';
 import ModelCollection from '../../components/ModelCollection/ModelCollection';
 import GdprSettings from '../../components/GdprSettings/GdprSettings';
 import PwaInstall from '../../components/PwaInstall/PwaInstall';
+import MyCassandra from '../../components/MyCassandra/MyCassandra';
 import AvatarSelector from '../../components/AvatarSelector/AvatarSelector';
 import type { Avatar } from '../../services/avatarService';
 import './UserAccount.css';
 
 const UserAccount: React.FC = () => {
   const { user, isAuthenticated, isLoading, fetchProfile } = useAuth();
-  const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'collection' | 'settings' | 'app'>('profile');
+  const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'collection' | 'cassandra' | 'settings' | 'app'>('profile');
   const [showAvatarSelector, setShowAvatarSelector] = useState(false);
   const [userAvatar, setUserAvatar] = useState<string | null>(user?.avatar?.imageUrl || null);
   const [isProfileEditing, setIsProfileEditing] = useState(false);
@@ -197,6 +198,19 @@ const UserAccount: React.FC = () => {
             </button>
 
             <button
+              className={`sidebar-tab ${activeTab === 'cassandra' ? 'active' : ''}`}
+              onClick={() => setActiveTab('cassandra')}
+            >
+              <div className="tab-icon">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M12 2L2 7l10 5 10-5-10-5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              <span className="tab-label">My Cassandra</span>
+            </button>
+
+            <button
               className={`sidebar-tab ${activeTab === 'settings' ? 'active' : ''}`}
               onClick={() => setActiveTab('settings')}
             >
@@ -266,6 +280,19 @@ const UserAccount: React.FC = () => {
             </button>
 
             <button
+              className={`mobile-tab ${activeTab === 'cassandra' ? 'active' : ''}`}
+              onClick={() => setActiveTab('cassandra')}
+            >
+              <span className="mobile-tab-icon">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M12 2L2 7l10 5 10-5-10-5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </span>
+              <span className="mobile-tab-label">Cassandra</span>
+            </button>
+
+            <button
               className={`mobile-tab ${activeTab === 'settings' ? 'active' : ''}`}
               onClick={() => setActiveTab('settings')}
             >
@@ -296,6 +323,7 @@ const UserAccount: React.FC = () => {
             {activeTab === 'profile' && <UserProfile />}
             {activeTab === 'orders' && <OrderHistory />}
             {activeTab === 'collection' && <ModelCollection />}
+            {activeTab === 'cassandra' && <MyCassandra />}
             {activeTab === 'settings' && <GdprSettings />}
             {activeTab === 'app' && <PwaInstall />}
           </main>

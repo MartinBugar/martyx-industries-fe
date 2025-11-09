@@ -56,6 +56,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ title, children, navTabs }) =
           <Link to="/admin/abandoned-carts" className={location.pathname.startsWith('/admin/abandoned-carts') ? 'admin-link-active' : ''}>Abandoned Carts</Link>
           <Link to="/admin/email-templates" className={location.pathname.startsWith('/admin/email-templates') ? 'admin-link-active' : ''}>Email Templates</Link>
           <Link to="/admin/cassandra" className={location.pathname === '/admin/cassandra' ? 'admin-link-active' : ''}>CASSANDRA</Link>
+          <Link to="/admin/cassandra-ranks" className={location.pathname === '/admin/cassandra-ranks' ? 'admin-link-active' : ''}>Cassandra Ranks</Link>
         </nav>
         <div className="admin-logout-wrap">
           <button onClick={handleLogout}>Logout</button>

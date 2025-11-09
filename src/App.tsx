@@ -81,6 +81,7 @@ import {
   AdminGallery,
   AdminGalleryUserDetail,
   AdminCassandra,
+  AdminCassandraRanks,
   AdminCampaigns,
   AdminSegments,
   AdminAbandonedCarts,
@@ -362,6 +363,11 @@ const MainContent = React.memo(() => {
             <Route path="/admin/cassandra" element={
               <RequireAdmin>
                 <AdminCassandra />
+              </RequireAdmin>
+            } />
+            <Route path="/admin/cassandra-ranks" element={
+              <RequireAdmin>
+                <AdminCassandraRanks />
               </RequireAdmin>
             } />
             <Route path="/admin/email-templates" element={
