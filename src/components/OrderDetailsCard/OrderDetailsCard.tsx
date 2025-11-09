@@ -4,7 +4,7 @@ import type { Order } from '../../context/authTypes';
 import { orderService } from '../../services/orderService';
 import './OrderDetailsCard.css';
 
-export interface OrderDetailsCardProps {
+export type OrderDetailsCardProps = {
   order: Order;
   onError?: (error: string) => void;
 }
