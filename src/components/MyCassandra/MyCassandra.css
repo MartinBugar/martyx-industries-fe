@@ -107,45 +107,45 @@
 }
 
 /* ============================================================================
-   RANK & PROGRESS SECTION
+   RANK & PROGRESS SECTION - COMPACT VERSION
    ============================================================================ */
 
 .rank-progress-section {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 12px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 28px;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+    padding: 16px 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(102, 126, 234, 0.25);
 }
 
 .current-rank-display {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 16px;
+    gap: 10px;
     flex-wrap: wrap;
 }
 
 .rank-badge-large {
     background: rgba(255, 255, 255, 0.95);
     color: #667eea;
-    padding: 12px 32px;
-    border-radius: 12px;
-    font-size: 24px;
+    padding: 6px 20px;
+    border-radius: 8px;
+    font-size: 16px;
     font-weight: 700;
-    letter-spacing: 1px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .rank-level {
     background: rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(10px);
     color: white;
-    padding: 8px 20px;
-    border-radius: 20px;
-    font-size: 16px;
+    padding: 4px 14px;
+    border-radius: 16px;
+    font-size: 13px;
     font-weight: 600;
 }
 
@@ -153,13 +153,13 @@
 .xp-progress-card {
     background: rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(10px);
-    padding: 20px;
-    border-radius: 12px;
+    padding: 14px 16px;
+    border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .progress-header {
-    margin-bottom: 16px;
+    margin-bottom: 10px;
 }
 
 .progress-info {
@@ -167,17 +167,17 @@
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: 8px;
     color: white;
 }
 
 .current-xp {
-    font-size: 20px;
+    font-size: 15px;
     font-weight: 700;
 }
 
 .next-rank-info {
-    font-size: 14px;
+    font-size: 12px;
     opacity: 0.9;
 }
 
@@ -188,9 +188,9 @@
 /* Progress Bar */
 .progress-bar {
     width: 100%;
-    height: 32px;
+    height: 24px;
     background: rgba(0, 0, 0, 0.2);
-    border-radius: 16px;
+    border-radius: 12px;
     overflow: hidden;
     position: relative;
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);

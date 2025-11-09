@@ -54,17 +54,6 @@ const MyCassandra: React.FC = () => {
 
     return (
         <div className="my-cassandra-container">
-            {/* Header */}
-            <header className="cassandra-header">
-                <h2 className="cassandra-title">
-                    <span className="title-icon">🎖️</span>
-                    My Cassandra
-                </h2>
-                <p className="cassandra-subtitle">
-                    Your personal mascot evolves as you progress through military ranks!
-                </p>
-            </header>
-
             {/* Current Rank & Progress Section */}
             <div className="rank-progress-section">
                 <div className="current-rank-display">
@@ -138,37 +127,6 @@ const MyCassandra: React.FC = () => {
                     )}
                 </div>
             </div>
-
-            {/* Next Cassandra Preview (if not max rank) */}
-            {!cassandraData.isMaxRank && cassandraData.nextRankName && (
-                <div className="next-cassandra-section">
-                    <h3 className="section-title">
-                        <span className="preview-icon">🔮</span>
-                        Next Rank Preview: {cassandraData.nextRankName}
-                    </h3>
-                    <div className="next-cassandra-card">
-                        {cassandraData.nextRankThumbnailUrl ? (
-                            <div className="next-cassandra-preview">
-                                <img
-                                    src={cassandraData.nextRankThumbnailUrl}
-                                    alt={`Next Cassandra ${cassandraData.nextRankName}`}
-                                    className="next-cassandra-image"
-                                />
-                                {cassandraData.nextRankDescription && (
-                                    <p className="next-cassandra-description">
-                                        {cassandraData.nextRankDescription}
-                                    </p>
-                                )}
-                            </div>
-                        ) : (
-                            <div className="no-next-cassandra">
-                                <div className="no-next-icon">🎨</div>
-                                <p>Next Cassandra image coming soon!</p>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            )}
 
             {/* Info Section */}
             <div className="cassandra-info-section">
