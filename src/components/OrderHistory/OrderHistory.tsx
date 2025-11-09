@@ -123,14 +123,17 @@ const OrderHistory: React.FC = () => {
                 <div className="order-id">Order #{(order.orderNumber || order.id).toString().substring(0, 12)}</div>
                 <div className="order-date">{formatDateTime(order.date)}</div>
               </div>
-              
-              <div className="order-header-right">
+
+              <div className="order-header-center">
                 <div className={getStatusBadgeClass(order.status)}>
                   {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                 </div>
                 {order.status.toLowerCase() === 'paid' && (
                   <div className="status-badge status-completed">ORDER COMPLETED</div>
                 )}
+              </div>
+
+              <div className="order-header-right">
                 <div className="order-amount">{formatCurrency(order.totalAmount, order.currency)}</div>
                 <button
                   className="toggle-details"

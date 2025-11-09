@@ -3,7 +3,8 @@
  * Particles spojené čiarami vytvárajúce sieť ako konštelácie
  */
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useUserSettings } from '../../context/UserSettingsContext';
 
 interface Particle {
   x: number;
@@ -17,10 +18,37 @@ interface Particle {
 }
 
 const ConstellationParticles: React.FC = () => {
+  const { particlesEnabled } = useUserSettings();
+  const [enabled, setEnabled] = useState(particlesEnabled);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particlesRef = useRef<Particle[]>([]);
   const animationRef = useRef<number | undefined>(undefined);
   const mouseRef = useRef({ x: 0, y: 0 });
+
+  // Listen to user settings changes
+  useEffect(() => {
+    const handleSettingsChange = (event: CustomEvent) => {
+      setEnabled(event.detail.particlesEnabled);
+    };
+
+    window.addEventListener('userSettings:particlesChanged', handleSettingsChange as EventListener);
+
+    return () => {
+      window.removeEventListener('userSettings:particlesChanged', handleSettingsChange as EventListener);
+    };
+  }, []);
+
+  // Update enabled state when context changes
+  useEffect(() => {
+    setEnabled(particlesEnabled);
+  }, [particlesEnabled]);
+
+  // Clear particles when disabled
+  useEffect(() => {
+    if (!enabled) {
+      particlesRef.current = []; // Clear all particles immediately
+    }
+  }, [enabled]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -60,14 +88,16 @@ const ConstellationParticles: React.FC = () => {
 
     // Click handler - vytvorí nové particles (globálne kliknutie)
     const handleClick = (event: MouseEvent) => {
+      if (!enabled) return; // Skip if particles disabled
+
       const x = event.clientX;
       const y = event.clientY;
-      
+
       // Click efekt na pozícii myši
-      
+
       // Vytvorenie 5-8 particles okolo click pozície
       const particleCount = Math.floor(Math.random() * 4) + 5;
-      
+
       for (let i = 0; i < particleCount; i++) {
         const offsetX = (Math.random() - 0.5) * 8; // Minimálny rozptyl: ±4px
         const offsetY = (Math.random() - 0.5) * 8; // Minimálny rozptyl: ±4px
@@ -187,12 +217,12 @@ const ConstellationParticles: React.FC = () => {
       window.removeEventListener('resize', resizeCanvas);
       document.removeEventListener('click', handleClick);
       document.removeEventListener('mousemove', handleMouseMove);
-      
+
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, []);
+  }, [enabled]); // Re-run when enabled changes
 
   return (
     <canvas
