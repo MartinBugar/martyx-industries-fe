@@ -278,13 +278,13 @@ const AdminXpConfig: React.FC = () => {
                                                 <span className="xp-label">XP</span>
                                             </div>
                                             <div className="button-group">
-                                                <Button onClick={() => handleEdit(config)} variant="secondary" size="small">
+                                                <Button onClick={() => handleEdit(config)} variant="secondary" size="sm">
                                                     ✏️ Edit
                                                 </Button>
                                                 <Button
                                                     onClick={() => handleToggleRequest(config)}
                                                     variant={config.isEnabled ? 'secondary' : 'primary'}
-                                                    size="small"
+                                                    size="sm"
                                                 >
                                                     {config.isEnabled ? '🔴 Disable' : '🟢 Enable'}
                                                 </Button>
