@@ -24,23 +24,22 @@ export interface XpTransactionDto {
 }
 
 /**
- * XP source enum (matches backend)
+ * XP source type (matches backend XpSource enum)
  */
-export enum XpSource {
-    PURCHASE = 'PURCHASE',
-    GALLERY_UPLOAD = 'GALLERY_UPLOAD',
-    REVIEW = 'REVIEW',
-    REFERRAL_FIRST_ORDER = 'REFERRAL_FIRST_ORDER',
-    REFERRAL_MILESTONE = 'REFERRAL_MILESTONE',
-    CONTEST_ENTRY = 'CONTEST_ENTRY',
-    FORUM_POST = 'FORUM_POST',
-    PHOTO_LIKE = 'PHOTO_LIKE',
-    SOCIAL_SHARE = 'SOCIAL_SHARE',
-    EMAIL_VERIFICATION = 'EMAIL_VERIFICATION',
-    BIRTHDAY_BONUS = 'BIRTHDAY_BONUS',
-    TUTORIAL_COMPLETION = 'TUTORIAL_COMPLETION',
-    ADMIN_ADJUSTMENT = 'ADMIN_ADJUSTMENT',
-}
+export type XpSource =
+    | 'PURCHASE'
+    | 'GALLERY_UPLOAD'
+    | 'REVIEW'
+    | 'REFERRAL_FIRST_ORDER'
+    | 'REFERRAL_MILESTONE'
+    | 'CONTEST_ENTRY'
+    | 'FORUM_POST'
+    | 'PHOTO_LIKE'
+    | 'SOCIAL_SHARE'
+    | 'EMAIL_VERIFICATION'
+    | 'BIRTHDAY_BONUS'
+    | 'TUTORIAL_COMPLETION'
+    | 'ADMIN_ADJUSTMENT';
 
 /**
  * Query parameters for XP history
