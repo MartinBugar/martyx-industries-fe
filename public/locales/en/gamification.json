@@ -1,0 +1,48 @@
+{
+  "ranks": {
+    "APPRENTICE": "Apprentice Engineer",
+    "NOVICE": "Novice Engineer",
+    "TECHNICIAN": "Technician",
+    "ENGINEER": "Engineer",
+    "SPECIALIST": "Specialist",
+    "ARCHITECT": "Architect",
+    "MASTER": "Master Engineer",
+    "INNOVATOR": "Innovator",
+    "LEGEND": "Legendary Engineer"
+  },
+  "rankDescriptions": {
+    "APPRENTICE": "Just starting your engineering journey. First tools in hand.",
+    "NOVICE": "You master basic techniques. First models successfully built.",
+    "TECHNICIAN": "You understand technical drawings and specifications. Building is a breeze.",
+    "ENGINEER": "Officially an engineer! You can solve complex projects independently.",
+    "SPECIALIST": "Expert in specialized areas. Your work is precise.",
+    "ARCHITECT": "You design custom modifications and improvements. Creativity + technique.",
+    "MASTER": "Master of your craft. Your models are works of art.",
+    "INNOVATOR": "You invent new technologies and approaches. Pushing the limits.",
+    "LEGEND": "Legendary engineer. Your name is synonymous with perfection."
+  },
+  "cassandra": {
+    "title": "🔧 Cassandra - Your Engineering Mascot",
+    "subtitle": "Cassandra's outfit changes as you progress through engineering skills!",
+    "currentRank": "Current Rank",
+    "nextRank": "Next Rank",
+    "xpProgress": "XP Progress",
+    "xpToNext": "{{xp}} XP to {{rank}}",
+    "currentOutfit": "Current Engineer Outfit",
+    "nextOutfit": "Next Rank Preview",
+    "earnXp": "Earn XP",
+    "earnXpDescription": "💡 Earn XP by purchasing products, completing builds, unlocking achievements, and referring friends. Cassandra will automatically get a new outfit when you reach the next rank!",
+    "noImage": "🎨 No Cassandra image for this rank yet!",
+    "comingSoon": "🎨 Next Cassandra image coming soon!"
+  },
+  "xpSources": {
+    "purchase": "Purchase Product",
+    "build": "Complete Build (Gallery Upload)",
+    "review": "Write Product Review",
+    "referral": "Refer a Friend",
+    "socialShare": "Share on Social Media",
+    "contest": "Contest Participation",
+    "tutorial": "Tutorial Completion",
+    "forum": "Forum Activity"
+  }
+}

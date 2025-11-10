@@ -1,0 +1,48 @@
+{
+  "ranks": {
+    "APPRENTICE": "Učeň Inžinier",
+    "NOVICE": "Nováčik Inžinier",
+    "TECHNICIAN": "Technik",
+    "ENGINEER": "Inžinier",
+    "SPECIALIST": "Špecialista",
+    "ARCHITECT": "Architekt",
+    "MASTER": "Majster Inžinier",
+    "INNOVATOR": "Inovátor",
+    "LEGEND": "Legendárny Inžinier"
+  },
+  "rankDescriptions": {
+    "APPRENTICE": "Práve začínaš svoju cestu inžiniera. Prvé nástroje v rukách.",
+    "NOVICE": "Ovládaš základné techniky. Prvé modely si úspešne postavil.",
+    "TECHNICIAN": "Rozumieš technickým výkresom a špecifikáciám. Stavba je hračka.",
+    "ENGINEER": "Oficiálne inžinier! Dokážeš samostatne riešiť komplexné projekty.",
+    "SPECIALIST": "Expert v špecializovaných oblastiach. Tvoja práca je precízna.",
+    "ARCHITECT": "Navrhujé vlastné úpravy a zlepšenia. Kreativita + technika.",
+    "MASTER": "Majster svojho remesla. Tvoje modely sú umelecké diela.",
+    "INNOVATOR": "Vymýšľaš nové technológie a prístupy. Posúvaš hranice možného.",
+    "LEGEND": "Legendárny inžinier. Tvoje meno je synonymom dokonalosti."
+  },
+  "cassandra": {
+    "title": "🔧 Cassandra - Tvoj Inžiniersky Maskot",
+    "subtitle": "Cassandra outfit sa mení ako postupuješ v inžinierskych zručnostiach!",
+    "currentRank": "Aktuálny Rank",
+    "nextRank": "Ďalší Rank",
+    "xpProgress": "XP Postup",
+    "xpToNext": "{{xp}} XP do {{rank}}",
+    "currentOutfit": "Aktuálny Inžiniersky Outfit",
+    "nextOutfit": "Náhľad Ďalšieho Ranku",
+    "earnXp": "Získaj XP",
+    "earnXpDescription": "💡 Získaj XP kúpou produktov, postavením modelov, odomknutím achievementov a odporúčaním priateľov. Cassandra automaticky dostane nový outfit keď dosiahneš ďalší rank!",
+    "noImage": "🎨 Zatiaľ žiadny obrázok Cassandry pre tento rank!",
+    "comingSoon": "🎨 Ďalší obrázok Cassandry čoskoro!"
+  },
+  "xpSources": {
+    "purchase": "Kúpa Produktu",
+    "build": "Postavený Model (Nahratie do Galérie)",
+    "review": "Napísanie Recenzie",
+    "referral": "Odporúčanie Priateľa",
+    "socialShare": "Zdieľanie na Sociálnych Sieťach",
+    "contest": "Účasť v Súťaži",
+    "tutorial": "Dokončenie Tutoriálu",
+    "forum": "Aktivita na Fóre"
+  }
+}

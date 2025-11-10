@@ -1,0 +1,48 @@
+{
+  "ranks": {
+    "APPRENTICE": "Lehrling Ingenieur",
+    "NOVICE": "Anfänger Ingenieur",
+    "TECHNICIAN": "Techniker",
+    "ENGINEER": "Ingenieur",
+    "SPECIALIST": "Spezialist",
+    "ARCHITECT": "Architekt",
+    "MASTER": "Meister Ingenieur",
+    "INNOVATOR": "Innovator",
+    "LEGEND": "Legendärer Ingenieur"
+  },
+  "rankDescriptions": {
+    "APPRENTICE": "Du beginnst gerade deine Ingenieurreise. Die ersten Werkzeuge in der Hand.",
+    "NOVICE": "Du beherrschst grundlegende Techniken. Erste Modelle erfolgreich gebaut.",
+    "TECHNICIAN": "Du verstehst technische Zeichnungen und Spezifikationen. Bauen ist ein Kinderspiel.",
+    "ENGINEER": "Offiziell Ingenieur! Du kannst komplexe Projekte selbstständig lösen.",
+    "SPECIALIST": "Experte in spezialisierten Bereichen. Deine Arbeit ist präzise.",
+    "ARCHITECT": "Du entwirfst eigene Modifikationen und Verbesserungen. Kreativität + Technik.",
+    "MASTER": "Meister deines Handwerks. Deine Modelle sind Kunstwerke.",
+    "INNOVATOR": "Du erfindest neue Technologien und Ansätze. Du verschiebst die Grenzen.",
+    "LEGEND": "Legendärer Ingenieur. Dein Name ist gleichbedeutend mit Perfektion."
+  },
+  "cassandra": {
+    "title": "🔧 Cassandra - Dein Ingenieur-Maskottchen",
+    "subtitle": "Cassandras Outfit ändert sich, wenn du in deinen technischen Fähigkeiten fortschreitest!",
+    "currentRank": "Aktueller Rang",
+    "nextRank": "Nächster Rang",
+    "xpProgress": "XP Fortschritt",
+    "xpToNext": "{{xp}} XP bis {{rank}}",
+    "currentOutfit": "Aktuelles Ingenieur-Outfit",
+    "nextOutfit": "Vorschau Nächster Rang",
+    "earnXp": "XP Verdienen",
+    "earnXpDescription": "💡 Verdiene XP durch den Kauf von Produkten, das Fertigstellen von Builds, das Freischalten von Achievements und das Empfehlen von Freunden. Cassandra erhält automatisch ein neues Outfit, wenn du den nächsten Rang erreichst!",
+    "noImage": "🎨 Noch kein Cassandra-Bild für diesen Rang!",
+    "comingSoon": "🎨 Nächstes Cassandra-Bild kommt bald!"
+  },
+  "xpSources": {
+    "purchase": "Produkt Kaufen",
+    "build": "Build Fertigstellen (Galerie Upload)",
+    "review": "Produktbewertung Schreiben",
+    "referral": "Freund Empfehlen",
+    "socialShare": "Auf Social Media Teilen",
+    "contest": "Wettbewerbs-Teilnahme",
+    "tutorial": "Tutorial Abschließen",
+    "forum": "Forum-Aktivität"
+  }
+}
