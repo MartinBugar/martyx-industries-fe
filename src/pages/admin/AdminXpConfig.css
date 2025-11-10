@@ -1,0 +1,476 @@
+/* ============================================================================
+   ADMIN XP CONFIG - Configuration Management
+   ============================================================================ */
+
+.admin-xp-config {
+    width: 100%;
+}
+
+.header-section {
+    margin-bottom: 30px;
+}
+
+.header-section h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0 0 8px 0;
+    color: #111827;
+}
+
+.subtitle {
+    font-size: 14px;
+    color: #6b7280;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* ============================================================================
+   CONFIGS LIST
+   ============================================================================ */
+
+.configs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 30px;
+}
+
+/* ============================================================================
+   CONFIG ROW
+   ============================================================================ */
+
+.config-row {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.config-row.disabled {
+    opacity: 0.6;
+    background: #f9fafb;
+}
+
+.config-row:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: #d1d5db;
+}
+
+/* ============================================================================
+   CONFIG ICON
+   ============================================================================ */
+
+.config-icon {
+    font-size: 32px;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f3f4f6;
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+
+/* ============================================================================
+   CONFIG INFO
+   ============================================================================ */
+
+.config-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.config-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+}
+
+.config-header h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+}
+
+.source-code {
+    font-size: 12px;
+    font-weight: 500;
+    color: #6b7280;
+    background: #f3f4f6;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-family: 'Monaco', 'Courier New', monospace;
+}
+
+.config-description {
+    font-size: 14px;
+    color: #4b5563;
+    margin: 0 0 12px 0;
+    line-height: 1.5;
+}
+
+.config-meta {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.frequency-badge {
+    font-size: 11px;
+    font-weight: 600;
+    color: #3b82f6;
+    background: #eff6ff;
+    padding: 4px 10px;
+    border-radius: 6px;
+    text-transform: uppercase;
+}
+
+.limit-badge {
+    font-size: 11px;
+    font-weight: 600;
+    color: #f59e0b;
+    background: #fffbeb;
+    padding: 4px 10px;
+    border-radius: 6px;
+}
+
+/* ============================================================================
+   CONFIG CONTROLS
+   ============================================================================ */
+
+.config-controls {
+    display: flex;
+    align-items: flex-start;
+    flex-shrink: 0;
+}
+
+.display-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+}
+
+.xp-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #f0f9ff;
+    padding: 12px 20px;
+    border-radius: 10px;
+    border: 2px solid #3b82f6;
+}
+
+.xp-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1e40af;
+    line-height: 1;
+}
+
+.xp-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #3b82f6;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ============================================================================
+   EDIT FORM
+   ============================================================================ */
+
+.edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    max-width: 400px;
+    background: #f9fafb;
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #374151;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.xp-input {
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
+    background: #ffffff;
+    transition: all 0.2s ease;
+    width: 120px;
+}
+
+.xp-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.description-textarea {
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #111827;
+    background: #ffffff;
+    transition: all 0.2s ease;
+    resize: vertical;
+    font-family: inherit;
+    width: 100%;
+}
+
+.description-textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* ============================================================================
+   BUTTON GROUP
+   ============================================================================ */
+
+.button-group {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* ============================================================================
+   CONFIG FOOTER
+   ============================================================================ */
+
+.config-footer {
+    position: absolute;
+    bottom: 12px;
+    right: 20px;
+    font-size: 11px;
+    color: #9ca3af;
+    font-style: italic;
+}
+
+/* ============================================================================
+   INFO SECTION
+   ============================================================================ */
+
+.info-section {
+    background: #f0f9ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 30px;
+}
+
+.info-section h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e40af;
+    margin: 0 0 12px 0;
+}
+
+.info-section ul {
+    margin: 0;
+    padding-left: 20px;
+    color: #1e40af;
+}
+
+.info-section li {
+    margin-bottom: 8px;
+    line-height: 1.6;
+}
+
+.info-section li strong {
+    font-weight: 700;
+    color: #1e3a8a;
+}
+
+/* ============================================================================
+   LOADING SPINNER
+   ============================================================================ */
+
+.loading-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px;
+    font-size: 16px;
+    color: #6b7280;
+}
+
+/* ============================================================================
+   CONFIRMATION DIALOG
+   ============================================================================ */
+
+.confirm-dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.confirm-dialog {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    width: 90%;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.confirm-dialog-header {
+    padding: 24px 24px 16px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.confirm-dialog-header h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.confirm-dialog-body {
+    padding: 24px;
+}
+
+.confirm-dialog-body p {
+    margin: 0 0 16px 0;
+    font-size: 15px;
+    color: #374151;
+    line-height: 1.6;
+}
+
+.confirm-dialog-body p:last-child {
+    margin-bottom: 0;
+}
+
+.confirm-dialog-source {
+    font-size: 18px;
+    color: #1e40af;
+    background: #f0f9ff;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 1px solid #bfdbfe;
+}
+
+.confirm-dialog-warning {
+    font-size: 14px;
+    color: #dc2626;
+    background: #fee2e2;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 1px solid #fecaca;
+}
+
+.confirm-dialog-footer {
+    padding: 16px 24px 24px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+/* ============================================================================
+   RESPONSIVE
+   ============================================================================ */
+
+@media (max-width: 768px) {
+    .config-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .config-controls {
+        width: 100%;
+    }
+
+    .edit-form {
+        max-width: none;
+        width: 100%;
+    }
+
+    .display-controls {
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .button-group {
+        flex-direction: column;
+        width: auto;
+    }
+
+    .config-footer {
+        position: static;
+        margin-top: 16px;
+    }
+
+    .confirm-dialog {
+        width: 95%;
+    }
+
+    .confirm-dialog-footer {
+        flex-direction: column;
+    }
+
+    .confirm-dialog-footer button {
+        width: 100%;
+    }
+}
