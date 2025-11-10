@@ -283,6 +283,52 @@
 }
 
 /* ============================================================================
+   ICON PICKER
+   ============================================================================ */
+
+.icon-picker {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+    gap: 6px;
+    padding: 8px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.icon-option {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    background: #ffffff;
+    border: 2px solid #e5e7eb;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.icon-option:hover {
+    background: #f9fafb;
+    border-color: #d1d5db;
+    transform: scale(1.1);
+}
+
+.icon-option.selected {
+    background: #111827;
+    border-color: #111827;
+    box-shadow: 0 2px 8px rgba(17, 24, 39, 0.2);
+}
+
+.icon-option:active {
+    transform: scale(0.95);
+}
+
+/* ============================================================================
    CONFIG FOOTER - Subtle
    ============================================================================ */
 
@@ -491,6 +537,18 @@
 
     .config-footer {
         grid-column: 1 / -1;
+    }
+
+    .icon-picker {
+        grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
+        gap: 4px;
+        max-height: 160px;
+    }
+
+    .icon-option {
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
     }
 
     .confirm-dialog-footer {

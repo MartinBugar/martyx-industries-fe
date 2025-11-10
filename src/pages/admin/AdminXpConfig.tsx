@@ -5,6 +5,14 @@ import xpConfigService, { type XpConfigDto } from '../../services/xpConfigServic
 import { useErrors } from '../../context/ErrorContext';
 import './AdminXpConfig.css';
 
+// Available icons for XP sources
+const AVAILABLE_ICONS = [
+    '⭐', '💎', '🎯', '🏆', '🎁', '💰', '🎮', '🔥',
+    '⚡', '✨', '🌟', '💫', '🎪', '🎨', '🎭', '🎬',
+    '📸', '🖼️', '💬', '📝', '✍️', '📬', '📧', '🎂',
+    '🎉', '🎊', '👥', '🤝', '💝', '🎓', '📚', '🔖'
+];
+
 const AdminXpConfig: React.FC = () => {
     const { addError } = useErrors();
     const [configs, setConfigs] = useState<XpConfigDto[]>([]);
@@ -50,6 +58,7 @@ const AdminXpConfig: React.FC = () => {
                 isEnabled: config.isEnabled,
                 maxPerDay: config.maxPerDay,
                 description: config.description,
+                icon: config.icon,
             }
         });
     };
@@ -86,7 +95,7 @@ const AdminXpConfig: React.FC = () => {
                 descriptionEn: config.descriptionEn,
                 descriptionDe: config.descriptionDe,
                 displayOrder: config.displayOrder,
-                icon: config.icon,
+                icon: edits.icon ?? config.icon,
             };
 
             await xpConfigService.updateXpConfig(config.id, updateRequest);
@@ -178,22 +187,15 @@ const AdminXpConfig: React.FC = () => {
     }
 
     return (
-        <AdminLayout>
+        <AdminLayout title="XP configuration">
             <div className="admin-xp-config">
-                <div className="header-section">
-                    <h1>🎮 XP Configuration</h1>
-                    <p className="subtitle">
-                        Manage XP earning sources, amounts, and frequency limits.
-                        Changes take effect immediately.
-                    </p>
-                </div>
-
                 <div className="configs-list">
                     {configs.map((config) => {
                         const isEditing = editingId === config.id;
                         const currentXpAmount = getEditedValue(config.id, 'xpAmount', config.xpAmount) as number;
                         const currentMaxPerDay = getEditedValue(config.id, 'maxPerDay', config.maxPerDay) as number | undefined;
                         const currentDescription = getEditedValue(config.id, 'description', config.description) as string | undefined;
+                        const currentIcon = getEditedValue(config.id, 'icon', config.icon) as string | undefined;
 
                         return (
                             <div key={config.id} className={`config-row ${!config.isEnabled ? 'disabled' : ''}`}>
@@ -218,6 +220,23 @@ const AdminXpConfig: React.FC = () => {
                                 <div className="config-controls">
                                     {isEditing ? (
                                         <div className="edit-form">
+                                            <div className="form-group">
+                                                <label>Icon:</label>
+                                                <div className="icon-picker">
+                                                    {AVAILABLE_ICONS.map((icon) => (
+                                                        <button
+                                                            key={icon}
+                                                            type="button"
+                                                            className={`icon-option ${currentIcon === icon ? 'selected' : ''}`}
+                                                            onClick={() => handleValueChange(config.id, 'icon', icon)}
+                                                            title={icon}
+                                                        >
+                                                            {icon}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+
                                             <div className="form-group">
                                                 <label>XP Amount:</label>
                                                 <input
