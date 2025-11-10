@@ -53,6 +53,7 @@ export const AdminAbandonedCarts = lazy(() => import('../pages/admin/AdminAbando
 export const AdminHomeSettings = lazy(() => import('../pages/admin/AdminHomeSettings'));
 export const AdminDiscounts = lazy(() => import('../pages/admin/AdminDiscounts'));
 export const AdminEmailTemplates = lazy(() => import('../pages/admin/AdminEmailTemplates'));
+export const AdminXpConfig = lazy(() => import('../pages/admin/AdminXpConfig'));
 
 // Components - lazy loaded for non-critical features
 export const EmailConfirmation = lazy(() => import('../components/EmailConfirmation/EmailConfirmation'));

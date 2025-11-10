@@ -15,6 +15,7 @@ import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-ro
 // Core providers and security
 import SecurityErrorBoundary from './components/security/SecurityErrorBoundary'
 import { setupCSPReporting, initializeCSRFToken } from './utils/security'
+import { ErrorProvider } from './context/ErrorContext'
 import { CartProvider } from './context/CartContext'
 import { AuthProvider } from './context/AuthProvider'
 import { WishlistProvider } from './context/WishlistContext'
@@ -88,6 +89,7 @@ import {
   AdminHomeSettings,
   AdminDiscounts,
   AdminEmailTemplates,
+  AdminXpConfig,
   ConstellationParticles
 } from './utils/lazyImports'
 
@@ -134,15 +136,17 @@ function AppWrapper() {
   return (
     <BrowserRouter>
       <SecurityErrorBoundary>
-        <AuthProvider>
-          <UserSettingsProvider>
-            <CartProvider>
-              <WishlistProvider>
-                <AppContent />
-              </WishlistProvider>
-            </CartProvider>
-          </UserSettingsProvider>
-        </AuthProvider>
+        <ErrorProvider>
+          <AuthProvider>
+            <UserSettingsProvider>
+              <CartProvider>
+                <WishlistProvider>
+                  <AppContent />
+                </WishlistProvider>
+              </CartProvider>
+            </UserSettingsProvider>
+          </AuthProvider>
+        </ErrorProvider>
       </SecurityErrorBoundary>
     </BrowserRouter>
   );
@@ -373,6 +377,11 @@ const MainContent = React.memo(() => {
             <Route path="/admin/email-templates" element={
               <RequireAdmin>
                 <AdminEmailTemplates />
+              </RequireAdmin>
+            } />
+            <Route path="/admin/xp-config" element={
+              <RequireAdmin>
+                <AdminXpConfig />
               </RequireAdmin>
             } />
           </Routes>
