@@ -32,6 +32,7 @@ const VariantSelector: React.FC<VariantSelectorProps> = ({
   const getAvailabilityText = (status: ProductVariant['availabilityStatus']) => {
     const texts: Record<typeof status, string> = {
       'IN_STOCK': '✓ In Stock',
+      'LOW_STOCK': '⚠ Low Stock',
       'OUT_OF_STOCK': '✗ Out of Stock',
       'PRE_ORDER': '⏰ Pre-Order',
       'DISCONTINUED': '✗ Discontinued',
