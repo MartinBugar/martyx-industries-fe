@@ -2,7 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useCart } from '../../context/useCart';
+import { useAuth } from '../../context/useAuth';
 import { shippingService } from '../../services/shippingService';
+import { discountService } from '../../services/discountService';
 import './CartPage.css';
 
 interface CartPageProps {
@@ -18,6 +20,7 @@ const CartPage: React.FC<CartPageProps> = ({
   onCheckout
 }) => {
   const { items, removeFromCart, updateQuantity, getTotalItems, getTotalPrice } = useCart();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation(['checkout', 'common']);
   const modalRef = useRef<HTMLDivElement>(null);
@@ -52,33 +55,51 @@ const CartPage: React.FC<CartPageProps> = ({
       return;
     }
 
-    // TODO: Replace with actual API call to backend
-    // Mock discount validation for now
-    const mockDiscounts: Record<string, { type: 'PERCENTAGE' | 'FIXED_AMOUNT' | 'FREE_SHIPPING'; value: number }> = {
-      'SUMMER10': { type: 'PERCENTAGE', value: 10 },
-      'SAVE20': { type: 'FIXED_AMOUNT', value: 20 },
-      'FREESHIP': { type: 'FREE_SHIPPING', value: 0 },
-    };
+    // Clear previous errors
+    setDiscountError('');
 
-    const discount = mockDiscounts[discountCode.toUpperCase()];
+    try {
+      // Call backend API to validate discount code
+      const validation = await discountService.validateDiscount(
+        discountCode.trim(),
+        subtotal,
+        user?.id
+      );
 
-    if (discount) {
-      let discountAmount = 0;
-      if (discount.type === 'PERCENTAGE') {
-        discountAmount = (subtotal * discount.value) / 100;
-      } else if (discount.type === 'FIXED_AMOUNT') {
-        discountAmount = discount.value;
+      if (validation.valid && validation.calculated_discount_amount !== undefined) {
+        // Determine discount type from response
+        let discountType: 'PERCENTAGE' | 'FIXED_AMOUNT' | 'FREE_SHIPPING' = 'FIXED_AMOUNT';
+        if (validation.discount_type === 'PERCENTAGE') {
+          discountType = 'PERCENTAGE';
+        } else if (validation.discount_type === 'FREE_SHIPPING') {
+          discountType = 'FREE_SHIPPING';
+        }
+
+        setAppliedDiscount({
+          code: validation.code || discountCode.toUpperCase(),
+          amount: validation.calculated_discount_amount,
+          type: discountType,
+        });
+        setDiscountCode(''); // Clear input after successful application
+
+        console.log('✅ [DISCOUNT] Applied:', validation.code, '→ €' + validation.calculated_discount_amount);
+      } else {
+        // Invalid discount
+        const errorMsg = validation.error_message || t('cart.invalid_discount_code', 'Invalid discount code');
+        setDiscountError(errorMsg);
+        setAppliedDiscount(null);
+
+        console.warn('❌ [DISCOUNT] Validation failed:', errorMsg);
       }
+    } catch (error) {
+      console.error('❌ [DISCOUNT] API error:', error);
 
-      setAppliedDiscount({
-        code: discountCode.toUpperCase(),
-        amount: discountAmount,
-        type: discount.type,
-      });
-      setDiscountError('');
-      setDiscountCode('');
-    } else {
-      setDiscountError(t('cart.invalid_discount_code', 'Invalid discount code'));
+      // Handle API errors gracefully
+      const errorMsg = error instanceof Error && error.message
+        ? error.message
+        : t('cart.discount_validation_error', 'Unable to validate discount code. Please try again.');
+
+      setDiscountError(errorMsg);
       setAppliedDiscount(null);
     }
   };
@@ -124,7 +145,7 @@ const CartPage: React.FC<CartPageProps> = ({
       try {
         // Calculate cart weight (same logic as Checkout)
         const totalWeight = items.reduce((total, item) => {
-          const weight = (item.product as any).weightKg || 0.5; // Default 0.5kg if not specified
+          const weight = item.product.weightKg || 0.5; // Default 0.5kg if not specified
           return total + (weight * item.quantity);
         }, 0);
 
