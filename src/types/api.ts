@@ -85,10 +85,14 @@ export interface ProductVariantDto {
   // Stock management
   stockQuantity: number;
   trackInventory: boolean;
-  availabilityStatus: 'IN_STOCK' | 'OUT_OF_STOCK' | 'PRE_ORDER' | 'DISCONTINUED' | 'BACKORDERED';
+  availabilityStatus: 'IN_STOCK' | 'LOW_STOCK' | 'OUT_OF_STOCK' | 'PRE_ORDER' | 'DISCONTINUED' | 'BACKORDERED';
   lowStockThreshold: number | null;
   reorderPoint: number | null;
   reorderQuantity: number | null;
+
+  // Real-time stock availability (NEW - for stock reservation system)
+  reservedQuantity?: number;  // Currently reserved by other users
+  availableStock?: number;     // stockQuantity - reservedQuantity
 
   // Digital content
   hasDigitalContent: boolean;
