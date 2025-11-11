@@ -268,6 +268,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       localStorage.removeItem('token'); // Also clear regular localStorage
       localStorage.removeItem('refreshToken'); // Also clear refresh token
 
+      // CRITICAL: Clear shopping cart on logout
+      // This prevents cart from persisting across different user sessions
+      console.log('[Auth] Clearing shopping cart on logout');
+      localStorage.removeItem('martyx_cart_v1');
+      localStorage.removeItem('martyx_session_id'); // Also clear guest session ID
+
       // Reset orders loading flags
       setOrdersLoading(false);
       setHasLoadedOrders(false);

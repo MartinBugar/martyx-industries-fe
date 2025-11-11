@@ -132,7 +132,22 @@ function safeLoad(): CartItem[] {
 // CartProvider component to wrap the app and provide cart functionality
 export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const { isAuthenticated } = useAuth();
-  const [items, setItems] = useState<CartItem[]>(() => safeLoad());
+  // CRITICAL: Don't load from localStorage if payment is in progress
+  // This prevents re-adding items after successful payment
+  const [items, setItems] = useState<CartItem[]>(() => {
+    const paymentInProgress = sessionStorage.getItem('payment_in_progress');
+    if (paymentInProgress === 'true') {
+      console.log('[Cart] Payment in progress detected - clearing localStorage and initializing with empty cart');
+      // Clear localStorage immediately to prevent any re-sync attempts
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch (e) {
+        console.warn('[Cart] Failed to clear localStorage:', e);
+      }
+      return [];
+    }
+    return safeLoad();
+  });
   const [sessionId] = useState<string>(() => getSessionId());
   const [isSyncing, setIsSyncing] = useState(false);
 
@@ -150,6 +165,19 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     const syncWithBackend = async () => {
       try {
         setIsSyncing(true);
+
+        // CRITICAL: Check if user just initiated payment (flag set BEFORE Stripe redirect)
+        // This prevents cart sync while user is on Stripe checkout page
+        const paymentInProgress = sessionStorage.getItem('payment_in_progress');
+        if (paymentInProgress === 'true') {
+          console.log('[Cart] Payment in progress - clearing local cart state and waiting for StripeSuccess');
+          // Clear items from state immediately to prevent re-sync
+          setItems([]);
+          // Don't clear the flag yet - StripeSuccess will handle it
+          setIsSyncing(false);
+          return;
+        }
+
         console.log('[Cart] Syncing with backend...');
 
         // Get current localStorage cart
@@ -185,8 +213,10 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         } else if (backendCart.items && backendCart.items.length === 0) {
           // Backend has empty cart
           console.log('[Cart] Backend cart is empty');
+
           if (localItems.length > 0) {
-            // But localStorage has items - push them to backend instead of clearing
+            // localStorage has items - push them to backend
+            // This handles offline cart recovery
             console.log('[Cart] No cart in backend, but localStorage has', localItems.length, 'items. Syncing localStorage → backend...');
             setItems(localItems);
 

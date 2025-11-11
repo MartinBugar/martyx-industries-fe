@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { stripeService, type StripeSuccessResponse } from '../../services/stripeService';
 import { API_BASE_URL } from '../../services/apiUtils';
+import { useCart } from '../../context/useCart';
 import './StripeSuccess.css';
 
 /**
@@ -37,6 +38,7 @@ const validateDownloadUrl = (url: string | undefined): string | null => {
 const StripeSuccess: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { clearCart } = useCart();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [paymentData, setPaymentData] = useState<StripeSuccessResponse | null>(null);
@@ -58,16 +60,23 @@ const StripeSuccess: React.FC = () => {
       return;
     }
 
+    // CRITICAL: Clear payment_in_progress flag that was set before Stripe redirect
+    // This allows CartContext to resume normal sync after payment completes
+    console.log('[StripeSuccess] Clearing payment_in_progress flag and cart localStorage');
+    sessionStorage.removeItem('payment_in_progress');
+
+    // Clear localStorage cart immediately
+    // Backend already cleared cart via webhook, this is redundant safety measure
+    console.log('[StripeSuccess] Clearing cart localStorage');
+    localStorage.removeItem('martyx_cart_v1');
+    clearCart();
+
     // Fetch payment details from backend
     const fetchPaymentDetails = async () => {
       try {
         const details = await stripeService.getSuccessDetails(sessionId);
 
         setPaymentData(details);
-
-        // NOTE: Cart clearing is handled automatically by the backend after successful payment
-        // No need to manually clear cart here - backend deletes the cart in OrderEventListener
-        // Keeping the clearCart() call here would create race conditions with backend deletion
 
         setLoading(false);
       } catch (err) {

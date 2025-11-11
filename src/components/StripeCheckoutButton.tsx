@@ -73,6 +73,11 @@ export default function StripeCheckoutButton({
 
       // Redirect to Stripe Checkout
       if (sessionResponse.url) {
+        // CRITICAL: Set flag BEFORE redirect to prevent cart sync after successful payment
+        // This flag will be checked by CartContext when user returns from Stripe
+        console.log('[StripeCheckout] Setting payment_in_progress flag before redirect');
+        sessionStorage.setItem('payment_in_progress', 'true');
+
         window.location.href = sessionResponse.url;
       } else {
         throw new Error('No checkout URL received from server');
