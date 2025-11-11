@@ -48,6 +48,10 @@ export interface StripeSuccessResponse {
     productName?: string;
     quantity?: number;
     unitPrice?: number;
+    // Product type information for conditional rendering
+    variantType?: string;        // DIGITAL_ONLY, PHYSICAL_ONLY, HYBRID
+    fulfillmentType?: string;    // DIGITAL, PHYSICAL, MIXED
+    requiresShipping?: boolean;  // Convenience flag - true if PHYSICAL_ONLY or HYBRID
   }>;
   invoiceDownloadUrl?: string;
   invoiceDownloadUrls?: string[];

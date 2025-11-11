@@ -29,8 +29,12 @@ const OrderHistory: React.FC = () => {
     return () => window.removeEventListener('refreshOrders', handleRefreshOrders);
   }, [user, ordersLoading, refreshOrders]);
   
-  // Get orders from context
-  const orders = getOrders();
+  // Get orders from context and sort by date (newest first)
+  const orders = getOrders().sort((a, b) => {
+    const dateA = new Date(a.date).getTime();
+    const dateB = new Date(b.date).getTime();
+    return dateB - dateA; // Descending order (newest first)
+  });
 
     // Note: Download functionality is handled directly in OrderDetailsCard via orderService
   

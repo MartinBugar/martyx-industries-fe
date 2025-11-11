@@ -275,8 +275,8 @@ const StripeSuccess: React.FC = () => {
         </div>
       </div>
 
-      {/* Delivery Information */}
-      {paymentData?.orderItems && paymentData.orderItems.some(() => true) && (
+      {/* Delivery Information - Only show for physical/hybrid products */}
+      {paymentData?.orderItems && paymentData.orderItems.some(item => item.requiresShipping === true) && (
         <div className="info-box">
           <span className="info-box-icon">🚚</span>
           <div className="info-box-content">
