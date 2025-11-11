@@ -63,7 +63,7 @@ const CartPage: React.FC<CartPageProps> = ({
       const validation = await discountService.validateDiscount(
         discountCode.trim(),
         subtotal,
-        user?.id
+        user?.id ? parseInt(user.id, 10) : undefined
       );
 
       if (validation.valid && validation.calculated_discount_amount !== undefined) {
