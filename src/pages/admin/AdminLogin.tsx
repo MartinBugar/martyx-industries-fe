@@ -72,89 +72,100 @@ const AdminLogin: React.FC = () => {
   };
 
   return (
-    <div className="admin-login-container">
-      <div className="admin-login-card">
-        <div className="admin-login-header">
-          <h1 className="admin-login-title">Admin Portal</h1>
-          <p className="admin-login-subtitle">Secure Administrative Access</p>
-          <div className="security-badge">
-            <svg className="security-icon" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,7C13.4,7 14.8,8.6 14.8,10V11.5C15.4,11.5 16,12.4 16,13V16C16,17.4 15.4,18 14.8,18H9.2C8.6,18 8,17.4 8,16V13C8,12.4 8.6,11.5 9.2,11.5V10C9.2,8.6 10.6,7 12,7M12,8.2C11.2,8.2 10.5,8.7 10.5,10V11.5H13.5V10C13.5,8.7 12.8,8.2 12,8.2Z" />
-            </svg>
-            Encrypted Connection
-          </div>
-        </div>
+    <div className="martyx-admin-login">
+      <div className="martyx-admin-bg"></div>
 
-        <form onSubmit={handleSubmit} className="admin-login-form">
+      <div className="martyx-admin-content">
+        <div className="martyx-admin-card">
+          {/* Header */}
+          <div className="martyx-admin-header">
+            <div className="martyx-admin-shield">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+            </div>
+            <h1>Admin Portal</h1>
+            <p>Secure System Access</p>
+          </div>
+
+          {/* Error */}
           {error && (
-            <div className="error-message">
+            <div className="martyx-admin-error">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+              </svg>
               {error}
             </div>
           )}
-          
-          <div className="form-group">
-            <label className="form-label">Email Address</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="form-input"
-              placeholder="XXXXXXXXXXXX"
-              disabled={loading}
-              autoComplete="email"
-              required
-            />
-          </div>
 
-          <div className="form-group">
-            <label className="form-label">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="form-input"
-              placeholder="XXXXXXXXXXXX"
-              disabled={loading}
-              autoComplete="current-password"
-              required
-            />
-          </div>
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="martyx-admin-form">
+            <div className="martyx-form-field">
+              <label>Email Address</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}
+                autoComplete="email"
+                required
+              />
+            </div>
 
-          <button 
-            type="submit" 
-            className="login-button" 
-            disabled={loading}
-          >
-            {loading ? (
-              <div className="login-button-loading">
-                <div className="loading-spinner"></div>
-                Authenticating...
-              </div>
-            ) : (
-              'Access Admin Portal'
-            )}
-          </button>
-        </form>
+            <div className="martyx-form-field">
+              <label>Password</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={loading}
+                autoComplete="current-password"
+                required
+              />
+            </div>
+
+            <button type="submit" disabled={loading} className="martyx-admin-submit">
+              {loading ? (
+                <div className="martyx-admin-loading">
+                  <div className="martyx-spinner"></div>
+                  <span>Authenticating...</span>
+                </div>
+              ) : (
+                <span>Access Portal</span>
+              )}
+            </button>
+          </form>
+
+          {/* Footer Badge */}
+          <div className="martyx-admin-footer">
+            <div className="martyx-security-badge">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+              </svg>
+              <span>Encrypted Connection</span>
+            </div>
+          </div>
+        </div>
       </div>
 
+      {/* Access Denied Modal */}
       {showDeniedModal && (
-        <div className="access-denied-overlay">
-          <div className="access-denied-modal" role="dialog" aria-modal="true" aria-labelledby="access-denied-title">
-            <div className="access-denied-icon">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" style={{ color: '#ff6b6b' }}>
-                <path d="M12,2C17.53,2 22,6.47 22,12C22,17.53 17.53,22 12,22C6.47,22 2,17.53 2,12C2,6.47 6.47,2 12,2M15.59,7L12,10.59L8.41,7L7,8.41L10.59,12L7,15.59L8.41,17L12,13.41L15.59,17L17,15.59L13.41,12L17,8.41L15.59,7Z" />
+        <div className="martyx-modal-overlay" onClick={() => setShowDeniedModal(false)}>
+          <div className="martyx-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="martyx-modal-icon">
+              <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="15" y1="9" x2="9" y2="15"/>
+                <line x1="9" y1="9" x2="15" y2="15"/>
               </svg>
             </div>
-            <h2 id="access-denied-title" className="access-denied-title">Access Denied</h2>
-            <p className="access-denied-message">
-              You do not have administrator privileges to access this portal. 
+            <h2>Access Denied</h2>
+            <p>
+              You do not have administrator privileges to access this portal.
               Please contact your system administrator if you believe this is an error.
             </p>
-            <button
-              autoFocus
-              onClick={() => setShowDeniedModal(false)}
-              className="access-denied-button"
-            >
+            <button onClick={() => setShowDeniedModal(false)}>
               Understood
             </button>
           </div>

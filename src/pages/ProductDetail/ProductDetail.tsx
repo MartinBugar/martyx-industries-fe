@@ -168,7 +168,39 @@ const ProductDetail: React.FC = () => {
                 // Filter tabs based on user authentication
                 const visibleTabs = tabs.filter(tab => canViewTab(tab, !!user));
 
-                console.log(`✅ Loaded ${visibleTabs.length} tabs (${tabs.length} total)`);
+                // FEATURE: Always add Reviews tab if not already present
+                const hasReviewsTab = visibleTabs.some(tab => tab.tabKey === 'reviews');
+                if (!hasReviewsTab) {
+                    // Create default Reviews tab
+                    const reviewsTab: ProductTabDto = {
+                        id: -1, // Temporary ID for frontend-only tab
+                        masterProductId: product.masterProductId,
+                        variantId: product.variantId,
+                        tabKey: 'reviews',
+                        tabLabel: i18n.language === 'sk' ? 'Recenzie' : 'Reviews',
+                        contentType: 'COMPONENT',
+                        contentHtml: null,
+                        contentMarkdown: null,
+                        contentJson: null,
+                        componentName: 'ReviewsTab',
+                        displayOrder: 999, // Place at end
+                        iconName: null,
+                        isActive: true,
+                        showForVariantType: null,
+                        requiresAuthentication: false,
+                        locale: i18n.language,
+                        description: null,
+                        cssClass: null,
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
+                        createdBy: null,
+                        updatedBy: null
+                    };
+                    visibleTabs.push(reviewsTab);
+                    console.log('✨ Added default Reviews tab');
+                }
+
+                console.log(`✅ Loaded ${visibleTabs.length} tabs (${tabs.length} total, +Reviews)`);
                 setBackendTabs(visibleTabs);
 
                 // Set first tab as active
