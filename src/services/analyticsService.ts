@@ -19,7 +19,7 @@
  */
 
 import type { Product } from '../data/productData';
-import type { CartItem } from '../context/cartContextTypes';
+import type { CartItem, CartProduct } from '../context/cartContextTypes';
 
 const GA4_MEASUREMENT_ID = import.meta.env.VITE_GA4_MEASUREMENT_ID || '';
 
@@ -76,14 +76,14 @@ export const initializeGA4 = (): void => {
 };
 
 /**
- * Convert Product to GA4 Item format
+ * Convert Product or CartProduct to GA4 Item format
  */
-const productToGA4Item = (product: Product, quantity: number = 1): GA4Item => {
+const productToGA4Item = (product: Product | CartProduct, quantity: number = 1): GA4Item => {
   return {
     item_id: product.variantId.toString(),
     item_name: product.name,
     item_brand: 'Martyx Industries',
-    item_category: product.productCategory || 'Uncategorized',
+    item_category: ('productCategory' in product ? product.productCategory : undefined) || 'Uncategorized',
     item_variant: product.variantName || undefined,
     price: product.priceWithVat,
     quantity: quantity,
@@ -141,7 +141,7 @@ export const trackViewItem = (product: Product): void => {
  * Track add_to_cart event
  * Called when user adds item to cart
  */
-export const trackAddToCart = (product: Product, quantity: number = 1): void => {
+export const trackAddToCart = (product: Product | CartProduct, quantity: number = 1): void => {
   if (!window.gtag) return;
 
   const item = productToGA4Item(product, quantity);
@@ -159,7 +159,7 @@ export const trackAddToCart = (product: Product, quantity: number = 1): void => 
  * Track remove_from_cart event
  * Called when user removes item from cart
  */
-export const trackRemoveFromCart = (product: Product, quantity: number = 1): void => {
+export const trackRemoveFromCart = (product: Product | CartProduct, quantity: number = 1): void => {
   if (!window.gtag) return;
 
   const item = productToGA4Item(product, quantity);

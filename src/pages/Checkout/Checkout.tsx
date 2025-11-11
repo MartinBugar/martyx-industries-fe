@@ -271,7 +271,7 @@ const Checkout: React.FC = () => {
 
     // VAT calculation - use VAT rate from products (Slovak VAT is 23%)
     // Get VAT rate from first product (assuming all products have same VAT rate)
-    const VAT_RATE = items.length > 0 ? (items[0].product.vatRate / 100) : 0.23;
+    const VAT_RATE = items.length > 0 && items[0].product.vatRate ? (items[0].product.vatRate / 100) : 0.23;
     const subtotalWithoutVAT = subtotalWithVAT / (1 + VAT_RATE);
     const vatAmount = subtotalWithVAT - subtotalWithoutVAT;
 

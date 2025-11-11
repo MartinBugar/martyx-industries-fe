@@ -48,7 +48,7 @@ export default function StripeCheckoutButton({
           id: Number(i.product.variantId),
           quantity: i.quantity,
           price: Number(i.product.priceWithVat),
-          currency: i.product.currency.toUpperCase()
+          currency: (i.product.currency || 'EUR').toUpperCase()
         })),
         Number(totalAmount.toFixed(2)),
         currency.toUpperCase(),

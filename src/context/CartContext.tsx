@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState, type ReactNode, useCallback } from 'react';
 import type { Product } from '../data/productData';
-import { CartContext, type CartItem } from './cartContextTypes';
+import { CartContext, type CartItem, type CartProduct } from './cartContextTypes';
 import { cartService } from '../services/cartService';
 import { useAuth } from './useAuth';
 import { trackAddToCart, trackRemoveFromCart } from '../services/analyticsService';
@@ -28,6 +28,26 @@ function getSessionId(): string {
     localStorage.setItem(SESSION_ID_KEY, sessionId);
   }
   return sessionId;
+}
+
+// Convert full Product to CartProduct (only keep fields needed in cart)
+function toCartProduct(product: Product): CartProduct {
+  return {
+    variantId: product.variantId,
+    masterProductId: product.masterProductId,
+    name: product.name,
+    variantName: product.variantName,
+    priceWithVat: product.priceWithVat,
+    imageUrl: product.gallery?.[0],
+    availabilityStatus: product.availabilityStatus,
+    stockQuantity: product.stockQuantity,
+    variantType: product.variantType,
+    sku: product.sku,
+    gallery: product.gallery,
+    currency: product.currency,
+    requiresShipping: product.requiresShipping,
+    vatRate: product.vatRate
+  };
 }
 
 type UnknownRecord = Record<string, unknown>;
@@ -135,7 +155,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         );
 
         // Use new items array from backend (CartItemDto[])
-        if (backendCart.items && Array.isArray(backendCart.items)) {
+        if (backendCart.items && Array.isArray(backendCart.items) && backendCart.items.length > 0) {
           // Convert backend CartItemDto[] to frontend CartItem[] format
           const convertedItems: CartItem[] = backendCart.items.map(item => ({
             product: {
@@ -145,10 +165,9 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
               variantName: item.variantName,
               priceWithVat: item.priceWithVat,
               imageUrl: item.imageUrl,
-              // Add required Product fields with sensible defaults
-              availabilityStatus: 'IN_STOCK',
+              availabilityStatus: 'IN_STOCK' as const,
               stockQuantity: item.quantity,
-              variantType: 'PHYSICAL'
+              variantType: 'PHYSICAL_ONLY' as const
             },
             quantity: item.quantity,
             addedAt: Date.now()
@@ -286,7 +305,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         }
 
         result = 'added';
-        const updatedItems = [...prevItems, { product, quantity: 1, addedAt: Date.now() }];
+        const updatedItems = [...prevItems, { product: toCartProduct(product), quantity: 1, addedAt: Date.now() }];
 
         // Sync to backend (non-blocking)
         void cartService
@@ -390,10 +409,9 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
             variantName: item.variantName,
             priceWithVat: item.priceWithVat,
             imageUrl: item.imageUrl,
-            // Add required Product fields with sensible defaults
-            availabilityStatus: 'IN_STOCK',
+            availabilityStatus: 'IN_STOCK' as const,
             stockQuantity: item.quantity,
-            variantType: 'PHYSICAL'
+            variantType: 'PHYSICAL_ONLY' as const
           },
           quantity: item.quantity,
           addedAt: Date.now()

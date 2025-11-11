@@ -191,7 +191,7 @@ const CartPage: React.FC<CartPageProps> = ({
 
   // VAT calculation - use VAT rate from products (Slovak VAT is 23%)
   // Get VAT rate from first product (assuming all products have same VAT rate)
-  const VAT_RATE = items.length > 0 ? (items[0].product.vatRate / 100) : 0.23;
+  const VAT_RATE = items.length > 0 && items[0].product.vatRate ? (items[0].product.vatRate / 100) : 0.23;
   const VAT_PERCENTAGE = Math.round(VAT_RATE * 100);
 
   // Calculate subtotal without VAT and VAT amount
