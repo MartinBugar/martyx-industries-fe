@@ -19,6 +19,7 @@ export interface CartProduct {
   currency?: string;
   requiresShipping?: boolean;
   vatRate?: number;
+  weightKg?: number;
 }
 
 // Define the structure of a cart item

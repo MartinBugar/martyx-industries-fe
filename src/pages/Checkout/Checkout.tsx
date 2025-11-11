@@ -245,7 +245,7 @@ const Checkout: React.FC = () => {
   // Calculate cart weight
   const calculateCartWeight = () => {
     return items.reduce((total, item) => {
-      const weight = (item.product as any).weightKg || 0.5;
+      const weight = item.product.weightKg || 0.5;
       return total + (weight * item.quantity);
     }, 0);
   };
