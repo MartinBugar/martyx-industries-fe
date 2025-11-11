@@ -50,24 +50,49 @@ export const CustomerStatus = {
 export type CustomerStatus = typeof CustomerStatus[keyof typeof CustomerStatus];
 
 /**
+ * Cart Item DTO - matches backend CartItemDto
+ */
+export interface CartItemDto {
+  id: number;
+  masterProductId: number;
+  variantId: number;
+  masterProductName: string;
+  variantName: string;
+  quantity: number;
+  priceWithVat: number;
+  subtotal: number;
+  imageUrl?: string;
+}
+
+/**
  * Shopping Cart data
  * Shopping cart information for abandoned cart recovery and conversion tracking
  */
 export interface ShoppingCartDto {
   id: number;
-  user_id?: number;
-  session_id?: string;
-  email?: string;
-  cart_items: string; // JSON array of cart items
-  total_items: number;
+  userId?: number;
+  sessionId?: string;
+  items: CartItemDto[]; // NEW: List of cart items (replaces cart_items JSON string)
   subtotal: number;
-  estimated_total: number;
-  cart_status: string; // CartStatus enum value
-  last_activity_at: string; // ISO date string
+  tax: number;
+  total: number;
+  currency: string;
+  createdAt?: string; // ISO date string
+  updatedAt?: string; // ISO date string
+  lastActivityAt?: string; // ISO date string
+  isAbandoned: boolean;
+  recoveryEmailCount?: number;
+
+  // Legacy fields for backward compatibility (abandoned cart admin)
+  email?: string;
+  cart_items?: string; // DEPRECATED: JSON array of cart items
+  total_items?: number;
+  estimated_total?: number;
+  cart_status?: string; // CartStatus enum value
+  last_activity_at?: string; // ISO date string
   abandoned_at?: string; // ISO date string
   abandoned_reason?: string; // HIGH_SHIPPING, NO_PAYMENT_METHOD, JUST_BROWSING, PRICE, OUT_OF_STOCK, OTHER
   recovery_email_sent_at?: string; // ISO date string
-  recovery_email_count?: number;
   recovery_click_count?: number;
   recovered_at?: string; // ISO date string
   converted_at?: string; // ISO date string
@@ -78,8 +103,8 @@ export interface ShoppingCartDto {
   user_agent?: string;
   referrer_url?: string;
   landing_page?: string;
-  created_at: string; // ISO date string
-  updated_at: string; // ISO date string
+  created_at?: string; // ISO date string
+  updated_at?: string; // ISO date string
   expires_at?: string; // ISO date string
 }
 

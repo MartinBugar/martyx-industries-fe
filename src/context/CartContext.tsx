@@ -134,19 +134,31 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
           isAuthenticated ? undefined : sessionId
         );
 
-        // Parse cart_items JSON string to CartItem[]
-        if (backendCart.cart_items) {
-          try {
-            const parsedItems = JSON.parse(backendCart.cart_items) as CartItem[];
-            if (Array.isArray(parsedItems)) {
-              console.log('[Cart] Synced from backend:', parsedItems.length, 'items');
-              setItems(parsedItems);
-            }
-          } catch (parseError) {
-            console.warn('[Cart] Failed to parse backend cart_items:', parseError);
-          }
-        } else {
-          // Backend has no cart
+        // Use new items array from backend (CartItemDto[])
+        if (backendCart.items && Array.isArray(backendCart.items)) {
+          // Convert backend CartItemDto[] to frontend CartItem[] format
+          const convertedItems: CartItem[] = backendCart.items.map(item => ({
+            product: {
+              variantId: item.variantId,
+              masterProductId: item.masterProductId,
+              name: item.masterProductName,
+              variantName: item.variantName,
+              priceWithVat: item.priceWithVat,
+              imageUrl: item.imageUrl,
+              // Add required Product fields with sensible defaults
+              availabilityStatus: 'IN_STOCK',
+              stockQuantity: item.quantity,
+              variantType: 'PHYSICAL'
+            },
+            quantity: item.quantity,
+            addedAt: Date.now()
+          }));
+
+          console.log('[Cart] Synced from backend:', convertedItems.length, 'items');
+          setItems(convertedItems);
+        } else if (backendCart.items && backendCart.items.length === 0) {
+          // Backend has empty cart
+          console.log('[Cart] Backend cart is empty');
           if (localItems.length > 0) {
             // But localStorage has items - push them to backend instead of clearing
             console.log('[Cart] No cart in backend, but localStorage has', localItems.length, 'items. Syncing localStorage → backend...');
@@ -253,7 +265,14 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         // Sync to backend (non-blocking)
         void cartService
           .addItem(product.variantId, 1, isAuthenticated ? undefined : sessionId)
-          .catch(err => console.warn('[Cart] Failed to add to backend:', err));
+          .catch(err => {
+            // If duplicate/conflict, ignore - the other request will succeed
+            if (err?.message?.includes('already in cart') || err?.status === 409) {
+              console.log('[Cart] Item already being added, ignoring duplicate request');
+            } else {
+              console.warn('[Cart] Failed to add to backend:', err);
+            }
+          });
 
         // Track analytics
         trackAddToCart(product, 1);
@@ -272,7 +291,14 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         // Sync to backend (non-blocking)
         void cartService
           .addItem(product.variantId, 1, isAuthenticated ? undefined : sessionId)
-          .catch(err => console.warn('[Cart] Failed to add to backend:', err));
+          .catch(err => {
+            // If duplicate/conflict, ignore - the other request will succeed
+            if (err?.message?.includes('already in cart') || err?.status === 409) {
+              console.log('[Cart] Item already being added, ignoring duplicate request');
+            } else {
+              console.warn('[Cart] Failed to add to backend:', err);
+            }
+          });
 
         // Track analytics
         trackAddToCart(product, 1);
@@ -353,22 +379,33 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       // Call backend merge endpoint
       const mergedCart = await cartService.mergeCart(sessionId);
 
-      // Parse merged cart items
-      if (mergedCart.cart_items) {
-        try {
-          const parsedItems = JSON.parse(mergedCart.cart_items) as CartItem[];
-          if (Array.isArray(parsedItems)) {
-            console.log('[Cart] Merged cart from backend:', parsedItems.length, 'items');
-            setItems(parsedItems);
+      // Use new items array from backend
+      if (mergedCart.items && Array.isArray(mergedCart.items)) {
+        // Convert backend CartItemDto[] to frontend CartItem[] format
+        const convertedItems: CartItem[] = mergedCart.items.map(item => ({
+          product: {
+            variantId: item.variantId,
+            masterProductId: item.masterProductId,
+            name: item.masterProductName,
+            variantName: item.variantName,
+            priceWithVat: item.priceWithVat,
+            imageUrl: item.imageUrl,
+            // Add required Product fields with sensible defaults
+            availabilityStatus: 'IN_STOCK',
+            stockQuantity: item.quantity,
+            variantType: 'PHYSICAL'
+          },
+          quantity: item.quantity,
+          addedAt: Date.now()
+        }));
 
-            // Clear guest session ID after successful merge
-            localStorage.removeItem(SESSION_ID_KEY);
+        console.log('[Cart] Merged cart from backend:', convertedItems.length, 'items');
+        setItems(convertedItems);
 
-            return true;
-          }
-        } catch (parseError) {
-          console.warn('[Cart] Failed to parse merged cart_items:', parseError);
-        }
+        // Clear guest session ID after successful merge
+        localStorage.removeItem(SESSION_ID_KEY);
+
+        return true;
       }
 
       return false;
