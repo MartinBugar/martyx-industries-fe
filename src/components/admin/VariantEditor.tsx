@@ -71,7 +71,7 @@ export const VariantEditor: React.FC<VariantEditorProps> = ({
     }
   }, [variant, masterProductId]);
 
-  const updateField = (key: keyof ProductVariantDto, value: any) => {
+  const updateField = (key: keyof ProductVariantDto, value: ProductVariantDto[keyof ProductVariantDto]) => {
     setFormData(prev => ({ ...prev, [key]: value }));
     setError(null);
   };
@@ -97,8 +97,8 @@ export const VariantEditor: React.FC<VariantEditorProps> = ({
     setSaving(true);
     try {
       await onSave(formData as ProductVariantDto);
-    } catch (e: any) {
-      setError(e.message || 'Failed to save variant');
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Failed to save variant');
       setSaving(false);
     }
   };
@@ -218,7 +218,7 @@ export const VariantEditor: React.FC<VariantEditorProps> = ({
             <button
               key={tab.key}
               type="button"
-              onClick={() => setActiveTab(tab.key as any)}
+              onClick={() => setActiveTab(tab.key as 'basic' | 'inventory' | 'physical' | 'digital' | 'advanced')}
               style={{
                 padding: '10px 16px',
                 background: activeTab === tab.key ? '#3B82F6' : 'transparent',
