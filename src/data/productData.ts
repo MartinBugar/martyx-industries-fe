@@ -71,7 +71,7 @@ export interface Product {
     variantType: 'DIGITAL_ONLY' | 'PHYSICAL_ONLY' | 'HYBRID';
     fulfillmentType: 'DIGITAL' | 'PHYSICAL' | 'MIXED';
     stockQuantity: number;
-    availabilityStatus: 'IN_STOCK' | 'OUT_OF_STOCK' | 'PRE_ORDER' | 'DISCONTINUED' | 'BACKORDERED';
+    availabilityStatus: 'IN_STOCK' | 'LOW_STOCK' | 'OUT_OF_STOCK' | 'PRE_ORDER' | 'DISCONTINUED' | 'BACKORDERED';
     requiresShipping: boolean;
 
     // From hardcoded frontend data
@@ -112,7 +112,7 @@ export interface ProductVariant {
     sku: string;
     variantType: 'DIGITAL_ONLY' | 'PHYSICAL_ONLY' | 'HYBRID';
     stockQuantity: number;
-    availabilityStatus: 'IN_STOCK' | 'OUT_OF_STOCK' | 'PRE_ORDER' | 'DISCONTINUED' | 'BACKORDERED';
+    availabilityStatus: 'IN_STOCK' | 'LOW_STOCK' | 'OUT_OF_STOCK' | 'PRE_ORDER' | 'DISCONTINUED' | 'BACKORDERED';
 }
 
 // Base interaction instructions shared across products
