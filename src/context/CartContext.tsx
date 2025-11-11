@@ -15,9 +15,16 @@ const SESSION_ID_KEY = 'martyx_session_id';
 const CART_EXPIRATION_DAYS = 30; // Cart items expire after 30 days
 const CART_EXPIRATION_MS = CART_EXPIRATION_DAYS * 24 * 60 * 60 * 1000; // 30 days in milliseconds
 
-// Generate a unique session ID for guest users
+// Generate a cryptographically secure unique session ID for guest users
 function generateSessionId(): string {
-  return `guest_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+  // Use crypto.getRandomValues() for cryptographic randomness (much better than Math.random())
+  const array = new Uint8Array(16); // 128 bits of entropy
+  crypto.getRandomValues(array);
+
+  // Convert to hex string
+  const hex = Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+
+  return `guest_${hex}`;
 }
 
 // Get or create session ID
