@@ -6,6 +6,7 @@ import './AdminUsers.css';
 import './AdminButtonOverrides.css';
 import {adminOrdersService, type AdminOrderDTO, type AdminOrderItem, type PageResponse} from '../../services/adminOrdersService';
 import { Button, Badge, SkeletonTable } from '../../components/ui';
+import OrderEmailHistory from '../../components/admin/OrderEmailHistory';
 
 const fieldInputStyle: React.CSSProperties = {
     width: '100%',
@@ -849,6 +850,11 @@ const AdminOrders: React.FC = () => {
                                                                                 </tfoot>
                                                                             </table>
                                                                         </div>
+                                                                    </div>
+
+                                                                    {/* Email History Section */}
+                                                                    <div style={{gridColumn: 'span 3', marginTop: '20px'}}>
+                                                                        <OrderEmailHistory orderId={o.id!} />
                                                                     </div>
                                                                 </div>
                                                             </td>
