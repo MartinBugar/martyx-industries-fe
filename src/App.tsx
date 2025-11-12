@@ -93,6 +93,7 @@ import {
   AdminXpConfig,
   AdminInvoices,
   AdminGiftTiers,
+  AdminShippingZones,
   ConstellationParticles
 } from './utils/lazyImports'
 
@@ -400,6 +401,11 @@ const MainContent = React.memo(() => {
             <Route path="/admin/gift-tiers" element={
               <RequireAdmin>
                 <AdminGiftTiers />
+              </RequireAdmin>
+            } />
+            <Route path="/admin/shipping" element={
+              <RequireAdmin>
+                <AdminShippingZones />
               </RequireAdmin>
             } />
           </Routes>

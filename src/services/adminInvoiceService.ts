@@ -19,7 +19,13 @@ export interface PageResponse<T> {
   last: boolean;
 }
 
-const jsonHeaders = () => defaultHeaders as HeadersInit;
+const jsonHeaders = (): HeadersInit => {
+  const token = localStorage.getItem('adminToken');
+  return {
+    ...defaultHeaders,
+    ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+  } as HeadersInit;
+};
 
 export const adminInvoiceService = {
   /**

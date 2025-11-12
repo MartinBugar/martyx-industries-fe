@@ -1,9 +1,10 @@
 {
   "title": "Pokladňa",
   "steps": {
+    "information": "Informácie",
     "shipping": "Dodanie",
     "payment": "Platba",
-    "review": "Kontrola",
+    "review": "Kontrola a platba",
     "confirmation": "Potvrdenie"
   },
   "shipping": {
@@ -100,6 +101,73 @@
     "error": "Platba zlyhala. Skúste to znovu.",
     "failed": "Platba zlyhala. Skúste to znovu.",
     "not_completed": "Platba nebola dokončená. Skúste to znovu alebo kontaktujte podporu."
+  },
+  "form": {
+    "contact_information": "Kontaktné informácie",
+    "guest_checkout_notice": "Pokračujte ako hosť. Neskôr budete mať možnosť vytvoriť si účet.",
+    "sign_in": "Prihlásiť sa",
+    "email_address": "E-mailová adresa",
+    "first_name": "Meno",
+    "last_name": "Priezvisko",
+    "phone_number": "Telefónne číslo",
+    "purchasing_as_company": "Nakupujem ako firma (B2B)",
+    "company_name": "Názov firmy",
+    "vat_number": "IČ DPH (nepovinné)",
+    "ship_different_address": "Dodať na inú adresu?",
+    "shipping_address": "Doručovacia adresa",
+    "street_address": "Ulica a číslo",
+    "apt_suite": "Byt, poschodie, atď. (nepovinné)",
+    "city": "Mesto",
+    "state_province": "Kraj / Región",
+    "postal_code": "PSČ",
+    "country": "Krajina",
+    "news_offers": "Posielať mi novinky a špeciálne ponuky",
+    "shipping_method": "Spôsob doručenia",
+    "business_days": "pracovných dní",
+    "edit": "Upraviť",
+    "contact": "Kontakt",
+    "same_as_billing": "Rovnaká ako fakturačná adresa",
+    "secure_payment_stripe": "Zabezpečená platba prostredníctvom Stripe",
+    "terms_consent": "Prečítal som a akceptujem",
+    "terms_link": "Obchodné podmienky",
+    "and": "a",
+    "privacy_policy_link": "Zásady ochrany osobných údajov",
+    "newsletter_consent": "Chcem dostávať novinky a propagačné ponuky e-mailom",
+    "saved_addresses": "Uložené adresy",
+    "use_this_address": "Použiť túto adresu",
+    "save_address_as": "Uložiť túto adresu ako",
+    "save_address": "Uložiť adresu",
+    "delete": "Vymazať",
+    "new_address": "Nová adresa"
+  },
+  "buttons": {
+    "continue_shopping": "Pokračovať v nákupe",
+    "back": "Späť",
+    "continue": "Pokračovať",
+    "apply": "Použiť"
+  },
+  "discount": {
+    "code": "Zľavový kód",
+    "applied": "Zľava použitá"
+  },
+  "summary": {
+    "subtotal_excl_vat": "Medziúčet (bez DPH)",
+    "vat": "DPH",
+    "total_incl_vat": "Celkom (vrátane DPH)",
+    "instant_delivery": "Okamžité doručenie",
+    "digital_delivery_note": "Digitálne produkty doručené na váš e-mail",
+    "qty": "Množstvo"
+  },
+  "alerts": {
+    "sign_in_required": "Prihláste sa prosím, aby ste mohli ukladať adresy",
+    "complete_billing_first": "Najprv vyplňte fakturačnú adresu",
+    "address_saved": "Adresa uložená ako \"{name}\"",
+    "address_save_failed": "Nepodarilo sa uložiť adresu: {error}",
+    "confirm_delete_address": "Vymazať túto uloženú adresu?",
+    "fill_required_fields": "Vyplňte prosím všetky povinné polia správne",
+    "select_shipping_method": "Vyberte prosím spôsob doručenia",
+    "accept_terms": "Musíte akceptovať Obchodné podmienky, aby ste mohli pokračovať",
+    "accept_privacy": "Musíte akceptovať Zásady ochrany osobných údajov, aby ste mohli pokračovať"
   },
   "confirmation": {
     "title": "Objednávka potvrdená!",

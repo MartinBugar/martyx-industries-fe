@@ -50,6 +50,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ title, children, navTabs }) =
           <Link to="/admin/products" className={location.pathname.startsWith('/admin/products') ? 'admin-link-active' : ''}>Products</Link>
           <Link to="/admin/orders" className={location.pathname.startsWith('/admin/orders') ? 'admin-link-active' : ''}>Orders</Link>
           <Link to="/admin/invoices" className={location.pathname.startsWith('/admin/invoices') ? 'admin-link-active' : ''}>Invoices</Link>
+          <Link to="/admin/shipping" className={location.pathname.startsWith('/admin/shipping') ? 'admin-link-active' : ''}>Shipping</Link>
           <Link to="/admin/gallery" className={location.pathname.startsWith('/admin/gallery') ? 'admin-link-active' : ''}>Gallery</Link>
           <Link to="/admin/campaigns" className={location.pathname.startsWith('/admin/campaigns') ? 'admin-link-active' : ''}>Campaigns</Link>
           <Link to="/admin/discounts" className={location.pathname.startsWith('/admin/discounts') ? 'admin-link-active' : ''}>Discount Codes</Link>

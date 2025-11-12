@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCart } from '../../context/useCart';
 import { useAuth } from '../../context/useAuth';
+import { useFormatters } from '../../hooks/useFormatters';
 import './Checkout.css';
 import StripeCheckoutButton from '../../components/StripeCheckoutButton';
 import { shippingService } from '../../services/shippingService';
@@ -112,7 +113,7 @@ const clearProgress = (): void => {
 };
 
 // Calculate estimated delivery date
-const calculateEstimatedDelivery = (deliveryDays: number): string => {
+const calculateEstimatedDelivery = (deliveryDays: number, formatDate: (date: Date) => string): string => {
   const today = new Date();
   let businessDaysAdded = 0;
   let currentDate = new Date(today);
@@ -126,15 +127,12 @@ const calculateEstimatedDelivery = (deliveryDays: number): string => {
     }
   }
 
-  return currentDate.toLocaleDateString('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric'
-  });
+  return formatDate(currentDate);
 };
 
 const Checkout: React.FC = () => {
   const { t } = useTranslation('checkout');
+  const { formatDate } = useFormatters();
   const { items, getTotalPrice, removeFromCart, updateQuantity } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -357,11 +355,11 @@ const Checkout: React.FC = () => {
         } else {
           setShippingOptions([]);
           setSelectedShipping(null);
-          setShippingError('No shipping options available for this destination');
+          setShippingError(t('shipping.no_options_available'));
         }
       } catch (error) {
         console.error('Error fetching shipping options:', error);
-        setShippingError('Failed to calculate shipping costs. Please check your address.');
+        setShippingError(t('shipping.calculation_failed'));
         setShippingOptions([]);
         setSelectedShipping(null);
       } finally {
@@ -468,13 +466,13 @@ const Checkout: React.FC = () => {
   // @ts-ignore - Reserved for future "save address" button
   const handleSaveCurrentAddress = async () => {
     if (!user) {
-      alert('Please sign in to save addresses');
+      alert(t('alerts.sign_in_required'));
       return;
     }
 
     // Validate that address fields are filled
     if (!formData.billingStreet || !formData.billingCity || !formData.billingPostalCode || !formData.billingCountry) {
-      alert('Please complete the billing address before saving');
+      alert(t('alerts.complete_billing_first'));
       return;
     }
 
@@ -499,10 +497,10 @@ const Checkout: React.FC = () => {
       setSelectedAddressId(saved.id || '');
       setShowSaveAddressOption(false);
 
-      alert(`Address saved as "${saved.label}"`);
-    } catch (error) {
-      console.error('[Checkout] Failed to save address:', error);
-      alert('Failed to save address. Please try again.');
+      alert(t('alerts.address_saved', { name: saved.label }));
+    } catch (err: any) {
+      console.error('[Checkout] Failed to save address:', err);
+      alert(t('alerts.address_save_failed', { error: err.message || 'Unknown error' }));
     }
   };
 
@@ -510,7 +508,7 @@ const Checkout: React.FC = () => {
   const handleDeleteAddress = async (addressId: string, e: React.MouseEvent) => {
     e.stopPropagation();
 
-    if (!window.confirm('Delete this saved address?')) {
+    if (!window.confirm(t('alerts.confirm_delete_address'))) {
       return;
     }
 
@@ -610,11 +608,11 @@ const Checkout: React.FC = () => {
   // @ts-ignore - Reserved for validation logic
   const validateLegalConsents = (): boolean => {
     if (!formData.termsAccepted) {
-      alert('Please accept the Terms & Conditions to continue');
+      alert(t('alerts.accept_terms'));
       return false;
     }
     if (!formData.privacyAccepted) {
-      alert('Please accept the Privacy Policy to continue');
+      alert(t('alerts.accept_privacy'));
       return false;
     }
     return true;
@@ -626,7 +624,7 @@ const Checkout: React.FC = () => {
       // Validate Information step
       const isValid = await validateStep1();
       if (!isValid) {
-        alert('Please fill in all required fields correctly');
+        alert(t('alerts.fill_required_fields'));
         return;
       }
     }
@@ -634,7 +632,7 @@ const Checkout: React.FC = () => {
     if (currentStep === 2) {
       // Validate shipping selection
       if (!selectedShipping) {
-        alert('Please select a shipping method');
+        alert(t('alerts.select_shipping_method'));
         return;
       }
     }
@@ -660,13 +658,13 @@ const Checkout: React.FC = () => {
     return (
       <main className="checkout-container" role="main">
         <div className="empty-cart-message">
-          <h2>Your cart is empty</h2>
-          <p>Add some products to your cart before proceeding to checkout.</p>
+          <h2>{t('cart.empty')}</h2>
+          <p>{t('cart.empty_message')}</p>
           <button
             className="continue-shopping-btn"
             onClick={() => navigate('/products')}
           >
-            Continue Shopping
+            {t('buttons.continue_shopping')}
           </button>
         </div>
       </main>
@@ -677,8 +675,8 @@ const Checkout: React.FC = () => {
     return (
       <main className="checkout-container" role="main">
         <div className="empty-cart-message">
-          <h2>Finalizing your payment…</h2>
-          <p>Redirecting to payment summary.</p>
+          <h2>{t('payment.finalizing')}</h2>
+          <p>{t('payment.redirecting')}</p>
         </div>
       </main>
     );
@@ -710,15 +708,15 @@ const Checkout: React.FC = () => {
         {/* Progress Steps - 3 STEPS */}
         <div className="checkout-steps">
           <div className={`step ${currentStep >= 1 ? 'active' : ''} ${currentStep > 1 ? 'completed' : ''}`}>
-            Information
+            {t('steps.information')}
           </div>
           <div className="step-divider"></div>
           <div className={`step ${currentStep >= 2 ? 'active' : ''} ${currentStep > 2 ? 'completed' : ''}`}>
-            Shipping
+            {t('steps.shipping')}
           </div>
           <div className="step-divider"></div>
           <div className={`step ${currentStep >= 3 ? 'active' : ''}`}>
-            Payment
+            {t('steps.review')}
           </div>
         </div>
       </div>
@@ -731,7 +729,7 @@ const Checkout: React.FC = () => {
             <div className="information-step">
               <h2 className="section-title">
                 <span className="section-number">1</span>
-                Contact Information
+                {t('form.contact_information')}
               </h2>
 
               {/* Guest Checkout Notice - Only shown for non-authenticated users */}
@@ -739,11 +737,10 @@ const Checkout: React.FC = () => {
                 <div className="guest-checkout-notice">
                   <div className="notice-icon">ℹ️</div>
                   <div className="notice-content">
-                    <strong>Guest Checkout</strong>
+                    <strong>{t('form.guest_checkout')}</strong>
                     <p>
-                      You're checking out as a guest.
-                      <a href="/login" className="notice-link"> Sign in</a> or
-                      <a href="/register" className="notice-link"> create an account</a> to track your order and save your details for next time.
+                      {t('form.guest_checkout_notice')}
+                      <a href="/login" className="notice-link"> {t('form.sign_in')}</a>
                     </p>
                   </div>
                 </div>
@@ -751,7 +748,7 @@ const Checkout: React.FC = () => {
 
               {/* Contact Information */}
               <div className="form-field">
-                <label htmlFor="email">Email Address *</label>
+                <label htmlFor="email">{t('form.email_address')} *</label>
                 <input
                   type="email"
                   id="email"
@@ -768,7 +765,7 @@ const Checkout: React.FC = () => {
 
               <div className="form-row">
                 <div className="form-field">
-                  <label htmlFor="firstName">First Name *</label>
+                  <label htmlFor="firstName">{t('form.first_name')} *</label>
                   <input
                     type="text"
                     id="firstName"
@@ -784,7 +781,7 @@ const Checkout: React.FC = () => {
                 </div>
 
                 <div className="form-field">
-                  <label htmlFor="lastName">Last Name *</label>
+                  <label htmlFor="lastName">{t('form.last_name')} *</label>
                   <input
                     type="text"
                     id="lastName"
@@ -801,7 +798,7 @@ const Checkout: React.FC = () => {
               </div>
 
               <div className="form-field">
-                <label htmlFor="phone">Phone Number *</label>
+                <label htmlFor="phone">{t('form.phone_number')} *</label>
                 <input
                   type="tel"
                   id="phone"
@@ -823,7 +820,7 @@ const Checkout: React.FC = () => {
                     type="checkbox"
                     {...register('isCompany')}
                   />
-                  <span>I'm purchasing as a company (B2B)</span>
+                  <span>{t('form.purchasing_as_company')}</span>
                 </label>
               </div>
 
@@ -831,7 +828,7 @@ const Checkout: React.FC = () => {
               {watch('isCompany') && (
                 <div className="b2b-fields">
                   <div className="form-field">
-                    <label htmlFor="companyName">Company Name *</label>
+                    <label htmlFor="companyName">{t('form.company_name')} *</label>
                     <input
                       type="text"
                       id="companyName"
@@ -846,7 +843,7 @@ const Checkout: React.FC = () => {
 
                   <div className="form-row">
                     <div className="form-field">
-                      <label htmlFor="companyId">Company Registration (IČO) *</label>
+                      <label htmlFor="companyId">{t('form.company_id')} *</label>
                       <input
                         type="text"
                         id="companyId"
@@ -860,7 +857,7 @@ const Checkout: React.FC = () => {
                     </div>
 
                     <div className="form-field">
-                      <label htmlFor="taxId">Tax ID (DIČ) *</label>
+                      <label htmlFor="taxId">{t('form.tax_id')} *</label>
                       <input
                         type="text"
                         id="taxId"
@@ -875,7 +872,7 @@ const Checkout: React.FC = () => {
                   </div>
 
                   <div className="form-field">
-                    <label htmlFor="vatId">VAT ID (IČ DPH) - Optional</label>
+                    <label htmlFor="vatId">{t('form.vat_number')}</label>
                     <input
                       type="text"
                       id="vatId"
@@ -889,7 +886,7 @@ const Checkout: React.FC = () => {
               {/* Billing Address */}
               <div className="subsection-divider"></div>
 
-              <h3 className="subsection-title">Billing Address</h3>
+              <h3 className="subsection-title">{t('billing.title')}</h3>
 
               {/* Saved Addresses Selector - Only for authenticated users */}
               {user && (
@@ -897,11 +894,11 @@ const Checkout: React.FC = () => {
                   {isLoadingAddresses ? (
                     <div className="loading-addresses">
                       <span className="loading-spinner">⏳</span>
-                      Loading saved addresses...
+                      {t('form.loading_addresses')}
                     </div>
                   ) : savedAddresses.length > 0 ? (
                     <div className="form-field">
-                      <label htmlFor="savedAddress">Use Saved Address</label>
+                      <label htmlFor="savedAddress">{t('form.saved_addresses')}</label>
                       <div className="saved-address-selector-wrapper">
                         <select
                           id="savedAddress"
@@ -909,7 +906,7 @@ const Checkout: React.FC = () => {
                           value={selectedAddressId}
                           onChange={handleAddressSelect}
                         >
-                          <option value="">Enter new address</option>
+                          <option value="">{t('form.new_address')}</option>
                           {savedAddresses.map((addr) => (
                             <option key={addr.id} value={addr.id}>
                               {addr.label || 'Unnamed Address'} - {addressService.formatAddress(addr)}
@@ -921,20 +918,20 @@ const Checkout: React.FC = () => {
                             type="button"
                             className="delete-address-btn"
                             onClick={(e) => handleDeleteAddress(selectedAddressId, e)}
-                            aria-label="Delete selected address"
-                            title="Delete this address"
+                            aria-label={t('form.delete')}
+                            title={t('form.delete')}
                           >
                             🗑️
                           </button>
                         )}
                       </div>
                       <p className="field-hint">
-                        {savedAddresses.length} saved address{savedAddresses.length !== 1 ? 'es' : ''} available
+                        {savedAddresses.length} {t('form.saved_addresses_available', { count: savedAddresses.length })}
                       </p>
                     </div>
                   ) : (
                     <div className="no-saved-addresses">
-                      <p className="hint-text">No saved addresses yet. Your address will be saved after checkout.</p>
+                      <p className="hint-text">{t('form.no_saved_addresses')}</p>
                     </div>
                   )}
                 </div>
@@ -942,8 +939,8 @@ const Checkout: React.FC = () => {
 
               <div className="form-field">
                 <label htmlFor="billingStreet">
-                  Street Address *
-                  {isAutocompleteLoaded && <span className="autocomplete-badge">🌍 Autocomplete</span>}
+                  {t('form.street_address')} *
+                  {isAutocompleteLoaded && <span className="autocomplete-badge">🌍 {t('form.autocomplete')}</span>}
                 </label>
                 <input
                   type="text"
@@ -977,13 +974,13 @@ const Checkout: React.FC = () => {
                   <span className="field-error">{errors.billingStreet.message}</span>
                 )}
                 {autocompleteError && !isAutocompleteLoaded && (
-                  <span className="field-hint text-warning">Address autocomplete unavailable. Please enter manually.</span>
+                  <span className="field-hint text-warning">{t('form.autocomplete_unavailable')}</span>
                 )}
               </div>
 
               <div className="form-row">
                 <div className="form-field">
-                  <label htmlFor="billingCity">City *</label>
+                  <label htmlFor="billingCity">{t('form.city')} *</label>
                   <input
                     type="text"
                     id="billingCity"
@@ -999,7 +996,7 @@ const Checkout: React.FC = () => {
                 </div>
 
                 <div className="form-field">
-                  <label htmlFor="billingPostalCode">Postal Code *</label>
+                  <label htmlFor="billingPostalCode">{t('form.postal_code')} *</label>
                   <input
                     type="text"
                     id="billingPostalCode"
@@ -1017,7 +1014,7 @@ const Checkout: React.FC = () => {
 
               <div className="form-row">
                 <div className="form-field">
-                  <label htmlFor="billingState">State/Region</label>
+                  <label htmlFor="billingState">{t('form.state_province')}</label>
                   <input
                     type="text"
                     id="billingState"
@@ -1028,7 +1025,7 @@ const Checkout: React.FC = () => {
                 </div>
 
                 <div className="form-field">
-                  <label htmlFor="billingCountry">Country *</label>
+                  <label htmlFor="billingCountry">{t('form.country')} *</label>
                   <select
                     id="billingCountry"
                     autoComplete="country"
@@ -1036,7 +1033,7 @@ const Checkout: React.FC = () => {
                     className={errors.billingCountry ? 'error' : ''}
                     {...register('billingCountry')}
                   >
-                    <option value="">Select a country</option>
+                    <option value="">{t('form.select_country')}</option>
                     {COUNTRIES.map(country => (
                       <option key={country.code} value={country.code}>
                         {country.name}
@@ -1058,17 +1055,17 @@ const Checkout: React.FC = () => {
                     type="checkbox"
                     {...register('shipToDifferentAddress')}
                   />
-                  <span>Ship to a different address?</span>
+                  <span>{t('form.ship_different_address')}</span>
                 </label>
               </div>
 
               {/* Shipping Address Fields */}
               {watch('shipToDifferentAddress') && (
                 <div className="shipping-address-fields">
-                  <h3 className="subsection-title">Shipping Address</h3>
+                  <h3 className="subsection-title">{t('form.shipping_address')}</h3>
 
                   <div className="form-field">
-                    <label htmlFor="shippingStreet">Street Address *</label>
+                    <label htmlFor="shippingStreet">{t('form.street_address')} *</label>
                     <input
                       type="text"
                       id="shippingStreet"
@@ -1084,7 +1081,7 @@ const Checkout: React.FC = () => {
 
                   <div className="form-row">
                     <div className="form-field">
-                      <label htmlFor="shippingCity">City *</label>
+                      <label htmlFor="shippingCity">{t('form.city')} *</label>
                       <input
                         type="text"
                         id="shippingCity"
@@ -1099,7 +1096,7 @@ const Checkout: React.FC = () => {
                     </div>
 
                     <div className="form-field">
-                      <label htmlFor="shippingPostalCode">Postal Code *</label>
+                      <label htmlFor="shippingPostalCode">{t('form.postal_code')} *</label>
                       <input
                         type="text"
                         id="shippingPostalCode"
@@ -1116,7 +1113,7 @@ const Checkout: React.FC = () => {
 
                   <div className="form-row">
                     <div className="form-field">
-                      <label htmlFor="shippingState">State/Region</label>
+                      <label htmlFor="shippingState">{t('form.state_province')}</label>
                       <input
                         type="text"
                         id="shippingState"
@@ -1127,14 +1124,14 @@ const Checkout: React.FC = () => {
                     </div>
 
                     <div className="form-field">
-                      <label htmlFor="shippingCountry">Country *</label>
+                      <label htmlFor="shippingCountry">{t('form.country')} *</label>
                       <select
                         id="shippingCountry"
                         autoComplete="shipping country"
                         className={errors.shippingCountry ? 'error' : ''}
                         {...register('shippingCountry')}
                       >
-                        <option value="">Select a country</option>
+                        <option value="">{t('form.select_country')}</option>
                         {COUNTRIES.map(country => (
                           <option key={country.code} value={country.code}>
                             {country.name}
@@ -1158,7 +1155,7 @@ const Checkout: React.FC = () => {
                     type="checkbox"
                     {...register('newsletterOptIn')}
                   />
-                  <span>Send me news and special offers</span>
+                  <span>{t('form.news_offers')}</span>
                 </label>
               </div>
             </div>
@@ -1169,13 +1166,13 @@ const Checkout: React.FC = () => {
             <div className="shipping-step">
               <h2 className="section-title">
                 <span className="section-number">2</span>
-                Shipping Method
+                {t('form.shipping_method')}
               </h2>
 
               {isLoadingShipping ? (
                 <div className="loading-message">
                   <span className="loading-spinner">⏳</span>
-                  Calculating shipping options...
+                  {t('shipping.calculating')}
                 </div>
               ) : shippingOptions.length > 0 ? (
                 <div className="shipping-options">
@@ -1187,7 +1184,7 @@ const Checkout: React.FC = () => {
                       : (deliveryDaysMin || deliveryDaysMax || '');
 
                     const estimatedDate = deliveryDaysMax
-                      ? calculateEstimatedDelivery(deliveryDaysMax)
+                      ? calculateEstimatedDelivery(deliveryDaysMax, formatDate)
                       : '';
 
                     return (
@@ -1206,13 +1203,13 @@ const Checkout: React.FC = () => {
                           <div className="shipping-name">{option.rate_name}</div>
                           {deliveryDaysDisplay && (
                             <div className="shipping-meta">
-                              {deliveryDaysDisplay} business days
-                              {estimatedDate && ` · Estimated delivery: ${estimatedDate}`}
+                              {deliveryDaysDisplay} {t('form.business_days')}
+                              {estimatedDate && ` · ${t('form.estimated_delivery')}: ${estimatedDate}`}
                             </div>
                           )}
                         </div>
                         <div className="shipping-price">
-                          {(option.shipping_cost || 0) === 0 ? 'FREE' : `€${(option.shipping_cost || 0).toFixed(2)}`}
+                          {(option.shipping_cost || 0) === 0 ? t('cart.free') : `€${(option.shipping_cost || 0).toFixed(2)}`}
                         </div>
                       </label>
                     );
@@ -1220,8 +1217,8 @@ const Checkout: React.FC = () => {
                 </div>
               ) : (
                 <div className="no-shipping-message">
-                  <p>No shipping options available for your location.</p>
-                  <p className="hint">Please check your address in the previous step.</p>
+                  <p>{t('shipping.no_options_location')}</p>
+                  <p className="hint">{t('shipping.check_address')}</p>
                 </div>
               )}
 
@@ -1238,23 +1235,23 @@ const Checkout: React.FC = () => {
             <div className="payment-step">
               <h2 className="section-title">
                 <span className="section-number">3</span>
-                Review & Payment
+                {t('steps.review')}
               </h2>
 
               {/* Order Review Summary */}
               <div className="order-review-summary">
-                <h3 className="review-section-title">Order Summary</h3>
+                <h3 className="review-section-title">{t('order_summary.title')}</h3>
 
                 {/* Contact Info */}
                 <div className="review-section">
                   <div className="review-header">
-                    <strong>Contact</strong>
+                    <strong>{t('form.contact')}</strong>
                     <button
                       className="edit-btn"
                       onClick={() => setCurrentStep(1)}
-                      aria-label="Edit contact information"
+                      aria-label={t('form.edit')}
                     >
-                      Edit
+                      {t('form.edit')}
                     </button>
                   </div>
                   <p>{formData.email}</p>
@@ -1264,13 +1261,13 @@ const Checkout: React.FC = () => {
                 {/* Billing Address */}
                 <div className="review-section">
                   <div className="review-header">
-                    <strong>Billing Address</strong>
+                    <strong>{t('billing.title')}</strong>
                     <button
                       className="edit-btn"
                       onClick={() => setCurrentStep(1)}
-                      aria-label="Edit billing address"
+                      aria-label={t('form.edit')}
                     >
-                      Edit
+                      {t('form.edit')}
                     </button>
                   </div>
                   <p>{formData.firstName} {formData.lastName}</p>
@@ -1283,13 +1280,13 @@ const Checkout: React.FC = () => {
                 {/* Shipping Address */}
                 <div className="review-section">
                   <div className="review-header">
-                    <strong>Shipping Address</strong>
+                    <strong>{t('form.shipping_address')}</strong>
                     <button
                       className="edit-btn"
                       onClick={() => setCurrentStep(1)}
-                      aria-label="Edit shipping address"
+                      aria-label={t('form.edit')}
                     >
-                      Edit
+                      {t('form.edit')}
                     </button>
                   </div>
                   {formData.shipToDifferentAddress ? (
@@ -1299,7 +1296,7 @@ const Checkout: React.FC = () => {
                       <p>{COUNTRIES.find(c => c.code === formData.shippingCountry)?.name || formData.shippingCountry}</p>
                     </>
                   ) : (
-                    <p>Same as billing address</p>
+                    <p>{t('form.same_as_billing')}</p>
                   )}
                 </div>
 
@@ -1307,18 +1304,18 @@ const Checkout: React.FC = () => {
                 {selectedShipping && (
                   <div className="review-section">
                     <div className="review-header">
-                      <strong>Shipping Method</strong>
+                      <strong>{t('form.shipping_method')}</strong>
                       <button
                         className="edit-btn"
                         onClick={() => setCurrentStep(2)}
-                        aria-label="Edit shipping method"
+                        aria-label={t('form.edit')}
                       >
-                        Edit
+                        {t('form.edit')}
                       </button>
                     </div>
                     <p>{selectedShipping.rate_name}</p>
                     <p className="review-meta">
-                      {selectedShipping.shipping_cost === 0 ? 'FREE' : `€${selectedShipping.shipping_cost.toFixed(2)}`}
+                      {selectedShipping.shipping_cost === 0 ? t('cart.free') : `€${selectedShipping.shipping_cost.toFixed(2)}`}
                     </p>
                   </div>
                 )}
@@ -1327,11 +1324,11 @@ const Checkout: React.FC = () => {
               <div className="subsection-divider"></div>
 
               {/* Payment */}
-              <h3 className="review-section-title">Payment</h3>
+              <h3 className="review-section-title">{t('payment.title')}</h3>
 
               <div className="payment-security-badge">
                 <span className="lock-icon">🔒</span>
-                <span>Secure payment powered by Stripe</span>
+                <span>{t('form.secure_payment_stripe')}</span>
               </div>
 
               {/* Legal Consents - REQUIRED */}
@@ -1344,7 +1341,7 @@ const Checkout: React.FC = () => {
                       {...register('termsAccepted')}
                     />
                     <span>
-                      I agree to the <a href="/terms-of-service" target="_blank" rel="noopener noreferrer">Terms & Conditions</a> *
+                      {t('form.terms_consent')} <a href="/terms-of-service" target="_blank" rel="noopener noreferrer">{t('form.terms_link')}</a> {t('form.and')} <a href="/privacy-policy" target="_blank" rel="noopener noreferrer">{t('form.privacy_policy_link')}</a> *
                     </span>
                   </label>
                   {errors.termsAccepted && (
@@ -1360,7 +1357,7 @@ const Checkout: React.FC = () => {
                       {...register('privacyAccepted')}
                     />
                     <span>
-                      I agree to the <a href="/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a> *
+                      {t('form.newsletter_consent')}
                     </span>
                   </label>
                   {errors.privacyAccepted && (
@@ -1427,7 +1424,7 @@ const Checkout: React.FC = () => {
               onClick={() => navigate('/products')}
               className="nav-btn nav-btn-link"
             >
-              ← Continue Shopping
+              ← {t('buttons.continue_shopping')}
             </button>
 
             <div className="nav-btn-group">
@@ -1437,7 +1434,7 @@ const Checkout: React.FC = () => {
                   onClick={handleBack}
                   className="nav-btn nav-btn-back"
                 >
-                  ← Back
+                  ← {t('buttons.back')}
                 </button>
               )}
 
@@ -1447,7 +1444,7 @@ const Checkout: React.FC = () => {
                   onClick={handleNext}
                   className="nav-btn nav-btn-next"
                 >
-                  Continue →
+                  {t('buttons.continue')} →
                 </button>
               )}
             </div>
@@ -1456,7 +1453,7 @@ const Checkout: React.FC = () => {
 
         {/* Order Summary - RIGHT SIDE (STICKY) */}
         <div className="order-summary-card" role="region" aria-labelledby="order-summary-title">
-          <h2 id="order-summary-title">Order Summary</h2>
+          <h2 id="order-summary-title">{t('order_summary.title')}</h2>
 
           <div className="order-items" role="list">
             {items.map(item => {
@@ -1472,14 +1469,14 @@ const Checkout: React.FC = () => {
                   <div className="item-info">
                     <div className="item-name">{item.product.name}</div>
                     <div className="item-quantity">
-                      Qty: {qty}
+                      {t('summary.qty')}: {qty}
                       {currentStep === 1 && (
                         <div className="quantity-controls-inline">
                           <button
                             onClick={() => updateQuantity(item.product.variantId.toString(), qty - 1)}
                             className="qty-btn"
                             disabled={item.product.variantType === 'DIGITAL_ONLY'}
-                            aria-label="Decrease quantity"
+                            aria-label={t('cart.decrease_quantity')}
                           >
                             −
                           </button>
@@ -1487,7 +1484,7 @@ const Checkout: React.FC = () => {
                             onClick={() => updateQuantity(item.product.variantId.toString(), qty + 1)}
                             className="qty-btn"
                             disabled={item.product.variantType === 'DIGITAL_ONLY'}
-                            aria-label="Increase quantity"
+                            aria-label={t('cart.increase_quantity')}
                           >
                             +
                           </button>
@@ -1501,7 +1498,7 @@ const Checkout: React.FC = () => {
                       <button
                         onClick={() => removeFromCart(item.product.variantId.toString())}
                         className="remove-item-btn-small"
-                        aria-label="Remove item"
+                        aria-label={t('cart.remove_item')}
                       >
                         ×
                       </button>
@@ -1523,7 +1520,7 @@ const Checkout: React.FC = () => {
                   className="discount-input"
                   value={discountCode}
                   onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
-                  placeholder="Discount code"
+                  placeholder={t('discount.code')}
                   disabled={isValidatingDiscount}
                 />
                 <button
@@ -1532,7 +1529,7 @@ const Checkout: React.FC = () => {
                   onClick={handleValidateDiscount}
                   disabled={isValidatingDiscount || !discountCode.trim()}
                 >
-                  Apply
+                  {t('buttons.apply')}
                 </button>
               </div>
             ) : (
@@ -1545,7 +1542,7 @@ const Checkout: React.FC = () => {
                   type="button"
                   className="remove-discount-btn"
                   onClick={handleRemoveDiscount}
-                  aria-label="Remove discount"
+                  aria-label={t('discount.remove')}
                 >
                   ×
                 </button>
@@ -1564,27 +1561,27 @@ const Checkout: React.FC = () => {
           {/* Order Breakdown */}
           <div className="order-breakdown">
             <div className="breakdown-row">
-              <span>Subtotal (excl. VAT)</span>
+              <span>{t('summary.subtotal_excl_vat')}</span>
               <span>€{totals.subtotalWithoutVAT.toFixed(2)}</span>
             </div>
 
             <div className="breakdown-row vat-row">
-              <span>VAT ({(totals.vatRate * 100).toFixed(0)}%)</span>
+              <span>{t('summary.vat')} ({(totals.vatRate * 100).toFixed(0)}%)</span>
               <span>€{totals.vatAmount.toFixed(2)}</span>
             </div>
 
             {discountValidation?.valid && totals.discount > 0 && (
               <div className="breakdown-row discount-row">
-                <span>Discount</span>
+                <span>{t('order_summary.discount')}</span>
                 <span className="discount-amount">-€{totals.discount.toFixed(2)}</span>
               </div>
             )}
 
             {selectedShipping && (
               <div className="breakdown-row">
-                <span>Shipping</span>
+                <span>{t('order_summary.shipping')}</span>
                 <span>
-                  {totals.shipping === 0 ? 'FREE' : `€${totals.shipping.toFixed(2)}`}
+                  {totals.shipping === 0 ? t('cart.free') : `€${totals.shipping.toFixed(2)}`}
                 </span>
               </div>
             )}
@@ -1592,7 +1589,7 @@ const Checkout: React.FC = () => {
             <div className="order-divider"></div>
 
             <div className="order-total">
-              <span>Total (incl. VAT)</span>
+              <span>{t('summary.total_incl_vat')}</span>
               <span>€{totals.total.toFixed(2)}</span>
             </div>
           </div>
@@ -1601,8 +1598,8 @@ const Checkout: React.FC = () => {
           <div className="delivery-badge">
             <span className="badge-icon">📧</span>
             <div className="badge-text">
-              <strong>Instant Delivery</strong>
-              <p>Digital products sent to your email</p>
+              <strong>{t('summary.instant_delivery')}</strong>
+              <p>{t('summary.digital_delivery_note')}</p>
             </div>
           </div>
         </div>

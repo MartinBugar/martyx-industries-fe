@@ -1,9 +1,10 @@
 {
   "title": "Kasse",
   "steps": {
+    "information": "Informationen",
     "shipping": "Versand",
     "payment": "Zahlung",
-    "review": "Überprüfung",
+    "review": "Überprüfung & Zahlung",
     "confirmation": "Bestätigung"
   },
   "shipping": {
@@ -100,6 +101,73 @@
     "error": "Zahlung fehlgeschlagen. Bitte versuchen Sie es erneut.",
     "failed": "Zahlung fehlgeschlagen. Bitte versuchen Sie es erneut.",
     "not_completed": "Zahlung nicht abgeschlossen. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support."
+  },
+  "form": {
+    "contact_information": "Kontaktinformationen",
+    "guest_checkout_notice": "Als Gast fortfahren. Sie haben später die Möglichkeit, ein Konto zu erstellen.",
+    "sign_in": "Anmelden",
+    "email_address": "E-Mail-Adresse",
+    "first_name": "Vorname",
+    "last_name": "Nachname",
+    "phone_number": "Telefonnummer",
+    "purchasing_as_company": "Ich kaufe als Firma (B2B)",
+    "company_name": "Firmenname",
+    "vat_number": "USt-IdNr. (optional)",
+    "ship_different_address": "An eine andere Adresse liefern?",
+    "shipping_address": "Lieferadresse",
+    "street_address": "Straße und Hausnummer",
+    "apt_suite": "Wohnung, Etage, usw. (optional)",
+    "city": "Stadt",
+    "state_province": "Bundesland / Region",
+    "postal_code": "Postleitzahl",
+    "country": "Land",
+    "news_offers": "Senden Sie mir Neuigkeiten und Sonderangebote",
+    "shipping_method": "Versandart",
+    "business_days": "Werktage",
+    "edit": "Bearbeiten",
+    "contact": "Kontakt",
+    "same_as_billing": "Gleiche wie Rechnungsadresse",
+    "secure_payment_stripe": "Sichere Zahlung powered by Stripe",
+    "terms_consent": "Ich habe gelesen und akzeptiere die",
+    "terms_link": "Allgemeinen Geschäftsbedingungen",
+    "and": "und",
+    "privacy_policy_link": "Datenschutzerklärung",
+    "newsletter_consent": "Ich möchte Neuigkeiten und Werbeangebote per E-Mail erhalten",
+    "saved_addresses": "Gespeicherte Adressen",
+    "use_this_address": "Diese Adresse verwenden",
+    "save_address_as": "Diese Adresse speichern als",
+    "save_address": "Adresse speichern",
+    "delete": "Löschen",
+    "new_address": "Neue Adresse"
+  },
+  "buttons": {
+    "continue_shopping": "Weiter einkaufen",
+    "back": "Zurück",
+    "continue": "Weiter",
+    "apply": "Anwenden"
+  },
+  "discount": {
+    "code": "Rabattcode",
+    "applied": "Rabatt angewendet"
+  },
+  "summary": {
+    "subtotal_excl_vat": "Zwischensumme (ohne MwSt.)",
+    "vat": "MwSt.",
+    "total_incl_vat": "Gesamt (inkl. MwSt.)",
+    "instant_delivery": "Sofortige Lieferung",
+    "digital_delivery_note": "Digitale Produkte werden per E-Mail gesendet",
+    "qty": "Menge"
+  },
+  "alerts": {
+    "sign_in_required": "Bitte melden Sie sich an, um Adressen zu speichern",
+    "complete_billing_first": "Bitte füllen Sie zuerst die Rechnungsadresse aus",
+    "address_saved": "Adresse gespeichert als \"{name}\"",
+    "address_save_failed": "Fehler beim Speichern der Adresse: {error}",
+    "confirm_delete_address": "Diese gespeicherte Adresse löschen?",
+    "fill_required_fields": "Bitte füllen Sie alle erforderlichen Felder korrekt aus",
+    "select_shipping_method": "Bitte wählen Sie eine Versandart",
+    "accept_terms": "Bitte akzeptieren Sie die AGB, um fortzufahren",
+    "accept_privacy": "Bitte akzeptieren Sie die Datenschutzerklärung, um fortzufahren"
   },
   "confirmation": {
     "title": "Bestellung bestätigt!",

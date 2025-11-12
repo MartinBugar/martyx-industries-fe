@@ -1,9 +1,10 @@
 {
   "title": "Checkout",
   "steps": {
+    "information": "Information",
     "shipping": "Shipping",
     "payment": "Payment",
-    "review": "Review",
+    "review": "Review & Payment",
     "confirmation": "Confirmation"
   },
   "shipping": {
@@ -100,6 +101,73 @@
     "error": "Payment failed. Please try again.",
     "failed": "Payment failed. Please try again.",
     "not_completed": "Payment not completed. Please try again or contact support."
+  },
+  "form": {
+    "contact_information": "Contact Information",
+    "guest_checkout_notice": "Continue as a guest. You'll have an option to create an account later.",
+    "sign_in": "Sign in",
+    "email_address": "Email Address",
+    "first_name": "First Name",
+    "last_name": "Last Name",
+    "phone_number": "Phone Number",
+    "purchasing_as_company": "I'm purchasing as a company (B2B)",
+    "company_name": "Company Name",
+    "vat_number": "VAT Number (optional)",
+    "ship_different_address": "Ship to a different address?",
+    "shipping_address": "Shipping Address",
+    "street_address": "Street Address",
+    "apt_suite": "Apt, suite, etc. (optional)",
+    "city": "City",
+    "state_province": "State / Province",
+    "postal_code": "Postal Code",
+    "country": "Country",
+    "news_offers": "Send me news and special offers",
+    "shipping_method": "Shipping Method",
+    "business_days": "business days",
+    "edit": "Edit",
+    "contact": "Contact",
+    "same_as_billing": "Same as billing address",
+    "secure_payment_stripe": "Secure payment powered by Stripe",
+    "terms_consent": "I have read and accept the",
+    "terms_link": "Terms & Conditions",
+    "and": "and",
+    "privacy_policy_link": "Privacy Policy",
+    "newsletter_consent": "I would like to receive news and promotional offers via email",
+    "saved_addresses": "Saved Addresses",
+    "use_this_address": "Use this address",
+    "save_address_as": "Save this address as",
+    "save_address": "Save Address",
+    "delete": "Delete",
+    "new_address": "New Address"
+  },
+  "buttons": {
+    "continue_shopping": "Continue Shopping",
+    "back": "Back",
+    "continue": "Continue",
+    "apply": "Apply"
+  },
+  "discount": {
+    "code": "Discount code",
+    "applied": "Discount applied"
+  },
+  "summary": {
+    "subtotal_excl_vat": "Subtotal (excl. VAT)",
+    "vat": "VAT",
+    "total_incl_vat": "Total (incl. VAT)",
+    "instant_delivery": "Instant Delivery",
+    "digital_delivery_note": "Digital products sent to your email",
+    "qty": "Qty"
+  },
+  "alerts": {
+    "sign_in_required": "Please sign in to save addresses",
+    "complete_billing_first": "Please complete the billing address before saving",
+    "address_saved": "Address saved as \"{name}\"",
+    "address_save_failed": "Failed to save address: {error}",
+    "confirm_delete_address": "Delete this saved address?",
+    "fill_required_fields": "Please fill in all required fields correctly",
+    "select_shipping_method": "Please select a shipping method",
+    "accept_terms": "Please accept the Terms & Conditions to continue",
+    "accept_privacy": "Please accept the Privacy Policy to continue"
   },
   "confirmation": {
     "title": "Order Confirmed!",

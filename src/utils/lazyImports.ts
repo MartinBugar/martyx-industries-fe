@@ -57,6 +57,7 @@ export const AdminEmailTemplates = lazy(() => import('../pages/admin/AdminEmailT
 export const AdminXpConfig = lazy(() => import('../pages/admin/AdminXpConfig'));
 export const AdminInvoices = lazy(() => import('../pages/admin/AdminInvoices'));
 export const AdminGiftTiers = lazy(() => import('../pages/admin/AdminGiftTiers'));
+export const AdminShippingZones = lazy(() => import('../pages/admin/AdminShippingZones'));
 
 // Components - lazy loaded for non-critical features
 export const EmailConfirmation = lazy(() => import('../components/EmailConfirmation/EmailConfirmation'));
