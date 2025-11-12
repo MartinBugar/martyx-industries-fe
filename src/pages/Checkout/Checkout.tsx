@@ -240,6 +240,11 @@ const Checkout: React.FC = () => {
   const { inputRef: autocompleteInputRef, isLoaded: isAutocompleteLoaded, error: autocompleteError } =
     useGooglePlacesAutocomplete(handlePlaceSelect);
 
+  // Check if cart contains any physical products that require shipping
+  const hasPhysicalProducts = useMemo(() => {
+    return items.some(item => item.product.requiresShipping);
+  }, [items]);
+
   // Calculate cart weight
   const calculateCartWeight = () => {
     return items.reduce((total, item) => {
@@ -321,6 +326,14 @@ const Checkout: React.FC = () => {
   // Fetch shipping options when entering step 2
   useEffect(() => {
     const fetchShippingOptions = async () => {
+      // Skip shipping if all products are digital
+      if (!hasPhysicalProducts) {
+        console.log('[Checkout] All products are digital, skipping shipping options fetch');
+        setShippingOptions([]);
+        setSelectedShipping(null);
+        return;
+      }
+
       // Only fetch if on step 2 or later
       if (currentStep < 2) return;
 
@@ -368,7 +381,7 @@ const Checkout: React.FC = () => {
     };
 
     fetchShippingOptions();
-  }, [currentStep]);
+  }, [currentStep, hasPhysicalProducts]);
 
   // GA4 Analytics: Track begin_checkout when component mounts
   useEffect(() => {
@@ -627,11 +640,19 @@ const Checkout: React.FC = () => {
         alert(t('alerts.fill_required_fields'));
         return;
       }
+
+      // If all products are digital, skip shipping step (2) and go directly to payment (3)
+      if (!hasPhysicalProducts) {
+        console.log('[Checkout] All products digital, skipping to payment step');
+        setCurrentStep(3);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
     }
 
     if (currentStep === 2) {
-      // Validate shipping selection
-      if (!selectedShipping) {
+      // Validate shipping selection (only for physical products)
+      if (hasPhysicalProducts && !selectedShipping) {
         alert(t('alerts.select_shipping_method'));
         return;
       }
@@ -648,6 +669,14 @@ const Checkout: React.FC = () => {
 
   const handleBack = () => {
     if (currentStep > 1) {
+      // If on step 3 and all products are digital, skip back to step 1 (bypass shipping)
+      if (currentStep === 3 && !hasPhysicalProducts) {
+        console.log('[Checkout] All products digital, skipping back to information step');
+        setCurrentStep(1);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+
       setCurrentStep((prev) => (prev - 1) as 1 | 2 | 3);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -705,15 +734,22 @@ const Checkout: React.FC = () => {
   return (
     <main className="checkout-container" role="main">
       <div className="checkout-header">
-        {/* Progress Steps - 3 STEPS */}
+        {/* Progress Steps - 2 or 3 STEPS depending on product type */}
         <div className="checkout-steps">
           <div className={`step ${currentStep >= 1 ? 'active' : ''} ${currentStep > 1 ? 'completed' : ''}`}>
             {t('steps.information')}
           </div>
-          <div className="step-divider"></div>
-          <div className={`step ${currentStep >= 2 ? 'active' : ''} ${currentStep > 2 ? 'completed' : ''}`}>
-            {t('steps.shipping')}
-          </div>
+
+          {/* Show Shipping step only if cart has physical products */}
+          {hasPhysicalProducts && (
+            <>
+              <div className="step-divider"></div>
+              <div className={`step ${currentStep >= 2 ? 'active' : ''} ${currentStep > 2 ? 'completed' : ''}`}>
+                {t('steps.shipping')}
+              </div>
+            </>
+          )}
+
           <div className="step-divider"></div>
           <div className={`step ${currentStep >= 3 ? 'active' : ''}`}>
             {t('steps.review')}
@@ -1300,8 +1336,8 @@ const Checkout: React.FC = () => {
                   )}
                 </div>
 
-                {/* Shipping Method */}
-                {selectedShipping && (
+                {/* Shipping Method - Only show if cart has physical products */}
+                {hasPhysicalProducts && selectedShipping && (
                   <div className="review-section">
                     <div className="review-header">
                       <strong>{t('form.shipping_method')}</strong>
@@ -1317,6 +1353,19 @@ const Checkout: React.FC = () => {
                     <p className="review-meta">
                       {selectedShipping.shipping_cost === 0 ? t('cart.free') : `€${selectedShipping.shipping_cost.toFixed(2)}`}
                     </p>
+                  </div>
+                )}
+
+                {/* Digital Products Notice */}
+                {!hasPhysicalProducts && (
+                  <div className="review-section">
+                    <div className="review-header">
+                      <strong>{t('form.delivery_method')}</strong>
+                    </div>
+                    <div className="digital-delivery-notice">
+                      <span className="delivery-icon">📧</span>
+                      <p>{t('summary.digital_delivery_note')}</p>
+                    </div>
                   </div>
                 )}
               </div>
@@ -1577,12 +1626,21 @@ const Checkout: React.FC = () => {
               </div>
             )}
 
-            {selectedShipping && (
+            {/* Show shipping cost only if cart has physical products */}
+            {hasPhysicalProducts && selectedShipping && (
               <div className="breakdown-row">
                 <span>{t('order_summary.shipping')}</span>
                 <span>
                   {totals.shipping === 0 ? t('cart.free') : `€${totals.shipping.toFixed(2)}`}
                 </span>
+              </div>
+            )}
+
+            {/* Digital delivery notice */}
+            {!hasPhysicalProducts && (
+              <div className="breakdown-row digital-delivery-row">
+                <span>📧 {t('order_summary.delivery')}</span>
+                <span className="digital-badge">{t('cart.digital')}</span>
               </div>
             )}
 
@@ -1594,14 +1652,16 @@ const Checkout: React.FC = () => {
             </div>
           </div>
 
-          {/* Digital Delivery Badge */}
-          <div className="delivery-badge">
-            <span className="badge-icon">📧</span>
-            <div className="badge-text">
-              <strong>{t('summary.instant_delivery')}</strong>
-              <p>{t('summary.digital_delivery_note')}</p>
+          {/* Digital Delivery Badge - Only show for digital-only orders */}
+          {!hasPhysicalProducts && (
+            <div className="delivery-badge">
+              <span className="badge-icon">📧</span>
+              <div className="badge-text">
+                <strong>{t('summary.instant_delivery')}</strong>
+                <p>{t('summary.digital_delivery_note')}</p>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </main>

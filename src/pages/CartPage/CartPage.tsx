@@ -416,6 +416,9 @@ const CartPage: React.FC<CartPageProps> = ({
                 </tbody>
               </table>
 
+              {/* Gift Tier Progress Bar - Under cart items */}
+              <GiftProgressBar cartTotal={subtotal} compact={true} />
+
               <button className="continue-shopping" onClick={handleBackToShopping} aria-label={t('cart.continue_shopping')}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M19 12H5M5 12l7 7m-7-7l7-7"/>
@@ -427,9 +430,6 @@ const CartPage: React.FC<CartPageProps> = ({
             {/* SUMMARY */}
             <aside className="order-summary" aria-label={t('order_summary.title')}>
               <h2 className="summary-title">{t('order_summary.title')}</h2>
-
-              {/* Gift Tier Progress Bar */}
-              <GiftProgressBar cartTotal={subtotal} />
 
               {/* Free Shipping Progress Bar */}
               {hasPhysicalProducts && !hasFreeShipping && (

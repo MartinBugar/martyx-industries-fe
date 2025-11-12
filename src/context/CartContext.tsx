@@ -2,6 +2,8 @@ import React, { useEffect, useMemo, useState, type ReactNode, useCallback } from
 import type { Product } from '../data/productData';
 import { CartContext, type CartItem, type CartProduct } from './cartContextTypes';
 import { cartService } from '../services/cartService';
+import { productService } from '../services/productService';
+import type { CartItemDto } from '../types/customer';
 import { useAuth } from './useAuth';
 import { trackAddToCart, trackRemoveFromCart } from '../services/analyticsService';
 import { useDebouncedCallback } from '../hooks/useDebouncedCallback';
@@ -91,6 +93,45 @@ function isCartItem(value: unknown): value is CartItem {
   }
 
   return true;
+}
+
+/**
+ * Convert backend CartItemDto to frontend CartItem with complete product details
+ * Fetches full product variant data to populate all required fields
+ */
+async function convertCartItemDto(item: CartItemDto): Promise<CartItem | null> {
+  try {
+    // Fetch full product variant details from backend
+    const variant = await productService.getVariant(item.variantId);
+
+    // Create complete CartProduct with all fields from ProductVariantDto
+    const product: CartProduct = {
+      variantId: variant.id,
+      masterProductId: variant.masterProductId,
+      name: item.masterProductName, // Use master product name from CartItemDto
+      variantName: variant.variantName,
+      priceWithVat: variant.priceWithVat,
+      imageUrl: item.imageUrl, // Use image from CartItemDto
+      availabilityStatus: variant.availabilityStatus,
+      stockQuantity: variant.stockQuantity,
+      variantType: variant.variantType,
+      sku: variant.sku,
+      gallery: item.imageUrl ? [item.imageUrl] : [], // Create gallery array from imageUrl
+      currency: variant.currency,
+      requiresShipping: variant.requiresShipping,
+      vatRate: variant.vatRate,
+      weightKg: variant.weightGrams ? variant.weightGrams / 1000 : undefined, // Convert grams to kg
+    };
+
+    return {
+      product,
+      quantity: item.quantity,
+      addedAt: Date.now(),
+    };
+  } catch (error) {
+    console.error('[Cart] Failed to fetch product details for variant', item.variantId, ':', error);
+    return null;
+  }
 }
 
 function safeLoad(): CartItem[] {
@@ -203,25 +244,20 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
         // Use new items array from backend (CartItemDto[])
         if (backendCart.items && Array.isArray(backendCart.items) && backendCart.items.length > 0) {
-          // Convert backend CartItemDto[] to frontend CartItem[] format
-          const convertedItems: CartItem[] = backendCart.items.map(item => ({
-            product: {
-              variantId: item.variantId,
-              masterProductId: item.masterProductId,
-              name: item.masterProductName,
-              variantName: item.variantName,
-              priceWithVat: item.priceWithVat,
-              imageUrl: item.imageUrl,
-              availabilityStatus: 'IN_STOCK' as const,
-              stockQuantity: item.quantity,
-              variantType: 'PHYSICAL_ONLY' as const
-            },
-            quantity: item.quantity,
-            addedAt: Date.now()
-          }));
+          // Fetch complete product details for each cart item
+          console.log('[Cart] Fetching complete product details for', backendCart.items.length, 'items...');
+          const itemPromises = backendCart.items.map(item => convertCartItemDto(item));
+          const convertedItems = await Promise.all(itemPromises);
 
-          console.log('[Cart] Synced from backend:', convertedItems.length, 'items');
-          setItems(convertedItems);
+          // Filter out any items that failed to load (null results)
+          const validItems = convertedItems.filter((item): item is CartItem => item !== null);
+
+          if (validItems.length < backendCart.items.length) {
+            console.warn('[Cart]', backendCart.items.length - validItems.length, 'items failed to load complete details');
+          }
+
+          console.log('[Cart] Synced from backend:', validItems.length, 'items with complete details');
+          setItems(validItems);
         } else if (backendCart.items && backendCart.items.length === 0) {
           // Backend has empty cart
           console.log('[Cart] Backend cart is empty');
@@ -447,25 +483,20 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
       // Use new items array from backend
       if (mergedCart.items && Array.isArray(mergedCart.items)) {
-        // Convert backend CartItemDto[] to frontend CartItem[] format
-        const convertedItems: CartItem[] = mergedCart.items.map(item => ({
-          product: {
-            variantId: item.variantId,
-            masterProductId: item.masterProductId,
-            name: item.masterProductName,
-            variantName: item.variantName,
-            priceWithVat: item.priceWithVat,
-            imageUrl: item.imageUrl,
-            availabilityStatus: 'IN_STOCK' as const,
-            stockQuantity: item.quantity,
-            variantType: 'PHYSICAL_ONLY' as const
-          },
-          quantity: item.quantity,
-          addedAt: Date.now()
-        }));
+        // Fetch complete product details for each merged cart item
+        console.log('[Cart] Fetching complete product details for', mergedCart.items.length, 'merged items...');
+        const itemPromises = mergedCart.items.map(item => convertCartItemDto(item));
+        const convertedItems = await Promise.all(itemPromises);
 
-        console.log('[Cart] Merged cart from backend:', convertedItems.length, 'items');
-        setItems(convertedItems);
+        // Filter out any items that failed to load
+        const validItems = convertedItems.filter((item): item is CartItem => item !== null);
+
+        if (validItems.length < mergedCart.items.length) {
+          console.warn('[Cart]', mergedCart.items.length - validItems.length, 'merged items failed to load complete details');
+        }
+
+        console.log('[Cart] Merged cart from backend:', validItems.length, 'items with complete details');
+        setItems(validItems);
 
         // Clear guest session ID after successful merge
         localStorage.removeItem(SESSION_ID_KEY);

@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { Gift, Lock, CheckCircle, TrendingUp } from 'lucide-react';
+import { Gift, Lock, CheckCircle, TrendingUp, ChevronDown, ChevronUp } from 'lucide-react';
 import { giftTierService, type GiftTierDTO } from '../../services/giftTierService';
 import './GiftProgressBar.css';
 
 interface GiftProgressBarProps {
   cartTotal: number;
+  compact?: boolean; // New prop for compact mode
 }
 
-const GiftProgressBar: React.FC<GiftProgressBarProps> = ({ cartTotal }) => {
+const GiftProgressBar: React.FC<GiftProgressBarProps> = ({ cartTotal, compact = false }) => {
   const [tiers, setTiers] = useState<GiftTierDTO[]>([]);
   const [currentTier, setCurrentTier] = useState<GiftTierDTO | null>(null);
   const [nextTier, setNextTier] = useState<GiftTierDTO | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false); // For compact mode expansion
 
   useEffect(() => {
     loadTiers();
@@ -78,6 +80,99 @@ const GiftProgressBar: React.FC<GiftProgressBarProps> = ({ cartTotal }) => {
   const progressPercentage = getProgressPercentage();
   const amountToNext = getAmountToNextTier();
 
+  // COMPACT MODE - for Order Summary
+  if (compact) {
+    return (
+      <div className="gift-progress-compact">
+        {/* Compact Header */}
+        <div className="gift-compact-header">
+          <div className="gift-compact-title">
+            <Gift size={16} className="gift-icon-small" />
+            <span>Progress to Gifts</span>
+          </div>
+        </div>
+
+        {/* Compact Progress Bar */}
+        {nextTier && (
+          <div className="gift-compact-bar-wrapper">
+            <div className="gift-compact-bar">
+              <div
+                className="gift-compact-fill"
+                style={{ width: `${progressPercentage}%` }}
+              />
+            </div>
+            <span className="gift-compact-percentage">{Math.round(progressPercentage)}%</span>
+          </div>
+        )}
+
+        {/* Compact Message */}
+        <div className="gift-compact-message">
+          {nextTier && amountToNext > 0 ? (
+            <p>
+              {formatCurrency(amountToNext)} more to unlock <strong>{nextTier.name}</strong>
+            </p>
+          ) : !nextTier && currentTier ? (
+            <p>
+              🎉 Unlocked: <strong>{currentTier.name}</strong>
+            </p>
+          ) : nextTier && amountToNext === 0 ? (
+            <p>
+              🎉 Unlocked: <strong>{nextTier.name}</strong>
+            </p>
+          ) : null}
+        </div>
+
+        {/* Expandable Tiers List */}
+        <button
+          className="gift-compact-toggle"
+          onClick={() => setIsExpanded(!isExpanded)}
+          aria-expanded={isExpanded}
+        >
+          <span>View all tiers</span>
+          {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+        </button>
+
+        {isExpanded && (
+          <div className="gift-compact-tiers">
+            {tiers.map((tier) => {
+              const isUnlocked = cartTotal >= tier.thresholdAmount;
+              const isCurrent = currentTier?.id === tier.id;
+
+              return (
+                <div
+                  key={tier.id}
+                  className={`gift-compact-tier ${isUnlocked ? 'unlocked' : ''} ${
+                    isCurrent ? 'current' : ''
+                  }`}
+                >
+                  <div className="compact-tier-icon">
+                    {isUnlocked ? (
+                      <CheckCircle className="icon-unlocked" size={16} />
+                    ) : (
+                      <Lock className="icon-locked" size={16} />
+                    )}
+                  </div>
+                  <div className="compact-tier-content">
+                    <div className="compact-tier-name">{tier.name}</div>
+                    <div className="compact-tier-threshold">
+                      {formatCurrency(tier.thresholdAmount)}
+                    </div>
+                  </div>
+                  {tier.imageUrl && (
+                    <div className="compact-tier-image">
+                      <img src={tier.imageUrl} alt={tier.name} />
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // FULL MODE - original design
   return (
     <div className="gift-progress-container">
       <div className="gift-progress-header">

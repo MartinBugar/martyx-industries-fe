@@ -28,11 +28,12 @@ export class Product3DModelService {
     const formData = new FormData();
     formData.append('file', file);
 
-    // Get auth token
-    const token = localStorage.getItem('adminToken');
-    if (!token) {
+    // Get auth token from defaultHeaders (same as other admin services)
+    const authHeader = defaultHeaders['Authorization'];
+    if (!authHeader) {
       throw new Error('Authentication required. Please log in.');
     }
+    const token = authHeader.replace('Bearer ', '');
 
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
@@ -77,7 +78,7 @@ export class Product3DModelService {
         reject(new Error('Upload cancelled'));
       });
 
-      xhr.open('POST', `${API_BASE_URL}/master-products/${masterProductId}/3d-model/upload`);
+      xhr.open('POST', `${API_BASE_URL}/api/master-products/${masterProductId}/3d-model/upload`);
       xhr.setRequestHeader('Authorization', `Bearer ${token}`);
       xhr.send(formData);
     });
@@ -100,19 +101,16 @@ export class Product3DModelService {
    * @returns Deletion response
    */
   async deleteModel(masterProductId: number): Promise<ModelDeleteResponse> {
-    const token = localStorage.getItem('adminToken');
-    if (!token) {
+    // Check authentication via defaultHeaders (same as other admin services)
+    if (!defaultHeaders['Authorization']) {
       throw new Error('Authentication required. Please log in.');
     }
 
     const response = await fetch(
-      `${API_BASE_URL}/master-products/${masterProductId}/3d-model`,
+      `${API_BASE_URL}/api/master-products/${masterProductId}/3d-model`,
       {
         method: 'DELETE',
-        headers: {
-          ...defaultHeaders,
-          'Authorization': `Bearer ${token}`
-        }
+        headers: defaultHeaders as HeadersInit
       }
     );
 
@@ -127,7 +125,7 @@ export class Product3DModelService {
    */
   async getModelInfo(masterProductId: number): Promise<Model3DInfoResponse> {
     const response = await fetch(
-      `${API_BASE_URL}/master-products/${masterProductId}/3d-model`,
+      `${API_BASE_URL}/api/master-products/${masterProductId}/3d-model`,
       {
         method: 'GET',
         headers: defaultHeaders as HeadersInit
