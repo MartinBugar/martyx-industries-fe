@@ -98,10 +98,30 @@ const AdminVariantTabForm: React.FC = () => {
   const [tabAttachments, setTabAttachments] = useState<any[]>([]);
   const [loadingAttachments, setLoadingAttachments] = useState(false);
 
+  // Helper function to check if a language is complete
+  const isLanguageComplete = (lang: SupportedLocale): boolean => {
+    const data = languageData[lang];
+
+    // Tab label is always required
+    if (!data.tabLabel.trim()) {
+      return false;
+    }
+
+    // Check appropriate content field based on content type
+    if (sharedFields.contentType === 'HTML' && !data.contentHtml.trim()) {
+      return false;
+    }
+
+    if (sharedFields.contentType === 'MARKDOWN' && !data.contentMarkdown.trim()) {
+      return false;
+    }
+
+    return true;
+  };
+
   // Determine which languages have been filled out
-  const completedLanguages: SupportedLocale[] = (['en', 'sk', 'de'] as SupportedLocale[]).filter(
-    (lang) => languageData[lang].tabLabel.trim() !== ''
-  );
+  const completedLanguages: SupportedLocale[] = (['en', 'sk', 'de'] as SupportedLocale[])
+    .filter(lang => isLanguageComplete(lang));
 
   // Load templates
   useEffect(() => {
@@ -285,8 +305,10 @@ const AdminVariantTabForm: React.FC = () => {
         }
       });
 
-      // Execute all saves in parallel
-      await Promise.all(savePromises);
+      // Execute all saves sequentially to avoid race conditions
+      for (const savePromise of savePromises) {
+        await savePromise;
+      }
 
       console.log(`✅ Saved ${savePromises.length} language versions`);
 
@@ -544,8 +566,14 @@ const AdminVariantTabForm: React.FC = () => {
                       }}
                       placeholder="e.g., details, features, reviews"
                       required
+                      disabled={isEditMode}
                       style={fieldErrors.tabKey ? { borderColor: '#ef4444' } : {}}
                     />
+                    {isEditMode && (
+                      <p style={{ fontSize: 12, color: '#6b7280', marginTop: 4 }}>
+                        ⚠️ Tab key cannot be changed after creation to maintain language version consistency
+                      </p>
+                    )}
                     {fieldErrors.tabKey && (
                       <div style={{ color: '#ef4444', fontSize: '13px', marginTop: '4px', fontWeight: 500 }}>
                         ⚠ {fieldErrors.tabKey}
