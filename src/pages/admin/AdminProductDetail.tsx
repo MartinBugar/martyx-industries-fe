@@ -215,6 +215,12 @@ const AdminProductDetail: React.FC = () => {
       >
         🎲 3D Model
       </Link>
+      <Link
+        to={`/admin/products/${id}/digital-file`}
+        className="admin-nav-tab"
+      >
+        💾 Digital File
+      </Link>
     </div>
   );
 
