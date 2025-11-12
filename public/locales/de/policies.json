@@ -1,0 +1,134 @@
+{
+  "last_updated": "Zuletzt aktualisiert",
+  "privacy_policy": {
+    "title": "Datenschutzerklärung",
+    "last_updated_date": "11. August 2025",
+    "intro": "Diese Datenschutzerklärung erläutert, wie Martyx Industries (\"wir\", \"uns\" oder \"unser\") Ihre Informationen sammelt, verwendet und schützt, wenn Sie unsere Website besuchen und unsere Dienste nutzen. Durch die Nutzung unserer Website stimmen Sie der Erfassung und Verwendung von Informationen gemäß dieser Richtlinie zu.",
+    "information_collect": {
+      "title": "Informationen, die wir sammeln",
+      "items": [
+        "Kontoinformationen wie Name, E-Mail-Adresse und Passwort.",
+        "Bestell- und Zahlungsdetails, die sicher über vertrauenswürdige Zahlungsanbieter verarbeitet werden.",
+        "Nutzungsdaten und Analysen zur Verbesserung der Leistung und Benutzererfahrung.",
+        "Cookies und ähnliche Technologien. Siehe unsere [Cookie-Richtlinie] für Details."
+      ]
+    },
+    "how_use": {
+      "title": "Wie wir Ihre Informationen verwenden",
+      "items": [
+        "Zur Bereitstellung, Wartung und Verbesserung unserer Dienste.",
+        "Zur Verarbeitung von Transaktionen und Erfüllung von Bestellungen.",
+        "Zur Kommunikation mit Ihnen bezüglich Ihres Kontos, Bestellungen und Aktualisierungen.",
+        "Zur Verbesserung der Sicherheit, Verhinderung von Betrug und Einhaltung gesetzlicher Verpflichtungen."
+      ]
+    },
+    "data_retention": {
+      "title": "Datenspeicherung",
+      "content": "Wir speichern personenbezogene Daten nur so lange, wie es zur Erbringung unserer Dienste und zur Erfüllung gesetzlicher Anforderungen erforderlich ist. Wenn Daten nicht mehr benötigt werden, löschen oder anonymisieren wir sie sicher."
+    },
+    "sharing": {
+      "title": "Weitergabe Ihrer Informationen",
+      "content": "Wir verkaufen Ihre personenbezogenen Daten nicht. Wir können Informationen mit Dienstleistern (z. B. Zahlungsabwicklern) ausschließlich für betriebliche Zwecke und nur unter angemessenen Schutzmaßnahmen teilen."
+    },
+    "your_rights": {
+      "title": "Ihre Rechte",
+      "content": "Je nach Ihrem Standort haben Sie möglicherweise Rechte auf Zugriff, Berichtigung oder Löschung Ihrer personenbezogenen Daten sowie auf Widerspruch oder Einschränkung bestimmter Verarbeitungen. Um diese Rechte auszuüben, kontaktieren Sie uns über die Details auf unserer [Über uns]-Seite."
+    },
+    "changes": {
+      "title": "Änderungen dieser Richtlinie",
+      "content": "Wir können diese Datenschutzerklärung von Zeit zu Zeit aktualisieren. Wir werden alle Änderungen auf dieser Seite veröffentlichen und das Datum \"Zuletzt aktualisiert\" oben aktualisieren."
+    },
+    "contact": {
+      "title": "Kontaktieren Sie uns",
+      "content": "Wenn Sie Fragen zu dieser Datenschutzerklärung haben, wenden Sie sich bitte über die Kontaktdaten auf unserer [Über uns]-Seite an uns."
+    }
+  },
+  "terms_of_service": {
+    "title": "Nutzungsbedingungen",
+    "last_updated_date": "11. August 2025",
+    "intro": "Willkommen bei Martyx Industries. Diese Nutzungsbedingungen (\"Bedingungen\") regeln Ihre Nutzung unserer Website und Dienste. Durch den Zugriff auf oder die Nutzung unserer Dienste stimmen Sie diesen Bedingungen zu.",
+    "use_service": {
+      "title": "Nutzung des Dienstes",
+      "items": [
+        "Sie müssen mindestens 18 Jahre alt sein oder die Zustimmung der Eltern haben, um unsere Dienste zu nutzen.",
+        "Sie erklären sich damit einverstanden, die Dienste nicht zu missbrauchen oder gegen geltende Gesetze zu verstoßen.",
+        "Wir behalten uns das Recht vor, Funktionen jederzeit zu ändern oder einzustellen."
+      ]
+    },
+    "purchases": {
+      "title": "Käufe und Zahlungen",
+      "content": "Alle Käufe unterliegen unseren Preisen und der Verfügbarkeit. Zahlungen werden von Drittanbietern gemäß deren Bedingungen und Sicherheitsstandards verarbeitet."
+    },
+    "intellectual_property": {
+      "title": "Geistiges Eigentum",
+      "content": "Alle bereitgestellten Inhalte, Designs und Materialien sind Eigentum von oder lizenziert an Martyx Industries und sind durch geltende Gesetze zum geistigen Eigentum geschützt. Sie dürfen Inhalte ohne Genehmigung nicht reproduzieren oder verbreiten."
+    },
+    "limitation": {
+      "title": "Haftungsbeschränkung",
+      "content": "Im größtmöglichen gesetzlich zulässigen Umfang haftet Martyx Industries nicht für indirekte, zufällige oder Folgeschäden, die aus der Nutzung unserer Dienste entstehen."
+    },
+    "privacy": {
+      "title": "Datenschutz",
+      "content": "Ihre Nutzung unserer Dienste unterliegt auch unserer [Datenschutzerklärung] und unserer [Cookie-Richtlinie]."
+    },
+    "changes": {
+      "title": "Änderungen dieser Bedingungen",
+      "content": "Wir können diese Bedingungen von Zeit zu Zeit aktualisieren. Die fortgesetzte Nutzung des Dienstes nach Änderungen stellt die Annahme der neuen Bedingungen dar."
+    },
+    "contact": {
+      "title": "Kontakt",
+      "content": "Bei Fragen zu diesen Bedingungen kontaktieren Sie uns über die Details auf unserer [Über uns]-Seite."
+    }
+  },
+  "cookies_policy": {
+    "title": "Cookie-Richtlinie",
+    "last_updated_date": "11. August 2025",
+    "intro": "Diese Cookie-Richtlinie erläutert, wie Martyx Industries (\"wir\", \"uns\" oder \"unser\") Cookies und ähnliche Technologien auf unserer Website verwendet. Sie sollte zusammen mit unserer [Datenschutzerklärung] gelesen werden.",
+    "what_are": {
+      "title": "Was sind Cookies?",
+      "content": "Cookies sind kleine Textdateien, die auf Ihrem Gerät gespeichert werden, wenn Sie eine Website besuchen. Sie helfen der Website, sich Ihre Aktionen und Präferenzen (wie Login, Sprache und andere Einstellungen) über einen bestimmten Zeitraum zu merken, sodass Sie diese nicht jedes Mal erneut eingeben müssen, wenn Sie zur Website zurückkehren oder von einer Seite zur anderen navigieren."
+    },
+    "how_use": {
+      "title": "Wie wir Cookies verwenden",
+      "content": "Wir verwenden Cookies für folgende Zwecke:"
+    },
+    "purposes": {
+      "items": [
+        "Unbedingt erforderliche Cookies – Erforderlich für die Kernfunktionalität der Website, wie Sicherheit, Netzwerkverwaltung und Barrierefreiheit. Diese können nicht deaktiviert werden.",
+        "Analyse-Cookies – Helfen uns zu verstehen, wie Besucher mit unserer Website interagieren, damit wir Leistung und Benutzererfahrung verbessern können.",
+        "Marketing-Cookies – Werden verwendet, um relevante Inhalte und Angebote basierend auf Ihren Interessen bereitzustellen."
+      ]
+    },
+    "types": {
+      "title": "Cookies, die wir verwenden",
+      "intro": "Nachfolgend finden Sie einen Überblick über die Arten von Cookies, denen Sie auf unserer Website begegnen können:",
+      "items": [
+        "Sitzungs-Cookies – Temporäre Cookies, die auf Ihrem Gerät bleiben, bis Sie Ihren Browser schließen.",
+        "Persistente Cookies – Bleiben für einen festgelegten Zeitraum auf Ihrem Gerät oder bis sie gelöscht werden.",
+        "Erst-Cookies – Direkt von unserer Website gesetzt.",
+        "Dritt-Cookies – Von Dritten (z. B. Analyse- oder Zahlungsanbietern) gesetzt, wenn Sie mit unserer Website interagieren."
+      ]
+    },
+    "managing": {
+      "title": "Verwaltung Ihrer Cookie-Präferenzen",
+      "content": "Sie können Ihre Präferenzen jederzeit über das Cookie-Banner auf unserer Website verwalten. Um Ihre Auswahl zu aktualisieren, öffnen Sie das Banner über die Option \"Einstellungen\", wenn es erscheint, oder löschen Sie Ihre Cookies, damit das Banner erneut angezeigt wird."
+    },
+    "browser_settings": {
+      "content": "Sie können Cookies auch über Ihre Browsereinstellungen blockieren oder löschen. Bitte beachten Sie, dass das Blockieren einiger Arten von Cookies Ihre Erfahrung auf der Website und die Dienste, die wir anbieten können, beeinträchtigen kann."
+    },
+    "changes": {
+      "title": "Änderungen dieser Richtlinie",
+      "content": "Wir können diese Cookie-Richtlinie von Zeit zu Zeit aktualisieren, um Änderungen an unseren Cookies oder aus betrieblichen, rechtlichen oder regulatorischen Gründen widerzuspiegeln. Besuchen Sie diese Seite regelmäßig, um über unsere Verwendung von Cookies informiert zu bleiben."
+    },
+    "contact": {
+      "title": "Kontaktieren Sie uns",
+      "content": "Wenn Sie Fragen zur Verwendung von Cookies haben, kontaktieren Sie uns bitte über die auf unserer [Über uns]-Seite angegebenen Details."
+    }
+  },
+  "links": {
+    "privacy_policy": "Datenschutzerklärung",
+    "cookie_policy": "Cookie-Richtlinie",
+    "terms_of_service": "Nutzungsbedingungen",
+    "about": "Über uns"
+  }
+}

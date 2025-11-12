@@ -1,0 +1,134 @@
+{
+  "last_updated": "Naposledy aktualizované",
+  "privacy_policy": {
+    "title": "Ochrana osobných údajov",
+    "last_updated_date": "11. augusta 2025",
+    "intro": "Tieto Zásady ochrany osobných údajov vysvetľujú, ako Martyx Industries (\"my\", \"nás\" alebo \"naše\") zhromažďuje, používa a chráni vaše informácie pri návšteve našej webovej stránky a používaní našich služieb. Používaním našej stránky súhlasíte so zhromažďovaním a používaním informácií v súlade s týmito zásadami.",
+    "information_collect": {
+      "title": "Informácie, ktoré zhromažďujeme",
+      "items": [
+        "Informácie o účte, ako je meno, e-mailová adresa a heslo.",
+        "Údaje o objednávkach a platbách spracované bezpečne prostredníctvom dôveryhodných platobných poskytovateľov.",
+        "Údaje o používaní a analytické údaje na zlepšenie výkonu a používateľskej skúsenosti.",
+        "Súbory cookie a podobné technológie. Podrobnosti nájdete v našich [Zásadách používania súborov cookie]."
+      ]
+    },
+    "how_use": {
+      "title": "Ako používame vaše informácie",
+      "items": [
+        "Na poskytovanie, udržiavanie a zlepšovanie našich služieb.",
+        "Na spracovanie transakcií a splnenie objednávok.",
+        "Na komunikáciu s vami týkajúcu sa vášho účtu, objednávok a aktualizácií.",
+        "Na zvýšenie bezpečnosti, prevenciu podvodov a dodržiavanie zákonných povinností."
+      ]
+    },
+    "data_retention": {
+      "title": "Uchovávanie údajov",
+      "content": "Osobné údaje uchovávame len po dobu potrebnú na poskytovanie našich služieb a na splnenie zákonných požiadaviek. Keď už údaje nie sú potrebné, bezpečne ich vymažeme alebo anonymizujeme."
+    },
+    "sharing": {
+      "title": "Zdieľanie vašich informácií",
+      "content": "Vaše osobné údaje nepredávame. Informácie môžeme zdieľať s poskytovateľmi služieb (napr. s poskytovateľmi platobných služieb) výhradne na prevádzkové účely a len pod primeranými zárukami."
+    },
+    "your_rights": {
+      "title": "Vaše práva",
+      "content": "V závislosti od vašej polohy môžete mať právo na prístup, opravu alebo vymazanie svojich osobných údajov a na námietku proti určitému spracovaniu alebo jeho obmedzenie. Ak chcete tieto práva uplatniť, kontaktujte nás prostredníctvom údajov na našej stránke [O nás]."
+    },
+    "changes": {
+      "title": "Zmeny týchto zásad",
+      "content": "Tieto Zásady ochrany osobných údajov môžeme čas od času aktualizovať. Všetky zmeny zverejníme na tejto stránke a aktualizujeme dátum \"Naposledy aktualizované\" vyššie."
+    },
+    "contact": {
+      "title": "Kontaktujte nás",
+      "content": "Ak máte otázky týkajúce sa týchto Zásad ochrany osobných údajov, kontaktujte nás prostredníctvom kontaktných údajov na našej stránke [O nás]."
+    }
+  },
+  "terms_of_service": {
+    "title": "Obchodné podmienky",
+    "last_updated_date": "11. augusta 2025",
+    "intro": "Vitajte v Martyx Industries. Tieto Obchodné podmienky (\"Podmienky\") upravujú používanie našej webovej stránky a služieb. Prístupom na naše služby alebo ich používaním súhlasíte s týmito Podmienkami.",
+    "use_service": {
+      "title": "Používanie služby",
+      "items": [
+        "Musíte mať aspoň 18 rokov alebo súhlas rodičov, aby ste mohli používať naše služby.",
+        "Súhlasíte s tým, že nebudete zneužívať služby ani porušovať platné zákony.",
+        "Vyhradzujeme si právo kedykoľvek upraviť alebo ukončiť funkcie."
+      ]
+    },
+    "purchases": {
+      "title": "Nákupy a platby",
+      "content": "Všetky nákupy podliehajú našim cenám a dostupnosti. Platby spracúvajú poskytovatelia tretích strán podľa ich podmienok a bezpečnostných štandardov."
+    },
+    "intellectual_property": {
+      "title": "Duševné vlastníctvo",
+      "content": "Všetok obsah, dizajny a materiály poskytované spoločnosťou Martyx Industries sú vlastníctvom alebo sú licencované spoločnosti Martyx Industries a sú chránené príslušnými zákonmi o duševnom vlastníctve. Obsah nemôžete reprodukovať ani šíriť bez povolenia."
+    },
+    "limitation": {
+      "title": "Obmedzenie zodpovednosti",
+      "content": "V maximálnom rozsahu povolenom zákonom nebude spoločnosť Martyx Industries zodpovedná za žiadne nepriame, náhodné ani následné škody vyplývajúce z používania našich služieb."
+    },
+    "privacy": {
+      "title": "Ochrana osobných údajov",
+      "content": "Používanie našich služieb sa riadi aj našimi [Zásadami ochrany osobných údajov] a našimi [Zásadami používania súborov cookie]."
+    },
+    "changes": {
+      "title": "Zmeny týchto podmienok",
+      "content": "Tieto Podmienky môžeme čas od času aktualizovať. Pokračovanie v používaní služby po zmenách znamená prijatie nových Podmienok."
+    },
+    "contact": {
+      "title": "Kontakt",
+      "content": "Ak máte otázky týkajúce sa týchto Podmienok, kontaktujte nás prostredníctvom údajov na našej stránke [O nás]."
+    }
+  },
+  "cookies_policy": {
+    "title": "Zásady používania súborov cookie",
+    "last_updated_date": "11. augusta 2025",
+    "intro": "Tieto Zásady používania súborov cookie vysvetľujú, ako Martyx Industries (\"my\", \"nás\" alebo \"naše\") používa súbory cookie a podobné technológie na našej webovej stránke. Mali by sa čítať spolu s našimi [Zásadami ochrany osobných údajov].",
+    "what_are": {
+      "title": "Čo sú súbory cookie?",
+      "content": "Súbory cookie sú malé textové súbory, ktoré sa ukladajú do vášho zariadenia pri návšteve webovej stránky. Pomáhajú stránke zapamätať si vaše akcie a preferencie (ako je prihlásenie, jazyk a ďalšie nastavenia) počas určitého času, takže ich nemusíte znovu zadávať pri každom návrate na stránku alebo pri prechádzaní z jednej stránky na druhú."
+    },
+    "how_use": {
+      "title": "Ako používame súbory cookie",
+      "content": "Súbory cookie používame na nasledujúce účely:"
+    },
+    "purposes": {
+      "items": [
+        "Nevyhnutne potrebné súbory cookie – Požadované pre základnú funkčnosť stránky, ako je bezpečnosť, správa siete a prístupnosť. Tieto nemožno zakázať.",
+        "Analytické súbory cookie – Pomáhajú nám pochopiť, ako návštevníci interagujú s našou stránkou, aby sme mohli zlepšiť výkon a používateľskú skúsenosť.",
+        "Marketingové súbory cookie – Používajú sa na poskytovanie relevantného obsahu a ponúk na základe vašich záujmov."
+      ]
+    },
+    "types": {
+      "title": "Súbory cookie, ktoré používame",
+      "intro": "Nižšie je uvedený prehľad typov súborov cookie, s ktorými sa môžete na našej stránke stretnúť:",
+      "items": [
+        "Reláciové súbory cookie – Dočasné súbory cookie, ktoré zostanú vo vašom zariadení, kým nezavriete prehliadač.",
+        "Trvalé súbory cookie – Zostávajú vo vašom zariadení počas stanoveného obdobia alebo kým ich nevymažete.",
+        "Súbory cookie prvej strany – Nastavené priamo našou webovou stránkou.",
+        "Súbory cookie tretích strán – Nastavené tretími stranami (napr. analytickými alebo platobnými poskytovateľmi) pri interakcii s našou stránkou."
+      ]
+    },
+    "managing": {
+      "title": "Správa vašich preferencií súborov cookie",
+      "content": "Svoje preferencie môžete kedykoľvek spravovať pomocou bannera súborov cookie na našej stránke. Ak chcete aktualizovať svoje voľby, otvorte banner cez možnosť \"Preferencie\", keď sa zobrazí, alebo vymažte svoje súbory cookie, aby sa banner znova zobrazil."
+    },
+    "browser_settings": {
+      "content": "Súbory cookie môžete tiež blokovať alebo vymazať prostredníctvom nastavení prehliadača. Upozorňujeme, že blokovanie niektorých typov súborov cookie môže ovplyvniť vašu skúsenosť na stránke a služby, ktoré vám môžeme ponúknuť."
+    },
+    "changes": {
+      "title": "Zmeny týchto zásad",
+      "content": "Tieto Zásady používania súborov cookie môžeme čas od času aktualizovať, aby odrážali zmeny našich súborov cookie alebo z prevádzkových, právnych alebo regulačných dôvodov. Pravidelne navštevujte túto stránku, aby ste boli informovaní o našom používaní súborov cookie."
+    },
+    "contact": {
+      "title": "Kontaktujte nás",
+      "content": "Ak máte akékoľvek otázky týkajúce sa používania súborov cookie, kontaktujte nás prostredníctvom údajov uvedených na našej stránke [O nás]."
+    }
+  },
+  "links": {
+    "privacy_policy": "Zásady ochrany osobných údajov",
+    "cookie_policy": "Zásady používania súborov cookie",
+    "terms_of_service": "Obchodné podmienky",
+    "about": "O nás"
+  }
+}

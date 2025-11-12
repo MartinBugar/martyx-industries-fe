@@ -1,0 +1,72 @@
+{
+  "title": "Community Galerie",
+  "subtitle": "Schauen Sie sich tolle Modelle unserer Modellbauer an",
+
+  "stats": {
+    "builders": "Modellbauer",
+    "models": "Modelle",
+    "photos": "Fotos",
+    "likes": "Likes"
+  },
+
+  "filter": {
+    "label": "Filter",
+    "all": "Alle Modelle",
+    "completed": "Nur fertiggestellte"
+  },
+
+  "sort": {
+    "label": "Sortieren nach",
+    "recent": "Neueste Fotos",
+    "most_photos": "Meiste Fotos",
+    "alphabetic": "Alphabetisch",
+    "most_liked": "Am meisten geliked"
+  },
+
+  "card": {
+    "models": "Modelle",
+    "photos": "Fotos",
+    "view_gallery": "Galerie ansehen"
+  },
+
+  "back_to_gallery": "Zurück zur Galerie",
+  "member_since": "Mitglied seit {{date}}",
+  "completed": "Fertiggestellt",
+  "photos": "Fotos",
+
+  "like": "Gefällt mir",
+  "unlike": "Gefällt mir nicht mehr",
+
+  "pagination": {
+    "previous": "Zurück",
+    "next": "Weiter"
+  },
+
+  "lightbox": {
+    "close": "Schließen",
+    "previous": "Zurück",
+    "next": "Weiter",
+    "comments_coming_soon": "Kommentare kommen bald"
+  },
+
+  "empty": {
+    "title": "Noch keine öffentlichen Galerien",
+    "description": "Seien Sie der Erste, der sein Modell teilt!",
+    "no_models": "Noch keine öffentlichen Modelle"
+  },
+
+  "loading": {
+    "title": "Lade Galerie..."
+  },
+
+  "errors": {
+    "load_failed": "Galerie konnte nicht geladen werden",
+    "user_not_found": "Benutzer nicht gefunden",
+    "user_no_public": "Dieser Benutzer hat keine öffentlichen Galerien",
+    "login_required": "Bitte melden Sie sich an, um Fotos zu liken"
+  },
+
+  "actions": {
+    "retry": "Erneut versuchen"
+  }
+}

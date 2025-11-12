@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { userGalleryService } from '../../services/userGalleryService';
 import { useAuth } from '../../context/useAuth';
+import { useFormatters } from '../../hooks/useFormatters';
 import Lightbox from './Lightbox';
 import type { UserProfile, PublicModel, PublicPhoto } from '../../types/userGallery';
 import './UserGalleryDetail.css';
@@ -10,6 +11,7 @@ import './UserGalleryDetail.css';
 const UserGalleryDetail: React.FC = () => {
   const { userId } = useParams<{ userId: string }>();
   const { t } = useTranslation('gallery');
+  const { formatDate } = useFormatters();
   const navigate = useNavigate();
   const { user: currentUser } = useAuth();
 
@@ -119,16 +121,6 @@ const UserGalleryDetail: React.FC = () => {
     document.body.style.overflow = 'auto';
   };
 
-  // Format date
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('sk-SK', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
-
   // Get avatar placeholder
   const getAvatarPlaceholder = () => {
     return userData?.username?.charAt(0).toUpperCase() || '?';
@@ -194,7 +186,7 @@ const UserGalleryDetail: React.FC = () => {
           <div className="user-meta">
             <h1>{userData.username}</h1>
             <p className="member-since">
-              {t('member_since').replace('{{date}}', formatDate(userData.member_since))}
+              {t('member_since', { date: formatDate(userData.member_since) })}
             </p>
             <div className="user-stats-detail">
               <span>

@@ -6,7 +6,25 @@ import ICU from 'i18next-icu';
 
 // Export types for better TypeScript support
 export type SupportedLanguage = 'en' | 'sk' | 'de';
-export type Namespace = 'common' | 'nav' | 'checkout' | 'home' | 'products' | 'auth' | 'about' | 'wishlist' | 'collection' | 'cart';
+export type Namespace =
+  | 'common'
+  | 'nav'
+  | 'checkout'
+  | 'home'
+  | 'products'
+  | 'auth'
+  | 'about'
+  | 'wishlist'
+  | 'collection'
+  | 'cart'
+  | 'contact'
+  | 'gallery'
+  | 'referral'
+  | 'credits'
+  | 'gamification'
+  | 'admin'
+  | 'policies'
+  | 'validation';
 
 i18n
   // Load translations using http backend
@@ -50,9 +68,27 @@ i18n
     
     // Default namespace
     defaultNS: 'common',
-    
+
     // Namespaces to load by default
-    ns: ['common', 'nav', 'checkout', 'home', 'products', 'auth', 'about'],
+    ns: [
+      'common',
+      'nav',
+      'checkout',
+      'home',
+      'products',
+      'auth',
+      'about',
+      'wishlist',
+      'collection',
+      'cart',
+      'contact',
+      'gallery',
+      'referral',
+      'credits',
+      'gamification',
+      'policies',
+      'validation'
+    ],
     
     // ICU options
     i18nFormat: {

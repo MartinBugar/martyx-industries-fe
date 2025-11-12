@@ -1,0 +1,134 @@
+{
+  "last_updated": "Last updated",
+  "privacy_policy": {
+    "title": "Privacy Policy",
+    "last_updated_date": "11 August 2025",
+    "intro": "This Privacy Policy explains how Martyx Industries (\"we\", \"us\", or \"our\") collects, uses, and safeguards your information when you visit our website and use our services. By using our site, you agree to the collection and use of information in accordance with this policy.",
+    "information_collect": {
+      "title": "Information we collect",
+      "items": [
+        "Account information such as name, email address, and password.",
+        "Order and payment details processed securely via trusted payment providers.",
+        "Usage data and analytics to improve performance and user experience.",
+        "Cookies and similar technologies. See our [Cookie Policy] for details."
+      ]
+    },
+    "how_use": {
+      "title": "How we use your information",
+      "items": [
+        "To provide, maintain, and improve our services.",
+        "To process transactions and fulfill orders.",
+        "To communicate with you regarding your account, orders, and updates.",
+        "To enhance security, prevent fraud, and comply with legal obligations."
+      ]
+    },
+    "data_retention": {
+      "title": "Data retention",
+      "content": "We retain personal data only for as long as necessary to provide our services and comply with legal requirements. When data is no longer needed, we securely delete or anonymize it."
+    },
+    "sharing": {
+      "title": "Sharing your information",
+      "content": "We do not sell your personal information. We may share information with service providers (e.g., payment processors) strictly for operational purposes and only under appropriate safeguards."
+    },
+    "your_rights": {
+      "title": "Your rights",
+      "content": "Depending on your location, you may have rights to access, correct, or delete your personal data, and to object to or restrict certain processing. To exercise these rights, contact us via the details on our [About] page."
+    },
+    "changes": {
+      "title": "Changes to this policy",
+      "content": "We may update this Privacy Policy from time to time. We will post any changes on this page and update the \"Last updated\" date above."
+    },
+    "contact": {
+      "title": "Contact us",
+      "content": "If you have questions about this Privacy Policy, please reach out via the contact details on our [About] page."
+    }
+  },
+  "terms_of_service": {
+    "title": "Terms of Service",
+    "last_updated_date": "11 August 2025",
+    "intro": "Welcome to Martyx Industries. These Terms of Service (\"Terms\") govern your use of our website and services. By accessing or using our services, you agree to be bound by these Terms.",
+    "use_service": {
+      "title": "Use of the service",
+      "items": [
+        "You must be at least 18 years old or have parental consent to use our services.",
+        "You agree not to misuse the services or violate applicable laws.",
+        "We reserve the right to modify or discontinue features at any time."
+      ]
+    },
+    "purchases": {
+      "title": "Purchases and payments",
+      "content": "All purchases are subject to our pricing and availability. Payments are processed by third-party providers under their terms and security standards."
+    },
+    "intellectual_property": {
+      "title": "Intellectual property",
+      "content": "All content, designs, and materials provided are owned by or licensed to Martyx Industries and are protected by applicable intellectual property laws. You may not reproduce or distribute content without permission."
+    },
+    "limitation": {
+      "title": "Limitation of liability",
+      "content": "To the fullest extent permitted by law, Martyx Industries will not be liable for any indirect, incidental, or consequential damages arising from the use of our services."
+    },
+    "privacy": {
+      "title": "Privacy",
+      "content": "Your use of our services is also governed by our [Privacy Policy] and our [Cookie Policy]."
+    },
+    "changes": {
+      "title": "Changes to these terms",
+      "content": "We may update these Terms from time to time. Continued use of the service after changes constitutes acceptance of the new Terms."
+    },
+    "contact": {
+      "title": "Contact",
+      "content": "For questions about these Terms, contact us via the details on our [About] page."
+    }
+  },
+  "cookies_policy": {
+    "title": "Cookie Policy",
+    "last_updated_date": "11 August 2025",
+    "intro": "This Cookie Policy explains how Martyx Industries (\"we\", \"us\", or \"our\") uses cookies and similar technologies on our website. It should be read together with our [Privacy Policy].",
+    "what_are": {
+      "title": "What are cookies?",
+      "content": "Cookies are small text files that are stored on your device when you visit a website. They help the site remember your actions and preferences (such as login, language, and other settings) over a period of time, so you don't have to re-enter them whenever you come back to the site or browse from one page to another."
+    },
+    "how_use": {
+      "title": "How we use cookies",
+      "content": "We use cookies for the following purposes:"
+    },
+    "purposes": {
+      "items": [
+        "Strictly necessary cookies – Required for core site functionality, such as security, network management, and accessibility. These cannot be disabled.",
+        "Analytics cookies – Help us understand how visitors interact with our site so we can improve performance and user experience.",
+        "Marketing cookies – Used to deliver relevant content and offers based on your interests."
+      ]
+    },
+    "types": {
+      "title": "Cookies we use",
+      "intro": "Below is an overview of the types of cookies you may encounter on our site:",
+      "items": [
+        "Session cookies – Temporary cookies that stay on your device until you close your browser.",
+        "Persistent cookies – Remain on your device for a set period or until deleted.",
+        "First-party cookies – Set by our website directly.",
+        "Third-party cookies – Set by third parties (e.g., analytics or payment providers) when interacting with our site."
+      ]
+    },
+    "managing": {
+      "title": "Managing your cookie preferences",
+      "content": "You can manage your preferences at any time using the cookie banner on our site. To update your choices, open the banner via the \"Preferences\" option when it appears, or clear your cookies to have the banner re-appear."
+    },
+    "browser_settings": {
+      "content": "You can also block or delete cookies through your browser settings. Please note that blocking some types of cookies may impact your experience on the site and the services we are able to offer."
+    },
+    "changes": {
+      "title": "Changes to this policy",
+      "content": "We may update this Cookie Policy from time to time to reflect changes to our cookies or for operational, legal, or regulatory reasons. Please revisit this page regularly to stay informed about our use of cookies."
+    },
+    "contact": {
+      "title": "Contact us",
+      "content": "If you have any questions about our use of cookies, please contact us via the details provided on our [About] page."
+    }
+  },
+  "links": {
+    "privacy_policy": "Privacy Policy",
+    "cookie_policy": "Cookie Policy",
+    "terms_of_service": "Terms of Service",
+    "about": "About"
+  }
+}

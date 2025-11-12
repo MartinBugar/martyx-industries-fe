@@ -1,0 +1,17 @@
+{
+  "title": "Kontoguthaben",
+  "availableBalance": "Verfügbarer Saldo",
+  "available": "Verfügbar",
+  "pending": "Ausstehend (14 Tage)",
+  "applyCredits": "Guthaben auf Bestellung anwenden",
+  "appliedCredits": "Angewendetes Guthaben",
+  "apply": "Anwenden",
+  "remove": "Entfernen",
+  "max": "Max",
+  "infoText": "Sie können Ihr Guthaben verwenden, um den Gesamtbetrag der Bestellung zu reduzieren. Guthaben wird durch unser Empfehlungsprogramm verdient.",
+  "error": {
+    "invalidAmount": "Bitte geben Sie einen gültigen Betrag ein",
+    "insufficientBalance": "Unzureichendes Guthaben",
+    "exceedsTotal": "Betrag übersteigt den Bestellbetrag"
+  }
+}

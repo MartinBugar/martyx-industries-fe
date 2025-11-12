@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { products } from '../../data/productData';
 import { ordersService } from '../../services/ordersService';
+import { useFormatters } from '../../hooks/useFormatters';
 import './OrderConfirmation.css';
 
 const OrderConfirmation: React.FC = () => {
   const navigate = useNavigate();
-    const product = products.find(p => p.masterProductId === 1) ?? products[0];
+  const { t } = useTranslation('checkout');
+  const { formatDate, formatCurrency } = useFormatters();
+  const product = products.find(p => p.masterProductId === 1) ?? products[0];
   const [customerEmail, setCustomerEmail] = useState<string>('');
   const [orderNumber, setOrderNumber] = useState<string>('');
   const [isEmailSent, setIsEmailSent] = useState<boolean>(false);
@@ -46,21 +50,14 @@ const OrderConfirmation: React.FC = () => {
     };
   }, [navigate]);
   
-  // Format the current date
-  const formatDate = () => {
-    const date = new Date();
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
+  // Get current date formatted
+  const currentDate = formatDate(new Date());
   
   // Handle download click
   const handleDownload = async () => {
     setDownloadError(null);
     if (!downloadUrls || downloadUrls.length === 0) {
-      setDownloadError('Download link is not available yet. Please check your email or try again later.');
+      setDownloadError(t('confirmation.download_not_available'));
       return;
     }
     try {
@@ -68,15 +65,15 @@ const OrderConfirmation: React.FC = () => {
       // Use the first available download URL; backend may return multiple per item
       await ordersService.downloadByUrl(downloadUrls[0], product.name);
     } catch (e) {
-      const msg = e instanceof Error ? e.message : 'Failed to download product';
+      const msg = e instanceof Error ? e.message : t('confirmation.download_failed');
       setDownloadError(msg);
     } finally {
       setDownloading(false);
     }
   };
-  
+
   if (!customerEmail) {
-    return <div className="loading">Loading...</div>;
+    return <div className="loading">{t('common:loading')}</div>;
   }
   
   return (
@@ -84,85 +81,85 @@ const OrderConfirmation: React.FC = () => {
       <div className="order-confirmation-content">
         <div className="order-success">
           <div className="success-icon">✓</div>
-          <h1>Thank You for Your Order!</h1>
-          <p>Your order has been successfully placed and is being processed.</p>
+          <h1>{t('confirmation.title')}</h1>
+          <p>{t('confirmation.subtitle')}</p>
         </div>
-        
+
         <div className="order-details">
-          <h2>Order Details</h2>
-          
+          <h2>{t('confirmation.order_details')}</h2>
+
           <div className="order-info">
             <div className="info-row">
-              <span>Order Number:</span>
+              <span>{t('confirmation.order_number')}:</span>
               <span>{orderNumber}</span>
             </div>
-            
+
             <div className="info-row">
-              <span>Date:</span>
-              <span>{formatDate()}</span>
+              <span>{t('confirmation.order_date')}:</span>
+              <span>{currentDate}</span>
             </div>
-            
+
             <div className="info-row">
-              <span>Email:</span>
+              <span>{t('shipping.email')}:</span>
               <span>{customerEmail}</span>
             </div>
-            
+
             <div className="info-row">
-              <span>Product:</span>
+              <span>{t('confirmation.item')}:</span>
               <span>{product.name}</span>
             </div>
-            
+
             <div className="info-row">
-              <span>Total:</span>
-              <span>{product.priceWithVat.toFixed(2)} {product.currency === 'EUR' ? '€' : product.currency}</span>
+              <span>{t('order_summary.total')}:</span>
+              <span>{formatCurrency(product.priceWithVat, product.currency)}</span>
             </div>
           </div>
         </div>
         
         <div className="digital-delivery">
-          <h2>Digital Product Delivery</h2>
-          
+          <h2>{t('confirmation.digital_delivery_title')}</h2>
+
           <div className="email-status">
             {isEmailSent ? (
               <p className="email-sent">
                 <span className="status-icon">✓</span>
-                An email with download instructions has been sent to <strong>{customerEmail}</strong>
+                {t('confirmation.email_sent', { email: customerEmail })}
               </p>
             ) : (
               <p className="email-sending">
                 <span className="status-icon">⟳</span>
-                Sending email to <strong>{customerEmail}</strong>...
+                {t('confirmation.email_sending', { email: customerEmail })}
               </p>
             )}
           </div>
-          
+
           <div className="download-section">
-            <p>You can also download your product directly from here:</p>
-            
-            <button 
+            <p>{t('confirmation.download_direct')}</p>
+
+            <button
               className="download-btn"
               onClick={handleDownload}
               disabled={downloading || !downloadUrls || downloadUrls.length === 0}
             >
-              {downloading ? 'Downloading…' : `Download ${product.name}.zip`}
+              {downloading ? t('confirmation.downloading') : t('confirmation.download_button', { product: product.name })}
             </button>
             {downloadError && (
               <p className="download-info" role="alert" style={{ color: '#b00020' }}>{downloadError}</p>
             )}
-            
+
             <div className="download-info">
-              <p>Your download link will expire in 24 hours.</p>
-              <p>If you encounter any issues, please contact our support team.</p>
+              <p>{t('confirmation.download_expires')}</p>
+              <p>{t('confirmation.download_issues')}</p>
             </div>
           </div>
         </div>
         
         <div className="next-steps">
-          <button 
+          <button
             className="continue-shopping-btn"
             onClick={() => navigate('/')}
           >
-            Continue Shopping
+            {t('confirmation.continue_shopping')}
           </button>
         </div>
       </div>
