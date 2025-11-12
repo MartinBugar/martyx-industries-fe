@@ -589,7 +589,7 @@ const AdminMasterProductTabForm: React.FC = () => {
                     <select
                       className="form-control"
                       value={sharedFields.contentType}
-                      onChange={(e) => updateSharedField('contentType', e.target.value)}
+                      onChange={(e) => updateSharedField('contentType', e.target.value as 'HTML' | 'MARKDOWN' | 'JSON' | 'COMPONENT')}
                     >
                       <option value="HTML">HTML</option>
                       <option value="MARKDOWN">Markdown</option>
