@@ -76,5 +76,11 @@
     "download_all_products": "Download all products (ZIP)",
     "downloading": "Downloading…",
     "download_failed": "Download failed. Please try again."
+  },
+  "unavailable": {
+    "title": "Product currently unavailable",
+    "description": "This product is temporarily unavailable",
+    "back": "Back",
+    "all_products": "All Products"
   }
 }

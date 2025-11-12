@@ -11,11 +11,13 @@ import WishlistButton from '../../components/WishlistButton';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import WishlistProductImage from '../../components/WishlistProductImage';
 import { productGalleryService } from '../../services/productGalleryService';
+import { useFormatters } from '../../hooks/useFormatters';
 import './Wishlist.css';
 import '../Products/Products.css';
 
 const Wishlist: React.FC = () => {
   const { t } = useTranslation('wishlist');
+  const { formatShortDate } = useFormatters();
   const navigate = useNavigate();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
   const {
@@ -358,7 +360,7 @@ const Wishlist: React.FC = () => {
                       <h3 className="product-card-title">{item.productName}</h3>
                       <p className="product-card-description">{item.productDescription}</p>
                       <div className="product-card-price">
-                        {item.hasMultipleVariants && 'Od '}
+                        {item.hasMultipleVariants && t('price_from')}
                         {item.productPrice ? item.productPrice.toFixed(2) : '0.00'} {item.productCurrency === 'EUR' ? '€' : item.productCurrency}
                       </div>
                     </div>
@@ -380,7 +382,7 @@ const Wishlist: React.FC = () => {
 
                   <div className="wishlist-item-meta">
                     <span className="wishlist-added-date">
-                      Added {new Date(item.addedAt).toLocaleDateString()}
+                      {t('added_date', { date: formatShortDate(item.addedAt) })}
                     </span>
                   </div>
                 </article>
@@ -390,7 +392,7 @@ const Wishlist: React.FC = () => {
               {unavailableItems.length > 0 && (
                 <>
                   <div className="unavailable-section-header">
-                    <h3>Unavailable Items</h3>
+                    <h3>{t('unavailable_section.title')}</h3>
                     <p>These items are no longer available for purchase</p>
                   </div>
 
@@ -406,7 +408,7 @@ const Wishlist: React.FC = () => {
                           />
 
                           <div className="unavailable-overlay">
-                            <span>Unavailable</span>
+                            <span>{t('unavailable_section.overlay')}</span>
                           </div>
 
                           <div className="product-card-wishlist">
@@ -431,7 +433,7 @@ const Wishlist: React.FC = () => {
                           <h3 className="product-card-title">{item.productName}</h3>
                           <p className="product-card-description">{item.productDescription}</p>
                           <div className="product-card-price">
-                            {item.hasMultipleVariants && 'Od '}
+                            {item.hasMultipleVariants && t('price_from')}
                             {item.productPrice ? item.productPrice.toFixed(2) : '0.00'} {item.productCurrency === 'EUR' ? '€' : item.productCurrency}
                           </div>
                         </div>
@@ -439,13 +441,13 @@ const Wishlist: React.FC = () => {
 
                       <div className="product-card-actions">
                         <button className="add-to-cart-btn" disabled>
-                          Unavailable
+                          {t('unavailable_section.button')}
                         </button>
                       </div>
 
                       <div className="wishlist-item-meta">
                         <span className="wishlist-added-date">
-                          Added {new Date(item.addedAt).toLocaleDateString()}
+                          {t('added_date', { date: formatShortDate(item.addedAt) })}
                         </span>
                       </div>
                     </article>

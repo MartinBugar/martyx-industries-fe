@@ -141,7 +141,7 @@ const toYouTubeEmbedUrl = (url: string): string => {
 
 const ProductDetail: React.FC = () => {
     const {id} = useParams<{ id: string }>();
-    const { i18n } = useTranslation('products');
+    const { i18n, t } = useTranslation('products');
     const { user } = useAuth();
     const [product, setProduct] = React.useState<Product | null>(null);
     const [loading, setLoading] = React.useState(true);
@@ -433,23 +433,22 @@ const ProductDetail: React.FC = () => {
                                     <path d="m9 9 6 6" stroke="currentColor" strokeWidth="2"/>
                                 </svg>
                             </div>
-                            <h1>Produkt je aktuálne nedostupný</h1>
+                            <h1>{t('unavailable.title')}</h1>
                             <p>
-                                Momentálne pracujeme na tomto produkte. <br />
-                                Prosím, skúste to neskôr alebo sa vráťte na hlavnú stránku.
+                                {t('unavailable.description')}
                             </p>
                             <div className="unavailable-actions">
-                                <button 
-                                    onClick={() => window.history.back()} 
+                                <button
+                                    onClick={() => window.history.back()}
                                     className="back-button"
                                 >
-                                    Späť
+                                    {t('unavailable.back')}
                                 </button>
-                                <button 
-                                    onClick={() => window.location.href = '/products'} 
+                                <button
+                                    onClick={() => window.location.href = '/products'}
                                     className="products-button"
                                 >
-                                    Všetky produkty
+                                    {t('unavailable.all_products')}
                                 </button>
                             </div>
                         </div>

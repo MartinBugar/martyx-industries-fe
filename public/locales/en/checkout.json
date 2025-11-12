@@ -21,7 +21,12 @@
     "delivery_method": "Delivery Method",
     "standard_shipping": "Standard Shipping",
     "express_shipping": "Express Shipping",
-    "overnight_shipping": "Overnight Shipping"
+    "overnight_shipping": "Overnight Shipping",
+    "no_options_available": "No shipping options available for your location",
+    "calculation_failed": "Failed to calculate shipping options",
+    "calculating": "Calculating shipping options...",
+    "no_options_location": "No shipping options available for this location",
+    "check_address": "Please check your address and try again"
   },
   "billing": {
     "title": "Billing Address",
@@ -96,14 +101,18 @@
   "secure_checkout": "Secure Checkout",
   "ssl_secured": "SSL Secured",
   "payment": {
+    "title": "Payment",
     "processing": "Processing your payment...",
     "success": "Payment completed successfully!",
     "error": "Payment failed. Please try again.",
     "failed": "Payment failed. Please try again.",
-    "not_completed": "Payment not completed. Please try again or contact support."
+    "not_completed": "Payment not completed. Please try again or contact support.",
+    "finalizing": "Finalizing your payment…",
+    "redirecting": "Redirecting to payment summary."
   },
   "form": {
     "contact_information": "Contact Information",
+    "guest_checkout": "Guest Checkout",
     "guest_checkout_notice": "Continue as a guest. You'll have an option to create an account later.",
     "sign_in": "Sign in",
     "email_address": "Email Address",
@@ -112,18 +121,24 @@
     "phone_number": "Phone Number",
     "purchasing_as_company": "I'm purchasing as a company (B2B)",
     "company_name": "Company Name",
-    "vat_number": "VAT Number (optional)",
+    "company_id": "Company Registration (IČO)",
+    "tax_id": "Tax ID (DIČ)",
+    "vat_number": "VAT ID (IČ DPH) - Optional",
     "ship_different_address": "Ship to a different address?",
     "shipping_address": "Shipping Address",
     "street_address": "Street Address",
+    "autocomplete": "Autocomplete",
+    "autocomplete_unavailable": "Address autocomplete unavailable in your area",
     "apt_suite": "Apt, suite, etc. (optional)",
     "city": "City",
     "state_province": "State / Province",
     "postal_code": "Postal Code",
     "country": "Country",
+    "select_country": "Select a country",
     "news_offers": "Send me news and special offers",
     "shipping_method": "Shipping Method",
     "business_days": "business days",
+    "estimated_delivery": "Estimated delivery",
     "edit": "Edit",
     "contact": "Contact",
     "same_as_billing": "Same as billing address",
@@ -134,6 +149,9 @@
     "privacy_policy_link": "Privacy Policy",
     "newsletter_consent": "I would like to receive news and promotional offers via email",
     "saved_addresses": "Saved Addresses",
+    "saved_addresses_available": "{count, plural, =1 {1 saved address} other {# saved addresses}}",
+    "no_saved_addresses": "No saved addresses yet. Save your first address for faster checkout next time.",
+    "loading_addresses": "Loading saved addresses...",
     "use_this_address": "Use this address",
     "save_address_as": "Save this address as",
     "save_address": "Save Address",
@@ -148,7 +166,9 @@
   },
   "discount": {
     "code": "Discount code",
-    "applied": "Discount applied"
+    "applied": "Discount applied",
+    "enter_code": "Please enter a discount code",
+    "remove": "Remove discount"
   },
   "summary": {
     "subtotal_excl_vat": "Subtotal (excl. VAT)",

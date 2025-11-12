@@ -49,7 +49,7 @@ const AdminInvoices: React.FC = () => {
       const pageResponse: PageResponse<InvoiceDto> = await adminInvoiceService.getAllInvoices(
         pageNum,
         20,
-        'invoice_issued_at',
+        'invoiceIssuedAt',
         'DESC',
         searchDebounce || undefined
       );

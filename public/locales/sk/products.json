@@ -76,5 +76,11 @@
     "download_all_products": "Stiahnuť všetky produkty (ZIP)",
     "downloading": "Sťahujem…",
     "download_failed": "Sťahovanie zlyhalo. Skúste to znovu."
+  },
+  "unavailable": {
+    "title": "Produkt je aktuálne nedostupný",
+    "description": "Tento produkt je dočasne nedostupný",
+    "back": "Späť",
+    "all_products": "Všetky produkty"
   }
 }

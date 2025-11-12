@@ -24,5 +24,12 @@
     "loading": "Načítavam wishlist...",
     "error": "Chyba pri načítavaní wishlistu",
     "last_updated": "Naposledy aktualizované"
-  }
+  },
+  "unavailable_section": {
+    "title": "Nedostupné položky",
+    "overlay": "Nedostupné",
+    "button": "Nedostupné"
+  },
+  "added_date": "Pridané {date}",
+  "price_from": "Od"
 }

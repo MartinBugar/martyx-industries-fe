@@ -24,5 +24,12 @@
     "loading": "Loading wishlist...",
     "error": "Error loading wishlist",
     "last_updated": "Last updated"
-  }
+  },
+  "unavailable_section": {
+    "title": "Unavailable Items",
+    "overlay": "Unavailable",
+    "button": "Unavailable"
+  },
+  "added_date": "Added {date}",
+  "price_from": "From"
 }

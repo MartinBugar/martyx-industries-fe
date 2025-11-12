@@ -24,5 +24,12 @@
     "loading": "Wunschliste wird geladen...",
     "error": "Fehler beim Laden der Wunschliste",
     "last_updated": "Zuletzt aktualisiert"
-  }
+  },
+  "unavailable_section": {
+    "title": "Nicht verfügbare Artikel",
+    "overlay": "Nicht verfügbar",
+    "button": "Nicht verfügbar"
+  },
+  "added_date": "Hinzugefügt {date}",
+  "price_from": "Ab"
 }

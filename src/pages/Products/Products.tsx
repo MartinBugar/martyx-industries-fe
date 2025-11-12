@@ -266,9 +266,9 @@ const Products: React.FC = () => {
                             onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
                             className="sort-select"
                         >
-                            <option value="newest">Newest</option>
-                            <option value="name">Name A-Z</option>
-                            <option value="price">Price Low-High</option>
+                            <option value="newest">{t('sort_options.newest')}</option>
+                            <option value="name">{t('sort_options.name')}</option>
+                            <option value="price">{t('sort_options.price')}</option>
                         </select>
                     </div>
                 </div>

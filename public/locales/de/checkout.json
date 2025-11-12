@@ -21,7 +21,12 @@
     "delivery_method": "Liefermethode",
     "standard_shipping": "Standardversand",
     "express_shipping": "Expressversand",
-    "overnight_shipping": "Über-Nacht-Versand"
+    "overnight_shipping": "Über-Nacht-Versand",
+    "no_options_available": "Für Ihren Standort sind keine Versandoptionen verfügbar",
+    "calculation_failed": "Versandoptionen konnten nicht berechnet werden",
+    "calculating": "Berechne Versandoptionen...",
+    "no_options_location": "Für diesen Standort sind keine Versandoptionen verfügbar",
+    "check_address": "Bitte überprüfen Sie Ihre Adresse und versuchen Sie es erneut"
   },
   "billing": {
     "title": "Rechnungsadresse",
@@ -96,14 +101,18 @@
   "secure_checkout": "Sichere Kasse",
   "ssl_secured": "SSL-gesichert",
   "payment": {
+    "title": "Zahlung",
     "processing": "Ihre Zahlung wird bearbeitet...",
     "success": "Zahlung erfolgreich abgeschlossen!",
     "error": "Zahlung fehlgeschlagen. Bitte versuchen Sie es erneut.",
     "failed": "Zahlung fehlgeschlagen. Bitte versuchen Sie es erneut.",
-    "not_completed": "Zahlung nicht abgeschlossen. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support."
+    "not_completed": "Zahlung nicht abgeschlossen. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
+    "finalizing": "Schließe Ihre Zahlung ab…",
+    "redirecting": "Weiterleitung zur Zahlungsübersicht."
   },
   "form": {
     "contact_information": "Kontaktinformationen",
+    "guest_checkout": "Gast-Kasse",
     "guest_checkout_notice": "Als Gast fortfahren. Sie haben später die Möglichkeit, ein Konto zu erstellen.",
     "sign_in": "Anmelden",
     "email_address": "E-Mail-Adresse",
@@ -112,18 +121,24 @@
     "phone_number": "Telefonnummer",
     "purchasing_as_company": "Ich kaufe als Firma (B2B)",
     "company_name": "Firmenname",
+    "company_id": "Unternehmensregisternummer",
+    "tax_id": "Steuernummer",
     "vat_number": "USt-IdNr. (optional)",
     "ship_different_address": "An eine andere Adresse liefern?",
     "shipping_address": "Lieferadresse",
     "street_address": "Straße und Hausnummer",
+    "autocomplete": "Autovervollständigung",
+    "autocomplete_unavailable": "Adress-Autovervollständigung ist in Ihrer Region nicht verfügbar",
     "apt_suite": "Wohnung, Etage, usw. (optional)",
     "city": "Stadt",
     "state_province": "Bundesland / Region",
     "postal_code": "Postleitzahl",
     "country": "Land",
+    "select_country": "Land auswählen",
     "news_offers": "Senden Sie mir Neuigkeiten und Sonderangebote",
     "shipping_method": "Versandart",
     "business_days": "Werktage",
+    "estimated_delivery": "Voraussichtliche Lieferung",
     "edit": "Bearbeiten",
     "contact": "Kontakt",
     "same_as_billing": "Gleiche wie Rechnungsadresse",
@@ -134,6 +149,9 @@
     "privacy_policy_link": "Datenschutzerklärung",
     "newsletter_consent": "Ich möchte Neuigkeiten und Werbeangebote per E-Mail erhalten",
     "saved_addresses": "Gespeicherte Adressen",
+    "saved_addresses_available": "{count, plural, =1 {1 gespeicherte Adresse} other {# gespeicherte Adressen}}",
+    "no_saved_addresses": "Noch keine gespeicherten Adressen. Speichern Sie Ihre erste Adresse für schnelleren Checkout beim nächsten Mal.",
+    "loading_addresses": "Lade gespeicherte Adressen...",
     "use_this_address": "Diese Adresse verwenden",
     "save_address_as": "Diese Adresse speichern als",
     "save_address": "Adresse speichern",
@@ -148,7 +166,9 @@
   },
   "discount": {
     "code": "Rabattcode",
-    "applied": "Rabatt angewendet"
+    "applied": "Rabatt angewendet",
+    "enter_code": "Bitte geben Sie einen Rabattcode ein",
+    "remove": "Rabatt entfernen"
   },
   "summary": {
     "subtotal_excl_vat": "Zwischensumme (ohne MwSt.)",
