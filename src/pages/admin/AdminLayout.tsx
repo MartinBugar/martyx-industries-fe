@@ -49,9 +49,11 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ title, children, navTabs }) =
           <Link to="/admin/users" className={location.pathname.startsWith('/admin/users') ? 'admin-link-active' : ''}>Users</Link>
           <Link to="/admin/products" className={location.pathname.startsWith('/admin/products') ? 'admin-link-active' : ''}>Products</Link>
           <Link to="/admin/orders" className={location.pathname.startsWith('/admin/orders') ? 'admin-link-active' : ''}>Orders</Link>
+          <Link to="/admin/invoices" className={location.pathname.startsWith('/admin/invoices') ? 'admin-link-active' : ''}>Invoices</Link>
           <Link to="/admin/gallery" className={location.pathname.startsWith('/admin/gallery') ? 'admin-link-active' : ''}>Gallery</Link>
           <Link to="/admin/campaigns" className={location.pathname.startsWith('/admin/campaigns') ? 'admin-link-active' : ''}>Campaigns</Link>
           <Link to="/admin/discounts" className={location.pathname.startsWith('/admin/discounts') ? 'admin-link-active' : ''}>Discount Codes</Link>
+          <Link to="/admin/gift-tiers" className={location.pathname.startsWith('/admin/gift-tiers') ? 'admin-link-active' : ''}>Gift Tiers</Link>
           <Link to="/admin/segments" className={location.pathname.startsWith('/admin/segments') ? 'admin-link-active' : ''}>Segments</Link>
           <Link to="/admin/abandoned-carts" className={location.pathname.startsWith('/admin/abandoned-carts') ? 'admin-link-active' : ''}>Abandoned Carts</Link>
           <Link to="/admin/email-templates" className={location.pathname.startsWith('/admin/email-templates') ? 'admin-link-active' : ''}>Email Templates</Link>

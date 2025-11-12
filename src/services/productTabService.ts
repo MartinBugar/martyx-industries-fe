@@ -351,3 +351,56 @@ export function canViewTab(tab: ProductTabDto, isAuthenticated: boolean): boolea
 
   return true;
 }
+
+// ============================================================================
+// MULTI-LANGUAGE HELPERS
+// ============================================================================
+
+export type SupportedLocale = 'en' | 'sk' | 'de';
+
+/**
+ * Get all language versions of a tab by its tab_key
+ * Used in multi-language tab editing form
+ *
+ * @param masterProductId - The master product ID (if master product tab)
+ * @param variantId - The variant ID (if variant-specific tab)
+ * @param tabKey - The tab key to search for
+ * @returns Promise<Record<SupportedLocale, ProductTabDto | null>>
+ */
+export async function adminGetTabsByKey(
+  tabKey: string,
+  masterProductId?: number | null,
+  variantId?: number | null
+): Promise<Record<SupportedLocale, ProductTabDto | null>> {
+  const locales: SupportedLocale[] = ['en', 'sk', 'de'];
+  const result: Record<SupportedLocale, ProductTabDto | null> = {
+    en: null,
+    sk: null,
+    de: null
+  };
+
+  // Load all language versions in parallel
+  const promises = locales.map(async (locale) => {
+    try {
+      let tabs: ProductTabDto[];
+      if (masterProductId) {
+        tabs = await adminGetTabsForMasterProduct(masterProductId, locale);
+      } else if (variantId) {
+        tabs = await adminGetTabsForVariant(variantId, locale);
+      } else {
+        return;
+      }
+
+      // Find tab with matching key
+      const tab = tabs.find(t => t.tabKey === tabKey);
+      if (tab) {
+        result[locale] = tab;
+      }
+    } catch (err) {
+      console.error(`Failed to load tab for locale ${locale}:`, err);
+    }
+  });
+
+  await Promise.all(promises);
+  return result;
+}

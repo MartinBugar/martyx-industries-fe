@@ -4,6 +4,7 @@ import { CartContext, type CartItem, type CartProduct } from './cartContextTypes
 import { cartService } from '../services/cartService';
 import { useAuth } from './useAuth';
 import { trackAddToCart, trackRemoveFromCart } from '../services/analyticsService';
+import { useDebouncedCallback } from '../hooks/useDebouncedCallback';
 
 // Props for the CartProvider component
 interface CartProviderProps {
@@ -150,6 +151,17 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   });
   const [sessionId] = useState<string>(() => getSessionId());
   const [isSyncing, setIsSyncing] = useState(false);
+
+  // Debounced backend sync for quantity updates (500ms delay)
+  // This prevents excessive API calls when users rapidly change quantities
+  const debouncedUpdateQuantity = useDebouncedCallback(
+    (variantId: number, quantity: number) => {
+      void cartService
+        .updateQuantity(variantId, quantity, isAuthenticated ? undefined : sessionId)
+        .catch(err => console.warn('[Cart] Failed to update quantity in backend:', err));
+    },
+    500
+  );
 
   // Persist to localStorage for offline support
   useEffect(() => {
@@ -403,10 +415,8 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         const isDigital = item.product.variantType === 'DIGITAL_ONLY';
         const nextQty = isDigital ? 1 : quantity;
 
-        // Sync to backend (non-blocking)
-        void cartService
-          .updateQuantity(item.product.variantId, nextQty, isAuthenticated ? undefined : sessionId)
-          .catch(err => console.warn('[Cart] Failed to update quantity in backend:', err));
+        // Sync to backend with debouncing (prevents excessive API calls during rapid changes)
+        debouncedUpdateQuantity(item.product.variantId, nextQty);
 
         return { ...item, quantity: nextQty };
       })

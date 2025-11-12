@@ -157,4 +157,68 @@ export const adminInvoiceService = {
 
     return await handleResponse(resp) as CompanySettingsDto;
   },
+
+  /**
+   * Download invoice PDF and trigger browser download
+   * @param id - Invoice ID
+   * @param invoiceNumber - Invoice number for filename
+   */
+  async downloadAndSaveInvoicePdf(id: number, invoiceNumber: string): Promise<void> {
+    const blob = await this.downloadInvoicePdf(id);
+
+    // Create download link
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `invoice-${invoiceNumber}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+
+    // Cleanup
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  },
+
+  /**
+   * Bulk download multiple invoices
+   * @param invoices - Array of invoices to download
+   */
+  async bulkDownloadInvoices(invoices: InvoiceDto[]): Promise<void> {
+    if (invoices.length === 0) {
+      throw new Error('No invoices selected for download');
+    }
+
+    // Download each invoice individually with small delay
+    for (const invoice of invoices) {
+      try {
+        await this.downloadAndSaveInvoicePdf(invoice.order_id, invoice.invoice_number);
+
+        // Add small delay between downloads to avoid browser blocking
+        if (invoices.length > 1) {
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
+      } catch (error) {
+        console.error(`Failed to download invoice ${invoice.invoice_number}:`, error);
+        // Continue with other downloads even if one fails
+      }
+    }
+  },
+
+  /**
+   * Resend invoice email to customer
+   * Note: This endpoint needs to be added to the backend
+   * @param id - Invoice ID
+   * @param email - Optional email address (if different from order email)
+   */
+  async resendInvoiceEmail(id: number, email?: string): Promise<{ message: string }> {
+    const body = email ? JSON.stringify({ email }) : undefined;
+
+    const resp = await fetch(`${API_BASE_URL}/api/admin/invoices/${id}/resend-email`, {
+      method: 'POST',
+      headers: jsonHeaders(),
+      body,
+    });
+
+    return await handleResponse(resp) as { message: string };
+  },
 };

@@ -5,6 +5,7 @@ import { useCart } from '../../context/useCart';
 import { useAuth } from '../../context/useAuth';
 import { shippingService } from '../../services/shippingService';
 import { discountService } from '../../services/discountService';
+import GiftProgressBar from '../../components/GiftProgressBar/GiftProgressBar';
 import './CartPage.css';
 
 interface CartPageProps {
@@ -426,6 +427,9 @@ const CartPage: React.FC<CartPageProps> = ({
             {/* SUMMARY */}
             <aside className="order-summary" aria-label={t('order_summary.title')}>
               <h2 className="summary-title">{t('order_summary.title')}</h2>
+
+              {/* Gift Tier Progress Bar */}
+              <GiftProgressBar cartTotal={subtotal} />
 
               {/* Free Shipping Progress Bar */}
               {hasPhysicalProducts && !hasFreeShipping && (
