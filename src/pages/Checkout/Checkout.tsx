@@ -561,7 +561,7 @@ const Checkout: React.FC = () => {
   // Handle discount code validation
   const handleValidateDiscount = async () => {
     if (!discountCode.trim()) {
-      setDiscountError('Please enter a discount code');
+      setDiscountError(t('discount.enter_code'));
       return;
     }
 
