@@ -1,15 +1,15 @@
 /**
- * Admin Variant Tab Form Page
+ * Admin Variant Tab Form Page - MULTI-LANGUAGE VERSION
  *
- * Dedicated page for creating or editing a product tab.
- * Provides a clean, professional form interface.
+ * Allows editing variant-specific product tabs in multiple languages (EN, SK, DE).
+ * Variant tabs override master product tabs for specific variants.
  */
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Save, Download, Plus, X, FileText } from 'lucide-react';
 import AdminLayout from './AdminLayout';
-import type { ProductTabCreateRequest, ProductTabTemplate } from '../../types/api';
+import type { ProductTabCreateRequest, ProductTabTemplate, ProductTabDto } from '../../types/api';
 import {
   adminGetTabById,
   adminCreateTab,
@@ -17,18 +17,42 @@ import {
   adminGetTabTemplates,
   adminGetTabAttachments,
   adminAddAttachmentToTab,
-  adminRemoveAttachmentFromTab
+  adminRemoveAttachmentFromTab,
+  adminGetTabsByKey,
+  type SupportedLocale
 } from '../../services/productTabService';
 import {
   adminGetAttachmentsForVariant
 } from '../../services/productAttachmentService';
 import { Button } from '../../components/ui';
 import { apiClient } from '../../services/apiClient';
+import LanguageTabs from '../../components/admin/LanguageTabs';
 import './AdminUsers.css';
 
+// Language-specific fields that can be translated
+interface TranslatableFields {
+  tabLabel: string;
+  contentHtml: string;
+  contentMarkdown: string;
+  description: string;
+}
+
+// Shared fields across all languages
+interface SharedFields {
+  tabKey: string;
+  contentType: string;
+  contentJson: string;
+  componentName: string;
+  displayOrder: number;
+  iconName: string;
+  isActive: boolean;
+  showForVariantType: string;
+  requiresAuthentication: boolean;
+  cssClass: string;
+}
+
 const AdminVariantTabForm: React.FC = () => {
-  const { productId, variantId, tabId } = useParams<{
-    productId: string;
+  const { variantId, tabId } = useParams<{
     variantId: string;
     tabId?: string;
   }>();
@@ -42,19 +66,23 @@ const AdminVariantTabForm: React.FC = () => {
   const [templates, setTemplates] = useState<ProductTabTemplate[]>([]);
   const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(null);
 
-  // Attachments state
-  const [availableAttachments, setAvailableAttachments] = useState<any[]>([]);
-  const [tabAttachments, setTabAttachments] = useState<any[]>([]);
-  const [loadingAttachments, setLoadingAttachments] = useState(false);
+  // Multi-language state
+  const [activeLanguage, setActiveLanguage] = useState<SupportedLocale>('en');
+  const [languageData, setLanguageData] = useState<Record<SupportedLocale, TranslatableFields>>({
+    en: { tabLabel: '', contentHtml: '', contentMarkdown: '', description: '' },
+    sk: { tabLabel: '', contentHtml: '', contentMarkdown: '', description: '' },
+    de: { tabLabel: '', contentHtml: '', contentMarkdown: '', description: '' }
+  });
+  const [existingTabIds, setExistingTabIds] = useState<Record<SupportedLocale, number | null>>({
+    en: null,
+    sk: null,
+    de: null
+  });
 
-  const [formData, setFormData] = useState<ProductTabCreateRequest>({
-    masterProductId: null,
-    variantId: variantId ? Number(variantId) : null,
+  // Shared fields (same across all languages)
+  const [sharedFields, setSharedFields] = useState<SharedFields>({
     tabKey: '',
-    tabLabel: '',
     contentType: 'HTML',
-    contentHtml: '',
-    contentMarkdown: '',
     contentJson: '',
     componentName: '',
     displayOrder: 0,
@@ -62,10 +90,18 @@ const AdminVariantTabForm: React.FC = () => {
     isActive: true,
     showForVariantType: '',
     requiresAuthentication: false,
-    locale: 'en',
-    description: '',
     cssClass: ''
   });
+
+  // Attachments state
+  const [availableAttachments, setAvailableAttachments] = useState<any[]>([]);
+  const [tabAttachments, setTabAttachments] = useState<any[]>([]);
+  const [loadingAttachments, setLoadingAttachments] = useState(false);
+
+  // Determine which languages have been filled out
+  const completedLanguages: SupportedLocale[] = (['en', 'sk', 'de'] as SupportedLocale[]).filter(
+    (lang) => languageData[lang].tabLabel.trim() !== ''
+  );
 
   // Load templates
   useEffect(() => {
@@ -83,18 +119,89 @@ const AdminVariantTabForm: React.FC = () => {
   // Load existing tab data if editing
   useEffect(() => {
     if (isEditMode && tabId) {
-      loadTab(Number(tabId));
+      loadAllLanguageVersions(Number(tabId));
     }
   }, [tabId, isEditMode]);
 
   // Load attachments when editing a ProductDownloads tab
   useEffect(() => {
     if (isEditMode && tabId && variantId &&
-        formData.contentType === 'COMPONENT' &&
-        formData.componentName === 'ProductDownloads') {
+        sharedFields.contentType === 'COMPONENT' &&
+        sharedFields.componentName === 'ProductDownloads') {
       loadAttachments();
     }
-  }, [isEditMode, tabId, variantId, formData.contentType, formData.componentName]);
+  }, [isEditMode, tabId, variantId, sharedFields.contentType, sharedFields.componentName]);
+
+  const loadAllLanguageVersions = async (id: number) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Load the primary tab to get the tabKey
+      const primaryTab = await adminGetTabById(id);
+
+      // Load all language versions by tabKey
+      const allVersions = await adminGetTabsByKey(
+        primaryTab.tabKey,
+        null,
+        Number(variantId)
+      );
+
+      // Populate shared fields (from primary tab)
+      setSharedFields({
+        tabKey: primaryTab.tabKey,
+        contentType: primaryTab.contentType,
+        contentJson: primaryTab.contentJson || '',
+        componentName: primaryTab.componentName || '',
+        displayOrder: primaryTab.displayOrder,
+        iconName: primaryTab.iconName || '',
+        isActive: primaryTab.isActive,
+        showForVariantType: primaryTab.showForVariantType || '',
+        requiresAuthentication: primaryTab.requiresAuthentication,
+        cssClass: primaryTab.cssClass || ''
+      });
+
+      // Populate language-specific data and IDs
+      const newLanguageData: Record<SupportedLocale, TranslatableFields> = {
+        en: { tabLabel: '', contentHtml: '', contentMarkdown: '', description: '' },
+        sk: { tabLabel: '', contentHtml: '', contentMarkdown: '', description: '' },
+        de: { tabLabel: '', contentHtml: '', contentMarkdown: '', description: '' }
+      };
+      const newTabIds: Record<SupportedLocale, number | null> = {
+        en: null,
+        sk: null,
+        de: null
+      };
+
+      (['en', 'sk', 'de'] as SupportedLocale[]).forEach((locale) => {
+        const tab = allVersions[locale];
+        if (tab) {
+          newLanguageData[locale] = {
+            tabLabel: tab.tabLabel,
+            contentHtml: tab.contentHtml || '',
+            contentMarkdown: tab.contentMarkdown || '',
+            description: tab.description || ''
+          };
+          newTabIds[locale] = tab.id;
+        }
+      });
+
+      setLanguageData(newLanguageData);
+      setExistingTabIds(newTabIds);
+
+      console.log('✅ Loaded all language versions:', {
+        en: newTabIds.en ? 'exists' : 'missing',
+        sk: newTabIds.sk ? 'exists' : 'missing',
+        de: newTabIds.de ? 'exists' : 'missing'
+      });
+
+    } catch (err) {
+      console.error('Error loading tab:', err);
+      setError('Failed to load tab');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const loadAttachments = async () => {
     if (!tabId || !variantId) return;
@@ -116,39 +223,6 @@ const AdminVariantTabForm: React.FC = () => {
     }
   };
 
-  const loadTab = async (id: number) => {
-    try {
-      setLoading(true);
-      setError(null);
-      const tab = await adminGetTabById(id);
-
-      setFormData({
-        masterProductId: tab.masterProductId,
-        variantId: tab.variantId,
-        tabKey: tab.tabKey,
-        tabLabel: tab.tabLabel,
-        contentType: tab.contentType,
-        contentHtml: tab.contentHtml || '',
-        contentMarkdown: tab.contentMarkdown || '',
-        contentJson: tab.contentJson || '',
-        componentName: tab.componentName || '',
-        displayOrder: tab.displayOrder,
-        iconName: tab.iconName || '',
-        isActive: tab.isActive,
-        showForVariantType: tab.showForVariantType || '',
-        requiresAuthentication: tab.requiresAuthentication,
-        locale: tab.locale,
-        description: tab.description || '',
-        cssClass: tab.cssClass || ''
-      });
-    } catch (err) {
-      console.error('Error loading tab:', err);
-      setError('Failed to load tab');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -157,30 +231,74 @@ const AdminVariantTabForm: React.FC = () => {
     setFieldErrors({});
 
     // Client-side validation
-    if (!formData.tabKey || !formData.tabLabel) {
-      setError('Tab Key and Tab Label are required');
+    if (!sharedFields.tabKey) {
+      setError('Tab Key is required');
+      return;
+    }
+
+    // Check that at least one language has content
+    if (completedLanguages.length === 0) {
+      setError('Please fill out content for at least one language');
       return;
     }
 
     try {
       setSaving(true);
 
-      if (isEditMode && tabId) {
-        await adminUpdateTab(Number(tabId), formData);
-      } else {
-        await adminCreateTab(formData);
-      }
+      // Save each language version
+      const savePromises: Promise<any>[] = [];
+
+      (['en', 'sk', 'de'] as SupportedLocale[]).forEach((locale) => {
+        const data = languageData[locale];
+
+        // Skip if this language has no content
+        if (!data.tabLabel.trim()) {
+          return;
+        }
+
+        const request: ProductTabCreateRequest = {
+          masterProductId: null,
+          variantId: Number(variantId),
+          tabKey: sharedFields.tabKey,
+          tabLabel: data.tabLabel,
+          contentType: sharedFields.contentType,
+          contentHtml: data.contentHtml,
+          contentMarkdown: data.contentMarkdown,
+          contentJson: sharedFields.contentJson,
+          componentName: sharedFields.componentName,
+          displayOrder: sharedFields.displayOrder,
+          iconName: sharedFields.iconName,
+          isActive: sharedFields.isActive,
+          showForVariantType: sharedFields.showForVariantType,
+          requiresAuthentication: sharedFields.requiresAuthentication,
+          locale: locale,
+          description: data.description,
+          cssClass: sharedFields.cssClass
+        };
+
+        // Update existing or create new
+        const existingId = existingTabIds[locale];
+        if (existingId) {
+          savePromises.push(adminUpdateTab(existingId, request));
+        } else {
+          savePromises.push(adminCreateTab(request));
+        }
+      });
+
+      // Execute all saves in parallel
+      await Promise.all(savePromises);
+
+      console.log(`✅ Saved ${savePromises.length} language versions`);
 
       // Clear cache so frontend sees new tabs immediately
       apiClient.clearCache();
 
       // Navigate back to tabs list
-      navigate(`/admin/products/${productId}/variants/${variantId}/tabs`);
+      navigate(`/admin/variants/${variantId}/tabs`);
     } catch (err: any) {
       console.error('Error saving tab:', err);
 
       // Parse validation errors from backend
-      // Error structure from apiClient: err.errorData.details
       const errorData = err.errorData || err.response?.data || {};
 
       if (errorData.details && Array.isArray(errorData.details)) {
@@ -203,7 +321,7 @@ const AdminVariantTabForm: React.FC = () => {
   };
 
   const handleCancel = () => {
-    navigate(`/admin/products/${productId}/variants/${variantId}/tabs`);
+    navigate(`/admin/variants/${variantId}/tabs`);
   };
 
   const handleLoadTemplate = () => {
@@ -212,18 +330,27 @@ const AdminVariantTabForm: React.FC = () => {
     const template = templates.find(t => t.id === selectedTemplateId);
     if (!template) return;
 
-    setFormData({
-      ...formData,
+    // Update shared fields
+    setSharedFields({
+      ...sharedFields,
       tabKey: template.defaultTabKey,
-      tabLabel: template.defaultTabLabel,
       contentType: template.contentType,
-      contentHtml: template.defaultContentHtml || '',
-      contentMarkdown: template.defaultContentMarkdown || '',
       contentJson: template.defaultContentJson || '',
       componentName: template.defaultComponentName || '',
       displayOrder: template.defaultDisplayOrder,
-      iconName: template.defaultIconName || '',
-      description: template.description || ''
+      iconName: template.defaultIconName || ''
+    });
+
+    // Update current language data
+    setLanguageData({
+      ...languageData,
+      [activeLanguage]: {
+        ...languageData[activeLanguage],
+        tabLabel: template.defaultTabLabel,
+        contentHtml: template.defaultContentHtml || '',
+        contentMarkdown: template.defaultContentMarkdown || '',
+        description: template.description || ''
+      }
     });
 
     setError(null);
@@ -235,7 +362,7 @@ const AdminVariantTabForm: React.FC = () => {
 
     try {
       await adminAddAttachmentToTab(Number(tabId), attachmentId, 0);
-      await loadAttachments(); // Reload to show updated list
+      await loadAttachments();
     } catch (err) {
       console.error('Error adding attachment:', err);
       setError('Failed to add attachment to tab');
@@ -247,12 +374,42 @@ const AdminVariantTabForm: React.FC = () => {
 
     try {
       await adminRemoveAttachmentFromTab(Number(tabId), attachmentId);
-      await loadAttachments(); // Reload to show updated list
+      await loadAttachments();
     } catch (err) {
       console.error('Error removing attachment:', err);
       setError('Failed to remove attachment from tab');
     }
   };
+
+  const handleLanguageChange = (lang: SupportedLocale) => {
+    setActiveLanguage(lang);
+  };
+
+  const updateLanguageField = <K extends keyof TranslatableFields>(
+    field: K,
+    value: TranslatableFields[K]
+  ) => {
+    setLanguageData({
+      ...languageData,
+      [activeLanguage]: {
+        ...languageData[activeLanguage],
+        [field]: value
+      }
+    });
+  };
+
+  const updateSharedField = <K extends keyof SharedFields>(
+    field: K,
+    value: SharedFields[K]
+  ) => {
+    setSharedFields({
+      ...sharedFields,
+      [field]: value
+    });
+  };
+
+  // Current language data shorthand
+  const currentLangData = languageData[activeLanguage];
 
   if (loading) {
     return (
@@ -269,14 +426,22 @@ const AdminVariantTabForm: React.FC = () => {
   }
 
   return (
-    <AdminLayout title={isEditMode ? 'Edit Tab' : 'Create New Tab'}>
+    <AdminLayout title={isEditMode ? 'Edit Variant Tab' : 'Create New Variant Tab'}>
       <div className="admin-page">
         <div className="admin-container">
           {/* Header */}
           <div className="admin-header">
+            <div>
+              <h2 style={{ marginBottom: 8 }}>
+                {isEditMode ? 'Edit Variant Tab' : 'Create New Variant Tab'}
+              </h2>
+              <p style={{ color: '#6b7280', fontSize: '14px' }}>
+                This tab is specific to this variant. Fill content for multiple languages.
+              </p>
+            </div>
             <div className="header-actions">
               <Link
-                to={`/admin/products/${productId}/variants/${variantId}/tabs`}
+                to={`/admin/variants/${variantId}/tabs`}
                 className="btn btn-outline"
               >
                 <ArrowLeft size={16} style={{ marginRight: 8 }} />
@@ -338,17 +503,24 @@ const AdminVariantTabForm: React.FC = () => {
             </div>
           )}
 
+          {/* Language Tabs */}
+          <LanguageTabs
+            activeLanguage={activeLanguage}
+            onLanguageChange={handleLanguageChange}
+            completedLanguages={completedLanguages}
+          />
+
           {/* Form */}
           <form onSubmit={handleSubmit}>
             <div className="admin-card">
               <h3 className="section-title" style={{ marginBottom: 24 }}>
-                {isEditMode ? 'Edit Tab' : 'Create New Tab'}
+                {isEditMode ? `Edit Tab - ${activeLanguage.toUpperCase()}` : `Create New Tab - ${activeLanguage.toUpperCase()}`}
               </h3>
 
-              {/* Basic Information */}
+              {/* Shared Fields Section */}
               <div style={{ marginBottom: 32 }}>
                 <h4 style={{ fontSize: '16px', fontWeight: 600, marginBottom: 16, color: '#374151' }}>
-                  Basic Information
+                  Shared Settings (applies to all languages)
                 </h4>
 
                 <div style={{ display: 'grid', gap: 20 }}>
@@ -359,10 +531,9 @@ const AdminVariantTabForm: React.FC = () => {
                     <input
                       type="text"
                       className="form-control"
-                      value={formData.tabKey}
+                      value={sharedFields.tabKey}
                       onChange={(e) => {
-                        setFormData({ ...formData, tabKey: e.target.value });
-                        // Clear field error on change
+                        updateSharedField('tabKey', e.target.value);
                         if (fieldErrors.tabKey) {
                           setFieldErrors(prev => {
                             const newErrors = { ...prev };
@@ -381,68 +552,16 @@ const AdminVariantTabForm: React.FC = () => {
                       </div>
                     )}
                     <small style={{ color: '#6b7280', fontSize: '13px' }}>
-                      Unique identifier for this tab. Use lowercase with hyphens (e.g., details-tab, features, info-sheet).
+                      Unique identifier for this tab. Same across all languages.
                     </small>
                   </div>
 
-                  <div className="form-group">
-                    <label className="form-label">
-                      Tab Label (Display Name) <span style={{ color: '#ef4444' }}>*</span>
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={formData.tabLabel}
-                      onChange={(e) => {
-                        setFormData({ ...formData, tabLabel: e.target.value });
-                        if (fieldErrors.tabLabel) {
-                          setFieldErrors(prev => {
-                            const newErrors = { ...prev };
-                            delete newErrors.tabLabel;
-                            return newErrors;
-                          });
-                        }
-                      }}
-                      placeholder="e.g., Product Details"
-                      required
-                      style={fieldErrors.tabLabel ? { borderColor: '#ef4444' } : {}}
-                    />
-                    {fieldErrors.tabLabel && (
-                      <div style={{ color: '#ef4444', fontSize: '13px', marginTop: '4px', fontWeight: 500 }}>
-                        ⚠ {fieldErrors.tabLabel}
-                      </div>
-                    )}
-                    <small style={{ color: '#6b7280', fontSize: '13px' }}>
-                      The label shown to users on the tab button.
-                    </small>
-                  </div>
-
-                  <div className="form-group">
-                    <label className="form-label">Description</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={formData.description || ''}
-                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                      placeholder="Brief description of this tab's purpose"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Content Configuration */}
-              <div style={{ marginBottom: 32 }}>
-                <h4 style={{ fontSize: '16px', fontWeight: 600, marginBottom: 16, color: '#374151' }}>
-                  Content Configuration
-                </h4>
-
-                <div style={{ display: 'grid', gap: 20 }}>
                   <div className="form-group">
                     <label className="form-label">Content Type</label>
                     <select
                       className="form-control"
-                      value={formData.contentType}
-                      onChange={(e) => setFormData({ ...formData, contentType: e.target.value as any })}
+                      value={sharedFields.contentType}
+                      onChange={(e) => updateSharedField('contentType', e.target.value)}
                     >
                       <option value="HTML">HTML</option>
                       <option value="MARKDOWN">Markdown</option>
@@ -451,145 +570,137 @@ const AdminVariantTabForm: React.FC = () => {
                     </select>
                   </div>
 
-                  {formData.contentType === 'HTML' && (
-                    <div className="form-group">
-                      <label className="form-label">HTML Content</label>
-                      <textarea
-                        className="form-control"
-                        value={formData.contentHtml || ''}
-                        onChange={(e) => setFormData({ ...formData, contentHtml: e.target.value })}
-                        rows={20}
-                        placeholder="Enter HTML content..."
-                        style={{ fontFamily: 'monospace', fontSize: '13px' }}
-                      />
-                    </div>
-                  )}
-
-                  {formData.contentType === 'MARKDOWN' && (
-                    <div className="form-group">
-                      <label className="form-label">Markdown Content</label>
-                      <textarea
-                        className="form-control"
-                        value={formData.contentMarkdown || ''}
-                        onChange={(e) => setFormData({ ...formData, contentMarkdown: e.target.value })}
-                        rows={20}
-                        placeholder="Enter Markdown content..."
-                        style={{ fontFamily: 'monospace', fontSize: '13px' }}
-                      />
-                    </div>
-                  )}
-
-                  {formData.contentType === 'JSON' && (
-                    <div className="form-group">
-                      <label className="form-label">JSON Content</label>
-                      <textarea
-                        className="form-control"
-                        value={formData.contentJson || ''}
-                        onChange={(e) => setFormData({ ...formData, contentJson: e.target.value })}
-                        rows={20}
-                        placeholder='{"key": "value"}'
-                        style={{ fontFamily: 'monospace', fontSize: '13px' }}
-                      />
-                    </div>
-                  )}
-
-                  {formData.contentType === 'COMPONENT' && (
+                  {sharedFields.contentType === 'COMPONENT' && (
                     <div className="form-group">
                       <label className="form-label">Component Name</label>
                       <input
                         type="text"
                         className="form-control"
-                        value={formData.componentName || ''}
-                        onChange={(e) => setFormData({ ...formData, componentName: e.target.value })}
-                        placeholder="e.g., DetailsTab, ReviewsTab"
+                        value={sharedFields.componentName}
+                        onChange={(e) => updateSharedField('componentName', e.target.value)}
+                        placeholder="e.g., ProductDownloads, ReviewsTab"
+                      />
+                    </div>
+                  )}
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+                    <div className="form-group">
+                      <label className="form-label">Display Order</label>
+                      <input
+                        type="number"
+                        className="form-control"
+                        value={sharedFields.displayOrder}
+                        onChange={(e) => updateSharedField('displayOrder', parseInt(e.target.value) || 0)}
+                        min="0"
                       />
                       <small style={{ color: '#6b7280', fontSize: '13px' }}>
-                        Name of the React component to render for this tab.
+                        Lower numbers appear first.
+                      </small>
+                    </div>
+
+                    <div className="form-group">
+                      <label className="form-label">Icon Name</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={sharedFields.iconName}
+                        onChange={(e) => updateSharedField('iconName', e.target.value)}
+                        placeholder="e.g., FileText, Star"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Language-Specific Fields Section */}
+              <div style={{ marginBottom: 32 }}>
+                <h4 style={{ fontSize: '16px', fontWeight: 600, marginBottom: 16, color: '#374151' }}>
+                  Content for {activeLanguage.toUpperCase()}
+                  {completedLanguages.includes(activeLanguage) && (
+                    <span style={{ color: '#10b981', marginLeft: 8, fontSize: '14px' }}>✓ Completed</span>
+                  )}
+                </h4>
+
+                <div style={{ display: 'grid', gap: 20 }}>
+                  <div className="form-group">
+                    <label className="form-label">
+                      Tab Label (Display Name) <span style={{ color: '#ef4444' }}>*</span>
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={currentLangData.tabLabel}
+                      onChange={(e) => updateLanguageField('tabLabel', e.target.value)}
+                      placeholder={`e.g., ${activeLanguage === 'en' ? 'Product Details' : activeLanguage === 'sk' ? 'Detaily produktu' : 'Produktdetails'}`}
+                      required
+                    />
+                    <small style={{ color: '#6b7280', fontSize: '13px' }}>
+                      The label shown to users in this language.
+                    </small>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">Description</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={currentLangData.description}
+                      onChange={(e) => updateLanguageField('description', e.target.value)}
+                      placeholder="Brief description in this language"
+                    />
+                  </div>
+
+                  {sharedFields.contentType === 'HTML' && (
+                    <div className="form-group">
+                      <label className="form-label">HTML Content ({activeLanguage.toUpperCase()})</label>
+                      <textarea
+                        className="form-control"
+                        value={currentLangData.contentHtml}
+                        onChange={(e) => updateLanguageField('contentHtml', e.target.value)}
+                        rows={20}
+                        placeholder="Enter HTML content in this language..."
+                        style={{ fontFamily: 'monospace', fontSize: '13px' }}
+                      />
+                    </div>
+                  )}
+
+                  {sharedFields.contentType === 'MARKDOWN' && (
+                    <div className="form-group">
+                      <label className="form-label">Markdown Content ({activeLanguage.toUpperCase()})</label>
+                      <textarea
+                        className="form-control"
+                        value={currentLangData.contentMarkdown}
+                        onChange={(e) => updateLanguageField('contentMarkdown', e.target.value)}
+                        rows={20}
+                        placeholder="Enter Markdown content in this language..."
+                        style={{ fontFamily: 'monospace', fontSize: '13px' }}
+                      />
+                    </div>
+                  )}
+
+                  {sharedFields.contentType === 'JSON' && (
+                    <div className="form-group">
+                      <label className="form-label">JSON Content (Shared)</label>
+                      <textarea
+                        className="form-control"
+                        value={sharedFields.contentJson}
+                        onChange={(e) => updateSharedField('contentJson', e.target.value)}
+                        rows={20}
+                        placeholder='{"key": "value"}'
+                        style={{ fontFamily: 'monospace', fontSize: '13px' }}
+                      />
+                      <small style={{ color: '#6b7280', fontSize: '13px' }}>
+                        JSON is shared across all languages.
                       </small>
                     </div>
                   )}
                 </div>
               </div>
 
-              {/* Display Settings */}
-              <div style={{ marginBottom: 32 }}>
-                <h4 style={{ fontSize: '16px', fontWeight: 600, marginBottom: 16, color: '#374151' }}>
-                  Display Settings
-                </h4>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
-                  <div className="form-group">
-                    <label className="form-label">Display Order</label>
-                    <input
-                      type="number"
-                      className="form-control"
-                      value={formData.displayOrder}
-                      onChange={(e) => {
-                        setFormData({ ...formData, displayOrder: parseInt(e.target.value) || 0 });
-                        if (fieldErrors.displayOrder) {
-                          setFieldErrors(prev => {
-                            const newErrors = { ...prev };
-                            delete newErrors.displayOrder;
-                            return newErrors;
-                          });
-                        }
-                      }}
-                      min="0"
-                      style={fieldErrors.displayOrder ? { borderColor: '#ef4444' } : {}}
-                    />
-                    {fieldErrors.displayOrder && (
-                      <div style={{ color: '#ef4444', fontSize: '13px', marginTop: '4px', fontWeight: 500 }}>
-                        ⚠ {fieldErrors.displayOrder}
-                      </div>
-                    )}
-                    <small style={{ color: '#6b7280', fontSize: '13px' }}>
-                      Lower numbers appear first.
-                    </small>
-                  </div>
-
-                  <div className="form-group">
-                    <label className="form-label">Icon Name</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={formData.iconName || ''}
-                      onChange={(e) => setFormData({ ...formData, iconName: e.target.value })}
-                      placeholder="e.g., FileText, Star"
-                    />
-                    <small style={{ color: '#6b7280', fontSize: '13px' }}>
-                      Lucide icon name (optional).
-                    </small>
-                  </div>
-
-                  <div className="form-group">
-                    <label className="form-label">CSS Class</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={formData.cssClass || ''}
-                      onChange={(e) => setFormData({ ...formData, cssClass: e.target.value })}
-                      placeholder="custom-tab-class"
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label className="form-label">Locale</label>
-                    <select
-                      className="form-control"
-                      value={formData.locale}
-                      onChange={(e) => setFormData({ ...formData, locale: e.target.value })}
-                    >
-                      <option value="en">English (en)</option>
-                      <option value="sk">Slovak (sk)</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-
               {/* Attachments Management (only for ProductDownloads component in edit mode) */}
               {isEditMode &&
-               formData.contentType === 'COMPONENT' &&
-               formData.componentName === 'ProductDownloads' && (
+               sharedFields.contentType === 'COMPONENT' &&
+               sharedFields.componentName === 'ProductDownloads' && (
                 <div style={{ marginBottom: 32 }}>
                   <h4 style={{ fontSize: '16px', fontWeight: 600, marginBottom: 16, color: '#374151' }}>
                     Attachments Management
@@ -617,9 +728,6 @@ const AdminVariantTabForm: React.FC = () => {
                           }}>
                             <FileText size={32} style={{ margin: '0 auto 8px', opacity: 0.3 }} />
                             <div>No attachments assigned to this tab yet.</div>
-                            <div style={{ fontSize: '13px', marginTop: '4px' }}>
-                              Add attachments from the available list below.
-                            </div>
                           </div>
                         ) : (
                           <div style={{ display: 'grid', gap: 8 }}>
@@ -647,7 +755,7 @@ const AdminVariantTabForm: React.FC = () => {
                                     </div>
                                   )}
                                   <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '4px' }}>
-                                    {attachment.fileName} • {attachment.fileFormat?.toUpperCase()}
+                                    {attachment.fileName}
                                   </div>
                                 </div>
                                 <button
@@ -659,14 +767,8 @@ const AdminVariantTabForm: React.FC = () => {
                                     borderRadius: '6px',
                                     background: '#fff',
                                     color: '#ef4444',
-                                    cursor: 'pointer',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: 6,
-                                    fontSize: '13px',
-                                    fontWeight: 500
+                                    cursor: 'pointer'
                                   }}
-                                  title="Remove from tab"
                                 >
                                   <X size={16} />
                                 </button>
@@ -692,7 +794,7 @@ const AdminVariantTabForm: React.FC = () => {
                             color: '#6b7280',
                             fontSize: '13px'
                           }}>
-                            All available attachments are already assigned to this tab.
+                            All available attachments are already assigned.
                           </div>
                         ) : (
                           <div style={{ display: 'grid', gap: 8 }}>
@@ -716,13 +818,8 @@ const AdminVariantTabForm: React.FC = () => {
                                     <div style={{ fontWeight: 500, fontSize: '14px', color: '#374151' }}>
                                       {attachment.displayLabel}
                                     </div>
-                                    {attachment.description && (
-                                      <div style={{ fontSize: '13px', color: '#6b7280', marginTop: '2px' }}>
-                                        {attachment.description}
-                                      </div>
-                                    )}
                                     <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '4px' }}>
-                                      {attachment.fileName} • {attachment.fileFormat?.toUpperCase()}
+                                      {attachment.fileName}
                                     </div>
                                   </div>
                                   <button
@@ -735,15 +832,10 @@ const AdminVariantTabForm: React.FC = () => {
                                       background: '#fff',
                                       color: '#3b82f6',
                                       cursor: 'pointer',
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      gap: 6,
-                                      fontSize: '13px',
-                                      fontWeight: 500
+                                      fontSize: '13px'
                                     }}
-                                    title="Add to tab"
                                   >
-                                    <Plus size={16} />
+                                    <Plus size={16} style={{ marginRight: 4 }} />
                                     Add
                                   </button>
                                 </div>
@@ -763,29 +855,12 @@ const AdminVariantTabForm: React.FC = () => {
                 </h4>
 
                 <div style={{ display: 'grid', gap: 16 }}>
-                  <div className="form-group">
-                    <label className="form-label">Show For Variant Type</label>
-                    <select
-                      className="form-control"
-                      value={formData.showForVariantType || ''}
-                      onChange={(e) => setFormData({ ...formData, showForVariantType: e.target.value })}
-                    >
-                      <option value="">All Variants (Show Everywhere)</option>
-                      <option value="DIGITAL_ONLY">Digital Only</option>
-                      <option value="PHYSICAL_ONLY">Physical Only</option>
-                      <option value="HYBRID">Hybrid (Digital + Physical)</option>
-                    </select>
-                    <small style={{ color: '#6b7280', fontSize: '13px' }}>
-                      Control which variant types display this tab.
-                    </small>
-                  </div>
-
                   <div style={{ display: 'flex', gap: 24 }}>
                     <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
                       <input
                         type="checkbox"
-                        checked={formData.isActive}
-                        onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+                        checked={sharedFields.isActive}
+                        onChange={(e) => updateSharedField('isActive', e.target.checked)}
                         style={{ width: 18, height: 18, cursor: 'pointer' }}
                       />
                       <span style={{ fontSize: '14px', color: '#374151' }}>Active</span>
@@ -794,8 +869,8 @@ const AdminVariantTabForm: React.FC = () => {
                     <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
                       <input
                         type="checkbox"
-                        checked={formData.requiresAuthentication}
-                        onChange={(e) => setFormData({ ...formData, requiresAuthentication: e.target.checked })}
+                        checked={sharedFields.requiresAuthentication}
+                        onChange={(e) => updateSharedField('requiresAuthentication', e.target.checked)}
                         style={{ width: 18, height: 18, cursor: 'pointer' }}
                       />
                       <span style={{ fontSize: '14px', color: '#374151' }}>Requires Authentication</span>
@@ -822,7 +897,7 @@ const AdminVariantTabForm: React.FC = () => {
                   ) : (
                     <>
                       <Save size={16} style={{ marginRight: 8 }} />
-                      {isEditMode ? 'Update Tab' : 'Create Tab'}
+                      {isEditMode ? 'Update All Languages' : 'Create Tab'}
                     </>
                   )}
                 </Button>
@@ -834,6 +909,13 @@ const AdminVariantTabForm: React.FC = () => {
                 >
                   Cancel
                 </Button>
+
+                {completedLanguages.length > 0 && (
+                  <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8, color: '#6b7280', fontSize: '14px' }}>
+                    <span>Languages filled: {completedLanguages.length}/3</span>
+                    <span>({completedLanguages.join(', ').toUpperCase()})</span>
+                  </div>
+                )}
               </div>
             </div>
           </form>
