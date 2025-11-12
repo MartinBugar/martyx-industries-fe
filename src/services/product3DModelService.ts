@@ -9,6 +9,9 @@ import type {
  * Service for managing 3D model (.glb) files for products
  */
 export class Product3DModelService {
+  // Store active XHR for cancellation
+  private activeXhr: XMLHttpRequest | null = null;
+
   /**
    * Upload a 3D model (.glb) file for a master product
    *
@@ -33,6 +36,7 @@ export class Product3DModelService {
 
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
+      this.activeXhr = xhr; // Store for cancellation
 
       // Track upload progress
       if (onProgress) {
@@ -45,6 +49,7 @@ export class Product3DModelService {
       }
 
       xhr.addEventListener('load', () => {
+        this.activeXhr = null; // Clear active XHR
         if (xhr.status >= 200 && xhr.status < 300) {
           try {
             const response = JSON.parse(xhr.responseText);
@@ -63,10 +68,12 @@ export class Product3DModelService {
       });
 
       xhr.addEventListener('error', () => {
+        this.activeXhr = null; // Clear active XHR
         reject(new Error('Network error during upload'));
       });
 
       xhr.addEventListener('abort', () => {
+        this.activeXhr = null; // Clear active XHR
         reject(new Error('Upload cancelled'));
       });
 
@@ -74,6 +81,16 @@ export class Product3DModelService {
       xhr.setRequestHeader('Authorization', `Bearer ${token}`);
       xhr.send(formData);
     });
+  }
+
+  /**
+   * Cancel an active upload
+   */
+  cancelUpload(): void {
+    if (this.activeXhr) {
+      this.activeXhr.abort();
+      this.activeXhr = null;
+    }
   }
 
   /**

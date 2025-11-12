@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Mail, Send, AlertCircle, CheckCircle, Clock } from 'lucide-react';
-import { adminOrderEmailService, OrderEmailDTO } from '../../services/adminOrderEmailService';
+import { adminOrderEmailService, type OrderEmailDTO } from '../../services/adminOrderEmailService';
 import { Button, Badge } from '../ui';
 import './OrderEmailHistory.css';
 

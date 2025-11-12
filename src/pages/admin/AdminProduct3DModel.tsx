@@ -6,22 +6,6 @@ import { adminProductsService, type BaseProduct } from '../../services/adminProd
 import { product3DModelService } from '../../services/product3DModelService';
 import type { Model3DInfoResponse, UploadState } from '../../types/product3DModel';
 
-// Declare model-viewer custom element for TypeScript
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      'model-viewer': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
-        src?: string;
-        alt?: string;
-        'auto-rotate'?: boolean;
-        'camera-controls'?: boolean;
-        loading?: string;
-        reveal?: string;
-      };
-    }
-  }
-}
-
 /**
  * Admin page for managing 3D model (.glb) files for products
  */
@@ -108,12 +92,32 @@ const AdminProduct3DModel: React.FC = () => {
       }
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Upload failed';
-      setUploadState({
-        uploading: false,
-        progress: 0,
-        error: msg
-      });
+      // Only show error if it wasn't a cancellation
+      if (msg !== 'Upload cancelled') {
+        setUploadState({
+          uploading: false,
+          progress: 0,
+          error: msg
+        });
+      } else {
+        // Reset state on cancellation
+        setUploadState({
+          uploading: false,
+          progress: 0,
+          error: null
+        });
+      }
     }
+  };
+
+  // Handle cancel upload
+  const handleCancelUpload = () => {
+    product3DModelService.cancelUpload();
+    setUploadState({
+      uploading: false,
+      progress: 0,
+      error: null
+    });
   };
 
   // Handle file input change
@@ -350,11 +354,20 @@ const AdminProduct3DModel: React.FC = () => {
                 {/* Upload Progress */}
                 {uploadState.uploading && (
                   <div style={{ marginTop: 16 }}>
-                    <div style={{ marginBottom: 8, display: 'flex', justifyContent: 'space-between' }}>
+                    <div style={{ marginBottom: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ fontSize: 14, color: '#6b7280' }}>Uploading...</span>
-                      <span style={{ fontSize: 14, fontWeight: 600, color: '#3b82f6' }}>
-                        {uploadState.progress}%
-                      </span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                        <span style={{ fontSize: 14, fontWeight: 600, color: '#3b82f6' }}>
+                          {uploadState.progress}%
+                        </span>
+                        <button
+                          onClick={handleCancelUpload}
+                          className="btn btn-secondary"
+                          style={{ padding: '4px 12px', fontSize: 12, minHeight: 'auto' }}
+                        >
+                          Cancel
+                        </button>
+                      </div>
                     </div>
                     <div style={{ width: '100%', height: 8, background: '#e2e8f0', borderRadius: 4, overflow: 'hidden' }}>
                       <div
