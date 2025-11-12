@@ -1,17 +1,24 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
 import { adminProductsService, type BaseProduct } from '../../services/adminProductsService';
 import { product3DModelService } from '../../services/product3DModelService';
 import type { Model3DInfoResponse, UploadState } from '../../types/product3DModel';
 
+// Declare model-viewer custom element for TypeScript
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      'model-viewer': any;
+    }
+  }
+}
+
 /**
  * Admin page for managing 3D model (.glb) files for products
  */
 const AdminProduct3DModel: React.FC = () => {
-  const { t } = useTranslation('common');
   const { id } = useParams<{ id: string }>();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -255,6 +262,10 @@ const AdminProduct3DModel: React.FC = () => {
                         alt="3D model preview"
                         auto-rotate
                         camera-controls
+                        onError={(e: Event) => {
+                          console.error('Model viewer error:', e);
+                          setError('Failed to load 3D model preview. The file may be corrupted or inaccessible.');
+                        }}
                         style={{
                           width: '100%',
                           height: '400px',

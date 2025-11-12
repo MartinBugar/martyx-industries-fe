@@ -1,5 +1,5 @@
 import { API_BASE_URL, defaultHeaders, handleResponse } from './apiUtils';
-import {
+import type {
   Model3DUploadResponse,
   Model3DInfoResponse,
   ModelDeleteResponse
@@ -113,11 +113,11 @@ export class Product3DModelService {
       `${API_BASE_URL}/master-products/${masterProductId}/3d-model`,
       {
         method: 'GET',
-        headers: defaultHeaders
+        headers: defaultHeaders as HeadersInit
       }
     );
 
-    return handleResponse<Model3DInfoResponse>(response);
+    return handleResponse(response) as Promise<Model3DInfoResponse>;
   }
 
   /**

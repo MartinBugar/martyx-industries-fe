@@ -8,7 +8,7 @@ import { useRef, useCallback, useEffect } from 'react';
  * @param delay - Delay in milliseconds (default: 500ms)
  * @returns The debounced callback function
  */
-export function useDebouncedCallback<T extends (...args: unknown[]) => void>(
+export function useDebouncedCallback<T extends (...args: any[]) => void>(
   callback: T,
   delay: number = 500
 ): T {
@@ -30,7 +30,7 @@ export function useDebouncedCallback<T extends (...args: unknown[]) => void>(
   }, []);
 
   return useCallback(
-    ((...args: unknown[]) => {
+    ((...args: any[]) => {
       // Clear existing timeout
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);

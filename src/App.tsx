@@ -72,6 +72,7 @@ import {
   AdminProducts,
   AdminProductDetail,
   AdminProductGallery,
+  AdminProduct3DModel,
   AdminVariantTabs,
   AdminVariantTabForm,
   AdminMasterProductTabs,
@@ -279,6 +280,11 @@ const MainContent = React.memo(() => {
             <Route path="/admin/products/:id/gallery" element={
               <RequireAdmin>
                 <AdminProductGallery />
+              </RequireAdmin>
+            } />
+            <Route path="/admin/products/:id/3d-model" element={
+              <RequireAdmin>
+                <AdminProduct3DModel />
               </RequireAdmin>
             } />
             <Route path="/admin/products/:productId/tabs" element={
