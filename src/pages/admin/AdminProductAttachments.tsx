@@ -77,8 +77,35 @@ const AdminProductAttachments: React.FC = () => {
     window.open(attachment.cdnUrl || attachment.fileUrl, '_blank');
   };
 
+  // Navigation tabs
+  const navTabs = (
+    <div className="admin-nav-tabs">
+      <Link to={`/admin/products/${productId}`} className="admin-nav-tab">
+        📝 Product Detail
+      </Link>
+      <Link to={`/admin/products/${productId}`} className="admin-nav-tab">
+        📦 Variants
+      </Link>
+      <Link to={`/admin/products/${productId}/tabs`} className="admin-nav-tab">
+        📋 Manage Tabs
+      </Link>
+      <Link to={`/admin/products/${productId}/attachments`} className="admin-nav-tab active">
+        📎 Manage Attachments
+      </Link>
+      <Link to={`/admin/products/${productId}/gallery`} className="admin-nav-tab">
+        📸 Gallery
+      </Link>
+      <Link to={`/admin/products/${productId}/3d-model`} className="admin-nav-tab">
+        🎲 3D Model
+      </Link>
+      <Link to={`/admin/products/${productId}/digital-file`} className="admin-nav-tab">
+        💾 Digital File
+      </Link>
+    </div>
+  );
+
   return (
-    <AdminLayout title="Product Attachments Management">
+    <AdminLayout title="Product Attachments Management" navTabs={navTabs}>
       <div className="admin-page">
         <div className="admin-container">
           {/* Header */}
