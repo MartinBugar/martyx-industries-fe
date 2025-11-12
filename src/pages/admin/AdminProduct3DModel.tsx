@@ -1,3 +1,4 @@
+/// <reference path="../../global.d.ts" />
 import React, { useEffect, useState, useRef } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import AdminLayout from './AdminLayout';
@@ -268,22 +269,22 @@ const AdminProduct3DModel: React.FC = () => {
                   {/* Model Viewer Preview */}
                   {modelInfo.cdnUrl && (
                     <div style={{ marginBottom: 16 }}>
-                      <model-viewer
-                        src={modelInfo.cdnUrl}
-                        alt="3D model preview"
-                        auto-rotate
-                        camera-controls
-                        onError={(e: Event) => {
+                      {React.createElement('model-viewer', {
+                        src: modelInfo.cdnUrl,
+                        alt: '3D model preview',
+                        'auto-rotate': true,
+                        'camera-controls': true,
+                        onError: (e: Event) => {
                           console.error('Model viewer error:', e);
                           setError('Failed to load 3D model preview. The file may be corrupted or inaccessible.');
-                        }}
-                        style={{
+                        },
+                        style: {
                           width: '100%',
                           height: '400px',
                           borderRadius: '8px',
                           border: '1px solid #e2e8f0'
-                        }}
-                      ></model-viewer>
+                        }
+                      })}
                     </div>
                   )}
 
