@@ -58,6 +58,18 @@ const AdminProductGallery: React.FC = () => {
         📦 Variants ({Array.isArray(product?.variants) ? product.variants.length : 0})
       </Link>
       <Link
+        to={`/admin/products/${id}/tabs`}
+        className="admin-nav-tab"
+      >
+        📋 Manage Tabs
+      </Link>
+      <Link
+        to={`/admin/products/${id}/attachments`}
+        className="admin-nav-tab"
+      >
+        📎 Manage Attachments
+      </Link>
+      <Link
         to={`/admin/products/${id}/gallery`}
         className="admin-nav-tab active"
       >
@@ -68,6 +80,12 @@ const AdminProductGallery: React.FC = () => {
         className="admin-nav-tab"
       >
         🎲 3D Model
+      </Link>
+      <Link
+        to={`/admin/products/${id}/digital-file`}
+        className="admin-nav-tab"
+      >
+        💾 Digital File
       </Link>
     </div>
   );

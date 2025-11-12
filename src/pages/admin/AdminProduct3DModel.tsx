@@ -182,11 +182,20 @@ const AdminProduct3DModel: React.FC = () => {
       <Link to={`/admin/products/${id}`} className="admin-nav-tab">
         📦 Variants ({Array.isArray(product?.variants) ? product.variants.length : 0})
       </Link>
+      <Link to={`/admin/products/${id}/tabs`} className="admin-nav-tab">
+        📋 Manage Tabs
+      </Link>
+      <Link to={`/admin/products/${id}/attachments`} className="admin-nav-tab">
+        📎 Manage Attachments
+      </Link>
       <Link to={`/admin/products/${id}/gallery`} className="admin-nav-tab">
         📸 Gallery
       </Link>
       <Link to={`/admin/products/${id}/3d-model`} className="admin-nav-tab active">
         🎲 3D Model
+      </Link>
+      <Link to={`/admin/products/${id}/digital-file`} className="admin-nav-tab">
+        💾 Digital File
       </Link>
     </div>
   );
