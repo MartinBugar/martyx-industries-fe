@@ -854,7 +854,7 @@ const AdminOrders: React.FC = () => {
 
                                                                     {/* Email History Section */}
                                                                     <div style={{gridColumn: 'span 3', marginTop: '20px'}}>
-                                                                        <OrderEmailHistory orderId={o.id!} />
+                                                                        <OrderEmailHistory orderId={Number(o.id!)} />
                                                                     </div>
                                                                 </div>
                                                             </td>

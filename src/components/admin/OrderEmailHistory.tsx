@@ -95,7 +95,7 @@ const OrderEmailHistory: React.FC<OrderEmailHistoryProps> = ({ orderId }) => {
                 <div className="header-title">
                     <Mail size={20} />
                     <h3>Email History</h3>
-                    <Badge variant="outline" size="sm">{emails.length}</Badge>
+                    <Badge variant="secondary" size="sm">{emails.length}</Badge>
                 </div>
                 <Button
                     variant="primary"

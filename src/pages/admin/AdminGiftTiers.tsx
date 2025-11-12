@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Plus, Edit, Trash2, Upload, X, Gift, CheckCircle, XCircle, Image as ImageIcon, ArrowLeft } from 'lucide-react';
+import { Plus, Edit, Trash2, Upload, X, Gift, CheckCircle, XCircle, Image as ImageIcon } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
 import { adminGiftTierService, type GiftTierDTO, type GiftTierRequest } from '../../services/giftTierService';
@@ -203,34 +203,29 @@ const AdminGiftTiers: React.FC = () => {
     });
   };
 
+  const navTabs = (
+    <nav className="dashboard-tabs">
+      <button
+        className={`dashboard-tab ${activeTab === 'all-tiers' ? 'active' : ''}`}
+        onClick={() => { resetCreate(); setActiveTab('all-tiers'); }}
+        aria-label="View all gift tiers"
+      >
+        All Gift Tiers
+      </button>
+      <button
+        className={`dashboard-tab ${activeTab === 'create-tier' ? 'active' : ''}`}
+        onClick={() => { resetCreate(); setActiveTab('create-tier'); }}
+        aria-label="Create new gift tier"
+      >
+        Create Gift Tier
+      </button>
+    </nav>
+  );
+
   return (
-    <AdminLayout title="Gift Tiers Management">
+    <AdminLayout title="Gift Tiers" navTabs={navTabs}>
       <div className="admin-page">
         <div className="admin-container">
-          {/* Header */}
-          <div className="admin-header">
-            <div className="admin-header-content">
-              <h1 className="admin-title">
-                <Gift size={28} style={{ display: 'inline', marginRight: '8px', verticalAlign: 'middle' }} />
-                Gift Tiers Management
-              </h1>
-              <p className="admin-subtitle">
-                Manage reward tiers based on cart value. Create and configure gifts that unlock at specific spending thresholds.
-              </p>
-            </div>
-            {activeTab === 'all-tiers' && (
-              <div className="admin-header-actions">
-                <Button
-                  onClick={() => { resetCreate(); setActiveTab('create-tier'); }}
-                  className="btn btn-primary"
-                  style={{ width: '100%' }}
-                >
-                  <Plus size={18} />
-                  Create Gift Tier
-                </Button>
-              </div>
-            )}
-          </div>
 
           {/* Error Message */}
           {error && (
@@ -293,13 +288,13 @@ const AdminGiftTiers: React.FC = () => {
                     <table className="admin-table">
                       <thead>
                         <tr>
-                          <th>Order</th>
-                          <th>Gift Name</th>
-                          <th>Threshold</th>
-                          <th>Image</th>
-                          <th>Status</th>
-                          <th>Created</th>
-                          <th style={{ textAlign: 'right' }}>Actions</th>
+                          <th style={{ width: '80px' }}>Order</th>
+                          <th style={{ width: 'auto', minWidth: '250px' }}>Gift Name</th>
+                          <th style={{ width: '140px' }}>Threshold</th>
+                          <th style={{ width: '100px' }}>Image</th>
+                          <th style={{ width: '120px' }}>Status</th>
+                          <th style={{ width: '140px' }}>Created</th>
+                          <th style={{ textAlign: 'right', width: '180px' }}>Actions</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -310,32 +305,38 @@ const AdminGiftTiers: React.FC = () => {
                                 display: 'inline-flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                width: '32px',
-                                height: '32px',
+                                width: '40px',
+                                height: '40px',
                                 borderRadius: '50%',
                                 background: 'var(--admin-bg-secondary)',
                                 color: 'var(--admin-accent)',
                                 fontWeight: 700,
-                                fontSize: '14px',
+                                fontSize: '16px',
                                 border: '2px solid var(--admin-border)'
                               }}>
                                 {tier.tierOrder}
                               </span>
                             </td>
                             <td>
-                              <strong style={{ color: 'var(--admin-primary)', fontWeight: 600 }}>
+                              <strong style={{
+                                color: 'var(--admin-primary)',
+                                fontWeight: 600,
+                                fontSize: '15px',
+                                display: 'block',
+                                lineHeight: '1.4'
+                              }}>
                                 {tier.name}
                               </strong>
                             </td>
                             <td>
                               <span style={{
                                 display: 'inline-block',
-                                padding: '6px 12px',
+                                padding: '8px 16px',
                                 borderRadius: '8px',
                                 background: 'var(--admin-success-bg)',
                                 color: 'var(--admin-success)',
-                                fontWeight: 600,
-                                fontSize: '13px'
+                                fontWeight: 700,
+                                fontSize: '15px'
                               }}>
                                 {formatCurrency(tier.thresholdAmount)}
                               </span>
@@ -343,11 +344,12 @@ const AdminGiftTiers: React.FC = () => {
                             <td>
                               {tier.imageUrl ? (
                                 <div style={{
-                                  width: '50px',
-                                  height: '50px',
-                                  borderRadius: '8px',
+                                  width: '64px',
+                                  height: '64px',
+                                  borderRadius: '10px',
                                   overflow: 'hidden',
-                                  border: '2px solid var(--admin-border)'
+                                  border: '2px solid var(--admin-border)',
+                                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
                                 }}>
                                   <img
                                     src={tier.imageUrl}
@@ -364,14 +366,14 @@ const AdminGiftTiers: React.FC = () => {
                                   display: 'inline-flex',
                                   alignItems: 'center',
                                   gap: '6px',
-                                  padding: '6px 10px',
+                                  padding: '8px 12px',
                                   borderRadius: '8px',
                                   background: 'var(--admin-bg-secondary)',
                                   color: 'var(--admin-secondary)',
-                                  fontSize: '12px',
+                                  fontSize: '13px',
                                   fontWeight: 500
                                 }}>
-                                  <ImageIcon size={14} />
+                                  <ImageIcon size={16} />
                                   No Image
                                 </span>
                               )}
@@ -381,35 +383,39 @@ const AdminGiftTiers: React.FC = () => {
                                 <span style={{
                                   display: 'inline-flex',
                                   alignItems: 'center',
-                                  gap: '6px',
-                                  padding: '6px 10px',
+                                  gap: '8px',
+                                  padding: '8px 14px',
                                   borderRadius: '8px',
                                   background: 'var(--admin-success-bg)',
                                   color: 'var(--admin-success)',
-                                  fontSize: '12px',
+                                  fontSize: '13px',
                                   fontWeight: 600
                                 }}>
-                                  <CheckCircle size={14} />
+                                  <CheckCircle size={16} />
                                   Active
                                 </span>
                               ) : (
                                 <span style={{
                                   display: 'inline-flex',
                                   alignItems: 'center',
-                                  gap: '6px',
-                                  padding: '6px 10px',
+                                  gap: '8px',
+                                  padding: '8px 14px',
                                   borderRadius: '8px',
                                   background: 'var(--admin-bg-secondary)',
                                   color: 'var(--admin-secondary)',
-                                  fontSize: '12px',
+                                  fontSize: '13px',
                                   fontWeight: 600
                                 }}>
-                                  <XCircle size={14} />
+                                  <XCircle size={16} />
                                   Inactive
                                 </span>
                               )}
                             </td>
-                            <td style={{ color: 'var(--admin-secondary)', fontSize: '13px' }}>
+                            <td style={{
+                              color: 'var(--admin-secondary)',
+                              fontSize: '14px',
+                              fontWeight: 500
+                            }}>
                               {formatDate(tier.createdAt)}
                             </td>
                             <td>
@@ -453,28 +459,9 @@ const AdminGiftTiers: React.FC = () => {
           {/* Create/Edit Tier Tab */}
           {activeTab === 'create-tier' && (
             <div className="admin-card">
-              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
-                <button
-                  onClick={() => { resetCreate(); setActiveTab('all-tiers'); }}
-                  style={{
-                    background: 'transparent',
-                    border: 'none',
-                    cursor: 'pointer',
-                    padding: '8px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    color: 'var(--admin-secondary)',
-                    transition: 'color 0.2s'
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.color = 'var(--admin-primary)'}
-                  onMouseLeave={(e) => e.currentTarget.style.color = 'var(--admin-secondary)'}
-                >
-                  <ArrowLeft size={20} />
-                </button>
-                <h3 className="section-title" style={{ margin: 0, fontSize: '24px' }}>
-                  {editingId ? 'Edit Gift Tier' : 'Create New Gift Tier'}
-                </h3>
-              </div>
+              <h3 className="section-title">
+                {editingId ? 'Edit Gift Tier' : 'Create New Gift Tier'}
+              </h3>
 
               <form onSubmit={handleCreate}>
                 <div className="form-grid">

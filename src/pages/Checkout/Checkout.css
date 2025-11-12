@@ -629,7 +629,50 @@
 }
 
 .stripe-container {
-  /* Stripe Elements will be injected here */
+  margin-top: var(--space-md);
+}
+
+.stripe-checkout-button {
+  width: 100%;
+  padding: 16px 24px;
+  background-color: #635BFF;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(99, 91, 255, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.stripe-checkout-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.stripe-checkout-button:not(:disabled):hover {
+  background-color: #5147EC;
+  box-shadow: 0 4px 12px rgba(99, 91, 255, 0.35);
+  transform: translateY(-1px);
+}
+
+.stripe-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 /* ============================================

@@ -27,7 +27,14 @@ export const LanguageTabs: React.FC<LanguageTabsProps> = ({
     className = ''
 }) => {
     return (
-        <div className={`language-tabs ${className}`} style={styles.container}>
+        <>
+            <style>{`
+                .language-tab-inactive:hover {
+                    border-color: #d1d5db !important;
+                    background: #f9fafb !important;
+                }
+            `}</style>
+            <div className={`language-tabs ${className}`} style={styles.container}>
             <div style={styles.tabList}>
                 {LANGUAGES.map((lang) => {
                     const isActive = activeLanguage === lang.code;
@@ -38,6 +45,7 @@ export const LanguageTabs: React.FC<LanguageTabsProps> = ({
                             key={lang.code}
                             type="button"
                             onClick={() => onLanguageChange(lang.code)}
+                            className={`language-tab ${isActive ? 'language-tab-active' : 'language-tab-inactive'}`}
                             style={{
                                 ...styles.tab,
                                 ...(isActive ? styles.tabActive : styles.tabInactive),
@@ -59,6 +67,7 @@ export const LanguageTabs: React.FC<LanguageTabsProps> = ({
                 </span>
             </div>
         </div>
+        </>
     );
 };
 
@@ -98,10 +107,6 @@ const styles: Record<string, React.CSSProperties> = {
     tabInactive: {
         borderColor: '#e5e7eb',
         color: '#6b7280',
-        ':hover': {
-            borderColor: '#d1d5db',
-            background: '#f9fafb',
-        },
     },
     flag: {
         fontSize: 20,
