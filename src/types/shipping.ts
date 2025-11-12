@@ -106,3 +106,124 @@ export interface ShippingCalculationResponseDto {
   estimated_delivery_days_min?: number;
   estimated_delivery_days_max?: number;
 }
+
+/**
+ * Shipment Status enum
+ */
+export const ShipmentStatus = {
+  CREATED: 'CREATED',
+  LABEL_GENERATED: 'LABEL_GENERATED',
+  PICKED_UP: 'PICKED_UP',
+  IN_TRANSIT: 'IN_TRANSIT',
+  OUT_FOR_DELIVERY: 'OUT_FOR_DELIVERY',
+  DELIVERED: 'DELIVERED',
+  FAILED: 'FAILED',
+  RETURNED: 'RETURNED',
+  CANCELLED: 'CANCELLED'
+} as const;
+export type ShipmentStatus = typeof ShipmentStatus[keyof typeof ShipmentStatus];
+
+/**
+ * Create Shipment Request
+ */
+export interface CreateShipmentRequest {
+  orderId: number;
+  carrierName: string;
+  carrierService: string;
+  weightKg: number;
+  shippingCost: number;
+  currency?: string;
+  isInsured?: boolean;
+  insuranceAmount?: number;
+  recipientName: string;
+  recipientAddress: string;
+  recipientCity: string;
+  recipientPostalCode: string;
+  recipientCountryCode: string;
+  recipientPhone?: string;
+  recipientEmail?: string;
+}
+
+/**
+ * Create Shipment Response
+ */
+export interface CreateShipmentResponse {
+  shipmentId: number;
+  orderId: number;
+  trackingNumber: string;
+  trackingUrl?: string;
+  labelUrl?: string;
+  carrierShipmentId?: string;
+  status: ShipmentStatus;
+  createdAt: string;
+  estimatedDeliveryAt?: string;
+  success: boolean;
+  errorMessage?: string;
+}
+
+/**
+ * Shipment details
+ */
+export interface Shipment {
+  id: number;
+  order: {
+    id: number;
+    orderNumber?: string;
+  };
+  carrierName: string;
+  carrierService: string;
+  providerType?: string;
+  trackingNumber: string;
+  trackingUrl?: string;
+  labelUrl?: string;
+  carrierShipmentId?: string;
+  status: ShipmentStatus;
+  statusMessage?: string;
+  weightKg?: number;
+  shippingCost?: number;
+  currency?: string;
+  isInsured?: boolean;
+  insuranceAmount?: number;
+  recipientName?: string;
+  recipientAddress?: string;
+  recipientCity?: string;
+  recipientPostalCode?: string;
+  recipientCountryCode?: string;
+  recipientPhone?: string;
+  recipientEmail?: string;
+  createdAt: string;
+  updatedAt: string;
+  shippedAt?: string;
+  deliveredAt?: string;
+  estimatedDeliveryAt?: string;
+  apiRequestPayload?: string;
+  apiResponsePayload?: string;
+  errorMessage?: string;
+}
+
+/**
+ * Tracking Event
+ */
+export interface TrackingEvent {
+  timestamp: string;
+  status: string;
+  description: string;
+  location?: string;
+}
+
+/**
+ * Shipment Tracking
+ */
+export interface ShipmentTracking {
+  shipmentId?: number;
+  trackingNumber: string;
+  trackingUrl?: string;
+  status: string;
+  statusMessage?: string;
+  lastUpdated?: string;
+  estimatedDeliveryAt?: string;
+  deliveredAt?: string;
+  carrierName?: string;
+  carrierService?: string;
+  events?: TrackingEvent[];
+}
