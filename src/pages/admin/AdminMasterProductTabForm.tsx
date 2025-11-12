@@ -40,7 +40,7 @@ interface TranslatableFields {
 // Shared fields across all languages
 interface SharedFields {
   tabKey: string;
-  contentType: string;
+  contentType: 'HTML' | 'MARKDOWN' | 'JSON' | 'COMPONENT';
   contentJson: string;
   componentName: string;
   displayOrder: number;

@@ -24,8 +24,7 @@ class AdminOrderEmailService {
      * Get email history for a specific order.
      */
     async getEmailHistory(orderId: number): Promise<OrderEmailDTO[]> {
-        const response = await apiClient.get<OrderEmailDTO[]>(`/api/admin/orders/${orderId}/emails`);
-        return response.data;
+        return apiClient.get<OrderEmailDTO[]>(`/api/admin/orders/${orderId}/emails`);
     }
 
     /**
@@ -33,11 +32,10 @@ class AdminOrderEmailService {
      */
     async resendOrderConfirmationEmail(orderId: number, bccEmail?: string): Promise<{ message: string }> {
         const request: ResendEmailRequest = bccEmail ? { bccEmail } : {};
-        const response = await apiClient.post<{ message: string }>(
+        return apiClient.post<{ message: string }>(
             `/api/admin/orders/${orderId}/resend-email`,
             request
         );
-        return response.data;
     }
 
     /**
@@ -45,7 +43,7 @@ class AdminOrderEmailService {
      */
     async getEmailCount(orderId: number): Promise<number> {
         const response = await apiClient.get<{ count: number }>(`/api/admin/orders/${orderId}/emails/count`);
-        return response.data.count;
+        return response.count;
     }
 }
 

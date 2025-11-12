@@ -99,7 +99,7 @@ export class Product3DModelService {
       }
     );
 
-    return handleResponse<ModelDeleteResponse>(response);
+    return handleResponse(response) as Promise<ModelDeleteResponse>;
   }
 
   /**
