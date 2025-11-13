@@ -20,19 +20,19 @@ export const discountService = {
     cartTotal: number,
     userId?: number
   ): Promise<DiscountValidationDto> {
-    const payload: { code: string; cartTotal: number; userId?: number } = {
+    // Build query parameters
+    const params = new URLSearchParams({
       code,
-      cartTotal
-    };
+      cartTotal: cartTotal.toString()
+    });
 
     if (userId) {
-      payload.userId = userId;
+      params.append('userId', userId.toString());
     }
 
-    const resp = await fetch(`${API_BASE_URL}/api/discounts/validate`, {
-      method: 'POST',
+    const resp = await fetch(`${API_BASE_URL}/api/discount-codes/validate?${params}`, {
+      method: 'GET',
       headers: jsonHeaders(),
-      body: JSON.stringify(payload),
     });
 
     return await handleResponse(resp) as DiscountValidationDto;
@@ -52,7 +52,7 @@ export const discountService = {
     validFrom: string;
     validUntil: string;
   }> {
-    const resp = await fetch(`${API_BASE_URL}/api/discounts/${encodeURIComponent(code)}`, {
+    const resp = await fetch(`${API_BASE_URL}/api/discount-codes/code/${encodeURIComponent(code)}`, {
       method: 'GET',
       headers: jsonHeaders(),
     });
