@@ -65,14 +65,20 @@ const UserAccount: React.FC = () => {
     if (activeTab === 'referrals' && isAuthenticated) {
       const loadReferralData = async () => {
         try {
+          console.log('🔄 Loading referral data...');
           const [credits, stats] = await Promise.all([
             userCreditsService.getBalance(),
             referralService.getMyStats()
           ]);
+          console.log('✅ Credits data:', credits);
+          console.log('✅ Stats data:', stats);
           setCreditsData(credits);
           setReferralStats(stats);
         } catch (error) {
-          console.error('Failed to load referral data:', error);
+          console.error('❌ Failed to load referral data:', error);
+          // Set default data to prevent "Loading..." forever
+          setCreditsData({ creditBalance: 0, pendingBalance: 0, totalEarned: 0, totalSpent: 0 } as UserCreditDto);
+          setReferralStats({ successfulReferrals: 0, totalEarnings: 0, pendingReferrals: 0 } as ReferralStatsDto);
         }
       };
       loadReferralData();
@@ -84,13 +90,10 @@ const UserAccount: React.FC = () => {
     return (
       <div className="account-page">
         <div className="account-loading">
-          <div className="loading-animation">
-            <div className="spinner"></div>
-            <div className="pulse-rings">
-              <div className="ring"></div>
-              <div className="ring"></div>
-              <div className="ring"></div>
-            </div>
+          <div className="loading-spinner">
+            <svg className="spinner-svg" viewBox="0 0 50 50">
+              <circle className="spinner-circle" cx="25" cy="25" r="20" fill="none" strokeWidth="4"></circle>
+            </svg>
           </div>
           <h2>Loading Your Account</h2>
           <p>Please wait while we set up your dashboard...</p>
@@ -182,38 +185,42 @@ const UserAccount: React.FC = () => {
             )}
 
             {/* Referral Stats - shown only when referrals tab is active */}
-            {activeTab === 'referrals' && creditsData && referralStats && (
+            {activeTab === 'referrals' && (
               <div className="referrals-stats-section">
-                <div className="referral-stats-compact">
-                  <div className="ref-stat-item">
-                    <span className="ref-stat-icon">💰</span>
-                    <div className="ref-stat-content">
-                      <span className="ref-stat-value">€{creditsData.creditBalance.toFixed(2)}</span>
-                      <span className="ref-stat-label">Available</span>
+                {creditsData && referralStats ? (
+                  <div className="referral-stats-compact">
+                    <div className="ref-stat-item">
+                      <span className="ref-stat-icon">💰</span>
+                      <div className="ref-stat-content">
+                        <span className="ref-stat-value">€{creditsData.creditBalance.toFixed(2)}</span>
+                        <span className="ref-stat-label">Available</span>
+                      </div>
+                    </div>
+                    <div className="ref-stat-item">
+                      <span className="ref-stat-icon">👥</span>
+                      <div className="ref-stat-content">
+                        <span className="ref-stat-value">{referralStats.successfulReferrals}</span>
+                        <span className="ref-stat-label">Referrals</span>
+                      </div>
+                    </div>
+                    <div className="ref-stat-item">
+                      <span className="ref-stat-icon">🎁</span>
+                      <div className="ref-stat-content">
+                        <span className="ref-stat-value">€{referralStats.totalEarnings.toFixed(2)}</span>
+                        <span className="ref-stat-label">Total Earned</span>
+                      </div>
+                    </div>
+                    <div className="ref-stat-item">
+                      <span className="ref-stat-icon">⏳</span>
+                      <div className="ref-stat-content">
+                        <span className="ref-stat-value">€{creditsData.pendingBalance.toFixed(2)}</span>
+                        <span className="ref-stat-label">Pending</span>
+                      </div>
                     </div>
                   </div>
-                  <div className="ref-stat-item">
-                    <span className="ref-stat-icon">👥</span>
-                    <div className="ref-stat-content">
-                      <span className="ref-stat-value">{referralStats.successfulReferrals}</span>
-                      <span className="ref-stat-label">Referrals</span>
-                    </div>
-                  </div>
-                  <div className="ref-stat-item">
-                    <span className="ref-stat-icon">🎁</span>
-                    <div className="ref-stat-content">
-                      <span className="ref-stat-value">€{referralStats.totalEarnings.toFixed(2)}</span>
-                      <span className="ref-stat-label">Total Earned</span>
-                    </div>
-                  </div>
-                  <div className="ref-stat-item">
-                    <span className="ref-stat-icon">⏳</span>
-                    <div className="ref-stat-content">
-                      <span className="ref-stat-value">€{creditsData.pendingBalance.toFixed(2)}</span>
-                      <span className="ref-stat-label">Pending</span>
-                    </div>
-                  </div>
-                </div>
+                ) : (
+                  <div className="referral-stats-loading">Loading stats...</div>
+                )}
               </div>
             )}
 

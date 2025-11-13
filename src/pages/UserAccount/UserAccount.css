@@ -29,61 +29,44 @@
   background: var(--bg, #0a0a0a);
 }
 
-.loading-animation {
-  position: relative;
-  width: 80px;
-  height: 80px;
+.loading-spinner {
+  width: 64px;
+  height: 64px;
   margin-bottom: 2rem;
 }
 
-.spinner {
-  position: absolute;
+.spinner-svg {
   width: 100%;
   height: 100%;
-  border: 4px solid rgba(255, 204, 0, 0.1);
-  border-top-color: var(--accent, #ffcc00);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
+  animation: rotate 1.5s linear infinite;
 }
 
-.pulse-rings {
-  position: absolute;
-  width: 100%;
-  height: 100%;
+.spinner-circle {
+  stroke: #1565c0;
+  stroke-linecap: round;
+  stroke-dasharray: 90, 150;
+  stroke-dashoffset: 0;
+  animation: dash 1.5s ease-in-out infinite;
 }
 
-.ring {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  border: 2px solid var(--accent, #ffcc00);
-  border-radius: 50%;
-  opacity: 0;
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-.ring:nth-child(2) {
-  animation-delay: 0.66s;
-}
-
-.ring:nth-child(3) {
-  animation-delay: 1.33s;
-}
-
-@keyframes spin {
-  to {
+@keyframes rotate {
+  100% {
     transform: rotate(360deg);
   }
 }
 
-@keyframes pulse {
-  0%, 100% {
-    opacity: 0;
-    transform: scale(0.5);
+@keyframes dash {
+  0% {
+    stroke-dasharray: 1, 150;
+    stroke-dashoffset: 0;
   }
   50% {
-    opacity: 1;
-    transform: scale(1.3);
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -35;
+  }
+  100% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -124;
   }
 }
 
@@ -542,9 +525,11 @@
 }
 
 .referral-stats-compact {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  display: flex;
+  align-items: center;
   gap: 0.75rem;
+  flex-wrap: nowrap;
+  overflow-x: auto;
 }
 
 .ref-stat-item {
@@ -556,6 +541,8 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   transition: all 0.2s ease;
+  flex-shrink: 0;
+  min-width: fit-content;
 }
 
 .ref-stat-item:hover {
@@ -595,7 +582,6 @@
 
 @media (max-width: 768px) {
   .referral-stats-compact {
-    grid-template-columns: repeat(2, 1fr);
     gap: 0.5rem;
   }
 
@@ -613,12 +599,6 @@
 
   .ref-stat-label {
     font-size: 0.625rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .referral-stats-compact {
-    grid-template-columns: 1fr 1fr;
   }
 }
 
