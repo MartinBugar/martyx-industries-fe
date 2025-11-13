@@ -24,6 +24,17 @@ const AdminManualOrderCreate: React.FC = () => {
   const [storeEmployeeName, setStoreEmployeeName] = useState<string>('');
   const [notes, setNotes] = useState<string>('');
 
+  // Billing address state
+  const [billingStreet, setBillingStreet] = useState<string>('');
+  const [billingCity, setBillingCity] = useState<string>('');
+  const [billingPostalCode, setBillingPostalCode] = useState<string>('');
+  const [billingCountry, setBillingCountry] = useState<string>('Slovakia');
+  const [companyName, setCompanyName] = useState<string>('');
+  const [ico, setIco] = useState<string>('');
+  const [dic, setDic] = useState<string>('');
+  const [icDph, setIcDph] = useState<string>('');
+  const [isCompanyOrder, setIsCompanyOrder] = useState<boolean>(false);
+
   // Product selection
   const [products, setProducts] = useState<ProductVariantDTO[]>([]);
   const [selectedItems, setSelectedItems] = useState<Array<{ variantId: number; quantity: number; product: ProductVariantDTO }>>([]);
@@ -33,6 +44,7 @@ const AdminManualOrderCreate: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<ManualOrderCreateResponse | null>(null);
   const [loadingProducts, setLoadingProducts] = useState<boolean>(true);
+  const [productLoadError, setProductLoadError] = useState<string | null>(null);
 
   // Load available products on mount
   useEffect(() => {
@@ -41,11 +53,13 @@ const AdminManualOrderCreate: React.FC = () => {
 
   const loadProducts = async () => {
     setLoadingProducts(true);
+    setProductLoadError(null);
     try {
       const data = await manualOrdersService.getAvailableProducts();
       setProducts(data);
     } catch (e) {
-      setError('Failed to load products: ' + (e instanceof Error ? e.message : 'Unknown error'));
+      const errorMsg = 'Failed to load products: ' + (e instanceof Error ? e.message : 'Unknown error');
+      setProductLoadError(errorMsg);
     } finally {
       setLoadingProducts(false);
     }
@@ -89,13 +103,35 @@ const AdminManualOrderCreate: React.FC = () => {
     setSuccess(null);
 
     // Validation
-    if (!recipientEmail) {
+    if (!recipientEmail || !recipientEmail.trim()) {
       setError('Customer email is required');
+      return;
+    }
+
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(recipientEmail)) {
+      setError('Please enter a valid email address');
       return;
     }
 
     if (selectedItems.length === 0) {
       setError('Please add at least one product');
+      return;
+    }
+
+    // Quantity validation
+    const invalidItems = selectedItems.filter(item => item.quantity < 1);
+    if (invalidItems.length > 0) {
+      setError('All products must have a quantity of at least 1');
+      return;
+    }
+
+    // Check for duplicate products
+    const variantIds = selectedItems.map(item => item.variantId);
+    const uniqueIds = new Set(variantIds);
+    if (variantIds.length !== uniqueIds.size) {
+      setError('Duplicate products detected. Please remove duplicates.');
       return;
     }
 
@@ -114,6 +150,16 @@ const AdminManualOrderCreate: React.FC = () => {
         storeLocation: storeLocation || undefined,
         storeEmployeeName: storeEmployeeName || undefined,
         notes: notes || undefined,
+        billingAddress: (billingStreet || billingCity || companyName) ? {
+          street: billingStreet || undefined,
+          city: billingCity || undefined,
+          postalCode: billingPostalCode || undefined,
+          country: billingCountry || undefined,
+          companyName: isCompanyOrder ? (companyName || undefined) : undefined,
+          ico: isCompanyOrder ? (ico || undefined) : undefined,
+          dic: isCompanyOrder ? (dic || undefined) : undefined,
+          icDph: isCompanyOrder ? (icDph || undefined) : undefined,
+        } : undefined,
       };
 
       const response = await manualOrdersService.createManualOrder(request);
@@ -128,6 +174,15 @@ const AdminManualOrderCreate: React.FC = () => {
       setStoreEmployeeName('');
       setNotes('');
       setSelectedItems([]);
+      setBillingStreet('');
+      setBillingCity('');
+      setBillingPostalCode('');
+      setBillingCountry('Slovakia');
+      setCompanyName('');
+      setIco('');
+      setDic('');
+      setIcDph('');
+      setIsCompanyOrder(false);
     } catch (e) {
       setError('Failed to create order: ' + (e instanceof Error ? e.message : 'Unknown error'));
     } finally {
@@ -144,6 +199,15 @@ const AdminManualOrderCreate: React.FC = () => {
     setStoreEmployeeName('');
     setNotes('');
     setSelectedItems([]);
+    setBillingStreet('');
+    setBillingCity('');
+    setBillingPostalCode('');
+    setBillingCountry('Slovakia');
+    setCompanyName('');
+    setIco('');
+    setDic('');
+    setIcDph('');
+    setIsCompanyOrder(false);
     setError(null);
     setSuccess(null);
   };
@@ -249,7 +313,126 @@ const AdminManualOrderCreate: React.FC = () => {
             </div>
 
             <div className="admin-card" style={{ marginBottom: '20px' }}>
+              <h3 className="section-title">Billing Address (Optional)</h3>
+              <div className="form-grid">
+                <div className="form-field-full">
+                  <label className="form-label">
+                    <input
+                      type="checkbox"
+                      checked={isCompanyOrder}
+                      onChange={(e) => setIsCompanyOrder(e.target.checked)}
+                      style={{ marginRight: '8px' }}
+                    />
+                    This is a company order (B2B)
+                  </label>
+                </div>
+
+                {isCompanyOrder && (
+                  <>
+                    <div className="form-field-full">
+                      <label className="form-label">Company Name</label>
+                      <input
+                        type="text"
+                        className="form-input"
+                        value={companyName}
+                        onChange={(e) => setCompanyName(e.target.value)}
+                        placeholder="Company s.r.o."
+                      />
+                    </div>
+                    <div>
+                      <label className="form-label">IČO</label>
+                      <input
+                        type="text"
+                        className="form-input"
+                        value={ico}
+                        onChange={(e) => setIco(e.target.value)}
+                        placeholder="12345678"
+                      />
+                    </div>
+                    <div>
+                      <label className="form-label">DIČ</label>
+                      <input
+                        type="text"
+                        className="form-input"
+                        value={dic}
+                        onChange={(e) => setDic(e.target.value)}
+                        placeholder="1234567890"
+                      />
+                    </div>
+                    <div>
+                      <label className="form-label">IČ DPH</label>
+                      <input
+                        type="text"
+                        className="form-input"
+                        value={icDph}
+                        onChange={(e) => setIcDph(e.target.value)}
+                        placeholder="SK1234567890"
+                      />
+                    </div>
+                  </>
+                )}
+
+                <div className="form-field-full">
+                  <label className="form-label">Street Address</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={billingStreet}
+                    onChange={(e) => setBillingStreet(e.target.value)}
+                    placeholder="Main Street 123"
+                  />
+                </div>
+                <div>
+                  <label className="form-label">City</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={billingCity}
+                    onChange={(e) => setBillingCity(e.target.value)}
+                    placeholder="Bratislava"
+                  />
+                </div>
+                <div>
+                  <label className="form-label">Postal Code</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={billingPostalCode}
+                    onChange={(e) => setBillingPostalCode(e.target.value)}
+                    placeholder="81101"
+                  />
+                </div>
+                <div>
+                  <label className="form-label">Country</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={billingCountry}
+                    onChange={(e) => setBillingCountry(e.target.value)}
+                    placeholder="Slovakia"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="admin-card" style={{ marginBottom: '20px' }}>
               <h3 className="section-title">Products</h3>
+
+              {/* Product Load Error with Retry */}
+              {productLoadError && (
+                <div className="alert alert-error" style={{ marginBottom: '20px' }}>
+                  <div>{productLoadError}</div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={loadProducts}
+                    disabled={loadingProducts}
+                    style={{ marginTop: '8px' }}
+                  >
+                    Retry Loading Products
+                  </Button>
+                </div>
+              )}
 
               {/* Product Selection */}
               <div style={{ marginBottom: '20px' }}>
@@ -262,10 +445,12 @@ const AdminManualOrderCreate: React.FC = () => {
                       e.target.value = '';
                     }
                   }}
-                  disabled={loadingProducts}
+                  disabled={loadingProducts || !!productLoadError}
                 >
                   <option value="">
-                    {loadingProducts ? 'Loading products...' : 'Select a product...'}
+                    {loadingProducts ? 'Loading products...' :
+                     productLoadError ? 'Failed to load products' :
+                     'Select a product...'}
                   </option>
                   {products.map((product) => (
                     <option key={product.variantId} value={product.variantId}>

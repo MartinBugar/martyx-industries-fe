@@ -15,6 +15,7 @@ import VariantSelector from '../../components/VariantSelector/VariantSelector';
 import { getTabsForVariant, canViewTab, renderTabContent } from '../../services/productTabService';
 import type { ProductTabDto } from '../../types/api';
 import { useAuth } from '../../context/useAuth';
+import { trackProductView, extractUTMParams } from '../../services/backendAnalyticsService';
 
 // Local inlined ProductDetails component (previously in components/ProductDetails/ProductDetails.tsx)
 interface ProductDetailsProps {
@@ -286,6 +287,29 @@ const ProductDetail: React.FC = () => {
 
         loadProduct();
     }, [id, i18n.language]); // Re-load product when language changes
+
+    // Track product view analytics when product is loaded
+    React.useEffect(() => {
+        if (!product) return;
+
+        // Track product view to backend analytics
+        const trackView = async () => {
+            try {
+                const utmParams = extractUTMParams();
+                await trackProductView(
+                    product.masterProductId,
+                    user?.id,
+                    utmParams
+                );
+                console.log('[Analytics] Product view tracked:', product.masterProductId);
+            } catch (error) {
+                console.warn('[Analytics] Failed to track product view:', error);
+                // Don't block user experience if analytics fails
+            }
+        };
+
+        trackView();
+    }, [product?.masterProductId, user?.id]); // Track when product ID or user changes
 
     // Load gallery images from database (with metadata and proper ordering) - ONCE per product
     React.useEffect(() => {

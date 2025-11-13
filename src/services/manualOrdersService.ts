@@ -289,4 +289,82 @@ export const manualOrdersService = {
     const data = await handleResponse(resp);
     return Array.isArray(data) ? data : [];
   },
+
+  /**
+   * Search manual orders by query string.
+   * Searches in order number, invoice number, customer email, name, and store location.
+   *
+   * GET /api/admin/manual-orders/search?query=...&page=0&size=20
+   */
+  async searchManualOrders(
+    query: string,
+    page: number = 0,
+    size: number = 20
+  ): Promise<PageResponse<ManualOrderHistoryDTO>> {
+    const params = new URLSearchParams({
+      query,
+      page: page.toString(),
+      size: size.toString(),
+    });
+
+    const resp = await fetch(`${API_BASE_URL}/api/admin/manual-orders/search?${params}`, {
+      method: 'GET',
+      headers: jsonHeaders(),
+    });
+    const data = await handleResponse(resp);
+
+    if (data && typeof data === 'object' && 'content' in data) {
+      return data as PageResponse<ManualOrderHistoryDTO>;
+    }
+
+    return {
+      content: Array.isArray(data) ? data : [],
+      totalElements: Array.isArray(data) ? data.length : 0,
+      totalPages: 1,
+      size: Array.isArray(data) ? data.length : 0,
+      number: 0,
+      first: true,
+      last: true
+    };
+  },
+
+  /**
+   * Export manual orders to CSV.
+   *
+   * GET /api/admin/manual-orders/export/csv?page=0&size=1000
+   */
+  async exportManualOrdersCsv(
+    page: number = 0,
+    size: number = 1000
+  ): Promise<Blob> {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      size: Math.min(size, 1000).toString(), // Max 1000
+    });
+
+    const resp = await fetch(`${API_BASE_URL}/api/admin/manual-orders/export/csv?${params}`, {
+      method: 'GET',
+      headers: jsonHeaders(),
+    });
+
+    if (!resp.ok) {
+      throw new Error(`Failed to export CSV: ${resp.statusText}`);
+    }
+
+    return await resp.blob();
+  },
+
+  /**
+   * Resend order confirmation email for an existing order.
+   * Regenerates invoice and download tokens, then sends email.
+   *
+   * POST /api/admin/manual-orders/{orderId}/resend-email
+   */
+  async resendOrderEmail(orderId: number): Promise<{ message: string }> {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/manual-orders/${orderId}/resend-email`, {
+      method: 'POST',
+      headers: jsonHeaders(),
+    });
+    return await handleResponse(resp) as { message: string };
+  },
 };

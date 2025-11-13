@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Eye, FileText, ShoppingBag } from 'lucide-react';
+import { Eye, FileText, ShoppingBag, Download, Mail } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
 import './AdminButtonOverrides.css';
@@ -26,17 +26,32 @@ const AdminManualOrderHistory: React.FC = () => {
 
   // Search/filter
   const [query, setQuery] = useState<string>('');
+  const [searchInput, setSearchInput] = useState<string>('');
+
+  // Resend email state
+  const [resendingEmailFor, setResendingEmailFor] = useState<number | null>(null);
+  const [resendEmailSuccess, setResendEmailSuccess] = useState<string | null>(null);
+
+  // CSV export state
+  const [exportingCsv, setExportingCsv] = useState<boolean>(false);
 
   useEffect(() => {
     loadOrders(0);
-  }, []);
+  }, [query]); // Reload when search query changes
 
   const loadOrders = async (pageNum: number = page) => {
     setLoading(true);
     setError(null);
     try {
-      const pageResponse: PageResponse<ManualOrderHistoryDTO> =
-        await manualOrdersService.getManualOrderHistory(pageNum, 20, 'orderDate,desc');
+      let pageResponse: PageResponse<ManualOrderHistoryDTO>;
+
+      // Use server-side search if query exists, otherwise load all
+      if (query.trim()) {
+        pageResponse = await manualOrdersService.searchManualOrders(query, pageNum, 20);
+      } else {
+        pageResponse = await manualOrdersService.getManualOrderHistory(pageNum, 20, 'orderDate,desc');
+      }
+
       setOrders(pageResponse.content);
       setTotalPages(pageResponse.totalPages);
       setTotalElements(pageResponse.totalElements);
@@ -46,6 +61,58 @@ const AdminManualOrderHistory: React.FC = () => {
       setError(msg);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSearch = () => {
+    setQuery(searchInput.trim());
+    setPage(0); // Reset to first page on new search
+  };
+
+  const handleClearSearch = () => {
+    setSearchInput('');
+    setQuery('');
+    setPage(0);
+  };
+
+  const handleResendEmail = async (orderId: number) => {
+    setResendingEmailFor(orderId);
+    setResendEmailSuccess(null);
+    setError(null);
+
+    try {
+      const response = await manualOrdersService.resendOrderEmail(orderId);
+      setResendEmailSuccess(response.message);
+      setTimeout(() => setResendEmailSuccess(null), 5000); // Clear after 5 seconds
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Failed to resend email';
+      setError(msg);
+    } finally {
+      setResendingEmailFor(null);
+    }
+  };
+
+  const handleExportCsv = async () => {
+    setExportingCsv(true);
+    setError(null);
+
+    try {
+      const blob = await manualOrdersService.exportManualOrdersCsv(0, 1000);
+
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `manual_orders_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Failed to export CSV';
+      setError(msg);
+    } finally {
+      setExportingCsv(false);
     }
   };
 
@@ -74,16 +141,6 @@ const AdminManualOrderHistory: React.FC = () => {
     }
   };
 
-  const filtered = orders.filter((o) => {
-    if (!query.trim()) return true;
-    const q = query.toLowerCase();
-    return (
-      `${o.orderNumber ?? ''} ${o.recipientEmail ?? ''} ${o.storeLocation ?? ''} ${o.firstName ?? ''} ${o.lastName ?? ''}`
-        .toLowerCase()
-        .includes(q)
-    );
-  });
-
   const navTabs = (
     <nav className="dashboard-tabs">
       <button
@@ -104,17 +161,39 @@ const AdminManualOrderHistory: React.FC = () => {
       <div className="admin-page">
         <div className="admin-container">
           {error && <div className="alert alert-error">{error}</div>}
+          {resendEmailSuccess && <div className="alert alert-success">{resendEmailSuccess}</div>}
 
           {/* Header Actions */}
           <div className="admin-header-actions">
-            <input
-              type="text"
-              className="form-input"
-              placeholder="Search by order number, email, store location..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
-            <Button variant="outline" onClick={() => loadOrders()}>
+            <div style={{ display: 'flex', gap: '8px', flex: 1 }}>
+              <input
+                type="text"
+                className="form-input"
+                placeholder="Search by order number, email, store location..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                style={{ flex: 1 }}
+              />
+              <Button variant="primary" onClick={handleSearch} disabled={loading}>
+                Search
+              </Button>
+              {query && (
+                <Button variant="outline" onClick={handleClearSearch}>
+                  Clear
+                </Button>
+              )}
+            </div>
+            <Button
+              variant="outline"
+              onClick={handleExportCsv}
+              disabled={exportingCsv || loading}
+              title="Export to CSV"
+            >
+              <Download size={16} />
+              {exportingCsv ? 'Exporting...' : 'Export CSV'}
+            </Button>
+            <Button variant="outline" onClick={() => loadOrders()} disabled={loading}>
               Refresh
             </Button>
           </div>
@@ -125,14 +204,14 @@ const AdminManualOrderHistory: React.FC = () => {
               <div className="mobile-table-card">
                 <SkeletonTable rows={5} columns={4} />
               </div>
-            ) : filtered.length === 0 ? (
+            ) : orders.length === 0 ? (
               <div className="mobile-table-card">
                 <div className="table-empty">
                   {query ? 'No orders match your search.' : 'No manual orders found.'}
                 </div>
               </div>
             ) : (
-              filtered.map((order) => (
+              orders.map((order) => (
                 <div key={`mobile-${order.orderId}`} className="mobile-table-card">
                   <div className="mobile-card-header">
                     <div>
@@ -142,6 +221,15 @@ const AdminManualOrderHistory: React.FC = () => {
                       </p>
                     </div>
                     <div className="mobile-card-actions">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleResendEmail(order.orderId)}
+                        disabled={resendingEmailFor === order.orderId}
+                        title="Resend confirmation email"
+                      >
+                        <Mail size={14} />
+                      </Button>
                       <Button
                         variant="outline"
                         size="sm"
@@ -215,14 +303,14 @@ const AdminManualOrderHistory: React.FC = () => {
                       <SkeletonTable rows={5} columns={10} />
                     </td>
                   </tr>
-                ) : filtered.length === 0 ? (
+                ) : orders.length === 0 ? (
                   <tr>
                     <td colSpan={10} className="table-empty">
                       {query ? 'No orders match your search.' : 'No manual orders found.'}
                     </td>
                   </tr>
                 ) : (
-                  filtered.map((order) => (
+                  orders.map((order) => (
                     <tr key={order.orderId}>
                       <td>
                         <div style={{ fontWeight: 500 }}>{order.orderNumber}</div>
@@ -283,14 +371,25 @@ const AdminManualOrderHistory: React.FC = () => {
                         <div>{formatDateTime(order.orderDate)}</div>
                       </td>
                       <td>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => navigate(`/admin/orders/${order.orderId}`)}
-                          title="View order details"
-                        >
-                          <Eye size={14} />
-                        </Button>
+                        <div style={{ display: 'flex', gap: '4px' }}>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleResendEmail(order.orderId)}
+                            disabled={resendingEmailFor === order.orderId}
+                            title="Resend confirmation email"
+                          >
+                            <Mail size={14} />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => navigate(`/admin/orders/${order.orderId}`)}
+                            title="View order details"
+                          >
+                            <Eye size={14} />
+                          </Button>
+                        </div>
                       </td>
                     </tr>
                   ))

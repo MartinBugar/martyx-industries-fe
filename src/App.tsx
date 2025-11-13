@@ -81,6 +81,7 @@ import {
   AdminProductAttachments,
   AdminProductAttachmentForm,
   AdminOrders,
+  AdminOrderDetail,
   AdminGallery,
   AdminGalleryUserDetail,
   AdminCassandra,
@@ -344,6 +345,11 @@ const MainContent = React.memo(() => {
             <Route path="/admin/orders" element={
               <RequireAdmin>
                 <AdminOrders />
+              </RequireAdmin>
+            } />
+            <Route path="/admin/orders/:id" element={
+              <RequireAdmin>
+                <AdminOrderDetail />
               </RequireAdmin>
             } />
             <Route path="/admin/gallery" element={
