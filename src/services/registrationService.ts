@@ -8,7 +8,8 @@ export const registrationService = {
         email: string,
         password: string,
         gdprConsent: boolean,
-        marketingConsent: boolean
+        marketingConsent: boolean,
+        referralCode?: string
     ): Promise<boolean> => {
         try {
             const response = await fetch(`${API_BASE_URL}/api/auth/register`, withLangHeaders({
@@ -18,7 +19,8 @@ export const registrationService = {
                     email,
                     password,
                     gdprConsent,
-                    marketingConsent
+                    marketingConsent,
+                    ...(referralCode && { referralCode })
                 }),
             }));
 

@@ -15,7 +15,7 @@ import './ReferralDashboard.css';
 
 const ReferralDashboard: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
-  const { t } = useTranslation();
+  const { t } = useTranslation(['referral', 'common']);
 
   // State
   const [loading, setLoading] = useState(true);

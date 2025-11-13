@@ -10,6 +10,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {registrationService} from '../../services/registrationService';
 import { registrationSchema, type RegistrationFormData } from '../../schemas/formSchemas';
+import { getReferralCodeFromCookie } from '../../hooks/useReferralTracking';
 import './Registration.css';
 
 // Zdieľané komponenty a utility
@@ -40,9 +41,19 @@ const Registration: React.FC = () => {
     const [generalError, setGeneralError] = useState<string | null>(null);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [referralCode, setReferralCode] = useState<string | null>(null);
 
     // Ref pre focus management po úspešnej registrácii
     const loginBtnRef = useRef<HTMLButtonElement | null>(null);
+
+    // Get referral code from cookie on mount
+    useEffect(() => {
+        const code = getReferralCodeFromCookie();
+        if (code) {
+            setReferralCode(code);
+            console.log('[REGISTRATION] Using referral code from cookie:', code);
+        }
+    }, []);
 
     // React Hook Form setup with zod validation
     const {
@@ -98,7 +109,8 @@ const Registration: React.FC = () => {
                 formData.email,
                 formData.password,
                 formData.gdprConsent,
-                formData.marketingConsent || false
+                formData.marketingConsent || false,
+                referralCode || undefined
             );
 
             if (success) {
@@ -124,7 +136,7 @@ const Registration: React.FC = () => {
             }
             console.error('Registration error:', error);
         }
-    }, [t, reset]);
+    }, [t, reset, referralCode]);
 
     /**
      * Navigácia na login stránku

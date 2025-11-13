@@ -38,6 +38,7 @@ import { visitorService } from './services/visitorService'
 import DevelopmentGate from './components/DevelopmentGate/DevelopmentGate'
 import RateLimitNotification, { type RateLimitError } from './components/RateLimitNotification/RateLimitNotification'
 import { initializeGA4 } from './services/analyticsService'
+import ReferralTracker from './components/ReferralTracker/ReferralTracker'
 // import { useRoutePrefetch } from './hooks/useRoutePrefetch'
 // import { advancedCache } from './utils/advancedCache'
 
@@ -510,6 +511,7 @@ function AppContent() {
   return (
     <>
       <ScrollToTop />
+      <ReferralTracker />
       <MainContent />
       <RateLimitNotification
         error={rateLimitError}
