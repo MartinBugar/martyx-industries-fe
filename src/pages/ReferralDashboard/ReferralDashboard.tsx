@@ -6,9 +6,7 @@ import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 import {
   referralService,
   userCreditsService,
-  type ReferralStatsDto,
   type ReferralDto,
-  type UserCreditDto,
   type CreditTransactionDto
 } from '../../services/referralService';
 import './ReferralDashboard.css';
@@ -19,10 +17,8 @@ const ReferralDashboard: React.FC = () => {
 
   // State
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState<ReferralStatsDto | null>(null);
   const [referralCode, setReferralCode] = useState<string>('');
   const [referralUrl, setReferralUrl] = useState<string>('');
-  const [credits, setCredits] = useState<UserCreditDto | null>(null);
   const [transactions, setTransactions] = useState<CreditTransactionDto[]>([]);
   const [referrals, setReferrals] = useState<ReferralDto[]>([]);
   const [copied, setCopied] = useState(false);
@@ -39,18 +35,14 @@ const ReferralDashboard: React.FC = () => {
   const loadReferralData = async () => {
     try {
       setLoading(true);
-      const [codeData, statsData, creditsData, transactionsData, referralsData] = await Promise.all([
+      const [codeData, transactionsData, referralsData] = await Promise.all([
         referralService.getMyReferralCode(),
-        referralService.getMyStats(),
-        userCreditsService.getBalance(),
         userCreditsService.getTransactions(0, 10),
         referralService.getMyReferrals(0, 10)
       ]);
 
       setReferralCode(codeData.referralCode);
       setReferralUrl(codeData.referralUrl);
-      setStats(statsData);
-      setCredits(creditsData);
       setTransactions(transactionsData);
       setReferrals(referralsData);
     } catch (error) {

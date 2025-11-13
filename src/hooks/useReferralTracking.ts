@@ -37,21 +37,6 @@ function setCookie(name: string, value: string, days: number): void {
 }
 
 /**
- * Get UTM parameters from URL
- */
-function getUTMParams(searchParams: URLSearchParams): {
-  utmSource?: string;
-  utmMedium?: string;
-  utmCampaign?: string;
-} {
-  return {
-    utmSource: searchParams.get('utm_source') || undefined,
-    utmMedium: searchParams.get('utm_medium') || undefined,
-    utmCampaign: searchParams.get('utm_campaign') || undefined
-  };
-}
-
-/**
  * Hook to track referral codes from URL parameters
  */
 export function useReferralTracking() {
