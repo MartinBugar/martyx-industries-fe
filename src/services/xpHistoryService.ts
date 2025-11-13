@@ -32,7 +32,6 @@ export type XpSource =
     | 'REVIEW'
     | 'REFERRAL_FIRST_ORDER'
     | 'REFERRAL_MILESTONE'
-    | 'CONTEST_ENTRY'
     | 'FORUM_POST'
     | 'PHOTO_LIKE'
     | 'SOCIAL_SHARE'
