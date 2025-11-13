@@ -1,0 +1,241 @@
+/* =========================================================================
+   ADMIN REFERRAL CONFIGURATION STYLES
+   ========================================================================= */
+
+.admin-referral-config {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.config-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.config-header h2 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+}
+
+.config-header p {
+    color: var(--text-muted);
+    font-size: 1rem;
+}
+
+.config-card {
+    background: var(--card-bg, #1a1a1a);
+    border: 1px solid var(--border, #333);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    margin-bottom: 2rem;
+}
+
+/* Edit Form */
+.edit-form h3 {
+    color: var(--text);
+    margin: 2rem 0 1rem 0;
+    font-size: 1.25rem;
+    border-bottom: 2px solid var(--accent, #ffcc00);
+    padding-bottom: 0.5rem;
+}
+
+.edit-form h3:first-child {
+    margin-top: 0;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+    font-size: 0.875rem;
+}
+
+.help-text {
+    font-size: 0.75rem;
+    color: var(--text-muted, #999);
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+}
+
+.config-input {
+    padding: 0.75rem;
+    border: 1px solid var(--border, #333);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--text);
+    font-size: 1rem;
+    transition: border-color 0.2s ease;
+}
+
+.config-input:focus {
+    outline: none;
+    border-color: var(--accent, #ffcc00);
+}
+
+.config-input::-webkit-outer-spin-button,
+.config-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.config-input[type=number] {
+    -moz-appearance: textfield;
+}
+
+/* Display View */
+.display-view .config-section {
+    margin-bottom: 2rem;
+}
+
+.display-view .config-section:last-of-type {
+    margin-bottom: 1.5rem;
+}
+
+.display-view h3 {
+    color: var(--text);
+    margin: 0 0 1rem 0;
+    font-size: 1.25rem;
+    border-bottom: 2px solid var(--accent, #ffcc00);
+    padding-bottom: 0.5rem;
+}
+
+.config-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.config-item {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--border, #333);
+}
+
+.config-item label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-muted, #999);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+}
+
+.config-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent, #ffcc00);
+}
+
+/* Button Group */
+.button-group {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.button-group button {
+    flex: 1;
+}
+
+/* Footer */
+.config-footer {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border, #333);
+    font-size: 0.875rem;
+    color: var(--text-muted, #999);
+    text-align: center;
+}
+
+/* Info Section */
+.info-section {
+    background: rgba(255, 204, 0, 0.1);
+    border: 1px solid rgba(255, 204, 0, 0.3);
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+
+.info-section h3 {
+    color: var(--text);
+    margin: 0 0 1rem 0;
+    font-size: 1.125rem;
+}
+
+.info-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.info-section li {
+    color: var(--text);
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    line-height: 1.6;
+}
+
+.info-section li:last-child {
+    border-bottom: none;
+}
+
+.info-section strong {
+    color: var(--accent, #ffcc00);
+}
+
+/* Loading/Error States */
+.loading-spinner,
+.error-message {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text);
+    font-size: 1.125rem;
+}
+
+.error-message {
+    color: #f87171;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .admin-referral-config {
+        padding: 1rem;
+    }
+
+    .config-card {
+        padding: 1.25rem;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .config-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .button-group {
+        flex-direction: column;
+    }
+
+    .button-group button {
+        width: 100%;
+    }
+}
