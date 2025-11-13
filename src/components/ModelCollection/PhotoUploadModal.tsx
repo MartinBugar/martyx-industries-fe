@@ -1,8 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getAuthToken, debugToken } from '../../utils/tokenUtils';
-import { profileService } from '../../services/profileService';
-import UsernamePromptModal from '../UsernamePromptModal';
 
 interface PurchasedModel {
   order_id: string;
@@ -37,7 +35,6 @@ const PhotoUploadModal: React.FC<PhotoUploadModalProps> = ({ model, onClose, onS
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
-  const [showUsernameModal, setShowUsernameModal] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const maxFiles = 10;
@@ -109,18 +106,8 @@ const PhotoUploadModal: React.FC<PhotoUploadModalProps> = ({ model, onClose, onS
       return;
     }
 
-    // Check if user has username before uploading (for public gallery display)
-    try {
-      const { hasUsername } = await profileService.checkHasUsername();
-      if (!hasUsername) {
-        // Show username prompt modal
-        setShowUsernameModal(true);
-        return;
-      }
-    } catch (err) {
-      console.error('Failed to check username:', err);
-      // Continue anyway - backend will handle it
-    }
+    // NOTE: Username check removed - users can upload without username
+    // Username is only required when setting is_public=true on their model collection
 
     setUploading(true);
     setUploadProgress(0);
@@ -293,21 +280,8 @@ const PhotoUploadModal: React.FC<PhotoUploadModalProps> = ({ model, onClose, onS
     handleFileSelect(mockEvent);
   };
 
-  const handleUsernameModalSuccess = () => {
-    // User set username or skipped - close modal and retry upload
-    setShowUsernameModal(false);
-    // Trigger upload again (username is now set or auto-generated)
-    handleUpload();
-  };
-
   return (
-    <>
-      <UsernamePromptModal
-        isOpen={showUsernameModal}
-        onClose={() => setShowUsernameModal(false)}
-        onSuccess={handleUsernameModalSuccess}
-      />
-      <div className="modal-overlay" onClick={onClose}>
+    <div className="modal-overlay" onClick={onClose}>
       <div className="upload-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h3>{t('upload.title')}</h3>
@@ -421,7 +395,6 @@ const PhotoUploadModal: React.FC<PhotoUploadModalProps> = ({ model, onClose, onS
         </div>
       </div>
     </div>
-    </>
   );
 };
 

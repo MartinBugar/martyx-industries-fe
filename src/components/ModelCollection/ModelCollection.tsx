@@ -4,8 +4,10 @@ import { useAuth } from '../../context/useAuth';
 import PhotoUploadModal from './PhotoUploadModal';
 import ModelPhotoGallery from './ModelPhotoGallery';
 import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
+import UsernamePromptModal from '../UsernamePromptModal';
 import { getAuthToken } from '../../utils/tokenUtils';
 import { API_BASE_URL } from '../../services/apiUtils';
+import { profileService } from '../../services/profileService';
 import './ModelCollection.css';
 
 interface ModelPhoto {
@@ -53,6 +55,8 @@ const ModelCollection: React.FC = () => {
   const [selectedModel, setSelectedModel] = useState<PurchasedModel | null>(null);
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [galleryModalOpen, setGalleryModalOpen] = useState(false);
+  const [showUsernameModal, setShowUsernameModal] = useState(false);
+  const [pendingPublicUpdate, setPendingPublicUpdate] = useState<{productId: string; orderId: string} | null>(null);
   // const [deletingPhotoId, setDeletingPhotoId] = useState<number | null>(null);
   const [updatingModel, setUpdatingModel] = useState<string | null>(null);
 
@@ -335,6 +339,17 @@ const ModelCollection: React.FC = () => {
     console.log('Photo removed from card view:', photoId);
   };
 
+  const handleUsernameModalSuccess = () => {
+    // User set username - close modal and retry the public update
+    setShowUsernameModal(false);
+
+    if (pendingPublicUpdate) {
+      // Retry the update now that username is set
+      updateModelStatus(pendingPublicUpdate.productId, pendingPublicUpdate.orderId, 'is_public', true);
+      setPendingPublicUpdate(null);
+    }
+  };
+
   // Delete photo function (currently not used in UI)
   // const deletePhoto = async (photoId: number, modelProductId: string) => {
   //   if (!window.confirm('Naozaj chcete zmazať túto fotku?')) {
@@ -432,9 +447,26 @@ const ModelCollection: React.FC = () => {
       field,
       value
     });
-    
+
+    // Check if user has username when trying to make model public
+    if (field === 'is_public' && value === true) {
+      try {
+        const { hasUsername } = await profileService.checkHasUsername();
+        if (!hasUsername) {
+          console.log('⚠️ User needs username to make gallery public');
+          // Store pending update and show username modal
+          setPendingPublicUpdate({ productId, orderId });
+          setShowUsernameModal(true);
+          return;
+        }
+      } catch (err) {
+        console.error('Failed to check username:', err);
+        // Continue anyway - backend will handle it
+      }
+    }
+
     setUpdatingModel(productId);
-    
+
     try {
       const token = getAuthToken();
       if (!token) {
@@ -716,6 +748,15 @@ const ModelCollection: React.FC = () => {
           onPhotoDeleted={handlePhotoDeleted}
         />
       )}
+
+      <UsernamePromptModal
+        isOpen={showUsernameModal}
+        onClose={() => {
+          setShowUsernameModal(false);
+          setPendingPublicUpdate(null);
+        }}
+        onSuccess={handleUsernameModalSuccess}
+      />
     </div>
   );
 };
