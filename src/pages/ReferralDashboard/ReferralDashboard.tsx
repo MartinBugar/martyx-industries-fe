@@ -101,20 +101,8 @@ const ReferralDashboard: React.FC = () => {
     return <span className={`status-badge ${statusInfo.className}`}>{statusInfo.label}</span>;
   };
 
-  // Loading state
-  if (isLoading || loading) {
-    return (
-      <div className="referral-dashboard">
-        <div className="loading-spinner">
-          <div className="spinner"></div>
-          <p>{t('common.loading')}</p>
-        </div>
-      </div>
-    );
-  }
-
   // Redirect to login if not authenticated
-  if (!isAuthenticated) {
+  if (!isAuthenticated && !isLoading) {
     return <Navigate to="/login" />;
   }
 

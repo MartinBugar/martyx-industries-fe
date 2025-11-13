@@ -85,25 +85,8 @@ const UserAccount: React.FC = () => {
     }
   }, [activeTab, isAuthenticated]);
 
-  // Show loading while authentication state is being restored
-  if (isLoading) {
-    return (
-      <div className="account-page">
-        <div className="account-loading">
-          <div className="loading-spinner">
-            <svg className="spinner-svg" viewBox="0 0 50 50">
-              <circle className="spinner-circle" cx="25" cy="25" r="20" fill="none" strokeWidth="4"></circle>
-            </svg>
-          </div>
-          <h2>Loading Your Account</h2>
-          <p>Please wait while we set up your dashboard...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Redirect to login if not authenticated (only after loading is complete)
-  if (!isAuthenticated) {
+  // Redirect to login if not authenticated
+  if (!isAuthenticated && !isLoading) {
     return <Navigate to="/login" />;
   }
 

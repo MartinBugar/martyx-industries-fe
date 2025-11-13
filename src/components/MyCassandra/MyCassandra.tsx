@@ -27,17 +27,6 @@ const MyCassandra: React.FC = () => {
         }
     };
 
-    if (loading) {
-        return (
-            <div className="my-cassandra-container">
-                <div className="cassandra-loading">
-                    <div className="loading-spinner"></div>
-                    <p>Loading your Cassandra...</p>
-                </div>
-            </div>
-        );
-    }
-
     if (error || !cassandraData) {
         return (
             <div className="my-cassandra-container">

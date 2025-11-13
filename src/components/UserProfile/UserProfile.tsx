@@ -224,28 +224,20 @@ const UserProfile: React.FC = () => {
 
   return (
     <div className="profile-container">
-      {/* Show loading indicator while fetching profile data */}
-      {isFetching && (
-        <div className="loading-overlay">
-          <div className="loading-spinner"></div>
-          <p>Loading profile data...</p>
-        </div>
-      )}
-      
       {/* Show error message if there's an error */}
       {error && (
         <div className="error-message">
           <p>{error}</p>
         </div>
       )}
-      
+
       {/* Show success message if profile was updated successfully */}
       {successMessage && (
         <div className="success-message">
           <p>{successMessage}</p>
         </div>
       )}
-      
+
       {!isEditing ? (
         <>
           <div className="profile-sections">

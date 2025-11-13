@@ -536,15 +536,6 @@ const ModelCollection: React.FC = () => {
 
 
 
-  if (loading || ordersLoading) {
-    return (
-      <div className="collection-loading">
-        <div className="loading-spinner"></div>
-        <p>{t('loading.title')}</p>
-      </div>
-    );
-  }
-
   if (error) {
     return (
       <div className="collection-error">

@@ -92,16 +92,7 @@ const OrderHistory: React.FC = () => {
     );
   }
 
-  if (ordersLoading || (!hasLoadedOrders && user)) {
-    return (
-      <div className="orders-container">
-        <div className="orders-loading">
-          <div className="loading-spinner"></div>
-          <p>Loading your orders...</p>
-        </div>
-      </div>
-    );
-  } else if (orders.length === 0 && hasLoadedOrders) {
+  if (orders.length === 0 && hasLoadedOrders) {
     return (
       <div className="orders-container">
         <div className="orders-empty-state">
