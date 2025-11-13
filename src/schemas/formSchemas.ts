@@ -168,11 +168,11 @@ export const checkoutFormSchema = z.object({
   // Marketing
   newsletterOptIn: z.boolean().optional(),
 
-  // Legal consents - REQUIRED
-  termsAccepted: z.boolean(),
-  privacyAccepted: z.boolean()
+  // Legal consents
+  termsAccepted: z.boolean(), // REQUIRED
+  privacyAccepted: z.boolean().optional() // OPTIONAL - newsletter consent
 }).superRefine((data, ctx) => {
-  // Validate legal consents - REQUIRED for payment
+  // Validate legal consents - Only Terms & Conditions are REQUIRED for payment
   if (!data.termsAccepted || data.termsAccepted !== true) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
@@ -181,13 +181,7 @@ export const checkoutFormSchema = z.object({
     });
   }
 
-  if (!data.privacyAccepted || data.privacyAccepted !== true) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: 'Please accept the Privacy Policy to continue',
-      path: ['privacyAccepted']
-    });
-  }
+  // privacyAccepted is optional - removed validation
 
   // Validate shipping address if different
   if (data.shipToDifferentAddress) {

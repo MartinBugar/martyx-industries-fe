@@ -1517,7 +1517,6 @@ const Checkout: React.FC = () => {
                   <label className="checkbox-label legal-checkbox">
                     <input
                       type="checkbox"
-                      required
                       {...register('privacyAccepted')}
                     />
                     <span>
@@ -1551,7 +1550,7 @@ const Checkout: React.FC = () => {
                     isCompany: getValues('isCompany')
                   }}
                   onError={handleStripeError}
-                  disabled={!watch('termsAccepted') || !watch('privacyAccepted')}
+                  disabled={!watch('termsAccepted')}
                   creditsToApply={creditsToApply}
                   discountCode={discountValidation?.valid ? discountValidation.code : undefined}
                 />
