@@ -130,19 +130,6 @@ const UserAccount: React.FC = () => {
                   Welcome back, <span className="user-name">{user?.firstName || user?.name || 'User'}</span>
                 </h1>
                 <p className="user-email">{user?.email}</p>
-                {creditsData && creditsData.creditBalance > 0 && (
-                  <div className="credits-mini-widget" onClick={() => setActiveTab('referrals')} style={{ cursor: 'pointer', marginTop: '8px' }}>
-                    <span className="credits-icon" style={{ fontSize: '16px', marginRight: '6px' }}>💰</span>
-                    <span className="credits-amount" style={{ fontWeight: '600', color: 'var(--primary)' }}>
-                      €{creditsData.creditBalance.toFixed(2)} available
-                    </span>
-                    {creditsData.pendingBalance > 0 && (
-                      <span className="credits-pending" style={{ marginLeft: '8px', fontSize: '0.85em', opacity: '0.7' }}>
-                        (+€{creditsData.pendingBalance.toFixed(2)} pending)
-                      </span>
-                    )}
-                  </div>
-                )}
               </div>
             </div>
 
@@ -186,6 +173,24 @@ const UserAccount: React.FC = () => {
                     </button>
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* Credits Balance - shown only when referrals tab is active */}
+            {activeTab === 'referrals' && creditsData && (
+              <div className="referrals-credits-section">
+                <div className="credits-compact-display">
+                  <div className="credits-available">
+                    <span className="credits-label">Available:</span>
+                    <span className="credits-value">€{creditsData.creditBalance.toFixed(2)}</span>
+                  </div>
+                  {creditsData.pendingBalance > 0 && (
+                    <div className="credits-pending">
+                      <span className="credits-label">Pending:</span>
+                      <span className="credits-value pending">€{creditsData.pendingBalance.toFixed(2)}</span>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
 

@@ -132,12 +132,6 @@ const ReferralDashboard: React.FC = () => {
       </div>
 
       <div className="referral-container">
-        {/* Header */}
-        <header className="referral-header">
-          <h1>{t('referral.title')}</h1>
-          <p>{t('referral.subtitle')}</p>
-        </header>
-
         {/* Stats Overview Cards */}
         <div className="stats-grid">
           <div className="stat-card highlight">
