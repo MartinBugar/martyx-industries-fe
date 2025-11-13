@@ -1666,6 +1666,51 @@ const Checkout: React.FC = () => {
             )}
           </div>
 
+          {/* Credits Section - Only for authenticated users */}
+          {user && !isLoadingCredits && userCredits && userCredits.creditBalance > 0 && (
+            <>
+              <div className="order-divider"></div>
+              <div className="credits-section">
+                {creditsToApply === 0 ? (
+                  <>
+                    <div className="credits-info">
+                      <span className="credits-label">Available Credits:</span>
+                      <span className="credits-balance">€{userCredits.creditBalance.toFixed(2)}</span>
+                    </div>
+                    <button
+                      type="button"
+                      className="apply-credits-btn"
+                      onClick={handleApplyCredits}
+                    >
+                      Use Credits
+                    </button>
+                  </>
+                ) : (
+                  <div className="credits-applied">
+                    <div className="credits-info-applied">
+                      <span className="credits-icon">💰</span>
+                      <span className="credits-amount">€{creditsToApply.toFixed(2)} Credits Applied</span>
+                    </div>
+                    <button
+                      type="button"
+                      className="remove-credits-btn"
+                      onClick={handleRemoveCredits}
+                      aria-label="Remove credits"
+                    >
+                      ×
+                    </button>
+                  </div>
+                )}
+
+                {creditsError && (
+                  <div className="error-message-small">
+                    {creditsError}
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+
           <div className="order-divider"></div>
 
           {/* Order Breakdown */}
@@ -1694,6 +1739,14 @@ const Checkout: React.FC = () => {
                 <span>
                   {totals.shipping === 0 ? t('cart.free') : `€${totals.shipping.toFixed(2)}`}
                 </span>
+              </div>
+            )}
+
+            {/* Show credits if applied */}
+            {creditsToApply > 0 && (
+              <div className="breakdown-row credits-row">
+                <span>Credits Applied</span>
+                <span className="credits-amount">-€{creditsToApply.toFixed(2)}</span>
               </div>
             )}
 

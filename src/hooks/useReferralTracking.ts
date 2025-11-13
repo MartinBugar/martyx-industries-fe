@@ -68,14 +68,10 @@ export function useReferralTracking() {
       // Only track if no existing cookie or different code
       if (!existingCode || existingCode !== referralCode) {
         // Track click on backend
-        const utmParams = getUTMParams(searchParams);
+        const source = searchParams.get('source') || 'direct_link';
 
         referralService
-          .trackClick({
-            referralCode,
-            source: searchParams.get('source') || 'direct_link',
-            ...utmParams
-          })
+          .trackClick(referralCode, source)
           .then(() => {
             // Set cookie on successful tracking
             setCookie(REFERRAL_COOKIE_NAME, referralCode, COOKIE_EXPIRY_DAYS);

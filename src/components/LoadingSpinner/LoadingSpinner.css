@@ -23,17 +23,19 @@
 
 /* Outer ring - rotates clockwise */
 .ring-outer {
-  border-top-color: #b8860b;
-  border-left-color: #b8860b;
+  border-top-color: #d4a520 !important;
+  border-left-color: #d4a520 !important;
   animation-direction: normal;
+  filter: drop-shadow(0 0 4px rgba(212, 165, 32, 0.6));
 }
 
 /* Inner ring - rotates counter-clockwise */
 .ring-inner {
-  border-top-color: #daa520;
-  border-right-color: #daa520;
+  border-top-color: #f6c845 !important;
+  border-right-color: #f6c845 !important;
   animation-direction: reverse;
   animation-duration: 1s;
+  filter: drop-shadow(0 0 3px rgba(246, 200, 69, 0.5));
 }
 
 /* Size variants */
