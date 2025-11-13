@@ -232,6 +232,19 @@ const Registration: React.FC = () => {
                         <p className="form-subtitle">{t('register.subtitle', 'Pridajte sa k nám a začnite svoju cestu')}</p>
                     </div>
 
+                    {/* Referral Benefit Banner */}
+                    {referralCode && (
+                        <div className="referral-benefit-banner" role="status" aria-live="polite">
+                            <div className="referral-banner-icon">🎁</div>
+                            <div className="referral-banner-content">
+                                <h3 className="referral-banner-title">{t('register.referral_benefit_title', 'Špeciálna ponuka!')}</h3>
+                                <p className="referral-banner-text">
+                                    {t('register.referral_benefit_text', 'Registruj sa cez tento referral link a získaj €5 zľavový kód na prvý nákup (minimum €30)!')}
+                                </p>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Chybové správy */}
                     {generalError && (
                         <div className="form-error" id="registration-error" role="alert" aria-live="polite">

@@ -17,7 +17,7 @@
   },
   "step2": {
     "title": "Friend Registers",
-    "description": "Your friend signs up using your code and gets 10% off their first order."
+    "description": "Your friend signs up THROUGH YOUR REFERRAL LINK and gets €5 discount code (no link = no code!)"
   },
   "step3": {
     "title": "Earn €10 Credit",
@@ -71,11 +71,11 @@
   },
   "discountInfo": {
     "title": "How Discount Codes Work",
-    "intro": "Your friends receive a special discount code after registering with your referral link:",
+    "intro": "⚠️ IMPORTANT: Discount codes are ONLY given to friends who register THROUGH YOUR REFERRAL LINK!",
     "benefit1": "€5 discount code for first order (minimum order €30)",
     "benefit2": "Code valid for 90 days from registration",
-    "benefit3": "Works for existing customers who use your referral link",
+    "benefit3": "Users without referral link get NO discount code",
     "benefit4": "Automatically generated code in format WELCOME{ID}",
-    "note": "Note: The discount code will be applied at checkout, not immediately. Your friend will receive an email with instructions."
+    "note": "Note: Your friend receives the discount code via email after registering THROUGH your referral link. Applied at checkout."
   }
 }
