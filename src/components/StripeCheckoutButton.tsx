@@ -24,6 +24,7 @@ type Props = {
   onError: (err: unknown) => void;
   disabled?: boolean;
   creditsToApply?: number; // Optional: Amount of user credits to apply
+  discountCode?: string; // Optional: Discount code to apply
 };
 
 export default function StripeCheckoutButton({
@@ -36,7 +37,8 @@ export default function StripeCheckoutButton({
   billingAddress,
   onError,
   disabled = false,
-  creditsToApply
+  creditsToApply,
+  discountCode
 }: Props) {
   const [loading, setLoading] = useState(false);
 
@@ -69,7 +71,8 @@ export default function StripeCheckoutButton({
           taxId: billingAddress?.taxId || '',
           vatId: billingAddress?.vatId || ''
         },
-        creditsToApply
+        creditsToApply,
+        discountCode
       );
 
       const sessionResponse = await stripeService.createCheckoutSession(request);

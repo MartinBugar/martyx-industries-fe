@@ -1553,6 +1553,7 @@ const Checkout: React.FC = () => {
                   onError={handleStripeError}
                   disabled={!watch('termsAccepted') || !watch('privacyAccepted')}
                   creditsToApply={creditsToApply}
+                  discountCode={discountValidation?.valid ? discountValidation.code : undefined}
                 />
               </div>
 

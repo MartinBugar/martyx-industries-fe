@@ -116,6 +116,7 @@ export class StripeService {
    * @param currency - Currency code (default: EUR)
    * @param userInfo - User/billing information
    * @param creditsToApply - Optional: Amount of user credits to apply
+   * @param discountCode - Optional: Discount code to apply
    * @returns CreateCheckoutSessionRequest
    */
   createCheckoutRequest(
@@ -142,7 +143,8 @@ export class StripeService {
       taxId?: string;
       vatId?: string;
     },
-    creditsToApply?: number
+    creditsToApply?: number,
+    discountCode?: string
   ): CreateCheckoutSessionRequest {
     const orderItems = cartItems.map(item => ({
       product: { id: item.id },
@@ -170,7 +172,8 @@ export class StripeService {
         taxId: userInfo.taxId || '',
         vatId: userInfo.vatId || ''
       } : undefined,
-      ...(creditsToApply && creditsToApply > 0 && { creditsToApply })
+      ...(creditsToApply && creditsToApply > 0 && { creditsToApply }),
+      ...(discountCode && discountCode.trim() && { discountCode: discountCode.trim() })
     };
   }
 }
