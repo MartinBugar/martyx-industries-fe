@@ -1,20 +1,60 @@
 /**
  * Backend Analytics Service
  * Sends analytics events to backend API for tracking and analysis
+ *
+ * GDPR-compliant: All tracking functions check for user consent before sending data
  */
 
 import { API_BASE_URL, defaultHeaders } from './apiUtils';
 import type { AnalyticsEventDto } from '../types/analytics';
 import { getSessionId, getVisitorId, refreshSession } from './sessionManager';
+import { hasAnalyticsConsent } from './cookieConsent';
+import { enqueueEvent, processQueue } from './analyticsQueue';
+import { logInfo, logError } from './logger';
+
+// Process queue every 60 seconds
+const QUEUE_PROCESS_INTERVAL = 60000;
+let queueProcessorInterval: NodeJS.Timeout | null = null;
 
 /**
- * Track a generic analytics event to backend
+ * Start queue processor (call this once when app initializes)
  */
-export const trackEventToBackend = async (eventData: Partial<AnalyticsEventDto>): Promise<void> => {
-  try {
-    // Refresh session on any tracking event
-    refreshSession();
+export const startQueueProcessor = (): void => {
+  if (queueProcessorInterval) {
+    return; // Already running
+  }
 
+  logInfo('[Backend Analytics] Starting queue processor...');
+
+  queueProcessorInterval = setInterval(() => {
+    processQueue(sendEventToBackend).catch((error) => {
+      logError('[Backend Analytics] Queue processing error:', error);
+    });
+  }, QUEUE_PROCESS_INTERVAL);
+
+  // Process immediately on start
+  processQueue(sendEventToBackend).catch((error) => {
+    logError('[Backend Analytics] Initial queue processing error:', error);
+  });
+};
+
+/**
+ * Stop queue processor (for cleanup)
+ */
+export const stopQueueProcessor = (): void => {
+  if (queueProcessorInterval) {
+    clearInterval(queueProcessorInterval);
+    queueProcessorInterval = null;
+    logInfo('[Backend Analytics] Queue processor stopped');
+  }
+};
+
+/**
+ * Send event to backend (internal function for queue processing)
+ * Returns true if successful, false otherwise
+ */
+const sendEventToBackend = async (eventData: Partial<AnalyticsEventDto>): Promise<boolean> => {
+  try {
     // Enrich event with session and visitor IDs
     const enrichedEvent: Partial<AnalyticsEventDto> = {
       ...eventData,
@@ -32,25 +72,58 @@ export const trackEventToBackend = async (eventData: Partial<AnalyticsEventDto>)
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('[Backend Analytics] Failed to track event:', errorText);
-    } else {
-      console.log('[Backend Analytics] Event tracked:', eventData.event_type);
+      logError('[Backend Analytics] Failed to track event:', response.status);
+      return false;
     }
+
+    logInfo('[Backend Analytics] Event tracked:', eventData.event_type);
+    return true;
   } catch (error) {
-    console.error('[Backend Analytics] Error tracking event:', error);
-    // Don't throw - analytics failures shouldn't break the app
+    logError('[Backend Analytics] Error tracking event:', error);
+    return false;
+  }
+};
+
+/**
+ * Track a generic analytics event to backend
+ * GDPR-compliant: Checks for user consent before tracking
+ * Resilient: Failed events are queued for retry
+ */
+export const trackEventToBackend = async (eventData: Partial<AnalyticsEventDto>): Promise<void> => {
+  // Check consent before tracking
+  if (!hasAnalyticsConsent()) {
+    logInfo('[Backend Analytics] Tracking skipped - no user consent');
+    return;
+  }
+
+  // Refresh session on any tracking event
+  refreshSession();
+
+  // Try to send immediately
+  const success = await sendEventToBackend(eventData);
+
+  // If failed, enqueue for retry
+  if (!success) {
+    logInfo('[Backend Analytics] Event failed, adding to queue');
+    enqueueEvent(eventData);
   }
 };
 
 /**
  * Track product view event
+ * GDPR-compliant: Checks for user consent before tracking
  */
 export const trackProductView = async (
   masterProductId: number,
   userId?: number,
   utmParams?: { [key: string]: string }
 ): Promise<void> => {
+  // Check consent before tracking
+  if (!hasAnalyticsConsent()) {
+    logInfo('[Backend Analytics] Product view tracking skipped - no user consent');
+    return;
+  }
+
   const sessionId = getSessionId();
   const visitorId = getVisitorId();
 
@@ -72,12 +145,12 @@ export const trackProductView = async (
     });
 
     if (!response.ok) {
-      console.error('[Backend Analytics] Failed to track product view');
+      logError('[Backend Analytics] Failed to track product view');
     } else {
-      console.log('[Backend Analytics] Product view tracked:', masterProductId);
+      logInfo('[Backend Analytics] Product view tracked:', masterProductId);
     }
   } catch (error) {
-    console.error('[Backend Analytics] Error tracking product view:', error);
+    logError('[Backend Analytics] Error tracking product view:', error);
   }
 };
 
@@ -188,6 +261,8 @@ export const getDeviceType = (): 'DESKTOP' | 'MOBILE' | 'TABLET' => {
 };
 
 export default {
+  startQueueProcessor,
+  stopQueueProcessor,
   trackEventToBackend,
   trackProductView,
   trackAddToCart,

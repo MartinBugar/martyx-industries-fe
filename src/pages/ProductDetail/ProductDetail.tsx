@@ -16,6 +16,8 @@ import { getTabsForVariant, canViewTab, renderTabContent } from '../../services/
 import type { ProductTabDto } from '../../types/api';
 import { useAuth } from '../../context/useAuth';
 import { trackProductView, extractUTMParams } from '../../services/backendAnalyticsService';
+import { debounce } from '../../utils/debounce';
+import { logInfo, logWarn } from '../../services/logger';
 
 // Local inlined ProductDetails component (previously in components/ProductDetails/ProductDetails.tsx)
 interface ProductDetailsProps {
@@ -288,28 +290,27 @@ const ProductDetail: React.FC = () => {
         loadProduct();
     }, [id, i18n.language]); // Re-load product when language changes
 
+    // Create debounced product view tracker (memoized to prevent recreating on every render)
+    const debouncedTrackView = React.useMemo(
+        () => debounce(async (masterProductId: number, userId?: number) => {
+            try {
+                const utmParams = extractUTMParams();
+                await trackProductView(masterProductId, userId, utmParams);
+                logInfo('[Analytics] Product view tracked:', masterProductId);
+            } catch (error) {
+                logWarn('[Analytics] Failed to track product view:', error);
+                // Don't block user experience if analytics fails
+            }
+        }, 2000), // Debounce for 2 seconds to prevent duplicate tracking on re-renders
+        []
+    );
+
     // Track product view analytics when product is loaded
     React.useEffect(() => {
         if (!product) return;
 
-        // Track product view to backend analytics
-        const trackView = async () => {
-            try {
-                const utmParams = extractUTMParams();
-                await trackProductView(
-                    product.masterProductId,
-                    user?.id,
-                    utmParams
-                );
-                console.log('[Analytics] Product view tracked:', product.masterProductId);
-            } catch (error) {
-                console.warn('[Analytics] Failed to track product view:', error);
-                // Don't block user experience if analytics fails
-            }
-        };
-
-        trackView();
-    }, [product?.masterProductId, user?.id]); // Track when product ID or user changes
+        debouncedTrackView(product.masterProductId, user?.id);
+    }, [product?.masterProductId, user?.id, debouncedTrackView]); // Track when product ID or user changes
 
     // Load gallery images from database (with metadata and proper ordering) - ONCE per product
     React.useEffect(() => {

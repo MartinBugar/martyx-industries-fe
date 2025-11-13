@@ -23,6 +23,8 @@ export interface AdminOrderDTO {
   id?: number | string;
   orderNumber?: string;
   userEmail?: string;
+  firstName?: string;
+  lastName?: string;
   user?: unknown; // backend may accept a nested user entity; keep flexible
   currency?: string;
   status?: string;
@@ -32,6 +34,8 @@ export interface AdminOrderDTO {
   billingAddress?: string;
   paymentMethod?: string;
   paymentId?: string;
+  invoiceNumber?: string;
+  salesChannel?: string; // ONLINE_SHOP, MANUAL_ADMIN, etc.
   notes?: string;
   totalAmount?: number;
   orderItems?: AdminOrderItem[];

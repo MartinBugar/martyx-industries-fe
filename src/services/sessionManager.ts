@@ -3,14 +3,34 @@
  * Manages session tracking for analytics events
  */
 
+import { logInfo, logWarn } from './logger';
+
 const SESSION_ID_KEY = 'analytics_session_id';
 const VISITOR_ID_KEY = 'analytics_visitor_id';
 const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes in milliseconds
 
 /**
- * Generate a unique ID (UUID v4)
+ * Generate a cryptographically secure unique ID (UUID v4)
+ * Uses crypto.randomUUID() for secure random number generation
+ * Falls back to crypto.getRandomValues() for older browsers
  */
 const generateUUID = (): string => {
+  // Modern browsers: Use native crypto.randomUUID()
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+
+  // Fallback: Use crypto.getRandomValues() for secure randomness
+  if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+      const r = crypto.getRandomValues(new Uint8Array(1))[0] % 16;
+      const v = c === 'x' ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
+  }
+
+  // Last resort fallback (should never happen in modern browsers)
+  logWarn('[Analytics] crypto API not available, using insecure random');
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
     const r = (Math.random() * 16) | 0;
     const v = c === 'x' ? r : (r & 0x3) | 0x8;
@@ -28,7 +48,7 @@ export const getVisitorId = (): string => {
   if (!visitorId) {
     visitorId = generateUUID();
     localStorage.setItem(VISITOR_ID_KEY, visitorId);
-    console.log('[Analytics] New visitor ID created:', visitorId);
+    logInfo('[Analytics] New visitor ID created:', visitorId);
   }
 
   return visitorId;
@@ -56,7 +76,7 @@ export const getSessionId = (): string => {
         return sessionId;
       }
     } catch (e) {
-      console.warn('[Analytics] Failed to parse session data:', e);
+      logWarn('[Analytics] Failed to parse session data:', e);
     }
   }
 
@@ -67,7 +87,7 @@ export const getSessionId = (): string => {
     lastActivity: now,
   }));
 
-  console.log('[Analytics] New session ID created:', newSessionId);
+  logInfo('[Analytics] New session ID created:', newSessionId);
   return newSessionId;
 };
 
@@ -95,7 +115,7 @@ export const refreshSession = (): void => {
  */
 export const clearSession = (): void => {
   sessionStorage.removeItem(SESSION_ID_KEY);
-  console.log('[Analytics] Session cleared');
+  logInfo('[Analytics] Session cleared');
 };
 
 /**
@@ -103,7 +123,7 @@ export const clearSession = (): void => {
  */
 export const clearVisitorId = (): void => {
   localStorage.removeItem(VISITOR_ID_KEY);
-  console.log('[Analytics] Visitor ID cleared');
+  logInfo('[Analytics] Visitor ID cleared');
 };
 
 /**

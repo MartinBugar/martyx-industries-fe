@@ -1,6 +1,6 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import { Link } from 'react-router-dom';
-import { Eye, Pencil, X } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Eye, Pencil, X, Plus } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
 import './AdminButtonOverrides.css';
@@ -32,6 +32,7 @@ const formatPrice = (amount: unknown, currency?: string): string => {
 };
 
 const AdminOrders: React.FC = () => {
+    const navigate = useNavigate();
     const [orders, setOrders] = useState<AdminOrderDTO[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -41,10 +42,8 @@ const AdminOrders: React.FC = () => {
     const [totalPages, setTotalPages] = useState<number>(1);
     const [totalElements, setTotalElements] = useState<number>(0);
 
-    // Tab navigation state
-    const [activeTab, setActiveTab] = useState<'all-orders' | 'create-order'>('all-orders');
-
-    const [createData, setCreateData] = useState<Partial<AdminOrderDTO>>({status: 'PENDING'});
+    // Filter state: 'all', 'online', 'manual'
+    const [orderFilter, setOrderFilter] = useState<'all' | 'online' | 'manual'>('all');
 
     // Edit row
     const [editingId, setEditingId] = useState<string | number | null>(null);
@@ -60,10 +59,24 @@ const AdminOrders: React.FC = () => {
     // Search/filter (by orderNumber/email/status)
     const [query, setQuery] = useState<string>('');
     const filtered = useMemo(() => {
-        if (!query.trim()) return orders;
-        const q = query.toLowerCase();
-        return orders.filter(o => `${o.orderNumber ?? ''} ${o.userEmail ?? ''} ${o.status ?? ''}`.toLowerCase().includes(q));
-    }, [orders, query]);
+        let result = orders;
+
+        // Apply salesChannel filter
+        if (orderFilter === 'manual') {
+            result = result.filter(o => o.salesChannel === 'MANUAL_ADMIN');
+        } else if (orderFilter === 'online') {
+            result = result.filter(o => o.salesChannel === 'ONLINE_SHOP' || !o.salesChannel);
+        }
+        // 'all' shows everything
+
+        // Apply search query
+        if (query.trim()) {
+            const q = query.toLowerCase();
+            result = result.filter(o => `${o.orderNumber ?? ''} ${o.userEmail ?? ''} ${o.status ?? ''}`.toLowerCase().includes(q));
+        }
+
+        return result;
+    }, [orders, query, orderFilter]);
 
     const loadOrders = async (pageNum: number = page) => {
         setLoading(true);
@@ -123,20 +136,6 @@ const AdminOrders: React.FC = () => {
             }, 0);
         }
         return 0;
-    };
-    const handleCreate = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setError(null);
-        try {
-            const payload: Partial<AdminOrderDTO> = {...createData};
-            const created = await adminOrdersService.createOrder(payload);
-            setOrders(prev => [created, ...prev]);
-            setCreateData({status: 'PENDING'});
-            setActiveTab('all-orders');
-        } catch (e: unknown) {
-            const msg = e instanceof Error ? e.message : 'Create failed';
-            setError(msg);
-        }
     };
 
     const startEdit = (o: AdminOrderDTO) => {
@@ -215,20 +214,25 @@ const AdminOrders: React.FC = () => {
     const navTabs = (
         <nav className="dashboard-tabs">
             <button
-                className={`dashboard-tab ${activeTab === 'all-orders' ? 'active' : ''}`}
-                data-tab="all-orders"
-                onClick={() => setActiveTab('all-orders')}
-                aria-label="View all customer orders"
+                className={`dashboard-tab ${orderFilter === 'all' ? 'active' : ''}`}
+                onClick={() => setOrderFilter('all')}
+                aria-label="View all orders"
             >
                 All Orders
             </button>
             <button
-                className={`dashboard-tab ${activeTab === 'create-order' ? 'active' : ''}`}
-                data-tab="create-order"
-                onClick={() => setActiveTab('create-order')}
-                aria-label="Create new order"
+                className={`dashboard-tab ${orderFilter === 'online' ? 'active' : ''}`}
+                onClick={() => setOrderFilter('online')}
+                aria-label="View online orders"
             >
-                Create New Order
+                Online Orders
+            </button>
+            <button
+                className={`dashboard-tab ${orderFilter === 'manual' ? 'active' : ''}`}
+                onClick={() => setOrderFilter('manual')}
+                aria-label="View manual orders"
+            >
+                Manual Orders
             </button>
         </nav>
     );
@@ -239,100 +243,8 @@ const AdminOrders: React.FC = () => {
                 <div className="admin-container">
                     {error && <div className="alert alert-error">{error}</div>}
 
-                    {/* Create Order Tab */}
-                    {activeTab === 'create-order' && (
-                        <div className="admin-card">
-                            <h3 className="section-title">Create New Order</h3>
-                            <form onSubmit={handleCreate} className="form-grid">
-                                <div>
-                                    <label className="form-label">Order Number</label>
-                                    <input
-                                        className="form-input"
-                                        value={createData.orderNumber ?? ''}
-                                        onChange={(e) => setCreateData({...createData, orderNumber: e.target.value})}
-                                        placeholder="ORD-001"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="form-label">User Email</label>
-                                    <input
-                                        type="email"
-                                        className="form-input"
-                                        value={createData.userEmail ?? ''}
-                                        onChange={(e) => setCreateData({...createData, userEmail: e.target.value})}
-                                        placeholder="user@example.com"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="form-label">Status</label>
-                                    <select
-                                        className="form-input"
-                                        value={createData.status as string ?? 'PENDING'}
-                                        onChange={(e) => setCreateData({...createData, status: e.target.value})}
-                                    >
-                                        <option value="PENDING">Pending</option>
-                                        <option value="CONFIRMED">Confirmed</option>
-                                        <option value="PROCESSING">Processing</option>
-                                        <option value="SHIPPED">Shipped</option>
-                                        <option value="DELIVERED">Delivered</option>
-                                        <option value="CANCELLED">Cancelled</option>
-                                        <option value="REFUNDED">Refunded</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="form-label">Currency</label>
-                                    <select
-                                        className="form-input"
-                                        value={createData.currency ?? 'USD'}
-                                        onChange={(e) => setCreateData({...createData, currency: e.target.value})}
-                                    >
-                                        <option value="USD">USD</option>
-                                        <option value="EUR">EUR</option>
-                                        <option value="GBP">GBP</option>
-                                        <option value="CAD">CAD</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="form-label">Order Date</label>
-                                    <input
-                                        type="datetime-local"
-                                        className="form-input"
-                                        value={toDateTimeLocalStr(createData.orderDate as string)}
-                                        onChange={(e) => setCreateData({...createData, orderDate: e.target.value})}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="form-label">Payment Date</label>
-                                    <input
-                                        type="datetime-local"
-                                        className="form-input"
-                                        value={toDateTimeLocalStr(createData.paymentDate as string)}
-                                        onChange={(e) => setCreateData({...createData, paymentDate: e.target.value})}
-                                    />
-                                </div>
-                                <div className="form-field-full">
-                                    <label className="form-label">Notes</label>
-                                    <textarea
-                                        className="form-input"
-                                        rows={3}
-                                        value={createData.notes ?? ''}
-                                        onChange={(e) => setCreateData({...createData, notes: e.target.value})}
-                                        placeholder="Optional order notes..."
-                                    />
-                                </div>
-                                <div className="form-actions">
-                                    <Button variant="primary" type="submit">Create Order</Button>
-                                    <Button variant="outline" type="button" onClick={() => setActiveTab('all-orders')}>
-                                        Cancel
-                                    </Button>
-                                </div>
-                            </form>
-                        </div>
-                    )}
-
-                    {/* All Orders Tab */}
-                    {activeTab === 'all-orders' && (
-                        <>
+                    {/* Orders List */}
+                    <>
                             <div className="admin-header-actions">
                                 <input
                                     type="text"
@@ -340,7 +252,16 @@ const AdminOrders: React.FC = () => {
                                     placeholder="Search by order number, email, or status..."
                                     value={query}
                                     onChange={(e) => setQuery(e.target.value)}
+                                    style={{ flex: 1 }}
                                 />
+                                <Button
+                                    variant="primary"
+                                    onClick={() => navigate('/admin/manual-orders/create')}
+                                    title="Create manual order"
+                                >
+                                    <Plus size={16} style={{ marginRight: '8px' }} />
+                                    Create Manual Order
+                                </Button>
                                 <Button variant="outline" onClick={() => loadOrders()}>
                                     Refresh
                                 </Button>
@@ -898,7 +819,6 @@ const AdminOrders: React.FC = () => {
                                 </div>
                             )}
                         </>
-                    )}
                 </div>
             </div>
         </AdminLayout>
