@@ -220,6 +220,7 @@
   transition: all 0.2s ease;
   white-space: nowrap;
   box-shadow: 0 2px 8px rgba(255, 204, 0, 0.3);
+  min-width: 120px;
 }
 
 .copy-btn:hover,

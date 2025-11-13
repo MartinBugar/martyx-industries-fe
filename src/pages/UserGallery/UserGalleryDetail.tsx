@@ -126,26 +126,14 @@ const UserGalleryDetail: React.FC = () => {
     return userData?.username?.charAt(0).toUpperCase() || '?';
   };
 
-  // Loading state
-  if (loading) {
-    return (
-      <div className="user-gallery-detail">
-        <div className="detail-loading">
-          <div className="loading-spinner"></div>
-          <p>{t('loading.title', 'Loading gallery...')}</p>
-        </div>
-      </div>
-    );
-  }
-
   // Error state
-  if (error || !userData) {
+  if (error) {
     return (
       <div className="user-gallery-detail">
         <div className="detail-error">
           <div className="error-icon">⚠️</div>
           <h3>{t('errors.user_not_found', 'User not found')}</h3>
-          <p>{error || t('errors.user_no_public', 'This user has no public galleries')}</p>
+          <p>{error}</p>
           <button onClick={() => navigate('/gallery')} className="back-to-gallery-btn">
             {t('back_to_gallery', 'Back to Gallery')}
           </button>
@@ -167,7 +155,7 @@ const UserGalleryDetail: React.FC = () => {
 
         <div className="user-profile">
           <div className="user-avatar-large">
-            {userData.avatar_url ? (
+            {userData?.avatar_url ? (
               <img
                 src={userData.avatar_url}
                 alt={userData.username}
@@ -178,25 +166,25 @@ const UserGalleryDetail: React.FC = () => {
                 }}
               />
             ) : null}
-            <div className={`avatar-placeholder-large ${userData.avatar_url ? 'hidden' : ''}`}>
+            <div className={`avatar-placeholder-large ${userData?.avatar_url ? 'hidden' : ''}`}>
               {getAvatarPlaceholder()}
             </div>
           </div>
 
           <div className="user-meta">
-            <h1>{userData.username}</h1>
+            <h1>{userData?.username || '...'}</h1>
             <p className="member-since">
-              {t('member_since', { date: formatDate(userData.member_since) })}
+              {userData?.member_since ? t('member_since', { date: formatDate(userData.member_since) }) : '...'}
             </p>
             <div className="user-stats-detail">
               <span>
-                <strong>{userData.total_public_models}</strong> {t('stats.models', 'models')}
+                <strong>{userData?.total_public_models || 0}</strong> {t('stats.models', 'models')}
               </span>
               <span className="divider">•</span>
               <span>
-                <strong>{userData.total_public_photos}</strong> {t('stats.photos', 'photos')}
+                <strong>{userData?.total_public_photos || 0}</strong> {t('stats.photos', 'photos')}
               </span>
-              {userData.total_likes !== undefined && userData.total_likes > 0 && (
+              {userData?.total_likes !== undefined && userData.total_likes > 0 && (
                 <>
                   <span className="divider">•</span>
                   <span>

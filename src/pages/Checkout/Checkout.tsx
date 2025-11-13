@@ -658,11 +658,30 @@ const Checkout: React.FC = () => {
     const totals = calculateTotals();
     const totalBeforeCredits = totals.subtotal - totals.discount + totals.shipping;
 
-    // Apply maximum available credits, but not more than order total
-    const maxApplicable = Math.min(userCredits.creditBalance, totalBeforeCredits);
+    // BUSINESS RULE 1: Minimum order value of €20 to use credits
+    const MINIMUM_ORDER_VALUE = 20.00;
+    if (totals.subtotal < MINIMUM_ORDER_VALUE) {
+      setCreditsError(`Credits can only be used on orders of €${MINIMUM_ORDER_VALUE.toFixed(2)} or more. Current order: €${totals.subtotal.toFixed(2)}`);
+      return;
+    }
+
+    // BUSINESS RULE 2: Maximum 50% of order can be paid with credits
+    const MAX_CREDIT_PERCENTAGE = 0.50;
+    const maxAllowedCredits = totals.subtotal * MAX_CREDIT_PERCENTAGE;
+
+    // Calculate applicable amount considering all constraints:
+    // 1. Cannot exceed user's available balance
+    // 2. Cannot exceed order total
+    // 3. Cannot exceed 50% of order total
+    const maxApplicable = Math.min(
+      userCredits.creditBalance,
+      totalBeforeCredits,
+      maxAllowedCredits
+    );
+
     setCreditsToApply(maxApplicable);
 
-    console.log('[Checkout] Applied €' + maxApplicable.toFixed(2) + ' in credits');
+    console.log('[Checkout] Applied €' + maxApplicable.toFixed(2) + ' in credits (max allowed: €' + maxAllowedCredits.toFixed(2) + ')');
   };
 
   // Handle credits removal
@@ -670,6 +689,41 @@ const Checkout: React.FC = () => {
     setCreditsToApply(0);
     setCreditsError('');
   };
+
+  // Calculate maximum credits user can apply based on business rules
+  const calculateMaxApplicableCredits = useMemo(() => {
+    if (!userCredits || userCredits.creditBalance <= 0) return null;
+
+    const totals = calculateTotals();
+    const totalBeforeCredits = totals.subtotal - totals.discount + totals.shipping;
+
+    const MINIMUM_ORDER_VALUE = 20.00;
+    const MAX_CREDIT_PERCENTAGE = 0.50;
+
+    // Check minimum order value
+    if (totals.subtotal < MINIMUM_ORDER_VALUE) {
+      return {
+        canApply: false,
+        reason: `Minimum order of €${MINIMUM_ORDER_VALUE.toFixed(2)} required`,
+        maxAmount: 0
+      };
+    }
+
+    // Calculate max allowed (50% of order)
+    const maxAllowedCredits = totals.subtotal * MAX_CREDIT_PERCENTAGE;
+    const maxApplicable = Math.min(
+      userCredits.creditBalance,
+      totalBeforeCredits,
+      maxAllowedCredits
+    );
+
+    return {
+      canApply: true,
+      maxAmount: maxApplicable,
+      isLimitedByBalance: userCredits.creditBalance < maxAllowedCredits,
+      isLimitedByOrderValue: maxAllowedCredits < userCredits.creditBalance
+    };
+  }, [userCredits, items, discountValidation, selectedShipping]);
 
   // Stripe error handler
   const handleStripeError = (err: unknown) => {
@@ -1678,10 +1732,26 @@ const Checkout: React.FC = () => {
                       <span className="credits-label">Available Credits:</span>
                       <span className="credits-balance">€{userCredits.creditBalance.toFixed(2)}</span>
                     </div>
+
+                    {/* Show max applicable amount info */}
+                    {calculateMaxApplicableCredits && !calculateMaxApplicableCredits.canApply && (
+                      <p className="field-hint text-muted" style={{ fontSize: '0.85rem', marginTop: '0.25rem' }}>
+                        {calculateMaxApplicableCredits.reason}
+                      </p>
+                    )}
+
+                    {calculateMaxApplicableCredits && calculateMaxApplicableCredits.canApply && (
+                      <p className="field-hint" style={{ fontSize: '0.85rem', marginTop: '0.25rem' }}>
+                        You can use up to €{calculateMaxApplicableCredits.maxAmount.toFixed(2)}
+                        {calculateMaxApplicableCredits.isLimitedByOrderValue && ' (max 50% of order)'}
+                      </p>
+                    )}
+
                     <button
                       type="button"
                       className="apply-credits-btn"
                       onClick={handleApplyCredits}
+                      disabled={!calculateMaxApplicableCredits || !calculateMaxApplicableCredits.canApply}
                     >
                       Use Credits
                     </button>

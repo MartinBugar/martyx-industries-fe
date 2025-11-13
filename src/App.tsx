@@ -220,7 +220,7 @@ const MainContent = React.memo(() => {
       )}
 
       <main className="main-content" style={isAdminRoute ? { padding: 0 } : undefined}>
-        <Suspense fallback={<PageLoader />}>
+        <Suspense fallback={null}>
           <Routes>
             {/* Public routes */}
             <Route path="/" element={<Home />} />

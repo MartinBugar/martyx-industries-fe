@@ -120,18 +120,6 @@ const UserGallery: React.FC = () => {
     }
   };
 
-  // Loading state
-  if (loading) {
-    return (
-      <div className="user-gallery-page">
-        <div className="gallery-loading">
-          <div className="loading-spinner"></div>
-          <p>{t('loading.title', 'Loading gallery...')}</p>
-        </div>
-      </div>
-    );
-  }
-
   // Error state
   if (error) {
     return (

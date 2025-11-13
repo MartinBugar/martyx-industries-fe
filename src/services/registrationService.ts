@@ -15,6 +15,7 @@ export const registrationService = {
             const response = await fetch(`${API_BASE_URL}/api/auth/register`, withLangHeaders({
                 method: 'POST',
                 headers: defaultHeaders as HeadersInit,
+                credentials: 'include',
                 body: JSON.stringify({
                     email,
                     password,
