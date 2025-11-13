@@ -10,7 +10,7 @@ import MyCassandra from '../../components/MyCassandra/MyCassandra';
 import ReferralDashboard from '../ReferralDashboard/ReferralDashboard';
 import AvatarSelector from '../../components/AvatarSelector/AvatarSelector';
 import cassandraRankService, { type UserCassandraDto } from '../../services/cassandraRankService';
-import { userCreditsService, type UserCreditDto } from '../../services/referralService';
+import { userCreditsService, referralService, type UserCreditDto, type ReferralStatsDto } from '../../services/referralService';
 import type { Avatar } from '../../services/avatarService';
 import './UserAccount.css';
 
@@ -24,6 +24,7 @@ const UserAccount: React.FC = () => {
   const [isProfileEditing, setIsProfileEditing] = useState(false);
   const [cassandraData, setCassandraData] = useState<UserCassandraDto | null>(null);
   const [creditsData, setCreditsData] = useState<UserCreditDto | null>(null);
+  const [referralStats, setReferralStats] = useState<ReferralStatsDto | null>(null);
 
   // Listen for profile edit state changes
   useEffect(() => {
@@ -59,20 +60,24 @@ const UserAccount: React.FC = () => {
     }
   }, [activeTab, cassandraData]);
 
-  // Load credits data for mini widget
+  // Load referral data when referrals tab is active
   useEffect(() => {
-    if (isAuthenticated) {
-      const loadCreditsData = async () => {
+    if (activeTab === 'referrals' && isAuthenticated) {
+      const loadReferralData = async () => {
         try {
-          const data = await userCreditsService.getBalance();
-          setCreditsData(data);
+          const [credits, stats] = await Promise.all([
+            userCreditsService.getBalance(),
+            referralService.getMyStats()
+          ]);
+          setCreditsData(credits);
+          setReferralStats(stats);
         } catch (error) {
-          console.error('Failed to load credits data:', error);
+          console.error('Failed to load referral data:', error);
         }
       };
-      loadCreditsData();
+      loadReferralData();
     }
-  }, [isAuthenticated]);
+  }, [activeTab, isAuthenticated]);
 
   // Show loading while authentication state is being restored
   if (isLoading) {
@@ -176,20 +181,38 @@ const UserAccount: React.FC = () => {
               </div>
             )}
 
-            {/* Credits Balance - shown only when referrals tab is active */}
-            {activeTab === 'referrals' && creditsData && (
-              <div className="referrals-credits-section">
-                <div className="credits-compact-display">
-                  <div className="credits-available">
-                    <span className="credits-label">Available:</span>
-                    <span className="credits-value">€{creditsData.creditBalance.toFixed(2)}</span>
-                  </div>
-                  {creditsData.pendingBalance > 0 && (
-                    <div className="credits-pending">
-                      <span className="credits-label">Pending:</span>
-                      <span className="credits-value pending">€{creditsData.pendingBalance.toFixed(2)}</span>
+            {/* Referral Stats - shown only when referrals tab is active */}
+            {activeTab === 'referrals' && creditsData && referralStats && (
+              <div className="referrals-stats-section">
+                <div className="referral-stats-compact">
+                  <div className="ref-stat-item">
+                    <span className="ref-stat-icon">💰</span>
+                    <div className="ref-stat-content">
+                      <span className="ref-stat-value">€{creditsData.creditBalance.toFixed(2)}</span>
+                      <span className="ref-stat-label">Available</span>
                     </div>
-                  )}
+                  </div>
+                  <div className="ref-stat-item">
+                    <span className="ref-stat-icon">👥</span>
+                    <div className="ref-stat-content">
+                      <span className="ref-stat-value">{referralStats.successfulReferrals}</span>
+                      <span className="ref-stat-label">Referrals</span>
+                    </div>
+                  </div>
+                  <div className="ref-stat-item">
+                    <span className="ref-stat-icon">🎁</span>
+                    <div className="ref-stat-content">
+                      <span className="ref-stat-value">€{referralStats.totalEarnings.toFixed(2)}</span>
+                      <span className="ref-stat-label">Total Earned</span>
+                    </div>
+                  </div>
+                  <div className="ref-stat-item">
+                    <span className="ref-stat-icon">⏳</span>
+                    <div className="ref-stat-content">
+                      <span className="ref-stat-value">€{creditsData.pendingBalance.toFixed(2)}</span>
+                      <span className="ref-stat-label">Pending</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}

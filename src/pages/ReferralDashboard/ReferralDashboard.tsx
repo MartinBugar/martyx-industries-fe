@@ -132,41 +132,6 @@ const ReferralDashboard: React.FC = () => {
       </div>
 
       <div className="referral-container">
-        {/* Stats Overview Cards */}
-        <div className="stats-grid">
-          <div className="stat-card highlight">
-            <div className="stat-icon">💰</div>
-            <div className="stat-content">
-              <h3>€{credits?.creditBalance.toFixed(2) || '0.00'}</h3>
-              <p>{t('referral.availableCredits')}</p>
-            </div>
-          </div>
-
-          <div className="stat-card">
-            <div className="stat-icon">👥</div>
-            <div className="stat-content">
-              <h3>{stats?.successfulReferrals || 0}</h3>
-              <p>{t('referral.successfulReferrals')}</p>
-            </div>
-          </div>
-
-          <div className="stat-card">
-            <div className="stat-icon">🎁</div>
-            <div className="stat-content">
-              <h3>€{stats?.totalEarnings.toFixed(2) || '0.00'}</h3>
-              <p>{t('referral.totalEarnings')}</p>
-            </div>
-          </div>
-
-          <div className="stat-card">
-            <div className="stat-icon">⏳</div>
-            <div className="stat-content">
-              <h3>€{credits?.pendingBalance.toFixed(2) || '0.00'}</h3>
-              <p>{t('referral.pendingCredits')}</p>
-            </div>
-          </div>
-        </div>
-
         {/* Tabs */}
         <div className="tabs">
           <button
