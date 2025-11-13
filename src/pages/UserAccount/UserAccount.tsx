@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../context/useAuth';
 import UserProfile from '../../components/UserProfile/UserProfile';
 import OrderHistory from '../../components/OrderHistory/OrderHistory';
@@ -7,18 +7,23 @@ import ModelCollection from '../../components/ModelCollection/ModelCollection';
 import GdprSettings from '../../components/GdprSettings/GdprSettings';
 import PwaInstall from '../../components/PwaInstall/PwaInstall';
 import MyCassandra from '../../components/MyCassandra/MyCassandra';
+import ReferralDashboard from '../ReferralDashboard/ReferralDashboard';
 import AvatarSelector from '../../components/AvatarSelector/AvatarSelector';
 import cassandraRankService, { type UserCassandraDto } from '../../services/cassandraRankService';
+import { userCreditsService, type UserCreditDto } from '../../services/referralService';
 import type { Avatar } from '../../services/avatarService';
 import './UserAccount.css';
 
 const UserAccount: React.FC = () => {
   const { user, isAuthenticated, isLoading, fetchProfile } = useAuth();
-  const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'collection' | 'cassandra' | 'settings' | 'app'>('profile');
+  const [searchParams] = useSearchParams();
+  const tabFromUrl = searchParams.get('tab') as 'profile' | 'orders' | 'collection' | 'cassandra' | 'referrals' | 'settings' | 'app' | null;
+  const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'collection' | 'cassandra' | 'referrals' | 'settings' | 'app'>(tabFromUrl || 'profile');
   const [showAvatarSelector, setShowAvatarSelector] = useState(false);
   const [userAvatar, setUserAvatar] = useState<string | null>(user?.avatar?.imageUrl || null);
   const [isProfileEditing, setIsProfileEditing] = useState(false);
   const [cassandraData, setCassandraData] = useState<UserCassandraDto | null>(null);
+  const [creditsData, setCreditsData] = useState<UserCreditDto | null>(null);
 
   // Listen for profile edit state changes
   useEffect(() => {
@@ -53,6 +58,21 @@ const UserAccount: React.FC = () => {
       loadCassandraData();
     }
   }, [activeTab, cassandraData]);
+
+  // Load credits data for mini widget
+  useEffect(() => {
+    if (isAuthenticated) {
+      const loadCreditsData = async () => {
+        try {
+          const data = await userCreditsService.getBalance();
+          setCreditsData(data);
+        } catch (error) {
+          console.error('Failed to load credits data:', error);
+        }
+      };
+      loadCreditsData();
+    }
+  }, [isAuthenticated]);
 
   // Show loading while authentication state is being restored
   if (isLoading) {
@@ -110,6 +130,19 @@ const UserAccount: React.FC = () => {
                   Welcome back, <span className="user-name">{user?.firstName || user?.name || 'User'}</span>
                 </h1>
                 <p className="user-email">{user?.email}</p>
+                {creditsData && creditsData.creditBalance > 0 && (
+                  <div className="credits-mini-widget" onClick={() => setActiveTab('referrals')} style={{ cursor: 'pointer', marginTop: '8px' }}>
+                    <span className="credits-icon" style={{ fontSize: '16px', marginRight: '6px' }}>💰</span>
+                    <span className="credits-amount" style={{ fontWeight: '600', color: 'var(--primary)' }}>
+                      €{creditsData.creditBalance.toFixed(2)} available
+                    </span>
+                    {creditsData.pendingBalance > 0 && (
+                      <span className="credits-pending" style={{ marginLeft: '8px', fontSize: '0.85em', opacity: '0.7' }}>
+                        (+€{creditsData.pendingBalance.toFixed(2)} pending)
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -253,6 +286,20 @@ const UserAccount: React.FC = () => {
             </button>
 
             <button
+              className={`sidebar-tab ${activeTab === 'referrals' ? 'active' : ''}`}
+              onClick={() => setActiveTab('referrals')}
+            >
+              <div className="tab-icon">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="2"/>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              <span className="tab-label">Referrals & Credits</span>
+            </button>
+
+            <button
               className={`sidebar-tab ${activeTab === 'settings' ? 'active' : ''}`}
               onClick={() => setActiveTab('settings')}
             >
@@ -335,6 +382,20 @@ const UserAccount: React.FC = () => {
             </button>
 
             <button
+              className={`mobile-tab ${activeTab === 'referrals' ? 'active' : ''}`}
+              onClick={() => setActiveTab('referrals')}
+            >
+              <span className="mobile-tab-icon">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="2"/>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </span>
+              <span className="mobile-tab-label">Referrals</span>
+            </button>
+
+            <button
               className={`mobile-tab ${activeTab === 'settings' ? 'active' : ''}`}
               onClick={() => setActiveTab('settings')}
             >
@@ -366,6 +427,7 @@ const UserAccount: React.FC = () => {
             {activeTab === 'orders' && <OrderHistory />}
             {activeTab === 'collection' && <ModelCollection />}
             {activeTab === 'cassandra' && <MyCassandra />}
+            {activeTab === 'referrals' && <ReferralDashboard />}
             {activeTab === 'settings' && <GdprSettings />}
             {activeTab === 'app' && <PwaInstall />}
           </main>

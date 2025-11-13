@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import LoadingSpinner from '../components/LoadingSpinner/LoadingSpinner';
 
 // Lazy load hlavných stránok
@@ -45,6 +45,10 @@ const AppRoutes: React.FC = () => {
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/account" element={<UserAccount />} />
+
+        {/* Referral Program - Redirect to account with referrals tab */}
+        <Route path="/referrals" element={<Navigate to="/account?tab=referrals" replace />} />
+
         <Route path="/admin" element={<AdminLogin />} />
         <Route path="/admin/panel" element={<AdminDashboard />} />
 
