@@ -11,6 +11,7 @@ import StripeCheckoutButton from '../../components/StripeCheckoutButton';
 import { shippingService } from '../../services/shippingService';
 import { discountService } from '../../services/discountService';
 import { addressService, type SavedAddress } from '../../services/addressService';
+import { userCreditsService, type UserCreditDto } from '../../services/referralService';
 import { useGooglePlacesAutocomplete, type ParsedAddress } from '../../hooks/useGooglePlacesAutocomplete';
 import type { ShippingOptionDto } from '../../types/shipping';
 import type { DiscountValidationDto } from '../../types/discounts';
@@ -206,6 +207,12 @@ const Checkout: React.FC = () => {
   const [isValidatingDiscount, setIsValidatingDiscount] = useState(false);
   const [discountError, setDiscountError] = useState('');
 
+  // Credits state
+  const [userCredits, setUserCredits] = useState<UserCreditDto | null>(null);
+  const [isLoadingCredits, setIsLoadingCredits] = useState(false);
+  const [creditsToApply, setCreditsToApply] = useState<number>(0);
+  const [creditsError, setCreditsError] = useState('');
+
   // Shipping state
   const [shippingOptions, setShippingOptions] = useState<ShippingOptionDto[]>([]);
   const [selectedShipping, setSelectedShipping] = useState<ShippingOptionDto | null>(null);
@@ -268,7 +275,7 @@ const Checkout: React.FC = () => {
     return first;
   }, [items]);
 
-  // Calculate totals with discount, shipping, and VAT breakdown
+  // Calculate totals with discount, credits, shipping, and VAT breakdown
   const calculateTotals = () => {
     const subtotalWithVAT = getTotalPrice(); // Prices already include VAT
 
@@ -280,7 +287,12 @@ const Checkout: React.FC = () => {
 
     const discountAmount = discountValidation?.valid ? (discountValidation.calculated_discount_amount || 0) : 0;
     const shippingCost = selectedShipping?.shipping_cost || 0;
-    const total = subtotalWithVAT - discountAmount + shippingCost;
+    const appliedCredits = creditsToApply;
+
+    // Calculate total: subtotal - discount + shipping - credits
+    // Credits can't make total negative
+    const totalBeforeCredits = subtotalWithVAT - discountAmount + shippingCost;
+    const total = Math.max(0, totalBeforeCredits - appliedCredits);
 
     return {
       subtotal: subtotalWithVAT,
@@ -289,7 +301,8 @@ const Checkout: React.FC = () => {
       vatRate: VAT_RATE,
       discount: discountAmount,
       shipping: shippingCost,
-      total: Math.max(0, total)
+      credits: appliedCredits,
+      total
     };
   };
 
@@ -321,6 +334,30 @@ const Checkout: React.FC = () => {
     };
 
     loadSavedAddresses();
+  }, [user]);
+
+  // Load user credits on mount (authenticated users only)
+  useEffect(() => {
+    const loadUserCredits = async () => {
+      if (!user) {
+        setUserCredits(null);
+        return;
+      }
+
+      setIsLoadingCredits(true);
+      try {
+        const credits = await userCreditsService.getBalance();
+        setUserCredits(credits);
+        console.log('[Checkout] User has €' + credits.creditBalance.toFixed(2) + ' in credits');
+      } catch (error) {
+        console.error('[Checkout] Failed to load user credits:', error);
+        setCreditsError('');
+      } finally {
+        setIsLoadingCredits(false);
+      }
+    };
+
+    loadUserCredits();
   }, [user]);
 
   // Fetch shipping options when entering step 2
@@ -608,6 +645,30 @@ const Checkout: React.FC = () => {
     setDiscountCode('');
     setDiscountValidation(null);
     setDiscountError('');
+  };
+
+  // Handle credits application
+  const handleApplyCredits = () => {
+    if (!userCredits || userCredits.creditBalance <= 0) {
+      setCreditsError(t('credits.no_balance'));
+      return;
+    }
+
+    setCreditsError('');
+    const totals = calculateTotals();
+    const totalBeforeCredits = totals.subtotal - totals.discount + totals.shipping;
+
+    // Apply maximum available credits, but not more than order total
+    const maxApplicable = Math.min(userCredits.creditBalance, totalBeforeCredits);
+    setCreditsToApply(maxApplicable);
+
+    console.log('[Checkout] Applied €' + maxApplicable.toFixed(2) + ' in credits');
+  };
+
+  // Handle credits removal
+  const handleRemoveCredits = () => {
+    setCreditsToApply(0);
+    setCreditsError('');
   };
 
   // Stripe error handler

@@ -42,15 +42,30 @@ export interface ReferralDto {
 }
 
 export interface ReferralStatsDto {
-  totalReferrals: number;
-  successfulReferrals: number;
-  pendingReferrals: number;
-  totalEarnings: number;
+  referralCode: string;
+  referralLink: string;
+
+  // Click stats
+  totalClicks: number;
+
+  // Referral stats
+  totalInvitationsSent: number;
+  totalRegistrations: number;
+  totalFirstOrders: number;
+  totalActiveReferrals: number;
+
+  // Earnings
+  totalEarned: number;
+  pendingEarnings: number;
   availableCredits: number;
-  pendingCredits: number;
-  bonusesEarned: number;
-  conversionRate: number;
-  recentReferrals: ReferralDto[];
+
+  // Conversion rates
+  clickToRegistrationRate: number;
+  registrationToOrderRate: number;
+
+  // Bonus tracking
+  referralsEligibleForBonus: number;
+  bonusEarned: number;
 }
 
 export interface ReferralCodeResponse {
@@ -84,8 +99,8 @@ export interface ValidateCodeResponse {
 // =========================================================================
 
 class ReferralService {
-  private readonly BASE_URL = '/api/referrals';
-  private readonly PUBLIC_URL = '/api/referrals/public';
+  private readonly BASE_URL = '/api/referral';
+  private readonly PUBLIC_URL = '/api/referral';
 
   /**
    * Get the current user's referral code
@@ -118,15 +133,17 @@ class ReferralService {
    * Track referral click (PUBLIC - no auth required)
    * Sets a 90-day cookie for attribution
    */
-  async trackClick(request: TrackClickRequest): Promise<void> {
-    return apiClient.post<void>(`${this.PUBLIC_URL}/track-click`, request);
+  async trackClick(code: string, source?: string): Promise<void> {
+    const params = new URLSearchParams({ code });
+    if (source) params.append('source', source);
+    return apiClient.post<void>(`${this.PUBLIC_URL}/track-click?${params.toString()}`);
   }
 
   /**
    * Validate referral code (PUBLIC - no auth required)
    */
   async validateCode(code: string): Promise<ValidateCodeResponse> {
-    return apiClient.get<ValidateCodeResponse>(`${this.PUBLIC_URL}/validate/${code}`, {
+    return apiClient.get<ValidateCodeResponse>(`${this.BASE_URL}/validate/${code}`, {
       cache: true,
       cacheType: 'api-responses'
     });
@@ -136,7 +153,10 @@ class ReferralService {
    * Share referral via email
    */
   async shareViaEmail(request: ShareReferralRequest): Promise<{ message: string }> {
-    return apiClient.post<{ message: string }>(`${this.BASE_URL}/share`, request);
+    return apiClient.post<{ message: string }>(`${this.BASE_URL}/share`, {
+      recipientEmails: request.emails,
+      personalMessage: request.message
+    });
   }
 
   /**
@@ -158,14 +178,10 @@ export interface UserCreditDto {
   pendingBalance: number;
   totalEarned: number;
   totalSpent: number;
-  totalRefunded: number;
-  successfulReferrals: number;
-  pendingReferrals: number;
-  totalReferralEarnings: number;
-  createdAt: string;
-  updatedAt: string;
   lastEarnedAt?: string;
   lastSpentAt?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface CreditTransactionDto {
@@ -197,7 +213,7 @@ export interface ApplyCreditResponse {
 }
 
 class UserCreditsService {
-  private readonly BASE_URL = '/api/user-credits';
+  private readonly BASE_URL = '/api/credits';
 
   /**
    * Get current user's credit balance
@@ -224,7 +240,10 @@ class UserCreditsService {
    * Apply credits to an order during checkout
    */
   async applyCredits(request: ApplyCreditRequest): Promise<ApplyCreditResponse> {
-    return apiClient.post<ApplyCreditResponse>(`${this.BASE_URL}/apply`, request);
+    return apiClient.post<ApplyCreditResponse>(`${this.BASE_URL}/apply`, {
+      orderId: request.orderId,
+      creditAmount: request.amount
+    });
   }
 }
 

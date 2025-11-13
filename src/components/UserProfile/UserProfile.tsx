@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../context/useAuth';
+import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 import './UserProfile.css';
 
 interface UserProfileFormData {
@@ -224,6 +225,13 @@ const UserProfile: React.FC = () => {
 
   return (
     <div className="profile-container">
+      {/* Show loading indicator while fetching profile data */}
+      {isFetching && (
+        <div className="loading-overlay">
+          <LoadingSpinner size="small" />
+        </div>
+      )}
+
       {/* Show error message if there's an error */}
       {error && (
         <div className="error-message">

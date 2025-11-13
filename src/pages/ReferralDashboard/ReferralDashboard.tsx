@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/useAuth';
 import { useTranslation } from 'react-i18next';
+import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 import {
   referralService,
   userCreditsService,
@@ -101,8 +102,17 @@ const ReferralDashboard: React.FC = () => {
     return <span className={`status-badge ${statusInfo.className}`}>{statusInfo.label}</span>;
   };
 
+  // Loading state
+  if (isLoading || loading) {
+    return (
+      <div className="referral-dashboard">
+        <LoadingSpinner size="medium" />
+      </div>
+    );
+  }
+
   // Redirect to login if not authenticated
-  if (!isAuthenticated && !isLoading) {
+  if (!isAuthenticated) {
     return <Navigate to="/login" />;
   }
 

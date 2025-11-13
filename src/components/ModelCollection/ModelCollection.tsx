@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/useAuth';
 import PhotoUploadModal from './PhotoUploadModal';
 import ModelPhotoGallery from './ModelPhotoGallery';
+import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 import { getAuthToken } from '../../utils/tokenUtils';
 import { API_BASE_URL } from '../../services/apiUtils';
 import './ModelCollection.css';
@@ -535,6 +536,14 @@ const ModelCollection: React.FC = () => {
   // };
 
 
+
+  if (loading || ordersLoading) {
+    return (
+      <div className="collection-loading">
+        <LoadingSpinner size="small" />
+      </div>
+    );
+  }
 
   if (error) {
     return (

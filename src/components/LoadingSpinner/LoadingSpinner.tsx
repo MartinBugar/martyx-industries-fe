@@ -3,21 +3,19 @@ import './LoadingSpinner.css';
 
 interface LoadingSpinnerProps {
   size?: 'small' | 'medium' | 'large';
-  color?: string;
   text?: string;
 }
 
-const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ 
-  size = 'medium', 
-  color = 'var(--accent)', 
-  text 
+const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
+  size = 'medium',
+  text
 }) => {
   return (
     <div className={`loading-spinner-container ${size}`}>
-      <div 
-        className="loading-spinner" 
-        style={{ borderTopColor: color }}
-      />
+      <div className="dual-ring-spinner">
+        <div className="spinner-ring ring-outer"></div>
+        <div className="spinner-ring ring-inner"></div>
+      </div>
       {text && <p className="loading-text">{text}</p>}
     </div>
   );

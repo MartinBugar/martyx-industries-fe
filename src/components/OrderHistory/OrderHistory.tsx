@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/useAuth';
 import type { Order } from '../../context/authTypes';
+import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 import './OrderHistory.css';
 // Note: Download functionality moved to OrderDetailsCard
 import OrderDetailsCard from '../OrderDetailsCard';
@@ -88,6 +89,14 @@ const OrderHistory: React.FC = () => {
     return (
       <div className="orders-empty-state">
         <p>Please log in to view your order history.</p>
+      </div>
+    );
+  }
+
+  if (ordersLoading || (!hasLoadedOrders && user)) {
+    return (
+      <div className="orders-container">
+        <LoadingSpinner size="small" />
       </div>
     );
   }

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import cassandraRankService, { type UserCassandraDto } from '../../services/cassandraRankService';
+import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 import './MyCassandra.css';
 
 const MyCassandra: React.FC = () => {
@@ -26,6 +27,14 @@ const MyCassandra: React.FC = () => {
             setLoading(false);
         }
     };
+
+    if (loading) {
+        return (
+            <div className="my-cassandra-container">
+                <LoadingSpinner size="small" />
+            </div>
+        );
+    }
 
     if (error || !cassandraData) {
         return (

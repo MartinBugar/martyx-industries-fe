@@ -9,6 +9,7 @@ import PwaInstall from '../../components/PwaInstall/PwaInstall';
 import MyCassandra from '../../components/MyCassandra/MyCassandra';
 import ReferralDashboard from '../ReferralDashboard/ReferralDashboard';
 import AvatarSelector from '../../components/AvatarSelector/AvatarSelector';
+import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 import cassandraRankService, { type UserCassandraDto } from '../../services/cassandraRankService';
 import { userCreditsService, referralService, type UserCreditDto, type ReferralStatsDto } from '../../services/referralService';
 import type { Avatar } from '../../services/avatarService';
@@ -78,15 +79,39 @@ const UserAccount: React.FC = () => {
           console.error('❌ Failed to load referral data:', error);
           // Set default data to prevent "Loading..." forever
           setCreditsData({ creditBalance: 0, pendingBalance: 0, totalEarned: 0, totalSpent: 0 } as UserCreditDto);
-          setReferralStats({ successfulReferrals: 0, totalEarnings: 0, pendingReferrals: 0 } as ReferralStatsDto);
+          setReferralStats({
+            referralCode: '',
+            referralLink: '',
+            totalClicks: 0,
+            totalInvitationsSent: 0,
+            totalRegistrations: 0,
+            totalFirstOrders: 0,
+            totalActiveReferrals: 0,
+            totalEarned: 0,
+            pendingEarnings: 0,
+            availableCredits: 0,
+            clickToRegistrationRate: 0,
+            registrationToOrderRate: 0,
+            referralsEligibleForBonus: 0,
+            bonusEarned: 0
+          } as ReferralStatsDto);
         }
       };
       loadReferralData();
     }
   }, [activeTab, isAuthenticated]);
 
+  // Show loading while authentication state is being restored
+  if (isLoading) {
+    return (
+      <div className="account-page">
+        <LoadingSpinner size="medium" />
+      </div>
+    );
+  }
+
   // Redirect to login if not authenticated
-  if (!isAuthenticated && !isLoading) {
+  if (!isAuthenticated) {
     return <Navigate to="/login" />;
   }
 
@@ -182,14 +207,14 @@ const UserAccount: React.FC = () => {
                     <div className="ref-stat-item">
                       <span className="ref-stat-icon">👥</span>
                       <div className="ref-stat-content">
-                        <span className="ref-stat-value">{referralStats.successfulReferrals}</span>
+                        <span className="ref-stat-value">{referralStats.totalActiveReferrals}</span>
                         <span className="ref-stat-label">Referrals</span>
                       </div>
                     </div>
                     <div className="ref-stat-item">
                       <span className="ref-stat-icon">🎁</span>
                       <div className="ref-stat-content">
-                        <span className="ref-stat-value">€{referralStats.totalEarnings.toFixed(2)}</span>
+                        <span className="ref-stat-value">€{referralStats.totalEarned.toFixed(2)}</span>
                         <span className="ref-stat-label">Total Earned</span>
                       </div>
                     </div>
