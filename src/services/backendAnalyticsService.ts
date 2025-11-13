@@ -8,9 +8,18 @@
 import { API_BASE_URL, defaultHeaders } from './apiUtils';
 import type { AnalyticsEventDto } from '../types/analytics';
 import { getSessionId, getVisitorId, refreshSession } from './sessionManager';
-import { hasAnalyticsConsent } from './cookieConsent';
+import { getConsent } from '../utils/cookieConsent';
 import { enqueueEvent, processQueue } from './analyticsQueue';
 import { logInfo, logError } from './logger';
+
+/**
+ * Check if user has given consent for analytics tracking
+ * Uses the main cookie consent system from utils/cookieConsent
+ */
+const hasAnalyticsConsent = (): boolean => {
+  const consent = getConsent();
+  return consent?.categories?.analytics === true;
+};
 
 // Process queue every 60 seconds
 const QUEUE_PROCESS_INTERVAL = 60000;
