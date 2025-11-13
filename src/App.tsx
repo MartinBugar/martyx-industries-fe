@@ -32,7 +32,7 @@ import CookieConsent from './components/CookieConsent/CookieConsent'
 import RequireAdmin from './pages/admin/RequireAdmin'
 import { useIOSNoZoomOnFocus } from './hooks/useIOSNoZoomOnFocus'
 import ScrollToTop from './components/ScrollToTop/ScrollToTop'
-import LoadingSpinner from './components/common/LoadingSpinner'
+import LoadingSpinner from './components/LoadingSpinner/LoadingSpinner'
 import { useEffectOnce } from './hooks/useOptimizedEffect'
 import { visitorService } from './services/visitorService'
 import DevelopmentGate from './components/DevelopmentGate/DevelopmentGate'
@@ -105,7 +105,7 @@ import {
 // Loading fallback component
 const PageLoader = () => (
   <div className="flex items-center justify-center min-h-screen">
-    <LoadingSpinner size="large" message="Loading page..." />
+    <LoadingSpinner size="large" text="Loading page..." />
   </div>
 );
 

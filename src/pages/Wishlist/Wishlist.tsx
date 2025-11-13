@@ -8,7 +8,7 @@ import { hybridProductService } from '../../services/hybridProductService';
 import { type Product } from '../../data/productData';
 import { type WishlistItem } from '../../types/wishlist';
 import WishlistButton from '../../components/WishlistButton';
-import LoadingSpinner from '../../components/common/LoadingSpinner';
+import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 import WishlistProductImage from '../../components/WishlistProductImage';
 import { productGalleryService } from '../../services/productGalleryService';
 import { useFormatters } from '../../hooks/useFormatters';
@@ -167,7 +167,7 @@ const Wishlist: React.FC = () => {
     return (
       <div className="wishlist-page">
         <div className="wishlist-container">
-          <LoadingSpinner size="large" message="Loading..." />
+          <LoadingSpinner size="large" text="Loading..." />
         </div>
       </div>
     );
@@ -181,7 +181,7 @@ const Wishlist: React.FC = () => {
     return (
       <div className="wishlist-page">
         <div className="wishlist-container">
-          <LoadingSpinner size="large" message="Loading your wishlist..." />
+          <LoadingSpinner size="large" text="Loading your wishlist..." />
         </div>
       </div>
     );

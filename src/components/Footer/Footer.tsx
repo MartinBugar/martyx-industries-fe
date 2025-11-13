@@ -72,7 +72,7 @@ const Footer: React.FC = () => {
         </div>
 
         <div className="footer-bottom">
-          <p className="copyright">&copy; {currentYear} Martyx Industries. Všetky práva vyhradené. RC modely a 3D tlač.</p>
+          <p className="copyright">&copy; {currentYear} Martyx Industries. Všetky práva vyhradené.</p>
           
           <div className="payment-methods" aria-label="Accepted payment methods">
             <span className="payment-label">Akceptujeme:</span>
