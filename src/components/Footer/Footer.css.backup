@@ -157,14 +157,15 @@
 
 .section-title {
   font-weight: 600;
-  font-size: clamp(0.6875rem, 1.3vw, 0.75rem);
-  letter-spacing: 0.06em;
+  font-size: clamp(0.5625rem, 0.9vw, 0.625rem);
+  letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--accent, #ffcc00);
-  margin-bottom: clamp(0.5rem, 1vw, 0.625rem);
+  margin-bottom: clamp(0.375rem, 0.8vw, 0.5rem);
   padding-bottom: 0;
   border-bottom: none;
   opacity: 0.95;
+  line-height: 1.2;
 }
 
 .footer-links {
@@ -360,8 +361,8 @@
   }
 
   .section-title {
-    font-size: 0.6875rem;
-    margin-bottom: 0.5rem;
+    font-size: 0.5625rem;
+    margin-bottom: 0.375rem;
   }
 
   .footer-links a {
@@ -414,7 +415,7 @@
   }
 
   .section-title {
-    font-size: 0.6875rem;
+    font-size: 0.5625rem;
   }
 
   .brand-area {
@@ -485,8 +486,8 @@
 
   .section-title {
     text-align: center;
-    font-size: 0.6875rem;
-    margin-bottom: 0.5rem;
+    font-size: 0.5625rem;
+    margin-bottom: 0.375rem;
   }
 
   .footer-links {
@@ -642,7 +643,7 @@
   }
 
   .section-title {
-    font-size: 0.6875rem;
+    font-size: 0.5625rem;
     margin-bottom: 0.375rem;
   }
 
@@ -803,9 +804,9 @@
   }
 
   .section-title {
-    font-size: 0.9375rem;
-    margin-bottom: 1.25rem;
-    padding-bottom: 0.625rem;
+    font-size: 0.625rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.375rem;
   }
 
   .footer-links {
