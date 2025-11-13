@@ -91,6 +91,7 @@ import {
   AdminAbandonedCarts,
   AdminHomeSettings,
   AdminDiscounts,
+  AdminReferralConfig,
   AdminEmailTemplates,
   AdminXpConfig,
   AdminInvoices,
@@ -363,6 +364,11 @@ const MainContent = React.memo(() => {
             <Route path="/admin/discounts" element={
               <RequireAdmin>
                 <AdminDiscounts />
+              </RequireAdmin>
+            } />
+            <Route path="/admin/referral-config" element={
+              <RequireAdmin>
+                <AdminReferralConfig />
               </RequireAdmin>
             } />
             <Route path="/admin/segments" element={

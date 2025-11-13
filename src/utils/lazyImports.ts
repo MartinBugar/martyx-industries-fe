@@ -55,6 +55,7 @@ export const AdminSegments = lazy(() => import('../pages/admin/AdminSegments'));
 export const AdminAbandonedCarts = lazy(() => import('../pages/admin/AdminAbandonedCarts'));
 export const AdminHomeSettings = lazy(() => import('../pages/admin/AdminHomeSettings'));
 export const AdminDiscounts = lazy(() => import('../pages/admin/AdminDiscounts'));
+export const AdminReferralConfig = lazy(() => import('../pages/admin/AdminReferralConfig'));
 export const AdminEmailTemplates = lazy(() => import('../pages/admin/AdminEmailTemplates'));
 export const AdminXpConfig = lazy(() => import('../pages/admin/AdminXpConfig'));
 export const AdminInvoices = lazy(() => import('../pages/admin/AdminInvoices'));

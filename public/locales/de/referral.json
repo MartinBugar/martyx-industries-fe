@@ -68,5 +68,14 @@
     "ADMIN_ADJUSTMENT": "Admin-Anpassung",
     "REFUND": "Rückerstattung",
     "EXPIRY": "Abgelaufen"
+  },
+  "discountInfo": {
+    "title": "So funktionieren Rabattcodes",
+    "intro": "Ihre Freunde erhalten nach der Registrierung mit Ihrem Empfehlungslink einen speziellen Rabattcode:",
+    "benefit1": "5€ Rabattcode für die erste Bestellung (Mindestbestellwert 30€)",
+    "benefit2": "Code gültig für 90 Tage ab Registrierung",
+    "benefit3": "Funktioniert auch für Bestandskunden, die Ihren Empfehlungslink verwenden",
+    "benefit4": "Automatisch generierter Code im Format WELCOME{ID}",
+    "note": "Hinweis: Der Rabattcode wird beim Checkout angewendet, nicht sofort. Ihr Freund erhält eine E-Mail mit Anweisungen."
   }
 }
