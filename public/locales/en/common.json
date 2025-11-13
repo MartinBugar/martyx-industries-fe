@@ -53,6 +53,7 @@
     "refresh": "Refresh"
   },
   "loading": "Loading...",
+  "sending": "Sending...",
   "success": "Success!",
   "warning": "Warning",
   "error": "Error",

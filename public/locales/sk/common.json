@@ -53,6 +53,7 @@
     "refresh": "Obnoviť"
   },
   "loading": "Načítava sa...",
+  "sending": "Odosiela sa...",
   "success": "Úspech!",
   "warning": "Upozornenie",
   "error": "Chyba",

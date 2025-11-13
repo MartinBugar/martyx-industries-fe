@@ -78,10 +78,10 @@ const ReferralDashboard: React.FC = () => {
       setShareLoading(true);
       await referralService.shareViaEmail({ emails: [shareEmail] });
       setShareEmail('');
-      alert(t('referral.shareSuccess'));
+      alert(t('shareSuccess'));
     } catch (error) {
       console.error('Failed to share:', error);
-      alert(t('referral.shareFailed'));
+      alert(t('shareFailed'));
     } finally {
       setShareLoading(false);
     }
@@ -89,13 +89,13 @@ const ReferralDashboard: React.FC = () => {
 
   const getStatusBadge = (status: string) => {
     const statusMap: Record<string, { label: string; className: string }> = {
-      PENDING: { label: t('referral.status.pending'), className: 'status-pending' },
-      REGISTERED: { label: t('referral.status.registered'), className: 'status-registered' },
-      FIRST_ORDER: { label: t('referral.status.firstOrder'), className: 'status-first-order' },
-      ACTIVE: { label: t('referral.status.active'), className: 'status-active' },
-      BONUS_EARNED: { label: t('referral.status.bonusEarned'), className: 'status-bonus' },
-      CANCELLED: { label: t('referral.status.cancelled'), className: 'status-cancelled' },
-      EXPIRED: { label: t('referral.status.expired'), className: 'status-expired' }
+      PENDING: { label: t('status.pending'), className: 'status-pending' },
+      REGISTERED: { label: t('status.registered'), className: 'status-registered' },
+      FIRST_ORDER: { label: t('status.firstOrder'), className: 'status-first-order' },
+      ACTIVE: { label: t('status.active'), className: 'status-active' },
+      BONUS_EARNED: { label: t('status.bonusEarned'), className: 'status-bonus' },
+      CANCELLED: { label: t('status.cancelled'), className: 'status-cancelled' },
+      EXPIRED: { label: t('status.expired'), className: 'status-expired' }
     };
 
     const statusInfo = statusMap[status] || { label: status, className: 'status-default' };
@@ -136,19 +136,19 @@ const ReferralDashboard: React.FC = () => {
             className={`tab ${activeTab === 'overview' ? 'active' : ''}`}
             onClick={() => setActiveTab('overview')}
           >
-            {t('referral.tabs.overview')}
+            {t('tabs.overview')}
           </button>
           <button
             className={`tab ${activeTab === 'referrals' ? 'active' : ''}`}
             onClick={() => setActiveTab('referrals')}
           >
-            {t('referral.tabs.referrals')}
+            {t('tabs.referrals')}
           </button>
           <button
             className={`tab ${activeTab === 'credits' ? 'active' : ''}`}
             onClick={() => setActiveTab('credits')}
           >
-            {t('referral.tabs.credits')}
+            {t('tabs.credits')}
           </button>
         </div>
 
@@ -159,7 +159,7 @@ const ReferralDashboard: React.FC = () => {
             <div className="overview-content">
               {/* Referral Code Card */}
               <div className="referral-code-card">
-                <h2>{t('referral.yourCode')}</h2>
+                <h2>{t('yourCode')}</h2>
                 <div className="code-display">
                   <div className="code-box">
                     <code>{referralCode}</code>
@@ -168,7 +168,7 @@ const ReferralDashboard: React.FC = () => {
                     className="copy-btn"
                     onClick={() => copyToClipboard(referralCode)}
                   >
-                    {copied ? '✓ ' + t('referral.copied') : t('referral.copyCode')}
+                    {copied ? '✓ ' + t('copied') : t('copyCode')}
                   </button>
                 </div>
 
@@ -183,59 +183,59 @@ const ReferralDashboard: React.FC = () => {
                     className="copy-btn"
                     onClick={() => copyToClipboard(referralUrl)}
                   >
-                    {t('referral.copyLink')}
+                    {t('copyLink')}
                   </button>
                 </div>
               </div>
 
               {/* Share via Email */}
               <div className="share-card">
-                <h2>{t('referral.shareViaEmail')}</h2>
+                <h2>{t('shareViaEmail')}</h2>
                 <form onSubmit={handleShareViaEmail} className="share-form">
                   <input
                     type="email"
                     value={shareEmail}
                     onChange={(e) => setShareEmail(e.target.value)}
-                    placeholder={t('referral.emailPlaceholder')}
+                    placeholder={t('emailPlaceholder')}
                     className="email-input"
                     required
                   />
                   <button type="submit" className="share-btn" disabled={shareLoading}>
-                    {shareLoading ? t('common.sending') : t('referral.send')}
+                    {shareLoading ? t('sending', { ns: 'common' }) : t('send')}
                   </button>
                 </form>
               </div>
 
               {/* How It Works */}
               <div className="how-it-works-card">
-                <h2>{t('referral.howItWorks')}</h2>
+                <h2>{t('howItWorks')}</h2>
                 <div className="steps">
                   <div className="step">
                     <div className="step-number">1</div>
                     <div className="step-content">
-                      <h3>{t('referral.step1.title')}</h3>
-                      <p>{t('referral.step1.description')}</p>
+                      <h3>{t('step1.title')}</h3>
+                      <p>{t('step1.description')}</p>
                     </div>
                   </div>
                   <div className="step">
                     <div className="step-number">2</div>
                     <div className="step-content">
-                      <h3>{t('referral.step2.title')}</h3>
-                      <p>{t('referral.step2.description')}</p>
+                      <h3>{t('step2.title')}</h3>
+                      <p>{t('step2.description')}</p>
                     </div>
                   </div>
                   <div className="step">
                     <div className="step-number">3</div>
                     <div className="step-content">
-                      <h3>{t('referral.step3.title')}</h3>
-                      <p>{t('referral.step3.description')}</p>
+                      <h3>{t('step3.title')}</h3>
+                      <p>{t('step3.description')}</p>
                     </div>
                   </div>
                   <div className="step">
                     <div className="step-number">4</div>
                     <div className="step-content">
-                      <h3>{t('referral.step4.title')}</h3>
-                      <p>{t('referral.step4.description')}</p>
+                      <h3>{t('step4.title')}</h3>
+                      <p>{t('step4.description')}</p>
                     </div>
                   </div>
                 </div>
@@ -246,27 +246,27 @@ const ReferralDashboard: React.FC = () => {
           {/* Referrals Tab */}
           {activeTab === 'referrals' && (
             <div className="referrals-content">
-              <h2>{t('referral.yourReferrals')}</h2>
+              <h2>{t('yourReferrals')}</h2>
               {referrals.length === 0 ? (
                 <div className="empty-state">
-                  <p>{t('referral.noReferralsYet')}</p>
+                  <p>{t('noReferralsYet')}</p>
                 </div>
               ) : (
                 <div className="referrals-table">
                   <table>
                     <thead>
                       <tr>
-                        <th>{t('referral.table.email')}</th>
-                        <th>{t('referral.table.status')}</th>
-                        <th>{t('referral.table.orders')}</th>
-                        <th>{t('referral.table.earned')}</th>
-                        <th>{t('referral.table.date')}</th>
+                        <th>{t('table.email')}</th>
+                        <th>{t('table.status')}</th>
+                        <th>{t('table.orders')}</th>
+                        <th>{t('table.earned')}</th>
+                        <th>{t('table.date')}</th>
                       </tr>
                     </thead>
                     <tbody>
                       {referrals.map((ref) => (
                         <tr key={ref.id}>
-                          <td>{ref.referredEmail || t('referral.pending')}</td>
+                          <td>{ref.referredEmail || t('pending')}</td>
                           <td>{getStatusBadge(ref.status)}</td>
                           <td>{ref.referredTotalOrders}</td>
                           <td>
@@ -286,21 +286,21 @@ const ReferralDashboard: React.FC = () => {
           {/* Credits Tab */}
           {activeTab === 'credits' && (
             <div className="credits-content">
-              <h2>{t('referral.creditHistory')}</h2>
+              <h2>{t('creditHistory')}</h2>
               {transactions.length === 0 ? (
                 <div className="empty-state">
-                  <p>{t('referral.noTransactions')}</p>
+                  <p>{t('noTransactions')}</p>
                 </div>
               ) : (
                 <div className="transactions-table">
                   <table>
                     <thead>
                       <tr>
-                        <th>{t('referral.table.type')}</th>
-                        <th>{t('referral.table.amount')}</th>
-                        <th>{t('referral.table.balance')}</th>
-                        <th>{t('referral.table.description')}</th>
-                        <th>{t('referral.table.date')}</th>
+                        <th>{t('table.type')}</th>
+                        <th>{t('table.amount')}</th>
+                        <th>{t('table.balance')}</th>
+                        <th>{t('table.description')}</th>
+                        <th>{t('table.date')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -308,7 +308,7 @@ const ReferralDashboard: React.FC = () => {
                         <tr key={tx.id}>
                           <td>
                             <span className={`tx-type ${tx.amount > 0 ? 'tx-credit' : 'tx-debit'}`}>
-                              {t(`referral.txType.${tx.transactionType}`)}
+                              {t(`txType.${tx.transactionType}`)}
                             </span>
                           </td>
                           <td className={tx.amount > 0 ? 'amount-positive' : 'amount-negative'}>
