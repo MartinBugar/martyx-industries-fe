@@ -68,5 +68,14 @@
     "ADMIN_ADJUSTMENT": "Úprava administrátorom",
     "REFUND": "Vrátenie",
     "EXPIRY": "Vypršalo"
+  },
+  "discountInfo": {
+    "title": "Ako fungujú zľavové kódy",
+    "intro": "Vaši priatelia získajú špeciálny zľavový kód po registrácii pomocou vášho referenčného odkazu:",
+    "benefit1": "€5 zľavový kód na prvú objednávku (minimálna objednávka €30)",
+    "benefit2": "Kód má platnosť 90 dní od registrácie",
+    "benefit3": "Funguje aj pre existujúcich zákazníkov, ktorí použijú váš referenčný odkaz",
+    "benefit4": "Automaticky vygenerovaný kód vo formáte WELCOME{ID}",
+    "note": "Poznámka: Zľavový kód sa uplatní pri platbe, nie okamžite. Váš priateľ dostane email s pokynmi."
   }
 }

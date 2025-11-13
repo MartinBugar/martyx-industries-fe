@@ -19,7 +19,6 @@ const UserGallery: React.FC = () => {
     total_public_models: 0,
     total_public_photos: 0
   });
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   // View mode & Filters from URL params
@@ -42,7 +41,6 @@ const UserGallery: React.FC = () => {
 
   // Fetch gallery data
   const fetchGallery = useCallback(async () => {
-    setLoading(true);
     setError(null);
 
     try {
@@ -73,8 +71,6 @@ const UserGallery: React.FC = () => {
     } catch (err) {
       console.error('Error fetching gallery:', err);
       setError(err instanceof Error ? err.message : 'Failed to load gallery');
-    } finally {
-      setLoading(false);
     }
   }, [view, filter, sort, currentPage]);
 
@@ -137,7 +133,7 @@ const UserGallery: React.FC = () => {
   }
 
   // Empty state
-  if (!loading && ((view === 'users' && users.length === 0) || (view === 'photos' && photos.length === 0))) {
+  if ((view === 'users' && users.length === 0) || (view === 'photos' && photos.length === 0)) {
     return (
       <div className="user-gallery-page">
         <div className="gallery-header">

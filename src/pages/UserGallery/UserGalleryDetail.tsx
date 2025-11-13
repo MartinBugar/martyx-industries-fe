@@ -18,7 +18,6 @@ const UserGalleryDetail: React.FC = () => {
   // State
   const [userData, setUserData] = useState<UserProfile | null>(null);
   const [models, setModels] = useState<PublicModel[]>([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   // Lightbox state
@@ -30,11 +29,9 @@ const UserGalleryDetail: React.FC = () => {
   const fetchUserGallery = useCallback(async () => {
     if (!userId) {
       setError('Invalid user ID');
-      setLoading(false);
       return;
     }
 
-    setLoading(true);
     setError(null);
 
     try {
@@ -44,8 +41,6 @@ const UserGalleryDetail: React.FC = () => {
     } catch (err) {
       console.error('Error fetching user gallery:', err);
       setError(err instanceof Error ? err.message : 'Failed to load user gallery');
-    } finally {
-      setLoading(false);
     }
   }, [userId]);
 

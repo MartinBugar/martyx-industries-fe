@@ -81,7 +81,7 @@ const AdminReferralConfig: React.FC = () => {
             console.log('✅ Referral configuration updated');
             addError({
                 message: 'Successfully updated referral configuration',
-                severity: 'success',
+                severity: 'info',
                 recoverable: false
             });
         } catch (error) {

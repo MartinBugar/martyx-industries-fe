@@ -343,6 +343,81 @@
   font-size: 0.875rem;
 }
 
+/* Discount Info Card */
+.discount-info-card {
+  padding: 1.5rem;
+  background: linear-gradient(135deg, rgba(255, 204, 0, 0.08) 0%, rgba(218, 165, 32, 0.08) 100%);
+  border: 1px solid rgba(255, 204, 0, 0.25);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.info-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.info-icon {
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.info-header h2 {
+  margin: 0;
+  color: var(--text, #ffffff);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.info-content {
+  color: var(--text-muted, #e0e0e0);
+}
+
+.info-intro {
+  margin: 0 0 1rem 0;
+  color: var(--text, #ffffff);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+.info-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem 0;
+}
+
+.info-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  color: var(--text-muted, #e0e0e0);
+  line-height: 1.6;
+  font-size: 0.875rem;
+}
+
+.info-bullet {
+  color: var(--accent, #ffcc00);
+  font-weight: 700;
+  font-size: 1rem;
+  flex-shrink: 0;
+  line-height: 1.4;
+}
+
+.info-note {
+  margin: 1rem 0 0 0;
+  padding: 0.875rem 1rem;
+  background: rgba(255, 204, 0, 0.1);
+  border-left: 3px solid var(--accent, #ffcc00);
+  border-radius: 6px;
+  color: var(--text, #ffffff);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  font-weight: 500;
+}
+
 /* Referrals & Credits Content */
 .referrals-content,
 .credits-content {

@@ -232,6 +232,36 @@ const ReferralDashboard: React.FC = () => {
                   </div>
                 </div>
               </div>
+
+              {/* Discount Code Info Box */}
+              <div className="discount-info-card">
+                <div className="info-header">
+                  <span className="info-icon">💡</span>
+                  <h2>{t('discountInfo.title')}</h2>
+                </div>
+                <div className="info-content">
+                  <p className="info-intro">{t('discountInfo.intro')}</p>
+                  <ul className="info-list">
+                    <li>
+                      <span className="info-bullet">✓</span>
+                      <span>{t('discountInfo.benefit1')}</span>
+                    </li>
+                    <li>
+                      <span className="info-bullet">✓</span>
+                      <span>{t('discountInfo.benefit2')}</span>
+                    </li>
+                    <li>
+                      <span className="info-bullet">✓</span>
+                      <span>{t('discountInfo.benefit3')}</span>
+                    </li>
+                    <li>
+                      <span className="info-bullet">✓</span>
+                      <span>{t('discountInfo.benefit4')}</span>
+                    </li>
+                  </ul>
+                  <p className="info-note">{t('discountInfo.note')}</p>
+                </div>
+              </div>
             </div>
           )}
 
