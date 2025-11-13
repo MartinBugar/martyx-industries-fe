@@ -27,7 +27,7 @@ interface QueuedEvent {
 }
 
 let isProcessing = false;
-let retryTimer: NodeJS.Timeout | null = null;
+let retryTimer: number | null = null;
 
 /**
  * Add event to offline queue

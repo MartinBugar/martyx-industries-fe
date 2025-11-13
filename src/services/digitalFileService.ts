@@ -61,14 +61,6 @@ class DigitalFileService {
    */
   validateFile(file: File): { valid: boolean; error?: string } {
     const maxSize = 500 * 1024 * 1024; // 500MB
-    const allowedTypes = [
-      'application/zip',
-      'application/x-zip-compressed',
-      'application/pdf',
-      'model/stl',
-      'application/sla',
-      'application/octet-stream'
-    ];
 
     if (!file) {
       return { valid: false, error: 'No file selected' };
@@ -124,17 +116,7 @@ class DigitalFileService {
       // Upload to backend
       const response = await apiClient.post<DigitalFileUploadResponse>(
         `/api/admin/products/${masterProductId}/digital-file/upload`,
-        request,
-        {
-          signal: this.uploadAbortController.signal,
-          onUploadProgress: (progressEvent) => {
-            if (progressEvent.total && onProgress) {
-              // Scale progress from 30% to 100%
-              const uploadProgress = Math.round((progressEvent.loaded / progressEvent.total) * 70);
-              onProgress(30 + uploadProgress);
-            }
-          }
-        }
+        request
       );
 
       if (onProgress) {

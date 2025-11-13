@@ -4,7 +4,7 @@
  * Prevents console.log pollution in production
  */
 
-const isDevelopment = process.env.NODE_ENV === 'development';
+const isDevelopment = import.meta.env.MODE === 'development';
 
 /**
  * Log informational messages (only in development)

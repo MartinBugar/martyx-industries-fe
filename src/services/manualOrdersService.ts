@@ -1,5 +1,5 @@
 import { API_BASE_URL, defaultHeaders, handleResponse } from './apiUtils';
-import { PageResponse } from './adminOrdersService';
+import type { PageResponse } from './adminOrdersService';
 
 // ============================================================================
 // TYPES & INTERFACES

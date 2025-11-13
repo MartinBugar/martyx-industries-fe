@@ -16,7 +16,7 @@ export function debounce<T extends (...args: any[]) => any>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {
-  let timeoutId: NodeJS.Timeout | null = null;
+  let timeoutId: number | null = null;
 
   return function debounced(...args: Parameters<T>): void {
     if (timeoutId) {
@@ -44,7 +44,7 @@ export function debounceLeading<T extends (...args: any[]) => any>(
   wait: number,
   options: { leading?: boolean } = {}
 ): (...args: Parameters<T>) => void {
-  let timeoutId: NodeJS.Timeout | null = null;
+  let timeoutId: number | null = null;
   let lastCallTime: number = 0;
 
   return function debounced(...args: Parameters<T>): void {

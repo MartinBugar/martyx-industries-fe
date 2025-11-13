@@ -378,56 +378,32 @@ const AdminInvoices: React.FC = () => {
                       <td>
                         <Badge variant="success">Issued</Badge>
                       </td>
-                      <td>
-                        <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
-                          <button
+                      <td className="text-right">
+                        <div className="action-buttons">
+                          <Button
+                            variant="outline"
+                            size="sm"
                             onClick={() => handleDownloadInvoice(invoice)}
                             title="Download PDF"
-                            style={{
-                              padding: '6px 10px',
-                              border: '1px solid #e5e7eb',
-                              borderRadius: 6,
-                              background: '#fff',
-                              cursor: 'pointer',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 4
-                            }}
                           >
                             <Download size={14} />
-                          </button>
-                          <button
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
                             onClick={() => handleRegenerateInvoice(invoice)}
                             title="Regenerate PDF"
-                            style={{
-                              padding: '6px 10px',
-                              border: '1px solid #e5e7eb',
-                              borderRadius: 6,
-                              background: '#fff',
-                              cursor: 'pointer',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 4
-                            }}
                           >
                             <RefreshCw size={14} />
-                          </button>
-                          <button
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
                             onClick={() => openResendModal(invoice)}
                             title="Resend Email"
-                            style={{
-                              padding: '6px 10px',
-                              border: '1px solid #e5e7eb',
-                              borderRadius: 6,
-                              background: '#fff',
-                              cursor: 'pointer',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 4
-                            }}
                           >
                             <Mail size={14} />
-                          </button>
+                          </Button>
                         </div>
                       </td>
                     </tr>

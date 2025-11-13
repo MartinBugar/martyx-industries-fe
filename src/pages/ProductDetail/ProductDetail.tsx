@@ -309,7 +309,7 @@ const ProductDetail: React.FC = () => {
     React.useEffect(() => {
         if (!product) return;
 
-        debouncedTrackView(product.masterProductId, user?.id);
+        debouncedTrackView(product.masterProductId, user?.id ? parseInt(user.id, 10) : undefined);
     }, [product?.masterProductId, user?.id, debouncedTrackView]); // Track when product ID or user changes
 
     // Load gallery images from database (with metadata and proper ordering) - ONCE per product

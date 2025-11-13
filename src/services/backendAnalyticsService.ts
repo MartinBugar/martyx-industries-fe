@@ -14,7 +14,7 @@ import { logInfo, logError } from './logger';
 
 // Process queue every 60 seconds
 const QUEUE_PROCESS_INTERVAL = 60000;
-let queueProcessorInterval: NodeJS.Timeout | null = null;
+let queueProcessorInterval: number | null = null;
 
 /**
  * Start queue processor (call this once when app initializes)
@@ -61,7 +61,6 @@ const sendEventToBackend = async (eventData: Partial<AnalyticsEventDto>): Promis
       session_id: eventData.session_id || getSessionId(),
       visitor_id: eventData.visitor_id || getVisitorId(),
       event_timestamp: new Date().toISOString(),
-      page_url: window.location.href,
       referrer_url: document.referrer || undefined,
     };
 
@@ -125,7 +124,6 @@ export const trackProductView = async (
   }
 
   const sessionId = getSessionId();
-  const visitorId = getVisitorId();
 
   try {
     const params = new URLSearchParams({
@@ -217,7 +215,6 @@ export const trackPageView = async (
     event_type: 'PAGE_VIEW',
     event_category: 'USER_ACTION',
     event_name: pageTitle || pagePath,
-    page_url: window.location.href,
   });
 };
 
