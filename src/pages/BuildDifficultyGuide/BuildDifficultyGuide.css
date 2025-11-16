@@ -28,7 +28,7 @@
 /* INTRO SECTION - Compact                                                     */
 /* ============================================================================ */
 .difficulty-intro {
-  padding: 3rem 2rem;
+  padding: 0.5rem 2rem 3rem;
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -425,7 +425,7 @@
 /* ============================================================================ */
 @media (max-width: 768px) {
   .difficulty-intro {
-    padding: 2.5rem 1.5rem;
+    padding: 0.5rem 1.5rem 2.5rem;
   }
 
   .difficulty-intro-content h2 {
