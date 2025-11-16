@@ -645,7 +645,6 @@
   box-shadow: none;
   transition: all 0.2s ease;
   margin-bottom: 0.5rem;
-  max-width: 800px;
 }
 
 .print-settings-section:hover,
@@ -682,7 +681,7 @@
 /* Print Settings Grid */
 .settings-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, max-content));
   gap: 0.75rem;
   margin-bottom: 1rem;
 }
@@ -1443,7 +1442,6 @@
   padding: 1rem;
   transition: all 0.2s ease;
   margin-bottom: 0.5rem;
-  max-width: 800px;
 }
 
 .build-overview-section:hover,
@@ -1483,7 +1481,7 @@
 /* Stats Grid */
 .build-stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, max-content));
   gap: 0.5rem;
   margin-bottom: 0;
 }
@@ -1669,7 +1667,7 @@
 /* Tools Section */
 .tools-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(160px, max-content));
   gap: 0.5rem;
 }
 
@@ -1741,7 +1739,6 @@
   padding: 1rem;
   transition: all 0.2s ease;
   margin-bottom: 0.5rem;
-  max-width: 800px;
 }
 
 .no-glue-highlight:hover {
