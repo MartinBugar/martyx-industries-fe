@@ -189,7 +189,7 @@ export class HybridProductService {
 
       // Build difficulty & info (V46)
       difficultyLevel: masterProduct.difficultyLevel as any,
-      buildInfo: masterProduct.buildInfo
+      buildInfo: masterProduct.buildInfo ?? undefined
     };
 
     console.log('🔀 HybridService: final result:', {

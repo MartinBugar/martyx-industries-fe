@@ -12,7 +12,6 @@ import WishlistButton from '../../components/WishlistButton';
 import { getLCPPreloadAttributes, getBaseNameFromPath, isCDNEnabled } from '../../utils/cdnImages';
 import { productGalleryService } from '../../services/productGalleryService';
 import VariantSelector from '../../components/VariantSelector/VariantSelector';
-import DifficultyBadge from '../../components/DifficultyBadge/DifficultyBadge';
 import { getTabsForVariant, canViewTab, renderTabContent } from '../../services/productTabService';
 import type { ProductTabDto } from '../../types/api';
 import { useAuth } from '../../context/useAuth';
