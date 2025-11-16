@@ -21,6 +21,8 @@ import {
   adminGetTabsByKey,
   type SupportedLocale
 } from '../../services/productTabService';
+import { productService } from '../../services/productService';
+import type { BuildInfoDto } from '../../types/api';
 import {
   adminGetAttachmentsForMasterProduct
 } from '../../services/productAttachmentService';
@@ -98,6 +100,21 @@ const AdminMasterProductTabForm: React.FC = () => {
   const [tabAttachments, setTabAttachments] = useState<any[]>([]);
   const [loadingAttachments, setLoadingAttachments] = useState(false);
 
+  // Build Info state (for BuildInfoTab component)
+  const [buildInfo, setBuildInfo] = useState<BuildInfoDto>({
+    partsCount: 0,
+    screwsCount: 0,
+    filamentGrams: 0,
+    filamentType: '',
+    printTimeHours: 0,
+    assemblyTimeHours: 0,
+    requiredTools: [],
+    skillsRequired: [],
+    estimatedTotalHours: 0
+  });
+  const [difficultyLevel, setDifficultyLevel] = useState<string>('BEGINNER');
+  const [buildInfoLoading, setBuildInfoLoading] = useState(false);
+
   // Helper function to check if a language is complete
   const isLanguageComplete = (lang: SupportedLocale): boolean => {
     const data = languageData[lang];
@@ -151,6 +168,32 @@ const AdminMasterProductTabForm: React.FC = () => {
       loadAttachments();
     }
   }, [isEditMode, tabId, productId, sharedFields.contentType, sharedFields.componentName]);
+
+  // Load build info when editing a BuildInfoTab
+  useEffect(() => {
+    const loadBuildInfo = async () => {
+      if (!productId || sharedFields.componentName !== 'BuildInfoTab') return;
+
+      try {
+        setBuildInfoLoading(true);
+        const masterProduct = await productService.adminGetMasterProduct(Number(productId));
+
+        if (masterProduct.buildInfo) {
+          setBuildInfo(masterProduct.buildInfo);
+        }
+        if (masterProduct.difficultyLevel) {
+          setDifficultyLevel(masterProduct.difficultyLevel);
+        }
+      } catch (err) {
+        console.error('Error loading build info:', err);
+        setError('Failed to load build information');
+      } finally {
+        setBuildInfoLoading(false);
+      }
+    };
+
+    loadBuildInfo();
+  }, [productId, sharedFields.componentName]);
 
   const loadAllLanguageVersions = async (id: number) => {
     try {
@@ -311,6 +354,23 @@ const AdminMasterProductTabForm: React.FC = () => {
       }
 
       console.log(`✅ Saved ${savePromises.length} language versions`);
+
+      // Save build info if this is a BuildInfoTab
+      if (sharedFields.componentName === 'BuildInfoTab' && productId) {
+        try {
+          console.log('💾 Saving build info to master product...');
+          const masterProduct = await productService.adminGetMasterProduct(Number(productId));
+
+          masterProduct.buildInfo = buildInfo;
+          masterProduct.difficultyLevel = difficultyLevel;
+
+          await productService.adminUpdateMasterProduct(Number(productId), masterProduct);
+          console.log('✅ Build info saved successfully');
+        } catch (buildInfoErr) {
+          console.error('Error saving build info:', buildInfoErr);
+          setError('Tab saved, but failed to save build information. Please try updating build info separately.');
+        }
+      }
 
       // Clear cache so frontend sees new tabs immediately
       apiClient.clearCache();
@@ -724,6 +784,160 @@ const AdminMasterProductTabForm: React.FC = () => {
                   )}
                 </div>
               </div>
+
+              {/* Build Info Management (only for BuildInfoTab component) */}
+              {sharedFields.contentType === 'COMPONENT' &&
+               sharedFields.componentName === 'BuildInfoTab' && (
+                <div style={{ marginBottom: 32 }}>
+                  <h4 style={{ fontSize: '16px', fontWeight: 600, marginBottom: 16, color: '#374151' }}>
+                    Build Information & Difficulty
+                  </h4>
+
+                  {buildInfoLoading ? (
+                    <div style={{ textAlign: 'center', padding: '20px', color: '#6b7280' }}>
+                      Loading build information...
+                    </div>
+                  ) : (
+                    <div style={{ display: 'grid', gap: 20 }}>
+                      {/* Difficulty Level */}
+                      <div className="form-group">
+                        <label className="form-label">
+                          Difficulty Level
+                        </label>
+                        <select
+                          className="form-control"
+                          value={difficultyLevel}
+                          onChange={(e) => setDifficultyLevel(e.target.value)}
+                        >
+                          <option value="BEGINNER">Beginner</option>
+                          <option value="INTERMEDIATE">Intermediate</option>
+                          <option value="ADVANCED">Advanced</option>
+                          <option value="EXPERT">Expert</option>
+                        </select>
+                      </div>
+
+                      {/* Parts Count */}
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+                        <div className="form-group">
+                          <label className="form-label">Parts Count</label>
+                          <input
+                            type="number"
+                            className="form-control"
+                            value={buildInfo.partsCount}
+                            onChange={(e) => setBuildInfo({ ...buildInfo, partsCount: parseInt(e.target.value) || 0 })}
+                            min="0"
+                          />
+                        </div>
+
+                        <div className="form-group">
+                          <label className="form-label">Screws Count</label>
+                          <input
+                            type="number"
+                            className="form-control"
+                            value={buildInfo.screwsCount}
+                            onChange={(e) => setBuildInfo({ ...buildInfo, screwsCount: parseInt(e.target.value) || 0 })}
+                            min="0"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Filament */}
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+                        <div className="form-group">
+                          <label className="form-label">Filament (grams)</label>
+                          <input
+                            type="number"
+                            className="form-control"
+                            value={buildInfo.filamentGrams}
+                            onChange={(e) => setBuildInfo({ ...buildInfo, filamentGrams: parseInt(e.target.value) || 0 })}
+                            min="0"
+                          />
+                        </div>
+
+                        <div className="form-group">
+                          <label className="form-label">Filament Type</label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            value={buildInfo.filamentType}
+                            onChange={(e) => setBuildInfo({ ...buildInfo, filamentType: e.target.value })}
+                            placeholder="e.g., PLA, ABS"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Time */}
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 20 }}>
+                        <div className="form-group">
+                          <label className="form-label">Print Time (hours)</label>
+                          <input
+                            type="number"
+                            className="form-control"
+                            value={buildInfo.printTimeHours}
+                            onChange={(e) => setBuildInfo({ ...buildInfo, printTimeHours: parseFloat(e.target.value) || 0 })}
+                            min="0"
+                            step="0.5"
+                          />
+                        </div>
+
+                        <div className="form-group">
+                          <label className="form-label">Assembly Time (hours)</label>
+                          <input
+                            type="number"
+                            className="form-control"
+                            value={buildInfo.assemblyTimeHours}
+                            onChange={(e) => setBuildInfo({ ...buildInfo, assemblyTimeHours: parseFloat(e.target.value) || 0 })}
+                            min="0"
+                            step="0.5"
+                          />
+                        </div>
+
+                        <div className="form-group">
+                          <label className="form-label">Total Time (hours)</label>
+                          <input
+                            type="number"
+                            className="form-control"
+                            value={buildInfo.estimatedTotalHours}
+                            onChange={(e) => setBuildInfo({ ...buildInfo, estimatedTotalHours: parseFloat(e.target.value) || 0 })}
+                            min="0"
+                            step="0.5"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Required Tools */}
+                      <div className="form-group">
+                        <label className="form-label">Required Tools (comma-separated)</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={buildInfo.requiredTools.join(', ')}
+                          onChange={(e) => setBuildInfo({
+                            ...buildInfo,
+                            requiredTools: e.target.value.split(',').map(s => s.trim()).filter(s => s)
+                          })}
+                          placeholder="e.g., Screwdriver, Pliers, Soldering iron"
+                        />
+                      </div>
+
+                      {/* Required Skills */}
+                      <div className="form-group">
+                        <label className="form-label">Required Skills (comma-separated)</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={buildInfo.skillsRequired.join(', ')}
+                          onChange={(e) => setBuildInfo({
+                            ...buildInfo,
+                            skillsRequired: e.target.value.split(',').map(s => s.trim()).filter(s => s)
+                          })}
+                          placeholder="e.g., Basic soldering, 3D printing, Electronics assembly"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Attachments Management (only for ProductDownloads component in edit mode) */}
               {isEditMode &&

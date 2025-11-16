@@ -150,6 +150,57 @@ export class ProductService {
     return handleResponse(response);
   }
 
+  // ============================================================================
+  // ADMIN API METHODS (require authentication)
+  // ============================================================================
+
+  /**
+   * Get master product for admin panel (no publishing check, loads all data)
+   * @param id - Master Product ID
+   * @returns Promise<MasterProductDto>
+   */
+  async adminGetMasterProduct(id: number): Promise<MasterProductDto> {
+    const url = `${API_BASE_URL}/api/admin/products/${id}`;
+
+    const requestOptions = {
+      method: 'GET',
+      headers: defaultHeaders as HeadersInit,
+    };
+
+    if (import.meta.env.VITE_DEBUG_API) {
+      console.log('ProductService.adminGetMasterProduct:', { url, masterProductId: id });
+    }
+
+    const response = await fetch(url, requestOptions);
+    return handleResponse(response);
+  }
+
+  /**
+   * Update master product (admin only)
+   * @param id - Master Product ID
+   * @param data - Updated master product data
+   * @returns Promise<MasterProductDto>
+   */
+  async adminUpdateMasterProduct(id: number, data: MasterProductDto): Promise<MasterProductDto> {
+    const url = `${API_BASE_URL}/api/admin/products/${id}`;
+
+    const requestOptions = {
+      method: 'PUT',
+      headers: {
+        ...defaultHeaders,
+        'Content-Type': 'application/json',
+      } as HeadersInit,
+      body: JSON.stringify(data),
+    };
+
+    if (import.meta.env.VITE_DEBUG_API) {
+      console.log('ProductService.adminUpdateMasterProduct:', { url, masterProductId: id, data });
+    }
+
+    const response = await fetch(url, requestOptions);
+    return handleResponse(response);
+  }
+
 }
 
 export const productService = new ProductService();

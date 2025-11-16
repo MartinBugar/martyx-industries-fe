@@ -5,7 +5,7 @@ import {type Product} from '../../data/productData';
 import {hybridProductService} from '../../services/hybridProductService';
 import ProductView from '../../components/ProductView/ProductView';
 import './ProductDetail.css';
-import {DetailsTab, DownloadTab, FeaturesTab, ReviewsTab, PrintInfoTab, IncludedTab} from '../../components/ProductTabs';
+import {DetailsTab, DownloadTab, FeaturesTab, ReviewsTab, PrintInfoTab, IncludedTab, BuildInfoTab} from '../../components/ProductTabs';
 import ProductDownloads from '../../components/ProductTabs/ProductDownloads';
 import {useCart} from '../../context/useCart';
 import WishlistButton from '../../components/WishlistButton';
@@ -593,6 +593,14 @@ const DynamicTabRenderer: React.FC<DynamicTabRendererProps> = ({ tab, product })
                     console.error('Failed to parse PrintInfo JSON:', e);
                 }
                 return <PrintInfoTab content={{ kind: 'text', text: tab.contentHtml || 'Print information not available.' }} />;
+            case 'BuildInfoTab':
+                if (product.buildInfo && product.difficultyLevel) {
+                    return <BuildInfoTab content={{
+                        kind: 'buildInfo',
+                        data: product.buildInfo
+                    }} />;
+                }
+                return <div>Build information not available.</div>;
             case 'DownloadTab':
                 return <DownloadTab content={{ kind: 'text', text: '' }} variantId={product.variantId} />;
             case 'FeaturesTab':
