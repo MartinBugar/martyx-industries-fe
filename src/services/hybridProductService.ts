@@ -107,11 +107,7 @@ export class HybridProductService {
     console.log('🔀 Selected Variant:', variant);
     console.log('🔀 All Variants:', allVariants.length);
 
-    // Parse JSON fields from backend with fallbacks to hardcoded data
-    const features = this.parseJsonField<string[]>(
-      masterProduct.featuresJson,
-      hardcodedData?.features || []
-    );
+    const features = hardcodedData?.features || [];
 
     const interactionInstructions = this.parseJsonField<string[]>(
       masterProduct.interactionInstructionsJson,

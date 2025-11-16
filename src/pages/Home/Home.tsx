@@ -9,6 +9,7 @@ import OptimizedImage from '../../components/OptimizedImage/OptimizedImage';
 import { getBestImageUrl, getBaseNameFromPath, isCDNEnabled } from '../../utils/cdnImages';
 import { productGalleryService } from '../../services/productGalleryService';
 import { homePageSettingsService, type VisibilityMap } from '../../services/homePageSettingsService';
+import { testimonialService, type Testimonial } from '../../services/testimonialService';
 import './Home.css';
 
 // Helper function to get price display with "Od" prefix if multiple variants
@@ -30,6 +31,7 @@ const Home: React.FC = () => {
   const { t, i18n } = useTranslation('home');
   const [products, setProducts] = useState<Product[]>([]);
   const [visibilityMap, setVisibilityMap] = useState<VisibilityMap>({});
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const featured = useMemo(() => products.slice(0, 6), [products]);
 
   type Popup = { visible: boolean; message: string; variant: 'success' | 'warning' };
@@ -60,6 +62,21 @@ const Home: React.FC = () => {
     };
 
     loadVisibilitySettings();
+  }, []);
+
+  // Load testimonials from API
+  useEffect(() => {
+    const loadTestimonials = async () => {
+      try {
+        const data = await testimonialService.getFeaturedTestimonials();
+        setTestimonials(data);
+      } catch (error) {
+        console.warn('Failed to load testimonials:', error);
+        // Continue with empty array - don't break homepage
+      }
+    };
+
+    loadTestimonials();
   }, []);
 
   // Load products with database gallery from hybrid service
@@ -139,6 +156,41 @@ const Home: React.FC = () => {
       timersRef.current = {};
     };
   }, []);
+
+  // Helper function to render star rating
+  const renderStars = (rating: number) => {
+    return (
+      <div className="star-rating">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <svg key={star} viewBox="0 0 24 24" fill={star <= rating ? "currentColor" : "none"}>
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+              stroke="currentColor" strokeWidth="1" />
+          </svg>
+        ))}
+      </div>
+    );
+  };
+
+  // Helper function to format relative date
+  const formatRelativeDate = (dateStr: string): string => {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffDays < 7) {
+      return diffDays === 0 ? 'Today' : diffDays === 1 ? '1 day ago' : `${diffDays} days ago`;
+    } else if (diffDays < 30) {
+      const weeks = Math.floor(diffDays / 7);
+      return weeks === 1 ? '1 week ago' : `${weeks} weeks ago`;
+    } else if (diffDays < 365) {
+      const months = Math.floor(diffDays / 30);
+      return months === 1 ? '1 month ago' : `${months} months ago`;
+    } else {
+      const years = Math.floor(diffDays / 365);
+      return years === 1 ? '1 year ago' : `${years} years ago`;
+    }
+  };
 
   const handleAdd = (p: Product) => () => {
     const status = addToCart(p);
@@ -331,7 +383,7 @@ const Home: React.FC = () => {
       )}
 
       {/* 6) Testimonials */}
-      {visibilityMap.testimonials !== false && (
+      {visibilityMap.testimonials !== false && testimonials.length > 0 && (
       <section className="home-section testimonials" aria-label={t('testimonials.title')}>
         <div className="container">
           <div className="section-header">
@@ -339,165 +391,33 @@ const Home: React.FC = () => {
             <p className="section-subtitle">{t('testimonials.subtitle')}</p>
           </div>
           <div className="testimonials-grid">
-            <article className="testimonial-card">
-              <div className="testimonial-header">
-                <div className="customer-info">
-                  <div className="customer-avatar">
-                    <svg viewBox="0 0 24 24" fill="none">
-                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </div>
-                  <div className="customer-details">
-                    <h4 className="customer-name">J. Park</h4>
-                    <div className="star-rating">
-                      <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                      </svg>
-                      <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                      </svg>
-                      <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                      </svg>
-                      <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                      </svg>
-                      <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            {testimonials.map((testimonial) => (
+              <article key={testimonial.id} className="testimonial-card">
+                <div className="testimonial-header">
+                  <div className="customer-info">
+                    <div className="customer-avatar">
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
                     </div>
-                  </div>
-                </div>
-                <div className="review-date">2 weeks ago</div>
-              </div>
-              <blockquote className="testimonial-content">
-                <p>"Printed over a weekend, runs like a charm. The STL files are perfectly optimized and the assembly guide is crystal clear. My kids love driving it around!"</p>
-              </blockquote>
-              <div className="testimonial-footer">
-                <span className="product-tag">Tiger I Kit</span>
-              </div>
-            </article>
-
-            <article className="testimonial-card">
-              <div className="testimonial-header">
-                <div className="customer-info">
-                  <div className="customer-avatar">
-                    <svg viewBox="0 0 24 24" fill="none">
-                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </div>
-                  <div className="customer-details">
-                    <h4 className="customer-name">A. Novak</h4>
-                    <div className="star-rating">
-                      <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                      </svg>
-                      <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                      </svg>
-                      <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                      </svg>
-                      <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                      </svg>
-                      <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                      </svg>
+                    <div className="customer-details">
+                      <h4 className="customer-name">{testimonial.userName}</h4>
+                      {renderStars(testimonial.rating)}
                     </div>
                   </div>
+                  <div className="review-date">{formatRelativeDate(testimonial.createdAt)}</div>
                 </div>
-                <div className="review-date">1 month ago</div>
-              </div>
-              <blockquote className="testimonial-content">
-                <p>"Clean STLs, no supports needed on my setup. The modular design makes it easy to customize and the electronics integration is seamless. Highly recommended!"</p>
-              </blockquote>
-              <div className="testimonial-footer">
-                <span className="product-tag">Sherman STL Bundle</span>
-              </div>
-            </article>
-
-            <article className="testimonial-card">
-              <div className="testimonial-header">
-                <div className="customer-info">
-                  <div className="customer-avatar">
-                    <svg viewBox="0 0 24 24" fill="none">
-                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </div>
-                  <div className="customer-details">
-                    <h4 className="customer-name">M. Chen</h4>
-                    <div className="star-rating">
-                      <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                      </svg>
-                      <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                      </svg>
-                      <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                      </svg>
-                      <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                      </svg>
-                      <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                      </svg>
-                    </div>
-                  </div>
+                <blockquote className="testimonial-content">
+                  <p>&quot;{testimonial.comment}&quot;</p>
+                </blockquote>
+                <div className="testimonial-footer">
+                  {testimonial.productName && (
+                    <span className="product-tag">{testimonial.productName}</span>
+                  )}
                 </div>
-                <div className="review-date">3 weeks ago</div>
-              </div>
-              <blockquote className="testimonial-content">
-                <p>"Amazing quality! The tracks work perfectly and the suspension system is incredibly realistic. Assembly took exactly as advertised - under 4 hours."</p>
-              </blockquote>
-              <div className="testimonial-footer">
-                <span className="product-tag">T-34 Kit</span>
-              </div>
-            </article>
-
-            <article className="testimonial-card">
-              <div className="testimonial-header">
-                <div className="customer-info">
-                  <div className="customer-avatar">
-                    <svg viewBox="0 0 24 24" fill="none">
-                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </div>
-                  <div className="customer-details">
-                    <h4 className="customer-name">R. Schmidt</h4>
-                    <div className="star-rating">
-                      <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                      </svg>
-                      <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                      </svg>
-                      <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                      </svg>
-                      <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                      </svg>
-                      <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-                <div className="review-date">1 week ago</div>
-              </div>
-              <blockquote className="testimonial-content">
-                <p>"The attention to detail is incredible. Every bolt and rivet is perfectly modeled. The controller range is impressive and the sound effects are spot on!"</p>
-              </blockquote>
-              <div className="testimonial-footer">
-                <span className="product-tag">Panther STL Bundle</span>
-              </div>
-            </article>
+              </article>
+            ))}
           </div>
         </div>
       </section>

@@ -183,6 +183,7 @@ export const defaultModelViewerSettings: ModelViewerSettings = {
 // Hardcoded frontend-specific data for products (UI, assets only - NO TABS)
 // These complement the backend MasterProduct + Variant data
 // TABS ARE NOW LOADED FROM BACKEND API PER VARIANT
+// VIDEO URLs NOW LOADED FROM BACKEND (master_products.video_url)
 export interface HardcodedProductData {
     masterProductId: number; // Must match backend master product ID for pairing
     features: string[];
@@ -190,7 +191,6 @@ export interface HardcodedProductData {
     gallery: string[];
     interactionInstructions: string[];
     modelViewerSettings?: ModelViewerSettings;
-    videoUrl?: string;
 }
 
 // Hardcoded data that cannot be retrieved from backend
@@ -198,31 +198,21 @@ export interface HardcodedProductData {
 export const hardcodedProductsData: HardcodedProductData[] = [
     {
         masterProductId: 1, // Must match backend master product ID
-        features: [
-            "High-resolution textures",
-            "Fully interactive 3D model",
-            "Adjustable material properties",
-            "Compatible with all major 3D software"
-        ],
+        features: [], // Features now loaded from backend (product_translation.features_json)
         modelPath: '', // Use CDN URL from database (model_3d_viewer_url column)
         gallery: [], // Gallery loaded from database
         interactionInstructions: baseInteractionInstructions,
-        modelViewerSettings: defaultModelViewerSettings,
-        videoUrl: 'https://youtu.be/b5QAer6Q8lY'
+        modelViewerSettings: defaultModelViewerSettings
+        // videoUrl now loaded from backend (master_products.video_url)
     },
     {
         masterProductId: 2, // Must match backend master product ID
-        features: [
-            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-            "BBBBBBBBBBBBBBBBBBBBBBBBBB",
-            "CCCCCCCCCCCCCCCCCCCCCCCCCCC",
-            "DDDDDDDDDDDDDDDDDDDDDDDDDDD"
-        ],
+        features: [], // Features now loaded from backend (product_translation.features_json)
         modelPath: '', // Use CDN URL from database (model_3d_viewer_url column)
         gallery: [], // Gallery loaded from database
         interactionInstructions: baseInteractionInstructions,
-        modelViewerSettings: defaultModelViewerSettings,
-        videoUrl: 'https://www.youtube-nocookie.com/embed/bXxOCo0VL1Y'
+        modelViewerSettings: defaultModelViewerSettings
+        // videoUrl now loaded from backend (master_products.video_url)
     }
 ];
 

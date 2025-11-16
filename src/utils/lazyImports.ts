@@ -64,6 +64,7 @@ export const AdminGiftTiers = lazy(() => import('../pages/admin/AdminGiftTiers')
 export const AdminShippingZones = lazy(() => import('../pages/admin/AdminShippingZones'));
 export const AdminManualOrderCreate = lazy(() => import('../pages/admin/AdminManualOrderCreate'));
 export const AdminManualOrderHistory = lazy(() => import('../pages/admin/AdminManualOrderHistory'));
+export const AdminReviews = lazy(() => import('../pages/admin/AdminReviews'));
 
 // Components - lazy loaded for non-critical features
 export const EmailConfirmation = lazy(() => import('../components/EmailConfirmation/EmailConfirmation'));

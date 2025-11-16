@@ -40,7 +40,7 @@ export interface MasterProductDto {
 
   // Frontend Presentation (JSON fields from backend)
   model3dViewerUrl: string | null;  // CDN URL to .glb file
-  featuresJson: string | null;  // JSON array: ["Feature 1", "Feature 2", ...]
+  featuresJson: string | null;  // DEPRECATED - Use ProductTab system instead
   interactionInstructionsJson: string | null;  // JSON array for 3D viewer
   modelViewerSettingsJson: string | null;  // JSON object with viewer settings
   tabsJson: string | null;  // JSON array of tab objects
