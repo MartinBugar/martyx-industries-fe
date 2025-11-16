@@ -21,18 +21,6 @@ const BuildDifficultyGuide: React.FC = () => {
 
   return (
     <div className="difficulty-guide-page">
-      {/* Hero Section */}
-      <section className="difficulty-hero">
-        <div className="difficulty-hero-content">
-          <h1 className="difficulty-hero-title">
-            {t('hero.title', 'Build Difficulty Guide')}
-          </h1>
-          <p className="difficulty-hero-subtitle">
-            {t('hero.subtitle', 'Find the perfect project that matches your skill level and experience.')}
-          </p>
-        </div>
-      </section>
-
       {/* Introduction */}
       <section className="difficulty-intro">
         <div className="difficulty-intro-content">

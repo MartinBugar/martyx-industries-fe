@@ -1,155 +1,138 @@
-/* BUILD DIFFICULTY GUIDE PAGE */
+/* ============================================================================ */
+/* BUILD DIFFICULTY GUIDE PAGE - DARK MINIMALIST DESIGN                       */
+/* ============================================================================ */
+/* Matches site-wide dark theme: #0b0f12 background, #F6C845 yellow accent    */
+/* Minimalistic, modern, compact design                                        */
+/* ============================================================================ */
 
+:root {
+  --guide-bg: #0b0f12;
+  --guide-surface: #1a1f2e;
+  --guide-card: #1e2530;
+  --guide-border: #2a3038;
+  --guide-text: #ffffff;
+  --guide-text-secondary: #d1d5db;
+  --guide-text-muted: #9ca3af;
+  --guide-accent: #F6C845;
+  --guide-accent-hover: #E6B82D;
+}
+
+/* PAGE CONTAINER */
 .difficulty-guide-page {
   min-height: 100vh;
-  background: linear-gradient(to bottom, #f8fafc 0%, #ffffff 100%);
+  background: var(--guide-bg);
+  color: var(--guide-text);
 }
 
-/* HERO SECTION */
-.difficulty-hero {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 6rem 2rem 4rem;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-}
-
-.difficulty-hero::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-  opacity: 0.3;
-}
-
-.difficulty-hero-content {
-  position: relative;
-  z-index: 1;
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.difficulty-hero-title {
-  font-size: 3rem;
-  font-weight: 800;
-  margin-bottom: 1rem;
-  letter-spacing: -0.02em;
-}
-
-.difficulty-hero-subtitle {
-  font-size: 1.25rem;
-  opacity: 0.95;
-  max-width: 600px;
-  margin: 0 auto;
-  line-height: 1.6;
-}
-
-/* INTRO SECTION */
+/* ============================================================================ */
+/* INTRO SECTION - Compact                                                     */
+/* ============================================================================ */
 .difficulty-intro {
-  padding: 4rem 2rem;
+  padding: 3rem 2rem;
   max-width: 1200px;
   margin: 0 auto;
 }
 
 .difficulty-intro-content h2 {
-  font-size: 2rem;
+  font-size: 1.75rem;
   font-weight: 700;
-  margin-bottom: 1rem;
-  color: #1e293b;
+  margin-bottom: 0.75rem;
+  color: var(--guide-text);
   text-align: center;
 }
 
 .difficulty-intro-content > p {
-  font-size: 1.125rem;
-  color: #64748b;
+  font-size: 1rem;
+  color: var(--guide-text-secondary);
   text-align: center;
   max-width: 800px;
-  margin: 0 auto 3rem;
-  line-height: 1.7;
+  margin: 0 auto 2rem;
+  line-height: 1.6;
 }
 
 .intro-highlights {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
   margin-top: 2rem;
 }
 
 .intro-highlight-item {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 1.5rem;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: var(--guide-card);
+  border: 1px solid var(--guide-border);
+  border-radius: 8px;
+  transition: transform 0.2s, border-color 0.2s;
 }
 
 .intro-highlight-item:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: var(--guide-accent);
 }
 
 .intro-highlight-item svg {
   flex-shrink: 0;
-  color: #667eea;
+  color: var(--guide-accent);
+  width: 20px;
+  height: 20px;
 }
 
 .intro-highlight-item span {
   font-weight: 500;
-  color: #334155;
+  font-size: 0.9375rem;
+  color: var(--guide-text-secondary);
 }
 
-/* DIFFICULTY LEVELS SECTION */
+/* ============================================================================ */
+/* DIFFICULTY LEVELS SECTION - Minimalist Cards                                */
+/* ============================================================================ */
 .difficulty-levels {
-  padding: 4rem 2rem;
-  background: white;
+  padding: 3rem 2rem;
+  background: var(--guide-bg);
 }
 
 .difficulty-levels-content {
   max-width: 1200px;
   margin: 0 auto;
   display: grid;
-  gap: 3rem;
+  gap: 1.5rem;
 }
 
 .difficulty-level-card {
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  background: var(--guide-surface);
+  border-radius: 12px;
+  border: 1px solid var(--guide-border);
   overflow: hidden;
-  transition: transform 0.3s, box-shadow 0.3s;
-  border: 2px solid #e2e8f0;
+  transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
 }
 
 .difficulty-level-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+  border-color: var(--guide-accent);
+  box-shadow: 0 4px 12px rgba(246, 200, 69, 0.15);
 }
 
 .difficulty-level-header {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
-  padding: 2rem;
-  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
-  border-bottom: 3px solid;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  background: var(--guide-card);
+  border-bottom: 2px solid;
 }
 
 .difficulty-level-icon {
-  width: 80px;
-  height: 80px;
-  border-radius: 16px;
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2.5rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-size: 2rem;
+  flex-shrink: 0;
 }
 
 .difficulty-level-title-group {
@@ -157,46 +140,49 @@
 }
 
 .difficulty-level-title-group h3 {
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 700;
   margin-bottom: 0.25rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  color: var(--guide-text);
 }
 
 .difficulty-level-tagline {
-  font-size: 1rem;
-  color: #64748b;
+  font-size: 0.875rem;
+  color: var(--guide-text-muted);
   font-weight: 500;
 }
 
 .difficulty-level-body {
-  padding: 2rem;
+  padding: 1.5rem;
 }
 
 .difficulty-level-description {
-  font-size: 1.125rem;
-  color: #475569;
-  line-height: 1.7;
-  margin-bottom: 2rem;
+  font-size: 1rem;
+  color: var(--guide-text-secondary);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
 }
 
 .difficulty-level-specs {
   display: grid;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .difficulty-spec {
   display: flex;
-  gap: 1rem;
+  gap: 0.75rem;
   align-items: flex-start;
 }
 
 .difficulty-spec svg {
   flex-shrink: 0;
-  color: #667eea;
+  color: var(--guide-accent);
   margin-top: 0.25rem;
+  width: 18px;
+  height: 18px;
 }
 
 .difficulty-spec-content {
@@ -207,157 +193,192 @@
 }
 
 .difficulty-spec-content strong {
-  color: #1e293b;
-  font-size: 0.875rem;
+  color: var(--guide-text);
+  font-size: 0.8125rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .difficulty-spec-content span {
-  color: #475569;
-  font-size: 1rem;
-  line-height: 1.6;
+  color: var(--guide-text-secondary);
+  font-size: 0.9375rem;
+  line-height: 1.5;
 }
 
 .difficulty-level-examples {
-  padding: 1.5rem;
-  background: #f8fafc;
-  border-radius: 12px;
-  border-left: 4px solid #667eea;
+  padding: 1rem;
+  background: rgba(246, 200, 69, 0.05);
+  border-radius: 8px;
+  border-left: 3px solid;
 }
 
 .examples-label {
   font-weight: 600;
-  color: #1e293b;
+  color: var(--guide-text);
   margin-bottom: 0.5rem;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .examples-text {
-  color: #64748b;
-  font-size: 1rem;
+  color: var(--guide-text-secondary);
+  font-size: 0.9375rem;
 }
 
-/* Level-specific colors */
+/* ============================================================================ */
+/* LEVEL-SPECIFIC COLORS - Using site color palette                            */
+/* ============================================================================ */
+
+/* BEGINNER - Green */
 .difficulty-level-card.beginner .difficulty-level-header {
   border-bottom-color: #4ade80;
+}
+
+.difficulty-level-card.beginner .difficulty-level-icon {
+  background: rgba(74, 222, 128, 0.15);
+  color: #4ade80;
 }
 
 .difficulty-level-card.beginner .difficulty-level-examples {
   border-left-color: #4ade80;
 }
 
+/* INTERMEDIATE - Blue */
 .difficulty-level-card.intermediate .difficulty-level-header {
   border-bottom-color: #60a5fa;
+}
+
+.difficulty-level-card.intermediate .difficulty-level-icon {
+  background: rgba(96, 165, 250, 0.15);
+  color: #60a5fa;
 }
 
 .difficulty-level-card.intermediate .difficulty-level-examples {
   border-left-color: #60a5fa;
 }
 
+/* ADVANCED - Purple (adjusted for WCAG AA) */
 .difficulty-level-card.advanced .difficulty-level-header {
-  border-bottom-color: #a78bfa;
+  border-bottom-color: #8b5cf6;
+}
+
+.difficulty-level-card.advanced .difficulty-level-icon {
+  background: rgba(139, 92, 246, 0.15);
+  color: #8b5cf6;
 }
 
 .difficulty-level-card.advanced .difficulty-level-examples {
-  border-left-color: #a78bfa;
+  border-left-color: #8b5cf6;
 }
 
+/* EXPERT - Red */
 .difficulty-level-card.expert .difficulty-level-header {
   border-bottom-color: #f87171;
+}
+
+.difficulty-level-card.expert .difficulty-level-icon {
+  background: rgba(248, 113, 113, 0.15);
+  color: #f87171;
 }
 
 .difficulty-level-card.expert .difficulty-level-examples {
   border-left-color: #f87171;
 }
 
-/* PHILOSOPHY SECTION */
+/* ============================================================================ */
+/* PHILOSOPHY SECTION - No Glue Philosophy                                     */
+/* ============================================================================ */
 .difficulty-philosophy {
-  padding: 5rem 2rem;
-  background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+  padding: 4rem 2rem;
+  background: linear-gradient(135deg, rgba(246, 200, 69, 0.05) 0%, rgba(246, 200, 69, 0.02) 100%);
+  border-top: 1px solid var(--guide-border);
+  border-bottom: 1px solid var(--guide-border);
 }
 
 .difficulty-philosophy-content {
-  max-width: 900px;
+  max-width: 1000px;
   margin: 0 auto;
   text-align: center;
 }
 
 .philosophy-icon {
-  width: 100px;
-  height: 100px;
-  margin: 0 auto 2rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1.5rem;
+  background: linear-gradient(135deg, var(--guide-accent) 0%, var(--guide-accent-hover) 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+  color: #0b0f12;
+  box-shadow: 0 8px 24px rgba(246, 200, 69, 0.3);
 }
 
 .difficulty-philosophy-content h2 {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 700;
-  margin-bottom: 1rem;
-  color: #1e293b;
+  margin-bottom: 0.75rem;
+  color: var(--guide-text);
 }
 
 .philosophy-intro {
-  font-size: 1.25rem;
-  color: #64748b;
-  margin-bottom: 3rem;
-  line-height: 1.7;
+  font-size: 1.125rem;
+  color: var(--guide-text-secondary);
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
 }
 
 .philosophy-benefits {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
   text-align: left;
 }
 
 .philosophy-benefit {
   display: flex;
-  gap: 1rem;
-  padding: 1.5rem;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s, box-shadow 0.2s;
+  gap: 0.875rem;
+  padding: 1.25rem;
+  background: var(--guide-card);
+  border: 1px solid var(--guide-border);
+  border-radius: 8px;
+  transition: transform 0.2s, border-color 0.2s;
 }
 
 .philosophy-benefit:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  border-color: var(--guide-accent);
 }
 
 .philosophy-benefit svg {
   flex-shrink: 0;
   color: #4ade80;
   margin-top: 0.25rem;
+  width: 20px;
+  height: 20px;
 }
 
 .philosophy-benefit strong {
   display: block;
-  color: #1e293b;
+  color: var(--guide-text);
   margin-bottom: 0.5rem;
-  font-size: 1.125rem;
+  font-size: 1rem;
 }
 
 .philosophy-benefit p {
-  color: #64748b;
-  line-height: 1.6;
+  color: var(--guide-text-secondary);
+  line-height: 1.5;
   margin: 0;
+  font-size: 0.9375rem;
 }
 
-/* CTA SECTION */
+/* ============================================================================ */
+/* CTA SECTION - Yellow Accent                                                 */
+/* ============================================================================ */
 .difficulty-cta {
-  padding: 5rem 2rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  padding: 4rem 2rem;
+  background: linear-gradient(135deg, #1a1f2e 0%, #0f1419 100%);
   text-align: center;
 }
 
@@ -367,97 +388,81 @@
 }
 
 .difficulty-cta-content h2 {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 700;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
+  color: var(--guide-text);
 }
 
 .difficulty-cta-content p {
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   margin-bottom: 2rem;
-  opacity: 0.95;
+  color: var(--guide-text-secondary);
   line-height: 1.6;
 }
 
 .difficulty-cta-button {
   display: inline-block;
-  padding: 1rem 3rem;
-  background: white;
-  color: #667eea;
+  padding: 0.875rem 2.5rem;
+  background: var(--guide-accent);
+  color: #0b0f12;
   font-weight: 600;
-  font-size: 1.125rem;
-  border-radius: 50px;
+  font-size: 1rem;
+  border-radius: 8px;
   text-decoration: none;
-  transition: transform 0.2s, box-shadow 0.2s;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 12px rgba(246, 200, 69, 0.2);
 }
 
 .difficulty-cta-button:hover {
+  background: var(--guide-accent-hover);
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 20px rgba(246, 200, 69, 0.3);
 }
 
-/* RESPONSIVE */
+/* ============================================================================ */
+/* RESPONSIVE DESIGN                                                            */
+/* ============================================================================ */
 @media (max-width: 768px) {
-  .difficulty-hero {
-    padding: 4rem 1.5rem 3rem;
-  }
-
-  .difficulty-hero-title {
-    font-size: 2rem;
-  }
-
-  .difficulty-hero-subtitle {
-    font-size: 1rem;
-  }
-
   .difficulty-intro {
-    padding: 3rem 1.5rem;
+    padding: 2.5rem 1.5rem;
   }
 
   .difficulty-intro-content h2 {
     font-size: 1.5rem;
   }
 
-  .difficulty-intro-content > p {
-    font-size: 1rem;
-  }
-
   .intro-highlights {
     grid-template-columns: 1fr;
-    gap: 1rem;
+    gap: 0.875rem;
   }
 
   .difficulty-levels {
-    padding: 3rem 1.5rem;
+    padding: 2.5rem 1.5rem;
   }
 
   .difficulty-levels-content {
-    gap: 2rem;
+    gap: 1.25rem;
   }
 
   .difficulty-level-header {
     flex-direction: column;
     text-align: center;
-    padding: 1.5rem;
+    padding: 1.25rem;
   }
 
   .difficulty-level-icon {
-    width: 60px;
-    height: 60px;
-    font-size: 2rem;
+    width: 50px;
+    height: 50px;
+    font-size: 1.75rem;
   }
 
   .difficulty-level-title-group h3 {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
   }
 
   .difficulty-level-body {
-    padding: 1.5rem;
-  }
-
-  .difficulty-level-description {
-    font-size: 1rem;
+    padding: 1.25rem;
   }
 
   .difficulty-philosophy {
@@ -465,8 +470,8 @@
   }
 
   .philosophy-icon {
-    width: 80px;
-    height: 80px;
+    width: 70px;
+    height: 70px;
   }
 
   .difficulty-philosophy-content h2 {
@@ -479,7 +484,7 @@
 
   .philosophy-benefits {
     grid-template-columns: 1fr;
-    gap: 1.5rem;
+    gap: 1.25rem;
   }
 
   .difficulty-cta {
@@ -495,31 +500,33 @@
   }
 
   .difficulty-cta-button {
-    padding: 0.875rem 2rem;
-    font-size: 1rem;
+    padding: 0.75rem 2rem;
+    font-size: 0.9375rem;
   }
 }
 
 @media (max-width: 480px) {
-  .difficulty-hero-title {
-    font-size: 1.75rem;
-  }
-
   .difficulty-level-title-group h3 {
-    font-size: 1.25rem;
+    font-size: 1.125rem;
   }
 
   .difficulty-spec {
     flex-direction: column;
     gap: 0.5rem;
   }
+
+  .intro-highlight-item {
+    padding: 0.875rem;
+  }
+
+  .philosophy-benefit {
+    padding: 1rem;
+  }
 }
 
-/* ========================================================================== */
-/* ACCESSIBILITY: Reduced Motion Support                                     */
-/* ========================================================================== */
-/* Respects user's motion preferences for accessibility                      */
-/* Removes animations for users with vestibular disorders                    */
+/* ============================================================================ */
+/* ACCESSIBILITY: Reduced Motion Support                                       */
+/* ============================================================================ */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -533,8 +540,29 @@
   .difficulty-level-card,
   .intro-highlight-item,
   .philosophy-benefit,
-  .cta-button {
+  .difficulty-cta-button {
     transition: none !important;
     transform: none !important;
+  }
+
+  .difficulty-level-card:hover,
+  .intro-highlight-item:hover,
+  .philosophy-benefit:hover {
+    transform: none !important;
+  }
+}
+
+/* ============================================================================ */
+/* HIGH CONTRAST MODE                                                           */
+/* ============================================================================ */
+@media (prefers-contrast: high) {
+  .difficulty-level-card,
+  .intro-highlight-item,
+  .philosophy-benefit {
+    border-width: 2px;
+  }
+
+  .difficulty-cta-button {
+    border: 2px solid var(--guide-accent);
   }
 }
