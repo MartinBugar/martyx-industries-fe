@@ -63,6 +63,7 @@ const Footer: React.FC = () => {
                 <li><Link to="/products">RC Tank Kity</Link></li>
                 <li><Link to="/products">STL Súbory</Link></li>
                 <li><Link to="/products">Komponenty</Link></li>
+                <li><Link to="/build-difficulty-guide">Náročnosť Stavieb</Link></li>
               </ul>
             </div>
 

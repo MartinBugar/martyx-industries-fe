@@ -185,7 +185,11 @@ export class HybridProductService {
       components: variant.components || [],
 
       // All available variants for this product
-      availableVariants: availableVariants
+      availableVariants: availableVariants,
+
+      // Build difficulty & info (V46)
+      difficultyLevel: masterProduct.difficultyLevel as any,
+      buildInfo: masterProduct.buildInfo
     };
 
     console.log('🔀 HybridService: final result:', {

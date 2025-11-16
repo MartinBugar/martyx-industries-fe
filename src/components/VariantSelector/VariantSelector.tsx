@@ -1,17 +1,20 @@
 import React from 'react';
-import { type ProductVariant } from '../../data/productData';
+import { type ProductVariant, type DifficultyLevel } from '../../data/productData';
+import DifficultyBadge from '../DifficultyBadge/DifficultyBadge';
 import './VariantSelector.css';
 
 interface VariantSelectorProps {
   variants: ProductVariant[];
   currentVariantId: number;
   onVariantChange: (variantId: number) => void;
+  difficultyLevel?: DifficultyLevel;
 }
 
 const VariantSelector: React.FC<VariantSelectorProps> = ({
   variants,
   currentVariantId,
-  onVariantChange
+  onVariantChange,
+  difficultyLevel
 }) => {
   // Don't render if there's only one variant or no variants
   if (!variants || variants.length <= 1) {
@@ -88,6 +91,9 @@ const VariantSelector: React.FC<VariantSelectorProps> = ({
           <span className="variant-type-badge">
             {getVariantTypeShort(currentVariant.variantType)}
           </span>
+          {difficultyLevel && (
+            <DifficultyBadge level={difficultyLevel} showLink={false} size="small" />
+          )}
           <span className={`variant-availability ${currentVariant.availabilityStatus.toLowerCase()}`}>
             {getAvailabilityText(currentVariant.availabilityStatus)}
           </span>

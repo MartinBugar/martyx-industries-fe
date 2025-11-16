@@ -64,19 +64,13 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({product, onVariantChange
         <div id="details" className="product-details">
             <h2>{product.name}</h2>
 
-            {/* Difficulty Badge */}
-            {product.difficultyLevel && (
-                <div className="product-difficulty-wrapper">
-                    <DifficultyBadge level={product.difficultyLevel} showLink={true} size="large" />
-                </div>
-            )}
-
             {/* Variant Selector */}
             {product.availableVariants && product.availableVariants.length > 1 && onVariantChange && (
                 <VariantSelector
                     variants={product.availableVariants}
                     currentVariantId={product.variantId}
                     onVariantChange={onVariantChange}
+                    difficultyLevel={product.difficultyLevel}
                 />
             )}
 

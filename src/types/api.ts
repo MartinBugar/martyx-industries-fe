@@ -57,6 +57,10 @@ export interface MasterProductDto {
   active: boolean;
   publishedAt: string | null;
 
+  // Build Difficulty & Info (V46)
+  difficultyLevel?: string | null; // BEGINNER, INTERMEDIATE, ADVANCED, EXPERT
+  buildInfo?: BuildInfoDto | null;
+
   // Timestamps
   createdAt: string;
   updatedAt: string;
@@ -64,6 +68,19 @@ export interface MasterProductDto {
   // Relationships (loaded separately or included in response)
   variants?: ProductVariantDto[];
   gallery?: ProductGalleryDto[];
+}
+
+// Build Info DTO - Build specifications for products
+export interface BuildInfoDto {
+  partsCount: number;
+  screwsCount: number;
+  filamentGrams: number;
+  filamentType: string;
+  printTimeHours: number;
+  assemblyTimeHours: number;
+  requiredTools: string[];
+  skillsRequired: string[];
+  estimatedTotalHours: number;
 }
 
 // Product Variant DTO - Sellable SKU (e.g., "Digital Edition €89.90")
