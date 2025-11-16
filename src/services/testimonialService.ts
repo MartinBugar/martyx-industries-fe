@@ -42,6 +42,3 @@ class TestimonialService {
 
 // Export singleton instance
 export const testimonialService = new TestimonialService();
-
-// Re-export type for convenience
-export type { Testimonial };

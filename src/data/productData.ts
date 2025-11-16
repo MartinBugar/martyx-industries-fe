@@ -219,8 +219,7 @@ export const hardcodedProductsData: HardcodedProductData[] = [
 // Debug: log hardcoded data in development
 console.log('🔥 ProductData.ts LOADED - NEW VARIANT ARCHITECTURE!');
 console.log('📊 HardcodedProductsData loaded (NO HARDCODED TABS):', hardcodedProductsData.map(p => ({
-    masterProductId: p.masterProductId,
-    hasVideoUrl: !!p.videoUrl
+    masterProductId: p.masterProductId
 })));
 
 // Products are now populated dynamically by the hybrid product service

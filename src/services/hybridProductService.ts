@@ -125,8 +125,8 @@ export class HybridProductService {
     // Use model3dViewerUrl from backend, fallback to hardcoded modelPath
     const modelPath = masterProduct.model3dViewerUrl || hardcodedData?.modelPath || '';
 
-    // Use videoUrl from backend, fallback to hardcoded
-    const videoUrl = masterProduct.videoUrl || hardcodedData?.videoUrl || undefined;
+    // Use videoUrl from backend only (no hardcoded fallback)
+    const videoUrl = masterProduct.videoUrl || undefined;
 
     // Gallery from backend (already loaded) or empty array
     // Sort gallery: PRIMARY image first, then by displayOrder (same logic as Home.tsx and Products.tsx)
