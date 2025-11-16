@@ -148,11 +148,19 @@
 /* Layout */
 .cart-layout {
   display: grid;
-  grid-template-columns: 1fr 420px;
-  gap: 40px;
+  grid-template-columns: 1fr 380px;
+  gap: 32px;
   animation: slideUp 0.6s ease;
   max-width: 1600px;
   margin: 0 auto;
+}
+
+/* Wider viewports - more space for summary */
+@media (min-width: 1600px) {
+  .cart-layout {
+    grid-template-columns: 1fr 420px;
+    gap: 40px;
+  }
 }
 
 /* Items panel - Table Layout */
@@ -165,7 +173,7 @@
 
 .cart-items-table {
   width: 100%;
-  min-width: 900px;
+  min-width: 750px;
   border-collapse: separate;
   border-spacing: 0;
   background: #141a20;
@@ -173,6 +181,13 @@
   border-radius: 12px;
   overflow: hidden;
   table-layout: auto;
+}
+
+/* Very wide viewports - allow larger table */
+@media (min-width: 1600px) {
+  .cart-items-table {
+    min-width: 900px;
+  }
 }
 
 .cart-items-table thead {
@@ -215,14 +230,22 @@
 /* Product Cell */
 .product-cell {
   display: flex;
-  gap: 20px;
+  gap: 16px;
   align-items: center;
-  min-width: 450px;
+  min-width: 350px;
+}
+
+/* Very wide viewports - allow larger product cell */
+@media (min-width: 1600px) {
+  .product-cell {
+    gap: 20px;
+    min-width: 450px;
+  }
 }
 
 .item-image {
-  width: 110px;
-  height: 110px;
+  width: 90px;
+  height: 90px;
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.05);
   display: flex;
@@ -235,6 +258,14 @@
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
+/* Very wide viewports - allow larger image */
+@media (min-width: 1600px) {
+  .item-image {
+    width: 110px;
+    height: 110px;
+  }
+}
+
 .item-image img {
   width: 100%;
   height: 100%;
@@ -245,8 +276,15 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  min-width: 300px;
+  min-width: 240px;
   flex: 1;
+}
+
+/* Very wide viewports - allow larger details section */
+@media (min-width: 1600px) {
+  .item-details {
+    min-width: 300px;
+  }
 }
 
 .item-name {
@@ -418,21 +456,53 @@
   background: #141a20;
   -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
   border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 24px; height: fit-content;
+  padding: 20px; height: fit-content;
+}
+
+/* Very wide viewports - allow larger padding */
+@media (min-width: 1600px) {
+  .order-summary {
+    padding: 24px;
+  }
 }
 .summary-title {
-  font-size:20px; font-weight:600; margin-bottom:24px;
+  font-size:18px; font-weight:600; margin-bottom:20px;
   padding-bottom:16px; border-bottom:1px solid rgba(255, 255, 255, 0.08);
   color:#e7eef5;
+  white-space: nowrap;
+}
+
+/* Very wide viewports - allow larger title */
+@media (min-width: 1600px) {
+  .summary-title {
+    font-size: 20px;
+    margin-bottom: 24px;
+  }
 }
 .summary-row {
   display:flex; justify-content:space-between; margin-bottom:12px;
-  color:#a7b3c1; font-size:14px;
+  color:#a7b3c1; font-size:13px;
 }
+
+.summary-row span {
+  white-space: nowrap;
+}
+
 .summary-row.total {
   margin-top:20px; padding-top:20px;
   border-top:1px solid rgba(255, 255, 255, 0.08);
-  font-size:18px; font-weight:600; color:#e7eef5;
+  font-size:17px; font-weight:600; color:#e7eef5;
+}
+
+/* Very wide viewports - allow larger text */
+@media (min-width: 1600px) {
+  .summary-row {
+    font-size: 14px;
+  }
+
+  .summary-row.total {
+    font-size: 18px;
+  }
 }
 
 .summary-row.discount-row {
@@ -575,11 +645,19 @@
 }
 
 .free-shipping-text {
-  font-size: 13px;
+  font-size: 12px;
   color: #10b981;
   font-weight: 500;
   margin-bottom: 10px;
   text-align: center;
+  word-break: break-word;
+}
+
+/* Very wide viewports - allow larger text */
+@media (min-width: 1600px) {
+  .free-shipping-text {
+    font-size: 13px;
+  }
 }
 
 .free-shipping-progress-bar {
@@ -607,22 +685,53 @@
 .delivery-info {
   background: rgba(246, 200, 69, 0.1);
   border:1px solid rgba(246, 200, 69, 0.2);
-  border-radius:12px; padding:16px; margin:20px 0;
-  display:flex; align-items:center; gap:12px; font-size:14px; color:#F6C845;
+  border-radius:12px; padding:14px; margin:16px 0;
+  display:flex; align-items:center; gap:10px; font-size:13px; color:#F6C845;
+}
+
+.delivery-info span {
+  white-space: nowrap;
+}
+
+/* Very wide viewports - allow larger delivery info */
+@media (min-width: 1600px) {
+  .delivery-info {
+    padding: 16px;
+    margin: 20px 0;
+    gap: 12px;
+    font-size: 14px;
+  }
 }
 
 .checkout-btn {
-  width:100%; padding:16px;
+  width:100%; padding:14px;
   background: linear-gradient(135deg, #F6C845 0%, #E6B82D 100%);
   color:#0b0f12; border:none; border-radius:12px;
-  font-size:16px; font-weight:600; cursor:pointer; transition: all 0.3s ease;
+  font-size:15px; font-weight:600; cursor:pointer; transition: all 0.3s ease;
   margin-top:20px; display:flex; align-items:center; justify-content:center; gap:8px;
+  white-space: nowrap;
 }
 .checkout-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(246, 200, 69, 0.3); }
 
+/* Very wide viewports - allow larger button */
+@media (min-width: 1600px) {
+  .checkout-btn {
+    padding: 16px;
+    font-size: 16px;
+  }
+}
+
 .secure-text {
   display:flex; align-items:center; justify-content:center; gap:6px;
-  margin-top:12px; font-size:12px; color:#a7b3c1;
+  margin-top:12px; font-size:11px; color:#a7b3c1;
+  white-space: nowrap;
+}
+
+/* Very wide viewports - allow larger text */
+@media (min-width: 1600px) {
+  .secure-text {
+    font-size: 12px;
+  }
 }
 
 /* Trust Badges */
@@ -852,201 +961,75 @@
   }
 }
 
-/* ========== MACBOOK AIR M2 14" RESPONSIVE DESIGN ========== */
-@media (min-width: 1400px) and (max-width: 1600px) and (min-height: 900px) and (max-height: 1100px) {
-  /* MacBook Air M2 14" specific optimizations */
-
-  /* Container max-width optimization */
-  .container {
-    max-width: 1350px;
-  }
-
-  .cart-page-container {
-    padding: 23px; /* 15% increase */
-  }
-
-  /* Header improvements */
-  .header {
-    margin-bottom: 46px; /* 15% increase */
-  }
-
-  .header h1 {
-    font-size: 34px; /* 6% increase */
-    margin-bottom: 9px; /* 12% increase */
-  }
-
-  .header p {
-    font-size: 15px; /* 7% increase */
-  }
-
-  /* Layout optimization */
+/* ========== DESKTOP OVERFLOW FIX (1024px+) ========== */
+/* Force narrower layout to prevent horizontal overflow on all desktop viewports */
+@media (min-width: 1024px) and (max-width: 1600px) {
+  /* Override grid layout to prevent overflow */
   .cart-layout {
-    grid-template-columns: 1fr 435px; /* Optimized for this viewport */
-    gap: 28px; /* 16% increase */
+    grid-template-columns: 1fr 360px !important;
+    gap: 28px !important;
   }
 
-  /* Cart items panel */
-  .cart-items {
-    padding: 28px; /* 16% increase */
+  /* Override table min-width to fit in narrower space */
+  .cart-items-table {
+    min-width: 700px !important;
   }
 
-  .cart-item {
-    gap: 18px; /* 12% increase */
-    padding: 23px; /* 15% increase */
-    margin-bottom: 14px; /* 16% increase */
+  /* Override product cell to be more compact */
+  .product-cell {
+    min-width: 320px !important;
+    gap: 14px !important;
   }
 
+  /* Override item image to be smaller */
   .item-image {
-    width: 90px; /* 12% increase */
-    height: 90px;
-    font-size: 13px; /* 8% increase */
+    width: 85px !important;
+    height: 85px !important;
   }
 
-  .item-name {
-    font-size: 17px; /* 6% increase */
-    margin-bottom: 5px; /* 25% increase */
+  /* Override item details to be narrower */
+  .item-details {
+    min-width: 220px !important;
   }
 
-  .item-type {
-    font-size: 13px; /* 8% increase */
-    padding: 5px 11px; /* 15% increase */
-  }
-
-  /* Quantity controls */
-  .quantity-control {
-    gap: 9px; /* 12% increase */
-    padding: 5px; /* 25% increase */
-  }
-
-  .quantity-btn {
-    width: 36px; /* 12% increase */
-    height: 36px;
-    font-size: 19px; /* 5% increase */
-  }
-
-  .quantity {
-    min-width: 45px; /* 12% increase */
-  }
-
-  .item-price {
-    font-size: 19px; /* 5% increase */
-    min-width: 115px; /* 15% increase */
-  }
-
-  .remove-btn {
-    width: 41px; /* 14% increase */
-    height: 41px;
-    font-size: 21px; /* 5% increase */
-  }
-
-  /* Order summary panel */
+  /* Override summary panel padding */
   .order-summary {
-    padding: 28px; /* 16% increase */
+    padding: 18px !important;
   }
 
+  /* Ensure text doesn't wrap in summary */
+  .summary-title,
+  .summary-row span,
+  .checkout-btn,
+  .secure-text,
+  .delivery-info span {
+    white-space: nowrap !important;
+  }
+
+  /* Smaller fonts for narrow summary panel */
   .summary-title {
-    font-size: 21px; /* 5% increase */
-    margin-bottom: 28px; /* 16% increase */
-    padding-bottom: 18px; /* 12% increase */
+    font-size: 17px !important;
   }
 
   .summary-row {
-    margin-bottom: 14px; /* 16% increase */
-    font-size: 15px; /* 7% increase */
+    font-size: 13px !important;
   }
 
   .summary-row.total {
-    margin-top: 23px; /* 15% increase */
-    padding-top: 23px; /* 15% increase */
-    font-size: 19px; /* 5% increase */
-  }
-
-  .delivery-info {
-    padding: 18px; /* 12% increase */
-    margin: 23px 0; /* 15% increase */
-    gap: 14px; /* 16% increase */
-    font-size: 15px; /* 7% increase */
+    font-size: 16px !important;
   }
 
   .checkout-btn {
-    padding: 18px; /* 12% increase */
-    font-size: 17px; /* 6% increase */
-    margin-top: 23px; /* 15% increase */
-    gap: 9px; /* 12% increase */
+    font-size: 14px !important;
+    padding: 14px !important;
   }
 
   .secure-text {
-    margin-top: 14px; /* 16% increase */
-    gap: 7px; /* 16% increase */
-    font-size: 13px; /* 8% increase */
+    font-size: 11px !important;
   }
 
-  /* Empty cart section */
-  .empty-cart {
-    gap: 3.5rem; /* 16% increase */
-    padding: 3.5rem 2.3rem; /* 16% increase */
-    min-height: 460px; /* 15% increase */
-  }
-
-  .mascot-image-empty-cart {
-    width: 230px; /* 15% increase */
-  }
-
-  .empty-cart-content {
-    max-width: 460px; /* 15% increase */
-  }
-
-  .empty-cart-content h3 {
-    font-size: 1.6rem; /* 7% increase */
-    margin-bottom: 0.85rem; /* 13% increase */
-  }
-
-  .empty-cart-content p {
-    font-size: 1.05rem; /* 5% increase */
-    margin-bottom: 2.3rem; /* 15% increase */
-  }
-
-  .continue-shopping-btn {
-    padding: 1rem 2rem; /* 15% increase */
-    font-size: 1rem; /* 5% increase */
-  }
-
-  .continue-shopping-btn svg {
-    width: 18px; /* 12% increase */
-    height: 18px;
-  }
-
-  /* View cart button optimization */
-  .view-cart-btn {
-    padding: 14px; /* 16% increase */
-    font-size: 15px; /* 7% increase */
-    margin-bottom: 14px; /* 16% increase */
-    gap: 9px; /* 12% increase */
-  }
-
-  /* Modal optimizations for this viewport */
-  .cart-content {
-    width: min(480px, 100vw); /* Slightly wider for better readability */
-  }
-
-  .modal-header {
-    padding: 1.7rem 2.3rem; /* 15% increase */
-  }
-
-  .modal-header h2 {
-    font-size: 1.32rem; /* 5% increase */
-  }
-
-  .close-icon-btn {
-    width: 36px; /* 12% increase */
-    height: 36px;
-  }
-
-  .cart-modal-content .cart-items {
-    padding: 1.15rem; /* 15% increase */
-  }
-
-  .cart-modal-content .order-summary {
-    padding: 1.7rem; /* 13% increase */
+  .free-shipping-text {
+    font-size: 11px !important;
+    word-break: break-word !important;
   }
 }
