@@ -70,6 +70,7 @@ const Footer: React.FC = () => {
               <h3 className={styles.columnTitle}>Podpora</h3>
               <ul className={styles.linkList}>
                 <li><Link to="/contact">Kontakt & FAQ</Link></li>
+                <li><Link to="/build-difficulty-guide">Sprievodca Náročnosťou</Link></li>
                 <li><Link to="/terms-of-service">Obchodné podmienky</Link></li>
                 <li><Link to="/privacy-policy">Ochrana súkromia</Link></li>
               </ul>

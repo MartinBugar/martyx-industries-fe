@@ -1,0 +1,79 @@
+{
+  "hero": {
+    "title": "Build Difficulty Guide",
+    "subtitle": "Find the perfect project that matches your skill level and experience."
+  },
+  "intro": {
+    "title": "Understanding Difficulty Levels",
+    "description": "We categorize our products into four difficulty levels to help you choose the right project. Each level indicates the required skills, time investment, and tools needed.",
+    "highlight1": "Realistic time estimates",
+    "highlight2": "Clear tool requirements",
+    "highlight3": "Skill-based recommendations"
+  },
+  "levels": {
+    "beginner": {
+      "name": "Beginner",
+      "tagline": "Your first RC project",
+      "description": "Perfect for those new to 3D printing or RC modeling. These projects have fewer parts, simpler assembly, and basic electronics wiring.",
+      "time": "15-30 hours total (5-10h printing, 5-10h assembly)",
+      "skills": "Basic 3D printing knowledge, no RC experience required",
+      "tools": "Basic tool set - screwdrivers, pliers, tweezers",
+      "bestFor": "Absolute beginners, students, gifts for RC enthusiasts",
+      "examples": "Coming soon..."
+    },
+    "intermediate": {
+      "name": "Intermediate",
+      "tagline": "Moving up the ladder",
+      "description": "For builders with some 3D printing experience and basic electronics knowledge. Moderately complex assembly with more parts and simple calibration.",
+      "time": "40-60 hours total (25-35h printing, 15-25h assembly)",
+      "skills": "3-6 months 3D printing experience, basic soldering",
+      "tools": "Tool set + soldering iron, multimeter, calipers",
+      "bestFor": "Hobby enthusiasts ready for a challenge, 3D printer owners",
+      "examples": "Coming soon..."
+    },
+    "advanced": {
+      "name": "Advanced",
+      "tagline": "For those who want a real challenge",
+      "description": "Complex projects with many components, advanced electronics, and precision assembly. Requires patience, attention to detail, and problem-solving skills.",
+      "time": "80-120 hours total (50-70h printing, 30-50h assembly)",
+      "skills": "1+ year 3D printing experience, advanced soldering, Arduino programming",
+      "tools": "Professional tool set, oscilloscope, calibration equipment",
+      "bestFor": "Experienced builders, RC veterans, engineers",
+      "examples": "ENDEAVOUR RC APC (500+ parts, Arduino Mega control)"
+    },
+    "expert": {
+      "name": "Expert",
+      "tagline": "Master level",
+      "description": "The most challenging projects with thousands of parts, custom PCBs, and advanced mechanical systems. Only for the most experienced builders.",
+      "time": "150+ hours total (100+ h printing, 50+ h assembly)",
+      "skills": "Multi-year experience, PCB design, advanced programming, mechanical engineering",
+      "tools": "Complete workshop, advanced measurement tools, programming equipment",
+      "bestFor": "Professional builders, researchers, competitors",
+      "examples": "Coming soon..."
+    }
+  },
+  "common": {
+    "timeRequired": "Time Required",
+    "skills": "Skills",
+    "tools": "Tools",
+    "bestFor": "Best For",
+    "exampleProducts": "Example Products"
+  },
+  "philosophy": {
+    "title": "Our \"No Glue\" Philosophy",
+    "intro": "Every Martyx Industries model is engineered without the need for glue.",
+    "benefit1Title": "Easy Disassembly",
+    "benefit1Text": "Take apart and reassemble anytime for maintenance or modifications.",
+    "benefit2Title": "Educational Value",
+    "benefit2Text": "Learn how every component fits together and understand the mechanics.",
+    "benefit3Title": "Superior Strength",
+    "benefit3Text": "Precision-engineered screw connections provide better structural integrity.",
+    "benefit4Title": "No Mess",
+    "benefit4Text": "Clean building experience without sticky residue or drying times."
+  },
+  "cta": {
+    "title": "Ready to Start Building?",
+    "text": "Browse our collection and find your next project.",
+    "button": "Explore Products"
+  }
+}

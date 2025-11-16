@@ -77,6 +77,26 @@
     "downloading": "Downloading…",
     "download_failed": "Download failed. Please try again."
   },
+  "buildInfo": {
+    "unavailable": "Build information not available for this product.",
+    "overview": "Build Overview",
+    "totalParts": "Total Parts",
+    "screws": "Screws",
+    "noGlue": "No Glue!",
+    "totalTime": "Total Build Time",
+    "filament": "Filament Required",
+    "timeBreakdown": "Time Breakdown",
+    "printTime": "3D Printing",
+    "assemblyTime": "Assembly",
+    "timeNote": "Times are estimates and may vary based on experience and equipment.",
+    "materials": "Required Materials",
+    "filamentType": "Filament Type",
+    "filamentAmount": "Amount Needed",
+    "requiredTools": "Required Tools",
+    "requiredSkills": "Recommended Skills",
+    "noGlueTitle": "No Glue Required!",
+    "noGlueDescription": "This model uses precision-engineered screw connections for superior strength and easy disassembly. Perfect for maintenance, modifications, and learning how everything works."
+  },
   "unavailable": {
     "title": "Product currently unavailable",
     "description": "This product is temporarily unavailable",

@@ -12,6 +12,7 @@ import WishlistButton from '../../components/WishlistButton';
 import { getLCPPreloadAttributes, getBaseNameFromPath, isCDNEnabled } from '../../utils/cdnImages';
 import { productGalleryService } from '../../services/productGalleryService';
 import VariantSelector from '../../components/VariantSelector/VariantSelector';
+import DifficultyBadge from '../../components/DifficultyBadge/DifficultyBadge';
 import { getTabsForVariant, canViewTab, renderTabContent } from '../../services/productTabService';
 import type { ProductTabDto } from '../../types/api';
 import { useAuth } from '../../context/useAuth';
@@ -62,6 +63,13 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({product, onVariantChange
     return (
         <div id="details" className="product-details">
             <h2>{product.name}</h2>
+
+            {/* Difficulty Badge */}
+            {product.difficultyLevel && (
+                <div className="product-difficulty-wrapper">
+                    <DifficultyBadge level={product.difficultyLevel} showLink={true} size="large" />
+                </div>
+            )}
 
             {/* Variant Selector */}
             {product.availableVariants && product.availableVariants.length > 1 && onVariantChange && (

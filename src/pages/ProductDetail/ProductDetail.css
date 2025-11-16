@@ -113,6 +113,14 @@
   line-height: 1.2;
 }
 
+/* Difficulty Badge Wrapper */
+.product-difficulty-wrapper {
+  margin: 1rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 /* Product Type Badge */
 .product-type {
   display: inline-flex;

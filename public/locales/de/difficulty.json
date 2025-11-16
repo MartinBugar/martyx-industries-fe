@@ -1,0 +1,79 @@
+{
+  "hero": {
+    "title": "Bauschwierigkeits-Leitfaden",
+    "subtitle": "Finden Sie das perfekte Projekt, das Ihrem Kenntnisstand und Ihrer Erfahrung entspricht."
+  },
+  "intro": {
+    "title": "Verständnis der Schwierigkeitsgrade",
+    "description": "Wir kategorisieren unsere Produkte in vier Schwierigkeitsgrade, um Ihnen bei der Auswahl des richtigen Projekts zu helfen. Jede Stufe gibt die erforderlichen Fähigkeiten, Zeitinvestition und benötigten Werkzeuge an.",
+    "highlight1": "Realistische Zeitschätzungen",
+    "highlight2": "Klare Werkzeuganforderungen",
+    "highlight3": "Fähigkeitsbasierte Empfehlungen"
+  },
+  "levels": {
+    "beginner": {
+      "name": "Anfänger",
+      "tagline": "Ihr erstes RC-Projekt",
+      "description": "Perfekt für Neulinge im 3D-Druck oder RC-Modellbau. Diese Projekte haben weniger Teile, einfachere Montage und grundlegende Elektronik-Verkabelung.",
+      "time": "15-30 Stunden insgesamt (5-10h Drucken, 5-10h Montage)",
+      "skills": "Grundkenntnisse im 3D-Druck, keine RC-Erfahrung erforderlich",
+      "tools": "Basis-Werkzeugset - Schraubendreher, Zange, Pinzette",
+      "bestFor": "Absolute Anfänger, Studenten, Geschenke für RC-Enthusiasten",
+      "examples": "Demnächst verfügbar..."
+    },
+    "intermediate": {
+      "name": "Fortgeschritten",
+      "tagline": "Aufsteigend",
+      "description": "Für Bauherren mit etwas 3D-Druckerfahrung und grundlegenden Elektronikkenntnissen. Mäßig komplexe Montage mit mehr Teilen und einfacher Kalibrierung.",
+      "time": "40-60 Stunden insgesamt (25-35h Drucken, 15-25h Montage)",
+      "skills": "3-6 Monate 3D-Druckerfahrung, grundlegendes Löten",
+      "tools": "Werkzeugset + Lötkolben, Multimeter, Messschieber",
+      "bestFor": "Hobby-Enthusiasten bereit für eine Herausforderung, 3D-Drucker-Besitzer",
+      "examples": "Demnächst verfügbar..."
+    },
+    "advanced": {
+      "name": "Experte",
+      "tagline": "Für diejenigen, die eine echte Herausforderung wollen",
+      "description": "Komplexe Projekte mit vielen Komponenten, fortgeschrittener Elektronik und Präzisionsmontage. Erfordert Geduld, Liebe zum Detail und Problemlösungsfähigkeiten.",
+      "time": "80-120 Stunden insgesamt (50-70h Drucken, 30-50h Montage)",
+      "skills": "1+ Jahr 3D-Druckerfahrung, fortgeschrittenes Löten, Arduino-Programmierung",
+      "tools": "Professionelles Werkzeugset, Oszilloskop, Kalibrierungsausrüstung",
+      "bestFor": "Erfahrene Bauherren, RC-Veteranen, Ingenieure",
+      "examples": "ENDEAVOUR RC APC (500+ Teile, Arduino Mega Steuerung)"
+    },
+    "expert": {
+      "name": "Meister",
+      "tagline": "Meisterebene",
+      "description": "Die anspruchsvollsten Projekte mit Tausenden von Teilen, benutzerdefinierten Leiterplatten und fortgeschrittenen mechanischen Systemen. Nur für die erfahrensten Bauherren.",
+      "time": "150+ Stunden insgesamt (100+ h Drucken, 50+ h Montage)",
+      "skills": "Mehrjährige Erfahrung, Leiterplattendesign, fortgeschrittene Programmierung, Maschinenbau",
+      "tools": "Komplette Werkstatt, fortgeschrittene Messwerkzeuge, Programmierausrüstung",
+      "bestFor": "Professionelle Bauherren, Forscher, Wettkämpfer",
+      "examples": "Demnächst verfügbar..."
+    }
+  },
+  "common": {
+    "timeRequired": "Benötigte Zeit",
+    "skills": "Fähigkeiten",
+    "tools": "Werkzeuge",
+    "bestFor": "Am besten für",
+    "exampleProducts": "Beispielprodukte"
+  },
+  "philosophy": {
+    "title": "Unsere \"Kein Kleber\"-Philosophie",
+    "intro": "Jedes Martyx Industries Modell ist ohne die Notwendigkeit von Kleber konstruiert.",
+    "benefit1Title": "Einfache Demontage",
+    "benefit1Text": "Zerlegen und wieder zusammenbauen jederzeit für Wartung oder Modifikationen.",
+    "benefit2Title": "Bildungswert",
+    "benefit2Text": "Lernen Sie, wie jede Komponente zusammenpasst und verstehen Sie die Mechanik.",
+    "benefit3Title": "Überlegene Festigkeit",
+    "benefit3Text": "Präzisionsgefertigte Schraubverbindungen bieten bessere strukturelle Integrität.",
+    "benefit4Title": "Keine Unordnung",
+    "benefit4Text": "Sauberes Bauerlebnis ohne klebrige Rückstände oder Trockenzeiten."
+  },
+  "cta": {
+    "title": "Bereit zum Bauen zu beginnen?",
+    "text": "Durchstöbern Sie unsere Sammlung und finden Sie Ihr nächstes Projekt.",
+    "button": "Produkte erkunden"
+  }
+}

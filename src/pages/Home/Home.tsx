@@ -189,6 +189,7 @@ const Home: React.FC = () => {
                     <li>{t('hero.facts.assembly_time')}</li>
                     <li>{t('hero.facts.layer_optimization')}</li>
                     <li>{t('hero.facts.electronics_ready')}</li>
+                    <li>{t('hero.facts.no_glue_engineering')}</li>
                   </ul>
                 </div>
               </div>

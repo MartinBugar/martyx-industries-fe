@@ -77,6 +77,26 @@
     "downloading": "Sťahujem…",
     "download_failed": "Sťahovanie zlyhalo. Skúste to znovu."
   },
+  "buildInfo": {
+    "unavailable": "Informácie o stavbe nie sú dostupné pre tento produkt.",
+    "overview": "Prehľad stavby",
+    "totalParts": "Celkový počet častí",
+    "screws": "Skrutky",
+    "noGlue": "Bez lepidla!",
+    "totalTime": "Celkový čas stavby",
+    "filament": "Potrebný filament",
+    "timeBreakdown": "Rozdelenie času",
+    "printTime": "3D tlač",
+    "assemblyTime": "Montáž",
+    "timeNote": "Časy sú odhadované a môžu sa líšiť v závislosti od skúseností a vybavenia.",
+    "materials": "Potrebné materiály",
+    "filamentType": "Typ filamentu",
+    "filamentAmount": "Potrebné množstvo",
+    "requiredTools": "Potrebné náradie",
+    "requiredSkills": "Odporúčané zručnosti",
+    "noGlueTitle": "Nepotrebujete lepidlo!",
+    "noGlueDescription": "Tento model využíva presne navrhnuté skrutkové spojenia pre vynikajúcu pevnosť a jednoduché demontáž. Ideálne pre údržbu, úpravy a učenie sa ako všetko funguje."
+  },
   "unavailable": {
     "title": "Produkt je aktuálne nedostupný",
     "description": "Tento produkt je dočasne nedostupný",

@@ -65,6 +65,7 @@ import {
   CookiesPolicy,
   PrivacyPolicy,
   TermsOfService,
+  BuildDifficultyGuide,
   AdminLogin,
   AdminDashboard,
   AdminUsers,
@@ -238,6 +239,7 @@ const MainContent = React.memo(() => {
             <Route path="/cookies-policy" element={<CookiesPolicy />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-of-service" element={<TermsOfService />} />
+            <Route path="/build-difficulty-guide" element={<BuildDifficultyGuide />} />
 
             {/* Admin routes */}
             <Route path="/admin" element={<AdminLogin />} />

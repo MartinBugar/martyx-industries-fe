@@ -19,6 +19,10 @@ import ReviewsTab from './ReviewsTab';
 import PrintInfoTab from './PrintInfoTab';
 import IncludedTab from './IncludedTab';
 import ProductDownloads from './ProductDownloads';
+import BuildInfoTab from './BuildInfoTab';
+
+// Import Error Boundary for error handling
+import ErrorBoundary from '../ErrorBoundary/ErrorBoundary';
 
 interface DynamicProductTabsProps {
   masterProductId?: number;
@@ -94,6 +98,12 @@ const DynamicProductTabs: React.FC<DynamicProductTabsProps> = ({
         return <ReviewsTab content={{ kind: 'text', text: '' }} productId={masterProductId || 0} />;
       case 'PrintInfoTab':
         return <PrintInfoTab content={{ kind: 'printInfo', data: { printSettings: { printTime: '', layerHeight: '', infill: '', supports: false, materials: [] }, rcComponents: [] } }} />;
+      case 'BuildInfoTab':
+        return (
+          <ErrorBoundary>
+            <BuildInfoTab content={{ kind: 'buildInfo', data: { partsCount: 0, screwsCount: 0, filamentGrams: 0, filamentType: '', printTimeHours: 0, assemblyTimeHours: 0, requiredTools: [], skillsRequired: [], estimatedTotalHours: 0 } }} />
+          </ErrorBoundary>
+        );
       case 'IncludedTab':
         return <IncludedTab content={{ kind: 'text', text: '' }} />;
       default:

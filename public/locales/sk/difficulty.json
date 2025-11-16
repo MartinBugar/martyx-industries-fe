@@ -1,0 +1,79 @@
+{
+  "hero": {
+    "title": "Sprievodca Náročnosťou Stavby",
+    "subtitle": "Nájdite perfektný projekt, ktorý zodpovedá vašej úrovni zručností a skúseností."
+  },
+  "intro": {
+    "title": "Pochopenie Úrovní Náročnosti",
+    "description": "Naše produkty kategorizujeme do štyroch úrovní náročnosti, aby sme vám pomohli vybrať správny projekt. Každá úroveň označuje potrebné zručnosti, časovú investíciu a potrebné náradie.",
+    "highlight1": "Realistické časové odhady",
+    "highlight2": "Jasné požiadavky na náradie",
+    "highlight3": "Odporúčania založené na zručnostiach"
+  },
+  "levels": {
+    "beginner": {
+      "name": "Začiatočník",
+      "tagline": "Váš prvý RC projekt",
+      "description": "Ideálne pre tých, ktorí sa prvýkrát púšťajú do 3D tlače alebo RC modelárstva. Tieto projekty majú menej častí, jednoduchšiu montáž a základné elektronické zapojenie.",
+      "time": "15-30 hodín celkovo (5-10h tlač, 5-10h montáž)",
+      "skills": "Základná znalosť 3D tlače, žiadna skúsenosť s RC nie je potrebná",
+      "tools": "Základná sada nástrojov - skrutkovač, kliešte, pinzeta",
+      "bestFor": "Absolútni začiatočníci, študenti, darčeky pre nadšencov RC",
+      "examples": "Pripravujeme..."
+    },
+    "intermediate": {
+      "name": "Stredne Pokročilý",
+      "tagline": "Posúvate sa ďalej",
+      "description": "Pre staviteľov s nejakou skúsenosťou v 3D tlači a základnými znalosťami elektroniky. Stredne zložitá montáž s väčším množstvom častí a jednoduchou kalibráciou.",
+      "time": "40-60 hodín celkovo (25-35h tlač, 15-25h montáž)",
+      "skills": "3-6 mesiacov skúseností s 3D tlačou, základné spájkovanie",
+      "tools": "Sada nástrojov + spájkovačka, multimeter, kaliper",
+      "bestFor": "Hobby nadšenci pripravení na výzvu, majitelia 3D tlačiarní",
+      "examples": "Pripravujeme..."
+    },
+    "advanced": {
+      "name": "Pokročilý",
+      "tagline": "Pre tých, čo chcú skutočnú výzvu",
+      "description": "Komplexné projekty s mnohými súčiastkami, pokročilou elektronikou a presnou montážou. Vyžaduje trpezlivosť, pozornosť k detailom a schopnosť riešiť problémy.",
+      "time": "80-120 hodín celkovo (50-70h tlač, 30-50h montáž)",
+      "skills": "1+ rok skúseností s 3D tlačou, pokročilé spájkovanie, Arduino programovanie",
+      "tools": "Profesionálna sada nástrojov, osciloskop, ladiace vybavenie",
+      "bestFor": "Skúsení stavitelia, RC veteráni, inžinieri",
+      "examples": "ENDEAVOUR RC APC (500+ častí, Arduino Mega riadenie)"
+    },
+    "expert": {
+      "name": "Expert",
+      "tagline": "Majstrovská úroveň",
+      "description": "Najnáročnejšie projekty s tisíckami častí, vlastnými PCB doskami a pokročilými mechanickými systémami. Iba pre najskúsenejších staviteľov.",
+      "time": "150+ hodín celkovo (100+ h tlač, 50+ h montáž)",
+      "skills": "Viacročné skúsenosti, PCB design, pokročilé programovanie, mechanické inžinierstvo",
+      "tools": "Kompletná dielňa, pokročilé meracie prístroje, programovacie vybavenie",
+      "bestFor": "Profesionálni stavitelia, výskumníci, súťažiaci",
+      "examples": "Pripravujeme..."
+    }
+  },
+  "common": {
+    "timeRequired": "Potrebný čas",
+    "skills": "Zručnosti",
+    "tools": "Náradie",
+    "bestFor": "Najlepšie pre",
+    "exampleProducts": "Ukážkové produkty"
+  },
+  "philosophy": {
+    "title": "Naša Filozofia \"Bez Lepidla\"",
+    "intro": "Každý model Martyx Industries je navrhnutý bez potreby lepidla.",
+    "benefit1Title": "Jednoduché Rozobratia",
+    "benefit1Text": "Rozoberte a znovu zložte kedykoľvek na údržbu alebo úpravy.",
+    "benefit2Title": "Vzdelávacia Hodnota",
+    "benefit2Text": "Naučte sa, ako každý komponent zapadá, a pochopte mechaniku.",
+    "benefit3Title": "Vynikajúca Pevnosť",
+    "benefit3Text": "Presne navrhnuté skrutkové spojenia poskytujú lepšiu štrukturálnu integritu.",
+    "benefit4Title": "Bez Neporiadku",
+    "benefit4Text": "Čistý zážitok zo stavby bez lepivých zvyškov alebo čakania na zaschnutie."
+  },
+  "cta": {
+    "title": "Pripravení Začať Stavať?",
+    "text": "Prezrite si našu zbierku a nájdite váš ďalší projekt.",
+    "button": "Preskúmať Produkty"
+  }
+}

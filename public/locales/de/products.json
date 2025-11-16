@@ -77,6 +77,26 @@
     "downloading": "Wird heruntergeladen…",
     "download_failed": "Download fehlgeschlagen. Bitte versuchen Sie es erneut."
   },
+  "buildInfo": {
+    "unavailable": "Bauinformationen für dieses Produkt nicht verfügbar.",
+    "overview": "Bauübersicht",
+    "totalParts": "Gesamtteile",
+    "screws": "Schrauben",
+    "noGlue": "Kein Kleber!",
+    "totalTime": "Gesamtbauzeit",
+    "filament": "Benötigtes Filament",
+    "timeBreakdown": "Zeitaufschlüsselung",
+    "printTime": "3D-Druck",
+    "assemblyTime": "Montage",
+    "timeNote": "Die Zeiten sind Schätzungen und können je nach Erfahrung und Ausrüstung variieren.",
+    "materials": "Benötigte Materialien",
+    "filamentType": "Filament-Typ",
+    "filamentAmount": "Benötigte Menge",
+    "requiredTools": "Benötigte Werkzeuge",
+    "requiredSkills": "Empfohlene Fähigkeiten",
+    "noGlueTitle": "Kein Kleber erforderlich!",
+    "noGlueDescription": "Dieses Modell verwendet präzisionsgefertigte Schraubverbindungen für überlegene Festigkeit und einfache Demontage. Perfekt für Wartung, Modifikationen und um zu lernen, wie alles funktioniert."
+  },
   "unavailable": {
     "title": "Produkt derzeit nicht verfügbar",
     "description": "Dieses Produkt ist vorübergehend nicht verfügbar",

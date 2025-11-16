@@ -1,0 +1,540 @@
+/* BUILD DIFFICULTY GUIDE PAGE */
+
+.difficulty-guide-page {
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #f8fafc 0%, #ffffff 100%);
+}
+
+/* HERO SECTION */
+.difficulty-hero {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 6rem 2rem 4rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.difficulty-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  opacity: 0.3;
+}
+
+.difficulty-hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.difficulty-hero-title {
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.difficulty-hero-subtitle {
+  font-size: 1.25rem;
+  opacity: 0.95;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* INTRO SECTION */
+.difficulty-intro {
+  padding: 4rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.difficulty-intro-content h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #1e293b;
+  text-align: center;
+}
+
+.difficulty-intro-content > p {
+  font-size: 1.125rem;
+  color: #64748b;
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto 3rem;
+  line-height: 1.7;
+}
+
+.intro-highlights {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.intro-highlight-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.intro-highlight-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.intro-highlight-item svg {
+  flex-shrink: 0;
+  color: #667eea;
+}
+
+.intro-highlight-item span {
+  font-weight: 500;
+  color: #334155;
+}
+
+/* DIFFICULTY LEVELS SECTION */
+.difficulty-levels {
+  padding: 4rem 2rem;
+  background: white;
+}
+
+.difficulty-levels-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  gap: 3rem;
+}
+
+.difficulty-level-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  transition: transform 0.3s, box-shadow 0.3s;
+  border: 2px solid #e2e8f0;
+}
+
+.difficulty-level-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+}
+
+.difficulty-level-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 2rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+  border-bottom: 3px solid;
+}
+
+.difficulty-level-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.difficulty-level-title-group {
+  flex: 1;
+}
+
+.difficulty-level-title-group h3 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.difficulty-level-tagline {
+  font-size: 1rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.difficulty-level-body {
+  padding: 2rem;
+}
+
+.difficulty-level-description {
+  font-size: 1.125rem;
+  color: #475569;
+  line-height: 1.7;
+  margin-bottom: 2rem;
+}
+
+.difficulty-level-specs {
+  display: grid;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.difficulty-spec {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.difficulty-spec svg {
+  flex-shrink: 0;
+  color: #667eea;
+  margin-top: 0.25rem;
+}
+
+.difficulty-spec-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.difficulty-spec-content strong {
+  color: #1e293b;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.difficulty-spec-content span {
+  color: #475569;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.difficulty-level-examples {
+  padding: 1.5rem;
+  background: #f8fafc;
+  border-radius: 12px;
+  border-left: 4px solid #667eea;
+}
+
+.examples-label {
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.examples-text {
+  color: #64748b;
+  font-size: 1rem;
+}
+
+/* Level-specific colors */
+.difficulty-level-card.beginner .difficulty-level-header {
+  border-bottom-color: #4ade80;
+}
+
+.difficulty-level-card.beginner .difficulty-level-examples {
+  border-left-color: #4ade80;
+}
+
+.difficulty-level-card.intermediate .difficulty-level-header {
+  border-bottom-color: #60a5fa;
+}
+
+.difficulty-level-card.intermediate .difficulty-level-examples {
+  border-left-color: #60a5fa;
+}
+
+.difficulty-level-card.advanced .difficulty-level-header {
+  border-bottom-color: #a78bfa;
+}
+
+.difficulty-level-card.advanced .difficulty-level-examples {
+  border-left-color: #a78bfa;
+}
+
+.difficulty-level-card.expert .difficulty-level-header {
+  border-bottom-color: #f87171;
+}
+
+.difficulty-level-card.expert .difficulty-level-examples {
+  border-left-color: #f87171;
+}
+
+/* PHILOSOPHY SECTION */
+.difficulty-philosophy {
+  padding: 5rem 2rem;
+  background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+}
+
+.difficulty-philosophy-content {
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.philosophy-icon {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+}
+
+.difficulty-philosophy-content h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #1e293b;
+}
+
+.philosophy-intro {
+  font-size: 1.25rem;
+  color: #64748b;
+  margin-bottom: 3rem;
+  line-height: 1.7;
+}
+
+.philosophy-benefits {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  text-align: left;
+}
+
+.philosophy-benefit {
+  display: flex;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.philosophy-benefit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+.philosophy-benefit svg {
+  flex-shrink: 0;
+  color: #4ade80;
+  margin-top: 0.25rem;
+}
+
+.philosophy-benefit strong {
+  display: block;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+  font-size: 1.125rem;
+}
+
+.philosophy-benefit p {
+  color: #64748b;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* CTA SECTION */
+.difficulty-cta {
+  padding: 5rem 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  text-align: center;
+}
+
+.difficulty-cta-content {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.difficulty-cta-content h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.difficulty-cta-content p {
+  font-size: 1.25rem;
+  margin-bottom: 2rem;
+  opacity: 0.95;
+  line-height: 1.6;
+}
+
+.difficulty-cta-button {
+  display: inline-block;
+  padding: 1rem 3rem;
+  background: white;
+  color: #667eea;
+  font-weight: 600;
+  font-size: 1.125rem;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.difficulty-cta-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .difficulty-hero {
+    padding: 4rem 1.5rem 3rem;
+  }
+
+  .difficulty-hero-title {
+    font-size: 2rem;
+  }
+
+  .difficulty-hero-subtitle {
+    font-size: 1rem;
+  }
+
+  .difficulty-intro {
+    padding: 3rem 1.5rem;
+  }
+
+  .difficulty-intro-content h2 {
+    font-size: 1.5rem;
+  }
+
+  .difficulty-intro-content > p {
+    font-size: 1rem;
+  }
+
+  .intro-highlights {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .difficulty-levels {
+    padding: 3rem 1.5rem;
+  }
+
+  .difficulty-levels-content {
+    gap: 2rem;
+  }
+
+  .difficulty-level-header {
+    flex-direction: column;
+    text-align: center;
+    padding: 1.5rem;
+  }
+
+  .difficulty-level-icon {
+    width: 60px;
+    height: 60px;
+    font-size: 2rem;
+  }
+
+  .difficulty-level-title-group h3 {
+    font-size: 1.5rem;
+  }
+
+  .difficulty-level-body {
+    padding: 1.5rem;
+  }
+
+  .difficulty-level-description {
+    font-size: 1rem;
+  }
+
+  .difficulty-philosophy {
+    padding: 3rem 1.5rem;
+  }
+
+  .philosophy-icon {
+    width: 80px;
+    height: 80px;
+  }
+
+  .difficulty-philosophy-content h2 {
+    font-size: 1.75rem;
+  }
+
+  .philosophy-intro {
+    font-size: 1rem;
+  }
+
+  .philosophy-benefits {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .difficulty-cta {
+    padding: 3rem 1.5rem;
+  }
+
+  .difficulty-cta-content h2 {
+    font-size: 1.75rem;
+  }
+
+  .difficulty-cta-content p {
+    font-size: 1rem;
+  }
+
+  .difficulty-cta-button {
+    padding: 0.875rem 2rem;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .difficulty-hero-title {
+    font-size: 1.75rem;
+  }
+
+  .difficulty-level-title-group h3 {
+    font-size: 1.25rem;
+  }
+
+  .difficulty-spec {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+/* ========================================================================== */
+/* ACCESSIBILITY: Reduced Motion Support                                     */
+/* ========================================================================== */
+/* Respects user's motion preferences for accessibility                      */
+/* Removes animations for users with vestibular disorders                    */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .difficulty-level-card,
+  .intro-highlight-item,
+  .philosophy-benefit,
+  .cta-button {
+    transition: none !important;
+    transform: none !important;
+  }
+}

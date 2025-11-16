@@ -27,6 +27,7 @@ export const UserGalleryDetail = lazy(() => import('../pages/UserGallery/UserGal
 export const CookiesPolicy = lazy(() => import('../pages/CookiesPolicy/CookiesPolicy'));
 export const PrivacyPolicy = lazy(() => import('../pages/PrivacyPolicy/PrivacyPolicy'));
 export const TermsOfService = lazy(() => import('../pages/TermsOfService/TermsOfService'));
+export const BuildDifficultyGuide = lazy(() => import('../pages/BuildDifficultyGuide/BuildDifficultyGuide'));
 
 // Admin Pages - lazy loaded for better bundle splitting
 export const AdminLogin = lazy(() => import('../pages/admin/AdminLogin'));

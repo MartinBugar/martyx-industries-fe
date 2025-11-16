@@ -8,7 +8,8 @@
     "facts": {
       "assembly_time": "Montage unter 4h (Prototyp)",
       "layer_optimization": "Optimiert für 0,1 mm Schichten",
-      "electronics_ready": "Modulare Elektronik bereit"
+      "electronics_ready": "Modulare Elektronik bereit",
+      "no_glue_engineering": "Ohne Kleber — Nur Schrauben"
     }
   },
   "how_it_works": {

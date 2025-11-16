@@ -35,13 +35,29 @@ export interface PrintInfoData {
   additionalNotes?: string[];
 }
 
+// Build Info types (V46)
+export type DifficultyLevel = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED' | 'EXPERT';
+
+export interface BuildInfo {
+  partsCount: number;
+  screwsCount: number;
+  filamentGrams: number;
+  filamentType: string;
+  printTimeHours: number;
+  assemblyTimeHours: number;
+  requiredTools: string[];
+  skillsRequired: string[];
+  estimatedTotalHours: number;
+}
+
 export type TabContent =
     | { kind: 'text'; text: string }
     | { kind: 'list'; items: string[] }
     | { kind: 'image'; image: TabImage }
     | { kind: 'gallery'; images: TabImage[] }
     | { kind: 'downloads'; items: TabDownloadItem[] }
-    | { kind: 'printInfo'; data: PrintInfoData };
+    | { kind: 'printInfo'; data: PrintInfoData }
+    | { kind: 'buildInfo'; data: BuildInfo };
 
 export interface ProductTab {
     id: ProductTabId;
@@ -100,6 +116,10 @@ export interface Product {
 
     // All available variants for this product
     availableVariants?: ProductVariant[];
+
+    // Build difficulty & info (V46)
+    difficultyLevel?: DifficultyLevel;
+    buildInfo?: BuildInfo;
 }
 
 // Individual variant info (used in variant selector)
