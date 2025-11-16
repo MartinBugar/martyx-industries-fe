@@ -1,22 +1,31 @@
-import axios from 'axios';
-import { Testimonial } from './testimonialService';
+import type { Testimonial } from './testimonialService';
+import { apiClient } from './apiClient';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+interface PageResponse<T> {
+  content: T[];
+  totalPages: number;
+  totalElements: number;
+  size: number;
+  number: number;
+}
 
 /**
  * Admin service for managing reviews (testimonials).
  * Requires ADMIN role authentication.
+ * Uses apiClient which automatically includes JWT authentication headers.
  */
 class AdminReviewsService {
   /**
-   * Get all reviews for admin management.
+   * Get all reviews for admin management with pagination.
    * Requires ADMIN role.
    */
-  async getAllReviews(): Promise<Testimonial[]> {
+  async getAllReviews(page = 0, size = 100): Promise<Testimonial[]> {
     try {
-      const response = await axios.get<Testimonial[]>(`${API_BASE_URL}/api/admin/reviews`);
-      console.log('✅ Fetched all reviews for admin:', response.data.length);
-      return response.data;
+      const response = await apiClient.get<PageResponse<Testimonial>>(
+        `/api/admin/reviews?page=${page}&size=${size}&sortBy=createdAt&sortDir=DESC`
+      );
+      console.log('✅ Fetched all reviews for admin:', response.content.length);
+      return response.content;
     } catch (error) {
       console.error('❌ Failed to fetch all reviews:', error);
       throw error;
@@ -29,11 +38,11 @@ class AdminReviewsService {
    */
   async toggleFeaturedStatus(reviewId: number): Promise<Testimonial> {
     try {
-      const response = await axios.patch<Testimonial>(
-        `${API_BASE_URL}/api/admin/reviews/${reviewId}/toggle-featured`
+      const response = await apiClient.patch<Testimonial>(
+        `/api/admin/reviews/${reviewId}/toggle-featured`
       );
       console.log('✅ Toggled featured status for review:', reviewId);
-      return response.data;
+      return response;
     } catch (error) {
       console.error('❌ Failed to toggle featured status:', error);
       throw error;
@@ -46,7 +55,7 @@ class AdminReviewsService {
    */
   async deleteReview(productId: number, reviewId: number): Promise<void> {
     try {
-      await axios.delete(`${API_BASE_URL}/api/products/${productId}/reviews/${reviewId}`);
+      await apiClient.delete(`/api/products/${productId}/reviews/${reviewId}`);
       console.log('✅ Deleted review:', reviewId);
     } catch (error) {
       console.error('❌ Failed to delete review:', error);
