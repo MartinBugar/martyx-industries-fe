@@ -62,8 +62,14 @@ const DifficultyBadge: React.FC<DifficultyBadgeProps> = ({
   );
 
   if (showLink) {
+    // Create hash link to specific difficulty section
+    const sectionHash = `#${level.toLowerCase()}`;
+
     return (
-      <Link to="/build-difficulty-guide" className="difficulty-badge-link">
+      <Link
+        to={`/build-difficulty-guide${sectionHash}`}
+        className="difficulty-badge-link"
+      >
         {badgeContent}
         <svg
           className="difficulty-badge-link-icon"

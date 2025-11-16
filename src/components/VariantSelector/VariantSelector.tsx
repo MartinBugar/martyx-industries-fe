@@ -92,7 +92,7 @@ const VariantSelector: React.FC<VariantSelectorProps> = ({
             {getVariantTypeShort(currentVariant.variantType)}
           </span>
           {difficultyLevel && (
-            <DifficultyBadge level={difficultyLevel} showLink={false} size="small" />
+            <DifficultyBadge level={difficultyLevel} showLink={true} size="small" />
           )}
           <span className={`variant-availability ${currentVariant.availabilityStatus.toLowerCase()}`}>
             {getAvailabilityText(currentVariant.availabilityStatus)}

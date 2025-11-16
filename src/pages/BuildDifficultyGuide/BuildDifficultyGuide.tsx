@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import './BuildDifficultyGuide.css';
 
 interface DifficultyLevel {
@@ -11,6 +11,7 @@ interface DifficultyLevel {
 
 const BuildDifficultyGuide: React.FC = () => {
   const { t } = useTranslation('difficulty');
+  const location = useLocation();
 
   const difficultyLevels: DifficultyLevel[] = [
     { key: 'beginner', color: '#4ade80', icon: '🌱' },
@@ -18,6 +19,20 @@ const BuildDifficultyGuide: React.FC = () => {
     { key: 'advanced', color: '#8b5cf6', icon: '🔧' },  // WCAG AA compliant (4.5:1 contrast)
     { key: 'expert', color: '#f87171', icon: '🏆' }
   ];
+
+  // Scroll to section based on hash in URL
+  useEffect(() => {
+    if (location.hash) {
+      const id = location.hash.replace('#', '');
+      const element = document.getElementById(id);
+      if (element) {
+        // Small delay to ensure DOM is ready
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+      }
+    }
+  }, [location]);
 
   return (
     <div className="difficulty-guide-page">
@@ -56,7 +71,7 @@ const BuildDifficultyGuide: React.FC = () => {
       <section className="difficulty-levels">
         <div className="difficulty-levels-content">
           {difficultyLevels.map((level) => (
-            <div key={level.key} className={`difficulty-level-card ${level.key}`}>
+            <div key={level.key} id={level.key} className={`difficulty-level-card ${level.key}`}>
               <div className="difficulty-level-header" style={{ borderColor: level.color }}>
                 <div className="difficulty-level-icon" style={{ backgroundColor: level.color }}>
                   <span>{level.icon}</span>
