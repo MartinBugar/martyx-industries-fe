@@ -28,12 +28,13 @@ class TestimonialService {
    * @returns Promise<Testimonial[]> Array of featured reviews
    */
   async getFeaturedTestimonials(): Promise<Testimonial[]> {
+    console.log('🌐 [TESTIMONIAL_SERVICE] Calling API:', `${API_BASE_URL}/api/reviews/featured`);
     try {
       const response = await axios.get<Testimonial[]>(`${API_BASE_URL}/api/reviews/featured`);
-      console.log('✅ Fetched featured testimonials:', response.data.length);
+      console.log('✅ [TESTIMONIAL_SERVICE] Fetched testimonials:', response.data.length, response.data);
       return response.data;
     } catch (error) {
-      console.error('❌ Failed to fetch featured testimonials:', error);
+      console.error('❌ [TESTIMONIAL_SERVICE] Failed to fetch:', error);
       // Return empty array on error - don't break the homepage
       return [];
     }

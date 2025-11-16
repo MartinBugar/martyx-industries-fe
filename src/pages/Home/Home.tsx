@@ -27,11 +27,13 @@ const getPriceDisplay = (product: Product): { prefix: string; price: number } =>
 };
 
 const Home: React.FC = () => {
+  console.log('🏠 [HOME] Component is rendering!');
   const { addToCart } = useCart();
   const { t, i18n } = useTranslation('home');
   const [products, setProducts] = useState<Product[]>([]);
   const [visibilityMap, setVisibilityMap] = useState<VisibilityMap>({});
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  console.log('🏠 [HOME] Testimonials state:', testimonials);
   const featured = useMemo(() => products.slice(0, 6), [products]);
 
   type Popup = { visible: boolean; message: string; variant: 'success' | 'warning' };
@@ -67,11 +69,13 @@ const Home: React.FC = () => {
   // Load testimonials from API
   useEffect(() => {
     const loadTestimonials = async () => {
+      console.log('🔍 [HOME] Starting to load testimonials...');
       try {
         const data = await testimonialService.getFeaturedTestimonials();
+        console.log('✅ [HOME] Loaded testimonials:', data);
         setTestimonials(data);
       } catch (error) {
-        console.warn('Failed to load testimonials:', error);
+        console.error('❌ [HOME] Failed to load testimonials:', error);
         // Continue with empty array - don't break homepage
       }
     };
@@ -212,6 +216,10 @@ const Home: React.FC = () => {
       delete timersRef.current[key];
     }, 2000);
   };
+
+  console.log('🎨 [HOME] About to render. visibilityMap:', visibilityMap);
+  console.log('🎨 [HOME] testimonials.length:', testimonials.length);
+  console.log('🎨 [HOME] Will show testimonials?', visibilityMap.testimonials !== false && testimonials.length > 0);
 
   return (
     <div className="home-root" aria-label="Home Page">
@@ -383,7 +391,7 @@ const Home: React.FC = () => {
       )}
 
       {/* 6) Testimonials */}
-      {visibilityMap.testimonials !== false && testimonials.length > 0 && (
+      {testimonials.length > 0 && (
       <section className="home-section testimonials" aria-label={t('testimonials.title')}>
         <div className="container">
           <div className="section-header">
