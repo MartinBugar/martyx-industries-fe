@@ -1,6 +1,4 @@
-import axios from 'axios';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+import { API_BASE_URL, handleResponse, withLangHeaders } from './apiUtils';
 
 export interface Testimonial {
   id: number;
@@ -30,9 +28,15 @@ class TestimonialService {
   async getFeaturedTestimonials(): Promise<Testimonial[]> {
     console.log('🌐 [TESTIMONIAL_SERVICE] Calling API:', `${API_BASE_URL}/api/reviews/featured`);
     try {
-      const response = await axios.get<Testimonial[]>(`${API_BASE_URL}/api/reviews/featured`);
-      console.log('✅ [TESTIMONIAL_SERVICE] Fetched testimonials:', response.data.length, response.data);
-      return response.data;
+      const response = await fetch(
+        `${API_BASE_URL}/api/reviews/featured`,
+        withLangHeaders({
+          method: 'GET'
+        })
+      );
+      const data = await handleResponse(response);
+      console.log('✅ [TESTIMONIAL_SERVICE] Fetched testimonials:', data?.length || 0, data);
+      return data || [];
     } catch (error) {
       console.error('❌ [TESTIMONIAL_SERVICE] Failed to fetch:', error);
       // Return empty array on error - don't break the homepage
