@@ -510,13 +510,12 @@
 
 /* Focus States for Accessibility */
 .product-card-link:focus {
-  outline: 2px solid var(--products-accent);
-  outline-offset: 2px;
+  outline: none;
 }
 
 .add-to-cart-btn:focus {
-  outline: 2px solid var(--products-accent);
-  outline-offset: 2px;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(40, 193, 255, 0.4);
 }
 
 .search-input:focus,
