@@ -25,16 +25,20 @@
     }
   },
   "how_it_works": {
-    "title": "How it works",
-    "step_1": "Step 1",
-    "step_1_title": "Choose",
-    "step_1_description": "Pick a Kit or STL bundle.",
-    "step_2": "Step 2",
-    "step_2_title": "Build or Print",
-    "step_2_description": "Assemble or 3D print.",
-    "step_3": "Step 3",
-    "step_3_title": "Drive",
-    "step_3_description": "Pair controller & enjoy."
+    "title": "Engineering Journey",
+    "subtitle": "From digital file to mechanical masterpiece",
+    "phase_1": "01",
+    "phase_1_title": "3D Print",
+    "phase_1_description": "Download STL files and print with precision",
+    "phase_2": "02",
+    "phase_2_title": "Mechanics",
+    "phase_2_description": "Assemble components with engineering-grade fit",
+    "phase_3": "03",
+    "phase_3_title": "Electronics",
+    "phase_3_description": "Integrate motors, sensors and control systems",
+    "phase_4": "04",
+    "phase_4_title": "Masterpiece",
+    "phase_4_description": "Experience your fully functional creation"
   },
   "featured": {
     "title": "Featured Products",

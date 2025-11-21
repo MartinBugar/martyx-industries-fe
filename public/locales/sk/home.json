@@ -25,16 +25,20 @@
     }
   },
   "how_it_works": {
-    "title": "Ako to funguje",
-    "step_1": "Krok 1",
-    "step_1_title": "Vyber",
-    "step_1_description": "Vyber Kit alebo STL balík.",
-    "step_2": "Krok 2", 
-    "step_2_title": "Zostav alebo Vytlač",
-    "step_2_description": "Zložiť alebo 3D tlačiť.",
-    "step_3": "Krok 3",
-    "step_3_title": "Jazdi",
-    "step_3_description": "Spáruj ovládač a užívaj si."
+    "title": "Cesta Inžinierstva",
+    "subtitle": "Od digitálneho súboru po mechanické majstrovské dielo",
+    "phase_1": "01",
+    "phase_1_title": "3D Tlač",
+    "phase_1_description": "Stiahni STL súbory a vytlač s presnosťou",
+    "phase_2": "02",
+    "phase_2_title": "Mechanika",
+    "phase_2_description": "Zostav komponenty s inžinierskou presnosťou",
+    "phase_3": "03",
+    "phase_3_title": "Elektronika",
+    "phase_3_description": "Integruj motory, senzory a riadiace systémy",
+    "phase_4": "04",
+    "phase_4_title": "Majstrovské Dielo",
+    "phase_4_description": "Zažij svoju plne funkčnú výtvor"
   },
   "featured": {
     "title": "Odporúčané Produkty",

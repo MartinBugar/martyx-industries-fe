@@ -256,26 +256,58 @@ const Home: React.FC = () => {
       </section>
       )}
 
-      {/* 2) How it works */}
+      {/* 2) Engineering Journey */}
       {visibilityMap.how_it_works !== false && (
-      <section className="how-section" aria-label={t('how_it_works.title')}>
+      <section className="engineering-journey" aria-label={t('how_it_works.title')}>
         <div className="container">
-          <div className="section-header"><h2>{t('how_it_works.title')}</h2></div>
-          <div className="how-grid">
-            <article className="how-card">
-              <span className="how-step">{t('how_it_works.step_1')}</span>
-              <h3>{t('how_it_works.step_1_title')}</h3>
-              <p>{t('how_it_works.step_1_description')}</p>
+          <div className="section-header-modern">
+            <h2>{t('how_it_works.title')}</h2>
+            <p className="section-subtitle-modern">{t('how_it_works.subtitle')}</p>
+          </div>
+          <div className="journey-grid">
+            <article className="journey-phase">
+              <div className="phase-number">{t('how_it_works.phase_1')}</div>
+              <div className="phase-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M12 2v20M2 12h20"></path>
+                  <circle cx="12" cy="12" r="10"></circle>
+                </svg>
+              </div>
+              <h3 className="phase-title">{t('how_it_works.phase_1_title')}</h3>
+              <p className="phase-description">{t('how_it_works.phase_1_description')}</p>
             </article>
-            <article className="how-card">
-              <span className="how-step">{t('how_it_works.step_2')}</span>
-              <h3>{t('how_it_works.step_2_title')}</h3>
-              <p>{t('how_it_works.step_2_description')}</p>
+
+            <article className="journey-phase">
+              <div className="phase-number">{t('how_it_works.phase_2')}</div>
+              <div className="phase-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                </svg>
+              </div>
+              <h3 className="phase-title">{t('how_it_works.phase_2_title')}</h3>
+              <p className="phase-description">{t('how_it_works.phase_2_description')}</p>
             </article>
-            <article className="how-card">
-              <span className="how-step">{t('how_it_works.step_3')}</span>
-              <h3>{t('how_it_works.step_3_title')}</h3>
-              <p>{t('how_it_works.step_3_description')}</p>
+
+            <article className="journey-phase">
+              <div className="phase-number">{t('how_it_works.phase_3')}</div>
+              <div className="phase-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+                </svg>
+              </div>
+              <h3 className="phase-title">{t('how_it_works.phase_3_title')}</h3>
+              <p className="phase-description">{t('how_it_works.phase_3_description')}</p>
+            </article>
+
+            <article className="journey-phase">
+              <div className="phase-number">{t('how_it_works.phase_4')}</div>
+              <div className="phase-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                </svg>
+              </div>
+              <h3 className="phase-title">{t('how_it_works.phase_4_title')}</h3>
+              <p className="phase-description">{t('how_it_works.phase_4_description')}</p>
             </article>
           </div>
         </div>
