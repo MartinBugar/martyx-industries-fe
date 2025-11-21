@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { CartItem } from '../context/cartContextTypes';
 import { stripeService } from '../services/stripeService';
+import { stockService } from '../services/stockService';
 
 type Props = {
   items: CartItem[];
@@ -45,6 +46,46 @@ export default function StripeCheckoutButton({
   const handleClick = async () => {
     try {
       setLoading(true);
+
+      // PRE-CHECKOUT VALIDATION: Check stock availability for all items
+      console.log('[StripeCheckout] Validating stock availability...');
+      const stockCheckResults = await Promise.all(
+        items.map(async (item) => {
+          try {
+            const stockData = await stockService.getAvailableStock(item.product.variantId);
+            return {
+              variantId: item.product.variantId,
+              productName: item.product.name,
+              requestedQty: item.quantity,
+              availableQty: stockData.availableStock,
+              isAvailable: stockData.availableStock >= item.quantity
+            };
+          } catch (err) {
+            console.error(`[StripeCheckout] Stock check failed for variant ${item.product.variantId}:`, err);
+            return {
+              variantId: item.product.variantId,
+              productName: item.product.name,
+              requestedQty: item.quantity,
+              availableQty: 0,
+              isAvailable: false
+            };
+          }
+        })
+      );
+
+      // Check if any items are out of stock
+      const outOfStockItems = stockCheckResults.filter(result => !result.isAvailable);
+      if (outOfStockItems.length > 0) {
+        setLoading(false);
+        const errorMessage = outOfStockItems.map(item =>
+          `${item.productName}: requested ${item.requestedQty}, available ${item.availableQty}`
+        ).join('\n');
+        alert(`⚠️ Some items are no longer available:\n\n${errorMessage}\n\nPlease update your cart and try again.`);
+        console.error('[StripeCheckout] Stock validation failed:', outOfStockItems);
+        return; // Abort checkout
+      }
+
+      console.log('[StripeCheckout] ✅ Stock validation passed');
 
       // Create checkout session on backend
       const request = stripeService.createCheckoutRequest(

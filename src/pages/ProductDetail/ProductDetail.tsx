@@ -18,6 +18,7 @@ import { useAuth } from '../../context/useAuth';
 import { trackProductView, extractUTMParams } from '../../services/backendAnalyticsService';
 import { debounce } from '../../utils/debounce';
 import { logInfo, logWarn } from '../../services/logger';
+import { stockService } from '../../services/stockService';
 
 // Local inlined ProductDetails component (previously in components/ProductDetails/ProductDetails.tsx)
 interface ProductDetailsProps {
@@ -35,6 +36,28 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({product, onVariantChange
         variant: 'success'
     });
     const timerRef = React.useRef<number | null>(null);
+
+    // Stock state
+    const [stockInfo, setStockInfo] = React.useState<{ availableStock: number; loading: boolean } | null>(null);
+
+    // Fetch stock information when product variant changes
+    React.useEffect(() => {
+        const fetchStock = async () => {
+            if (!product.variantId) return;
+
+            try {
+                setStockInfo({ availableStock: 0, loading: true });
+                const stockData = await stockService.getAvailableStock(product.variantId);
+                setStockInfo({ availableStock: stockData.availableStock, loading: false });
+                console.log(`📦 Stock for variant ${product.variantId}:`, stockData.availableStock);
+            } catch (error) {
+                console.error('Failed to fetch stock:', error);
+                setStockInfo(null);
+            }
+        };
+
+        fetchStock();
+    }, [product.variantId]);
 
     React.useEffect(() => {
         return () => {
@@ -76,6 +99,52 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({product, onVariantChange
             <div
                 className="price">{product.priceWithVat.toFixed(2)} {product.currency === 'EUR' ? '€' : product.currency}</div>
             <p className="description">{product.description}</p>
+
+            {/* Low Stock Warning */}
+            {!stockInfo?.loading && stockInfo && stockInfo.availableStock > 0 && stockInfo.availableStock <= 10 && (
+                <div className="stock-warning" style={{
+                    backgroundColor: '#fff3cd',
+                    border: '1px solid #ffc107',
+                    borderRadius: '8px',
+                    padding: '12px 16px',
+                    margin: '16px 0',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    color: '#856404'
+                }}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span style={{ fontSize: '0.95rem' }}>
+                        <strong>{t('stock.low_stock', 'Low Stock')}:</strong> {t('stock.only_left', `Only ${stockInfo.availableStock} left in stock!`)}
+                    </span>
+                </div>
+            )}
+
+            {/* Out of Stock Warning */}
+            {!stockInfo?.loading && stockInfo && stockInfo.availableStock === 0 && (
+                <div className="stock-warning" style={{
+                    backgroundColor: '#f8d7da',
+                    border: '1px solid #dc3545',
+                    borderRadius: '8px',
+                    padding: '12px 16px',
+                    margin: '16px 0',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    color: '#721c24'
+                }}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="15" y1="9" x2="9" y2="15"/>
+                        <line x1="9" y1="9" x2="15" y2="15"/>
+                    </svg>
+                    <span style={{ fontSize: '0.95rem' }}>
+                        <strong>{t('stock.out_of_stock', 'Out of Stock')}</strong>
+                    </span>
+                </div>
+            )}
 
             <div className="whats-included-section">
                 <h3 id="features">What's Included</h3>

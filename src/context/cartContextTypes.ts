@@ -12,6 +12,7 @@ export interface CartProduct {
   imageUrl?: string;
   availabilityStatus: 'IN_STOCK' | 'LOW_STOCK' | 'OUT_OF_STOCK' | 'PRE_ORDER' | 'DISCONTINUED' | 'BACKORDERED';
   stockQuantity: number;
+  availableStock?: number; // Real-time available stock (total - reserved)
   variantType: 'DIGITAL_ONLY' | 'PHYSICAL_ONLY' | 'HYBRID';
   // Additional fields used by cart UI
   sku?: string;

@@ -8,13 +8,49 @@ export default defineConfig({
   define: {
     global: 'globalThis',
   },
-  resolve: {
-    alias: {
-      buffer: 'buffer',
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // React vendor chunk (core framework)
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+
+          // 3D/Model viewer chunk (heavy dependencies)
+          'three-vendor': ['three', '@google/model-viewer'],
+
+          // i18n chunk (internationalization)
+          'i18n-vendor': [
+            'i18next',
+            'react-i18next',
+            'i18next-browser-languagedetector',
+            'i18next-http-backend',
+            'i18next-icu',
+            'intl-messageformat'
+          ],
+
+          // Form libraries chunk
+          'form-vendor': [
+            'react-hook-form',
+            '@hookform/resolvers',
+            'zod'
+          ],
+
+          // Payment vendors chunk
+          'payment-vendor': [
+            '@paypal/paypal-js',
+            '@paypal/react-paypal-js'
+          ],
+
+          // Utilities chunk
+          'utils-vendor': [
+            'lucide-react',
+            'dompurify'
+          ]
+        }
+      }
     },
-  },
-  optimizeDeps: {
-    include: ['buffer'],
+    // Increase chunk size warning limit (default is 500kb)
+    chunkSizeWarningLimit: 1000
   },
   server: {
     proxy: {

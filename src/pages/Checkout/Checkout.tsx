@@ -21,6 +21,8 @@ import {
   trackAddPaymentInfo
 } from '../../services/analyticsService';
 import { checkoutFormSchema, type CheckoutFormData } from '../../schemas/formSchemas';
+import { stockReservationService } from '../../services/stockReservationService';
+import { ReservationTimer } from '../../components/ReservationTimer/ReservationTimer';
 
 // Country list for dropdown
 const COUNTRIES = [
@@ -225,6 +227,9 @@ const Checkout: React.FC = () => {
   const [isLoadingAddresses, setIsLoadingAddresses] = useState(false);
   // @ts-ignore - Reserved for future "save address" UI feature
   const [showSaveAddressOption, setShowSaveAddressOption] = useState(false);
+
+  // Stock Reservation state
+  const [reservationExpiresAt, setReservationExpiresAt] = useState<Date | null>(null);
 
   // Google Places Autocomplete handler
   const handlePlaceSelect = (address: ParsedAddress) => {
@@ -481,6 +486,38 @@ const Checkout: React.FC = () => {
       clearProgress();
     }
   }, [searchParams]);
+
+  // Stock Reservation: Reserve cart items on checkout mount
+  useEffect(() => {
+    const reserveStock = async () => {
+      if (items.length === 0) return;
+
+      try {
+        const sessionId = !user ? (localStorage.getItem('martyx_session_id') || undefined) : undefined;
+        const response = await stockReservationService.reserveCartItems(
+          items.map(item => ({
+            variantId: item.product.variantId,
+            quantity: item.quantity
+          })),
+          sessionId
+        );
+
+        setReservationExpiresAt(new Date(response.expiresAt));
+        console.log('✅ Stock reserved until:', response.expiresAt);
+      } catch (error) {
+        console.error('❌ Failed to reserve stock:', error);
+        alert('Some items may not be available. Please check your cart.');
+      }
+    };
+
+    reserveStock();
+
+    // Cleanup: release reservations when leaving checkout
+    return () => {
+      const sessionId = !user ? (localStorage.getItem('martyx_session_id') || undefined) : undefined;
+      stockReservationService.releaseReservations(sessionId).catch(console.error);
+    };
+  }, []); // Run once on mount
 
   // Apply saved address to form
   const applyAddress = (address: SavedAddress) => {
@@ -848,6 +885,18 @@ const Checkout: React.FC = () => {
 
   return (
     <main className="checkout-container" role="main">
+      {/* Stock Reservation Timer - Show countdown if reservation is active */}
+      {reservationExpiresAt && (
+        <ReservationTimer
+          expiresAt={reservationExpiresAt}
+          onExpired={() => {
+            console.warn('[Checkout] Stock reservation expired');
+            setReservationExpiresAt(null);
+            alert('Your stock reservation has expired. Please review your cart and try again.');
+          }}
+        />
+      )}
+
       <div className="checkout-header">
         {/* Progress Steps - 2 or 3 STEPS depending on product type */}
         <div className="checkout-steps">

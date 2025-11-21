@@ -339,8 +339,8 @@ const CartPage: React.FC<CartPageProps> = ({
                                       <circle cx="12" cy="12" r="10"/>
                                       <path d="M9 12l2 2l4-4"/>
                                     </svg>
-                                    {item.product.stockQuantity <= 10 && item.product.stockQuantity > 0
-                                      ? `${t('cart.low_stock', 'Low stock')} (${item.product.stockQuantity} ${t('cart.left', 'left')})`
+                                    {item.product.availableStock !== undefined && item.product.availableStock <= 10 && item.product.availableStock > 0
+                                      ? `${t('cart.low_stock', 'Low stock')} (${item.product.availableStock} ${t('cart.left', 'left')})`
                                       : t('cart.in_stock', 'In Stock')}
                                   </div>
                                 )}

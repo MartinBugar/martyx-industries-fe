@@ -38,7 +38,10 @@
       "Read(//c/Users/Martin/Desktop/obrazky/**)",
       "Bash(mvn clean:*)",
       "Bash(del /f \"BACKEND_REQUIREMENTS.md\" \"IMPLEMENTATION_STATUS.md\" \"src\\components\\Footer\\FOOTER_README.md\" \"src\\pages\\admin\\CLEANUP_SUMMARY.md\")",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Read(//a/GoldMann/martyx-academy-be/src/main/resources/**)",
+      "Bash(npm uninstall:*)",
+      "Bash(tee:*)"
     ],
     "deny": [],
     "ask": []
