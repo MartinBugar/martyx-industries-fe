@@ -1,10 +1,22 @@
 {
   "hero": {
-    "title": "RC Tank Kity a STL Súbory",
-    "subtitle": "Zostavuj. Tlač. Ovládaj.",
-    "shop_kits": "Nakupovať Kity",
-    "download_stl": "Stiahnuť STL",
-    "image_alt": "RC Tank Kity a STL Súbory — hlavný obrázok produktu",
+    "title": "Konštruuj. Stavaj. Ovládni.",
+    "subtitle": "Presne navrhnuté 3D modely, ktoré inšpirujú a vyzývajú.",
+    "shop_kits": "Preskúmať Produkty",
+    "download_stl": "Zobraziť Galériu",
+    "image_alt": "Presne konštruované 3D modely — Komplexné mechanické zostavy",
+    "stats": {
+      "parts_count": "500+ Častí",
+      "build_time": "40+ Hodín",
+      "electronics": "Elektronika Pripravená",
+      "community": "2000+ Inžinierov"
+    },
+    "badges": {
+      "no_glue": "Bez Lepidiel",
+      "stl_included": "STL Súbory Zahrnuté",
+      "free_shipping": "Doprava Zdarma EU",
+      "money_back": "30-Dňová Záruka"
+    },
     "facts": {
       "assembly_time": "Zostavenie pod 4h (prototyp)",
       "layer_optimization": "Optimalizované pre 0,1 mm vrstvy",

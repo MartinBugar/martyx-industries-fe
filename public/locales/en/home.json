@@ -1,10 +1,22 @@
 {
   "hero": {
-    "title": "RC Tank Kits & STL Files",
-    "subtitle": "Build. Print. Command.",
-    "shop_kits": "Shop Kits",
-    "download_stl": "Download STL",
-    "image_alt": "RC Tank Kits & STL Files — product hero image",
+    "title": "Engineer. Build. Master.",
+    "subtitle": "Precision-engineered 3D models that challenge and inspire.",
+    "shop_kits": "Explore Products",
+    "download_stl": "View Gallery",
+    "image_alt": "Precision-engineered 3D models — Complex mechanical builds",
+    "stats": {
+      "parts_count": "500+ Parts",
+      "build_time": "40+ Hours",
+      "electronics": "Electronics Ready",
+      "community": "2000+ Engineers"
+    },
+    "badges": {
+      "no_glue": "No Glue Engineering",
+      "stl_included": "STL Files Included",
+      "free_shipping": "Free Shipping EU",
+      "money_back": "30-Day Guarantee"
+    },
     "facts": {
       "assembly_time": "Assembly under 4h (prototype)",
       "layer_optimization": "Optimized for 0.1 mm layers",

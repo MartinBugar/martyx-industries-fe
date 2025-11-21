@@ -223,48 +223,33 @@ const Home: React.FC = () => {
 
   return (
     <div className="home-root" aria-label="Home Page">
-      {/* 1) Hero */}
+      {/* 1) Hero - Minimalist Modern */}
       {visibilityMap.hero !== false && (
-      <section className="hero-section" aria-label="Hero">
-        <div className="container">
-          <div className="hero-grid">
-            <div className="hero-copy">
-              <div className="hero-content-wrapper">
-                <div className="hero-mascot-container">
-                  <OptimizedImage
-                    src="/cassandra/Home-Cass.png"
-                    alt="Cassandra - Váš 3D sprievodca"
-                    className="mascot-image-home"
-                    priority={true} // Hero mascot má najvyššiu prioritu
-                  />
-                </div>
-                <div className="hero-text-content">
-                  <h1 className="hero-title">{t('hero.title')}</h1>
-                  <p className="hero-sub">{t('hero.subtitle')}</p>
-                  <div className="hero-ctas">
-                    <Link to="/products" className="btn btn-accent" onClick={() => console.log('hero_shop_kits_click')}>{t('hero.shop_kits')}</Link>
-                    <Link to="/products" className="btn btn-outline" onClick={() => console.log('hero_download_stl_click')}>{t('hero.download_stl')}</Link>
-                  </div>
-                  <ul className="hero-kpis" aria-label={t('hero.facts.assembly_time')}>
-                    <li>{t('hero.facts.assembly_time')}</li>
-                    <li>{t('hero.facts.layer_optimization')}</li>
-                    <li>{t('hero.facts.electronics_ready')}</li>
-                    <li>{t('hero.facts.no_glue_engineering')}</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-            <div className="hero-visual">
-              {heroSrc ? (
-                <OptimizedImage
-                  src={heroSrc}
-                  alt={heroAlt}
-                  priority={true} // Hero obrázok má najvyššiu prioritu
-                  className="hero-image hero-image-full-width"
-                />
-              ) : (
-                <div className="hero-image" role="img" aria-label={heroAlt} />
-              )}
+      <section className="hero-modern" aria-label="Hero">
+        <div className="hero-background">
+          {heroSrc && (
+            <OptimizedImage
+              src={heroSrc}
+              alt={heroAlt}
+              priority={true}
+              className="hero-bg-image"
+            />
+          )}
+          <div className="hero-overlay" />
+        </div>
+
+        <div className="container hero-container">
+          <div className="hero-content-minimal">
+            <h1 className="hero-title-minimal">{t('hero.title')}</h1>
+            <p className="hero-subtitle-minimal">{t('hero.subtitle')}</p>
+
+            <div className="hero-ctas-minimal">
+              <Link to="/products" className="btn-minimal btn-primary">
+                {t('hero.shop_kits')}
+              </Link>
+              <Link to="/gallery" className="btn-minimal btn-secondary">
+                {t('hero.download_stl')}
+              </Link>
             </div>
           </div>
         </div>
