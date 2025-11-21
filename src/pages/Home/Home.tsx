@@ -314,15 +314,18 @@ const Home: React.FC = () => {
       </section>
       )}
 
-      {/* 3) Featured */}
+      {/* 3) Featured Products */}
       {visibilityMap.featured_products !== false && (
-      <section className="home-section featured-section" aria-label={t('featured.title')}>
+      <section className="featured-products-modern" aria-label={t('featured.title')}>
         <div className="container">
-          <div className="section-header">
+          <div className="section-header-modern">
             <h2>{t('featured.title')}</h2>
-            <div className="button-wrapper-centered">
-              <Link className="btn primary" to="/products">{t('featured.view_all')}</Link>
-            </div>
+            <Link className="btn-view-all" to="/products">
+              {t('featured.view_all')}
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </Link>
           </div>
           <div className="featured-grid">
             {featured.map((p, index) => {
@@ -407,36 +410,26 @@ const Home: React.FC = () => {
       </section>
       )}
 
-      {/* 6) Testimonials */}
+      {/* 4) Testimonials */}
       {testimonials.length > 0 && (
-      <section className="home-section testimonials" aria-label={t('testimonials.title')}>
+      <section className="testimonials-modern" aria-label={t('testimonials.title')}>
         <div className="container">
-          <div className="section-header">
+          <div className="section-header-modern">
             <h2>{t('testimonials.title')}</h2>
-            <p className="section-subtitle">{t('testimonials.subtitle')}</p>
+            <p className="section-subtitle-modern">{t('testimonials.subtitle')}</p>
           </div>
           <div className="testimonials-grid">
             {testimonials.map((testimonial) => (
-              <article key={testimonial.id} className="testimonial-card">
-                <div className="testimonial-header">
-                  <div className="customer-info">
-                    <div className="customer-avatar">
-                      <svg viewBox="0 0 24 24" fill="none">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </div>
-                    <div className="customer-details">
-                      <h4 className="customer-name">{testimonial.userName}</h4>
-                      {renderStars(testimonial.rating)}
-                    </div>
-                  </div>
-                  <div className="review-date">{formatRelativeDate(testimonial.createdAt)}</div>
+              <article key={testimonial.id} className="testimonial-card-compact">
+                <div className="testimonial-top">
+                  {renderStars(testimonial.rating)}
+                  <span className="review-date">{formatRelativeDate(testimonial.createdAt)}</span>
                 </div>
-                <blockquote className="testimonial-content">
-                  <p>&quot;{testimonial.comment}&quot;</p>
-                </blockquote>
-                <div className="testimonial-footer">
+                <p className="testimonial-text">
+                  "{testimonial.comment}"
+                </p>
+                <div className="testimonial-author">
+                  <span className="author-name">{testimonial.userName}</span>
                   {testimonial.productName && (
                     <span className="product-tag">{testimonial.productName}</span>
                   )}
