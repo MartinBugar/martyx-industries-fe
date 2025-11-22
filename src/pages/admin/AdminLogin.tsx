@@ -36,10 +36,10 @@ const AdminLogin: React.FC = () => {
 
     // Create multiple layers for depth effect
     const layers = [
-      { fontSize: 10, speed: 0.3, opacity: 0.15, color: '#F6C845' },  // Far background
-      { fontSize: 14, speed: 0.5, opacity: 0.25, color: '#F6C845' },  // Mid background
-      { fontSize: 18, speed: 0.7, opacity: 0.35, color: '#F6C845' },  // Mid foreground
-      { fontSize: 22, speed: 1.0, opacity: 0.45, color: '#E6B82D' },  // Foreground
+      { fontSize: 10, speed: 0.15, opacity: 0.15, color: '#F6C845' },  // Far background
+      { fontSize: 14, speed: 0.25, opacity: 0.25, color: '#F6C845' },  // Mid background
+      { fontSize: 18, speed: 0.35, opacity: 0.35, color: '#F6C845' },  // Mid foreground
+      { fontSize: 22, speed: 0.5, opacity: 0.45, color: '#E6B82D' },  // Foreground
     ];
 
     // Initialize columns for each layer
@@ -58,8 +58,8 @@ const AdminLogin: React.FC = () => {
 
     // Draw function
     const draw = () => {
-      // Semi-transparent black background for trail effect
-      ctx.fillStyle = 'rgba(11, 15, 18, 0.08)';
+      // Stronger clearing to prevent characters from accumulating
+      ctx.fillStyle = 'rgba(11, 15, 18, 0.15)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       // Draw each layer
@@ -76,11 +76,20 @@ const AdminLogin: React.FC = () => {
           const x = i * fontSize;
           const y = drops[i] * fontSize;
 
+          // Fade out effect - opacity decreases as character approaches bottom
+          const fadeZone = canvas.height * 0.7; // Start fading at 70% of screen height
+          if (y > fadeZone) {
+            const fadeProgress = (y - fadeZone) / (canvas.height - fadeZone);
+            ctx.globalAlpha = layer.opacity * (1 - fadeProgress);
+          } else {
+            ctx.globalAlpha = layer.opacity;
+          }
+
           ctx.fillText(char, x, y);
 
-          // Reset drop to top with random delay
-          if (y > canvas.height && Math.random() > 0.975) {
-            drops[i] = 0;
+          // Reset drop to top after it completely fades out
+          if (y > canvas.height + 20) {
+            drops[i] = Math.random() * -100;
           }
 
           // Move drop down

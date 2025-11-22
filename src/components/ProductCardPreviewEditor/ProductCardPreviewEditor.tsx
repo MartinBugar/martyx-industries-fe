@@ -111,7 +111,13 @@ const ProductCardPreviewEditor: React.FC<ProductCardPreviewEditorProps> = ({
             </div>
           </div>
           <div className="product-card-mock__content">
-            <h3 className="product-card-mock__title">Product Name</h3>
+            <h3 className="product-card-mock__title">Premium Product Name</h3>
+            <p className="product-card-mock__description">
+              High-quality product with advanced features and exceptional performance.
+              Perfect for professional use with industry-leading specifications and cutting-edge technology.
+              This product offers outstanding reliability, durability, and efficiency for demanding applications.
+              Engineered with precision and attention to detail, it delivers superior results in any environment.
+            </p>
             <p className="product-card-mock__price">€499.90</p>
             <button className="product-card-mock__button">View Details</button>
           </div>
