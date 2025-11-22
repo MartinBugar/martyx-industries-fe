@@ -87,10 +87,31 @@ const ProductCardPreviewEditor: React.FC<ProductCardPreviewEditorProps> = ({
   };
 
   // Use real product if provided, otherwise create a mock product
-  const previewProduct: Product = product ? {
-    ...product,
-    gallery: [imageUrl, ...(product.gallery?.slice(1) || [])] // Replace first image with the one being edited
-  } : {
+  const previewProduct: Product = product ? (() => {
+    const originalGallery = product.gallery || [];
+
+    // ADMIN PREVIEW LOGIC:
+    // Duplicate the selected image for both main and hover positions
+    // This allows the user to see ONLY the image they're editing in the preview
+    // Hover effect will show the same image (to test zoom/position settings)
+    const previewGallery = [imageUrl, imageUrl];
+
+    if (import.meta.env.DEV) {
+      console.log('🖼️ ProductCardPreviewEditor - Building preview product:', {
+        hasProduct: !!product,
+        originalGalleryLength: originalGallery.length,
+        previewGalleryLength: previewGallery.length,
+        selectedImageUrl: imageUrl,
+        previewStrategy: 'DUPLICATE_SELECTED_IMAGE',
+        previewGallery
+      });
+    }
+
+    return {
+      ...product,
+      gallery: previewGallery
+    };
+  })() : {
     // Mock product for preview when no real product is provided
     masterProductId: 0,
     name: 'Premium Product Name',
@@ -145,6 +166,21 @@ const ProductCardPreviewEditor: React.FC<ProductCardPreviewEditorProps> = ({
             disableLink={true}
             priority={true}
           />
+          {import.meta.env.DEV && (
+            <div style={{
+              marginTop: 8,
+              padding: 8,
+              background: '#f3f4f6',
+              borderRadius: 4,
+              fontSize: 11,
+              fontFamily: 'monospace',
+              color: '#374151'
+            }}>
+              🔍 Debug: Gallery[0]={previewProduct.gallery?.[0]?.substring(0, 30)}...,
+              Gallery[1]={previewProduct.gallery?.[1]?.substring(0, 30)}...,
+              Total: {previewProduct.gallery?.length || 0} images
+            </div>
+          )}
         </div>
       </div>
 

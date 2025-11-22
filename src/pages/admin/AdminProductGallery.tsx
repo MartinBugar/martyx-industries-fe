@@ -45,7 +45,16 @@ const AdminProductGallery: React.FC = () => {
       try {
         const fullData = await hybridProductService.getProductById(Number(id));
         setFullProduct(fullData);
-        console.log('✅ Full product data loaded for preview:', fullData);
+        if (import.meta.env.DEV) {
+          console.log('✅ Full product data loaded for preview:', {
+            masterProductId: fullData.masterProductId,
+            name: fullData.name,
+            variantType: fullData.variantType,
+            galleryLength: fullData.gallery?.length || 0,
+            gallery: fullData.gallery?.slice(0, 3) || [],
+            fullData
+          });
+        }
       } catch (e) {
         console.warn('Could not load full product data for preview:', e);
         // Continue without preview if hybrid service fails
@@ -71,14 +80,18 @@ const AdminProductGallery: React.FC = () => {
       setSelectedImage(defaultImage);
 
       // Reload full product data to update ProductCard preview with new gallery
-      if (fullProduct) {
-        try {
-          const refreshedProduct = await hybridProductService.getProductById(Number(id));
-          setFullProduct(refreshedProduct);
-          console.log('✅ Product preview refreshed with new gallery');
-        } catch (e) {
-          console.warn('Could not refresh product preview:', e);
+      try {
+        const refreshedProduct = await hybridProductService.getProductById(Number(id));
+        setFullProduct(refreshedProduct);
+        if (import.meta.env.DEV) {
+          console.log('✅ Product preview refreshed with new gallery:', {
+            masterProductId: refreshedProduct.masterProductId,
+            galleryLength: refreshedProduct.gallery?.length || 0,
+            gallery: refreshedProduct.gallery?.slice(0, 5) || []
+          });
         }
+      } catch (e) {
+        console.warn('Could not refresh product preview:', e);
       }
 
     } catch (e: unknown) {

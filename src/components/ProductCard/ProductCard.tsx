@@ -105,15 +105,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <span>Unavailable</span>
         </div>
       )}
-
-      {product.variantType === 'DIGITAL_ONLY' && (
-        <div className="product-badge">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <line x1="12" y1="15" x2="12" y2="3"></line>
-          </svg>
-          Digital
-        </div>
-      )}
     </div>
   );
 
@@ -128,7 +119,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
   return (
     <article className={`product-card ${isUnavailable ? 'product-card--unavailable' : ''} ${className}`}>
       {disableLink ? (
-        <div className="product-card-link">
+        <div
+          className="product-card-link"
+          onClick={(e) => e.preventDefault()}
+          role="presentation"
+        >
           {imageContainerContent}
           {contentSection}
         </div>

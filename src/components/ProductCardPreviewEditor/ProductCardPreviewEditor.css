@@ -54,15 +54,33 @@
   transition: transform 0.2s ease-out;
 }
 
-/* Disable link styling in preview mode */
+/* Disable link navigation in preview mode, but keep hover effects */
 .product-card-preview-wrapper .product-card-link {
   cursor: default;
-  pointer-events: none;
+  /* DON'T use pointer-events: none - it blocks hover effects! */
+  pointer-events: auto !important; /* Explicitly allow hover */
 }
 
-/* Re-enable pointer events for the entire card container for hover effects */
+/* Re-enable pointer events for hover effects */
 .product-card-preview-wrapper .product-card {
-  pointer-events: auto;
+  pointer-events: auto !important;
+}
+
+/* Explicitly enable pointer events for image container to allow hover effects */
+.product-card-preview-wrapper .product-card-image-container {
+  pointer-events: auto !important;
+}
+
+/* Ensure hover effects work in preview mode with higher specificity */
+.product-card-preview-wrapper .product-card:hover .product-card-image-main {
+  opacity: 0 !important;
+  z-index: 0 !important;
+}
+
+.product-card-preview-wrapper .product-card:hover .product-card-image-hover {
+  opacity: 1 !important;
+  z-index: 2 !important;
+  visibility: visible !important;
 }
 
 /* ============================================
