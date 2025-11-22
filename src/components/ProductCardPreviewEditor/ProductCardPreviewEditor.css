@@ -41,17 +41,39 @@
 }
 
 /* Product Card Preview Wrapper - uses real ProductCard component */
+/* Match the exact size from Products page grid (minmax(340px, 1fr)) */
 .product-card-preview-wrapper {
-  max-width: 480px;
+  width: 340px; /* Exact width from Products grid */
   margin: 0 auto;
-  width: 100%;
 }
 
 /* Apply transformation settings to the product card image inside preview wrapper */
 .product-card-preview-wrapper .product-card-image {
   transform: scale(var(--preview-zoom, 1)) translate(var(--preview-offset-x, 0px), var(--preview-offset-y, 0px));
   transform-origin: center center;
-  transition: transform 0.2s ease-out;
+  transition: transform 0.2s ease-out, opacity 0.4s ease;
+}
+
+/* Ensure both main and hover images have the same transform but different opacity */
+.product-card-preview-wrapper .product-card-image-main {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 1 !important;
+  z-index: 1;
+}
+
+.product-card-preview-wrapper .product-card-image-hover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0 !important;
+  z-index: 0;
+  visibility: hidden;
 }
 
 /* Disable link navigation in preview mode, but keep hover effects */

@@ -129,13 +129,17 @@ export class HybridProductService {
     const videoUrl = masterProduct.videoUrl || undefined;
 
     // Gallery from backend (already loaded) or empty array
-    // Sort gallery: PRIMARY image first, then by displayOrder (same logic as Home.tsx and Products.tsx)
+    // Sort gallery: PRIMARY image first, HOVER image second, then by displayOrder
+    // This matches the logic in Home.tsx, Products.tsx, and Wishlist.tsx
     let gallery: string[] = [];
     if (masterProduct.gallery && masterProduct.gallery.length > 0) {
       const sortedGallery = [...masterProduct.gallery].sort((a, b) => {
         // Primary image always goes first
         if (a.primary && !b.primary) return -1;
         if (!a.primary && b.primary) return 1;
+        // Hover image goes second (after primary)
+        if (a.isHover && !b.isHover) return -1;
+        if (!a.isHover && b.isHover) return 1;
         // Otherwise sort by displayOrder
         return (a.displayOrder || 0) - (b.displayOrder || 0);
       });

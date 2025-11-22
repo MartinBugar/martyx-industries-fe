@@ -60,6 +60,26 @@ const ProductCard: React.FC<ProductCardProps> = ({
     return isCDNUrl ? imageUrl : (isCDNEnabled() ? getBestImageUrl(getBaseNameFromPath(imageUrl), 800) : imageUrl);
   };
 
+  // Debug logging for image URLs
+  if (import.meta.env.DEV && hoverImage) {
+    console.log(`🖼️ ProductCard for "${product.name}":`, {
+      masterProductId: product.masterProductId,
+      galleryLength: product.gallery?.length || 0,
+      mainImageUrl: mainImage,
+      hoverImageUrl: hoverImage,
+      mainImageProcessed: mainImage ? getImageUrl(mainImage) : 'none',
+      hoverImageProcessed: hoverImage ? getImageUrl(hoverImage) : 'none',
+      imagesAreSame: mainImage === hoverImage,
+      priority
+    });
+
+    // Extra detail for admin preview
+    if (mainImage === hoverImage) {
+      console.log('ℹ️ Main and hover images are the SAME - this is expected in admin preview mode');
+      console.log('   Hover effect will still work (opacity transition), but shows the same image');
+    }
+  }
+
   // Shared image container content - ensures hover image works everywhere
   const imageContainerContent = (
     <div className="product-card-image-container">
@@ -78,6 +98,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               alt={`${product.name} - hover image`}
               className="product-card-image product-card-image-hover"
               placeholder="/images/product-placeholder.svg"
+              eager={true}
             />
           )}
         </>

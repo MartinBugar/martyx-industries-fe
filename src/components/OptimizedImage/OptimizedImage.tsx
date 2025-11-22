@@ -60,15 +60,45 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
     setError(false);
   };
 
-  const handleError = () => {
+  const handleError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     if (import.meta.env.DEV) {
-      console.warn('❌ Image failed to load:', src);
+      console.error('❌ Image failed to load:', {
+        src,
+        alt,
+        className,
+        error: e,
+        timestamp: new Date().toISOString()
+      });
+
+      // Try to fetch the image to get HTTP status code
+      fetch(src, { method: 'HEAD' })
+        .then(response => {
+          console.error('🔍 Image HEAD request result:', {
+            url: src,
+            status: response.status,
+            statusText: response.statusText,
+            ok: response.ok,
+            headers: {
+              contentType: response.headers.get('content-type'),
+              contentLength: response.headers.get('content-length'),
+              accessControlAllowOrigin: response.headers.get('access-control-allow-origin')
+            }
+          });
+        })
+        .catch(fetchError => {
+          console.error('🔍 Image HEAD request failed:', {
+            url: src,
+            error: fetchError.message,
+            errorType: fetchError.name
+          });
+        });
     }
 
     // If the main image failed and we haven't tried fallback yet, try placeholder
     if (!useFallback && !error) {
       setUseFallback(true);
       setError(true);
+      setLoaded(true); // Mark as loaded to show placeholder
     } else {
       setError(true);
       setLoaded(true); // Stop trying

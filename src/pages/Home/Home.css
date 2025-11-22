@@ -471,7 +471,25 @@
   gap: 2rem;
 }
 
-/* ProductCard component handles all hover effects - no overrides needed */
+/* Ensure hover effects work on featured products */
+.featured-grid .product-card {
+  pointer-events: auto !important;
+}
+
+.featured-grid .product-card-image-container {
+  pointer-events: auto !important;
+}
+
+.featured-grid .product-card:hover .product-card-image-main {
+  opacity: 0 !important;
+  z-index: 0 !important;
+}
+
+.featured-grid .product-card:hover .product-card-image-hover {
+  opacity: 1 !important;
+  z-index: 2 !important;
+  visibility: visible !important;
+}
 
 /* Responsive Featured Products Grid */
 @media (max-width: 1024px) {

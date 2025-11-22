@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import ProductCard from '../ProductCard/ProductCard';
 import { type Product } from '../../data/productData';
+import { productGalleryService } from '../../services/productGalleryService';
 import './ProductCardPreviewEditor.css';
 
 export interface ImageDisplaySettings {
@@ -33,7 +34,76 @@ const ProductCardPreviewEditor: React.FC<ProductCardPreviewEditorProps> = ({
   const [settings, setSettings] = useState<ImageDisplaySettings>(initialSettings);
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
+  const [galleryUrls, setGalleryUrls] = useState<string[]>([]);
   const debounceTimerRef = useRef<number | null>(null);
+
+  // Load gallery from database (same logic as Products.tsx, Home.tsx, Wishlist.tsx)
+  useEffect(() => {
+    const loadGallery = async () => {
+      if (!product?.masterProductId) {
+        setGalleryUrls([]);
+        return;
+      }
+
+      try {
+        const galleryData = await productGalleryService.getProductImages(product.masterProductId.toString());
+
+        // Sort: PRIMARY image first, HOVER image second, then by order
+        const sortedGallery = galleryData.sort((a, b) => {
+          // Primary image always goes first
+          if (a.isPrimary && !b.isPrimary) return -1;
+          if (!a.isPrimary && b.isPrimary) return 1;
+          // Hover image goes second (after primary)
+          if (a.isHover && !b.isHover) return -1;
+          if (!a.isHover && b.isHover) return 1;
+          // Otherwise sort by order
+          return (a.order || 0) - (b.order || 0);
+        });
+
+        // Fallback: if no hover image is set, ensure backwards compatibility
+        const hasHoverImage = sortedGallery.some(img => img.isHover);
+        if (!hasHoverImage && sortedGallery.length >= 2) {
+          const nonPrimaryImages = galleryData
+            .filter(img => !img.isPrimary)
+            .sort((a, b) => (a.order || 0) - (b.order || 0));
+
+          if (nonPrimaryImages.length >= 2) {
+            const secondNonPrimary = nonPrimaryImages[1];
+            const currentIndex = sortedGallery.findIndex(img => img.id === secondNonPrimary.id);
+
+            if (currentIndex > 1) {
+              sortedGallery.splice(currentIndex, 1);
+              sortedGallery.splice(1, 0, secondNonPrimary);
+            }
+          }
+        }
+
+        const urls = sortedGallery.map(img => img.cdnUrl || img.url).filter(Boolean);
+
+        if (import.meta.env.DEV) {
+          console.log('🖼️ ProductCardPreviewEditor - Gallery loaded from DB:', {
+            masterProductId: product.masterProductId,
+            totalImages: urls.length,
+            mainImage: urls[0]?.substring(0, 50) + '...',
+            hoverImage: urls[1]?.substring(0, 50) + '...',
+            hasHoverFlag: hasHoverImage,
+            sortedGalleryFlags: sortedGallery.slice(0, 3).map(img => ({
+              isPrimary: img.isPrimary,
+              isHover: img.isHover,
+              order: img.order
+            }))
+          });
+        }
+
+        setGalleryUrls(urls);
+      } catch (error) {
+        console.error('Failed to load gallery for preview:', error);
+        setGalleryUrls([]);
+      }
+    };
+
+    loadGallery();
+  }, [product?.masterProductId]);
 
   // Update local settings when initial settings change (e.g., when selecting different image)
   useEffect(() => {
@@ -88,22 +158,22 @@ const ProductCardPreviewEditor: React.FC<ProductCardPreviewEditorProps> = ({
 
   // Use real product if provided, otherwise create a mock product
   const previewProduct: Product = product ? (() => {
-    const originalGallery = product.gallery || [];
-
     // ADMIN PREVIEW LOGIC:
-    // Duplicate the selected image for both main and hover positions
-    // This allows the user to see ONLY the image they're editing in the preview
-    // Hover effect will show the same image (to test zoom/position settings)
-    const previewGallery = [imageUrl, imageUrl];
+    // Use gallery loaded from database (already sorted: PRIMARY first, HOVER second)
+    // This ensures preview shows exactly what users see on Products/Home/Wishlist pages
+    const previewGallery = galleryUrls.length >= 2
+      ? galleryUrls  // Use full sorted gallery from DB
+      : [imageUrl, imageUrl]; // Fallback: duplicate if gallery not loaded yet
 
     if (import.meta.env.DEV) {
       console.log('🖼️ ProductCardPreviewEditor - Building preview product:', {
         hasProduct: !!product,
-        originalGalleryLength: originalGallery.length,
+        galleryUrlsLength: galleryUrls.length,
         previewGalleryLength: previewGallery.length,
         selectedImageUrl: imageUrl,
-        previewStrategy: 'DUPLICATE_SELECTED_IMAGE',
-        previewGallery
+        previewStrategy: galleryUrls.length >= 2 ? 'USE_DB_SORTED_GALLERY' : 'DUPLICATE_SELECTED_IMAGE',
+        mainImage: previewGallery[0]?.substring(0, 50) + '...',
+        hoverImage: previewGallery[1]?.substring(0, 50) + '...'
       });
     }
 
@@ -166,21 +236,6 @@ const ProductCardPreviewEditor: React.FC<ProductCardPreviewEditorProps> = ({
             disableLink={true}
             priority={true}
           />
-          {import.meta.env.DEV && (
-            <div style={{
-              marginTop: 8,
-              padding: 8,
-              background: '#f3f4f6',
-              borderRadius: 4,
-              fontSize: 11,
-              fontFamily: 'monospace',
-              color: '#374151'
-            }}>
-              🔍 Debug: Gallery[0]={previewProduct.gallery?.[0]?.substring(0, 30)}...,
-              Gallery[1]={previewProduct.gallery?.[1]?.substring(0, 30)}...,
-              Total: {previewProduct.gallery?.length || 0} images
-            </div>
-          )}
         </div>
       </div>
 
