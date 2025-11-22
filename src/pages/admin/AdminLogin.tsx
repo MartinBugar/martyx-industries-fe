@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { authApi, setAuthToken, removeAuthToken } from '../../services/api';
 import { adminService } from '../../services/adminService';
 import { isTokenExpired } from '../../services/apiUtils';
-import MatrixBackground from '../../components/MatrixBackground/MatrixBackground';
 import './AdminLogin.css';
 
 const AdminLogin: React.FC = () => {
@@ -74,11 +73,6 @@ const AdminLogin: React.FC = () => {
 
   return (
     <div className="martyx-admin-login">
-      {/* Matrix Background Effect - ADMIN LOGIN ONLY */}
-      {/* Configuration: speed={0.4} density={1.0} - Full width coverage */}
-      {/* To disable: Remove this component */}
-      <MatrixBackground speed={0.4} density={1.0} />
-
       <div className="martyx-admin-bg"></div>
 
       <div className="martyx-admin-content">

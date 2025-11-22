@@ -54,6 +54,17 @@
   transition: transform 0.2s ease-out;
 }
 
+/* Disable link styling in preview mode */
+.product-card-preview-wrapper .product-card-link {
+  cursor: default;
+  pointer-events: none;
+}
+
+/* Re-enable pointer events for the entire card container for hover effects */
+.product-card-preview-wrapper .product-card {
+  pointer-events: auto;
+}
+
 /* ============================================
    CONTROLS SECTION
    ============================================ */

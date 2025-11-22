@@ -139,6 +139,7 @@ const ProductCardPreviewEditor: React.FC<ProductCardPreviewEditorProps> = ({
             product={mockProduct}
             showWishlistButton={false}
             showAddToCart={false}
+            disableLink={true}
           />
         </div>
       </div>

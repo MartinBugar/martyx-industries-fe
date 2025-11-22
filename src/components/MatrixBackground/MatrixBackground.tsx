@@ -104,8 +104,8 @@ const MatrixBackground: React.FC<MatrixBackgroundProps> = ({
 
     // Main animation loop
     const draw = () => {
-      // Stronger clearing - ensures old characters disappear quickly
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+      // Balanced clearing - long trail but chars eventually disappear
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.12)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       ctx.font = `${fontSize}px 'Courier New', monospace`;

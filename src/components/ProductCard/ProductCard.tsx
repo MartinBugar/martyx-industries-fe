@@ -21,6 +21,7 @@ interface ProductCardProps {
   };
   className?: string;
   children?: React.ReactNode; // For additional content like wishlist meta
+  disableLink?: boolean; // For admin preview where link shouldn't be clickable
 }
 
 // Helper function to get price display with "Od" prefix if multiple variants
@@ -46,7 +47,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
   priority = false,
   popupState,
   className = '',
-  children
+  children,
+  disableLink = false
 }) => {
   const mainImage = product.gallery && product.gallery.length > 0 ? product.gallery[0] : undefined;
   const hoverImage = product.gallery && product.gallery.length > 1 ? product.gallery[1] : undefined;
@@ -58,9 +60,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
     return isCDNUrl ? imageUrl : (isCDNEnabled() ? getBestImageUrl(getBaseNameFromPath(imageUrl), 800) : imageUrl);
   };
 
+  // Content wrapper component - either Link or div based on disableLink prop
+  const ContentWrapper = disableLink ? 'div' : Link;
+  const wrapperProps = disableLink ? {} : { to: `/products/${product.masterProductId}` };
+
   return (
     <article className={`product-card ${isUnavailable ? 'product-card--unavailable' : ''} ${className}`}>
-      <Link to={`/products/${product.masterProductId}`} className="product-card-link">
+      <ContentWrapper {...wrapperProps} className="product-card-link">
         <div className="product-card-image-container">
           {mainImage ? (
             <>
@@ -105,7 +111,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             </div>
           )}
 
-          {product.productType === 'digital' && (
+          {product.variantType === 'DIGITAL_ONLY' && (
             <div className="product-badge">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <line x1="12" y1="15" x2="12" y2="3"></line>
@@ -119,7 +125,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <h3 className="product-card-title">{product.name}</h3>
           <p className="product-card-description">{product.description}</p>
         </div>
-      </Link>
+      </ContentWrapper>
 
       <div className="product-card-footer">
         <div className="product-card-price">

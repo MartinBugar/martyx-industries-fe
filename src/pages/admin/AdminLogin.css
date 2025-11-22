@@ -27,7 +27,7 @@
 
 .martyx-admin-login {
   min-height: 100vh;
-  background: #000000; /* Black background for Matrix effect */
+  background: var(--martyx-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -36,7 +36,7 @@
   padding: 1rem;
 }
 
-/* High-tech layered background - Overlay on top of Matrix */
+/* High-tech layered background */
 .martyx-admin-bg {
   position: fixed;
   top: 0;
@@ -44,11 +44,11 @@
   right: 0;
   bottom: 0;
   background:
-    radial-gradient(circle at 20% 20%, rgba(201, 165, 0, 0.04) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(201, 165, 0, 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 50% 50%, rgba(201, 165, 0, 0.02) 0%, transparent 70%);
-  z-index: 1;
-  pointer-events: none;
+    radial-gradient(circle at 20% 20%, rgba(246, 200, 69, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(246, 200, 69, 0.06) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(246, 200, 69, 0.03) 0%, transparent 70%),
+    linear-gradient(135deg, #0b0f12 0%, #0f1419 50%, #0b0f12 100%);
+  z-index: 0;
 }
 
 /* Animated tech grid */
@@ -110,7 +110,7 @@
 
 .martyx-admin-content {
   position: relative;
-  z-index: 10; /* Above Matrix background (z-index: 0) and overlay (z-index: 1) */
+  z-index: 1;
   width: 100%;
   max-width: 380px;
 }
