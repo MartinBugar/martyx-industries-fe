@@ -15,11 +15,8 @@ interface ProductCardPreviewEditorProps {
   initialSettings?: ImageDisplaySettings;
   onSettingsChange: (settings: ImageDisplaySettings) => void;
   onSave: (settings: ImageDisplaySettings) => Promise<void>;
-  // Optional product data for realistic preview
-  productName?: string;
-  productDescription?: string;
-  productPrice?: number;
-  productCurrency?: string;
+  // Optional full product data for 1:1 realistic preview
+  product?: Product;
 }
 
 /**
@@ -31,7 +28,8 @@ const ProductCardPreviewEditor: React.FC<ProductCardPreviewEditorProps> = ({
   imageName,
   initialSettings = { zoom: 1.0, offsetX: 0, offsetY: 0 },
   onSettingsChange,
-  onSave
+  onSave,
+  product
 }) => {
   const [settings, setSettings] = useState<ImageDisplaySettings>(initialSettings);
   const [saving, setSaving] = useState(false);
@@ -89,17 +87,18 @@ const ProductCardPreviewEditor: React.FC<ProductCardPreviewEditorProps> = ({
     }
   };
 
-  // Create a mock product for preview using the actual imageUrl being edited
-  const mockProduct: Product = {
-    // Master product fields
+  // Use real product if provided, otherwise create a mock product
+  const previewProduct: Product = product ? {
+    ...product,
+    gallery: [imageUrl, ...(product.gallery?.slice(1) || [])] // Replace first image with the one being edited
+  } : {
+    // Mock product for preview when no real product is provided
     masterProductId: 0,
     name: 'Premium Product Name',
     slug: 'preview-product',
     description: 'High-quality product with advanced features and exceptional performance. Perfect for professional use with industry-leading specifications.',
     longDescription: 'Detailed product description with advanced specifications',
     productCategory: 'MODEL_KIT',
-
-    // Variant fields
     variantId: 0,
     variantName: 'Standard Edition',
     sku: 'PREVIEW-001',
@@ -113,13 +112,16 @@ const ProductCardPreviewEditor: React.FC<ProductCardPreviewEditorProps> = ({
     stockQuantity: 100,
     availabilityStatus: 'IN_STOCK',
     requiresShipping: true,
-
-    // Frontend data
     features: ['Premium Quality', 'Fast Shipping', 'Professional Grade'],
     modelPath: '',
-    gallery: [imageUrl], // Use the actual image being edited
+    gallery: [imageUrl],
     interactionInstructions: [],
     availableVariants: []
+  };
+
+  // Dummy handler for add to cart in preview (doesn't actually add)
+  const handlePreviewAddToCart = () => {
+    console.log('🛒 Preview: Add to cart clicked (editor mode - no action)');
   };
 
   // Calculate CSS custom properties for image transformation
@@ -141,10 +143,12 @@ const ProductCardPreviewEditor: React.FC<ProductCardPreviewEditorProps> = ({
         {/* Actual Product Card with preview transformations applied */}
         <div className="product-card-preview-wrapper" style={previewStyle}>
           <ProductCard
-            product={mockProduct}
-            showWishlistButton={false}
-            showAddToCart={false}
+            product={previewProduct}
+            showWishlistButton={true}
+            showAddToCart={true}
+            onAddToCart={handlePreviewAddToCart}
             disableLink={true}
+            priority={true}
           />
         </div>
       </div>

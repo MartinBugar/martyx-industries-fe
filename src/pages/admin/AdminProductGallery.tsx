@@ -7,6 +7,9 @@ import { adminProductsService, type BaseProduct } from '../../services/adminProd
 import ProductGalleryUpload from '../../components/ProductGalleryUpload/ProductGalleryUpload';
 import ProductCardPreviewEditor, { type ImageDisplaySettings } from '../../components/ProductCardPreviewEditor/ProductCardPreviewEditor';
 import { productGalleryService, type GalleryImage } from '../../services/productGalleryService';
+import ProductCard from '../../components/ProductCard/ProductCard';
+import { hybridProductService } from '../../services/hybridProductService';
+import { type Product } from '../../data/productData';
 
 const AdminProductGallery: React.FC = () => {
   useTranslation('common');
@@ -21,6 +24,7 @@ const AdminProductGallery: React.FC = () => {
   }, [id]);
 
   const [product, setProduct] = useState<BaseProduct | null>(null);
+  const [fullProduct, setFullProduct] = useState<Product | null>(null); // Full product data for ProductCard
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -34,8 +38,19 @@ const AdminProductGallery: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
+      // Load basic product data for admin info
       const data = await adminProductsService.getProductById(id);
       setProduct(data);
+
+      // Load full product data for ProductCard preview
+      try {
+        const fullData = await hybridProductService.getProductById(Number(id));
+        setFullProduct(fullData);
+        console.log('✅ Full product data loaded for preview:', fullData);
+      } catch (e) {
+        console.warn('Could not load full product data for preview:', e);
+        // Continue without preview if hybrid service fails
+      }
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Failed to load product';
       setError(msg);
@@ -55,6 +70,17 @@ const AdminProductGallery: React.FC = () => {
       const primaryImage = images.find(img => img.isPrimary);
       const defaultImage = primaryImage || images[0] || null;
       setSelectedImage(defaultImage);
+
+      // Reload full product data to update ProductCard preview with new gallery
+      if (fullProduct) {
+        try {
+          const refreshedProduct = await hybridProductService.getProductById(Number(id));
+          setFullProduct(refreshedProduct);
+          console.log('✅ Product preview refreshed with new gallery');
+        } catch (e) {
+          console.warn('Could not refresh product preview:', e);
+        }
+      }
 
     } catch (e: unknown) {
       console.error('Failed to load gallery images:', e);
@@ -110,6 +136,11 @@ const AdminProductGallery: React.FC = () => {
       console.error('❌ Failed to save display settings:', e);
       throw e;
     }
+  };
+
+  // Dummy handler for add to cart in preview (admin mode - doesn't actually add)
+  const handlePreviewAddToCart = () => {
+    console.log('🛒 Preview: Add to cart clicked (admin mode - no action)');
   };
 
   // Navigation tabs
@@ -225,15 +256,15 @@ const AdminProductGallery: React.FC = () => {
               </div>
 
               {/* Product Card Preview & Customization Section */}
-              {galleryImages.length > 0 && (
+              {galleryImages.length > 0 && fullProduct && (
                 <div className="product-card-customization-section">
                   <div className="section-header" style={{ marginTop: 32, marginBottom: 16 }}>
                     <h3 className="section-title" style={{ margin: 0, fontSize: 16, fontWeight: 600, color: '#1f2937' }}>
-                      Product Card Customization
+                      Product Card Preview & Customization
                     </h3>
                     <p className="section-description" style={{ margin: '4px 0 0 0', fontSize: 14, color: '#6b7280' }}>
-                      Customize how the image appears in the product card on the /products page.
-                      Select an image and adjust zoom and position.
+                      Live preview of how the product card appears on your store (homepage, products page, wishlist).
+                      Adjust zoom and position for perfect image framing.
                     </p>
                   </div>
 
@@ -327,6 +358,7 @@ const AdminProductGallery: React.FC = () => {
                     <ProductCardPreviewEditor
                       imageUrl={selectedImage.cdnUrl || selectedImage.url}
                       imageName={selectedImage.originalName}
+                      product={fullProduct || undefined}
                       initialSettings={{
                         zoom: selectedImage.cardDisplayZoom || 1.0,
                         offsetX: selectedImage.cardDisplayOffsetX || 0,

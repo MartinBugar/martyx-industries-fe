@@ -97,7 +97,8 @@ const Home: React.FC = () => {
                   mainImage: galleryUrls[0] || 'none',
                   orderInfo: sortedGallery.slice(0, 3).map(img => ({
                     fileName: img.fileName,
-                    order: img.order
+                    order: img.order,
+                    isPrimary: img.isPrimary
                   }))
                 });
               }

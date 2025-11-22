@@ -3,7 +3,7 @@
 /* Import component styles used in this page */
 @import url('../../components/home/Hero.css');
 @import url('../../components/home/FeaturedProducts.css');
-@import url('../../styles/home.css');
+/* Removed @import of old home.css - conflicts with ProductCard component hover effects */
 
 /* ========== MINIMALIST MODERN HERO (2025) ========== */
 
