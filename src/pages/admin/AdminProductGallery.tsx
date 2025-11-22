@@ -243,11 +243,21 @@ const AdminProductGallery: React.FC = () => {
                       <label style={{ display: 'block', fontWeight: 600, marginBottom: 8, color: '#374151' }}>
                         Select Image to Customize:
                       </label>
-                      <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                      <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }} role="group" aria-label="Product images gallery">
                         {galleryImages.map((image) => (
-                          <div
+                          <button
                             key={image.id}
+                            type="button"
                             onClick={() => handleImageSelect(image.id)}
+                            onKeyPress={(e) => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                handleImageSelect(image.id);
+                              }
+                            }}
+                            aria-label={`${image.originalName}${image.isPrimary ? ' - Main image' : ''}${selectedImage?.id === image.id ? ' - Currently selected' : ''}`}
+                            aria-pressed={selectedImage?.id === image.id}
+                            className="image-picker-button"
                             style={{
                               position: 'relative',
                               cursor: 'pointer',
@@ -256,16 +266,20 @@ const AdminProductGallery: React.FC = () => {
                               overflow: 'hidden',
                               width: 100,
                               height: 100,
-                              transition: 'all 0.2s'
+                              transition: 'all 0.2s',
+                              padding: 0,
+                              background: 'none'
                             }}
                           >
                             <img
                               src={image.cdnUrl || image.url}
-                              alt={image.originalName}
+                              alt=""
+                              role="presentation"
                               style={{
                                 width: '100%',
                                 height: '100%',
-                                objectFit: 'cover'
+                                objectFit: 'cover',
+                                display: 'block'
                               }}
                             />
                             {image.isPrimary && (
@@ -279,7 +293,8 @@ const AdminProductGallery: React.FC = () => {
                                 borderRadius: 4,
                                 fontSize: 10,
                                 fontWeight: 600
-                              }}>
+                              }}
+                              aria-label="Main image badge">
                                 ⭐ Main
                               </div>
                             )}
@@ -295,11 +310,12 @@ const AdminProductGallery: React.FC = () => {
                                 fontSize: 10,
                                 textAlign: 'center',
                                 fontWeight: 600
-                              }}>
+                              }}
+                              aria-hidden="true">
                                 SELECTED
                               </div>
                             )}
-                          </div>
+                          </button>
                         ))}
                       </div>
                     </div>

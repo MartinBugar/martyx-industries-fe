@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import './ProductCardPreviewEditor.css';
 
 export interface ImageDisplaySettings {
@@ -29,16 +29,36 @@ const ProductCardPreviewEditor: React.FC<ProductCardPreviewEditorProps> = ({
   const [settings, setSettings] = useState<ImageDisplaySettings>(initialSettings);
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Update local settings when initial settings change (e.g., when selecting different image)
   useEffect(() => {
     setSettings(initialSettings);
   }, [initialSettings]);
 
+  // Cleanup debounce timer on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
+
+  // Debounced callback for onSettingsChange
+  const debouncedOnSettingsChange = useCallback((newSettings: ImageDisplaySettings) => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+    debounceTimerRef.current = setTimeout(() => {
+      onSettingsChange(newSettings);
+    }, 150); // 150ms debounce delay
+  }, [onSettingsChange]);
+
   const handleSettingChange = (field: keyof ImageDisplaySettings, value: number) => {
     const newSettings = { ...settings, [field]: value };
-    setSettings(newSettings);
-    onSettingsChange(newSettings);
+    setSettings(newSettings); // Update immediately for responsive UI
+    debouncedOnSettingsChange(newSettings); // Debounced callback
   };
 
   const handleReset = () => {
@@ -105,7 +125,7 @@ const ProductCardPreviewEditor: React.FC<ProductCardPreviewEditorProps> = ({
         {/* Zoom Control */}
         <div className="control-group">
           <label htmlFor="zoom-slider" className="control-label">
-            🔍 Zoom: <span className="control-value">{(settings.zoom * 100).toFixed(0)}%</span>
+            <span aria-hidden="true">🔍</span> Zoom: <span className="control-value">{(settings.zoom * 100).toFixed(0)}%</span>
           </label>
           <input
             id="zoom-slider"
@@ -116,6 +136,11 @@ const ProductCardPreviewEditor: React.FC<ProductCardPreviewEditorProps> = ({
             value={settings.zoom}
             onChange={(e) => handleSettingChange('zoom', parseFloat(e.target.value))}
             className="control-slider"
+            aria-label={`Image zoom level: ${(settings.zoom * 100).toFixed(0)}%`}
+            aria-valuemin={50}
+            aria-valuemax={300}
+            aria-valuenow={Number((settings.zoom * 100).toFixed(0))}
+            aria-valuetext={`${(settings.zoom * 100).toFixed(0)} percent`}
           />
           <div className="control-range-labels">
             <span>50%</span>
@@ -126,7 +151,7 @@ const ProductCardPreviewEditor: React.FC<ProductCardPreviewEditorProps> = ({
         {/* Horizontal Offset Control */}
         <div className="control-group">
           <label htmlFor="offsetX-slider" className="control-label">
-            ↔️ Horizontal Position: <span className="control-value">{settings.offsetX}px</span>
+            <span aria-hidden="true">↔️</span> Horizontal Position: <span className="control-value">{settings.offsetX}px</span>
           </label>
           <input
             id="offsetX-slider"
@@ -137,17 +162,22 @@ const ProductCardPreviewEditor: React.FC<ProductCardPreviewEditorProps> = ({
             value={settings.offsetX}
             onChange={(e) => handleSettingChange('offsetX', parseInt(e.target.value, 10))}
             className="control-slider"
+            aria-label={`Horizontal position: ${settings.offsetX} pixels`}
+            aria-valuemin={-500}
+            aria-valuemax={500}
+            aria-valuenow={settings.offsetX}
+            aria-valuetext={`${settings.offsetX} pixels ${settings.offsetX < 0 ? 'left' : settings.offsetX > 0 ? 'right' : 'center'}`}
           />
           <div className="control-range-labels">
-            <span>← Left</span>
-            <span>Right →</span>
+            <span>← Left (-500px)</span>
+            <span>Right (+500px) →</span>
           </div>
         </div>
 
         {/* Vertical Offset Control */}
         <div className="control-group">
           <label htmlFor="offsetY-slider" className="control-label">
-            ↕️ Vertical Position: <span className="control-value">{settings.offsetY}px</span>
+            <span aria-hidden="true">↕️</span> Vertical Position: <span className="control-value">{settings.offsetY}px</span>
           </label>
           <input
             id="offsetY-slider"
@@ -158,10 +188,15 @@ const ProductCardPreviewEditor: React.FC<ProductCardPreviewEditorProps> = ({
             value={settings.offsetY}
             onChange={(e) => handleSettingChange('offsetY', parseInt(e.target.value, 10))}
             className="control-slider"
+            aria-label={`Vertical position: ${settings.offsetY} pixels`}
+            aria-valuemin={-500}
+            aria-valuemax={500}
+            aria-valuenow={settings.offsetY}
+            aria-valuetext={`${settings.offsetY} pixels ${settings.offsetY < 0 ? 'up' : settings.offsetY > 0 ? 'down' : 'center'}`}
           />
           <div className="control-range-labels">
-            <span>↑ Up</span>
-            <span>Down ↓</span>
+            <span>↑ Up (-500px)</span>
+            <span>Down (+500px) ↓</span>
           </div>
         </div>
 
@@ -185,7 +220,12 @@ const ProductCardPreviewEditor: React.FC<ProductCardPreviewEditorProps> = ({
 
         {/* Save Message */}
         {saveMessage && (
-          <div className={`save-message ${saveMessage.startsWith('✅') ? 'success' : 'error'}`}>
+          <div
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+            className={`save-message ${saveMessage.startsWith('✅') ? 'success' : 'error'}`}
+          >
             {saveMessage}
           </div>
         )}
