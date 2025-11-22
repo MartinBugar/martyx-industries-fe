@@ -497,7 +497,7 @@
 
 .featured-grid .product-card-image-container {
   position: relative;
-  aspect-ratio: 16/10;
+  aspect-ratio: 3/2;
   background: linear-gradient(135deg, var(--card) 0%, var(--surface) 100%);
   overflow: hidden;
 }
@@ -514,7 +514,7 @@
 }
 
 .featured-grid .product-info {
-  padding: 1.75rem;
+  padding: 1.35rem;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -530,7 +530,7 @@
 }
 
 .featured-grid .product-price {
-  font-size: 1.5rem;
+  font-size: 1.65rem;
   font-weight: 800;
   color: var(--accent);
   margin: 0;
@@ -538,18 +538,19 @@
 
 .featured-grid .product-description {
   color: var(--text-muted);
-  font-size: 0.95rem;
-  line-height: 1.5;
+  font-size: 0.875rem;
+  line-height: 1.6;
   margin: 0;
   flex: 1;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  min-height: 84px;
 }
 
 .featured-grid .product-card-actions {
-  padding: 0 1.75rem 1.75rem;
+  padding: 0 1.35rem 1.35rem;
 }
 
 .featured-grid .add-to-cart-btn {
@@ -1727,7 +1728,7 @@
 
 .featured-grid .product-card-image-container {
     position: relative;
-    aspect-ratio: 16/10;
+    aspect-ratio: 3/2;
     background: linear-gradient(135deg, var(--card) 0%, var(--surface) 100%);
     display: flex;
     align-items: center;
@@ -1747,7 +1748,7 @@
 }
 
 .featured-grid .product-info {
-    padding: 1.5rem;
+    padding: 1.35rem;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -1762,7 +1763,7 @@
 }
 
 .featured-grid .product-price {
-    font-size: 1.375rem;
+    font-size: 1.65rem;
     font-weight: 700;
     color: var(--accent);
     margin: 0 0 0.75rem 0;
@@ -1771,18 +1772,19 @@
 .featured-grid .product-description {
     color: var(--text-muted);
     font-size: 0.875rem;
-    line-height: 1.5;
+    line-height: 1.6;
     margin: 0;
     flex: 1;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    min-height: 84px;
 }
 
 /* Product Card Actions - Add to Cart Button */
 .product-card-actions {
-    padding: 0 1.5rem 1.5rem 1.5rem;
+    padding: 0 1.35rem 1.35rem 1.35rem;
 }
 
 .add-to-cart-btn {

@@ -443,7 +443,7 @@
 /* Ensure wishlist product images use the same styling as /products */
 .wishlist-product-card .product-card-image-container {
   position: relative;
-  aspect-ratio: 16/10;
+  aspect-ratio: 3/2;
   background: linear-gradient(135deg,
     var(--wishlist-surface) 0%,
     var(--wishlist-card) 100%

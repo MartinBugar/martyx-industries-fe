@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authApi, setAuthToken, removeAuthToken } from '../../services/api';
 import { adminService } from '../../services/adminService';
@@ -12,102 +12,6 @@ const AdminLogin: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [showDeniedModal, setShowDeniedModal] = useState(false);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  // Matrix Rain Effect
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    // Set canvas size to window size
-    const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-
-    // Characters - mix of letters, numbers, and special chars
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%&*+=<>[]{}|';
-    const charArray = chars.split('');
-
-    // Create multiple layers for depth effect
-    const layers = [
-      { fontSize: 10, speed: 0.15, opacity: 0.15, color: '#F6C845' },  // Far background
-      { fontSize: 14, speed: 0.25, opacity: 0.25, color: '#F6C845' },  // Mid background
-      { fontSize: 18, speed: 0.35, opacity: 0.35, color: '#F6C845' },  // Mid foreground
-      { fontSize: 22, speed: 0.5, opacity: 0.45, color: '#E6B82D' },  // Foreground
-    ];
-
-    // Initialize columns for each layer
-    const columnSets = layers.map(layer => {
-      const fontSize = layer.fontSize;
-      const columns = Math.floor(canvas.width / fontSize);
-      const drops: number[] = [];
-
-      // Initialize drops at random positions
-      for (let i = 0; i < columns; i++) {
-        drops[i] = Math.random() * -100;
-      }
-
-      return { drops, columns, fontSize };
-    });
-
-    // Draw function
-    const draw = () => {
-      // Stronger clearing to prevent characters from accumulating
-      ctx.fillStyle = 'rgba(11, 15, 18, 0.15)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Draw each layer
-      layers.forEach((layer, layerIndex) => {
-        const { drops, fontSize } = columnSets[layerIndex];
-
-        ctx.fillStyle = layer.color;
-        ctx.globalAlpha = layer.opacity;
-        ctx.font = `${fontSize}px 'Courier New', monospace`;
-
-        // Draw characters for this layer
-        for (let i = 0; i < drops.length; i++) {
-          const char = charArray[Math.floor(Math.random() * charArray.length)];
-          const x = i * fontSize;
-          const y = drops[i] * fontSize;
-
-          // Fade out effect - opacity decreases as character approaches bottom
-          const fadeZone = canvas.height * 0.7; // Start fading at 70% of screen height
-          if (y > fadeZone) {
-            const fadeProgress = (y - fadeZone) / (canvas.height - fadeZone);
-            ctx.globalAlpha = layer.opacity * (1 - fadeProgress);
-          } else {
-            ctx.globalAlpha = layer.opacity;
-          }
-
-          ctx.fillText(char, x, y);
-
-          // Reset drop to top after it completely fades out
-          if (y > canvas.height + 20) {
-            drops[i] = Math.random() * -100;
-          }
-
-          // Move drop down
-          drops[i] += layer.speed;
-        }
-      });
-
-      ctx.globalAlpha = 1.0;
-    };
-
-    // Animation loop
-    const interval = setInterval(draw, 50);
-
-    return () => {
-      clearInterval(interval);
-      window.removeEventListener('resize', resizeCanvas);
-    };
-  }, []);
 
   // If already authenticated, redirect to panel (only if token is valid)
   useEffect(() => {
@@ -169,9 +73,6 @@ const AdminLogin: React.FC = () => {
 
   return (
     <div className="martyx-admin-login">
-      {/* Matrix Rain Canvas */}
-      <canvas ref={canvasRef} className="matrix-rain-canvas" />
-
       <div className="martyx-admin-bg"></div>
 
       <div className="martyx-admin-content">
