@@ -44,7 +44,10 @@
       "Bash(tee:*)",
       "Bash(xargs -I {} sh -c 'count=$(grep -c \"\"\"\"console\\.\"\"\"\" \"\"\"\"{}\"\"\"\" 2>/dev/null || echo 0); if [ \"\"\"\"$count\"\"\"\" -gt 5 ]; then echo \"\"\"\"$count {}\"\"\"\"; fi')",
       "Bash(awk:*)",
-      "Bash(powershell.exe:*)"
+      "Bash(powershell.exe:*)",
+      "Bash(for file in \"src/utils/debounce.ts\" \"src/utils/validation.ts\" \"src/utils/translateApiError.ts\" \"src/utils/tokenRefresh.ts\" \"src/utils/productTranslationUtils.ts\")",
+      "Bash(do echo \"=== $file ===\")",
+      "Bash(done)"
     ],
     "deny": [],
     "ask": []

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { gdprService } from '../../services/gdprService';
+import { gdprService, type ConsentHistoryItem, type DataExportRequest } from '../../services/gdprService';
 import './GdprManagement.css';
 import { logInfo, logWarn, logError } from '../../services/logger';
 
@@ -18,8 +18,8 @@ const GdprManagement: React.FC = () => {
         marketing: boolean;
         confirmed: boolean;
     } | null>(null);
-    const [consentHistory, setConsentHistory] = useState<any[]>([]);
-    const [exportHistory, setExportHistory] = useState<any[]>([]);
+    const [consentHistory, setConsentHistory] = useState<ConsentHistoryItem[]>([]);
+    const [exportHistory, setExportHistory] = useState<DataExportRequest[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
@@ -74,8 +74,8 @@ const GdprManagement: React.FC = () => {
             setSuccess(result.message);
             loadConsentStatus();
             loadConsentHistory();
-        } catch (err: any) {
-            setError(err.message || 'Nepodarilo sa odvolať marketing consent');
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : 'Nepodarilo sa odvolať marketing consent');
         } finally {
             setLoading(false);
         }
@@ -95,8 +95,8 @@ const GdprManagement: React.FC = () => {
             setSuccess(result.message);
             loadConsentStatus();
             loadConsentHistory();
-        } catch (err: any) {
-            setError(err.message || 'Nepodarilo sa povoliť marketing consent');
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : 'Nepodarilo sa povoliť marketing consent');
         } finally {
             setLoading(false);
         }
@@ -111,8 +111,8 @@ const GdprManagement: React.FC = () => {
             const result = await gdprService.requestDataExport();
             setSuccess(result.message);
             loadExportHistory();
-        } catch (err: any) {
-            setError(err.message || 'Nepodarilo sa požiadať o export dát');
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : 'Nepodarilo sa požiadať o export dát');
         } finally {
             setLoading(false);
         }
@@ -126,8 +126,8 @@ const GdprManagement: React.FC = () => {
         try {
             await gdprService.downloadDataExport();
             setSuccess('Export dát bol úspešne stiahnutý!');
-        } catch (err: any) {
-            setError(err.message || 'Nepodarilo sa stiahnuť export dát');
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : 'Nepodarilo sa stiahnuť export dát');
         } finally {
             setLoading(false);
         }
@@ -154,8 +154,8 @@ const GdprManagement: React.FC = () => {
                 localStorage.removeItem('user');
                 window.location.href = '/';
             }, 3000);
-        } catch (err: any) {
-            setError(err.message || 'Nepodarilo sa zmazať účet');
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : 'Nepodarilo sa zmazať účet');
         } finally {
             setLoading(false);
         }
@@ -334,7 +334,7 @@ const GdprManagement: React.FC = () => {
                     <div className="export-history">
                         <h3>História exportov</h3>
                         <div className="history-list">
-                            {exportHistory.map((req: any, index: number) => (
+                            {exportHistory.map((req, index) => (
                                 <div key={index} className="history-item">
                                     <div className="history-date">
                                         {new Date(req.requestDate).toLocaleDateString('sk-SK')}
@@ -367,7 +367,7 @@ const GdprManagement: React.FC = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {consentHistory.map((consent: any, index: number) => (
+                                {consentHistory.map((consent, index) => (
                                     <tr key={index}>
                                         <td>{consent.consentType}</td>
                                         <td>

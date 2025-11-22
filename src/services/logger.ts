@@ -9,7 +9,7 @@ const isDevelopment = import.meta.env.MODE === 'development';
 /**
  * Log informational messages (only in development)
  */
-export const logInfo = (...args: any[]): void => {
+export const logInfo = (...args: unknown[]): void => {
   if (isDevelopment) {
     console.log(...args);
   }
@@ -18,21 +18,21 @@ export const logInfo = (...args: any[]): void => {
 /**
  * Log warnings (always shown, but formatted)
  */
-export const logWarn = (...args: any[]): void => {
+export const logWarn = (...args: unknown[]): void => {
   console.warn(...args);
 };
 
 /**
  * Log errors (always shown)
  */
-export const logError = (...args: any[]): void => {
+export const logError = (...args: unknown[]): void => {
   console.error(...args);
 };
 
 /**
  * Log debug messages (only in development, with [DEBUG] prefix)
  */
-export const logDebug = (...args: any[]): void => {
+export const logDebug = (...args: unknown[]): void => {
   if (isDevelopment) {
     console.log('[DEBUG]', ...args);
   }

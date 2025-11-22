@@ -9,8 +9,8 @@ interface CacheConfig {
   strategy: 'cache-first' | 'network-first' | 'stale-while-revalidate';
 }
 
-interface CacheEntry {
-  data: any;
+interface CacheEntry<T = unknown> {
+  data: T;
   timestamp: number;
   etag?: string;
   lastModified?: string;
@@ -58,9 +58,9 @@ class AdvancedCache {
     setInterval(() => this.cleanup(), 5 * 60 * 1000);
   }
 
-  set(key: string, data: any, type: string = 'api-responses', etag?: string, lastModified?: string): void {
+  set<T = unknown>(key: string, data: T, type: string = 'api-responses', etag?: string, lastModified?: string): void {
     const config = this.configs.get(type) || this.configs.get('api-responses')!;
-    
+
     // Check if we need to evict entries
     if (this.cache.size >= config.maxEntries) {
       this.evictOldest();
@@ -74,7 +74,7 @@ class AdvancedCache {
     });
   }
 
-  get(key: string, type: string = 'api-responses'): any | null {
+  get<T = unknown>(key: string, type: string = 'api-responses'): T | null {
     const config = this.configs.get(type) || this.configs.get('api-responses')!;
     const entry = this.cache.get(key);
 
@@ -86,10 +86,10 @@ class AdvancedCache {
       return null;
     }
 
-    return entry.data;
+    return entry.data as T;
   }
 
-  getWithMetadata(key: string, type: string = 'api-responses'): { data: any; etag?: string; lastModified?: string } | null {
+  getWithMetadata<T = unknown>(key: string, type: string = 'api-responses'): { data: T; etag?: string; lastModified?: string } | null {
     const config = this.configs.get(type) || this.configs.get('api-responses')!;
     const entry = this.cache.get(key);
 
@@ -101,7 +101,7 @@ class AdvancedCache {
     }
 
     return {
-      data: entry.data,
+      data: entry.data as T,
       etag: entry.etag,
       lastModified: entry.lastModified
     };
@@ -171,10 +171,10 @@ export const advancedCache = AdvancedCache.getInstance();
 // Hook for using advanced cache in components
 export const useAdvancedCache = () => {
   return {
-    get: (key: string, type?: string) => advancedCache.get(key, type),
-    set: (key: string, data: any, type?: string, etag?: string, lastModified?: string) => 
+    get: <T = unknown>(key: string, type?: string) => advancedCache.get<T>(key, type),
+    set: <T = unknown>(key: string, data: T, type?: string, etag?: string, lastModified?: string) =>
       advancedCache.set(key, data, type, etag, lastModified),
-    getWithMetadata: (key: string, type?: string) => advancedCache.getWithMetadata(key, type),
+    getWithMetadata: <T = unknown>(key: string, type?: string) => advancedCache.getWithMetadata<T>(key, type),
     preloadCriticalData: () => advancedCache.preloadCriticalData()
   };
 };

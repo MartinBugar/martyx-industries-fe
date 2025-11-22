@@ -12,6 +12,24 @@ interface PerformanceMetrics {
   totalBlockingTime: number;
 }
 
+interface PerformanceEntryWithProcessing extends PerformanceEntry {
+  processingStart?: number;
+}
+
+interface LayoutShiftEntry extends PerformanceEntry {
+  value: number;
+  hadRecentInput: boolean;
+}
+
+interface NavigationTimingEntry extends PerformanceEntry {
+  loadEventEnd: number;
+  fetchStart: number;
+}
+
+interface WindowWithGtag extends Window {
+  gtag?: (command: string, eventName: string, eventParams: Record<string, unknown>) => void;
+}
+
 class PerformanceMonitor {
   private static instance: PerformanceMonitor;
   private metrics: Partial<PerformanceMetrics> = {};
@@ -62,7 +80,10 @@ class PerformanceMonitor {
     const observer = new PerformanceObserver((list) => {
       const entries = list.getEntries();
       entries.forEach((entry) => {
-        this.metrics.firstInputDelay = (entry as any).processingStart - entry.startTime;
+        const entryWithProcessing = entry as PerformanceEntryWithProcessing;
+        if (entryWithProcessing.processingStart !== undefined) {
+          this.metrics.firstInputDelay = entryWithProcessing.processingStart - entry.startTime;
+        }
       });
     });
 
@@ -76,9 +97,10 @@ class PerformanceMonitor {
     let clsValue = 0;
     const observer = new PerformanceObserver((list) => {
       const entries = list.getEntries();
-      entries.forEach((entry: any) => {
-        if (!entry.hadRecentInput) {
-          clsValue += entry.value;
+      entries.forEach((entry) => {
+        const shiftEntry = entry as LayoutShiftEntry;
+        if (!shiftEntry.hadRecentInput) {
+          clsValue += shiftEntry.value;
         }
       });
       this.metrics.cumulativeLayoutShift = clsValue;
@@ -111,7 +133,8 @@ class PerformanceMonitor {
       const entries = list.getEntries();
       entries.forEach((entry) => {
         if (entry.entryType === 'navigation') {
-          this.metrics.loadTime = (entry as any).loadEventEnd - (entry as any).fetchStart;
+          const navEntry = entry as NavigationTimingEntry;
+          this.metrics.loadTime = navEntry.loadEventEnd - navEntry.fetchStart;
         }
       });
     });
@@ -161,8 +184,9 @@ class PerformanceMonitor {
 
   private sendToAnalytics(metrics: Partial<PerformanceMetrics>): void {
     // Send to your analytics service
-    if (typeof (window as any).gtag !== 'undefined') {
-      (window as any).gtag('event', 'web_vitals', {
+    const windowWithGtag = window as WindowWithGtag;
+    if (typeof windowWithGtag.gtag !== 'undefined') {
+      windowWithGtag.gtag('event', 'web_vitals', {
         event_category: 'Performance',
         event_label: 'Core Web Vitals',
         value: Math.round(metrics.largestContentfulPaint || 0),
@@ -208,8 +232,8 @@ export const performanceMonitor = PerformanceMonitor.getInstance();
 // Hook for using performance monitor in components
 export const usePerformanceMonitor = () => {
   return {
-    measure: (name: string, fn: () => any) => performanceMonitor.measureFunction(name, fn),
-    measureAsync: (name: string, fn: () => Promise<any>) => performanceMonitor.measureAsyncFunction(name, fn),
+    measure: <T>(name: string, fn: () => T) => performanceMonitor.measureFunction(name, fn),
+    measureAsync: <T>(name: string, fn: () => Promise<T>) => performanceMonitor.measureAsyncFunction(name, fn),
     getMetrics: () => performanceMonitor.getMetrics()
   };
 };

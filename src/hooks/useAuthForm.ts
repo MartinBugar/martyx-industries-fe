@@ -4,14 +4,15 @@
  */
 
 import { useState, useCallback, useMemo } from 'react';
-import { 
-import { logInfo, logWarn, logError } from '../services/logger';
-  validateLoginForm, 
-  validateRegistrationForm, 
+import {
+  validateLoginForm,
+  validateRegistrationForm,
   validateForgotPasswordForm,
   sanitizeInput,
-  debounce 
+  debounce,
+  type ValidationResult
 } from '../utils/validation';
+import { logInfo, logWarn, logError } from '../services/logger';
 // import { registrationRateLimiter } from '../utils/security';
 
 // ===== TYPY A INTERFACES =====
@@ -20,6 +21,27 @@ export interface AuthFormData {
   password: string;
   confirmPassword?: string;
 }
+
+// Validation return types
+export interface LoginValidationResult {
+  email: ValidationResult;
+  password: ValidationResult;
+  isFormValid: boolean;
+  firstError: string | null;
+}
+
+export interface RegistrationValidationResult {
+  email: ValidationResult;
+  password: ValidationResult;
+  confirmPassword: ValidationResult;
+  isFormValid: boolean;
+  firstError: string | null;
+}
+
+export type FormValidationResult =
+  | LoginValidationResult
+  | RegistrationValidationResult
+  | ValidationResult;
 
 export interface AuthFormState {
   data: AuthFormData;
@@ -94,8 +116,8 @@ export const useAuthForm = ({
   const debouncedValidation = useCallback(
     debounce((fieldName: string, value: string, currentData: AuthFormData) => {
       if (!enableRealTimeValidation) return;
-      
-      let validation: any;
+
+      let validation: FormValidationResult;
       switch (fieldName) {
         case 'email':
           validation = validateForgotPasswordForm(value);
@@ -113,9 +135,9 @@ export const useAuthForm = ({
         default:
           return;
       }
-      
+
       // Pre jednoduchú validáciu (email)
-      if (fieldName === 'email') {
+      if ('isValid' in validation && !('isFormValid' in validation)) {
         if (!validation.isValid && validation.error) {
           setState(prev => ({
             ...prev,
@@ -133,16 +155,16 @@ export const useAuthForm = ({
             }
           }));
         }
-      } else {
+      } else if ('isFormValid' in validation) {
         // Pre formulárové validácie (password, registration)
         if (!validation.isFormValid) {
-          const fieldError = validation[fieldName]?.error;
-          if (fieldError) {
+          const fieldError = (validation as LoginValidationResult | RegistrationValidationResult)[fieldName as keyof typeof validation] as ValidationResult | undefined;
+          if (fieldError?.error) {
             setState(prev => ({
               ...prev,
               errors: {
                 ...prev.errors,
-                [fieldName]: fieldError
+                [fieldName]: fieldError.error
               }
             }));
           }
@@ -194,25 +216,39 @@ export const useAuthForm = ({
      */
     handleSubmit: useCallback(async (e: React.FormEvent) => {
       e.preventDefault();
-      
+
       // Validácia formulára
       const validation = validateForm();
-      
-      if (!(validation as any).isFormValid) {
-        setState(prev => ({
-          ...prev,
-          errors: {
-            email: (validation as any).email?.error,
-            password: (validation as any).password?.error,
-            confirmPassword: (validation as any).confirmPassword?.error
-          }
-        }));
-        return;
+
+      // Type narrowing: check if it's a form validation result
+      if ('isFormValid' in validation) {
+        if (!validation.isFormValid) {
+          setState(prev => ({
+            ...prev,
+            errors: {
+              email: validation.email?.error,
+              password: validation.password?.error,
+              confirmPassword: 'confirmPassword' in validation ? validation.confirmPassword?.error : undefined
+            }
+          }));
+          return;
+        }
+      } else {
+        // It's a simple ValidationResult (forgot password)
+        if (!validation.isValid) {
+          setState(prev => ({
+            ...prev,
+            errors: {
+              email: validation.error
+            }
+          }));
+          return;
+        }
       }
-      
+
       // Nastavenie loading stavu
       setState(prev => ({ ...prev, isProcessing: true, errors: {} }));
-      
+
       try {
         await onSubmit(state.data);
       } catch (error) {
@@ -297,12 +333,16 @@ export const useAuthForm = ({
   // ===== COMPUTED VALUES =====
   const computed = useMemo(() => {
     const validation = validateForm();
-    
+
+    // Type narrowing to get correct properties
+    const isFormValid = 'isFormValid' in validation ? validation.isFormValid : validation.isValid;
+    const firstError = 'firstError' in validation ? validation.firstError : validation.error;
+
     return {
-      isFormValid: (validation as any).isFormValid,
+      isFormValid,
       hasErrors: Object.values(state.errors).some(error => Boolean(error)),
-      firstError: (validation as any).firstError || Object.values(state.errors).find(Boolean),
-      isSubmitDisabled: state.isProcessing || !(validation as any).isFormValid
+      firstError: firstError || Object.values(state.errors).find(Boolean),
+      isSubmitDisabled: state.isProcessing || !isFormValid
     };
   }, [validateForm, state.errors, state.isProcessing]);
 

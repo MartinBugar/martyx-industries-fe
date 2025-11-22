@@ -75,9 +75,13 @@ export const handleResponse = async (response: Response) => {
       }));
 
       // Throw specific rate limit error
-      const error = new Error('RATE_LIMIT_EXCEEDED');
-      (error as any).errorData = errorData;
-      (error as any).rateLimitInfo = rateLimitError;
+      interface ErrorWithMetadata extends Error {
+        errorData?: typeof errorData;
+        rateLimitInfo?: typeof rateLimitError;
+      }
+      const error = new Error('RATE_LIMIT_EXCEEDED') as ErrorWithMetadata;
+      error.errorData = errorData;
+      error.rateLimitInfo = rateLimitError;
       throw error;
     }
 
@@ -105,8 +109,11 @@ export const handleResponse = async (response: Response) => {
     }
 
     // Throw error with unified contract data
-    const error = new Error(errorData.errorCode || 'Unknown error');
-    (error as any).errorData = errorData;
+    interface ErrorWithData extends Error {
+      errorData?: typeof errorData;
+    }
+    const error = new Error(errorData.errorCode || 'Unknown error') as ErrorWithData;
+    error.errorData = errorData;
     throw error;
   }
 

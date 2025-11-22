@@ -92,6 +92,7 @@ import {
   AdminSegments,
   AdminAbandonedCarts,
   AdminHomeSettings,
+  AdminCompanySettings,
   AdminDiscounts,
   AdminReferralConfig,
   AdminEmailTemplates,
@@ -388,6 +389,11 @@ const MainContent = React.memo(() => {
             <Route path="/admin/home-settings" element={
               <RequireAdmin>
                 <AdminHomeSettings />
+              </RequireAdmin>
+            } />
+            <Route path="/admin/company-settings" element={
+              <RequireAdmin>
+                <AdminCompanySettings />
               </RequireAdmin>
             } />
             <Route path="/admin/cassandra" element={

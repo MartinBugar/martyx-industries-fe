@@ -238,8 +238,8 @@ export const sanitizeInput = (input: string): string => {
  * @param delay - Oneskorenie v ms
  * @returns Debounced funkcia
  */
-export const debounce = <T extends (...args: any[]) => any>(
-  func: T, 
+export const debounce = <T extends (...args: unknown[]) => unknown>(
+  func: T,
   delay: number
 ): ((...args: Parameters<T>) => void) => {
   let timeoutId: number | undefined;

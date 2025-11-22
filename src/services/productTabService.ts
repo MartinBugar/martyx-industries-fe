@@ -33,14 +33,19 @@ export async function getTabsForMasterProduct(
   );
 }
 
+interface ProductAttachmentDto {
+  id: number;
+  [key: string]: unknown;
+}
+
 /**
  * Get attachments assigned to a tab (public endpoint)
  *
  * @param tabId - The tab ID
  * @returns Promise<ProductAttachmentDto[]>
  */
-export async function getAttachmentsForTab(tabId: number): Promise<any[]> {
-  return apiClient.request<any[]>(
+export async function getAttachmentsForTab(tabId: number): Promise<ProductAttachmentDto[]> {
+  return apiClient.request<ProductAttachmentDto[]>(
     `/api/public/product-tabs/${tabId}/attachments`,
     {
       method: 'GET',
@@ -238,8 +243,8 @@ export async function adminGetTabTemplates(): Promise<ProductTabTemplate[]> {
  * @param tabId - The tab ID
  * @returns Promise<ProductAttachmentDto[]>
  */
-export async function adminGetTabAttachments(tabId: number): Promise<any[]> {
-  return apiClient.request<any[]>(
+export async function adminGetTabAttachments(tabId: number): Promise<ProductAttachmentDto[]> {
+  return apiClient.request<ProductAttachmentDto[]>(
     `/api/admin/product-tabs/${tabId}/attachments`,
     {
       method: 'GET'

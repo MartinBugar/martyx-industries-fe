@@ -1,6 +1,20 @@
 // GDPR Service - Communication with backend GDPR API
 import { API_BASE_URL, defaultHeaders, handleResponse } from './apiUtils';
 
+// Type definitions for GDPR data structures
+export interface ConsentHistoryItem {
+    consentType: string;
+    consentValue: boolean;
+    actionType: string;
+    consentDate: string;
+    ipAddress: string | null;
+}
+
+export interface DataExportRequest {
+    requestDate: string;
+    status: string;
+}
+
 /**
  * Get auth headers with JWT token
  * Uses defaultHeaders from apiUtils which already handles token parsing correctly
@@ -38,7 +52,7 @@ export const gdprService = {
     /**
      * Get consent history for authenticated user
      */
-    getConsentHistory: async (): Promise<any[]> => {
+    getConsentHistory: async (): Promise<ConsentHistoryItem[]> => {
         const response = await fetch(`${API_BASE_URL}/api/gdpr/consent/history`, {
             method: 'GET',
             headers: getAuthHeaders(),
@@ -88,7 +102,7 @@ export const gdprService = {
     /**
      * Get data export request history
      */
-    getDataExportHistory: async (): Promise<any[]> => {
+    getDataExportHistory: async (): Promise<DataExportRequest[]> => {
         const response = await fetch(`${API_BASE_URL}/api/gdpr/consent/data-export/history`, {
             method: 'GET',
             headers: getAuthHeaders(),
@@ -100,12 +114,12 @@ export const gdprService = {
      * Download data export (immediate export)
      * Downloads all user data as JSON file
      */
-    downloadDataExport: async (): Promise<any> => {
+    downloadDataExport: async (): Promise<Record<string, unknown>> => {
         const response = await fetch(`${API_BASE_URL}/api/gdpr/consent/data-export/download`, {
             method: 'GET',
             headers: getAuthHeaders(),
         });
-        const data = await handleResponse(response);
+        const data = await handleResponse(response) as Record<string, unknown>;
 
         // Trigger download
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });

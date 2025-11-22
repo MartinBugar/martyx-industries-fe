@@ -2,16 +2,39 @@ import { useEffect, useRef, useState } from 'react';
 import { logInfo, logWarn, logError } from '../services/logger';
 
 // Type declarations for Google Maps (minimal subset needed)
+interface GoogleMapsAddressComponent {
+  long_name: string;
+  short_name: string;
+  types: string[];
+}
+
+interface GoogleMapsPlaceResult {
+  address_components?: GoogleMapsAddressComponent[];
+  formatted_address?: string;
+  geometry?: unknown;
+}
+
+interface GoogleMapsAutocomplete {
+  addListener(event: string, callback: () => void): void;
+  getPlace(): GoogleMapsPlaceResult;
+}
+
+interface GoogleMapsAutocompleteConstructor {
+  new (input: HTMLInputElement, options?: {
+    types?: string[];
+    fields?: string[];
+  }): GoogleMapsAutocomplete;
+}
+
 declare global {
   interface Window {
     google?: {
       maps?: {
         places?: {
-          Autocomplete: any;
-          PlaceResult: any;
+          Autocomplete: GoogleMapsAutocompleteConstructor;
         };
         event?: {
-          clearInstanceListeners: (instance: any) => void;
+          clearInstanceListeners: (instance: GoogleMapsAutocomplete) => void;
         };
       };
     };
@@ -87,7 +110,7 @@ const loadGoogleMapsScript = (): Promise<void> => {
 /**
  * Parse Google Place result into structured address
  */
-const parseAddressComponents = (place: any): ParsedAddress | null => {
+const parseAddressComponents = (place: GoogleMapsPlaceResult): ParsedAddress | null => {
   if (!place.address_components) {
     return null;
   }
@@ -104,7 +127,7 @@ const parseAddressComponents = (place: any): ParsedAddress | null => {
   let streetNumber = '';
   let route = '';
 
-  place.address_components.forEach((component: any) => {
+  place.address_components.forEach((component: GoogleMapsAddressComponent) => {
     const types = component.types;
 
     if (types.includes('street_number')) {
@@ -150,7 +173,7 @@ export const useGooglePlacesAutocomplete = (
   onAddressSelect: (address: ParsedAddress) => void
 ) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const autocompleteRef = useRef<any>(null);
+  const autocompleteRef = useRef<GoogleMapsAutocomplete | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

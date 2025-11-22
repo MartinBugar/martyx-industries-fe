@@ -18,17 +18,25 @@ export interface TranslationArgs {
  * @param args - Optional arguments to pass to the translation function
  * @returns A translated error message
  */
+interface ErrorWithData extends Error {
+  errorData?: ApiErrorResponse;
+}
+
+function isErrorWithData(error: unknown): error is ErrorWithData {
+  return error instanceof Error && 'errorData' in error;
+}
+
 export const translateApiError = (
   error: unknown,
   t: TFunction,
   args?: TranslationArgs
 ): string => {
   let errorData: ApiErrorResponse | null = null;
-  
-  if (error instanceof Error) {
+
+  if (isErrorWithData(error)) {
     // Check if error has errorData attached (from handleResponse)
-    if ((error as any).errorData) {
-      errorData = (error as any).errorData;
+    if (error.errorData) {
+      errorData = error.errorData;
     } else {
       // Fallback: try to parse error message as error code
       const errorCode = error.message || 'ERR_INTERNAL';

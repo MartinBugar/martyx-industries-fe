@@ -11,6 +11,27 @@ interface WishlistProviderProps {
   children: ReactNode;
 }
 
+// Type guard for errors with code property
+interface ErrorWithCode {
+  code?: string;
+}
+
+// Type guard for errors with message and errorData
+interface ErrorWithData {
+  message?: string;
+  errorData?: {
+    status?: number;
+  };
+}
+
+const isErrorWithCode = (error: unknown): error is ErrorWithCode => {
+  return typeof error === 'object' && error !== null && 'code' in error;
+};
+
+const isErrorWithData = (error: unknown): error is ErrorWithData => {
+  return typeof error === 'object' && error !== null;
+};
+
 export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) => {
   const { isAuthenticated } = useAuth();
   const [items, setItems] = useState<WishlistItem[]>([]);
@@ -48,7 +69,7 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
             return { ...item, isAvailable: true };
           } catch (error) {
             // If we can't fetch the product (inactive or not found), mark as unavailable
-            if ((error as any).code === 'PRODUCT_INACTIVE') {
+            if (isErrorWithCode(error) && error.code === 'PRODUCT_INACTIVE') {
               return { ...item, isAvailable: false };
             }
             // For other errors (network, etc.), keep original status
@@ -60,18 +81,22 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
       setItems(correctedItems);
       setTotalCount(wishlistData.totalCount);
       setLastUpdated(wishlistData.lastUpdated);
-    } catch (err: any) {
+    } catch (err: unknown) {
       logError('Failed to load wishlist:', err);
 
       // Handle authentication errors from backend
-      if (err.message?.includes('Authentication required') || err.message?.includes('session has expired')) {
-        setError('Please log in to access your wishlist');
-      } else if (err.message?.includes('401') || err.errorData?.status === 401) {
-        setError('Your session has expired. Please log in again.');
-      } else if (err.message?.includes('403') || err.errorData?.status === 403) {
-        setError('You do not have permission to access this wishlist');
-      } else if (err.message?.includes('5') || err.errorData?.status >= 500) {
-        setError('Wishlist temporarily unavailable');
+      if (isErrorWithData(err)) {
+        if (err.message?.includes('Authentication required') || err.message?.includes('session has expired')) {
+          setError('Please log in to access your wishlist');
+        } else if (err.message?.includes('401') || err.errorData?.status === 401) {
+          setError('Your session has expired. Please log in again.');
+        } else if (err.message?.includes('403') || err.errorData?.status === 403) {
+          setError('You do not have permission to access this wishlist');
+        } else if (err.message?.includes('5') || (err.errorData?.status !== undefined && err.errorData.status >= 500)) {
+          setError('Wishlist temporarily unavailable');
+        } else {
+          setError('Unable to load wishlist');
+        }
       } else {
         setError('Unable to load wishlist');
       }
@@ -94,7 +119,7 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
     try {
       const statsData = await wishlistService.getStats();
       setStats(statsData);
-    } catch (err: any) {
+    } catch (err: unknown) {
       logError('Failed to load wishlist stats:', err);
       // Stats are non-critical, fail silently
       setStats(null);
@@ -119,7 +144,7 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
         correctedItem = { ...newItem, isAvailable: true };
       } catch (error) {
         // If we can't fetch the product (inactive or not found), mark as unavailable
-        if ((error as any).code === 'PRODUCT_INACTIVE') {
+        if (isErrorWithCode(error) && error.code === 'PRODUCT_INACTIVE') {
           correctedItem = { ...newItem, isAvailable: false };
         }
         // For other errors (network, etc.), keep original status
@@ -141,22 +166,26 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
       }
 
       return true;
-    } catch (err: any) {
+    } catch (err: unknown) {
       logError('Failed to add to wishlist:', err);
 
       // Handle backend errors with proper error messages
-      if (err.message?.includes('Authentication required') || err.message?.includes('session has expired')) {
-        setError('Please log in to add items to wishlist');
-      } else if (err.message?.includes('401') || err.errorData?.status === 401) {
-        setError('Your session has expired. Please log in again.');
-      } else if (err.message?.includes('403') || err.errorData?.status === 403) {
-        setError('You do not have permission to modify this wishlist');
-      } else if (err.message?.includes('409') || err.errorData?.status === 409) {
-        setError('Product is already in your wishlist');
-      } else if (err.message?.includes('404') || err.errorData?.status === 404) {
-        setError('Product not found');
-      } else if (err.message?.includes('5') || err.errorData?.status >= 500) {
-        setError('Server error, please try again');
+      if (isErrorWithData(err)) {
+        if (err.message?.includes('Authentication required') || err.message?.includes('session has expired')) {
+          setError('Please log in to add items to wishlist');
+        } else if (err.message?.includes('401') || err.errorData?.status === 401) {
+          setError('Your session has expired. Please log in again.');
+        } else if (err.message?.includes('403') || err.errorData?.status === 403) {
+          setError('You do not have permission to modify this wishlist');
+        } else if (err.message?.includes('409') || err.errorData?.status === 409) {
+          setError('Product is already in your wishlist');
+        } else if (err.message?.includes('404') || err.errorData?.status === 404) {
+          setError('Product not found');
+        } else if (err.message?.includes('5') || (err.errorData?.status !== undefined && err.errorData.status >= 500)) {
+          setError('Server error, please try again');
+        } else {
+          setError('Unable to add to wishlist. Please try again.');
+        }
       } else {
         setError('Unable to add to wishlist. Please try again.');
       }
@@ -196,20 +225,24 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
       }
 
       return true;
-    } catch (err: any) {
+    } catch (err: unknown) {
       logError('Failed to remove from wishlist:', err);
 
       // Handle backend errors with proper error messages
-      if (err.message?.includes('Authentication required') || err.message?.includes('session has expired')) {
-        setError('Please log in to remove items from wishlist');
-      } else if (err.message?.includes('401') || err.errorData?.status === 401) {
-        setError('Your session has expired. Please log in again.');
-      } else if (err.message?.includes('403') || err.errorData?.status === 403) {
-        setError('You do not have permission to modify this wishlist');
-      } else if (err.message?.includes('404') || err.errorData?.status === 404) {
-        setError('Product not found in wishlist');
-      } else if (err.message?.includes('5') || err.errorData?.status >= 500) {
-        setError('Server error, please try again');
+      if (isErrorWithData(err)) {
+        if (err.message?.includes('Authentication required') || err.message?.includes('session has expired')) {
+          setError('Please log in to remove items from wishlist');
+        } else if (err.message?.includes('401') || err.errorData?.status === 401) {
+          setError('Your session has expired. Please log in again.');
+        } else if (err.message?.includes('403') || err.errorData?.status === 403) {
+          setError('You do not have permission to modify this wishlist');
+        } else if (err.message?.includes('404') || err.errorData?.status === 404) {
+          setError('Product not found in wishlist');
+        } else if (err.message?.includes('5') || (err.errorData?.status !== undefined && err.errorData.status >= 500)) {
+          setError('Server error, please try again');
+        } else {
+          setError('Unable to remove from wishlist');
+        }
       } else {
         setError('Unable to remove from wishlist');
       }
@@ -256,13 +289,17 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
       // Reload data after bulk operation
       await loadWishlist();
       await loadStats();
-    } catch (err: any) {
+    } catch (err: unknown) {
       logError('Failed to add multiple items to wishlist:', err);
 
-      if (err.message?.includes('Authentication required') || err.message?.includes('session has expired')) {
-        setError('Please log in to add items to wishlist');
-      } else if (err.message?.includes('401') || err.errorData?.status === 401) {
-        setError('Your session has expired. Please log in again.');
+      if (isErrorWithData(err)) {
+        if (err.message?.includes('Authentication required') || err.message?.includes('session has expired')) {
+          setError('Please log in to add items to wishlist');
+        } else if (err.message?.includes('401') || err.errorData?.status === 401) {
+          setError('Your session has expired. Please log in again.');
+        } else {
+          setError('Failed to add products to wishlist');
+        }
       } else {
         setError('Failed to add products to wishlist');
       }
@@ -282,13 +319,17 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
       // Reload data after bulk operation
       await loadWishlist();
       await loadStats();
-    } catch (err: any) {
+    } catch (err: unknown) {
       logError('Failed to remove multiple items from wishlist:', err);
 
-      if (err.message?.includes('Authentication required') || err.message?.includes('session has expired')) {
-        setError('Please log in to remove items from wishlist');
-      } else if (err.message?.includes('401') || err.errorData?.status === 401) {
-        setError('Your session has expired. Please log in again.');
+      if (isErrorWithData(err)) {
+        if (err.message?.includes('Authentication required') || err.message?.includes('session has expired')) {
+          setError('Please log in to remove items from wishlist');
+        } else if (err.message?.includes('401') || err.errorData?.status === 401) {
+          setError('Your session has expired. Please log in again.');
+        } else {
+          setError('Failed to remove products from wishlist');
+        }
       } else {
         setError('Failed to remove products from wishlist');
       }

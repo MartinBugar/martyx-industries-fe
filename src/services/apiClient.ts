@@ -12,9 +12,9 @@
 import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
 import { advancedCache } from '../utils/advancedCache';
 
-interface RequestConfig {
+interface RequestConfig<T = unknown> {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
-  body?: any;
+  body?: T;
   headers?: Record<string, string>;
   cache?: boolean;
   cacheType?: 'products' | 'user-data' | 'static-assets' | 'api-responses';
@@ -24,15 +24,15 @@ interface RequestConfig {
   staleWhileRevalidate?: boolean;
 }
 
-interface CacheEntry {
-  data: any;
+interface CacheEntry<T = unknown> {
+  data: T;
   timestamp: number;
   expiry: number;
 }
 
 class ApiClient {
   private cache = new Map<string, CacheEntry>();
-  private pendingRequests = new Map<string, Promise<any>>();
+  private pendingRequests = new Map<string, Promise<unknown>>();
   // private readonly CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
   private readonly DEFAULT_RETRY_ATTEMPTS = 3;
   private readonly DEFAULT_RETRY_DELAY = 1000; // 1 second
@@ -40,7 +40,7 @@ class ApiClient {
   /**
    * Make an API request with automatic error handling and optional caching
    */
-  async request<T = any>(endpoint: string, config: RequestConfig = {}): Promise<T> {
+  async request<T = unknown>(endpoint: string, config: RequestConfig = {}): Promise<T> {
     const {
       method = 'GET',
       body,
@@ -178,23 +178,23 @@ class ApiClient {
   }
 
   // Convenience methods
-  async get<T = any>(endpoint: string, options: Omit<RequestConfig, 'method'> = {}): Promise<T> {
+  async get<T = unknown>(endpoint: string, options: Omit<RequestConfig, 'method'> = {}): Promise<T> {
     return this.request<T>(endpoint, { ...options, method: 'GET' });
   }
 
-  async post<T = any>(endpoint: string, body?: any, options: Omit<RequestConfig, 'method' | 'body'> = {}): Promise<T> {
+  async post<T = unknown, B = unknown>(endpoint: string, body?: B, options: Omit<RequestConfig, 'method' | 'body'> = {}): Promise<T> {
     return this.request<T>(endpoint, { ...options, method: 'POST', body });
   }
 
-  async put<T = any>(endpoint: string, body?: any, options: Omit<RequestConfig, 'method' | 'body'> = {}): Promise<T> {
+  async put<T = unknown, B = unknown>(endpoint: string, body?: B, options: Omit<RequestConfig, 'method' | 'body'> = {}): Promise<T> {
     return this.request<T>(endpoint, { ...options, method: 'PUT', body });
   }
 
-  async patch<T = any>(endpoint: string, body?: any, options: Omit<RequestConfig, 'method' | 'body'> = {}): Promise<T> {
+  async patch<T = unknown, B = unknown>(endpoint: string, body?: B, options: Omit<RequestConfig, 'method' | 'body'> = {}): Promise<T> {
     return this.request<T>(endpoint, { ...options, method: 'PATCH', body });
   }
 
-  async delete<T = any>(endpoint: string, options: Omit<RequestConfig, 'method'> = {}): Promise<T> {
+  async delete<T = unknown>(endpoint: string, options: Omit<RequestConfig, 'method'> = {}): Promise<T> {
     return this.request<T>(endpoint, { ...options, method: 'DELETE' });
   }
 }
