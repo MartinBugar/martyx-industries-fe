@@ -273,3 +273,49 @@
   display: block;
   margin-bottom: 4px;
 }
+
+/* ============================================
+   FOCUS INDICATORS & ACCESSIBILITY
+   ============================================ */
+
+/* Focus indicators for image picker buttons (from AdminProductGallery) */
+.image-picker-button:focus-visible {
+  outline: 3px solid #3b82f6;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+}
+
+/* Focus indicators for sliders */
+.control-slider:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 3px;
+}
+
+/* Focus indicators for buttons */
+.btn-reset:focus-visible,
+.btn-save:focus-visible {
+  outline: 3px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .image-picker-button:focus-visible {
+    outline-width: 4px;
+  }
+
+  .control-slider:focus-visible {
+    outline-width: 3px;
+  }
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  .product-card-mock__image,
+  .control-slider,
+  .image-picker-button,
+  .btn-reset,
+  .btn-save {
+    transition: none;
+  }
+}

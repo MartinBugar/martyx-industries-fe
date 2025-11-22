@@ -275,6 +275,7 @@ const AdminProductGallery: React.FC = () => {
                               src={image.cdnUrl || image.url}
                               alt=""
                               role="presentation"
+                              loading="lazy"
                               style={{
                                 width: '100%',
                                 height: '100%',
