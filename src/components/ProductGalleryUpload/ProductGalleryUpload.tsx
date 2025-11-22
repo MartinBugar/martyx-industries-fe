@@ -48,7 +48,7 @@ const ProductGalleryUpload: React.FC<ProductGalleryUploadProps> = ({
       logInfo(`🔍 ${isRefresh ? 'Refreshing' : 'Loading'} gallery images for product: ${productId}`);
 
       // Load gallery images from database (with metadata)
-      let galleryImages: any[] = [];
+      let galleryImages: Array<{ id: string; cdnUrl?: string; url: string; order?: number; isPrimary?: boolean }> = [];
 
       if (productGalleryService.isSpacesConfigured()) {
         try {

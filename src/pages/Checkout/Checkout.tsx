@@ -586,9 +586,10 @@ const Checkout: React.FC = () => {
       setShowSaveAddressOption(false);
 
       alert(t('alerts.address_saved', { name: saved.label }));
-    } catch (err: any) {
+    } catch (err: unknown) {
       logError('[Checkout] Failed to save address:', err);
-      alert(t('alerts.address_save_failed', { error: err.message || 'Unknown error' }));
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      alert(t('alerts.address_save_failed', { error: errorMessage }));
     }
   };
 

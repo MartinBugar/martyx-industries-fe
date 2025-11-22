@@ -3,6 +3,19 @@ import { useTranslation } from 'react-i18next';
 import { getAuthToken, debugToken } from '../../utils/tokenUtils';
 import { logInfo, logWarn, logError } from '../../services/logger';
 
+interface Photo {
+  id: number;
+  originalFilename: string;
+  fileName: string;
+  fileSize: number;
+  cdnUrl: string;
+  thumbnailUrl: string;
+  verificationStatus: 'pending' | 'approved' | 'rejected';
+  uploadDate: string;
+  productId: string;
+  productName: string;
+}
+
 interface PurchasedModel {
   order_id: string;
   order_number: string;
@@ -13,7 +26,7 @@ interface PurchasedModel {
   quantity: number;
   price: number;
   currency?: string;
-  photos: any[];
+  photos: Photo[];
   can_upload: boolean;
   max_photos: number;
 }
@@ -158,6 +171,7 @@ const PhotoUploadModal: React.FC<PhotoUploadModalProps> = ({ model, onClose, onS
           });
 
           if (!response.ok) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             let errorData: any = {};
             const contentType = response.headers.get('content-type');
 
@@ -200,9 +214,10 @@ const PhotoUploadModal: React.FC<PhotoUploadModalProps> = ({ model, onClose, onS
           const progress = Math.round(((i + 1) / totalFiles) * 100);
           setUploadProgress(progress);
 
-        } catch (fileError: any) {
+        } catch (fileError: unknown) {
           logError(`❌ Error uploading file ${i + 1}:`, fileError);
-          errors.push(`${selectedFile.file.name}: ${fileError.message}`);
+          const message = fileError instanceof Error ? fileError.message : 'Unknown error';
+          errors.push(`${selectedFile.file.name}: ${message}`);
         }
       }
 
@@ -228,11 +243,13 @@ const PhotoUploadModal: React.FC<PhotoUploadModalProps> = ({ model, onClose, onS
       if (uploadedCount > 0) {
         onSuccess();
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       logError('Upload error:', err);
-      
+
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+
       // If it's a 500 error (backend not implemented), offer mock mode
-      if (err.message && err.message.includes('Backend chyba (500)')) {
+      if (errorMessage.includes('Backend chyba (500)')) {
         logInfo('💡 Suggestion: Enable mock mode for testing without backend');
         logInfo('   Add VITE_MOCK_UPLOADS=true to .env file');
         
@@ -256,8 +273,8 @@ const PhotoUploadModal: React.FC<PhotoUploadModalProps> = ({ model, onClose, onS
           return;
         }
       }
-      
-      setError(err.message || 'Nepodarilo sa uploadnúť fotky. Skúste to znovu.');
+
+      setError(errorMessage || 'Nepodarilo sa uploadnúť fotky. Skúste to znovu.');
     } finally {
       setUploading(false);
       setUploadProgress(0);

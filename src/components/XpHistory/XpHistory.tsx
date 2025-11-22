@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/useAuth';
 import xpHistoryService, { type XpTransactionDto } from '../../services/xpHistoryService';
 import './XpHistory.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logInfo, logError } from '../../services/logger';
 
 const XpHistory: React.FC = () => {
     const { user } = useAuth();

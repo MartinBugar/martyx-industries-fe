@@ -64,6 +64,7 @@ const AdminProductDetail: React.FC = () => {
     try {
       const payload: MasterProductDto = { ...product };
       // Clean timestamps (read-only) and relationships (managed separately)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const cleanPayload: any = { ...payload };
       delete cleanPayload.createdAt;
       delete cleanPayload.updatedAt;
@@ -104,8 +105,9 @@ const AdminProductDetail: React.FC = () => {
       setEditingVariant(null);
       await load(); // Reload product to get updated variants
       setSavedMsg('Variant saved successfully!');
-    } catch (e: any) {
-      throw new Error(e.message || 'Failed to save variant');
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Failed to save variant';
+      throw new Error(message);
     }
   };
 
@@ -115,8 +117,9 @@ const AdminProductDetail: React.FC = () => {
       await adminProductsService.deleteVariant(variantId);
       await load();
       setSavedMsg('Variant deleted successfully!');
-    } catch (e: any) {
-      setError(e.message || 'Failed to delete variant');
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Failed to delete variant';
+      setError(message);
     }
   };
 
@@ -146,8 +149,9 @@ const AdminProductDetail: React.FC = () => {
       setComponentVariantId(null);
       await load();
       setSavedMsg('Component saved successfully!');
-    } catch (e: any) {
-      throw new Error(e.message || 'Failed to save component');
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Failed to save component';
+      throw new Error(message);
     }
   };
 
@@ -157,8 +161,9 @@ const AdminProductDetail: React.FC = () => {
       await adminProductsService.deleteComponent(componentId);
       await load();
       setSavedMsg('Component deleted successfully!');
-    } catch (e: any) {
-      setError(e.message || 'Failed to delete component');
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Failed to delete component';
+      setError(message);
     }
   };
 

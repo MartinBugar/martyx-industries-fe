@@ -7,7 +7,7 @@ import { useFormatters } from '../../hooks/useFormatters';
 import Lightbox from './Lightbox';
 import type { UserProfile, PublicModel, PublicPhoto } from '../../types/userGallery';
 import './UserGalleryDetail.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logError } from '../../services/logger';
 
 const UserGalleryDetail: React.FC = () => {
   const { userId } = useParams<{ userId: string }>();

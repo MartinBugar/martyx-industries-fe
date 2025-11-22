@@ -9,7 +9,7 @@ import { userGalleryService } from '../../services/userGalleryService';
 import { adminGalleryService, type AdminUserPhotosResponse, type AdminModelInfo } from '../../services/adminGalleryService';
 import { adminAbandonedCartService, type ShoppingCartDto } from '../../services/adminAbandonedCartService';
 import type { UserGalleryDetail } from '../../types/userGallery';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logInfo, logError } from '../../services/logger';
 
 type AdminUserTab = 'details' | 'gallery';
 

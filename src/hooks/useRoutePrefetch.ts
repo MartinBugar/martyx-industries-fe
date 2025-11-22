@@ -6,7 +6,7 @@
 import { useEffect, useCallback, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { advancedCache } from '../utils/advancedCache';
-import { logInfo, logWarn, logError } from '../services/logger';
+import { logInfo, logWarn } from '../services/logger';
 
 interface PrefetchConfig {
   routes: string[];

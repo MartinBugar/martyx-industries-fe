@@ -8,7 +8,7 @@ import { isTokenExpired } from '../services/apiUtils';
 import { ordersService } from '../services/ordersService';
 import { secureLocalStorage, loginRateLimiter } from '../utils/security';
 import { startTokenRefresh, stopTokenRefresh, refreshAccessToken } from '../utils/tokenRefresh';
-import { logInfo, logWarn, logError } from '../services/logger';
+import { logInfo, logError } from '../services/logger';
 
 // Props for the AuthProvider component
 interface AuthProviderProps {

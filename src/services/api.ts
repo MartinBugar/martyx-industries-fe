@@ -1,4 +1,4 @@
-import { logInfo, logWarn, logError } from './logger';
+import { logError } from './logger';
 // Import common API utilities
 import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders, updateAuthorizationHeader } from './apiUtils';
 import type {

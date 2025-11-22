@@ -104,9 +104,10 @@ const ModelPhotoGallery: React.FC<ModelPhotoGalleryProps> = ({ model, onClose, o
       const photos = data.data?.photos || data.photos || [];
       logInfo('Setting photos:', photos);
       setPhotos(photos);
-    } catch (err: any) {
+    } catch (err: unknown) {
       logError('Error fetching photos:', err);
-      setError(err.message || 'Nepodarilo sa načítať fotky');
+      const message = err instanceof Error ? err.message : 'Nepodarilo sa načítať fotky';
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -258,9 +259,10 @@ const ModelPhotoGallery: React.FC<ModelPhotoGalleryProps> = ({ model, onClose, o
       }
 
       logInfo('Photo deleted successfully');
-    } catch (err: any) {
+    } catch (err: unknown) {
       logError('Error deleting photo:', err);
-      alert(err.message || 'Nepodarilo sa zmazať fotku. Skúste to znovu.');
+      const message = err instanceof Error ? err.message : 'Nepodarilo sa zmazať fotku. Skúste to znovu.';
+      alert(message);
     } finally {
       setDeletingPhotoId(null);
     }

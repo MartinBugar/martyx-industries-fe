@@ -5,7 +5,7 @@ import type { PublicPhotoWithUser } from '../../types/userGallery';
 import { userGalleryService } from '../../services/userGalleryService';
 import Lightbox from './Lightbox';
 import './PhotoGrid.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logError } from '../../services/logger';
 
 interface PhotoGridProps {
   photos: PublicPhotoWithUser[];

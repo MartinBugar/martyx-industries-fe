@@ -7,7 +7,7 @@ import { adminSupplierService, type PageResponse } from '../../services/adminSup
 import { adminProductsService, type ProductVariantDto } from '../../services/adminProductsService';
 import type { PurchaseOrderDto, PurchaseOrderCreateDto, SupplierDto } from '../../types/inventory';
 import { Badge, Button, SkeletonTable } from '../../components/ui';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logError } from '../../services/logger';
 
 type TabType = 'all-orders' | 'create-order' | 'view-details';
 
@@ -166,6 +166,7 @@ const AdminPurchaseOrders: React.FC = () => {
     recalculateTotals(newItems, createData.tax_amount, createData.shipping_cost);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const updateLineItem = (index: number, field: keyof LineItem, value: any) => {
     const newItems = [...createData.items];
     newItems[index] = { ...newItems[index], [field]: value };

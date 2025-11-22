@@ -5,7 +5,7 @@ import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 import './OrderHistory.css';
 // Note: Download functionality moved to OrderDetailsCard
 import OrderDetailsCard from '../OrderDetailsCard';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logError } from '../../services/logger';
 
 
 const OrderHistory: React.FC = () => {

@@ -4,7 +4,7 @@ import { Button } from '../../components/ui';
 import xpConfigService, { type XpConfigDto } from '../../services/xpConfigService';
 import { useErrors } from '../../context/ErrorContext';
 import './AdminXpConfig.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logInfo, logError } from '../../services/logger';
 
 // Available icons for XP sources
 const AVAILABLE_ICONS = [
@@ -165,6 +165,7 @@ const AdminXpConfig: React.FC = () => {
         setConfirmDialog({ isOpen: false, config: null, action: null });
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleValueChange = (id: number, field: keyof XpConfigDto, value: any) => {
         setEditedValues(prev => ({
             ...prev,
@@ -175,6 +176,7 @@ const AdminXpConfig: React.FC = () => {
         }));
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const getEditedValue = (id: number, field: keyof XpConfigDto, originalValue: any) => {
         return editedValues[id]?.[field] ?? originalValue;
     };

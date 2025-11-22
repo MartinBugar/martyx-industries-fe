@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { stripeService, type CreateCheckoutSessionRequest, type CreateCheckoutSessionResponse } from '../services/stripeService';
 import { translateApiError } from '../utils/translateApiError';
-import { logInfo, logWarn, logError } from '../services/logger';
+import { logError } from '../services/logger';
 
 interface StripeCheckoutState {
   loading: boolean;

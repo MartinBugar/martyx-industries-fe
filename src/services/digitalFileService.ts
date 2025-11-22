@@ -3,7 +3,7 @@
  */
 
 import { apiClient } from './apiClient';
-import { logInfo, logWarn, logError } from '../services/logger';
+import { logError } from '../services/logger';
 
 export interface DigitalFileInfo {
   hasFile: boolean;
@@ -125,8 +125,11 @@ class DigitalFileService {
       }
 
       return response;
-    } catch (error: any) {
-      if (error.name === 'AbortError' || error.message === 'canceled') {
+    } catch (error: unknown) {
+      const errorName = error && typeof error === 'object' && 'name' in error ? (error as any).name : '';
+      const errorMessage = error instanceof Error ? error.message : '';
+
+      if (errorName === 'AbortError' || errorMessage === 'canceled') {
         throw new Error('Upload cancelled');
       }
       throw error;

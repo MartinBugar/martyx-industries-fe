@@ -20,7 +20,7 @@
 
 import type {Product} from '../data/productData';
 import type {CartItem, CartProduct} from '../context/cartContextTypes';
-import {logInfo, logWarn} from '../services/logger';
+import { logInfo, logWarn } from '../services/logger';
 
 const GA4_MEASUREMENT_ID = import.meta.env.VITE_GA4_MEASUREMENT_ID || '';
 

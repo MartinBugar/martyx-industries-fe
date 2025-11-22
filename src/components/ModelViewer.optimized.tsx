@@ -12,7 +12,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useStableCallback, useDebouncedEffect } from '../hooks/useOptimizedEffect';
 import './ModelViewer.css';
-import { logInfo, logWarn, logError } from '../services/logger';
+import { logWarn } from '../services/logger';
 
 // Using existing type definitions from src/types/google-model-viewer.d.ts
 

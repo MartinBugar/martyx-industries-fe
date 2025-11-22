@@ -6,7 +6,7 @@
 
 import { apiClient } from './apiClient';
 import type { ProductTabDto, ProductTabCreateRequest, ProductTabTemplate, ProductAttachmentDto } from '../types/api';
-import { logInfo, logWarn, logError } from './logger';
+import { logError } from './logger';
 
 // ============================================================================
 // PUBLIC ENDPOINTS (No auth required)

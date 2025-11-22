@@ -4,7 +4,7 @@ import { Button } from '../../components/ui';
 import { referralConfigService, type ReferralConfigDto } from '../../services/referralConfigService';
 import { useErrors } from '../../context/ErrorContext';
 import './AdminReferralConfig.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logInfo, logError } from '../../services/logger';
 
 const AdminReferralConfig: React.FC = () => {
     const { addError } = useErrors();
@@ -98,6 +98,7 @@ const AdminReferralConfig: React.FC = () => {
         }
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleValueChange = (field: keyof ReferralConfigDto, value: any) => {
         setEditedValues(prev => ({
             ...prev,
@@ -105,6 +106,7 @@ const AdminReferralConfig: React.FC = () => {
         }));
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const getEditedValue = (field: keyof ReferralConfigDto, originalValue: any) => {
         return editedValues[field] ?? originalValue;
     };

@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { logInfo, logWarn, logError } from '../services/logger';
+import { logError } from '../services/logger';
 
 const CSRF_TOKEN_KEY = 'csrf_token';
 const CSRF_HEADER_NAME = 'X-CSRF-Token';

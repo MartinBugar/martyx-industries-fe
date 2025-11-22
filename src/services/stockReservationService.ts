@@ -1,5 +1,5 @@
 import { API_BASE_URL } from './apiUtils';
-import { logInfo, logWarn, logError } from '../services/logger';
+import { logWarn } from '../services/logger';
 
 export interface ReservationResponse {
   reservationId: number;

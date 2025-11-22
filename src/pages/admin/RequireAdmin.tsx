@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { isTokenExpired } from '../../services/apiUtils';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logInfo } from '../../services/logger';
 
 interface Props {
   children: React.ReactNode;

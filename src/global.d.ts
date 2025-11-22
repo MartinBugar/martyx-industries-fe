@@ -70,6 +70,7 @@ declare global {
   }
   
   interface Window {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     gtag?: (...args: any[]) => void;
     __I18N_MISSING_KEYS?: Set<string>;
     __i18nDebug?: {

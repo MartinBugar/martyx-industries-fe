@@ -5,7 +5,7 @@ import '@google/model-viewer';
 import Slider from './Slider/Slider';
 // Import CSS
 import './ModelViewer.css';
-import { logInfo, logWarn, logError } from '../services/logger';
+import { logInfo, logWarn } from '../services/logger';
 
 // Use the ModelViewerElement interface from global.d.ts
 declare global {

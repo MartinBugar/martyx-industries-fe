@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import AdminLayout from './AdminLayout';
 import { homePageSettingsService, type HomePageSetting } from '../../services/homePageSettingsService';
 import './AdminHomeSettings.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logError } from '../../services/logger';
 
 const AdminHomeSettings: React.FC = () => {
   const [settings, setSettings] = useState<HomePageSetting[]>([]);

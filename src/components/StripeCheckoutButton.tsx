@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { CartItem } from '../context/cartContextTypes';
 import { stripeService } from '../services/stripeService';
 import { stockService } from '../services/stockService';
-import { logInfo, logWarn, logError } from '../services/logger';
+import { logInfo, logError } from '../services/logger';
 
 type Props = {
   items: CartItem[];

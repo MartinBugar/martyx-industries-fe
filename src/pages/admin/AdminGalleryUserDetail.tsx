@@ -22,10 +22,10 @@ const AdminGalleryUserDetail: React.FC = () => {
   const [sortBy, setSortBy] = useState<'recent' | 'oldest' | 'product_name'>('recent');
 
   // Data state
-  const [userInfo, setUserInfo] = useState<any>(null);
+  const [userInfo, setUserInfo] = useState<{ userId: number; email: string; firstName: string; lastName: string } | null>(null);
   const [photos, setPhotos] = useState<AdminPhotoInfo[]>([]);
-  const [stats, setStats] = useState<any>(null);
-  const [modelStatuses, setModelStatuses] = useState<any>({});
+  const [stats, setStats] = useState<{ totalPhotos: number; publicPhotos: number; privatePhotos: number; pendingPhotos: number } | null>(null);
+  const [modelStatuses, setModelStatuses] = useState<Record<string, { isPublic: boolean; isCompleted: boolean }>>({});
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -174,7 +174,7 @@ const AdminGalleryUserDetail: React.FC = () => {
     if (selectedPhotos.size === photos.length) {
       setSelectedPhotos(new Set());
     } else {
-      setSelectedPhotos(new Set(photos.map((p: any) => p.id)));
+      setSelectedPhotos(new Set(photos.map(p => p.id)));
     }
   };
 

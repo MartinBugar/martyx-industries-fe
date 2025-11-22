@@ -17,7 +17,7 @@ import {
 import { Button } from '../../components/ui';
 import { apiClient } from '../../services/apiClient';
 import './AdminUsers.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logError } from '../../services/logger';
 
 const AdminProductAttachments: React.FC = () => {
   const { productId } = useParams<{ productId: string }>();

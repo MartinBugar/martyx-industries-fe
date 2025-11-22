@@ -4,18 +4,20 @@
  */
 
 import { useEffect, useCallback, useRef, type DependencyList } from 'react';
-import { logInfo, logWarn, logError } from '../services/logger';
+import { logError } from '../services/logger';
 
 /**
  * useStableCallback - Creates a stable callback reference that doesn't change on every render
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const useStableCallback = <T extends (...args: any[]) => any>(callback: T): T => {
   const callbackRef = useRef<T>(callback);
-  
+
   // Update the ref if callback changes
   callbackRef.current = callback;
-  
+
   // Return a stable callback that calls the current callback
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return useCallback(((...args: any[]) => {
     return callbackRef.current(...args);
   }) as T, []);

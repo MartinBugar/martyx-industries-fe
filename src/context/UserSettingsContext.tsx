@@ -7,7 +7,7 @@ import React, { useState, useEffect, type ReactNode } from 'react';
 import { userSettingsService } from '../services/userSettingsService';
 import { useAuth } from './useAuth';
 import { UserSettingsContext } from './UserSettingsContextDef';
-import { logInfo, logWarn, logError } from '../services/logger';
+import { logWarn, logError } from '../services/logger';
 
 export const UserSettingsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const { isAuthenticated } = useAuth();

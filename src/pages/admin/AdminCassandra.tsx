@@ -6,7 +6,7 @@ import './AdminUsers.css';
 import './AdminButtonOverrides.css';
 import { Button } from '../../components/ui';
 import cassandraImageService, { type CassandraImageDto, type UploadImageResponse } from '../../services/cassandraImageService';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logInfo, logError } from '../../services/logger';
 
 const AdminCassandra: React.FC = () => {
     const [images, setImages] = useState<CassandraImageDto[]>([]);

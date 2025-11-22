@@ -1,5 +1,5 @@
 import { API_BASE_URL, handleResponse, withLangHeaders } from './apiUtils';
-import { logInfo, logWarn, logError } from '../services/logger';
+import { logInfo, logError } from '../services/logger';
 
 export interface Testimonial {
   id: number;

@@ -10,7 +10,7 @@ import {
   type CreditTransactionDto
 } from '../../services/referralService';
 import './ReferralDashboard.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logError } from '../../services/logger';
 
 const ReferralDashboard: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();

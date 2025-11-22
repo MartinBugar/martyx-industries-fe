@@ -1,6 +1,6 @@
 import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
 import { authApi } from './api';
-import { logInfo, logWarn, logError } from '../services/logger';
+import { logError } from '../services/logger';
 
 export const adminService = {
   // Verifies if the current authenticated user has ADMIN privileges on the backend

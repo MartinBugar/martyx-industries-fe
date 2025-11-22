@@ -1,5 +1,5 @@
 import { API_BASE_URL, defaultHeaders, withLangHeaders } from './apiUtils';
-import { logInfo, logWarn, logError } from '../services/logger';
+import { logInfo, logError } from '../services/logger';
 
 // Response interfaces for revenue analytics
 export interface RevenueSummary {

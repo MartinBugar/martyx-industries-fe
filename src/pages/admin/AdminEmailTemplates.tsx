@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './AdminEmailTemplates.css';
 import { emailTemplatesService, type EmailTemplate } from '../../services/emailTemplatesService';
 import AdminLayout from './AdminLayout';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logError } from '../../services/logger';
 
 const AdminEmailTemplates: React.FC = () => {
   const [templates, setTemplates] = useState<EmailTemplate[]>([]);
@@ -32,9 +32,10 @@ const AdminEmailTemplates: React.FC = () => {
 
       const data = await emailTemplatesService.getAllTemplates();
       setTemplates(data);
-    } catch (err: any) {
+    } catch (err: unknown) {
       logError('Failed to fetch templates:', err);
-      setError(err.message || 'Failed to fetch templates');
+      const message = err instanceof Error ? err.message : 'Failed to fetch templates';
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -80,9 +81,10 @@ const AdminEmailTemplates: React.FC = () => {
 
       // Auto-hide success message
       setTimeout(() => setSuccessMessage(null), 3000);
-    } catch (err: any) {
+    } catch (err: unknown) {
       logError('Failed to update template:', err);
-      setError(err.message || 'Failed to update template');
+      const message = err instanceof Error ? err.message : 'Failed to update template';
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -99,9 +101,10 @@ const AdminEmailTemplates: React.FC = () => {
       const html = await emailTemplatesService.previewTemplate(selectedTemplate.templateCode);
       setPreviewHtml(html);
       setShowPreview(true);
-    } catch (err: any) {
+    } catch (err: unknown) {
       logError('Failed to preview template:', err);
-      setError(err.message || 'Failed to generate preview');
+      const message = err instanceof Error ? err.message : 'Failed to generate preview';
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -128,9 +131,10 @@ const AdminEmailTemplates: React.FC = () => {
 
       // Auto-hide success message
       setTimeout(() => setSuccessMessage(null), 5000);
-    } catch (err: any) {
+    } catch (err: unknown) {
       logError('Failed to send test email:', err);
-      setError(err.message || 'Failed to send test email');
+      const message = err instanceof Error ? err.message : 'Failed to send test email';
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -148,9 +152,10 @@ const AdminEmailTemplates: React.FC = () => {
       if (selectedTemplate?.id === updated.id) {
         setSelectedTemplate(updated);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       logError('Failed to toggle status:', err);
-      setError(err.message || 'Failed to toggle status');
+      const message = err instanceof Error ? err.message : 'Failed to toggle status';
+      setError(message);
     } finally {
       setLoading(false);
     }

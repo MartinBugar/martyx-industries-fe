@@ -114,8 +114,8 @@ function VirtualList<T>({
 export default VirtualList;
 
 // Hook for virtual list calculations
-export const useVirtualList = (
-  items: any[],
+export const useVirtualList = <T,>(
+  items: T[],
   itemHeight: number,
   containerHeight: number,
   overscan: number = 5

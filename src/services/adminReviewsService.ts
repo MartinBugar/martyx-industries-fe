@@ -1,6 +1,6 @@
 import type { Testimonial } from './testimonialService';
 import { apiClient } from './apiClient';
-import { logInfo, logWarn, logError } from '../services/logger';
+import { logInfo, logError } from '../services/logger';
 
 interface PageResponse<T> {
   content: T[];

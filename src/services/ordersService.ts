@@ -1,7 +1,7 @@
 import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
 import { removeAuthToken } from './api';
 import type { Order } from '../context/authTypes';
-import { logInfo, logWarn, logError } from '../services/logger';
+import { logError } from '../services/logger';
 
 // Types that approximate the backend OrderDTO shape
 // We keep them flexible to avoid tight coupling

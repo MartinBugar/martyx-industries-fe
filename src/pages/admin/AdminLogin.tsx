@@ -5,7 +5,7 @@ import { adminService } from '../../services/adminService';
 import { isTokenExpired } from '../../services/apiUtils';
 import ParticlesBackground from '../../components/ParticlesBackground/ParticlesBackground';
 import './AdminLogin.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logError } from '../../services/logger';
 
 const AdminLogin: React.FC = () => {
   const navigate = useNavigate();

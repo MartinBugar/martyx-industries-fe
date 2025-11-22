@@ -11,7 +11,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import {registrationService} from '../../services/registrationService';
 import { registrationSchema, type RegistrationFormData } from '../../schemas/formSchemas';
 import { getReferralCodeFromCookie } from '../../hooks/useReferralTracking';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logInfo, logError } from '../../services/logger';
 import './Registration.css';
 
 // Zdieľané komponenty a utility

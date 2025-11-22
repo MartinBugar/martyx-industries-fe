@@ -7,7 +7,7 @@ import { companySettingsService } from '../../services/companySettingsService';
 import { contactSchema, type ContactFormData } from '../../schemas/formSchemas';
 import type { CompanySettingsDto } from '../../types/invoice';
 import './Contact.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logWarn, logError } from '../../services/logger';
 
 const Contact: React.FC = () => {
   const { t } = useTranslation('contact');
@@ -95,16 +95,19 @@ const Contact: React.FC = () => {
         formStartTime: Date.now(),
         verificationToken: `verify_${Date.now()}_${Math.random().toString(36).substring(7)}`
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       logError('Contact form submission error:', error);
       setSubmitStatus('error');
 
       // Handle API error with message from backend
-      if (error.errorData && error.errorData.message) {
-        setApiError(error.errorData.message);
-      } else {
-        setApiError(t('form.error'));
+      let message = t('form.error');
+      if (error && typeof error === 'object' && 'errorData' in error) {
+        const errorData = error.errorData as any;
+        if (errorData && errorData.message) {
+          message = errorData.message;
+        }
       }
+      setApiError(message);
     }
   };
 

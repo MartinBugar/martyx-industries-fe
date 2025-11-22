@@ -1,6 +1,6 @@
 // Registration service
 import { handleResponse, API_BASE_URL, defaultHeaders, withLangHeaders } from './apiUtils';
-import { logInfo, logWarn, logError } from '../services/logger';
+import { logError } from '../services/logger';
 
 // Registration service
 export const registrationService = {

@@ -97,7 +97,7 @@ export const addressService = {
       const parsed = JSON.parse(raw);
       if (!Array.isArray(parsed)) return [];
 
-      return parsed.filter((addr: any) =>
+      return parsed.filter(addr =>
         addr &&
         typeof addr === 'object' &&
         addr.street &&

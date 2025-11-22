@@ -14,7 +14,7 @@ import cassandraRankService, { type UserCassandraDto } from '../../services/cass
 import { userCreditsService, referralService, type UserCreditDto, type ReferralStatsDto } from '../../services/referralService';
 import type { Avatar } from '../../services/avatarService';
 import './UserAccount.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logInfo, logError } from '../../services/logger';
 
 const UserAccount: React.FC = () => {
   const { user, isAuthenticated, isLoading, fetchProfile } = useAuth();

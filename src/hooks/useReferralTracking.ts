@@ -7,7 +7,7 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { referralService } from '../services/referralService';
-import { logInfo, logWarn, logError } from '../services/logger';
+import { logInfo, logError } from '../services/logger';
 
 // Cookie name and expiry (90 days)
 const REFERRAL_COOKIE_NAME = 'referral_code';

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './PwaInstall.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logInfo, logError } from '../../services/logger';
 
 /**
  * PWA Installation Component

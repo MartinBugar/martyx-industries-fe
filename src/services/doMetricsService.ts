@@ -1,5 +1,5 @@
 import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
-import { logInfo, logWarn, logError } from '../services/logger';
+import { logWarn } from '../services/logger';
 
 // Minimal wrapper for a DigitalOcean metrics endpoint (or any bandwidth provider).
 // If the backend endpoint is unavailable, this function will return a friendly string.

@@ -43,8 +43,9 @@ const GdprSettings: React.FC = () => {
         try {
             await updateParticlesEnabled(newValue);
             // No success message - silent update for better UX
-        } catch (err: any) {
-            setError(err.message || 'Nepodarilo sa zmeniť nastavenie particles');
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : 'Nepodarilo sa zmeniť nastavenie particles';
+            setError(message);
         }
     };
 
@@ -70,8 +71,9 @@ const GdprSettings: React.FC = () => {
 
             setSuccess(result.message);
             loadConsentStatus();
-        } catch (err: any) {
-            setError(err.message || 'Nepodarilo sa zmeniť marketing consent');
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : 'Nepodarilo sa zmeniť marketing consent';
+            setError(message);
         } finally {
             setLoading(false);
         }
@@ -85,8 +87,9 @@ const GdprSettings: React.FC = () => {
         try {
             await gdprService.downloadDataExport();
             setSuccess('Export dát bol úspešne stiahnutý!');
-        } catch (err: any) {
-            setError(err.message || 'Nepodarilo sa stiahnuť export dát');
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : 'Nepodarilo sa stiahnuť export dát';
+            setError(message);
         } finally {
             setLoading(false);
         }
@@ -112,8 +115,9 @@ const GdprSettings: React.FC = () => {
                 logout();
                 window.location.href = '/';
             }, 3000);
-        } catch (err: any) {
-            setError(err.message || 'Nepodarilo sa zmazať účet');
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : 'Nepodarilo sa zmazať účet';
+            setError(message);
         } finally {
             setLoading(false);
         }

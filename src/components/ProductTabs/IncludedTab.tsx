@@ -25,8 +25,8 @@ const IncludedTab: React.FC<IncludedTabProps> = ({ content }) => {
             <h3>What's Included in This Package:</h3>
             <ol className="components-list">
               {components
-                .sort((a: any, b: any) => (a.displayOrder || 0) - (b.displayOrder || 0))
-                .map((component: any) => (
+                .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))
+                .map((component) => (
                   <li key={component.id} className="component-item">
                     <div className="component-content">
                       <div className="component-title-row">

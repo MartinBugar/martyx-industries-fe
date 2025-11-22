@@ -18,7 +18,7 @@ import {
 import { Button } from '../../components/ui';
 import { apiClient } from '../../services/apiClient';
 import './AdminUsers.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logError } from '../../services/logger';
 
 const AdminVariantTabs: React.FC = () => {
   const { productId, variantId } = useParams<{ productId: string; variantId: string }>();

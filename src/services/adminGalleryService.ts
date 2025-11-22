@@ -1,5 +1,5 @@
 import { apiClient } from './apiClient';
-import { logInfo, logWarn, logError } from '../services/logger';
+import { logInfo } from '../services/logger';
 
 // Types for admin gallery management
 export interface AdminPhotoInfo {
@@ -165,7 +165,7 @@ class AdminGalleryService {
   // Delete a photo
   async deletePhoto(photoId: number, request: AdminPhotoDeleteRequest) {
     const url = `${this.baseUrl}/photos/${photoId}`;
-    const response = await apiClient.delete<{ success: boolean; data: any }>(url, { body: request });
+    const response = await apiClient.delete<{ success: boolean; data: { success: boolean; message: string } }>(url, { body: request });
     return response.data;
   }
 
@@ -174,7 +174,7 @@ class AdminGalleryService {
   // Update photo metadata
   async updatePhoto(photoId: number, request: AdminPhotoUpdateRequest) {
     const url = `${this.baseUrl}/photos/${photoId}`;
-    const response = await apiClient.put<{ success: boolean; data: any }>(url, request);
+    const response = await apiClient.put<{ success: boolean; data: AdminPhotoInfo }>(url, request);
     return response.data;
   }
 

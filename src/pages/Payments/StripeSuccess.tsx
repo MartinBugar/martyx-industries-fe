@@ -4,7 +4,7 @@ import { stripeService, type StripeSuccessResponse } from '../../services/stripe
 import { API_BASE_URL } from '../../services/apiUtils';
 import { useCart } from '../../context/useCart';
 import './StripeSuccess.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logInfo, logError } from '../../services/logger';
 
 /**
  * Validates and sanitizes download URLs to prevent injection attacks.

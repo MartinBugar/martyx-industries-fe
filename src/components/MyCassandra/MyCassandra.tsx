@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import cassandraRankService, { type UserCassandraDto } from '../../services/cassandraRankService';
 import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 import './MyCassandra.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logInfo, logError } from '../../services/logger';
 
 const MyCassandra: React.FC = () => {
     const [cassandraData, setCassandraData] = useState<UserCassandraDto | null>(null);

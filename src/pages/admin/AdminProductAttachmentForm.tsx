@@ -17,7 +17,7 @@ import {
 import { Button } from '../../components/ui';
 import { apiClient } from '../../services/apiClient';
 import './AdminUsers.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logError } from '../../services/logger';
 
 const ATTACHMENT_TYPES = [
   'ASSEMBLY_GUIDE',
@@ -152,9 +152,10 @@ const AdminProductAttachmentForm: React.FC = () => {
 
       // Navigate back to list
       navigate(`/admin/products/${productId}/attachments`);
-    } catch (err: any) {
+    } catch (err: unknown) {
       logError('Error saving attachment:', err);
-      setError(err.message || 'Failed to save attachment');
+      const message = err instanceof Error ? err.message : 'Failed to save attachment';
+      setError(message);
     } finally {
       setSaving(false);
     }

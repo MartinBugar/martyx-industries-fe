@@ -6,7 +6,7 @@ import PhotoGrid from './PhotoGrid';
 import { userGalleryService } from '../../services/userGalleryService';
 import type { PublicUser, PublicPhotoWithUser, GalleryStats, GalleryFilter, GallerySort, GalleryView } from '../../types/userGallery';
 import './UserGallery.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logError } from '../../services/logger';
 
 const UserGallery: React.FC = () => {
   const { t } = useTranslation('gallery');

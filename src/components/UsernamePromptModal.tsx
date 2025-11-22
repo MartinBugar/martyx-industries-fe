@@ -33,13 +33,10 @@ const UsernamePromptModal: React.FC<UsernamePromptModalProps> = ({ isOpen, onClo
       } else {
         setError(result.message || 'Nepodarilo sa nastaviť username');
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       // Handle specific error messages from backend
-      if (err.message) {
-        setError(err.message);
-      } else {
-        setError('Nepodarilo sa nastaviť username. Skúste to znova.');
-      }
+      const message = err instanceof Error ? err.message : 'Nepodarilo sa nastaviť username. Skúste to znova.';
+      setError(message);
     } finally {
       setIsSubmitting(false);
     }

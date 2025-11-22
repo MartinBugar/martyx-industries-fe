@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { decodeJWT } from '../../services/apiUtils';
 import './TokenExpirationTimer.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logInfo } from '../../services/logger';
 
 interface TokenExpirationTimerProps {
   className?: string;

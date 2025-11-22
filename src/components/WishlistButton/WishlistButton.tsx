@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useWishlist } from '../../context/WishlistContext';
 import { useAuth } from '../../context/useAuth';
 import './WishlistButton.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logError } from '../../services/logger';
 
 interface WishlistButtonProps {
   productId: string | number;

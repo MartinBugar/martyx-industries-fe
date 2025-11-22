@@ -23,7 +23,7 @@ import BuildInfoTab from './BuildInfoTab';
 
 // Import Error Boundary for error handling
 import ErrorBoundary from '../ErrorBoundary/ErrorBoundary';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logInfo, logError } from '../../services/logger';
 
 interface DynamicProductTabsProps {
   masterProductId?: number;

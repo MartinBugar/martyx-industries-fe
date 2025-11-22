@@ -10,7 +10,7 @@ import {
 } from '../../services/revenueAnalyticsService';
 import VisitorChart from '../../components/Charts/VisitorChart';
 import './AdminDashboard.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logInfo, logError } from '../../services/logger';
 
 type DashboardSection = 'status' | 'visitors' | 'revenue';
 

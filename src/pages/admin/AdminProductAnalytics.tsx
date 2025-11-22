@@ -60,8 +60,8 @@ const AdminProductAnalytics: React.FC = () => {
   };
 
   const sortedAnalytics = [...analytics].sort((a, b) => {
-    let aVal: any;
-    let bVal: any;
+    let aVal: string | number;
+    let bVal: string | number;
 
     switch (sortField) {
       case 'date':

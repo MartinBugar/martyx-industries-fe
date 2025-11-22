@@ -5,7 +5,7 @@ import { getAttachmentsForVariant, trackDownload } from '../../services/productA
 import type { ProductAttachmentDto } from '../../types/api';
 import { downloadFile } from '../../services/download';
 import './ProductTabs.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logError } from '../../services/logger';
 
 interface DownloadTabProps {
   content: TabContent;

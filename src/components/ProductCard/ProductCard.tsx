@@ -5,7 +5,7 @@ import WishlistButton from '../WishlistButton';
 import OptimizedImage from '../OptimizedImage/OptimizedImage';
 import { getBestImageUrl, getBaseNameFromPath, isCDNEnabled } from '../../utils/cdnImages';
 import './ProductCard.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logInfo } from '../../services/logger';
 
 interface ProductCardProps {
   product: Product;

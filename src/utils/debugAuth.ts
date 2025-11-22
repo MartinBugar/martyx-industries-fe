@@ -4,7 +4,7 @@
  */
 
 import { debugToken, clearAuthData } from './tokenUtils';
-import { logInfo, logWarn, logError } from '../services/logger';
+import { logInfo } from '../services/logger';
 
 // Make functions available globally for console debugging
 declare global {

@@ -4,7 +4,7 @@
  */
 
 import { useMemo, useRef, useState, useEffect, type DependencyList } from 'react';
-import { logInfo, logWarn, logError } from '../services/logger';
+import { logInfo } from '../services/logger';
 
 // Deep comparison for objects
 const deepEqual = (a: unknown, b: unknown): boolean => {

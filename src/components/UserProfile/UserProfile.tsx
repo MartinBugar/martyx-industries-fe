@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../context/useAuth';
 import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 import './UserProfile.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logError } from '../../services/logger';
 
 interface UserProfileFormData {
   firstName: string;

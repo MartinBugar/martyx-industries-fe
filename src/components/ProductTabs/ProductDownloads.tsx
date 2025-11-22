@@ -19,7 +19,7 @@ import { getAttachmentsForTab } from '../../services/productTabService';
 import type { ProductAttachmentDto } from '../../types/api';
 import { downloadFile } from '../../services/download';
 import './ProductDownloads.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logInfo, logError } from '../../services/logger';
 
 interface ProductDownloadsProps {
   masterProductId?: number;

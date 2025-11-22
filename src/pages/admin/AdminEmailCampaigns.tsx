@@ -5,7 +5,7 @@ import './AdminDiscounts.css';
 import './AdminButtonOverrides.css';
 import { adminCampaignsService, type EmailCampaign, type CampaignPerformance, type CustomerSegment, type CreateCampaignRequest } from '../../services/adminCampaignsService';
 import { Badge, Button, SkeletonTable } from '../../components/ui';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logError } from '../../services/logger';
 
 type TabType = 'all-campaigns' | 'create-campaign' | 'campaign-details';
 

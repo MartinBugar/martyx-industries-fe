@@ -35,6 +35,7 @@ export const ComponentEditor: React.FC<ComponentEditorProps> = ({
     }
   }, [component]);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const updateField = (key: keyof VariantComponentDto, value: any) => {
     setFormData(prev => ({ ...prev, [key]: value }));
     setError(null);
@@ -57,8 +58,9 @@ export const ComponentEditor: React.FC<ComponentEditorProps> = ({
     setSaving(true);
     try {
       await onSave(formData as VariantComponentDto);
-    } catch (e: any) {
-      setError(e.message || 'Failed to save component');
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Failed to save component';
+      setError(message);
       setSaving(false);
     }
   };

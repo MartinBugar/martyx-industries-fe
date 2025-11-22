@@ -10,7 +10,7 @@ import {
   type CreateCampaignRequest
 } from '../../services/adminCampaignsService';
 import './AdminCampaigns.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logError } from '../../services/logger';
 
 const AdminCampaigns: React.FC = () => {
   // Tab state

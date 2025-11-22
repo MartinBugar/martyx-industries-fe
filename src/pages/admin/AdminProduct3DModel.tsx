@@ -6,7 +6,7 @@ import './AdminUsers.css';
 import { adminProductsService, type BaseProduct } from '../../services/adminProductsService';
 import { product3DModelService } from '../../services/product3DModelService';
 import type { Model3DInfoResponse, UploadState } from '../../types/product3DModel';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logError } from '../../services/logger';
 
 /**
  * Admin page for managing 3D model (.glb) files for products

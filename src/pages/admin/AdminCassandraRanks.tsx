@@ -6,7 +6,7 @@ import cassandraRankService, {
     type Rank
 } from '../../services/cassandraRankService';
 import './AdminCassandraRanks.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logInfo, logError } from '../../services/logger';
 
 const AdminCassandraRanks: React.FC = () => {
     const [ranks, setRanks] = useState<CassandraRankImageDto[]>([]);

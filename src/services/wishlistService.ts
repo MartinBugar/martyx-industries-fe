@@ -7,7 +7,7 @@ import type {
   WishlistItem
 } from '../types/wishlist';
 import type { ApiResponse } from '../types/api';
-import { logInfo, logWarn, logError } from '../services/logger';
+import { logError } from '../services/logger';
 
 export class WishlistService {
   private readonly baseUrl = '/api/wishlist';

@@ -3,7 +3,7 @@
  * Tracks and reports performance metrics
  */
 
-import { logInfo, logWarn, logError } from '../services/logger';
+import { logInfo, logWarn } from '../services/logger';
 
 interface PerformanceMetrics {
   loadTime: number;

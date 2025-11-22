@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { loadNamespace, type Namespace } from '../i18n';
-import { logInfo, logWarn, logError } from '../services/logger';
+import { logWarn } from '../services/logger';
 
 /**
  * Route-based namespace mapping

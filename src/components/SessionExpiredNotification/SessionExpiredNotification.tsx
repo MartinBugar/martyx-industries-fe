@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './SessionExpiredNotification.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logInfo } from '../../services/logger';
 
 const SessionExpiredNotification: React.FC = () => {
   const [isVisible, setIsVisible] = useState<boolean>(false);

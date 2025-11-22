@@ -1,4 +1,4 @@
-import { logInfo, logWarn, logError } from './logger';
+import { logError } from './logger';
 // Profile service
 import { handleResponse, API_BASE_URL, defaultHeaders, withLangHeaders } from './apiUtils';
 import type { User } from '../context/authTypes';

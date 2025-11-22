@@ -138,6 +138,7 @@ const AdminShippingZones: React.FC = () => {
 
     setCreating(true);
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const payload: any = {
         zone_name: zoneData.zone_name.trim(),
         zone_code: zoneData.zone_code.trim().toUpperCase(),
@@ -182,6 +183,7 @@ const AdminShippingZones: React.FC = () => {
 
     setCreating(true);
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const payload: any = {
         shipping_zone_id: rateData.shipping_zone_id,
         rate_name: rateData.rate_name.trim(),

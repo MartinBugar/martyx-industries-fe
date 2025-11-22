@@ -4,7 +4,7 @@
 // import raketaModel from '../assets/3dModels/raketa.glb'; // REMOVED: Now using CDN
 // CDN imports removed - gallery now loaded from database only
 
-import { logInfo, logWarn, logError } from '../services/logger';
+import { logInfo } from '../services/logger';
 
 // makeGallery function removed - gallery now loaded from database only
 

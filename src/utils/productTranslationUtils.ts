@@ -2,7 +2,7 @@ import type { TFunction } from 'i18next';
 import i18n from '../i18n';
 import { type ProductTab, type TabContent, type HardcodedProductData } from '../data/productData';
 import endeavourBuildPdf from '../assets/buildguide/1/endeavourBuild.pdf';
-import { logInfo, logWarn, logError } from '../services/logger';
+import { logInfo, logWarn } from '../services/logger';
 
 /**
  * Utility functions for localizing hardcoded product data

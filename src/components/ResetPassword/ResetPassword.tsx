@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '../../context/useAuth';
 import { resetPasswordSchema, type ResetPasswordFormData } from '../../schemas/formSchemas';
 import './ResetPassword.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logError } from '../../services/logger';
 
 const ResetPassword: React.FC = () => {
   const { resetPassword } = useAuth();

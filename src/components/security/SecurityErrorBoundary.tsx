@@ -5,7 +5,7 @@
 
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import './SecurityErrorBoundary.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logInfo, logError } from '../../services/logger';
 
 interface Props {
   children: ReactNode;

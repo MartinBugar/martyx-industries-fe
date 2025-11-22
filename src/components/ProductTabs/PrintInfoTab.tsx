@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { type TabContent, type PrintInfoData } from '../../data/productData';
 import './ProductTabs.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logInfo } from '../../services/logger';
 
 // PrintInfo tab content interface - matches the union type in productData.ts
 interface PrintInfoTabContent {

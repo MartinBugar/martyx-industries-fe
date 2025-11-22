@@ -117,7 +117,7 @@ export class ImagePreloader {
 
 // Hook for using preloader in components
 import { useEffect } from 'react';
-import { logInfo, logWarn, logError } from '../services/logger';
+import { logWarn } from '../services/logger';
 
 export const useImagePreloader = (
   urls: string[], 

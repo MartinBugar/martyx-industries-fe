@@ -30,7 +30,7 @@ import { Button } from '../../components/ui';
 import { apiClient } from '../../services/apiClient';
 import LanguageTabs from '../../components/admin/LanguageTabs';
 import './AdminUsers.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logInfo, logError } from '../../services/logger';
 
 // Language-specific fields that can be translated
 interface TranslatableFields {
@@ -97,8 +97,8 @@ const AdminMasterProductTabForm: React.FC = () => {
   });
 
   // Attachments state
-  const [availableAttachments, setAvailableAttachments] = useState<any[]>([]);
-  const [tabAttachments, setTabAttachments] = useState<any[]>([]);
+  const [availableAttachments, setAvailableAttachments] = useState<Array<{ id: number; displayLabel: string; fileName: string; description?: string | null }>>([]);
+  const [tabAttachments, setTabAttachments] = useState<Array<{ id: number; displayLabel: string; fileName: string; description?: string | null }>>([]);
   const [loadingAttachments, setLoadingAttachments] = useState(false);
 
   // Build Info state (for BuildInfoTab component)
@@ -378,14 +378,21 @@ const AdminMasterProductTabForm: React.FC = () => {
 
       // Navigate back to tabs list
       navigate(`/admin/products/${productId}/tabs`);
-    } catch (err: any) {
+    } catch (err: unknown) {
       logError('Error saving tab:', err);
 
       // Parse validation errors from backend
-      const errorData = err.errorData || err.response?.data || {};
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let errorData: any = {};
+      if (err && typeof err === 'object') {
+        errorData = ('errorData' in err ? err.errorData : undefined) ||
+                    ('response' in err && err.response && typeof err.response === 'object' && 'data' in err.response ? err.response.data : {}) ||
+                    {};
+      }
 
       if (errorData.details && Array.isArray(errorData.details)) {
         const errors: Record<string, string> = {};
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         errorData.details.forEach((detail: any) => {
           if (detail.field && detail.message) {
             errors[detail.field] = detail.message;
@@ -974,7 +981,7 @@ const AdminMasterProductTabForm: React.FC = () => {
                           </div>
                         ) : (
                           <div style={{ display: 'grid', gap: 8 }}>
-                            {tabAttachments.map((attachment: any) => (
+                            {tabAttachments.map(attachment => (
                               <div
                                 key={attachment.id}
                                 style={{
@@ -1043,7 +1050,7 @@ const AdminMasterProductTabForm: React.FC = () => {
                           <div style={{ display: 'grid', gap: 8 }}>
                             {availableAttachments
                               .filter(att => !tabAttachments.find(ta => ta.id === att.id))
-                              .map((attachment: any) => (
+                              .map(attachment => (
                                 <div
                                   key={attachment.id}
                                   style={{

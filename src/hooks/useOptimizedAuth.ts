@@ -12,7 +12,7 @@ import { useState, useCallback, useMemo } from 'react';
 import { useStableCallback, useDebouncedEffect, useEffectOnce } from './useOptimizedEffect';
 import type { User } from '../context/authTypes';
 import { apiClient } from '../services/apiClient';
-import { logInfo, logWarn, logError } from '../services/logger';
+import { logError } from '../services/logger';
 
 interface AuthState {
   user: User | null;
@@ -122,6 +122,7 @@ export const useOptimizedAuth = (): UseOptimizedAuthReturn => {
     updateAuthState({ isLoading: true, error: null });
 
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const response = await apiClient.post<any>('/api/auth/login', {
         email,
         password
@@ -299,6 +300,7 @@ export const useOptimizedAuth = (): UseOptimizedAuthReturn => {
 };
 
 // Helper function to parse JWT token
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function parseJWT(token: string): any {
   try {
     const base64Url = token.split('.')[1];

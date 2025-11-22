@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './OptimizedImage.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logError } from '../../services/logger';
 
-interface OptimizedImageProps {
+interface OptimizedImageProps extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'src' | 'alt' | 'width' | 'height' | 'className' | 'placeholder' | 'style'> {
   src: string;
   alt: string;
   width?: number;
@@ -12,8 +12,6 @@ interface OptimizedImageProps {
   priority?: boolean;
   eager?: boolean; // Nová prop pre immediate loading bez intersection observer
   style?: React.CSSProperties;
-  // Všetky ostatné img props
-  [key: string]: any;
 }
 
 const OptimizedImage: React.FC<OptimizedImageProps> = ({

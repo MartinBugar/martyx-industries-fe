@@ -71,9 +71,10 @@ const AttachmentManager: React.FC<AttachmentManagerProps> = ({ variantId }) => {
 
       // Reload
       await loadAttachments();
-    } catch (err: any) {
+    } catch (err: unknown) {
       logError('Upload failed', err);
-      setError(err.response?.data?.message || 'Upload failed');
+      const message = (err && typeof err === 'object' && 'response' in err && err.response && typeof err.response === 'object' && 'data' in err.response && err.response.data && typeof err.response.data === 'object' && 'message' in err.response.data) ? (err.response.data as { message?: string }).message : 'Upload failed';
+      setError(message || 'Upload failed');
     } finally {
       setUploading(false);
     }

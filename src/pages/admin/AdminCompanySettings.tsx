@@ -82,9 +82,10 @@ const AdminCompanySettings: React.FC = () => {
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
       await loadSettings(); // Reload to get updated data
-    } catch (err: any) {
+    } catch (err: unknown) {
       logError('Failed to save company settings:', err);
-      setError(err.message || 'Failed to save settings. Please try again.');
+      const message = err instanceof Error ? err.message : 'Failed to save settings. Please try again.';
+      setError(message);
     } finally {
       setSaving(false);
     }
