@@ -183,6 +183,7 @@ export interface ProductGalleryDto {
   thumbnailUrl: string; // Thumbnail version
   displayOrder: number | null;
   primary: boolean; // Is primary/featured image?
+  isHover?: boolean; // Is hover image for product card?
   folderName: string | null;
   createdAt: string;
   updatedAt: string;

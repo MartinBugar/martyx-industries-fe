@@ -99,9 +99,7 @@
 /* ProductCard image positioning and hover effects */
 /* Vyššia špecificita pre override OptimizedImage CSS */
 .product-card .product-card-image-main {
-  position: absolute;
-  top: 0;
-  left: 0;
+  position: relative;
   width: 100%;
   height: 100%;
   opacity: 1 !important; /* Override OptimizedImage inline/CSS styles */
