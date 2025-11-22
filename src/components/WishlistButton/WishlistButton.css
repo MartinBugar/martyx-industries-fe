@@ -14,6 +14,10 @@
   user-select: none;
 }
 
+.wishlist-button svg {
+  display: block;
+}
+
 .wishlist-button:disabled {
   cursor: not-allowed;
   opacity: 0.6;
@@ -21,13 +25,15 @@
 
 /* Size variants */
 .wishlist-button--small {
-  padding: 0.25rem;
+  padding: 0;
   font-size: 0.875rem;
+  width: 100%;
+  height: 100%;
 }
 
 .wishlist-button--small svg {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
 }
 
 .wishlist-button--medium {
@@ -53,17 +59,17 @@
 /* Style variants */
 .wishlist-button--icon {
   border-radius: 50%;
-  color: var(--color-text-secondary, #666);
+  color: rgba(255, 255, 255, 0.7);
   background: transparent;
 }
 
 .wishlist-button--icon:hover {
-  color: var(--color-primary, #ff4757);
-  background: var(--color-background-secondary, rgba(255, 71, 87, 0.1));
+  color: #f6c845;
+  background: rgba(246, 200, 69, 0.15);
 }
 
 .wishlist-button--icon.wishlist-button--active {
-  color: var(--color-primary, #ff4757);
+  color: #f6c845;
 }
 
 .wishlist-button--button {
@@ -75,14 +81,14 @@
 }
 
 .wishlist-button--button:hover {
-  color: var(--color-primary, #ff4757);
-  border-color: var(--color-primary, #ff4757);
+  color: #f6c845;
+  border-color: #f6c845;
   background: var(--color-background, white);
 }
 
 .wishlist-button--button.wishlist-button--active {
-  color: var(--color-primary, #ff4757);
-  border-color: var(--color-primary, #ff4757);
+  color: #f6c845;
+  border-color: #f6c845;
   background: var(--color-background, white);
 }
 
@@ -94,12 +100,12 @@
 }
 
 .wishlist-button--text:hover {
-  color: var(--color-primary, #ff4757);
-  background: var(--color-background-secondary, rgba(255, 71, 87, 0.1));
+  color: #f6c845;
+  background: rgba(246, 200, 69, 0.15);
 }
 
 .wishlist-button--text.wishlist-button--active {
-  color: var(--color-primary, #ff4757);
+  color: #f6c845;
 }
 
 /* Button text */
@@ -180,7 +186,7 @@
 
 /* Focus states for accessibility */
 .wishlist-button:focus-visible {
-  outline: 2px solid var(--color-primary, #ff4757);
+  outline: 2px solid #f6c845;
   outline-offset: 2px;
 }
 
@@ -202,11 +208,12 @@
 /* Dark mode support */
 @media (prefers-color-scheme: dark) {
   .wishlist-button--icon {
-    color: var(--color-text-secondary-dark, #adb5bd);
+    color: rgba(255, 255, 255, 0.6);
   }
 
   .wishlist-button--icon:hover {
-    background: rgba(255, 71, 87, 0.2);
+    background: rgba(246, 200, 69, 0.2);
+    color: #f6c845;
   }
 
   .wishlist-button--button {
