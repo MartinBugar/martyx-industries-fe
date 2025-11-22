@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { authApi, setAuthToken, removeAuthToken } from '../../services/api';
 import { adminService } from '../../services/adminService';
 import { isTokenExpired } from '../../services/apiUtils';
+import ParticlesBackground from '../../components/ParticlesBackground/ParticlesBackground';
 import './AdminLogin.css';
 
 const AdminLogin: React.FC = () => {
@@ -73,6 +74,9 @@ const AdminLogin: React.FC = () => {
 
   return (
     <div className="martyx-admin-login">
+      {/* Yellow Particles Background Effect */}
+      <ParticlesBackground particleCount={120} speed={0.3} />
+
       <div className="martyx-admin-bg"></div>
 
       <div className="martyx-admin-content">

@@ -15,6 +15,11 @@ interface ProductCardPreviewEditorProps {
   initialSettings?: ImageDisplaySettings;
   onSettingsChange: (settings: ImageDisplaySettings) => void;
   onSave: (settings: ImageDisplaySettings) => Promise<void>;
+  // Optional product data for realistic preview
+  productName?: string;
+  productDescription?: string;
+  productPrice?: number;
+  productCurrency?: string;
 }
 
 /**
