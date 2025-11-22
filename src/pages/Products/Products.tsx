@@ -1,29 +1,14 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {Link, useSearchParams} from 'react-router-dom';
+import {useSearchParams} from 'react-router-dom';
 import {useTranslation} from 'react-i18next';
 import {type Product, type ProductVariant} from '../../data/productData';
 import {hybridProductService} from '../../services/hybridProductService';
 import {useCart} from '../../context/useCart';
-import WishlistButton from '../../components/WishlistButton';
+import ProductCard from '../../components/ProductCard/ProductCard';
 import OptimizedImage from '../../components/OptimizedImage/OptimizedImage';
-import { getBestImageUrl, getBaseNameFromPath, isCDNEnabled } from '../../utils/cdnImages';
 import { productGalleryService } from '../../services/productGalleryService';
 import VariantSelectorModal from '../../components/VariantSelectorModal/VariantSelectorModal';
 import './Products.css';
-
-// Helper function to get price display with "Od" prefix if multiple variants
-const getPriceDisplay = (product: Product): { prefix: string; price: number } => {
-    const hasMultipleVariants = product.availableVariants && product.availableVariants.length > 1;
-
-    if (hasMultipleVariants) {
-        // Find lowest price from all variants
-        const lowestPrice = Math.min(...product.availableVariants!.map(v => v.priceWithVat));
-        return { prefix: 'Od ', price: lowestPrice };
-    }
-
-    // Single variant or no variants - show current price without prefix
-    return { prefix: '', price: product.priceWithVat };
-};
 
 const Products: React.FC = () => {
     const {addToCart} = useCart();
@@ -278,130 +263,15 @@ const Products: React.FC = () => {
                     {filteredProducts.length > 0 ? (
                         <div className="products-grid">
                             {filteredProducts.map((p, index) => {
-                                const mainImage = p.gallery && p.gallery.length > 0 ? p.gallery[0] : undefined;
                                 const popupKey = p.variantId.toString();
                                 return (
-                                    <article key={p.variantId} className="product-card">
-                                        <Link to={`/products/${p.masterProductId}`} className="product-card-link">
-                                            <div className="product-card-image-container">
-                                                {mainImage ? (
-                                                    <>
-                                                        <OptimizedImage
-                                                            src={(() => {
-                                                                // If the image URL is already a CDN URL, use it directly
-                                                                const isCDNUrl = mainImage.includes('digitaloceanspaces.com') || mainImage.includes(import.meta.env.VITE_CDN_BASE || '');
-                                                                const finalSrc = isCDNUrl ? mainImage : (isCDNEnabled() ? getBestImageUrl(getBaseNameFromPath(mainImage), 800) : mainImage);
-                                                                if (import.meta.env.DEV && p.masterProductId === 1) {
-                                                                    console.log(`🏷️ Product card for ${p.name} - Original:`, mainImage, '→ Final:', finalSrc, '(CDN URL detected:', isCDNUrl, ')');
-                                                                }
-                                                                return finalSrc;
-                                                            })()}
-                                                            alt={`${p.name} - main image`}
-                                                            className="product-card-image product-card-image-main"
-                                                            priority={index < 6} // Prvých 6 produktov má prioritu
-                                                            placeholder="/images/product-placeholder.svg"
-                                                        />
-                                                        {p.gallery && p.gallery.length > 1 && (
-                                                            <OptimizedImage
-                                                                src={(() => {
-                                                                    const secondImage = p.gallery[1];
-                                                                    const isCDNUrl = secondImage.includes('digitaloceanspaces.com') || secondImage.includes(import.meta.env.VITE_CDN_BASE || '');
-                                                                    return isCDNUrl ? secondImage : (isCDNEnabled() ? getBestImageUrl(getBaseNameFromPath(secondImage), 800) : secondImage);
-                                                                })()}
-                                                                alt={`${p.name} - hover image`}
-                                                                className="product-card-image product-card-image-hover"
-                                                                placeholder="/images/product-placeholder.svg"
-                                                            />
-                                                        )}
-                                                    </>
-                                                ) : (
-                                                    <div className="product-card-placeholder">
-                                                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none"
-                                                             stroke="currentColor" strokeWidth="1.5">
-                                                            <path
-                                                                d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
-                                                            <circle cx="12" cy="13" r="3"></circle>
-                                                        </svg>
-                                                    </div>
-                                                )}
-                                                <div className="product-card-wishlist">
-                                                    <WishlistButton
-                                                        productId={p.masterProductId}
-                                                        size="small"
-                                                        variant="icon"
-                                                    />
-                                                </div>
-                                            </div>
-
-                                            <div className="product-card-content">
-                                                <h3 className="product-card-title">{p.name}</h3>
-                                                <p className="product-card-description">{p.description}</p>
-                                            </div>
-                                        </Link>
-
-                                        <div className="product-card-footer">
-                                            <div className="product-card-price">
-                                                {(() => {
-                                                    const { prefix, price } = getPriceDisplay(p);
-                                                    return (
-                                                        <>
-                                                            {prefix}{price.toFixed(2)}
-                                                            <span>€</span>
-                                                        </>
-                                                    );
-                                                })()}
-                                            </div>
-
-                                            <div className="product-card-actions">
-                                            <button
-                                                className={`add-to-cart-btn${popups[popupKey]?.visible ? ` is-popup ${popups[popupKey].variant}` : ''}`}
-                                                onClick={handleAdd(p)}
-                                                disabled={!!popups[popupKey]?.visible}
-                                                aria-live="polite"
-                                            >
-                                                {popups[popupKey]?.visible ? (
-                                                    <span className="popup-message">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                 strokeWidth="2">
-                              {popups[popupKey].variant === 'success' ? (
-                                  <polyline points="20,6 9,17 4,12"></polyline>
-                              ) : (
-                                  <circle cx="12" cy="12" r="10"></circle>
-                              )}
-                            </svg>
-                                                        {popups[popupKey].message}
-                          </span>
-                                                ) : (
-                                                    <span className="add-to-cart-text">
-                            {p.availableVariants && p.availableVariants.length > 1 ? (
-                                <>
-                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                       strokeWidth="2">
-                                    <rect x="3" y="3" width="7" height="7"></rect>
-                                    <rect x="14" y="3" width="7" height="7"></rect>
-                                    <rect x="14" y="14" width="7" height="7"></rect>
-                                    <rect x="3" y="14" width="7" height="7"></rect>
-                                  </svg>
-                                  Select Options
-                                </>
-                            ) : (
-                                <>
-                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                       strokeWidth="2">
-                                    <circle cx="8" cy="21" r="1"></circle>
-                                    <circle cx="19" cy="21" r="1"></circle>
-                                    <path
-                                        d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57L20.6 7H6"></path>
-                                  </svg>
-                                  {t('cart.add_to_cart')}
-                                </>
-                            )}
-                          </span>
-                                                )}
-                                            </button>
-                                            </div>
-                                        </div>
-                                    </article>
+                                    <ProductCard
+                                        key={p.variantId}
+                                        product={p}
+                                        onAddToCart={handleAdd(p)}
+                                        popupState={popups[popupKey]}
+                                        priority={index < 6}
+                                    />
                                 );
                             })}
                         </div>

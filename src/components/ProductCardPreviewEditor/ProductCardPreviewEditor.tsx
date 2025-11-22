@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import ProductCard from '../ProductCard/ProductCard';
+import { type Product } from '../../data/productData';
 import './ProductCardPreviewEditor.css';
 
 export interface ImageDisplaySettings {
@@ -17,7 +19,7 @@ interface ProductCardPreviewEditorProps {
 
 /**
  * Component for previewing and editing how product card images are displayed.
- * Allows adjusting zoom and position with real-time preview.
+ * Allows adjusting zoom and position with real-time preview using the actual ProductCard component.
  */
 const ProductCardPreviewEditor: React.FC<ProductCardPreviewEditorProps> = ({
   imageUrl,
@@ -82,12 +84,45 @@ const ProductCardPreviewEditor: React.FC<ProductCardPreviewEditorProps> = ({
     }
   };
 
-  // Calculate image style based on settings
-  const imageStyle: React.CSSProperties = {
-    transform: `scale(${settings.zoom}) translate(${settings.offsetX / settings.zoom}px, ${settings.offsetY / settings.zoom}px)`,
-    transformOrigin: 'center center',
-    transition: 'transform 0.2s ease-out'
+  // Create a mock product for preview using the actual imageUrl being edited
+  const mockProduct: Product = {
+    // Master product fields
+    masterProductId: 0,
+    name: 'Premium Product Name',
+    slug: 'preview-product',
+    description: 'High-quality product with advanced features and exceptional performance. Perfect for professional use with industry-leading specifications.',
+    longDescription: 'Detailed product description with advanced specifications',
+    productCategory: 'MODEL_KIT',
+
+    // Variant fields
+    variantId: 0,
+    variantName: 'Standard Edition',
+    sku: 'PREVIEW-001',
+    priceWithVat: 499.90,
+    priceWithoutVat: 416.58,
+    vatRate: 20,
+    vatAmount: 83.32,
+    currency: 'EUR',
+    variantType: 'PHYSICAL_ONLY',
+    fulfillmentType: 'PHYSICAL',
+    stockQuantity: 100,
+    availabilityStatus: 'IN_STOCK',
+    requiresShipping: true,
+
+    // Frontend data
+    features: ['Premium Quality', 'Fast Shipping', 'Professional Grade'],
+    modelPath: '',
+    gallery: [imageUrl], // Use the actual image being edited
+    interactionInstructions: [],
+    availableVariants: []
   };
+
+  // Calculate CSS custom properties for image transformation
+  const previewStyle = {
+    '--preview-zoom': settings.zoom,
+    '--preview-offset-x': `${settings.offsetX / settings.zoom}px`,
+    '--preview-offset-y': `${settings.offsetY / settings.zoom}px`,
+  } as React.CSSProperties;
 
   return (
     <div className="product-card-preview-editor">
@@ -98,29 +133,13 @@ const ProductCardPreviewEditor: React.FC<ProductCardPreviewEditorProps> = ({
           This is how the image will appear on the product card in /products page
         </p>
 
-        {/* Product Card Mock */}
-        <div className="product-card-mock">
-          <div className="product-card-mock__image-container">
-            <div className="product-card-mock__image-wrapper">
-              <img
-                src={imageUrl}
-                alt={imageName}
-                className="product-card-mock__image"
-                style={imageStyle}
-              />
-            </div>
-          </div>
-          <div className="product-card-mock__content">
-            <h3 className="product-card-mock__title">Premium Product Name</h3>
-            <p className="product-card-mock__description">
-              High-quality product with advanced features and exceptional performance.
-              Perfect for professional use with industry-leading specifications and cutting-edge technology.
-              This product offers outstanding reliability, durability, and efficiency for demanding applications.
-              Engineered with precision and attention to detail, it delivers superior results in any environment.
-            </p>
-            <p className="product-card-mock__price">€499.90</p>
-            <button className="product-card-mock__button">View Details</button>
-          </div>
+        {/* Actual Product Card with preview transformations applied */}
+        <div className="product-card-preview-wrapper" style={previewStyle}>
+          <ProductCard
+            product={mockProduct}
+            showWishlistButton={false}
+            showAddToCart={false}
+          />
         </div>
       </div>
 

@@ -7,9 +7,8 @@ import { useCart } from '../../context/useCart';
 import { hybridProductService } from '../../services/hybridProductService';
 import { type Product } from '../../data/productData';
 import { type WishlistItem } from '../../types/wishlist';
-import WishlistButton from '../../components/WishlistButton';
+import ProductCard from '../../components/ProductCard/ProductCard';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
-import WishlistProductImage from '../../components/WishlistProductImage';
 import { productGalleryService } from '../../services/productGalleryService';
 import { useFormatters } from '../../hooks/useFormatters';
 import './Wishlist.css';
@@ -327,66 +326,26 @@ const Wishlist: React.FC = () => {
 
             {/* Wishlist Items */}
             <div className={`wishlist-items wishlist-items--${viewMode}`}>
-              {availableItems.map((item) => (
-                <article key={item.id} className="product-card wishlist-product-card">
-
-                  <Link to={`/products/${item.productId}`} className="product-card-link">
-                    <div className="product-card-image-container">
-                      <WishlistProductImage 
-                        item={item}
-                        product={productsData.get(item.productId)}
-                        loading={loadingProducts}
-                      />
-
-                      <div className="product-card-wishlist">
-                        <WishlistButton
-                          productId={item.productId}
-                          variant="icon"
-                          size="small"
-                        />
-                      </div>
-
-                      {item.productType === 'digital' && (
-                        <div className="product-badge">
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <line x1="12" y1="15" x2="12" y2="3"></line>
-                          </svg>
-                          Digital
-                        </div>
-                      )}
+              {availableItems.map((item) => {
+                const product = productsData.get(item.productId);
+                if (!product) {
+                  return null; // Skip if product data not loaded yet
+                }
+                return (
+                  <ProductCard
+                    key={item.id}
+                    product={product}
+                    onAddToCart={() => handleAddToCart(item)}
+                    className="wishlist-product-card"
+                  >
+                    <div className="wishlist-item-meta">
+                      <span className="wishlist-added-date">
+                        {t('added_date', { date: formatShortDate(item.addedAt) })}
+                      </span>
                     </div>
-
-                    <div className="product-card-content">
-                      <h3 className="product-card-title">{item.productName}</h3>
-                      <p className="product-card-description">{item.productDescription}</p>
-                      <div className="product-card-price">
-                        {item.hasMultipleVariants && t('price_from')}
-                        {item.productPrice ? item.productPrice.toFixed(2) : '0.00'} {item.productCurrency === 'EUR' ? '€' : item.productCurrency}
-                      </div>
-                    </div>
-                  </Link>
-
-                  <div className="product-card-actions">
-                    <button
-                      className="add-to-cart-btn"
-                      onClick={() => handleAddToCart(item)}
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <circle cx="8" cy="21" r="1"/>
-                        <circle cx="19" cy="21" r="1"/>
-                        <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57L20.6 7H6"/>
-                      </svg>
-                      Add to Cart
-                    </button>
-                  </div>
-
-                  <div className="wishlist-item-meta">
-                    <span className="wishlist-added-date">
-                      {t('added_date', { date: formatShortDate(item.addedAt) })}
-                    </span>
-                  </div>
-                </article>
-              ))}
+                  </ProductCard>
+                );
+              })}
 
               {/* Unavailable Items Section */}
               {unavailableItems.length > 0 && (
@@ -396,62 +355,27 @@ const Wishlist: React.FC = () => {
                     <p>These items are no longer available for purchase</p>
                   </div>
 
-                  {unavailableItems.map((item) => (
-                    <article key={item.id} className="product-card wishlist-product-card wishlist-product-card--unavailable">
-
-                      <Link to={`/products/${item.productId}`} className="product-card-link">
-                        <div className="product-card-image-container">
-                          <WishlistProductImage 
-                            item={item}
-                            product={productsData.get(item.productId)}
-                            loading={loadingProducts}
-                          />
-
-                          <div className="unavailable-overlay">
-                            <span>{t('unavailable_section.overlay')}</span>
-                          </div>
-
-                          <div className="product-card-wishlist">
-                            <WishlistButton
-                              productId={item.productId}
-                              variant="icon"
-                              size="small"
-                            />
-                          </div>
-
-                          {item.productType === 'digital' && (
-                            <div className="product-badge">
-                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <line x1="12" y1="15" x2="12" y2="3"></line>
-                              </svg>
-                              Digital
-                            </div>
-                          )}
+                  {unavailableItems.map((item) => {
+                    const product = productsData.get(item.productId);
+                    if (!product) {
+                      return null; // Skip if product data not loaded yet
+                    }
+                    return (
+                      <ProductCard
+                        key={item.id}
+                        product={product}
+                        onAddToCart={() => handleAddToCart(item)}
+                        isUnavailable={true}
+                        className="wishlist-product-card wishlist-product-card--unavailable"
+                      >
+                        <div className="wishlist-item-meta">
+                          <span className="wishlist-added-date">
+                            {t('added_date', { date: formatShortDate(item.addedAt) })}
+                          </span>
                         </div>
-
-                        <div className="product-card-content">
-                          <h3 className="product-card-title">{item.productName}</h3>
-                          <p className="product-card-description">{item.productDescription}</p>
-                          <div className="product-card-price">
-                            {item.hasMultipleVariants && t('price_from')}
-                            {item.productPrice ? item.productPrice.toFixed(2) : '0.00'} {item.productCurrency === 'EUR' ? '€' : item.productCurrency}
-                          </div>
-                        </div>
-                      </Link>
-
-                      <div className="product-card-actions">
-                        <button className="add-to-cart-btn" disabled>
-                          {t('unavailable_section.button')}
-                        </button>
-                      </div>
-
-                      <div className="wishlist-item-meta">
-                        <span className="wishlist-added-date">
-                          {t('added_date', { date: formatShortDate(item.addedAt) })}
-                        </span>
-                      </div>
-                    </article>
-                  ))}
+                      </ProductCard>
+                    );
+                  })}
                 </>
               )}
             </div>

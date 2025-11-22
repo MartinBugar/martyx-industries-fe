@@ -4,27 +4,12 @@ import { useTranslation } from 'react-i18next';
 import { type Product } from '../../data/productData';
 import { hybridProductService } from '../../services/hybridProductService';
 import { useCart } from '../../context/useCart';
-import WishlistButton from '../../components/WishlistButton';
+import ProductCard from '../../components/ProductCard/ProductCard';
 import OptimizedImage from '../../components/OptimizedImage/OptimizedImage';
-import { getBestImageUrl, getBaseNameFromPath, isCDNEnabled } from '../../utils/cdnImages';
 import { productGalleryService } from '../../services/productGalleryService';
 import { homePageSettingsService, type VisibilityMap } from '../../services/homePageSettingsService';
 import { testimonialService, type Testimonial } from '../../services/testimonialService';
 import './Home.css';
-
-// Helper function to get price display with "Od" prefix if multiple variants
-const getPriceDisplay = (product: Product): { prefix: string; price: number } => {
-  const hasMultipleVariants = product.availableVariants && product.availableVariants.length > 1;
-
-  if (hasMultipleVariants) {
-    // Find lowest price from all variants
-    const lowestPrice = Math.min(...product.availableVariants!.map(v => v.priceWithVat));
-    return { prefix: 'Od ', price: lowestPrice };
-  }
-
-  // Single variant or no variants - show current price without prefix
-  return { prefix: '', price: product.priceWithVat };
-};
 
 const Home: React.FC = () => {
   console.log('🏠 [HOME] Component is rendering!');
@@ -331,78 +316,13 @@ const Home: React.FC = () => {
             {featured.map((p, index) => {
               const popupKey = p.variantId.toString();
               return (
-                <article key={p.variantId} className="product-card">
-                  <Link to={`/products/${p.masterProductId}`} className="product-card-link">
-                    <div className="product-card-image-container">
-                      <OptimizedImage
-                        src={(() => {
-                          if (!p.gallery?.[0]) return '/assets/kit-01.png';
-                          const mainImage = p.gallery[0];
-                          // If the image URL is already a CDN URL, use it directly
-                          const isCDNUrl = mainImage.includes('digitaloceanspaces.com') || mainImage.includes(import.meta.env.VITE_CDN_BASE || '');
-                          const finalSrc = isCDNUrl ? mainImage : (isCDNEnabled() ? getBestImageUrl(getBaseNameFromPath(mainImage), 800) : mainImage);
-                          if (import.meta.env.DEV && p.masterProductId === 1) {
-                            console.log(`🏠 Homepage card for ${p.name} - Original:`, mainImage, '→ Final:', finalSrc, '(CDN URL detected:', isCDNUrl, ')');
-                          }
-                          return finalSrc;
-                        })()}
-                        alt={p.name}
-                        className="product-image"
-                        priority={index < 3} // Prvé 3 featured produkty majú prioritu
-                        placeholder="/images/product-placeholder.svg"
-                      />
-                      <div className="product-card-wishlist">
-                        <WishlistButton
-                          productId={p.masterProductId}
-                          size="small"
-                          variant="icon"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="product-info">
-                      <h3 className="product-title">{p.name}</h3>
-                      <div className="product-price">
-                        {(() => {
-                          const { prefix, price } = getPriceDisplay(p);
-                          return `${prefix}${price.toFixed(2)} ${p.currency === 'EUR' ? '€' : p.currency}`;
-                        })()}
-                      </div>
-                      <p className="product-description">{p.description}</p>
-                    </div>
-                  </Link>
-
-                  <div className="product-card-actions">
-                    <button
-                      className={`add-to-cart-btn${popups[popupKey]?.visible ? ` is-popup ${popups[popupKey].variant}` : ''}`}
-                      onClick={handleAdd(p)}
-                      disabled={!!popups[popupKey]?.visible}
-                      aria-live="polite"
-                    >
-                      {popups[popupKey]?.visible ? (
-                        <span className="popup-message">
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            {popups[popupKey].variant === 'success' ? (
-                              <polyline points="20,6 9,17 4,12"></polyline>
-                            ) : (
-                              <circle cx="12" cy="12" r="10"></circle>
-                            )}
-                          </svg>
-                          {popups[popupKey].message}
-                        </span>
-                      ) : (
-                        <span className="add-to-cart-text">
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <circle cx="8" cy="21" r="1"></circle>
-                            <circle cx="19" cy="21" r="1"></circle>
-                            <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57L20.6 7H6"></path>
-                          </svg>
-                          {t('cart.add_to_cart', { ns: 'products' })}
-                        </span>
-                      )}
-                    </button>
-                  </div>
-                </article>
+                <ProductCard
+                  key={p.variantId}
+                  product={p}
+                  onAddToCart={handleAdd(p)}
+                  popupState={popups[popupKey]}
+                  priority={index < 3}
+                />
               );
             })}
           </div>

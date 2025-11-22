@@ -14,21 +14,8 @@
     grid-template-columns: 1fr;
   }
 
-  .product-card-mock {
+  .product-card-preview-wrapper {
     max-width: 100%;
-  }
-
-  .product-card-mock__image-container {
-    height: 320px;
-  }
-
-  .product-card-mock__content {
-    padding: 18px;
-  }
-
-  .product-card-mock__description {
-    -webkit-line-clamp: 4;
-    min-height: auto;
   }
 }
 
@@ -53,90 +40,18 @@
   color: #6b7280;
 }
 
-/* Product Card Mock */
-.product-card-mock {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+/* Product Card Preview Wrapper - uses real ProductCard component */
+.product-card-preview-wrapper {
   max-width: 480px;
   margin: 0 auto;
   width: 100%;
 }
 
-.product-card-mock__image-container {
-  position: relative;
-  width: 100%;
-  height: 400px;
-  background: #f3f4f6;
-  overflow: hidden;
-}
-
-.product-card-mock__image-wrapper {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-.product-card-mock__image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.product-card-mock__content {
-  padding: 24px;
-}
-
-.product-card-mock__title {
-  margin: 0 0 14px 0;
-  font-size: 19px;
-  font-weight: 600;
-  color: #111827;
-  line-height: 1.3;
-}
-
-.product-card-mock__description {
-  margin: 0 0 20px 0;
-  font-size: 14px;
-  font-weight: 400;
-  color: #6b7280;
-  line-height: 1.7;
-  display: -webkit-box;
-  -webkit-line-clamp: 5;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  min-height: 119px;
-}
-
-.product-card-mock__price {
-  margin: 0 0 18px 0;
-  font-size: 22px;
-  font-weight: 700;
-  color: #059669;
-}
-
-.product-card-mock__button {
-  width: 100%;
-  padding: 12px 18px;
-  background: #3b82f6;
-  color: #ffffff;
-  border: none;
-  border-radius: 6px;
-  font-size: 15px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.product-card-mock__button:hover {
-  background: #2563eb;
+/* Apply transformation settings to the product card image inside preview wrapper */
+.product-card-preview-wrapper .product-card-image {
+  transform: scale(var(--preview-zoom, 1)) translate(var(--preview-offset-x, 0px), var(--preview-offset-y, 0px));
+  transform-origin: center center;
+  transition: transform 0.2s ease-out;
 }
 
 /* ============================================
@@ -344,7 +259,7 @@
 
 /* Reduce motion for users who prefer it */
 @media (prefers-reduced-motion: reduce) {
-  .product-card-mock__image,
+  .product-card-preview-wrapper .product-card-image,
   .control-slider,
   .image-picker-button,
   .btn-reset,
