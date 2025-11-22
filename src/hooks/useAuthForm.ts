@@ -120,17 +120,17 @@ export const useAuthForm = ({
       let validation: FormValidationResult;
       switch (fieldName) {
         case 'email':
-          validation = validateForgotPasswordForm(value);
+          validation = validateForgotPasswordForm(value) as FormValidationResult;
           break;
         case 'password':
           if (formType === 'registration') {
-            validation = validateRegistrationForm(value, value, currentData.confirmPassword || '');
+            validation = validateRegistrationForm(value, value, currentData.confirmPassword || '') as FormValidationResult;
           } else {
-            validation = validateLoginForm(currentData.email, value);
+            validation = validateLoginForm(currentData.email, value) as FormValidationResult;
           }
           break;
         case 'confirmPassword':
-          validation = validateRegistrationForm(currentData.email, currentData.password, value);
+          validation = validateRegistrationForm(currentData.email, currentData.password, value) as FormValidationResult;
           break;
         default:
           return;
@@ -158,8 +158,11 @@ export const useAuthForm = ({
       } else if ('isFormValid' in validation) {
         // Pre formulárové validácie (password, registration)
         if (!validation.isFormValid) {
-          const fieldError = (validation as LoginValidationResult | RegistrationValidationResult)[fieldName as keyof typeof validation] as ValidationResult | undefined;
-          if (fieldError?.error) {
+          const validationTyped = validation as LoginValidationResult | RegistrationValidationResult;
+          const fieldKey = fieldName as keyof (LoginValidationResult | RegistrationValidationResult);
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const fieldError = (validationTyped as any)[fieldKey] as ValidationResult | undefined;
+          if (fieldError && typeof fieldError === 'object' && 'error' in fieldError && fieldError?.error) {
             setState(prev => ({
               ...prev,
               errors: {
@@ -226,9 +229,9 @@ export const useAuthForm = ({
           setState(prev => ({
             ...prev,
             errors: {
-              email: validation.email?.error,
-              password: validation.password?.error,
-              confirmPassword: 'confirmPassword' in validation ? validation.confirmPassword?.error : undefined
+              email: (validation as LoginValidationResult | RegistrationValidationResult).email?.error,
+              password: (validation as LoginValidationResult | RegistrationValidationResult).password?.error,
+              confirmPassword: 'confirmPassword' in validation ? (validation as RegistrationValidationResult).confirmPassword?.error : undefined
             }
           }));
           return;

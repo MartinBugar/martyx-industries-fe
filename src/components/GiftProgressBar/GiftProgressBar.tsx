@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Gift, Lock, CheckCircle, TrendingUp, ChevronDown, ChevronUp } from 'lucide-react';
 import { giftTierService, type GiftTierDTO } from '../../services/giftTierService';
 import './GiftProgressBar.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logError } from '../../services/logger';
 
 interface GiftProgressBarProps {
   cartTotal: number;

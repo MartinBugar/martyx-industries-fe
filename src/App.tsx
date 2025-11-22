@@ -1,4 +1,4 @@
-import { logInfo, logWarn, logError } from './services/logger';
+import { logInfo, logWarn } from './services/logger';
 /**
  * Optimized App Component with Code Splitting and Performance Improvements
  * 

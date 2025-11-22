@@ -47,7 +47,8 @@
       "Bash(powershell.exe:*)",
       "Bash(for file in \"src/utils/debounce.ts\" \"src/utils/validation.ts\" \"src/utils/translateApiError.ts\" \"src/utils/tokenRefresh.ts\" \"src/utils/productTranslationUtils.ts\")",
       "Bash(do echo \"=== $file ===\")",
-      "Bash(done)"
+      "Bash(done)",
+      "Bash(echo \"Exit code: $?\")"
     ],
     "deny": [],
     "ask": []

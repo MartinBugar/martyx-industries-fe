@@ -16,7 +16,7 @@ import {
   adminDuplicateTab
 } from '../../services/productTabService';
 import './AdminProductTabs.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logError } from '../../services/logger';
 
 interface AdminProductTabsProps {
   masterProductId?: number;

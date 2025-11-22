@@ -78,8 +78,8 @@ class SecurityErrorBoundary extends Component<Props, State> {
         //   headers: { 'Content-Type': 'application/json' },
         //   body: JSON.stringify(safeError)
         // });
-      } catch (logError) {
-        logError('Failed to log error to service:', logError);
+      } catch (loggingError) {
+        logError('Failed to log error to service:', loggingError);
       }
     }
   };

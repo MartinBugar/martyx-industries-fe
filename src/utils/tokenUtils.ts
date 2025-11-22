@@ -2,6 +2,8 @@
  * Utility functions for handling JWT tokens
  */
 
+import { logInfo, logWarn, logError } from '../services/logger';
+
 /**
  * Get JWT token from localStorage, handling both JSON and plain string formats
  * @returns The JWT token as a string, or null if not found

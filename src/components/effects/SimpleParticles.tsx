@@ -4,7 +4,7 @@
  */
 
 import React, { useEffect } from 'react';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logInfo } from '../../services/logger';
 
 const SimpleParticles: React.FC = () => {
   useEffect(() => {

@@ -3,6 +3,8 @@
  * Tracks and reports performance metrics
  */
 
+import { logInfo, logWarn, logError } from '../services/logger';
+
 interface PerformanceMetrics {
   loadTime: number;
   firstContentfulPaint: number;
@@ -24,10 +26,6 @@ interface LayoutShiftEntry extends PerformanceEntry {
 interface NavigationTimingEntry extends PerformanceEntry {
   loadEventEnd: number;
   fetchStart: number;
-}
-
-interface WindowWithGtag extends Window {
-  gtag?: (command: string, eventName: string, eventParams: Record<string, unknown>) => void;
 }
 
 class PerformanceMonitor {
@@ -184,9 +182,8 @@ class PerformanceMonitor {
 
   private sendToAnalytics(metrics: Partial<PerformanceMetrics>): void {
     // Send to your analytics service
-    const windowWithGtag = window as WindowWithGtag;
-    if (typeof windowWithGtag.gtag !== 'undefined') {
-      windowWithGtag.gtag('event', 'web_vitals', {
+    if (typeof window.gtag !== 'undefined') {
+      window.gtag('event', 'web_vitals', {
         event_category: 'Performance',
         event_label: 'Core Web Vitals',
         value: Math.round(metrics.largestContentfulPaint || 0),

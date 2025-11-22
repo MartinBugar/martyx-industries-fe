@@ -58,11 +58,11 @@ class ApiClient {
 
     // Check advanced cache for GET requests
     if (method === 'GET' && cache) {
-      const cached = advancedCache.get(requestKey, cacheType);
+      const cached = advancedCache.get<T>(requestKey, cacheType);
       if (cached && !staleWhileRevalidate) {
-        return cached;
+        return cached as T;
       }
-      
+
       // For stale-while-revalidate, return cached data immediately and update in background
       if (cached && staleWhileRevalidate) {
         this.executeRequest<T>(url, withLangHeaders({
@@ -74,13 +74,13 @@ class ApiClient {
         }).catch(() => {
           // Ignore background update errors
         });
-        return cached;
+        return cached as T;
       }
     }
 
     // Prevent duplicate requests
     if (this.pendingRequests.has(requestKey)) {
-      return this.pendingRequests.get(requestKey)!;
+      return this.pendingRequests.get(requestKey)! as Promise<T>;
     }
 
     const requestPromise = this.executeRequest<T>(url, withLangHeaders({

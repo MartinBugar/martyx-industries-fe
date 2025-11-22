@@ -3,6 +3,8 @@
  * Intelligent caching with multiple strategies for different content types
  */
 
+import {logWarn} from '../services/logger';
+
 interface CacheConfig {
   maxAge: number;
   maxEntries: number;

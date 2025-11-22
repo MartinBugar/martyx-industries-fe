@@ -12,7 +12,8 @@
  * @param wait - The number of milliseconds to delay
  * @returns The debounced function
  */
-export function debounce<T extends (...args: unknown[]) => unknown>(
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function debounce<T extends (...args: any[]) => any>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {
@@ -39,7 +40,8 @@ export function debounce<T extends (...args: unknown[]) => unknown>(
  * @param options - Options object with 'leading' flag
  * @returns The debounced function
  */
-export function debounceLeading<T extends (...args: unknown[]) => unknown>(
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function debounceLeading<T extends (...args: any[]) => any>(
   func: T,
   wait: number,
   options: { leading?: boolean } = {}

@@ -12,11 +12,11 @@ import { useAuth } from '../../context/useAuth';
 import { registrationService } from '../../services/registrationService';
 import type { LoginErrorResponse } from '../../context/authTypes';
 import { loginSchema, type LoginFormData } from '../../schemas/formSchemas';
+import { logError } from '../../services/logger';
 import './Login.css';
 
 // Zdieľané komponenty a utility
 import {
-import { logInfo, logWarn, logError } from '../../services/logger';
   LoadingSpinner,
   EmailIcon,
   PasswordIcon,

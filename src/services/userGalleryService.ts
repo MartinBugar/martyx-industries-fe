@@ -1,17 +1,17 @@
-import { API_BASE_URL } from './apiUtils';
-import { getAuthToken } from '../utils/tokenUtils';
+import {API_BASE_URL} from './apiUtils';
+import {getAuthToken} from '../utils/tokenUtils';
+import {logInfo} from './logger';
 import type {
-import { logInfo, logWarn, logError } from '../services/logger';
-  UserGalleryData,
-  UserGalleryDetail,
-  GalleryQueryParams,
-  LikePhotoRequest,
-  LikePhotoResponse,
-  PhotoCommentsResponse,
-  PublicUser,
-  UserProfile,
-  AllPhotosGalleryData,
-  PublicPhotoWithUser
+    AllPhotosGalleryData,
+    GalleryQueryParams,
+    LikePhotoRequest,
+    LikePhotoResponse,
+    PhotoCommentsResponse,
+    PublicPhotoWithUser,
+    PublicUser,
+    UserGalleryData,
+    UserGalleryDetail,
+    UserProfile
 } from '../types/userGallery';
 
 // Backend types for transformation

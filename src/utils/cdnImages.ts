@@ -3,6 +3,8 @@
  * Handles image URL generation from DigitalOcean Spaces CDN with fallback to local assets
  */
 
+import { logInfo, logWarn, logError } from '../services/logger';
+
 // Environment variables
 const CDN_BASE = import.meta.env.VITE_CDN_BASE || '';
 const CDN_FOLDER = import.meta.env.VITE_CDN_FOLDER || '1';

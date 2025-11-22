@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { registrationService } from '../../services/registrationService';
 import './EmailConfirmation.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logError } from '../../services/logger';
 
 const EmailConfirmation: React.FC = () => {
   const [searchParams] = useSearchParams();

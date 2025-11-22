@@ -1,11 +1,6 @@
-import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
-import type {
-import { logInfo, logWarn, logError } from '../services/logger';
-  PaginatedResponse,
-  MasterProductDto,
-  ProductVariantDto,
-  VariantComponentDto
-} from '../types/api';
+import {API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders} from './apiUtils';
+import {logInfo} from './logger';
+import type {MasterProductDto, PaginatedResponse, ProductVariantDto, VariantComponentDto} from '../types/api';
 
 /**
  * Service for product-related API calls with i18n support

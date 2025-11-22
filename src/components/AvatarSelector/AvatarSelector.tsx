@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import type { Avatar } from '../../services/avatarService';
 import { avatarService } from '../../services/avatarService';
 import './AvatarSelector.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logError } from '../../services/logger';
 
 interface AvatarSelectorProps {
   onClose: () => void;

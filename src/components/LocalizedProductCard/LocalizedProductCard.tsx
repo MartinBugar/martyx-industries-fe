@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { productService } from '../../services/productService';
 import { translateApiError } from '../../utils/translateApiError';
 import type { ProductVariantDto } from '../../types/api';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logError } from '../../services/logger';
 
 interface LocalizedProductCardProps {
   variantId: number;

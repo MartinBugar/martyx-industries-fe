@@ -5,7 +5,7 @@ import { translateApiError } from '../../utils/translateApiError';
 import { changeLanguageWithPersistence } from '../../utils/languageUtils';
 import type { SupportedLocales } from '../../types/api';
 import type { SupportedLanguage } from '../../i18n';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logInfo, logError } from '../../services/logger';
 
 /**
  * Component that loads supported locales from backend and displays them

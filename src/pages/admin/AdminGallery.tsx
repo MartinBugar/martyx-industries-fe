@@ -37,7 +37,7 @@ const AdminGallery: React.FC = () => {
         sort: sortBy,
         filter: filterBy,
         search: searchQuery || undefined
-      });
+      }) as { data?: { users?: AdminUserSummary[]; pagination?: any; stats?: any } };
 
       setUsers(response.data?.users || []);
       setPagination(response.data?.pagination);

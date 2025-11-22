@@ -12,7 +12,7 @@ import {
   Youtube
 } from 'lucide-react';
 import './FooterNew.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logInfo } from '../../services/logger';
 
 // Newsletter Form Component
 const NewsletterForm: React.FC = () => {

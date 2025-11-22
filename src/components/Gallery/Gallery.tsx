@@ -3,7 +3,7 @@ import './Gallery.css';
 import OptimizedImage from '../OptimizedImage/OptimizedImage';
 import { getImageSrcSet, getBestImageUrl, getBaseNameFromPath, isCDNEnabled } from '../../utils/cdnImages';
 import { useImagePreload, useBatchImagePreload } from '../../hooks/useImagePreload';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logInfo, logWarn } from '../../services/logger';
 
 interface GalleryProps {
   productName: string;

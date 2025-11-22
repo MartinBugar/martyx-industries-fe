@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { userCreditsService, type UserCreditDto } from '../../services/referralService';
 import { useAuth } from '../../context/useAuth';
 import './CreditsWidget.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logError } from '../../services/logger';
 
 interface CreditsWidgetProps {
   orderTotal: number;

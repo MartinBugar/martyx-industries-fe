@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import type { SupportedLanguage } from '../i18n';
 import { changeLanguageWithPersistence } from '../utils/languageUtils';
 import './LanguageSwitcher.css';
-import { logInfo, logWarn, logError } from '../services/logger';
+import { logError } from '../services/logger';
 
 interface LanguageOption {
   code: SupportedLanguage;

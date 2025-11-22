@@ -3,7 +3,7 @@ import { useAuth } from '../../context/useAuth';
 import { gdprService } from '../../services/gdprService';
 import { useUserSettings } from '../../context/useUserSettings';
 import './GdprSettings.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logError } from '../../services/logger';
 
 /**
  * GDPR Settings Component for User Account Settings Tab

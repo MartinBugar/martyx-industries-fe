@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Download, X } from 'lucide-react';
 import './InstallPWA.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logInfo } from '../../services/logger';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;

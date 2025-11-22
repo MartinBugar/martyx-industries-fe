@@ -5,7 +5,7 @@
 
 import React, { useEffect, useRef, useCallback, useState } from 'react';
 import './ClickParticles.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logInfo } from '../../services/logger';
 
 export type ParticleType = 'default' | 'sparkle' | 'heart' | 'star' | 'confetti' | 'ripple';
 

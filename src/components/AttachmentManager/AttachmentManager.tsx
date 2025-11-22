@@ -6,7 +6,7 @@ import {
 } from '../../services/productAttachmentService';
 import type { ProductAttachmentDto } from '../../types/api';
 import './AttachmentManager.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logError } from '../../services/logger';
 
 interface AttachmentManagerProps {
   variantId: number;

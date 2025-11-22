@@ -5,8 +5,8 @@
  */
 
 import { apiClient } from './apiClient';
-import type { ProductTabDto, ProductTabCreateRequest, ProductTabTemplate } from '../types/api';
-import { logInfo, logWarn, logError } from '../services/logger';
+import type { ProductTabDto, ProductTabCreateRequest, ProductTabTemplate, ProductAttachmentDto } from '../types/api';
+import { logInfo, logWarn, logError } from './logger';
 
 // ============================================================================
 // PUBLIC ENDPOINTS (No auth required)
@@ -31,11 +31,6 @@ export async function getTabsForMasterProduct(
       cacheType: 'api-responses'
     }
   );
-}
-
-interface ProductAttachmentDto {
-  id: number;
-  [key: string]: unknown;
 }
 
 /**

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { gdprService, type ConsentHistoryItem, type DataExportRequest } from '../../services/gdprService';
 import './GdprManagement.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logError } from '../../services/logger';
 
 /**
  * GDPR Management Component

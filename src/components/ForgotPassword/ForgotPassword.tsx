@@ -9,11 +9,11 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '../../context/useAuth';
 import { forgotPasswordSchema, type ForgotPasswordFormData } from '../../schemas/formSchemas';
+import { logError } from '../../services/logger';
 import './ForgotPassword.css';
 
 // Zdieľané komponenty a utility
 import {
-import { logInfo, logWarn, logError } from '../../services/logger';
   AuthContainer,
   AuthHeader,
   ErrorMessage,
