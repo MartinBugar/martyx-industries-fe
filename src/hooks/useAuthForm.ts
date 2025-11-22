@@ -5,6 +5,7 @@
 
 import { useState, useCallback, useMemo } from 'react';
 import { 
+import { logInfo, logWarn, logError } from '../services/logger';
   validateLoginForm, 
   validateRegistrationForm, 
   validateForgotPasswordForm,
@@ -216,7 +217,7 @@ export const useAuthForm = ({
         await onSubmit(state.data);
       } catch (error) {
         // Chyba bude spracovaná v parent komponente
-        console.error('Chyba pri submite formulára:', error);
+        logError('Chyba pri submite formulára:', error);
       } finally {
         setState(prev => ({ ...prev, isProcessing: false }));
       }

@@ -6,6 +6,7 @@ import PhotoGrid from './PhotoGrid';
 import { userGalleryService } from '../../services/userGalleryService';
 import type { PublicUser, PublicPhotoWithUser, GalleryStats, GalleryFilter, GallerySort, GalleryView } from '../../types/userGallery';
 import './UserGallery.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 const UserGallery: React.FC = () => {
   const { t } = useTranslation('gallery');
@@ -69,7 +70,7 @@ const UserGallery: React.FC = () => {
         setTotalPages(data.pagination.total_pages);
       }
     } catch (err) {
-      console.error('Error fetching gallery:', err);
+      logError('Error fetching gallery:', err);
       setError(err instanceof Error ? err.message : 'Failed to load gallery');
     }
   }, [view, filter, sort, currentPage]);

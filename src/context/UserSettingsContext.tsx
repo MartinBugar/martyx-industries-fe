@@ -7,6 +7,7 @@ import React, { useState, useEffect, type ReactNode } from 'react';
 import { userSettingsService } from '../services/userSettingsService';
 import { useAuth } from './useAuth';
 import { UserSettingsContext } from './UserSettingsContextDef';
+import { logInfo, logWarn, logError } from '../services/logger';
 
 export const UserSettingsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const { isAuthenticated } = useAuth();
@@ -26,7 +27,7 @@ export const UserSettingsProvider: React.FC<{ children: ReactNode }> = ({ childr
                 const settings = await userSettingsService.getUserSettings();
                 setParticlesEnabledState(settings.particlesEnabled);
             } catch (err) {
-                console.error('Failed to load user settings:', err);
+                logError('Failed to load user settings:', err);
                 // Default to true if loading fails
                 setParticlesEnabledState(true);
             }
@@ -38,7 +39,7 @@ export const UserSettingsProvider: React.FC<{ children: ReactNode }> = ({ childr
     // Update particles enabled setting
     const setParticlesEnabled = async (enabled: boolean) => {
         if (!isAuthenticated) {
-            console.warn('Cannot update particles setting: User not authenticated');
+            logWarn('Cannot update particles setting: User not authenticated');
             return;
         }
 
@@ -52,7 +53,7 @@ export const UserSettingsProvider: React.FC<{ children: ReactNode }> = ({ childr
                 detail: { particlesEnabled: enabled }
             }));
         } catch (err) {
-            console.error('Failed to update particles setting:', err);
+            logError('Failed to update particles setting:', err);
             throw err;
         } finally {
             setLoading(false);

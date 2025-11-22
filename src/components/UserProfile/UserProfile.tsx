@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../context/useAuth';
 import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 import './UserProfile.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 interface UserProfileFormData {
   firstName: string;
@@ -53,7 +54,7 @@ const UserProfile: React.FC = () => {
           }
         } catch (err) {
           setError('An error occurred while fetching profile data.');
-          console.error('Fetch profile error:', err);
+          logError('Fetch profile error:', err);
         } finally {
           setIsFetching(false);
         }
@@ -127,7 +128,7 @@ const UserProfile: React.FC = () => {
       }
     } catch (err) {
       setError('An error occurred while updating your profile.');
-      console.error('Update profile error:', err);
+      logError('Update profile error:', err);
     } finally {
       setIsLoading(false);
     }

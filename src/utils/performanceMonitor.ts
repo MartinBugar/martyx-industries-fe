@@ -127,7 +127,7 @@ class PerformanceMonitor {
       const startTime = performance.now();
       script.addEventListener('load', () => {
         const loadTime = performance.now() - startTime;
-        console.log(`Script ${(script as HTMLScriptElement).src} loaded in ${loadTime}ms`);
+        logInfo(`Script ${(script as HTMLScriptElement).src} loaded in ${loadTime}ms`);
       });
     });
 
@@ -138,7 +138,7 @@ class PerformanceMonitor {
       img.addEventListener('load', () => {
         const loadTime = performance.now() - startTime;
         if (loadTime > 1000) {
-          console.warn(`Slow image load: ${(img as HTMLImageElement).src} took ${loadTime}ms`);
+          logWarn(`Slow image load: ${(img as HTMLImageElement).src} took ${loadTime}ms`);
         }
       });
     });
@@ -148,7 +148,7 @@ class PerformanceMonitor {
     const metrics = this.getMetrics();
     
     if (import.meta.env.DEV) {
-      console.log('📊 Performance Metrics:', metrics);
+      logInfo('📊 Performance Metrics:', metrics);
     }
 
     // Send to analytics service
@@ -183,7 +183,7 @@ class PerformanceMonitor {
     const result = fn();
     const end = performance.now();
     
-    console.log(`${name} took ${end - start}ms`);
+    logInfo(`${name} took ${end - start}ms`);
     return result;
   }
 
@@ -192,7 +192,7 @@ class PerformanceMonitor {
     const result = await fn();
     const end = performance.now();
     
-    console.log(`${name} took ${end - start}ms`);
+    logInfo(`${name} took ${end - start}ms`);
     return result;
   }
 

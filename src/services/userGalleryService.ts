@@ -1,6 +1,7 @@
 import { API_BASE_URL } from './apiUtils';
 import { getAuthToken } from '../utils/tokenUtils';
 import type {
+import { logInfo, logWarn, logError } from '../services/logger';
   UserGalleryData,
   UserGalleryDetail,
   GalleryQueryParams,
@@ -99,7 +100,7 @@ const transformUserProfile = (backendUser: BackendUserProfile): UserProfile => {
     total_public_photos: backendUser.totalPublicPhotos,
     total_likes: backendUser.totalLikes
   };
-  console.log('🔄 Transform UserProfile:', { backendUser, transformed });
+  logInfo('🔄 Transform UserProfile:', { backendUser, transformed });
   return transformed;
 };
 

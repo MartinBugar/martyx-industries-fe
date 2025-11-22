@@ -6,6 +6,7 @@
 import { useEffect, useCallback, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { advancedCache } from '../utils/advancedCache';
+import { logInfo, logWarn, logError } from '../services/logger';
 
 interface PrefetchConfig {
   routes: string[];
@@ -49,10 +50,10 @@ class RoutePrefetcher {
       if (importFn) {
         await importFn();
         this.prefetchedRoutes.add(route);
-        console.log(`✅ Prefetched route: ${route}`);
+        logInfo(`✅ Prefetched route: ${route}`);
       }
     } catch (error) {
-      console.warn(`Failed to prefetch route ${route}:`, error);
+      logWarn(`Failed to prefetch route ${route}:`, error);
     }
   }
 
@@ -69,10 +70,10 @@ class RoutePrefetcher {
         
         advancedCache.set(endpoint, data, 'api-responses');
         this.prefetchedData.add(endpoint);
-        console.log(`✅ Prefetched data: ${endpoint}`);
+        logInfo(`✅ Prefetched data: ${endpoint}`);
       }
     } catch (error) {
-      console.warn(`Failed to prefetch data ${endpoint}:`, error);
+      logWarn(`Failed to prefetch data ${endpoint}:`, error);
     }
   }
 

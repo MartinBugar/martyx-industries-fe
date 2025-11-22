@@ -5,6 +5,7 @@ import '@google/model-viewer';
 import Slider from './Slider/Slider';
 // Import CSS
 import './ModelViewer.css';
+import { logInfo, logWarn, logError } from '../services/logger';
 
 // Use the ModelViewerElement interface from global.d.ts
 declare global {
@@ -112,7 +113,7 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
                     // Silently skip materials that can't be loaded or configured
                     // This prevents console spam while allowing other materials to work
                     if (import.meta.env.DEV) {
-                        console.warn(`Skipping material ${index}: not loaded or incompatible`);
+                        logWarn(`Skipping material ${index}: not loaded or incompatible`);
                     }
                 }
             }
@@ -165,7 +166,7 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
         // Define event handlers outside to ensure the same reference is used for cleanup
         const handleModelLoad = () => {
             if (import.meta.env.DEV) {
-                console.log('Model loaded successfully');
+                logInfo('Model loaded successfully');
             }
 
             // Hide loading indicator
@@ -180,7 +181,7 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
                         const targetRadius = 1.3369;
 
                         if (import.meta.env.DEV) {
-                            console.log('Initial zoom radius:', currentRadius.toFixed(4));
+                            logInfo('Initial zoom radius:', currentRadius.toFixed(4));
                         }
 
                         if (Math.abs(currentRadius - targetRadius) > 0.01) {
@@ -189,7 +190,7 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
                             const steps = Math.round(radiusDiff / 0.02); // Approximate step size
 
                             if (import.meta.env.DEV) {
-                                console.log(`Auto-scrolling ${steps} steps to reach target radius ${targetRadius.toFixed(4)}`);
+                                logInfo(`Auto-scrolling ${steps} steps to reach target radius ${targetRadius.toFixed(4)}`);
                             }
 
                             // Try accessing model-viewer's internal zoom methods
@@ -197,7 +198,7 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
 
                             if (import.meta.env.DEV) {
                                 // Look for internal zoom/camera methods
-                                console.log('Available methods:', Object.getOwnPropertyNames(modelViewer).filter(name =>
+                                logInfo('Available methods:', Object.getOwnPropertyNames(modelViewer).filter(name =>
                                     name.toLowerCase().includes('zoom') ||
                                     name.toLowerCase().includes('camera') ||
                                     name.toLowerCase().includes('orbit')
@@ -207,7 +208,7 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
                             // Use the zoom method we know works
                             if (typeof modelViewer.zoom === 'function') {
                                 if (import.meta.env.DEV) {
-                                    console.log('Using zoom method');
+                                    logInfo('Using zoom method');
                                 }
 
                                 // Calculate zoom factor based on radius difference
@@ -217,22 +218,22 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
                                 const zoomFactor = currentToTarget * 7; // 3x more zoom than before (was 2x, now 6x)
 
                                 if (import.meta.env.DEV) {
-                                    console.log(`Zoom factor: ${zoomFactor.toFixed(4)}`);
+                                    logInfo(`Zoom factor: ${zoomFactor.toFixed(4)}`);
                                 }
 
                                 try {
                                     modelViewer.zoom(zoomFactor);
                                     if (import.meta.env.DEV) {
-                                        console.log('Zoom method executed successfully');
+                                        logInfo('Zoom method executed successfully');
                                     }
                                 } catch (e) {
                                     if (import.meta.env.DEV) {
-                                        console.log('Zoom method failed:', (e as Error).message);
+                                        logInfo('Zoom method failed:', (e as Error).message);
                                     }
                                 }
                             } else {
                                 if (import.meta.env.DEV) {
-                                    console.log('Zoom method not available');
+                                    logInfo('Zoom method not available');
                                 }
                             }
 
@@ -241,7 +242,7 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
                             setTimeout(() => {
                                 const finalOrbit = modelElementWithOrbit.getCameraOrbit?.();
                                 if (finalOrbit && import.meta.env.DEV) {
-                                    console.log('Final zoom radius after method attempt:', finalOrbit.radius.toFixed(4));
+                                    logInfo('Final zoom radius after method attempt:', finalOrbit.radius.toFixed(4));
                                 }
                             }, 200);
                         }
@@ -277,9 +278,9 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
                     const radius = cameraOrbit.radius;
                     const direction = event.deltaY > 0 ? 'zoom out' : 'zoom in';
 
-                    console.log(`Current zoom radius: ${radius.toFixed(4)} (${direction})`);
+                    logInfo(`Current zoom radius: ${radius.toFixed(4)} (${direction})`);
                 } else {
-                    console.log('getCameraOrbit method not available');
+                    logInfo('getCameraOrbit method not available');
                 }
             }, 50);
         };
@@ -292,7 +293,7 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
         if (import.meta.env.DEV) {
             // Log initial camera position only in dev
             const initialCameraOrbit = modelElement.getAttribute('camera-orbit');
-            console.log('Initial camera position:', initialCameraOrbit);
+            logInfo('Initial camera position:', initialCameraOrbit);
         }
 
         return () => {

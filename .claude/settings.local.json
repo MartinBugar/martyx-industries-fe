@@ -43,7 +43,8 @@
       "Bash(npm uninstall:*)",
       "Bash(tee:*)",
       "Bash(xargs -I {} sh -c 'count=$(grep -c \"\"\"\"console\\.\"\"\"\" \"\"\"\"{}\"\"\"\" 2>/dev/null || echo 0); if [ \"\"\"\"$count\"\"\"\" -gt 5 ]; then echo \"\"\"\"$count {}\"\"\"\"; fi')",
-      "Bash(awk:*)"
+      "Bash(awk:*)",
+      "Bash(powershell.exe:*)"
     ],
     "deny": [],
     "ask": []

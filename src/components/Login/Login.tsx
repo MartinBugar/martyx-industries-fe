@@ -16,6 +16,7 @@ import './Login.css';
 
 // Zdieľané komponenty a utility
 import {
+import { logInfo, logWarn, logError } from '../../services/logger';
   LoadingSpinner,
   EmailIcon,
   PasswordIcon,
@@ -174,7 +175,7 @@ const Login: React.FC<LoginProps> = ({ confirmationStatus = null }) => {
       }
     } catch (error) {
       setGeneralError('Nastala chyba pri prihlasovaní. Skúste to znovu.');
-      console.error('Login error:', error);
+      logError('Login error:', error);
     }
   }, [login, navigate]);
 
@@ -198,7 +199,7 @@ const Login: React.FC<LoginProps> = ({ confirmationStatus = null }) => {
       }
     } catch (error) {
       setGeneralError('Nepodarilo sa odoslať potvrdzovací email. Skúste to znovu.');
-      console.error('Resend confirmation error:', error);
+      logError('Resend confirmation error:', error);
     } finally {
       setIsResending(false);
     }

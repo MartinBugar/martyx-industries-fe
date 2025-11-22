@@ -160,7 +160,7 @@ class AdvancedCache {
           this.set(endpoint, data, 'api-responses', etag || undefined, lastModified || undefined);
         }
       } catch (error) {
-        console.warn(`Failed to preload ${endpoint}:`, error);
+        logWarn(`Failed to preload ${endpoint}:`, error);
       }
     }
   }

@@ -17,6 +17,7 @@ import {
 import { Button } from '../../components/ui';
 import { apiClient } from '../../services/apiClient';
 import './AdminUsers.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 const ATTACHMENT_TYPES = [
   'ASSEMBLY_GUIDE',
@@ -79,7 +80,7 @@ const AdminProductAttachmentForm: React.FC = () => {
         locale: attachment.locale
       });
     } catch (err) {
-      console.error('Error loading attachment:', err);
+      logError('Error loading attachment:', err);
       setError('Failed to load attachment');
     } finally {
       setLoading(false);
@@ -152,7 +153,7 @@ const AdminProductAttachmentForm: React.FC = () => {
       // Navigate back to list
       navigate(`/admin/products/${productId}/attachments`);
     } catch (err: any) {
-      console.error('Error saving attachment:', err);
+      logError('Error saving attachment:', err);
       setError(err.message || 'Failed to save attachment');
     } finally {
       setSaving(false);

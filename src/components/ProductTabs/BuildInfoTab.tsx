@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { type TabContent, type BuildInfo } from '../../data/productData';
 import './ProductTabs.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 // BuildInfo tab content interface
 interface BuildInfoTabContent {
@@ -17,14 +18,14 @@ const BuildInfoTab: React.FC<BuildInfoTabProps> = ({ content }) => {
   const { t } = useTranslation('products');
 
   if (import.meta.env.DEV) {
-    console.log('🔨 BuildInfoTab received content:', JSON.stringify(content, null, 2));
-    console.log('🔨 BuildInfoTab content kind:', content.kind);
+    logInfo('🔨 BuildInfoTab received content:', JSON.stringify(content, null, 2));
+    logInfo('🔨 BuildInfoTab content kind:', content.kind);
   }
 
   // Handle legacy content types or missing build info
   if (content.kind !== 'buildInfo') {
     if (import.meta.env.DEV) {
-      console.log('❌ Content kind is not buildInfo, kind is:', content.kind);
+      logInfo('❌ Content kind is not buildInfo, kind is:', content.kind);
     }
     return (
       <div className="build-info-unavailable">

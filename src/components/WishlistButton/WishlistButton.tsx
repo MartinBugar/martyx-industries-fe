@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useWishlist } from '../../context/WishlistContext';
 import { useAuth } from '../../context/useAuth';
 import './WishlistButton.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 interface WishlistButtonProps {
   productId: string | number;
@@ -45,7 +46,7 @@ const WishlistButton: React.FC<WishlistButtonProps> = ({
         await addToWishlist(productId);
       }
     } catch (err) {
-      console.error('Wishlist operation failed:', err);
+      logError('Wishlist operation failed:', err);
     } finally {
       setIsProcessing(false);
     }

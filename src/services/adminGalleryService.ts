@@ -1,4 +1,5 @@
 import { apiClient } from './apiClient';
+import { logInfo, logWarn, logError } from '../services/logger';
 
 // Types for admin gallery management
 export interface AdminPhotoInfo {
@@ -156,7 +157,7 @@ class AdminGalleryService {
 
     // Ensure userId is sent as string to match backend expectation
     const url = `${this.baseUrl}/users/${String(userId)}/photos${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
-    console.log('Admin gallery API URL:', url);
+    logInfo('Admin gallery API URL:', url);
     const response = await apiClient.get<{ success: boolean; data: AdminUserPhotosResponse }>(url);
     return response.data;
   }

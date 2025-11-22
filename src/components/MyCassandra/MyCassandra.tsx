@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import cassandraRankService, { type UserCassandraDto } from '../../services/cassandraRankService';
 import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 import './MyCassandra.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 const MyCassandra: React.FC = () => {
     const [cassandraData, setCassandraData] = useState<UserCassandraDto | null>(null);
@@ -16,12 +17,12 @@ const MyCassandra: React.FC = () => {
         try {
             setLoading(true);
             setError(null);
-            console.log('🔄 Loading user Cassandra data...');
+            logInfo('🔄 Loading user Cassandra data...');
             const data = await cassandraRankService.getUserCassandraInfo();
             setCassandraData(data);
-            console.log('✅ Cassandra data loaded:', data);
+            logInfo('✅ Cassandra data loaded:', data);
         } catch (err) {
-            console.error('❌ Failed to load Cassandra data:', err);
+            logError('❌ Failed to load Cassandra data:', err);
             setError('Failed to load Cassandra information. Please try again later.');
         } finally {
             setLoading(false);

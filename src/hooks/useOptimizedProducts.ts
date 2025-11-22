@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { ImagePreloader, useImagePreloader } from '../utils/imagePreloader';
+import { logInfo, logWarn, logError } from '../services/logger';
 
 interface Product {
   id: string;
@@ -80,7 +81,7 @@ export const useOptimizedProducts = (
 
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load products');
-      console.error('Error loading products:', err);
+      logError('Error loading products:', err);
     } finally {
       setLoading(false);
     }
@@ -155,7 +156,7 @@ export const useOptimizedProduct = (
 
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load product');
-        console.error('Error loading product:', err);
+        logError('Error loading product:', err);
       } finally {
         setLoading(false);
       }

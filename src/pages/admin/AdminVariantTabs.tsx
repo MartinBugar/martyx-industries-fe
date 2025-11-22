@@ -18,6 +18,7 @@ import {
 import { Button } from '../../components/ui';
 import { apiClient } from '../../services/apiClient';
 import './AdminUsers.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 const AdminVariantTabs: React.FC = () => {
   const { productId, variantId } = useParams<{ productId: string; variantId: string }>();
@@ -37,7 +38,7 @@ const AdminVariantTabs: React.FC = () => {
       const loadedTabs = await adminGetTabsForVariant(Number(variantId), 'en');
       setTabs(loadedTabs);
     } catch (err) {
-      console.error('Error loading tabs:', err);
+      logError('Error loading tabs:', err);
       setError('Failed to load tabs');
     } finally {
       setLoading(false);
@@ -58,7 +59,7 @@ const AdminVariantTabs: React.FC = () => {
       apiClient.clearCache();
       await loadTabs();
     } catch (err) {
-      console.error('Error deleting tab:', err);
+      logError('Error deleting tab:', err);
       setError('Failed to delete tab');
     }
   };
@@ -71,7 +72,7 @@ const AdminVariantTabs: React.FC = () => {
       apiClient.clearCache();
       await loadTabs();
     } catch (err) {
-      console.error('Error duplicating tab:', err);
+      logError('Error duplicating tab:', err);
       setError('Failed to duplicate tab');
     }
   };

@@ -4,6 +4,7 @@ import { Button } from '../../components/ui';
 import xpConfigService, { type XpConfigDto } from '../../services/xpConfigService';
 import { useErrors } from '../../context/ErrorContext';
 import './AdminXpConfig.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 // Available icons for XP sources
 const AVAILABLE_ICONS = [
@@ -32,12 +33,12 @@ const AdminXpConfig: React.FC = () => {
     const loadConfigs = async () => {
         try {
             setLoading(true);
-            console.log('🔄 Loading XP configurations...');
+            logInfo('🔄 Loading XP configurations...');
             const data = await xpConfigService.getAllXpConfigs();
             setConfigs(data);
-            console.log(`✅ Loaded ${data.length} XP configurations`);
+            logInfo(`✅ Loaded ${data.length} XP configurations`);
         } catch (error) {
-            console.error('❌ Failed to load XP configurations:', error);
+            logError('❌ Failed to load XP configurations:', error);
             addError({
                 message: 'Failed to load XP configurations. Please try again.',
                 severity: 'error',
@@ -80,7 +81,7 @@ const AdminXpConfig: React.FC = () => {
                 return;
             }
 
-            console.log(`💾 Updating XP config: ${config.sourceCode}`);
+            logInfo(`💾 Updating XP config: ${config.sourceCode}`);
 
             const updateRequest = {
                 sourceName: config.sourceName,
@@ -100,7 +101,7 @@ const AdminXpConfig: React.FC = () => {
 
             await xpConfigService.updateXpConfig(config.id, updateRequest);
 
-            console.log(`✅ XP config updated: ${config.sourceCode}`);
+            logInfo(`✅ XP config updated: ${config.sourceCode}`);
             addError({
                 message: `Successfully updated ${config.sourceName}`,
                 severity: 'info',
@@ -114,7 +115,7 @@ const AdminXpConfig: React.FC = () => {
             });
             await loadConfigs();
         } catch (error) {
-            console.error(`❌ Failed to update XP config ${config.sourceCode}:`, error);
+            logError(`❌ Failed to update XP config ${config.sourceCode}:`, error);
             addError({
                 message: 'Failed to update configuration. Please try again.',
                 severity: 'error',
@@ -138,9 +139,9 @@ const AdminXpConfig: React.FC = () => {
         if (!config) return;
 
         try {
-            console.log(`🔄 Toggling XP config: ${config.sourceCode} to ${!config.isEnabled}`);
+            logInfo(`🔄 Toggling XP config: ${config.sourceCode} to ${!config.isEnabled}`);
             await xpConfigService.toggleXpSource(config.id, !config.isEnabled);
-            console.log(`✅ Toggled successfully`);
+            logInfo(`✅ Toggled successfully`);
             addError({
                 message: `Successfully ${config.isEnabled ? 'disabled' : 'enabled'} ${config.sourceName}`,
                 severity: 'info',
@@ -149,7 +150,7 @@ const AdminXpConfig: React.FC = () => {
             setConfirmDialog({ isOpen: false, config: null, action: null });
             await loadConfigs();
         } catch (error) {
-            console.error(`❌ Failed to toggle XP config ${config.sourceCode}:`, error);
+            logError(`❌ Failed to toggle XP config ${config.sourceCode}:`, error);
             addError({
                 message: 'Failed to toggle configuration. Please try again.',
                 severity: 'error',

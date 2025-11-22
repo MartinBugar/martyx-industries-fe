@@ -6,6 +6,7 @@ import './AdminUsers.css';
 import './AdminButtonOverrides.css';
 import { Button } from '../../components/ui';
 import cassandraImageService, { type CassandraImageDto, type UploadImageResponse } from '../../services/cassandraImageService';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 const AdminCassandra: React.FC = () => {
     const [images, setImages] = useState<CassandraImageDto[]>([]);
@@ -25,12 +26,12 @@ const AdminCassandra: React.FC = () => {
     const loadImages = async () => {
         try {
             setLoading(true);
-            console.log('🔄 Loading Cassandra images...');
+            logInfo('🔄 Loading Cassandra images...');
             const data = await cassandraImageService.getAllImages();
             setImages(data);
-            console.log(`✅ Loaded ${data.length} Cassandra images`);
+            logInfo(`✅ Loaded ${data.length} Cassandra images`);
         } catch (error) {
-            console.error('❌ Failed to load Cassandra images:', error);
+            logError('❌ Failed to load Cassandra images:', error);
         } finally {
             setLoading(false);
         }
@@ -105,7 +106,7 @@ const AdminCassandra: React.FC = () => {
                 // Update progress
                 setUploadProgress({ current: i + 1, total: imageFiles.length, uploading: true });
 
-                console.log(`🚀 Uploading ${i + 1}/${imageFiles.length}: ${file.name}`);
+                logInfo(`🚀 Uploading ${i + 1}/${imageFiles.length}: ${file.name}`);
 
                 // Calculate order (next available order number)
                 const currentOrder = images.length + i;
@@ -117,7 +118,7 @@ const AdminCassandra: React.FC = () => {
                     throw new Error(uploadResponse.message || 'Upload failed');
                 }
 
-                console.log('✅ Upload successful:', uploadResponse.image);
+                logInfo('✅ Upload successful:', uploadResponse.image);
                 results.push({ success: true });
 
                 // Add delay between uploads (except for the last one)
@@ -126,7 +127,7 @@ const AdminCassandra: React.FC = () => {
                 }
 
             } catch (error) {
-                console.error(`❌ Upload ${i + 1}/${imageFiles.length} failed:`, error);
+                logError(`❌ Upload ${i + 1}/${imageFiles.length} failed:`, error);
                 results.push({
                     success: false,
                     error: error instanceof Error ? error.message : 'Upload failed'
@@ -162,11 +163,11 @@ const AdminCassandra: React.FC = () => {
 
         try {
             await cassandraImageService.deleteImage(id);
-            console.log('✅ Image deleted successfully');
+            logInfo('✅ Image deleted successfully');
             // Reload images
             await loadImages();
         } catch (error) {
-            console.error('❌ Failed to delete image:', error);
+            logError('❌ Failed to delete image:', error);
             alert('Failed to delete image. Please try again.');
         }
     };

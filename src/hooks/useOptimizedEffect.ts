@@ -4,6 +4,7 @@
  */
 
 import { useEffect, useCallback, useRef, type DependencyList } from 'react';
+import { logInfo, logWarn, logError } from '../services/logger';
 
 /**
  * useStableCallback - Creates a stable callback reference that doesn't change on every render
@@ -56,7 +57,7 @@ export const useAsyncEffect = (
         cleanup = await effect();
       } catch (error) {
         if (!cancelled) {
-          console.error('Async effect error:', error);
+          logError('Async effect error:', error);
         }
       }
     };

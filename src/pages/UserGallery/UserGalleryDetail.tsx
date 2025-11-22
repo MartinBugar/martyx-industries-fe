@@ -7,6 +7,7 @@ import { useFormatters } from '../../hooks/useFormatters';
 import Lightbox from './Lightbox';
 import type { UserProfile, PublicModel, PublicPhoto } from '../../types/userGallery';
 import './UserGalleryDetail.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 const UserGalleryDetail: React.FC = () => {
   const { userId } = useParams<{ userId: string }>();
@@ -39,7 +40,7 @@ const UserGalleryDetail: React.FC = () => {
       setUserData(data.user);
       setModels(data.models);
     } catch (err) {
-      console.error('Error fetching user gallery:', err);
+      logError('Error fetching user gallery:', err);
       setError(err instanceof Error ? err.message : 'Failed to load user gallery');
     }
   }, [userId]);
@@ -91,7 +92,7 @@ const UserGalleryDetail: React.FC = () => {
         );
       }
     } catch (err) {
-      console.error('Error liking photo:', err);
+      logError('Error liking photo:', err);
       alert(err instanceof Error ? err.message : 'Failed to like photo');
     }
   };

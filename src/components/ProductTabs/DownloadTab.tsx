@@ -5,6 +5,7 @@ import { getAttachmentsForVariant, trackDownload } from '../../services/productA
 import type { ProductAttachmentDto } from '../../types/api';
 import { downloadFile } from '../../services/download';
 import './ProductTabs.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 interface DownloadTabProps {
   content: TabContent;
@@ -30,7 +31,7 @@ const DownloadTab: React.FC<DownloadTabProps> = ({ content, variantId }) => {
       const data = await getAttachmentsForVariant(variantId);
       setAttachments(data);
     } catch (error) {
-      console.error('Failed to load attachments', error);
+      logError('Failed to load attachments', error);
     } finally {
       setLoading(false);
     }
@@ -48,7 +49,7 @@ const DownloadTab: React.FC<DownloadTabProps> = ({ content, variantId }) => {
         withCredentials: false, // CDN URLs don't need credentials
       });
     } catch (error) {
-      console.error('Download failed', error);
+      logError('Download failed', error);
       alert('Failed to download file. Please try again.');
     }
   };

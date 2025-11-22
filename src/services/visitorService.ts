@@ -1,4 +1,5 @@
 import { API_BASE_URL, defaultHeaders, withLangHeaders } from './apiUtils';
+import { logInfo, logWarn, logError } from '../services/logger';
 
 // Response interfaces
 export interface VisitorCountResponse {
@@ -60,7 +61,7 @@ export const visitorService = {
 
       if (!resp.ok) {
         if (import.meta.env.DEV) {
-          console.warn('Visit tracking failed:', resp.status, resp.statusText);
+          logWarn('Visit tracking failed:', resp.status, resp.statusText);
         }
         return null;
       }
@@ -69,7 +70,7 @@ export const visitorService = {
       return data as VisitorCountResponse;
     } catch (e) {
       if (import.meta.env.DEV) {
-        console.warn('Visitor tracking failed:', e);
+        logWarn('Visitor tracking failed:', e);
       }
       return null;
     }
@@ -85,7 +86,7 @@ export const visitorService = {
 
       if (!resp.ok) {
         if (import.meta.env.DEV) {
-          console.warn('Failed to fetch visitor count:', resp.status, resp.statusText);
+          logWarn('Failed to fetch visitor count:', resp.status, resp.statusText);
         }
         return { totalCount: 0, todayCount: 0 };
       }
@@ -94,7 +95,7 @@ export const visitorService = {
       return data as VisitorCountResponse;
     } catch (e) {
       if (import.meta.env.DEV) {
-        console.warn('Visitor count failed:', e);
+        logWarn('Visitor count failed:', e);
       }
       return { totalCount: 0, todayCount: 0 };
     }
@@ -110,7 +111,7 @@ export const visitorService = {
 
       if (!resp.ok) {
         if (import.meta.env.DEV) {
-          console.warn('Failed to fetch daily visitor data:', resp.status, resp.statusText);
+          logWarn('Failed to fetch daily visitor data:', resp.status, resp.statusText);
         }
         return this.generateEmptyDailyData(days);
       }
@@ -123,7 +124,7 @@ export const visitorService = {
       return this.generateEmptyDailyData(days);
     } catch (err) {
       if (import.meta.env.DEV) {
-        console.warn('Failed to get daily visitor data:', err);
+        logWarn('Failed to get daily visitor data:', err);
       }
       return this.generateEmptyDailyData(days);
     }
@@ -139,7 +140,7 @@ export const visitorService = {
 
       if (!resp.ok) {
         if (import.meta.env.DEV) {
-          console.warn('Failed to fetch location stats:', resp.status, resp.statusText);
+          logWarn('Failed to fetch location stats:', resp.status, resp.statusText);
         }
         return [];
       }
@@ -148,7 +149,7 @@ export const visitorService = {
       return Array.isArray(data) ? data as VisitorLocationStats[] : [];
     } catch (err) {
       if (import.meta.env.DEV) {
-        console.warn('Failed to get location stats:', err);
+        logWarn('Failed to get location stats:', err);
       }
       return [];
     }
@@ -172,7 +173,7 @@ export const visitorService = {
       };
     } catch (err) {
       if (import.meta.env.DEV) {
-        console.warn('Failed to get visitor analytics:', err);
+        logWarn('Failed to get visitor analytics:', err);
       }
       return {
         totalVisits: 0,

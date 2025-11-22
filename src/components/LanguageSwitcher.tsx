@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import type { SupportedLanguage } from '../i18n';
 import { changeLanguageWithPersistence } from '../utils/languageUtils';
 import './LanguageSwitcher.css';
+import { logInfo, logWarn, logError } from '../services/logger';
 
 interface LanguageOption {
   code: SupportedLanguage;
@@ -29,7 +30,7 @@ const LanguageSwitcher: React.FC = () => {
       await changeLanguageWithPersistence(languageCode);
       setIsOpen(false);
     } catch (error) {
-      console.error('Failed to change language:', error);
+      logError('Failed to change language:', error);
     }
   };
 

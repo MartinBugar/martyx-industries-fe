@@ -4,6 +4,7 @@ import { stripeService, type StripeSuccessResponse } from '../../services/stripe
 import { API_BASE_URL } from '../../services/apiUtils';
 import { useCart } from '../../context/useCart';
 import './StripeSuccess.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 /**
  * Validates and sanitizes download URLs to prevent injection attacks.
@@ -21,13 +22,13 @@ const validateDownloadUrl = (url: string | undefined): string | null => {
 
   // Only allow URLs starting with /api/download/ or /api/download/invoice/
   if (!trimmedUrl.startsWith('/api/download/')) {
-    console.error('Invalid download URL format:', trimmedUrl);
+    logError('Invalid download URL format:', trimmedUrl);
     return null;
   }
 
   // Prevent directory traversal attacks
   if (trimmedUrl.includes('..') || trimmedUrl.includes('//')) {
-    console.error('Potential directory traversal in URL:', trimmedUrl);
+    logError('Potential directory traversal in URL:', trimmedUrl);
     return null;
   }
 
@@ -62,12 +63,12 @@ const StripeSuccess: React.FC = () => {
 
     // CRITICAL: Clear payment_in_progress flag that was set before Stripe redirect
     // This allows CartContext to resume normal sync after payment completes
-    console.log('[StripeSuccess] Clearing payment_in_progress flag and cart localStorage');
+    logInfo('[StripeSuccess] Clearing payment_in_progress flag and cart localStorage');
     sessionStorage.removeItem('payment_in_progress');
 
     // Clear localStorage cart immediately
     // Backend already cleared cart via webhook, this is redundant safety measure
-    console.log('[StripeSuccess] Clearing cart localStorage');
+    logInfo('[StripeSuccess] Clearing cart localStorage');
     localStorage.removeItem('martyx_cart_v1');
     clearCart();
 
@@ -80,7 +81,7 @@ const StripeSuccess: React.FC = () => {
 
         setLoading(false);
       } catch (err) {
-        console.error('Failed to fetch payment details:', err);
+        logError('Failed to fetch payment details:', err);
         setError('Failed to verify payment. Please contact support.');
         setLoading(false);
       }

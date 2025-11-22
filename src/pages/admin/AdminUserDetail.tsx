@@ -9,6 +9,7 @@ import { userGalleryService } from '../../services/userGalleryService';
 import { adminGalleryService, type AdminUserPhotosResponse, type AdminModelInfo } from '../../services/adminGalleryService';
 import { adminAbandonedCartService, type ShoppingCartDto } from '../../services/adminAbandonedCartService';
 import type { UserGalleryDetail } from '../../types/userGallery';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 type AdminUserTab = 'details' | 'gallery';
 
@@ -91,7 +92,7 @@ const AdminUserDetail: React.FC = () => {
       setGalleryError(null);
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to load user gallery';
-      console.error(msg);
+      logError(msg);
       setGalleryError(msg);
     } finally {
       setGalleryLoading(false);
@@ -111,20 +112,20 @@ const AdminUserDetail: React.FC = () => {
         filter: 'all'
       });
       
-      console.log('Admin gallery data received:', data);
-      console.log('Photos array:', data.photos);
-      console.log('First photo structure:', data.photos[0]);
+      logInfo('Admin gallery data received:', data);
+      logInfo('Photos array:', data.photos);
+      logInfo('First photo structure:', data.photos[0]);
       
       // Debug: Check if backend provides model-level status
-      console.log('=== BACKEND DATA DEBUG ===');
-      console.log('Model statuses from backend:', data.modelStatuses);
-      console.log('Photos array length:', data.photos.length);
+      logInfo('=== BACKEND DATA DEBUG ===');
+      logInfo('Model statuses from backend:', data.modelStatuses);
+      logInfo('Photos array length:', data.photos.length);
       if (data.photos.length > 0) {
         const firstPhoto = data.photos[0];
-        console.log('First photo structure:', firstPhoto);
-        console.log('All photo fields:', Object.keys(firstPhoto));
+        logInfo('First photo structure:', firstPhoto);
+        logInfo('All photo fields:', Object.keys(firstPhoto));
       }
-      console.log('========================');
+      logInfo('========================');
       
       // Check if data has photos array
       if (!data.photos || !Array.isArray(data.photos)) {
@@ -141,7 +142,7 @@ const AdminUserDetail: React.FC = () => {
           // Get model status from backend modelStatuses object
           const modelStatus = data.modelStatuses?.[photo.productId];
           
-          console.log(`Model ${photo.productId} status from backend:`, modelStatus);
+          logInfo(`Model ${photo.productId} status from backend:`, modelStatus);
           
           modelsMap.set(modelKey, {
             productId: photo.productId,
@@ -164,21 +165,21 @@ const AdminUserDetail: React.FC = () => {
         models: Array.from(modelsMap.values())
       };
       
-      console.log('Transformed admin gallery data:', transformedData);
+      logInfo('Transformed admin gallery data:', transformedData);
       
       // Debug: Check transformed model data
       if (transformedData.models.length > 0) {
         const firstModel = transformedData.models[0];
-        console.log('=== TRANSFORMED MODEL DEBUG ===');
-        console.log('Model isPublic (transformed):', firstModel.isPublic, typeof firstModel.isPublic);
-        console.log('Model isCompleted (transformed):', firstModel.isCompleted, typeof firstModel.isCompleted);
-        console.log('Model name:', firstModel.productName);
-        console.log('===============================');
+        logInfo('=== TRANSFORMED MODEL DEBUG ===');
+        logInfo('Model isPublic (transformed):', firstModel.isPublic, typeof firstModel.isPublic);
+        logInfo('Model isCompleted (transformed):', firstModel.isCompleted, typeof firstModel.isCompleted);
+        logInfo('Model name:', firstModel.productName);
+        logInfo('===============================');
       }
       
       setAdminGalleryData(transformedData);
     } catch (err) {
-      console.error('Admin gallery loading error:', err);
+      logError('Admin gallery loading error:', err);
       const msg = err instanceof Error ? err.message : 'Failed to load admin gallery';
       setAdminGalleryError(msg);
     } finally {

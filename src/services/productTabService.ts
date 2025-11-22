@@ -6,6 +6,7 @@
 
 import { apiClient } from './apiClient';
 import type { ProductTabDto, ProductTabCreateRequest, ProductTabTemplate } from '../types/api';
+import { logInfo, logWarn, logError } from '../services/logger';
 
 // ============================================================================
 // PUBLIC ENDPOINTS (No auth required)
@@ -397,7 +398,7 @@ export async function adminGetTabsByKey(
         result[locale] = tab;
       }
     } catch (err) {
-      console.error(`Failed to load tab for locale ${locale}:`, err);
+      logError(`Failed to load tab for locale ${locale}:`, err);
     }
   });
 

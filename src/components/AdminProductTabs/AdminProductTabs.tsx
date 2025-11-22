@@ -16,6 +16,7 @@ import {
   adminDuplicateTab
 } from '../../services/productTabService';
 import './AdminProductTabs.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 interface AdminProductTabsProps {
   masterProductId?: number;
@@ -66,7 +67,7 @@ const AdminProductTabs: React.FC<AdminProductTabsProps> = ({
 
       setTabs(loadedTabs);
     } catch (err) {
-      console.error('Error loading tabs:', err);
+      logError('Error loading tabs:', err);
       setError('Failed to load tabs');
     } finally {
       setLoading(false);
@@ -86,7 +87,7 @@ const AdminProductTabs: React.FC<AdminProductTabsProps> = ({
       setFormData(emptyForm);
       await loadTabs();
     } catch (err) {
-      console.error('Error creating tab:', err);
+      logError('Error creating tab:', err);
       setError('Failed to create tab');
     }
   };
@@ -102,7 +103,7 @@ const AdminProductTabs: React.FC<AdminProductTabsProps> = ({
       setFormData(emptyForm);
       await loadTabs();
     } catch (err) {
-      console.error('Error updating tab:', err);
+      logError('Error updating tab:', err);
       setError('Failed to update tab');
     }
   };
@@ -116,7 +117,7 @@ const AdminProductTabs: React.FC<AdminProductTabsProps> = ({
       await adminDeleteTab(id);
       await loadTabs();
     } catch (err) {
-      console.error('Error deleting tab:', err);
+      logError('Error deleting tab:', err);
       setError('Failed to delete tab');
     }
   };
@@ -128,7 +129,7 @@ const AdminProductTabs: React.FC<AdminProductTabsProps> = ({
       await adminDuplicateTab(id);
       await loadTabs();
     } catch (err) {
-      console.error('Error duplicating tab:', err);
+      logError('Error duplicating tab:', err);
       setError('Failed to duplicate tab');
     }
   };

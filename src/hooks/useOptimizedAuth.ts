@@ -12,6 +12,7 @@ import { useState, useCallback, useMemo } from 'react';
 import { useStableCallback, useDebouncedEffect, useEffectOnce } from './useOptimizedEffect';
 import type { User } from '../context/authTypes';
 import { apiClient } from '../services/apiClient';
+import { logInfo, logWarn, logError } from '../services/logger';
 
 interface AuthState {
   user: User | null;
@@ -89,7 +90,7 @@ export const useOptimizedAuth = (): UseOptimizedAuthReturn => {
         });
       }
     } catch (error) {
-      console.error('Token validation error:', error);
+      logError('Token validation error:', error);
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       updateAuthState({
@@ -310,7 +311,7 @@ function parseJWT(token: string): any {
     );
     return JSON.parse(jsonPayload);
   } catch (error) {
-    console.error('JWT parsing error:', error);
+    logError('JWT parsing error:', error);
     return null;
   }
 }

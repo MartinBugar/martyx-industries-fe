@@ -7,6 +7,7 @@ import { shippingService } from '../../services/shippingService';
 import { discountService } from '../../services/discountService';
 import GiftProgressBar from '../../components/GiftProgressBar/GiftProgressBar';
 import './CartPage.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 interface CartPageProps {
   // Modal props - when provided, renders as modal
@@ -83,17 +84,17 @@ const CartPage: React.FC<CartPageProps> = ({
         });
         setDiscountCode(''); // Clear input after successful application
 
-        console.log('✅ [DISCOUNT] Applied:', validation.code, '→ €' + validation.calculated_discount_amount);
+        logInfo('✅ [DISCOUNT] Applied:', validation.code, '→ €' + validation.calculated_discount_amount);
       } else {
         // Invalid discount
         const errorMsg = validation.error_message || t('cart.invalid_discount_code', 'Invalid discount code');
         setDiscountError(errorMsg);
         setAppliedDiscount(null);
 
-        console.warn('❌ [DISCOUNT] Validation failed:', errorMsg);
+        logWarn('❌ [DISCOUNT] Validation failed:', errorMsg);
       }
     } catch (error) {
-      console.error('❌ [DISCOUNT] API error:', error);
+      logError('❌ [DISCOUNT] API error:', error);
 
       // Handle API errors gracefully
       const errorMsg = error instanceof Error && error.message
@@ -167,7 +168,7 @@ const CartPage: React.FC<CartPageProps> = ({
           setCheapestShipping(0);
         }
       } catch (error) {
-        console.error('Error fetching shipping costs:', error);
+        logError('Error fetching shipping costs:', error);
         // On error, fallback to 0 instead of showing wrong price
         setCheapestShipping(0);
       } finally {

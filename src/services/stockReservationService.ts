@@ -1,4 +1,5 @@
 import { API_BASE_URL } from './apiUtils';
+import { logInfo, logWarn, logError } from '../services/logger';
 
 export interface ReservationResponse {
   reservationId: number;
@@ -79,7 +80,7 @@ export const stockReservationService = {
     });
 
     if (!response.ok) {
-      console.warn('Failed to release reservations:', response.statusText);
+      logWarn('Failed to release reservations:', response.statusText);
       // Don't throw - this is best-effort cleanup
     }
   },
@@ -104,7 +105,7 @@ export const stockReservationService = {
     });
 
     if (!response.ok) {
-      console.warn('Failed to fetch reservations:', response.statusText);
+      logWarn('Failed to fetch reservations:', response.statusText);
       return [];
     }
 

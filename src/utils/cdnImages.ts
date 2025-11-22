@@ -26,7 +26,7 @@ export function getCDNImageUrl(baseName: string, size?: ImageSize, format?: 'web
   if (!USE_CDN_IMAGES || !CDN_BASE) {
     // Fallback to local assets
     if (import.meta.env.DEV) {
-      console.log('🚫 CDN disabled or no base URL:', { USE_CDN_IMAGES, CDN_BASE });
+      logInfo('🚫 CDN disabled or no base URL:', { USE_CDN_IMAGES, CDN_BASE });
     }
     return getLocalImageUrl(baseName, size, format);
   }
@@ -40,7 +40,7 @@ export function getCDNImageUrl(baseName: string, size?: ImageSize, format?: 'web
     const extension = format || 'png';
     const finalUrl = `${baseUrl}/${baseName}.${extension}`;
     if (import.meta.env.DEV) {
-      console.log('🌐 CDN URL generated:', finalUrl, 'for folder:', folder);
+      logInfo('🌐 CDN URL generated:', finalUrl, 'for folder:', folder);
     }
     return finalUrl;
   }

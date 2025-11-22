@@ -5,6 +5,7 @@ import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 import './OrderHistory.css';
 // Note: Download functionality moved to OrderDetailsCard
 import OrderDetailsCard from '../OrderDetailsCard';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 
 const OrderHistory: React.FC = () => {
@@ -158,7 +159,7 @@ const OrderHistory: React.FC = () => {
             {selectedOrder?.id === order.id && (
               <OrderDetailsCard
                 order={order}
-                onError={(error) => console.error('Order details error:', error)}
+                onError={(error) => logError('Order details error:', error)}
               />
             )}
           </div>

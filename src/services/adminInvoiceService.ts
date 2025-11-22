@@ -1,5 +1,6 @@
 import { API_BASE_URL, defaultHeaders, handleResponse } from './apiUtils';
 import type {
+import { logInfo, logWarn, logError } from '../services/logger';
   InvoiceDto,
   CompanySettingsDto
 } from '../types/invoice';
@@ -204,7 +205,7 @@ export const adminInvoiceService = {
           await new Promise(resolve => setTimeout(resolve, 500));
         }
       } catch (error) {
-        console.error(`Failed to download invoice ${invoice.invoice_number}:`, error);
+        logError(`Failed to download invoice ${invoice.invoice_number}:`, error);
         // Continue with other downloads even if one fails
       }
     }

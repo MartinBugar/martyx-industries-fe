@@ -10,6 +10,7 @@ import {
   type CreditTransactionDto
 } from '../../services/referralService';
 import './ReferralDashboard.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 const ReferralDashboard: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -46,7 +47,7 @@ const ReferralDashboard: React.FC = () => {
       setTransactions(transactionsData);
       setReferrals(referralsData);
     } catch (error) {
-      console.error('Failed to load referral data:', error);
+      logError('Failed to load referral data:', error);
     } finally {
       setLoading(false);
     }
@@ -58,7 +59,7 @@ const ReferralDashboard: React.FC = () => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      console.error('Failed to copy:', error);
+      logError('Failed to copy:', error);
     }
   };
 
@@ -72,7 +73,7 @@ const ReferralDashboard: React.FC = () => {
       setShareEmail('');
       alert(t('shareSuccess'));
     } catch (error) {
-      console.error('Failed to share:', error);
+      logError('Failed to share:', error);
       alert(t('shareFailed'));
     } finally {
       setShareLoading(false);

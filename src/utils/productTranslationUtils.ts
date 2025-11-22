@@ -2,6 +2,7 @@ import type { TFunction } from 'i18next';
 import i18n from '../i18n';
 import { type ProductTab, type TabContent, type HardcodedProductData } from '../data/productData';
 import endeavourBuildPdf from '../assets/buildguide/1/endeavourBuild.pdf';
+import { logInfo, logWarn, logError } from '../services/logger';
 
 /**
  * Utility functions for localizing hardcoded product data
@@ -17,7 +18,7 @@ export const getLocalizedFeatures = (productId: string, t: TFunction): string[] 
   try {
     return t(`product_data.${productKey}.features`, { returnObjects: true }) as string[];
   } catch (error) {
-    console.warn(`Failed to load localized features for product ${productId}:`, error);
+    logWarn(`Failed to load localized features for product ${productId}:`, error);
     // Fallback to hardcoded features
     return productId === '1' 
       ? [
@@ -56,7 +57,7 @@ export const getLocalizedDetailsContent = (productId: string, t: TFunction): Tab
       text: content
     };
   } catch (error) {
-    console.warn(`Failed to load localized details for product ${productId}:`, error);
+    logWarn(`Failed to load localized details for product ${productId}:`, error);
     // Fallback to hardcoded content
     const fallbackContent = productId === '1' 
       ? '<h2>Endeavour - 3D Printed RC APC Project</h2>' +
@@ -129,7 +130,7 @@ export const getLocalizedHardcodedProductDataForService = (productId: string): P
   const t = i18n.getFixedT(currentLanguage, 'products');
   
   if (import.meta.env.MODE === 'development') {
-    console.log(`🌐 Getting localized product data for ${productId} in language: ${currentLanguage}`);
+    logInfo(`🌐 Getting localized product data for ${productId} in language: ${currentLanguage}`);
   }
 
   const features = getLocalizedFeatures(productId, t);

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './OptimizedImage.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 interface OptimizedImageProps {
   src: string;
@@ -62,7 +63,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
 
   const handleError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     if (import.meta.env.DEV) {
-      console.error('❌ Image failed to load:', {
+      logError('❌ Image failed to load:', {
         src,
         alt,
         className,
@@ -73,7 +74,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
       // Try to fetch the image to get HTTP status code
       fetch(src, { method: 'HEAD' })
         .then(response => {
-          console.error('🔍 Image HEAD request result:', {
+          logError('🔍 Image HEAD request result:', {
             url: src,
             status: response.status,
             statusText: response.statusText,
@@ -86,7 +87,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
           });
         })
         .catch(fetchError => {
-          console.error('🔍 Image HEAD request failed:', {
+          logError('🔍 Image HEAD request failed:', {
             url: src,
             error: fetchError.message,
             errorType: fetchError.name

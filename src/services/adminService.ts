@@ -1,5 +1,6 @@
 import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
 import { authApi } from './api';
+import { logInfo, logWarn, logError } from '../services/logger';
 
 export const adminService = {
   // Verifies if the current authenticated user has ADMIN privileges on the backend
@@ -60,7 +61,7 @@ export const adminService = {
       // Other errors
       return false;
     } catch (error) {
-      console.error('Admin check error:', error);
+      logError('Admin check error:', error);
       return false;
     } finally {
       // Restore previous Authorization header to avoid altering global auth

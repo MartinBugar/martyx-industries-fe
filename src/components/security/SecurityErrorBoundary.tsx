@@ -5,6 +5,7 @@
 
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import './SecurityErrorBoundary.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 interface Props {
   children: ReactNode;
@@ -27,7 +28,7 @@ class SecurityErrorBoundary extends Component<Props, State> {
     const errorId = `ERR_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
     // Log chyby do konzoly (v produkcii by sa malo posielať na server)
-    console.error('Security Error Boundary caught an error:', {
+    logError('Security Error Boundary caught an error:', {
       errorId,
       message: error.message,
       name: error.name,
@@ -43,8 +44,8 @@ class SecurityErrorBoundary extends Component<Props, State> {
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // Detailné logovanie pre development
     if (import.meta.env.DEV) {
-      console.error('Error details:', error);
-      console.error('Error info:', errorInfo);
+      logError('Error details:', error);
+      logError('Error info:', errorInfo);
     }
     
     // V produkcii by sa chyba mala poslať na monitoring service
@@ -69,7 +70,7 @@ class SecurityErrorBoundary extends Component<Props, State> {
         };
         
         // Použitie safeError pre logging
-        console.log('Error logged:', safeError);
+        logInfo('Error logged:', safeError);
         
         // Poslanie na monitoring endpoint
         // fetch('/api/errors', {
@@ -78,7 +79,7 @@ class SecurityErrorBoundary extends Component<Props, State> {
         //   body: JSON.stringify(safeError)
         // });
       } catch (logError) {
-        console.error('Failed to log error to service:', logError);
+        logError('Failed to log error to service:', logError);
       }
     }
   };

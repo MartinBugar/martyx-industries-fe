@@ -5,6 +5,7 @@ import WishlistButton from '../WishlistButton';
 import OptimizedImage from '../OptimizedImage/OptimizedImage';
 import { getBestImageUrl, getBaseNameFromPath, isCDNEnabled } from '../../utils/cdnImages';
 import './ProductCard.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 interface ProductCardProps {
   product: Product;
@@ -62,7 +63,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   // Debug logging for image URLs
   if (import.meta.env.DEV && hoverImage) {
-    console.log(`🖼️ ProductCard for "${product.name}":`, {
+    logInfo(`🖼️ ProductCard for "${product.name}":`, {
       masterProductId: product.masterProductId,
       galleryLength: product.gallery?.length || 0,
       mainImageUrl: mainImage,
@@ -75,8 +76,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
     // Extra detail for admin preview
     if (mainImage === hoverImage) {
-      console.log('ℹ️ Main and hover images are the SAME - this is expected in admin preview mode');
-      console.log('   Hover effect will still work (opacity transition), but shows the same image');
+      logInfo('ℹ️ Main and hover images are the SAME - this is expected in admin preview mode');
+      logInfo('   Hover effect will still work (opacity transition), but shows the same image');
     }
   }
 

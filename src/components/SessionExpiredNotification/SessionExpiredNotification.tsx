@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './SessionExpiredNotification.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 const SessionExpiredNotification: React.FC = () => {
   const [isVisible, setIsVisible] = useState<boolean>(false);
@@ -7,11 +8,11 @@ const SessionExpiredNotification: React.FC = () => {
   useEffect(() => {
     const handleAuthLogout = (event: CustomEvent) => {
       const reason = event.detail?.reason;
-      console.log('Session expired notification: Received auth:logout event with reason:', reason);
+      logInfo('Session expired notification: Received auth:logout event with reason:', reason);
       
       // Only show notification for token expiration, not for manual logout or API errors
       if (reason === 'token_expired') {
-        console.log('Token expired - showing session expired notification');
+        logInfo('Token expired - showing session expired notification');
         setIsVisible(true);
         
         // Auto-hide the notification after 5 seconds
@@ -19,7 +20,7 @@ const SessionExpiredNotification: React.FC = () => {
           setIsVisible(false);
         }, 5000);
       } else {
-        console.log('Logout reason is not token expiration - not showing notification');
+        logInfo('Logout reason is not token expiration - not showing notification');
       }
     };
 

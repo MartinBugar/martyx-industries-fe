@@ -7,6 +7,7 @@ import type {
   WishlistItem
 } from '../types/wishlist';
 import type { ApiResponse } from '../types/api';
+import { logInfo, logWarn, logError } from '../services/logger';
 
 export class WishlistService {
   private readonly baseUrl = '/api/wishlist';
@@ -23,7 +24,7 @@ export class WishlistService {
       // Fallback for different response formats - response might be the data directly
       return response as unknown as WishlistResponse;
     } catch (error) {
-      console.error('Failed to get wishlist:', error);
+      logError('Failed to get wishlist:', error);
       throw error;
     }
   }
@@ -40,7 +41,7 @@ export class WishlistService {
       // Fallback for different response formats - response might be the data directly
       return response as unknown as WishlistStats;
     } catch (error) {
-      console.error('Failed to get wishlist stats:', error);
+      logError('Failed to get wishlist stats:', error);
       throw error;
     }
   }
@@ -61,7 +62,7 @@ export class WishlistService {
       // Fallback for different response formats - response might be the data directly
       return response as unknown as WishlistItem;
     } catch (error) {
-      console.error('Failed to add to wishlist:', error);
+      logError('Failed to add to wishlist:', error);
       throw error;
     }
   }
@@ -81,7 +82,7 @@ export class WishlistService {
         }
       });
     } catch (error) {
-      console.error('Failed to remove from wishlist:', error);
+      logError('Failed to remove from wishlist:', error);
       throw error;
     }
   }
@@ -99,7 +100,7 @@ export class WishlistService {
       // Fallback for different response formats - response might be the data directly
       return response as unknown as boolean;
     } catch (error) {
-      console.error('Failed to check if product in wishlist:', error);
+      logError('Failed to check if product in wishlist:', error);
       return false; // Return false on error rather than throwing
     }
   }
@@ -116,7 +117,7 @@ export class WishlistService {
       // Fallback for different response formats - response might be the data directly
       return response as unknown as number;
     } catch (error) {
-      console.error('Failed to cleanup wishlist:', error);
+      logError('Failed to cleanup wishlist:', error);
       throw error;
     }
   }
@@ -127,7 +128,7 @@ export class WishlistService {
       const numericIds = productIds.map(id => typeof id === 'string' ? parseInt(id) : id);
       await apiClient.post<ApiResponse<void>>(`${this.baseUrl}/bulk/add`, numericIds);
     } catch (error) {
-      console.error('Failed to add multiple to wishlist:', error);
+      logError('Failed to add multiple to wishlist:', error);
       throw error;
     }
   }
@@ -138,7 +139,7 @@ export class WishlistService {
       const numericIds = productIds.map(id => typeof id === 'string' ? parseInt(id) : id);
       await apiClient.post<ApiResponse<void>>(`${this.baseUrl}/bulk/remove`, numericIds);
     } catch (error) {
-      console.error('Failed to remove multiple from wishlist:', error);
+      logError('Failed to remove multiple from wishlist:', error);
       throw error;
     }
   }

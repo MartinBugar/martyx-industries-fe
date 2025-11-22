@@ -13,6 +13,7 @@ import './ForgotPassword.css';
 
 // Zdieľané komponenty a utility
 import {
+import { logInfo, logWarn, logError } from '../../services/logger';
   AuthContainer,
   AuthHeader,
   ErrorMessage,
@@ -71,7 +72,7 @@ const ForgotPassword: React.FC = () => {
       }
     } catch (error) {
       setGeneralError('Nastala chyba. Skúste to znovu.');
-      console.error('Forgot password error:', error);
+      logError('Forgot password error:', error);
     }
   }, [forgotPassword, reset]);
 

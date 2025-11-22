@@ -12,6 +12,7 @@ import {
   Youtube
 } from 'lucide-react';
 import './FooterNew.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 // Newsletter Form Component
 const NewsletterForm: React.FC = () => {
@@ -37,7 +38,7 @@ const NewsletterForm: React.FC = () => {
     setIsSubmitting(true);
     // Mock API call
     await new Promise(resolve => setTimeout(resolve, 1000));
-    console.log('Newsletter subscription:', email);
+    logInfo('Newsletter subscription:', email);
     setEmail('');
     setIsValid(false);
     setIsSubmitting(false);

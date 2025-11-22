@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import AdminLayout from './AdminLayout';
 import { homePageSettingsService, type HomePageSetting } from '../../services/homePageSettingsService';
 import './AdminHomeSettings.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 const AdminHomeSettings: React.FC = () => {
   const [settings, setSettings] = useState<HomePageSetting[]>([]);
@@ -22,7 +23,7 @@ const AdminHomeSettings: React.FC = () => {
       const data = await homePageSettingsService.getAllSettings();
       setSettings(data);
     } catch (err) {
-      console.error('Failed to load home page settings:', err);
+      logError('Failed to load home page settings:', err);
       setError('Failed to load settings. Please try again.');
     } finally {
       setLoading(false);
@@ -38,7 +39,7 @@ const AdminHomeSettings: React.FC = () => {
 
       await homePageSettingsService.updateVisibility(id, !currentValue);
     } catch (err) {
-      console.error('Failed to update visibility:', err);
+      logError('Failed to update visibility:', err);
       // Revert on error
       setSettings(prev => prev.map(s =>
         s.id === id ? { ...s, isVisible: currentValue } : s
@@ -58,7 +59,7 @@ const AdminHomeSettings: React.FC = () => {
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
     } catch (err) {
-      console.error('Failed to save settings:', err);
+      logError('Failed to save settings:', err);
       setError('Failed to save settings. Please try again.');
     } finally {
       setSaving(false);

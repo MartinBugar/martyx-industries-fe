@@ -5,6 +5,7 @@ import { translateApiError } from '../../utils/translateApiError';
 import { changeLanguageWithPersistence } from '../../utils/languageUtils';
 import type { SupportedLocales } from '../../types/api';
 import type { SupportedLanguage } from '../../i18n';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 /**
  * Component that loads supported locales from backend and displays them
@@ -25,9 +26,9 @@ const LocaleSelector: React.FC = () => {
         const locales = await metaService.getSupportedLocales();
         setSupportedLocales(locales);
         
-        console.log('✅ Loaded supported locales from backend:', locales);
+        logInfo('✅ Loaded supported locales from backend:', locales);
       } catch (err) {
-        console.error('❌ Failed to load supported locales:', err);
+        logError('❌ Failed to load supported locales:', err);
         
         // Use the unified error translation
         const errorMessage = translateApiError(err, t);
@@ -47,7 +48,7 @@ const LocaleSelector: React.FC = () => {
     try {
       await changeLanguageWithPersistence(locale as SupportedLanguage);
     } catch (err) {
-      console.error('Failed to change language:', err);
+      logError('Failed to change language:', err);
       const errorMessage = translateApiError(err, t);
       alert(errorMessage);
     }

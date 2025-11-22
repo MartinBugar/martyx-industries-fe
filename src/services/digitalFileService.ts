@@ -3,6 +3,7 @@
  */
 
 import { apiClient } from './apiClient';
+import { logInfo, logWarn, logError } from '../services/logger';
 
 export interface DigitalFileInfo {
   hasFile: boolean;
@@ -51,7 +52,7 @@ class DigitalFileService {
         fileFormat: product.digitalFileFormat,
       };
     } catch (error) {
-      console.error('Failed to get digital file info:', error);
+      logError('Failed to get digital file info:', error);
       return { hasFile: false };
     }
   }

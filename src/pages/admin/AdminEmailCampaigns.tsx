@@ -5,6 +5,7 @@ import './AdminDiscounts.css';
 import './AdminButtonOverrides.css';
 import { adminCampaignsService, type EmailCampaign, type CampaignPerformance, type CustomerSegment, type CreateCampaignRequest } from '../../services/adminCampaignsService';
 import { Badge, Button, SkeletonTable } from '../../components/ui';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 type TabType = 'all-campaigns' | 'create-campaign' | 'campaign-details';
 
@@ -62,7 +63,7 @@ const AdminEmailCampaigns: React.FC = () => {
       const data = await adminCampaignsService.getSegments();
       setSegments(data);
     } catch (e) {
-      console.error('Failed to load segments', e);
+      logError('Failed to load segments', e);
     }
   };
 

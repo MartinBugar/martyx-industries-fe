@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { logInfo, logWarn, logError } from '../services/logger';
 
 // Type declarations for Google Maps (minimal subset needed)
 declare global {
@@ -57,7 +58,7 @@ const loadGoogleMapsScript = (): Promise<void> => {
 
     // No API key configured - skip loading
     if (!GOOGLE_MAPS_API_KEY || GOOGLE_MAPS_API_KEY.trim().length === 0) {
-      console.warn('[GooglePlaces] No API key configured. Set VITE_GOOGLE_MAPS_API_KEY in .env');
+      logWarn('[GooglePlaces] No API key configured. Set VITE_GOOGLE_MAPS_API_KEY in .env');
       reject(new Error('Google Maps API key not configured'));
       return;
     }
@@ -70,12 +71,12 @@ const loadGoogleMapsScript = (): Promise<void> => {
     script.defer = true;
 
     script.addEventListener('load', () => {
-      console.log('[GooglePlaces] Google Maps API loaded successfully');
+      logInfo('[GooglePlaces] Google Maps API loaded successfully');
       resolve();
     });
 
     script.addEventListener('error', () => {
-      console.error('[GooglePlaces] Failed to load Google Maps API');
+      logError('[GooglePlaces] Failed to load Google Maps API');
       reject(new Error('Google Maps script failed to load'));
     });
 
@@ -132,7 +133,7 @@ const parseAddressComponents = (place: any): ParsedAddress | null => {
 
   // Validate that we have minimum required fields
   if (!address.city || !address.country) {
-    console.warn('[GooglePlaces] Incomplete address data:', address);
+    logWarn('[GooglePlaces] Incomplete address data:', address);
     return null;
   }
 
@@ -174,13 +175,13 @@ export const useGooglePlacesAutocomplete = (
           const place = autocomplete.getPlace();
 
           if (!place.address_components) {
-            console.warn('[GooglePlaces] No address components in selected place');
+            logWarn('[GooglePlaces] No address components in selected place');
             return;
           }
 
           const parsed = parseAddressComponents(place);
           if (parsed) {
-            console.log('[GooglePlaces] Address selected:', parsed);
+            logInfo('[GooglePlaces] Address selected:', parsed);
             onAddressSelect(parsed);
           }
         });
@@ -189,7 +190,7 @@ export const useGooglePlacesAutocomplete = (
         setIsLoaded(true);
         setError(null);
       } catch (err) {
-        console.warn('[GooglePlaces] Failed to initialize:', err);
+        logWarn('[GooglePlaces] Failed to initialize:', err);
         setError(err instanceof Error ? err.message : 'Failed to load Google Places');
         setIsLoaded(false);
       }

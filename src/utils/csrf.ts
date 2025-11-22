@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import { logInfo, logWarn, logError } from '../services/logger';
 
 const CSRF_TOKEN_KEY = 'csrf_token';
 const CSRF_HEADER_NAME = 'X-CSRF-Token';
@@ -25,7 +26,7 @@ export const setCSRFToken = (token: string): void => {
   try {
     sessionStorage.setItem(CSRF_TOKEN_KEY, token);
   } catch (error) {
-    console.error('Failed to store CSRF token:', error);
+    logError('Failed to store CSRF token:', error);
   }
 };
 
@@ -36,7 +37,7 @@ export const getCSRFToken = (): string | null => {
   try {
     return sessionStorage.getItem(CSRF_TOKEN_KEY);
   } catch (error) {
-    console.error('Failed to retrieve CSRF token:', error);
+    logError('Failed to retrieve CSRF token:', error);
     return null;
   }
 };
@@ -48,7 +49,7 @@ export const clearCSRFToken = (): void => {
   try {
     sessionStorage.removeItem(CSRF_TOKEN_KEY);
   } catch (error) {
-    console.error('Failed to clear CSRF token:', error);
+    logError('Failed to clear CSRF token:', error);
   }
 };
 

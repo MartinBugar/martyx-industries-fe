@@ -1,4 +1,5 @@
 import { API_BASE_URL, handleResponse, withLangHeaders } from './apiUtils';
+import { logInfo, logWarn, logError } from '../services/logger';
 
 export interface Testimonial {
   id: number;
@@ -26,7 +27,7 @@ class TestimonialService {
    * @returns Promise<Testimonial[]> Array of featured reviews
    */
   async getFeaturedTestimonials(): Promise<Testimonial[]> {
-    console.log('🌐 [TESTIMONIAL_SERVICE] Calling API:', `${API_BASE_URL}/api/reviews/featured`);
+    logInfo('🌐 [TESTIMONIAL_SERVICE] Calling API:', `${API_BASE_URL}/api/reviews/featured`);
     try {
       const response = await fetch(
         `${API_BASE_URL}/api/reviews/featured`,
@@ -35,10 +36,10 @@ class TestimonialService {
         })
       );
       const data = await handleResponse(response);
-      console.log('✅ [TESTIMONIAL_SERVICE] Fetched testimonials:', data?.length || 0, data);
+      logInfo('✅ [TESTIMONIAL_SERVICE] Fetched testimonials:', data?.length || 0, data);
       return data || [];
     } catch (error) {
-      console.error('❌ [TESTIMONIAL_SERVICE] Failed to fetch:', error);
+      logError('❌ [TESTIMONIAL_SERVICE] Failed to fetch:', error);
       // Return empty array on error - don't break the homepage
       return [];
     }

@@ -14,6 +14,7 @@ import cassandraRankService, { type UserCassandraDto } from '../../services/cass
 import { userCreditsService, referralService, type UserCreditDto, type ReferralStatsDto } from '../../services/referralService';
 import type { Avatar } from '../../services/avatarService';
 import './UserAccount.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 const UserAccount: React.FC = () => {
   const { user, isAuthenticated, isLoading, fetchProfile } = useAuth();
@@ -54,7 +55,7 @@ const UserAccount: React.FC = () => {
           const data = await cassandraRankService.getUserCassandraInfo();
           setCassandraData(data);
         } catch (error) {
-          console.error('Failed to load Cassandra data:', error);
+          logError('Failed to load Cassandra data:', error);
         }
       };
       loadCassandraData();
@@ -66,17 +67,17 @@ const UserAccount: React.FC = () => {
     if (activeTab === 'referrals' && isAuthenticated) {
       const loadReferralData = async () => {
         try {
-          console.log('🔄 Loading referral data...');
+          logInfo('🔄 Loading referral data...');
           const [credits, stats] = await Promise.all([
             userCreditsService.getBalance(),
             referralService.getMyStats()
           ]);
-          console.log('✅ Credits data:', credits);
-          console.log('✅ Stats data:', stats);
+          logInfo('✅ Credits data:', credits);
+          logInfo('✅ Stats data:', stats);
           setCreditsData(credits);
           setReferralStats(stats);
         } catch (error) {
-          console.error('❌ Failed to load referral data:', error);
+          logError('❌ Failed to load referral data:', error);
           // Set default data to prevent "Loading..." forever
           setCreditsData({ creditBalance: 0, pendingBalance: 0, totalEarned: 0, totalSpent: 0 } as UserCreditDto);
           setReferralStats({

@@ -17,6 +17,7 @@ import {
 import { Button } from '../../components/ui';
 import { apiClient } from '../../services/apiClient';
 import './AdminUsers.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 const AdminProductAttachments: React.FC = () => {
   const { productId } = useParams<{ productId: string }>();
@@ -36,7 +37,7 @@ const AdminProductAttachments: React.FC = () => {
       const loadedAttachments = await adminGetAttachmentsForMasterProduct(Number(productId));
       setAttachments(loadedAttachments);
     } catch (err) {
-      console.error('Error loading attachments:', err);
+      logError('Error loading attachments:', err);
       setError('Failed to load attachments');
     } finally {
       setLoading(false);
@@ -57,7 +58,7 @@ const AdminProductAttachments: React.FC = () => {
       apiClient.clearCache();
       await loadAttachments();
     } catch (err) {
-      console.error('Error deleting attachment:', err);
+      logError('Error deleting attachment:', err);
       setError('Failed to delete attachment');
     }
   };

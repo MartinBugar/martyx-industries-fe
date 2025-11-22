@@ -9,6 +9,7 @@ import OptimizedImage from '../../components/OptimizedImage/OptimizedImage';
 import { productGalleryService } from '../../services/productGalleryService';
 import VariantSelectorModal from '../../components/VariantSelectorModal/VariantSelectorModal';
 import './Products.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 const Products: React.FC = () => {
     const {addToCart} = useCart();
@@ -78,7 +79,7 @@ const Products: React.FC = () => {
                             const galleryUrls = sortedGallery.map(img => img.cdnUrl || img.url).filter(Boolean);
 
                             if (import.meta.env.DEV) {
-                                console.log(`🏷️ Product ${product.masterProductId} (${product.name}) gallery loaded:`, {
+                                logInfo(`🏷️ Product ${product.masterProductId} (${product.name}) gallery loaded:`, {
                                     galleryCount: galleryUrls.length,
                                     mainImage: galleryUrls[0] || 'none',
                                     orderInfo: sortedGallery.slice(0, 3).map(img => ({
@@ -93,7 +94,7 @@ const Products: React.FC = () => {
                                 gallery: galleryUrls // Replace empty gallery with database gallery
                             };
                         } catch (galleryError) {
-                            console.warn(`Failed to load gallery for product ${product.masterProductId}:`, galleryError);
+                            logWarn(`Failed to load gallery for product ${product.masterProductId}:`, galleryError);
                             return {
                                 ...product,
                                 gallery: [] // Keep empty gallery if loading fails
@@ -104,7 +105,7 @@ const Products: React.FC = () => {
                 
                 setProducts(productsWithGallery);
             } catch (err) {
-                console.error('Failed to load products:', err);
+                logError('Failed to load products:', err);
                 setError('Failed to load products. Please try again later.');
             } finally {
                 setLoading(false);

@@ -97,7 +97,7 @@ export class ImagePreloader {
         resolve();
       };
       img.onerror = () => {
-        console.warn(`Failed to preload image: ${url}`);
+        logWarn(`Failed to preload image: ${url}`);
         reject();
       };
       img.src = url;
@@ -117,6 +117,7 @@ export class ImagePreloader {
 
 // Hook for using preloader in components
 import { useEffect } from 'react';
+import { logInfo, logWarn, logError } from '../services/logger';
 
 export const useImagePreloader = (
   urls: string[], 

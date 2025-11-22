@@ -1,6 +1,7 @@
 import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
 import { removeAuthToken } from './api';
 import type { Order } from '../context/authTypes';
+import { logInfo, logWarn, logError } from '../services/logger';
 
 // Types that approximate the backend OrderDTO shape
 // We keep them flexible to avoid tight coupling
@@ -242,7 +243,7 @@ export const ordersService = {
       URL.revokeObjectURL(objectUrl);
       return true;
     } catch (error) {
-      console.error('Download product error:', error);
+      logError('Download product error:', error);
       alert('An unexpected error occurred while downloading the file.');
       return false;
     }
@@ -258,7 +259,7 @@ export const ordersService = {
       const { downloadProductByUrl } = await import('./download');
       return await downloadProductByUrl(downloadUrl, suggestedName);
     } catch (error) {
-      console.error('Download by URL error:', error);
+      logError('Download by URL error:', error);
       return false;
     }
   },
@@ -273,7 +274,7 @@ export const ordersService = {
       const { downloadInvoiceByUrl } = await import('./download');
       return await downloadInvoiceByUrl(downloadUrl, suggestedName);
     } catch (error) {
-      console.error('Download invoice by URL error:', error);
+      logError('Download invoice by URL error:', error);
       return false;
     }
   },

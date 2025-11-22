@@ -6,6 +6,7 @@ import cassandraRankService, {
     type Rank
 } from '../../services/cassandraRankService';
 import './AdminCassandraRanks.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 const AdminCassandraRanks: React.FC = () => {
     const [ranks, setRanks] = useState<CassandraRankImageDto[]>([]);
@@ -22,12 +23,12 @@ const AdminCassandraRanks: React.FC = () => {
     const loadRanks = async () => {
         try {
             setLoading(true);
-            console.log('🔄 Loading Cassandra ranks...');
+            logInfo('🔄 Loading Cassandra ranks...');
             const data = await cassandraRankService.getAllRankImages();
             setRanks(data);
-            console.log(`✅ Loaded ${data.length} Cassandra ranks`);
+            logInfo(`✅ Loaded ${data.length} Cassandra ranks`);
         } catch (error) {
-            console.error('❌ Failed to load Cassandra ranks:', error);
+            logError('❌ Failed to load Cassandra ranks:', error);
         } finally {
             setLoading(false);
         }
@@ -36,14 +37,14 @@ const AdminCassandraRanks: React.FC = () => {
     const handleImageUpload = async (rank: Rank, file: File) => {
         try {
             setUploadingRank(rank);
-            console.log(`🚀 Uploading image for rank: ${rank}`);
+            logInfo(`🚀 Uploading image for rank: ${rank}`);
 
             await cassandraRankService.uploadRankImage(rank, file);
 
-            console.log(`✅ Upload successful for rank: ${rank}`);
+            logInfo(`✅ Upload successful for rank: ${rank}`);
             await loadRanks(); // Reload all ranks
         } catch (error) {
-            console.error(`❌ Upload failed for rank ${rank}:`, error);
+            logError(`❌ Upload failed for rank ${rank}:`, error);
             alert(`Upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
         } finally {
             setUploadingRank(null);
@@ -65,10 +66,10 @@ const AdminCassandraRanks: React.FC = () => {
                 return;
             }
 
-            console.log(`💾 Updating description for rank: ${rank}`);
+            logInfo(`💾 Updating description for rank: ${rank}`);
             await cassandraRankService.updateRankDescription(rank, newDescription);
 
-            console.log(`✅ Description updated for rank: ${rank}`);
+            logInfo(`✅ Description updated for rank: ${rank}`);
             setEditingRank(null);
             setEditedDescriptions(prev => {
                 const updated = { ...prev };
@@ -77,7 +78,7 @@ const AdminCassandraRanks: React.FC = () => {
             });
             await loadRanks();
         } catch (error) {
-            console.error(`❌ Failed to update description for rank ${rank}:`, error);
+            logError(`❌ Failed to update description for rank ${rank}:`, error);
             alert('Failed to update description. Please try again.');
         }
     };
@@ -95,13 +96,13 @@ const AdminCassandraRanks: React.FC = () => {
         if (!window.confirm(`Are you sure you want to delete the image for ${rank}?`)) return;
 
         try {
-            console.log(`🗑️ Deleting image for rank: ${rank}`);
+            logInfo(`🗑️ Deleting image for rank: ${rank}`);
             await cassandraRankService.deleteRankImage(rank);
 
-            console.log(`✅ Image deleted for rank: ${rank}`);
+            logInfo(`✅ Image deleted for rank: ${rank}`);
             await loadRanks();
         } catch (error) {
-            console.error(`❌ Failed to delete image for rank ${rank}:`, error);
+            logError(`❌ Failed to delete image for rank ${rank}:`, error);
             alert('Failed to delete image. Please try again.');
         }
     };

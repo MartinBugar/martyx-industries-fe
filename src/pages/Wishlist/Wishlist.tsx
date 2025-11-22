@@ -13,6 +13,7 @@ import { productGalleryService } from '../../services/productGalleryService';
 import { useFormatters } from '../../hooks/useFormatters';
 import './Wishlist.css';
 import '../Products/Products.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 const Wishlist: React.FC = () => {
   const { t } = useTranslation('wishlist');
@@ -105,7 +106,7 @@ const Wishlist: React.FC = () => {
               const galleryUrls = sortedGallery.map(img => img.cdnUrl || img.url).filter(Boolean);
 
               if (import.meta.env.DEV) {
-                console.log(`🏷️ Wishlist: Product ${product.masterProductId} (${product.name}) gallery loaded:`, {
+                logInfo(`🏷️ Wishlist: Product ${product.masterProductId} (${product.name}) gallery loaded:`, {
                   galleryCount: galleryUrls.length,
                   mainImage: galleryUrls[0] || 'none',
                   orderInfo: sortedGallery.slice(0, 3).map(img => ({
@@ -125,14 +126,14 @@ const Wishlist: React.FC = () => {
               return { productId: item.productId, product: productWithGallery };
             } catch (galleryError) {
               if (import.meta.env.DEV) {
-                console.log(`🏷️ Wishlist: No gallery found for product ${product.masterProductId}, using fallback`);
+                logInfo(`🏷️ Wishlist: No gallery found for product ${product.masterProductId}, using fallback`);
               }
               // Return product without database gallery (keeps hardcoded or empty gallery)
               return { productId: item.productId, product };
             }
           } catch (err) {
             if (import.meta.env.DEV) {
-              console.error(`Failed to fetch product data for ${item.productId}:`, err);
+              logError(`Failed to fetch product data for ${item.productId}:`, err);
             }
             return null;
           }
@@ -149,7 +150,7 @@ const Wishlist: React.FC = () => {
         setProductsData(newProductsData);
       } catch (err) {
         if (import.meta.env.DEV) {
-          console.error('Failed to fetch products data:', err);
+          logError('Failed to fetch products data:', err);
         }
       }
     };
@@ -169,7 +170,7 @@ const Wishlist: React.FC = () => {
     } else {
       // Fallback: create minimal product from wishlist item data
       // This shouldn't normally happen as we fetch full product data above
-      console.warn('Adding to cart without full product data for', item.productId);
+      logWarn('Adding to cart without full product data for', item.productId);
       // Skip add to cart if we don't have full product data
       // The user should wait for products to load
     }

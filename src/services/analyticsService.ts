@@ -20,6 +20,7 @@
 
 import type { Product } from '../data/productData';
 import type { CartItem, CartProduct } from '../context/cartContextTypes';
+import { logInfo, logWarn, logError } from '../services/logger';
 
 const GA4_MEASUREMENT_ID = import.meta.env.VITE_GA4_MEASUREMENT_ID || '';
 
@@ -43,13 +44,13 @@ interface GA4Item {
  */
 export const initializeGA4 = (): void => {
   if (!GA4_MEASUREMENT_ID || GA4_MEASUREMENT_ID.trim().length === 0) {
-    console.warn('[GA4] No measurement ID configured. Set VITE_GA4_MEASUREMENT_ID in .env');
+    logWarn('[GA4] No measurement ID configured. Set VITE_GA4_MEASUREMENT_ID in .env');
     return;
   }
 
   // Check if gtag already exists
   if (window.gtag) {
-    console.log('[GA4] Google Analytics already initialized');
+    logInfo('[GA4] Google Analytics already initialized');
     return;
   }
 
@@ -72,7 +73,7 @@ export const initializeGA4 = (): void => {
     currency: 'EUR', // Default currency
   });
 
-  console.log('[GA4] Google Analytics initialized:', GA4_MEASUREMENT_ID);
+  logInfo('[GA4] Google Analytics initialized:', GA4_MEASUREMENT_ID);
 };
 
 /**
@@ -116,7 +117,7 @@ export const trackViewItemList = (products: Product[], listName: string = 'Produ
     items: items,
   });
 
-  console.log('[GA4] view_item_list:', listName, `(${items.length} items)`);
+  logInfo('[GA4] view_item_list:', listName, `(${items.length} items)`);
 };
 
 /**
@@ -134,7 +135,7 @@ export const trackViewItem = (product: Product): void => {
     items: [item],
   });
 
-  console.log('[GA4] view_item:', product.name);
+  logInfo('[GA4] view_item:', product.name);
 };
 
 /**
@@ -152,7 +153,7 @@ export const trackAddToCart = (product: Product | CartProduct, quantity: number 
     items: [item],
   });
 
-  console.log('[GA4] add_to_cart:', product.name, `x${quantity}`);
+  logInfo('[GA4] add_to_cart:', product.name, `x${quantity}`);
 };
 
 /**
@@ -170,7 +171,7 @@ export const trackRemoveFromCart = (product: Product | CartProduct, quantity: nu
     items: [item],
   });
 
-  console.log('[GA4] remove_from_cart:', product.name, `x${quantity}`);
+  logInfo('[GA4] remove_from_cart:', product.name, `x${quantity}`);
 };
 
 /**
@@ -188,7 +189,7 @@ export const trackBeginCheckout = (cartItems: CartItem[], totalValue: number): v
     items: items,
   });
 
-  console.log('[GA4] begin_checkout:', `€${totalValue.toFixed(2)}`, `(${items.length} items)`);
+  logInfo('[GA4] begin_checkout:', `€${totalValue.toFixed(2)}`, `(${items.length} items)`);
 };
 
 /**
@@ -212,7 +213,7 @@ export const trackAddShippingInfo = (
     items: items,
   });
 
-  console.log('[GA4] add_shipping_info:', shippingMethod, `€${shippingCost.toFixed(2)}`);
+  logInfo('[GA4] add_shipping_info:', shippingMethod, `€${shippingCost.toFixed(2)}`);
 };
 
 /**
@@ -235,7 +236,7 @@ export const trackAddPaymentInfo = (
     items: items,
   });
 
-  console.log('[GA4] add_payment_info:', paymentMethod);
+  logInfo('[GA4] add_payment_info:', paymentMethod);
 };
 
 /**
@@ -264,7 +265,7 @@ export const trackPurchase = (
     items: items,
   });
 
-  console.log('[GA4] purchase:', orderId, `€${totalValue.toFixed(2)}`);
+  logInfo('[GA4] purchase:', orderId, `€${totalValue.toFixed(2)}`);
 };
 
 /**
@@ -276,7 +277,7 @@ export const trackCustomEvent = (eventName: string, params?: Record<string, any>
 
   window.gtag('event', eventName, params);
 
-  console.log('[GA4] custom event:', eventName, params);
+  logInfo('[GA4] custom event:', eventName, params);
 };
 
 /**
@@ -291,7 +292,7 @@ export const trackPageView = (pagePath: string, pageTitle?: string): void => {
     page_title: pageTitle || document.title,
   });
 
-  console.log('[GA4] page_view:', pagePath);
+  logInfo('[GA4] page_view:', pagePath);
 };
 
 /**

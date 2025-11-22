@@ -3,6 +3,7 @@ import { useAuth } from '../../context/useAuth';
 import { gdprService } from '../../services/gdprService';
 import { useUserSettings } from '../../context/useUserSettings';
 import './GdprSettings.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 /**
  * GDPR Settings Component for User Account Settings Tab
@@ -32,7 +33,7 @@ const GdprSettings: React.FC = () => {
             const status = await gdprService.getConsentStatus();
             setConsentStatus(status);
         } catch (err) {
-            console.error('Failed to load consent status:', err);
+            logError('Failed to load consent status:', err);
         }
     };
 

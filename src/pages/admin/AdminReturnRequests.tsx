@@ -5,6 +5,7 @@ import './AdminDiscounts.css';
 import './AdminButtonOverrides.css';
 import { adminReturnRequestsService, type ReturnRequestDto, type ReturnRequestStats } from '../../services/adminReturnRequestsService';
 import { Badge, Button, SkeletonTable } from '../../components/ui';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 type TabType = 'all-returns' | 'pending-approval' | 'view-details' | 'statistics';
 
@@ -62,7 +63,7 @@ const AdminReturnRequests: React.FC = () => {
       const data = await adminReturnRequestsService.getStats();
       setStats(data);
     } catch (e: unknown) {
-      console.error('Failed to load stats:', e);
+      logError('Failed to load stats:', e);
     }
   };
 

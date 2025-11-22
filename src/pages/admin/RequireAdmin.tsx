@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { isTokenExpired } from '../../services/apiUtils';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 interface Props {
   children: React.ReactNode;
@@ -17,7 +18,7 @@ const RequireAdmin: React.FC<Props> = ({ children }) => {
 
   // Debug authentication status
   if (import.meta.env.DEV) {
-    console.log('🔐 Admin auth check:', {
+    logInfo('🔐 Admin auth check:', {
       path: location.pathname,
       hasToken: !!token,
       adminFlag,
@@ -28,7 +29,7 @@ const RequireAdmin: React.FC<Props> = ({ children }) => {
 
   if (!isAuthed) {
     if (import.meta.env.DEV) {
-      console.log('❌ Admin access denied, redirecting to /admin');
+      logInfo('❌ Admin access denied, redirecting to /admin');
     }
     return <Navigate to="/admin" replace state={{ from: location }} />;
   }

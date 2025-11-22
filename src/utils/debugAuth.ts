@@ -4,6 +4,7 @@
  */
 
 import { debugToken, clearAuthData } from './tokenUtils';
+import { logInfo, logWarn, logError } from '../services/logger';
 
 // Make functions available globally for console debugging
 declare global {
@@ -21,8 +22,8 @@ declare global {
  * Clears all auth data and provides instructions
  */
 const quickFix = (): void => {
-  console.log('🚨 JWT Authentication Quick Fix');
-  console.log('================================');
+  logInfo('🚨 JWT Authentication Quick Fix');
+  logInfo('================================');
   
   // Debug current state first
   debugToken();
@@ -30,17 +31,17 @@ const quickFix = (): void => {
   // Clear all auth data
   clearAuthData();
   
-  console.log('');
-  console.log('📋 Next steps:');
-  console.log('1. Refresh the page (F5)');
-  console.log('2. Logout completely from the app');
-  console.log('3. Login again with your credentials');
-  console.log('4. Try uploading photos again');
-  console.log('');
-  console.log('If the problem persists, check:');
-  console.log('- Backend JWT secret configuration');
-  console.log('- Token expiration settings');
-  console.log('- CORS configuration');
+  logInfo('');
+  logInfo('📋 Next steps:');
+  logInfo('1. Refresh the page (F5)');
+  logInfo('2. Logout completely from the app');
+  logInfo('3. Login again with your credentials');
+  logInfo('4. Try uploading photos again');
+  logInfo('');
+  logInfo('If the problem persists, check:');
+  logInfo('- Backend JWT secret configuration');
+  logInfo('- Token expiration settings');
+  logInfo('- CORS configuration');
 };
 
 // Attach to window for console access
@@ -51,10 +52,10 @@ if (typeof window !== 'undefined') {
     quickFix
   };
   
-  console.log('🔧 Debug utilities available:');
-  console.log('- window.debugAuth.debugToken() - Show token info');
-  console.log('- window.debugAuth.clearAuthData() - Clear all auth data');
-  console.log('- window.debugAuth.quickFix() - Quick fix for JWT issues');
+  logInfo('🔧 Debug utilities available:');
+  logInfo('- window.debugAuth.debugToken() - Show token info');
+  logInfo('- window.debugAuth.clearAuthData() - Clear all auth data');
+  logInfo('- window.debugAuth.quickFix() - Quick fix for JWT issues');
 }
 
 export { debugToken, clearAuthData, quickFix };

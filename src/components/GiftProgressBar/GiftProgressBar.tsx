@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Gift, Lock, CheckCircle, TrendingUp, ChevronDown, ChevronUp } from 'lucide-react';
 import { giftTierService, type GiftTierDTO } from '../../services/giftTierService';
 import './GiftProgressBar.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 interface GiftProgressBarProps {
   cartTotal: number;
@@ -30,7 +31,7 @@ const GiftProgressBar: React.FC<GiftProgressBarProps> = ({ cartTotal, compact = 
       const activeTiers = await giftTierService.getActiveGiftTiers();
       setTiers(activeTiers);
     } catch (error) {
-      console.error('Failed to load gift tiers:', error);
+      logError('Failed to load gift tiers:', error);
     } finally {
       setLoading(false);
     }
@@ -46,7 +47,7 @@ const GiftProgressBar: React.FC<GiftProgressBarProps> = ({ cartTotal, compact = 
       setCurrentTier(applicable);
       setNextTier(next);
     } catch (error) {
-      console.error('Failed to update progress:', error);
+      logError('Failed to update progress:', error);
     }
   };
 

@@ -7,6 +7,7 @@ import { adminSupplierService, type PageResponse } from '../../services/adminSup
 import { adminProductsService, type ProductVariantDto } from '../../services/adminProductsService';
 import type { PurchaseOrderDto, PurchaseOrderCreateDto, SupplierDto } from '../../types/inventory';
 import { Badge, Button, SkeletonTable } from '../../components/ui';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 type TabType = 'all-orders' | 'create-order' | 'view-details';
 
@@ -104,7 +105,7 @@ const AdminPurchaseOrders: React.FC = () => {
       const pageResponse: PageResponse<SupplierDto> = await adminSupplierService.getAllSuppliers(0, 1000);
       setSuppliers(pageResponse.content.filter(s => s.is_active));
     } catch (e) {
-      console.error('Failed to load suppliers', e);
+      logError('Failed to load suppliers', e);
     }
   };
 
@@ -124,7 +125,7 @@ const AdminPurchaseOrders: React.FC = () => {
       });
       setVariants(allVariants);
     } catch (e) {
-      console.error('Failed to load product variants', e);
+      logError('Failed to load product variants', e);
     }
   };
 

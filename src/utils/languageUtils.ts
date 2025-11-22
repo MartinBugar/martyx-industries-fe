@@ -1,5 +1,6 @@
 import i18n from '../i18n';
 import type { SupportedLanguage } from '../i18n';
+import { logInfo, logWarn, logError } from '../services/logger';
 
 /**
  * Utility functions for language management and persistence
@@ -15,7 +16,7 @@ export const getSavedLanguage = (): SupportedLanguage => {
       return savedLanguage as SupportedLanguage;
     }
   } catch (error) {
-    console.warn('Failed to read language from localStorage:', error);
+    logWarn('Failed to read language from localStorage:', error);
   }
   
   // Fallback to browser language or default
@@ -34,7 +35,7 @@ export const saveLanguage = (language: SupportedLanguage): void => {
   try {
     localStorage.setItem('i18nextLng', language);
   } catch (error) {
-    console.warn('Failed to save language to localStorage:', error);
+    logWarn('Failed to save language to localStorage:', error);
   }
 };
 
@@ -53,9 +54,9 @@ export const initializeLanguage = async (): Promise<void> => {
     // Ensure it's saved in localStorage (in case it was detected from browser)
     saveLanguage(savedLanguage);
     
-    console.log(`🌐 Language initialized: ${savedLanguage}`);
+    logInfo(`🌐 Language initialized: ${savedLanguage}`);
   } catch (error) {
-    console.error('Failed to initialize language:', error);
+    logError('Failed to initialize language:', error);
   }
 };
 
@@ -66,9 +67,9 @@ export const changeLanguageWithPersistence = async (language: SupportedLanguage)
   try {
     await i18n.changeLanguage(language);
     saveLanguage(language);
-    console.log(`🌐 Language changed to: ${language}`);
+    logInfo(`🌐 Language changed to: ${language}`);
   } catch (error) {
-    console.error('Failed to change language:', error);
+    logError('Failed to change language:', error);
     throw error;
   }
 };

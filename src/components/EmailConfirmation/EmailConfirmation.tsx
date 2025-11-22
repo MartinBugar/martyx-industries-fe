@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { registrationService } from '../../services/registrationService';
 import './EmailConfirmation.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 const EmailConfirmation: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -33,7 +34,7 @@ const EmailConfirmation: React.FC = () => {
       } catch (error) {
         setStatus('error');
         setMessage('An unexpected error occurred. Please try again later.');
-        console.error('Email confirmation error:', error);
+        logError('Email confirmation error:', error);
       }
     };
 
@@ -57,7 +58,7 @@ const EmailConfirmation: React.FC = () => {
       }
     } catch (error) {
       alert('Failed to resend confirmation email. Please try again.');
-      console.error('Resend confirmation error:', error);
+      logError('Resend confirmation error:', error);
     } finally {
       setIsResending(false);
     }

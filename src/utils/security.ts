@@ -3,6 +3,8 @@
  * Poskytuje ochranu proti XSS, injection útokom a ďalším bezpečnostným rizikám
  */
 
+import { logWarn, logError } from '../services/logger';
+
 /**
  * HTML Sanitization - ochrana proti XSS útokom
  */
@@ -230,7 +232,7 @@ export const safeJsonParse = <T>(jsonString: string, fallback: T): T => {
     if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
       if ('__proto__' in parsed || ('constructor' in parsed && parsed.constructor !== Object) || 'prototype' in parsed) {
         if (import.meta.env.DEV) {
-          console.warn('Potential prototype pollution detected in JSON');
+          logWarn('Potential prototype pollution detected in JSON');
         }
         return fallback;
       }
@@ -255,7 +257,7 @@ export const secureLocalStorage = {
       localStorage.setItem(sanitizedKey, serialized);
       return true;
     } catch (error) {
-      console.error('Failed to save to localStorage:', error);
+      logError('Failed to save to localStorage:', error);
       return false;
     }
   },
@@ -270,7 +272,7 @@ export const secureLocalStorage = {
       
       return safeJsonParse(item, fallback);
     } catch (error) {
-      console.error('Failed to read from localStorage:', error);
+      logError('Failed to read from localStorage:', error);
       return fallback;
     }
   },
@@ -283,7 +285,7 @@ export const secureLocalStorage = {
       localStorage.removeItem(sanitizedKey);
       return true;
     } catch (error) {
-      console.error('Failed to remove from localStorage:', error);
+      logError('Failed to remove from localStorage:', error);
       return false;
     }
   },
@@ -293,7 +295,7 @@ export const secureLocalStorage = {
       localStorage.clear();
       return true;
     } catch (error) {
-      console.error('Failed to clear localStorage:', error);
+      logError('Failed to clear localStorage:', error);
       return false;
     }
   }
@@ -305,7 +307,7 @@ export const secureLocalStorage = {
 export const setupCSPReporting = (): void => {
   if (import.meta.env.DEV) {
     document.addEventListener('securitypolicyviolation', (event) => {
-      console.warn('CSP Violation:', {
+      logWarn('CSP Violation:', {
         directive: event.violatedDirective,
         blockedURI: event.blockedURI,
         documentURI: event.documentURI,
@@ -323,7 +325,7 @@ export const initializeCSRFToken = async (): Promise<void> => {
     const { initializeCSRFToken: initCSRF } = await import('./csrf');
     initCSRF();
   } catch (error) {
-    console.error('Failed to initialize CSRF token:', error);
+    logError('Failed to initialize CSRF token:', error);
   }
 };
 

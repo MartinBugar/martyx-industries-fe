@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { userCreditsService, type UserCreditDto } from '../../services/referralService';
 import { useAuth } from '../../context/useAuth';
 import './CreditsWidget.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 interface CreditsWidgetProps {
   orderTotal: number;
@@ -39,7 +40,7 @@ const CreditsWidget: React.FC<CreditsWidgetProps> = ({ orderTotal, onCreditsAppl
       const data = await userCreditsService.getBalance();
       setCredits(data);
     } catch (error) {
-      console.error('Failed to load credits:', error);
+      logError('Failed to load credits:', error);
     } finally {
       setLoading(false);
     }

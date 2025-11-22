@@ -5,6 +5,7 @@ import type { PublicPhotoWithUser } from '../../types/userGallery';
 import { userGalleryService } from '../../services/userGalleryService';
 import Lightbox from './Lightbox';
 import './PhotoGrid.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 interface PhotoGridProps {
   photos: PublicPhotoWithUser[];
@@ -65,7 +66,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ photos, onPhotoLikeChange }) => {
         onPhotoLikeChange(photoId, response.is_liked, response.likes_count);
       }
     } catch (error) {
-      console.error('Error toggling like:', error);
+      logError('Error toggling like:', error);
       alert(t('errors.like_failed', 'Failed to like photo. Please try again.'));
     }
   };

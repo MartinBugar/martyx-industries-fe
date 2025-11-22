@@ -1,4 +1,5 @@
 import { API_BASE_URL, defaultHeaders, withLangHeaders } from './apiUtils';
+import { logInfo, logWarn, logError } from '../services/logger';
 
 export interface Avatar {
   id: number;
@@ -25,7 +26,7 @@ export const avatarService = {
 
       throw new Error('Failed to fetch avatars');
     } catch (error) {
-      console.error('Error fetching avatars:', error);
+      logError('Error fetching avatars:', error);
       throw error;
     }
   },
@@ -47,7 +48,7 @@ export const avatarService = {
           }
         }
       } catch (e) {
-        console.error('Failed to get token from localStorage:', e);
+        logError('Failed to get token from localStorage:', e);
       }
 
       if (!token) {
@@ -70,7 +71,7 @@ export const avatarService = {
         throw new Error('Failed to update avatar');
       }
     } catch (error) {
-      console.error('Error updating avatar:', error);
+      logError('Error updating avatar:', error);
       throw error;
     }
   }

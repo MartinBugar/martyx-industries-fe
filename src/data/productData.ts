@@ -217,8 +217,8 @@ export const hardcodedProductsData: HardcodedProductData[] = [
 ];
 
 // Debug: log hardcoded data in development
-console.log('🔥 ProductData.ts LOADED - NEW VARIANT ARCHITECTURE!');
-console.log('📊 HardcodedProductsData loaded (NO HARDCODED TABS):', hardcodedProductsData.map(p => ({
+logInfo('🔥 ProductData.ts LOADED - NEW VARIANT ARCHITECTURE!');
+logInfo('📊 HardcodedProductsData loaded (NO HARDCODED TABS):', hardcodedProductsData.map(p => ({
     masterProductId: p.masterProductId
 })));
 

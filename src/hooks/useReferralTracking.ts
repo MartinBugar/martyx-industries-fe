@@ -7,6 +7,7 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { referralService } from '../services/referralService';
+import { logInfo, logWarn, logError } from '../services/logger';
 
 // Cookie name and expiry (90 days)
 const REFERRAL_COOKIE_NAME = 'referral_code';
@@ -60,10 +61,10 @@ export function useReferralTracking() {
           .then(() => {
             // Set cookie on successful tracking
             setCookie(REFERRAL_COOKIE_NAME, referralCode, COOKIE_EXPIRY_DAYS);
-            console.log(`[REFERRAL] Tracked referral code: ${referralCode}`);
+            logInfo(`[REFERRAL] Tracked referral code: ${referralCode}`);
           })
           .catch((error) => {
-            console.error('[REFERRAL] Failed to track referral:', error);
+            logError('[REFERRAL] Failed to track referral:', error);
           });
       }
     }

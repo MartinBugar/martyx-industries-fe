@@ -1,5 +1,6 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import './ErrorBoundary.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 interface Props {
   children: ReactNode;
@@ -43,8 +44,8 @@ class ErrorBoundary extends Component<Props, State> {
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     // Log error to console in development
     if (import.meta.env.DEV) {
-      console.error('ErrorBoundary caught an error:', error);
-      console.error('Component stack:', errorInfo.componentStack);
+      logError('ErrorBoundary caught an error:', error);
+      logError('Component stack:', errorInfo.componentStack);
     }
 
     // Call optional error handler (e.g., for logging to Sentry)

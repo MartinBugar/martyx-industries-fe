@@ -1,4 +1,5 @@
 import { API_BASE_URL, defaultHeaders, withLangHeaders } from './apiUtils';
+import { logInfo, logWarn, logError } from '../services/logger';
 
 // Response interfaces for system health
 export interface DatabaseStatus {
@@ -101,7 +102,7 @@ const generateMockSystemHealth = (): SystemHealthResponse => {
 export const systemHealthService = {
   // Get complete system health status
   async getSystemHealth(): Promise<SystemHealthResponse> {
-    console.log('🔄 SystemHealthService: getSystemHealth() called');
+    logInfo('🔄 SystemHealthService: getSystemHealth() called');
 
     try {
       // Get token from localStorage
@@ -116,11 +117,11 @@ export const systemHealthService = {
           }
         }
       } catch (e) {
-        console.error('Failed to get token from localStorage:', e);
+        logError('Failed to get token from localStorage:', e);
       }
 
       if (!token) {
-        console.warn('⚠️ No authentication token found, using mock data');
+        logWarn('⚠️ No authentication token found, using mock data');
         return generateMockSystemHealth();
       }
 
@@ -131,35 +132,35 @@ export const systemHealthService = {
       };
 
       // Try to fetch from real API endpoint
-      console.log(`🌐 Trying to fetch from: ${API_BASE_URL}/api/admin/system/health`);
-      console.log('🔑 Using auth token:', token.substring(0, 20) + '...');
+      logInfo(`🌐 Trying to fetch from: ${API_BASE_URL}/api/admin/system/health`);
+      logInfo('🔑 Using auth token:', token.substring(0, 20) + '...');
 
       const resp = await fetch(`${API_BASE_URL}/api/admin/system/health`, withLangHeaders({
         method: 'GET',
         headers: headers as HeadersInit,
       }));
 
-      console.log('📡 Response status:', resp.status);
+      logInfo('📡 Response status:', resp.status);
 
       if (resp.ok) {
-        console.log('✅ Real API endpoint responded successfully');
+        logInfo('✅ Real API endpoint responded successfully');
         const data = await resp.json();
-        console.log('📊 Real system health data:', data);
+        logInfo('📊 Real system health data:', data);
         return data as SystemHealthResponse;
       } else if (resp.status === 401) {
-        console.warn('⚠️ Unauthorized (401) - token may be invalid or expired, using mock data');
+        logWarn('⚠️ Unauthorized (401) - token may be invalid or expired, using mock data');
         const errorText = await resp.text();
-        console.warn('Error details:', errorText);
+        logWarn('Error details:', errorText);
         return generateMockSystemHealth();
       } else {
         // Fallback to mock data if endpoint doesn't exist
-        console.warn('⚠️ System health endpoint not available, using mock data, status:', resp.status);
+        logWarn('⚠️ System health endpoint not available, using mock data, status:', resp.status);
         const errorText = await resp.text();
-        console.warn('Error details:', errorText);
+        logWarn('Error details:', errorText);
         return generateMockSystemHealth();
       }
     } catch (err) {
-      console.error('❌ Failed to fetch system health, using mock data:', err);
+      logError('❌ Failed to fetch system health, using mock data:', err);
       return generateMockSystemHealth();
     }
   },
@@ -186,7 +187,7 @@ export const systemHealthService = {
       }
     } catch (err) {
       if (import.meta.env.DEV) {
-        console.warn('Failed to check database status:', err);
+        logWarn('Failed to check database status:', err);
       }
       return {
         connected: false,

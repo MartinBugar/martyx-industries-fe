@@ -10,6 +10,7 @@ import {
 } from '../../services/revenueAnalyticsService';
 import VisitorChart from '../../components/Charts/VisitorChart';
 import './AdminDashboard.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 type DashboardSection = 'status' | 'visitors' | 'revenue';
 
@@ -206,7 +207,7 @@ const AdminDashboard: React.FC = () => {
                 }
             } catch (err) {
                 if (import.meta.env.DEV) {
-                    console.error('Failed to load visitor analytics:', err);
+                    logError('Failed to load visitor analytics:', err);
                 }
                 if (mounted) {
                     setVisitorError('Failed to load visitor data');
@@ -245,23 +246,23 @@ const AdminDashboard: React.FC = () => {
         // Load system health metrics
         (async () => {
             try {
-                console.log('🚀 AdminDashboard: Starting system health data loading...');
+                logInfo('🚀 AdminDashboard: Starting system health data loading...');
                 const healthData = await systemHealthService.getSystemHealth();
-                console.log('📊 AdminDashboard: Received health data:', healthData);
+                logInfo('📊 AdminDashboard: Received health data:', healthData);
                 if (mounted) {
                     setSystemHealth(healthData);
                     setSystemHealthError(null);
-                    console.log('✅ AdminDashboard: System health state updated');
+                    logInfo('✅ AdminDashboard: System health state updated');
                 }
             } catch (e) {
-                console.error('❌ AdminDashboard: Failed to fetch system health:', e);
+                logError('❌ AdminDashboard: Failed to fetch system health:', e);
                 if (mounted) {
                     setSystemHealthError('Failed to load system health');
                 }
             } finally {
                 if (mounted) {
                     setSystemHealthLoading(false);
-                    console.log('🏁 AdminDashboard: System health loading finished');
+                    logInfo('🏁 AdminDashboard: System health loading finished');
                 }
             }
         })();
@@ -270,7 +271,7 @@ const AdminDashboard: React.FC = () => {
         // Load revenue analytics from optimized backend endpoint
         (async () => {
             try {
-                console.log('🚀 AdminDashboard: Starting revenue analytics loading...');
+                logInfo('🚀 AdminDashboard: Starting revenue analytics loading...');
 
                 const revenueData = await revenueAnalyticsService.getRevenueAnalytics(30);
 
@@ -280,17 +281,17 @@ const AdminDashboard: React.FC = () => {
                     setRevenueTimeSeries(revenueData.dailyRevenue);
                     setTopProducts(revenueData.topProducts);
 
-                    console.log('✅ AdminDashboard: Revenue analytics loaded successfully');
-                    console.log('📊 Revenue Summary:', revenueData.summary);
-                    console.log('📊 Daily Revenue Data Points:', revenueData.dailyRevenue.length);
-                    console.log('📊 Top Products:', revenueData.topProducts.length);
+                    logInfo('✅ AdminDashboard: Revenue analytics loaded successfully');
+                    logInfo('📊 Revenue Summary:', revenueData.summary);
+                    logInfo('📊 Daily Revenue Data Points:', revenueData.dailyRevenue.length);
+                    logInfo('📊 Top Products:', revenueData.topProducts.length);
                 }
             } catch (error) {
-                console.error('❌ AdminDashboard: Failed to load revenue analytics:', error);
+                logError('❌ AdminDashboard: Failed to load revenue analytics:', error);
             } finally {
                 if (mounted) {
                     setRevenueLoading(false);
-                    console.log('🏁 AdminDashboard: Revenue analytics loading finished');
+                    logInfo('🏁 AdminDashboard: Revenue analytics loading finished');
                 }
             }
         })();

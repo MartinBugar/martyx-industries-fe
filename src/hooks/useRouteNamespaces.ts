@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { loadNamespace, type Namespace } from '../i18n';
+import { logInfo, logWarn, logError } from '../services/logger';
 
 /**
  * Route-based namespace mapping
@@ -114,7 +115,7 @@ export const useRouteNamespaces = (options: {
             console.info('✅ All namespaces loaded successfully');
           }
         } catch (error) {
-          console.warn('⚠️ Failed to preload some namespaces:', error);
+          logWarn('⚠️ Failed to preload some namespaces:', error);
         }
         return;
       }
@@ -132,7 +133,7 @@ export const useRouteNamespaces = (options: {
           console.info('✅ Route namespaces loaded successfully:', requiredNamespaces);
         }
       } catch (error) {
-        console.warn('⚠️ Failed to load route namespaces:', error);
+        logWarn('⚠️ Failed to load route namespaces:', error);
       }
     };
 

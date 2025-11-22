@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import type { Avatar } from '../../services/avatarService';
 import { avatarService } from '../../services/avatarService';
 import './AvatarSelector.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 interface AvatarSelectorProps {
   onClose: () => void;
@@ -28,7 +29,7 @@ const AvatarSelector: React.FC<AvatarSelectorProps> = ({ onClose, onAvatarSelect
       setError(null);
     } catch (err) {
       setError('Failed to load avatars');
-      console.error('Error loading avatars:', err);
+      logError('Error loading avatars:', err);
     } finally {
       setLoading(false);
     }
@@ -53,7 +54,7 @@ const AvatarSelector: React.FC<AvatarSelectorProps> = ({ onClose, onAvatarSelect
       onClose();
     } catch (err) {
       setError('Failed to update avatar');
-      console.error('Error updating avatar:', err);
+      logError('Error updating avatar:', err);
     } finally {
       setSaving(false);
     }

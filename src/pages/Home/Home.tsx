@@ -10,15 +10,16 @@ import { productGalleryService } from '../../services/productGalleryService';
 import { homePageSettingsService, type VisibilityMap } from '../../services/homePageSettingsService';
 import { testimonialService, type Testimonial } from '../../services/testimonialService';
 import './Home.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 const Home: React.FC = () => {
-  console.log('🏠 [HOME] Component is rendering!');
+  logInfo('🏠 [HOME] Component is rendering!');
   const { addToCart } = useCart();
   const { t, i18n } = useTranslation('home');
   const [products, setProducts] = useState<Product[]>([]);
   const [visibilityMap, setVisibilityMap] = useState<VisibilityMap>({});
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
-  console.log('🏠 [HOME] Testimonials state:', testimonials);
+  logInfo('🏠 [HOME] Testimonials state:', testimonials);
   const featured = useMemo(() => products.slice(0, 6), [products]);
 
   type Popup = { visible: boolean; message: string; variant: 'success' | 'warning' };
@@ -37,7 +38,7 @@ const Home: React.FC = () => {
         const visibility = await homePageSettingsService.getVisibilityMap();
         setVisibilityMap(visibility);
       } catch (error) {
-        console.warn('Failed to load home page visibility settings, showing all sections:', error);
+        logWarn('Failed to load home page visibility settings, showing all sections:', error);
         // Default to showing all sections if settings can't be loaded
         setVisibilityMap({
           hero: true,
@@ -54,13 +55,13 @@ const Home: React.FC = () => {
   // Load testimonials from API
   useEffect(() => {
     const loadTestimonials = async () => {
-      console.log('🔍 [HOME] Starting to load testimonials...');
+      logInfo('🔍 [HOME] Starting to load testimonials...');
       try {
         const data = await testimonialService.getFeaturedTestimonials();
-        console.log('✅ [HOME] Loaded testimonials:', data);
+        logInfo('✅ [HOME] Loaded testimonials:', data);
         setTestimonials(data);
       } catch (error) {
-        console.error('❌ [HOME] Failed to load testimonials:', error);
+        logError('❌ [HOME] Failed to load testimonials:', error);
         // Continue with empty array - don't break homepage
       }
     };
@@ -116,7 +117,7 @@ const Home: React.FC = () => {
               const galleryUrls = sortedGallery.map(img => img.cdnUrl || img.url).filter(Boolean);
 
               if (import.meta.env.DEV) {
-                console.log(`🏠 Product ${product.masterProductId} gallery loaded:`, {
+                logInfo(`🏠 Product ${product.masterProductId} gallery loaded:`, {
                   productName: product.name,
                   galleryCount: galleryUrls.length,
                   mainImage: galleryUrls[0] || 'none',
@@ -136,7 +137,7 @@ const Home: React.FC = () => {
                 gallery: galleryUrls // Replace empty gallery with database gallery
               };
             } catch (galleryError) {
-              console.warn(`Failed to load gallery for product ${product.masterProductId}:`, galleryError);
+              logWarn(`Failed to load gallery for product ${product.masterProductId}:`, galleryError);
               return {
                 ...product,
                 gallery: [] // Keep empty gallery if loading fails
@@ -147,7 +148,7 @@ const Home: React.FC = () => {
         
         setProducts(productsWithGallery);
       } catch (error) {
-        console.error('Failed to load products for home page:', error);
+        logError('Failed to load products for home page:', error);
         // Continue with empty array - don't show error on home page
       }
     };
@@ -231,9 +232,9 @@ const Home: React.FC = () => {
     }, 2000);
   };
 
-  console.log('🎨 [HOME] About to render. visibilityMap:', visibilityMap);
-  console.log('🎨 [HOME] testimonials.length:', testimonials.length);
-  console.log('🎨 [HOME] Will show testimonials?', visibilityMap.testimonials !== false && testimonials.length > 0);
+  logInfo('🎨 [HOME] About to render. visibilityMap:', visibilityMap);
+  logInfo('🎨 [HOME] testimonials.length:', testimonials.length);
+  logInfo('🎨 [HOME] Will show testimonials?', visibilityMap.testimonials !== false && testimonials.length > 0);
 
   return (
     <div className="home-root" aria-label="Home Page">

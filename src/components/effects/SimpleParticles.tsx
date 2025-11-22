@@ -4,11 +4,12 @@
  */
 
 import React, { useEffect } from 'react';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 const SimpleParticles: React.FC = () => {
   useEffect(() => {
     const handleClick = (event: MouseEvent) => {
-      console.log('Click burst at:', event.clientX, event.clientY);
+      logInfo('Click burst at:', event.clientX, event.clientY);
       
       // Farebná paleta
       const colors = [

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/useAuth';
 import xpHistoryService, { type XpTransactionDto } from '../../services/xpHistoryService';
 import './XpHistory.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 const XpHistory: React.FC = () => {
     const { user } = useAuth();
@@ -22,7 +23,7 @@ const XpHistory: React.FC = () => {
         try {
             setLoading(true);
             setError(null);
-            console.log(`🔄 Loading XP history (page ${page})...`);
+            logInfo(`🔄 Loading XP history (page ${page})...`);
 
             const data = await xpHistoryService.getMyXpHistory({
                 page,
@@ -32,9 +33,9 @@ const XpHistory: React.FC = () => {
             setTransactions(prev => page === 0 ? data : [...prev, ...data]);
             setHasMore(data.length === pageSize);
 
-            console.log(`✅ Loaded ${data.length} XP transactions`);
+            logInfo(`✅ Loaded ${data.length} XP transactions`);
         } catch (err) {
-            console.error('❌ Failed to load XP history:', err);
+            logError('❌ Failed to load XP history:', err);
             setError('Failed to load XP history. Please try again.');
         } finally {
             setLoading(false);

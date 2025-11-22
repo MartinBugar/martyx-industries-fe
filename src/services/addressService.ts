@@ -1,4 +1,5 @@
 import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
+import { logInfo, logWarn, logError } from '../services/logger';
 
 /**
  * Address interface matching backend User.Address embeddable
@@ -61,7 +62,7 @@ export const addressService = {
 
       return null;
     } catch (error) {
-      console.error('[AddressService] Failed to fetch primary address:', error);
+      logError('[AddressService] Failed to fetch primary address:', error);
       return null;
     }
   },
@@ -105,7 +106,7 @@ export const addressService = {
         addr.country
       );
     } catch (error) {
-      console.warn('[AddressService] Failed to load saved addresses:', error);
+      logWarn('[AddressService] Failed to load saved addresses:', error);
       return [];
     }
   },
@@ -150,11 +151,11 @@ export const addressService = {
       }
 
       localStorage.setItem(STORAGE_KEY, JSON.stringify(addresses));
-      console.log('[AddressService] Saved new address:', newAddress.label);
+      logInfo('[AddressService] Saved new address:', newAddress.label);
 
       return newAddress;
     } catch (error) {
-      console.error('[AddressService] Failed to save address:', error);
+      logError('[AddressService] Failed to save address:', error);
       throw error;
     }
   },
@@ -165,7 +166,7 @@ export const addressService = {
   removeAddress(addressId: string): void {
     try {
       if (addressId === 'primary') {
-        console.warn('[AddressService] Cannot remove primary address');
+        logWarn('[AddressService] Cannot remove primary address');
         return;
       }
 
@@ -173,9 +174,9 @@ export const addressService = {
       const filtered = addresses.filter(addr => addr.id !== addressId);
 
       localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
-      console.log('[AddressService] Removed address:', addressId);
+      logInfo('[AddressService] Removed address:', addressId);
     } catch (error) {
-      console.error('[AddressService] Failed to remove address:', error);
+      logError('[AddressService] Failed to remove address:', error);
     }
   },
 
@@ -191,9 +192,9 @@ export const addressService = {
       });
 
       localStorage.setItem(STORAGE_KEY, JSON.stringify(addresses));
-      console.log('[AddressService] Set default address:', addressId);
+      logInfo('[AddressService] Set default address:', addressId);
     } catch (error) {
-      console.error('[AddressService] Failed to set default address:', error);
+      logError('[AddressService] Failed to set default address:', error);
     }
   },
 
@@ -203,9 +204,9 @@ export const addressService = {
   clearAllAddresses(): void {
     try {
       localStorage.removeItem(STORAGE_KEY);
-      console.log('[AddressService] Cleared all saved addresses');
+      logInfo('[AddressService] Cleared all saved addresses');
     } catch (error) {
-      console.error('[AddressService] Failed to clear addresses:', error);
+      logError('[AddressService] Failed to clear addresses:', error);
     }
   },
 
@@ -257,9 +258,9 @@ export const addressService = {
       }));
 
       await handleResponse(updateResponse);
-      console.log('[AddressService] Updated primary address');
+      logInfo('[AddressService] Updated primary address');
     } catch (error) {
-      console.error('[AddressService] Failed to update primary address:', error);
+      logError('[AddressService] Failed to update primary address:', error);
       throw error;
     }
   },

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './PwaInstall.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 /**
  * PWA Installation Component
@@ -33,7 +34,7 @@ const PwaInstall: React.FC = () => {
                     hasValidManifest = true;
                 }
             } catch (error) {
-                console.error('Error checking manifest:', error);
+                logError('Error checking manifest:', error);
             }
 
             // If browser supports PWA features, mark as capable
@@ -79,15 +80,15 @@ const PwaInstall: React.FC = () => {
             const { outcome } = await (deferredPrompt as any).userChoice;
 
             if (outcome === 'accepted') {
-                console.log('User accepted the PWA installation');
+                logInfo('User accepted the PWA installation');
             } else {
-                console.log('User dismissed the PWA installation');
+                logInfo('User dismissed the PWA installation');
             }
 
             // Clear the deferred prompt
             setDeferredPrompt(null);
         } catch (error) {
-            console.error('Error installing PWA:', error);
+            logError('Error installing PWA:', error);
         } finally {
             setInstallingPWA(false);
         }

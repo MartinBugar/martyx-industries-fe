@@ -1,4 +1,5 @@
 import { API_BASE_URL, defaultHeaders, withLangHeaders } from './apiUtils';
+import { logInfo, logWarn, logError } from '../services/logger';
 
 // Response interfaces for revenue analytics
 export interface RevenueSummary {
@@ -44,7 +45,7 @@ export const revenueAnalyticsService = {
   // Get complete revenue analytics from optimized backend endpoint
   async getRevenueAnalytics(days: number = 30): Promise<RevenueAnalyticsResponse['data']> {
     try {
-      console.log(`🔄 Loading revenue analytics for ${days} days from backend...`);
+      logInfo(`🔄 Loading revenue analytics for ${days} days from backend...`);
 
       const resp = await fetch(`${API_BASE_URL}/api/admin/dashboard/revenue-analytics?days=${days}`, withLangHeaders({
         method: 'GET',
@@ -63,11 +64,11 @@ export const revenueAnalyticsService = {
       }
 
       const successResponse = response as RevenueAnalyticsResponse;
-      console.log('✅ Revenue analytics loaded successfully:', successResponse.data);
+      logInfo('✅ Revenue analytics loaded successfully:', successResponse.data);
 
       return successResponse.data;
     } catch (err) {
-      console.error('❌ Failed to fetch revenue analytics:', err);
+      logError('❌ Failed to fetch revenue analytics:', err);
 
       // Return fallback data structure to prevent UI crashes
       const fallbackData: RevenueAnalyticsResponse['data'] = {
@@ -82,7 +83,7 @@ export const revenueAnalyticsService = {
         lastUpdated: new Date().toISOString()
       };
 
-      console.log('📦 Using fallback revenue data');
+      logInfo('📦 Using fallback revenue data');
       return fallbackData;
     }
   },

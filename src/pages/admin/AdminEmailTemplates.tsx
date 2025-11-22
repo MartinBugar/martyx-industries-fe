@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './AdminEmailTemplates.css';
 import { emailTemplatesService, type EmailTemplate } from '../../services/emailTemplatesService';
 import AdminLayout from './AdminLayout';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 const AdminEmailTemplates: React.FC = () => {
   const [templates, setTemplates] = useState<EmailTemplate[]>([]);
@@ -32,7 +33,7 @@ const AdminEmailTemplates: React.FC = () => {
       const data = await emailTemplatesService.getAllTemplates();
       setTemplates(data);
     } catch (err: any) {
-      console.error('Failed to fetch templates:', err);
+      logError('Failed to fetch templates:', err);
       setError(err.message || 'Failed to fetch templates');
     } finally {
       setLoading(false);
@@ -80,7 +81,7 @@ const AdminEmailTemplates: React.FC = () => {
       // Auto-hide success message
       setTimeout(() => setSuccessMessage(null), 3000);
     } catch (err: any) {
-      console.error('Failed to update template:', err);
+      logError('Failed to update template:', err);
       setError(err.message || 'Failed to update template');
     } finally {
       setLoading(false);
@@ -99,7 +100,7 @@ const AdminEmailTemplates: React.FC = () => {
       setPreviewHtml(html);
       setShowPreview(true);
     } catch (err: any) {
-      console.error('Failed to preview template:', err);
+      logError('Failed to preview template:', err);
       setError(err.message || 'Failed to generate preview');
     } finally {
       setLoading(false);
@@ -128,7 +129,7 @@ const AdminEmailTemplates: React.FC = () => {
       // Auto-hide success message
       setTimeout(() => setSuccessMessage(null), 5000);
     } catch (err: any) {
-      console.error('Failed to send test email:', err);
+      logError('Failed to send test email:', err);
       setError(err.message || 'Failed to send test email');
     } finally {
       setLoading(false);
@@ -148,7 +149,7 @@ const AdminEmailTemplates: React.FC = () => {
         setSelectedTemplate(updated);
       }
     } catch (err: any) {
-      console.error('Failed to toggle status:', err);
+      logError('Failed to toggle status:', err);
       setError(err.message || 'Failed to toggle status');
     } finally {
       setLoading(false);

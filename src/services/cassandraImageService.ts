@@ -1,4 +1,5 @@
 import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
+import { logInfo, logWarn, logError } from '../services/logger';
 
 export interface CassandraImageDto {
     id?: number;
@@ -204,7 +205,7 @@ export const uploadImageJson = async (file: File, order?: number): Promise<Uploa
 
         return handleResponse(response);
     } catch (error) {
-        console.error('Upload failed:', error);
+        logError('Upload failed:', error);
         throw error;
     }
 };

@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { type TabContent, type PrintInfoData } from '../../data/productData';
 import './ProductTabs.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 // PrintInfo tab content interface - matches the union type in productData.ts
 interface PrintInfoTabContent {
@@ -17,16 +18,16 @@ const PrintInfoTab: React.FC<PrintInfoTabProps> = ({ content }) => {
   const { t } = useTranslation('products');
 
   if (import.meta.env.DEV) {
-    console.log('🖨️ PrintInfoTab received content:', JSON.stringify(content, null, 2));
-    console.log('🖨️ PrintInfoTab content kind:', content.kind);
-    console.log('🖨️ PrintInfoTab content type:', typeof content);
+    logInfo('🖨️ PrintInfoTab received content:', JSON.stringify(content, null, 2));
+    logInfo('🖨️ PrintInfoTab content kind:', content.kind);
+    logInfo('🖨️ PrintInfoTab content type:', typeof content);
   }
 
   // Handle legacy content types or missing print info
   if (content.kind !== 'printInfo') {
     if (import.meta.env.DEV) {
-      console.log('❌ Content kind is not printInfo, kind is:', content.kind);
-      console.log('❌ Full content object:', content);
+      logInfo('❌ Content kind is not printInfo, kind is:', content.kind);
+      logInfo('❌ Full content object:', content);
     }
     return (
       <div className="print-info-unavailable">
@@ -43,7 +44,7 @@ const PrintInfoTab: React.FC<PrintInfoTabProps> = ({ content }) => {
   }
 
   if (import.meta.env.DEV) {
-    console.log('✅ PrintInfo data received:', content.data);
+    logInfo('✅ PrintInfo data received:', content.data);
   }
 
   const { printSettings, rcComponents, additionalNotes } = content.data;

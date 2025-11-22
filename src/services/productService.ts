@@ -1,5 +1,6 @@
 import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
 import type {
+import { logInfo, logWarn, logError } from '../services/logger';
   PaginatedResponse,
   MasterProductDto,
   ProductVariantDto,
@@ -39,7 +40,7 @@ export class ProductService {
     });
 
     if (import.meta.env.VITE_DEBUG_API) {
-      console.log('ProductService.getMasterProducts:', { url: url.toString(), category, language });
+      logInfo('ProductService.getMasterProducts:', { url: url.toString(), category, language });
     }
 
     const response = await fetch(url.toString(), requestOptions);
@@ -65,7 +66,7 @@ export class ProductService {
     });
 
     if (import.meta.env.VITE_DEBUG_API) {
-      console.log('ProductService.getMasterProduct:', { url: url.toString(), masterProductId: id, language });
+      logInfo('ProductService.getMasterProduct:', { url: url.toString(), masterProductId: id, language });
     }
 
     const response = await fetch(url.toString(), requestOptions);
@@ -91,7 +92,7 @@ export class ProductService {
     });
 
     if (import.meta.env.VITE_DEBUG_API) {
-      console.log('ProductService.getVariantsForMasterProduct:', { url: url.toString(), masterProductId, language });
+      logInfo('ProductService.getVariantsForMasterProduct:', { url: url.toString(), masterProductId, language });
     }
 
     const response = await fetch(url.toString(), requestOptions);
@@ -117,7 +118,7 @@ export class ProductService {
     });
 
     if (import.meta.env.VITE_DEBUG_API) {
-      console.log('ProductService.getVariant:', { url: url.toString(), variantId, language });
+      logInfo('ProductService.getVariant:', { url: url.toString(), variantId, language });
     }
 
     const response = await fetch(url.toString(), requestOptions);
@@ -143,7 +144,7 @@ export class ProductService {
     });
 
     if (import.meta.env.VITE_DEBUG_API) {
-      console.log('ProductService.getVariantComponents:', { url: url.toString(), variantId, language });
+      logInfo('ProductService.getVariantComponents:', { url: url.toString(), variantId, language });
     }
 
     const response = await fetch(url.toString(), requestOptions);
@@ -168,7 +169,7 @@ export class ProductService {
     };
 
     if (import.meta.env.VITE_DEBUG_API) {
-      console.log('ProductService.adminGetMasterProduct:', { url, masterProductId: id });
+      logInfo('ProductService.adminGetMasterProduct:', { url, masterProductId: id });
     }
 
     const response = await fetch(url, requestOptions);
@@ -194,7 +195,7 @@ export class ProductService {
     };
 
     if (import.meta.env.VITE_DEBUG_API) {
-      console.log('ProductService.adminUpdateMasterProduct:', { url, masterProductId: id, data });
+      logInfo('ProductService.adminUpdateMasterProduct:', { url, masterProductId: id, data });
     }
 
     const response = await fetch(url, requestOptions);

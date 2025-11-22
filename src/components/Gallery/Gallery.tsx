@@ -3,6 +3,7 @@ import './Gallery.css';
 import OptimizedImage from '../OptimizedImage/OptimizedImage';
 import { getImageSrcSet, getBestImageUrl, getBaseNameFromPath, isCDNEnabled } from '../../utils/cdnImages';
 import { useImagePreload, useBatchImagePreload } from '../../hooks/useImagePreload';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 interface GalleryProps {
   productName: string;
@@ -46,10 +47,10 @@ const Gallery: React.FC<GalleryProps> = ({ productName, images, galleryData }) =
   // Debug: log received images
   React.useEffect(() => {
     if (import.meta.env.DEV) {
-      console.log('🖼️ Gallery received images for', productName, ':', images.length, 'images');
-      console.log('🔍 All image URLs:', images);
-      console.log('📦 Gallery data received:', galleryData);
-      console.log('🎨 Optimized images:', optimizedImages.map(img => ({
+      logInfo('🖼️ Gallery received images for', productName, ':', images.length, 'images');
+      logInfo('🔍 All image URLs:', images);
+      logInfo('📦 Gallery data received:', galleryData);
+      logInfo('🎨 Optimized images:', optimizedImages.map(img => ({
         thumbnail: img.thumbnailSrc,
         fullscreen: img.fullscreenSrc
       })));
@@ -168,7 +169,7 @@ const Gallery: React.FC<GalleryProps> = ({ productName, images, galleryData }) =
                   // Fallback to full image if thumbnail fails
                   if (thumbnailSrc !== fullSrc && e.currentTarget.src !== fullSrc) {
                     if (import.meta.env.DEV) {
-                      console.warn(`⚠️ Thumbnail failed for image ${index + 1}, using full image as fallback`);
+                      logWarn(`⚠️ Thumbnail failed for image ${index + 1}, using full image as fallback`);
                     }
                     e.currentTarget.src = fullSrc;
                   }

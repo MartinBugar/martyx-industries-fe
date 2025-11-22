@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '../../context/useAuth';
 import { resetPasswordSchema, type ResetPasswordFormData } from '../../schemas/formSchemas';
 import './ResetPassword.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 const ResetPassword: React.FC = () => {
   const { resetPassword } = useAuth();
@@ -60,7 +61,7 @@ const ResetPassword: React.FC = () => {
       }
     } catch (err) {
       setError('An error occurred. Please try again.');
-      console.error('Reset password error:', err);
+      logError('Reset password error:', err);
     }
   }, [token, resetPassword, reset]);
   

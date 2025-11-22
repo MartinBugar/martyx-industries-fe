@@ -8,6 +8,7 @@ import { adminService } from '../../services/adminService';
 import { profileService } from '../../services/profileService';
 import UsernamePromptModal from '../UsernamePromptModal';
 import './ProductTabs.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 interface ReviewsTabProps {
   content: TabContent;
@@ -177,7 +178,7 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ content, productId }) => {
         return;
       }
     } catch (err) {
-      console.error('Failed to check username:', err);
+      logError('Failed to check username:', err);
       // Continue anyway - backend will handle it
     }
 

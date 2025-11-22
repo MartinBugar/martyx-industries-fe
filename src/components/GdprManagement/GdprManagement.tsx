@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { gdprService } from '../../services/gdprService';
 import './GdprManagement.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 /**
  * GDPR Management Component
@@ -37,7 +38,7 @@ const GdprManagement: React.FC = () => {
             const status = await gdprService.getConsentStatus();
             setConsentStatus(status);
         } catch (err) {
-            console.error('Failed to load consent status:', err);
+            logError('Failed to load consent status:', err);
         }
     };
 
@@ -46,7 +47,7 @@ const GdprManagement: React.FC = () => {
             const history = await gdprService.getConsentHistory();
             setConsentHistory(history);
         } catch (err) {
-            console.error('Failed to load consent history:', err);
+            logError('Failed to load consent history:', err);
         }
     };
 
@@ -55,7 +56,7 @@ const GdprManagement: React.FC = () => {
             const history = await gdprService.getDataExportHistory();
             setExportHistory(history);
         } catch (err) {
-            console.error('Failed to load export history:', err);
+            logError('Failed to load export history:', err);
         }
     };
 

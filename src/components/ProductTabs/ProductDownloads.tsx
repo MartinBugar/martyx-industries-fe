@@ -19,6 +19,7 @@ import { getAttachmentsForTab } from '../../services/productTabService';
 import type { ProductAttachmentDto } from '../../types/api';
 import { downloadFile } from '../../services/download';
 import './ProductDownloads.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 interface ProductDownloadsProps {
   masterProductId?: number;
@@ -36,7 +37,7 @@ const ProductDownloads: React.FC<ProductDownloadsProps> = ({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log('[ProductDownloads] Props received:', { masterProductId, variantId, tabId });
+    logInfo('[ProductDownloads] Props received:', { masterProductId, variantId, tabId });
     loadAttachments();
   }, [masterProductId, variantId, tabId]);
 
@@ -49,16 +50,16 @@ const ProductDownloads: React.FC<ProductDownloadsProps> = ({
 
       // If tabId is provided, load only attachments assigned to this tab
       if (tabId) {
-        console.log('[ProductDownloads] Loading attachments for tabId:', tabId);
+        logInfo('[ProductDownloads] Loading attachments for tabId:', tabId);
         data = await getAttachmentsForTab(tabId);
-        console.log('[ProductDownloads] Loaded tab attachments:', data.length);
+        logInfo('[ProductDownloads] Loaded tab attachments:', data.length);
       }
       // Otherwise, load all attachments for the product
       else if (variantId) {
-        console.log('[ProductDownloads] Loading attachments for variantId:', variantId);
+        logInfo('[ProductDownloads] Loading attachments for variantId:', variantId);
         data = await getAttachmentsForVariant(variantId);
       } else if (masterProductId) {
-        console.log('[ProductDownloads] Loading attachments for masterProductId:', masterProductId);
+        logInfo('[ProductDownloads] Loading attachments for masterProductId:', masterProductId);
         data = await getAttachmentsForMasterProduct(masterProductId);
       } else {
         throw new Error('No product ID or tab ID provided');
@@ -66,7 +67,7 @@ const ProductDownloads: React.FC<ProductDownloadsProps> = ({
 
       setAttachments(data);
     } catch (err) {
-      console.error('Error loading attachments:', err);
+      logError('Error loading attachments:', err);
       setError('Failed to load downloads');
     } finally {
       setLoading(false);
@@ -92,7 +93,7 @@ const ProductDownloads: React.FC<ProductDownloadsProps> = ({
         withCredentials: false, // CDN URLs don't need credentials
       });
     } catch (err) {
-      console.error('Error downloading file:', err);
+      logError('Error downloading file:', err);
       alert('Failed to download file. Please try again.');
     }
   };

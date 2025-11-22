@@ -10,6 +10,7 @@ import {
   type CreateCampaignRequest
 } from '../../services/adminCampaignsService';
 import './AdminCampaigns.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 const AdminCampaigns: React.FC = () => {
   // Tab state
@@ -56,7 +57,7 @@ const AdminCampaigns: React.FC = () => {
       const response = await adminCampaignsService.getSegments();
       setSegments(response || []);
     } catch (e: unknown) {
-      console.error('Failed to load segments:', e);
+      logError('Failed to load segments:', e);
     }
   };
 
@@ -66,7 +67,7 @@ const AdminCampaigns: React.FC = () => {
       const performance = await adminCampaignsService.getCampaignPerformance(campaignId);
       setCampaignPerformance(performance);
     } catch (e: unknown) {
-      console.error('Failed to load performance:', e);
+      logError('Failed to load performance:', e);
     }
   };
 

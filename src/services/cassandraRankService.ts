@@ -1,4 +1,5 @@
 import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
+import { logInfo, logWarn, logError } from '../services/logger';
 
 // Rank type matching backend
 export type Rank = 'PRIVATE' | 'CORPORAL' | 'SERGEANT' | 'LIEUTENANT' | 'CAPTAIN' | 'MAJOR' | 'COLONEL' | 'GENERAL' | 'FIELD_MARSHAL';
@@ -161,7 +162,7 @@ export const uploadRankImage = async (rank: Rank, file: File): Promise<Cassandra
 
         return handleResponse(response);
     } catch (error) {
-        console.error('Upload failed:', error);
+        logError('Upload failed:', error);
         throw error;
     }
 };

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { CartItem } from '../context/cartContextTypes';
 import { stripeService } from '../services/stripeService';
 import { stockService } from '../services/stockService';
+import { logInfo, logWarn, logError } from '../services/logger';
 
 type Props = {
   items: CartItem[];
@@ -48,7 +49,7 @@ export default function StripeCheckoutButton({
       setLoading(true);
 
       // PRE-CHECKOUT VALIDATION: Check stock availability for all items
-      console.log('[StripeCheckout] Validating stock availability...');
+      logInfo('[StripeCheckout] Validating stock availability...');
       const stockCheckResults = await Promise.all(
         items.map(async (item) => {
           try {
@@ -61,7 +62,7 @@ export default function StripeCheckoutButton({
               isAvailable: stockData.availableStock >= item.quantity
             };
           } catch (err) {
-            console.error(`[StripeCheckout] Stock check failed for variant ${item.product.variantId}:`, err);
+            logError(`[StripeCheckout] Stock check failed for variant ${item.product.variantId}:`, err);
             return {
               variantId: item.product.variantId,
               productName: item.product.name,
@@ -81,11 +82,11 @@ export default function StripeCheckoutButton({
           `${item.productName}: requested ${item.requestedQty}, available ${item.availableQty}`
         ).join('\n');
         alert(`⚠️ Some items are no longer available:\n\n${errorMessage}\n\nPlease update your cart and try again.`);
-        console.error('[StripeCheckout] Stock validation failed:', outOfStockItems);
+        logError('[StripeCheckout] Stock validation failed:', outOfStockItems);
         return; // Abort checkout
       }
 
-      console.log('[StripeCheckout] ✅ Stock validation passed');
+      logInfo('[StripeCheckout] ✅ Stock validation passed');
 
       // Create checkout session on backend
       const request = stripeService.createCheckoutRequest(
@@ -122,7 +123,7 @@ export default function StripeCheckoutButton({
       if (sessionResponse.url) {
         // CRITICAL: Set flag BEFORE redirect to prevent cart sync after successful payment
         // This flag will be checked by CartContext when user returns from Stripe
-        console.log('[StripeCheckout] Setting payment_in_progress flag before redirect');
+        logInfo('[StripeCheckout] Setting payment_in_progress flag before redirect');
         sessionStorage.setItem('payment_in_progress', 'true');
 
         window.location.href = sessionResponse.url;
@@ -130,7 +131,7 @@ export default function StripeCheckoutButton({
         throw new Error('No checkout URL received from server');
       }
     } catch (error) {
-      console.error('Failed to create Stripe checkout:', error);
+      logError('Failed to create Stripe checkout:', error);
       setLoading(false);
       onError(error);
     }

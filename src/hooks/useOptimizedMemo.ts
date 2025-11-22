@@ -4,6 +4,7 @@
  */
 
 import { useMemo, useRef, useState, useEffect, type DependencyList } from 'react';
+import { logInfo, logWarn, logError } from '../services/logger';
 
 // Deep comparison for objects
 const deepEqual = (a: any, b: any): boolean => {
@@ -166,7 +167,7 @@ export const usePerformanceMemo = <T>(
     const end = performance.now();
     
     if (import.meta.env.DEV) {
-      console.log(`${name} took ${end - start}ms`);
+      logInfo(`${name} took ${end - start}ms`);
     }
     
     return result;

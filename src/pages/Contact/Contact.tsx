@@ -7,6 +7,7 @@ import { companySettingsService } from '../../services/companySettingsService';
 import { contactSchema, type ContactFormData } from '../../schemas/formSchemas';
 import type { CompanySettingsDto } from '../../types/invoice';
 import './Contact.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 const Contact: React.FC = () => {
   const { t } = useTranslation('contact');
@@ -42,7 +43,7 @@ const Contact: React.FC = () => {
         const settings = await companySettingsService.getCompanySettings();
         setCompanySettings(settings);
       } catch (error) {
-        console.error('Failed to load company settings:', error);
+        logError('Failed to load company settings:', error);
         // Fallback to translations if API fails
       } finally {
         setIsLoadingSettings(false);
@@ -59,7 +60,7 @@ const Contact: React.FC = () => {
     try {
       // Anti-bot validation: honeypot should be empty
       if (formData.website && formData.website.length > 0) {
-        console.warn('[Contact] Bot detected - honeypot field filled');
+        logWarn('[Contact] Bot detected - honeypot field filled');
         setSubmitStatus('error');
         setApiError('Invalid submission detected');
         return;
@@ -69,7 +70,7 @@ const Contact: React.FC = () => {
       if (formData.formStartTime) {
         const timeSpent = Date.now() - formData.formStartTime;
         if (timeSpent < 2000) {
-          console.warn('[Contact] Bot detected - form filled too quickly');
+          logWarn('[Contact] Bot detected - form filled too quickly');
           setSubmitStatus('error');
           setApiError('Please take your time to fill out the form');
           return;
@@ -95,7 +96,7 @@ const Contact: React.FC = () => {
         verificationToken: `verify_${Date.now()}_${Math.random().toString(36).substring(7)}`
       });
     } catch (error: any) {
-      console.error('Contact form submission error:', error);
+      logError('Contact form submission error:', error);
       setSubmitStatus('error');
 
       // Handle API error with message from backend

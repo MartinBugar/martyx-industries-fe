@@ -1,4 +1,5 @@
 import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
+import { logInfo, logWarn, logError } from '../services/logger';
 
 // Minimal wrapper for a DigitalOcean metrics endpoint (or any bandwidth provider).
 // If the backend endpoint is unavailable, this function will return a friendly string.
@@ -12,7 +13,7 @@ export const doMetricsService = {
       // If the endpoint exists, parse and return structured data
       return await handleResponse(resp);
     } catch {
-      console.warn('Bandwidth endpoint not available, returning placeholder');
+      logWarn('Bandwidth endpoint not available, returning placeholder');
       return 'Bandwidth metrics not available';
     }
   },

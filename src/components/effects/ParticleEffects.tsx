@@ -5,6 +5,7 @@
 
 import React, { useEffect, useRef, useCallback, useState } from 'react';
 import './ClickParticles.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 export type ParticleType = 'default' | 'sparkle' | 'heart' | 'star' | 'confetti' | 'ripple';
 
@@ -83,7 +84,7 @@ const ParticleEffects: React.FC<ParticleEffectsProps> = ({
     const element = document.createElement('div');
     element.className = `click-particle click-particle--${type}`;
     
-    console.log('Creating particle element:', { type, size, color });
+    logInfo('Creating particle element:', { type, size, color });
     
     const baseStyles = `
       position: fixed;
@@ -146,7 +147,7 @@ const ParticleEffects: React.FC<ParticleEffectsProps> = ({
     }
     
     document.body.appendChild(element);
-    console.log('Particle element added to body:', element, 'styles:', element.style.cssText);
+    logInfo('Particle element added to body:', element, 'styles:', element.style.cssText);
     return element;
   };
 
@@ -240,13 +241,13 @@ const ParticleEffects: React.FC<ParticleEffectsProps> = ({
     
     const particles = particlesRef.current;
     
-    console.log('Creating particle burst with', particleCount, 'particles of type', type);
+    logInfo('Creating particle burst with', particleCount, 'particles of type', type);
     
     // Vytvorenie nových particles
     for (let i = 0; i < particleCount; i++) {
       const particle = createParticle(x, y, type);
       particles.push(particle);
-      console.log('Created particle:', particle.id, 'at', { x: particle.x, y: particle.y });
+      logInfo('Created particle:', particle.id, 'at', { x: particle.x, y: particle.y });
     }
     
     // Pre ripple efekt pridaj aj centrálnu particle
@@ -257,12 +258,12 @@ const ParticleEffects: React.FC<ParticleEffectsProps> = ({
       particles.push(centralParticle);
     }
     
-    console.log('Total particles after burst:', particles.length);
+    logInfo('Total particles after burst:', particles.length);
     
     // Spustenie animácie ak nie je už spustená
     if (!animationRef.current) {
       animationRef.current = requestAnimationFrame(updateParticles);
-      console.log('Animation started');
+      logInfo('Animation started');
     }
   }, [enabled, particleCount, type, createParticle, updateParticles]);
 
@@ -275,7 +276,7 @@ const ParticleEffects: React.FC<ParticleEffectsProps> = ({
     const y = event.clientY;
     
     // Debug informácie
-    console.log('Particle click detected at:', { x, y });
+    logInfo('Particle click detected at:', { x, y });
     
     createParticlesBurst(x, y);
   }, [enabled, createParticlesBurst]);

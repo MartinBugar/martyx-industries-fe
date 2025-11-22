@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { decodeJWT } from '../../services/apiUtils';
 import './TokenExpirationTimer.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 interface TokenExpirationTimerProps {
   className?: string;
@@ -42,7 +43,7 @@ const TokenExpirationTimer: React.FC<TokenExpirationTimerProps> = ({ className }
         
         // Automatically logout user when token expires (only once)
         if (!logoutTriggered) {
-          console.log('Token has expired, triggering automatic logout');
+          logInfo('Token has expired, triggering automatic logout');
           setLogoutTriggered(true);
           window.dispatchEvent(new CustomEvent('auth:logout', { 
             detail: { reason: 'token_expired' } 

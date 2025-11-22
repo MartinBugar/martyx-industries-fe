@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { stripeService, type CreateCheckoutSessionRequest, type CreateCheckoutSessionResponse } from '../services/stripeService';
 import { translateApiError } from '../utils/translateApiError';
+import { logInfo, logWarn, logError } from '../services/logger';
 
 interface StripeCheckoutState {
   loading: boolean;
@@ -35,7 +36,7 @@ export const useStripeCheckout = () => {
 
       return sessionResponse;
     } catch (error) {
-      console.error('Failed to create Stripe Checkout Session:', error);
+      logError('Failed to create Stripe Checkout Session:', error);
 
       const errorMessage = translateApiError(error, t);
       setState(prev => ({

@@ -1,5 +1,6 @@
 import type { Testimonial } from './testimonialService';
 import { apiClient } from './apiClient';
+import { logInfo, logWarn, logError } from '../services/logger';
 
 interface PageResponse<T> {
   content: T[];
@@ -24,10 +25,10 @@ class AdminReviewsService {
       const response = await apiClient.get<PageResponse<Testimonial>>(
         `/api/admin/reviews?page=${page}&size=${size}&sortBy=createdAt&sortDir=DESC`
       );
-      console.log('✅ Fetched all reviews for admin:', response.content.length);
+      logInfo('✅ Fetched all reviews for admin:', response.content.length);
       return response.content;
     } catch (error) {
-      console.error('❌ Failed to fetch all reviews:', error);
+      logError('❌ Failed to fetch all reviews:', error);
       throw error;
     }
   }
@@ -41,10 +42,10 @@ class AdminReviewsService {
       const response = await apiClient.patch<Testimonial>(
         `/api/admin/reviews/${reviewId}/toggle-featured`
       );
-      console.log('✅ Toggled featured status for review:', reviewId);
+      logInfo('✅ Toggled featured status for review:', reviewId);
       return response;
     } catch (error) {
-      console.error('❌ Failed to toggle featured status:', error);
+      logError('❌ Failed to toggle featured status:', error);
       throw error;
     }
   }
@@ -56,9 +57,9 @@ class AdminReviewsService {
   async deleteReview(productId: number, reviewId: number): Promise<void> {
     try {
       await apiClient.delete(`/api/products/${productId}/reviews/${reviewId}`);
-      console.log('✅ Deleted review:', reviewId);
+      logInfo('✅ Deleted review:', reviewId);
     } catch (error) {
-      console.error('❌ Failed to delete review:', error);
+      logError('❌ Failed to delete review:', error);
       throw error;
     }
   }

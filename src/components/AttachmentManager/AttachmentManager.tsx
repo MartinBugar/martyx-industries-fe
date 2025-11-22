@@ -6,6 +6,7 @@ import {
 } from '../../services/productAttachmentService';
 import type { ProductAttachmentDto } from '../../types/api';
 import './AttachmentManager.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 interface AttachmentManagerProps {
   variantId: number;
@@ -30,7 +31,7 @@ const AttachmentManager: React.FC<AttachmentManagerProps> = ({ variantId }) => {
       const data = await adminGetAttachmentsForVariant(variantId);
       setAttachments(data);
     } catch (err) {
-      console.error('Failed to load attachments', err);
+      logError('Failed to load attachments', err);
       setError('Failed to load attachments');
     }
   };
@@ -71,7 +72,7 @@ const AttachmentManager: React.FC<AttachmentManagerProps> = ({ variantId }) => {
       // Reload
       await loadAttachments();
     } catch (err: any) {
-      console.error('Upload failed', err);
+      logError('Upload failed', err);
       setError(err.response?.data?.message || 'Upload failed');
     } finally {
       setUploading(false);
@@ -85,7 +86,7 @@ const AttachmentManager: React.FC<AttachmentManagerProps> = ({ variantId }) => {
       await adminDeleteAttachment(id);
       await loadAttachments();
     } catch (err) {
-      console.error('Delete failed', err);
+      logError('Delete failed', err);
       setError('Failed to delete attachment');
     }
   };

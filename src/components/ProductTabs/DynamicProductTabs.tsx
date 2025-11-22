@@ -23,6 +23,7 @@ import BuildInfoTab from './BuildInfoTab';
 
 // Import Error Boundary for error handling
 import ErrorBoundary from '../ErrorBoundary/ErrorBoundary';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 interface DynamicProductTabsProps {
   masterProductId?: number;
@@ -66,7 +67,7 @@ const DynamicProductTabs: React.FC<DynamicProductTabsProps> = ({
           setActiveTab(0);
         }
       } catch (err) {
-        console.error('Error loading product tabs:', err);
+        logError('Error loading product tabs:', err);
         setError('Failed to load product tabs');
       } finally {
         setLoading(false);
@@ -78,7 +79,7 @@ const DynamicProductTabs: React.FC<DynamicProductTabsProps> = ({
 
   // Render component based on componentName
   const renderCustomComponent = (componentName: string, tabId?: number): React.ReactElement | null => {
-    console.log('[DynamicProductTabs] renderCustomComponent called:', { componentName, tabId, masterProductId, variantId });
+    logInfo('[DynamicProductTabs] renderCustomComponent called:', { componentName, tabId, masterProductId, variantId });
 
     switch (componentName) {
       case 'DetailsTab':
@@ -86,7 +87,7 @@ const DynamicProductTabs: React.FC<DynamicProductTabsProps> = ({
       case 'DownloadTab':
         return <DownloadTab content={{ kind: 'text', text: '' }} />;
       case 'ProductDownloads':
-        console.log('[DynamicProductTabs] Rendering ProductDownloads with props:', { masterProductId, variantId, tabId });
+        logInfo('[DynamicProductTabs] Rendering ProductDownloads with props:', { masterProductId, variantId, tabId });
         return <ProductDownloads
           masterProductId={masterProductId}
           variantId={variantId}
@@ -113,7 +114,7 @@ const DynamicProductTabs: React.FC<DynamicProductTabsProps> = ({
 
   // Render tab content
   const renderContent = (tab: ProductTabDto): React.ReactElement => {
-    console.log('[DynamicProductTabs] renderContent called for tab:', { id: tab.id, tabLabel: tab.tabLabel, contentType: tab.contentType });
+    logInfo('[DynamicProductTabs] renderContent called for tab:', { id: tab.id, tabLabel: tab.tabLabel, contentType: tab.contentType });
     const { type, content } = renderTabContent(tab);
 
     switch (type) {
@@ -142,7 +143,7 @@ const DynamicProductTabs: React.FC<DynamicProductTabsProps> = ({
         );
 
       case 'component':
-        console.log('[DynamicProductTabs] Rendering component type, passing tabId:', tab.id);
+        logInfo('[DynamicProductTabs] Rendering component type, passing tabId:', tab.id);
         return renderCustomComponent(content as string, tab.id) || <div>Component not available</div>;
 
       default:

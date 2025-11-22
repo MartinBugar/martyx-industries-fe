@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { productService } from '../../services/productService';
 import { translateApiError } from '../../utils/translateApiError';
 import type { ProductVariantDto } from '../../types/api';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 interface LocalizedProductCardProps {
   variantId: number;
@@ -32,7 +33,7 @@ const LocalizedProductCard: React.FC<LocalizedProductCardProps> = ({
 
 
       } catch (err) {
-        console.error('❌ Failed to load product:', err);
+        logError('❌ Failed to load product:', err);
         
         // Use unified error translation
         const errorMessage = translateApiError(err, t);

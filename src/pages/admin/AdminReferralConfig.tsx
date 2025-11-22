@@ -4,6 +4,7 @@ import { Button } from '../../components/ui';
 import { referralConfigService, type ReferralConfigDto } from '../../services/referralConfigService';
 import { useErrors } from '../../context/ErrorContext';
 import './AdminReferralConfig.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 const AdminReferralConfig: React.FC = () => {
     const { addError } = useErrors();
@@ -20,12 +21,12 @@ const AdminReferralConfig: React.FC = () => {
     const loadConfig = async () => {
         try {
             setLoading(true);
-            console.log('🔄 Loading referral configuration...');
+            logInfo('🔄 Loading referral configuration...');
             const data = await referralConfigService.getConfig();
             setConfig(data);
-            console.log('✅ Loaded referral configuration');
+            logInfo('✅ Loaded referral configuration');
         } catch (error) {
-            console.error('❌ Failed to load referral configuration:', error);
+            logError('❌ Failed to load referral configuration:', error);
             addError({
                 message: 'Failed to load referral configuration. Please try again.',
                 severity: 'error',
@@ -61,7 +62,7 @@ const AdminReferralConfig: React.FC = () => {
 
         try {
             setSaving(true);
-            console.log('💾 Updating referral configuration...');
+            logInfo('💾 Updating referral configuration...');
 
             const updateRequest = {
                 firstOrderReward: editedValues.firstOrderReward ?? config.firstOrderReward,
@@ -78,14 +79,14 @@ const AdminReferralConfig: React.FC = () => {
             setIsEditing(false);
             setEditedValues({});
 
-            console.log('✅ Referral configuration updated');
+            logInfo('✅ Referral configuration updated');
             addError({
                 message: 'Successfully updated referral configuration',
                 severity: 'info',
                 recoverable: false
             });
         } catch (error) {
-            console.error('❌ Failed to update referral configuration:', error);
+            logError('❌ Failed to update referral configuration:', error);
             addError({
                 message: 'Failed to update configuration. Please try again.',
                 severity: 'error',

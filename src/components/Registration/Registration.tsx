@@ -15,6 +15,7 @@ import './Registration.css';
 
 // Zdieľané komponenty a utility
 import {
+import { logInfo, logWarn, logError } from '../../services/logger';
     EmailIcon,
     PasswordIcon,
     ConfirmPasswordIcon,
@@ -51,7 +52,7 @@ const Registration: React.FC = () => {
         const code = getReferralCodeFromCookie();
         if (code) {
             setReferralCode(code);
-            console.log('[REGISTRATION] Using referral code from cookie:', code);
+            logInfo('[REGISTRATION] Using referral code from cookie:', code);
         }
     }, []);
 
@@ -134,7 +135,7 @@ const Registration: React.FC = () => {
             } else {
                 setGeneralError('Nastala chyba pri registrácii. Skúste to znovu.');
             }
-            console.error('Registration error:', error);
+            logError('Registration error:', error);
         }
     }, [t, reset, referralCode]);
 

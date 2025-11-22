@@ -5,6 +5,7 @@ import { adminService } from '../../services/adminService';
 import { isTokenExpired } from '../../services/apiUtils';
 import ParticlesBackground from '../../components/ParticlesBackground/ParticlesBackground';
 import './AdminLogin.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 const AdminLogin: React.FC = () => {
   const navigate = useNavigate();
@@ -64,7 +65,7 @@ const AdminLogin: React.FC = () => {
       setError('ACCESS DENIED');
       setShowDeniedModal(true);
     } catch (err) {
-      console.error('Admin login error:', err);
+      logError('Admin login error:', err);
       setError('ACCESS DENIED');
       setShowDeniedModal(true);
     } finally {

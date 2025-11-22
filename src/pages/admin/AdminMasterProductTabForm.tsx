@@ -30,6 +30,7 @@ import { Button } from '../../components/ui';
 import { apiClient } from '../../services/apiClient';
 import LanguageTabs from '../../components/admin/LanguageTabs';
 import './AdminUsers.css';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 // Language-specific fields that can be translated
 interface TranslatableFields {
@@ -147,7 +148,7 @@ const AdminMasterProductTabForm: React.FC = () => {
         const loadedTemplates = await adminGetTabTemplates();
         setTemplates(loadedTemplates);
       } catch (err) {
-        console.error('Error loading templates:', err);
+        logError('Error loading templates:', err);
       }
     };
     loadTemplates();
@@ -185,7 +186,7 @@ const AdminMasterProductTabForm: React.FC = () => {
           setDifficultyLevel(masterProduct.difficultyLevel);
         }
       } catch (err) {
-        console.error('Error loading build info:', err);
+        logError('Error loading build info:', err);
         setError('Failed to load build information');
       } finally {
         setBuildInfoLoading(false);
@@ -252,14 +253,14 @@ const AdminMasterProductTabForm: React.FC = () => {
       setLanguageData(newLanguageData);
       setExistingTabIds(newTabIds);
 
-      console.log('✅ Loaded all language versions:', {
+      logInfo('✅ Loaded all language versions:', {
         en: newTabIds.en ? 'exists' : 'missing',
         sk: newTabIds.sk ? 'exists' : 'missing',
         de: newTabIds.de ? 'exists' : 'missing'
       });
 
     } catch (err) {
-      console.error('Error loading tab:', err);
+      logError('Error loading tab:', err);
       setError('Failed to load tab');
     } finally {
       setLoading(false);
@@ -280,7 +281,7 @@ const AdminMasterProductTabForm: React.FC = () => {
       const assigned = await adminGetTabAttachments(Number(tabId));
       setTabAttachments(assigned);
     } catch (err) {
-      console.error('Error loading attachments:', err);
+      logError('Error loading attachments:', err);
     } finally {
       setLoadingAttachments(false);
     }
@@ -353,21 +354,21 @@ const AdminMasterProductTabForm: React.FC = () => {
         await savePromise;
       }
 
-      console.log(`✅ Saved ${savePromises.length} language versions`);
+      logInfo(`✅ Saved ${savePromises.length} language versions`);
 
       // Save build info if this is a BuildInfoTab
       if (sharedFields.componentName === 'BuildInfoTab' && productId) {
         try {
-          console.log('💾 Saving build info to master product...');
+          logInfo('💾 Saving build info to master product...');
           const masterProduct = await productService.adminGetMasterProduct(Number(productId));
 
           masterProduct.buildInfo = buildInfo;
           masterProduct.difficultyLevel = difficultyLevel;
 
           await productService.adminUpdateMasterProduct(Number(productId), masterProduct);
-          console.log('✅ Build info saved successfully');
+          logInfo('✅ Build info saved successfully');
         } catch (buildInfoErr) {
-          console.error('Error saving build info:', buildInfoErr);
+          logError('Error saving build info:', buildInfoErr);
           setError('Tab saved, but failed to save build information. Please try updating build info separately.');
         }
       }
@@ -378,7 +379,7 @@ const AdminMasterProductTabForm: React.FC = () => {
       // Navigate back to tabs list
       navigate(`/admin/products/${productId}/tabs`);
     } catch (err: any) {
-      console.error('Error saving tab:', err);
+      logError('Error saving tab:', err);
 
       // Parse validation errors from backend
       const errorData = err.errorData || err.response?.data || {};
@@ -446,7 +447,7 @@ const AdminMasterProductTabForm: React.FC = () => {
       await adminAddAttachmentToTab(Number(tabId), attachmentId, 0);
       await loadAttachments();
     } catch (err) {
-      console.error('Error adding attachment:', err);
+      logError('Error adding attachment:', err);
       setError('Failed to add attachment to tab');
     }
   };
@@ -458,7 +459,7 @@ const AdminMasterProductTabForm: React.FC = () => {
       await adminRemoveAttachmentFromTab(Number(tabId), attachmentId);
       await loadAttachments();
     } catch (err) {
-      console.error('Error removing attachment:', err);
+      logError('Error removing attachment:', err);
       setError('Failed to remove attachment from tab');
     }
   };

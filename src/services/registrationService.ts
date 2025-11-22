@@ -1,5 +1,6 @@
 // Registration service
 import { handleResponse, API_BASE_URL, defaultHeaders, withLangHeaders } from './apiUtils';
+import { logInfo, logWarn, logError } from '../services/logger';
 
 // Registration service
 export const registrationService = {
@@ -62,7 +63,7 @@ export const registrationService = {
 
             throw new Error(message);
         } catch (error) {
-            console.error('Registration API error:', error);
+            logError('Registration API error:', error);
             throw error;
         }
   },
@@ -78,7 +79,7 @@ export const registrationService = {
       const data = await handleResponse(response);
       return { success: true, message: data.message || 'Email confirmed successfully!' };
     } catch (error) {
-      console.error('Email confirmation API error:', error);
+      logError('Email confirmation API error:', error);
       return { success: false, message: 'Email confirmation failed. Please try again or contact support.' };
     }
   },
@@ -95,7 +96,7 @@ export const registrationService = {
       const data = await handleResponse(response);
       return { success: true, message: data.message || 'Confirmation email sent successfully!' };
     } catch (error) {
-      console.error('Resend confirmation API error:', error);
+      logError('Resend confirmation API error:', error);
       return { success: false, message: 'Failed to resend confirmation email. Please try again.' };
     }
   },
