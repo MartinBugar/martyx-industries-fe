@@ -13,6 +13,12 @@ export interface GalleryImage {
   thumbnailUrl?: string;
   order: number;
   isPrimary?: boolean;  // true = hlavný obrázok produktu
+
+  // Product card display settings
+  cardDisplayZoom?: number;     // Zoom level (1.00 = 100%, range: 0.5-3.0)
+  cardDisplayOffsetX?: number;  // Horizontal offset in pixels (-500 to +500)
+  cardDisplayOffsetY?: number;  // Vertical offset in pixels (-500 to +500)
+
   folderName?: string;
   createdAt: string;
   updatedAt?: string;
@@ -44,6 +50,12 @@ export interface UploadImageResponse {
 export interface ReorderImagesRequest {
   productId: string;
   imageOrders: { imageId: string; order: number }[];
+}
+
+export interface UpdateImageDisplaySettingsRequest {
+  cardDisplayZoom: number;      // 0.5 - 3.0
+  cardDisplayOffsetX: number;   // -500 to +500
+  cardDisplayOffsetY: number;   // -500 to +500
 }
 
 /**
@@ -644,6 +656,38 @@ export class ProductGalleryService {
 
     if (!response.ok) {
       throw new Error(`Failed to set primary image: ${response.status}`);
+    }
+
+    return handleResponse(response);
+  }
+
+  /**
+   * Update display settings for image in product card (zoom, position offset)
+   */
+  async updateImageDisplaySettings(
+    masterProductId: number,
+    variantId: number | null,
+    imageId: string,
+    settings: UpdateImageDisplaySettingsRequest
+  ): Promise<GalleryImage> {
+    const endpoint = variantId
+      ? `${API_BASE_URL}/api/master-products/${masterProductId}/variants/${variantId}/gallery/${imageId}/display-settings`
+      : `${API_BASE_URL}/api/master-products/${masterProductId}/gallery/${imageId}/display-settings`;
+
+    const headers = { ...defaultHeaders };
+    const token = localStorage.getItem('token');
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(endpoint, withLangHeaders({
+      method: 'PUT',
+      headers: headers as HeadersInit,
+      body: JSON.stringify(settings),
+    }));
+
+    if (!response.ok) {
+      throw new Error(`Failed to update display settings: ${response.status}`);
     }
 
     return handleResponse(response);

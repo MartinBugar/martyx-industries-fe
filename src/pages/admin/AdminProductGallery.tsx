@@ -5,9 +5,11 @@ import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
 import { adminProductsService, type BaseProduct } from '../../services/adminProductsService';
 import ProductGalleryUpload from '../../components/ProductGalleryUpload/ProductGalleryUpload';
+import ProductCardPreviewEditor, { type ImageDisplaySettings } from '../../components/ProductCardPreviewEditor/ProductCardPreviewEditor';
+import { productGalleryService, type GalleryImage } from '../../services/productGalleryService';
 
 const AdminProductGallery: React.FC = () => {
-    useTranslation('common');
+  useTranslation('common');
   const { id } = useParams<{ id: string }>();
 
   // Debug: Log when component mounts
@@ -21,6 +23,11 @@ const AdminProductGallery: React.FC = () => {
   const [product, setProduct] = useState<BaseProduct | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Gallery images state
+  const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
+  const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
+  const [loadingGallery, setLoadingGallery] = useState(false);
 
   const load = async () => {
     if (!id) return;
@@ -37,10 +44,73 @@ const AdminProductGallery: React.FC = () => {
     }
   };
 
+  const loadGalleryImages = async () => {
+    if (!id) return;
+    setLoadingGallery(true);
+    try {
+      const images = await productGalleryService.getMasterProductGallery(Number(id));
+      setGalleryImages(images);
+
+      // Auto-select primary image or first image
+      const primaryImage = images.find(img => img.isPrimary);
+      const defaultImage = primaryImage || images[0] || null;
+      setSelectedImage(defaultImage);
+
+    } catch (e: unknown) {
+      console.error('Failed to load gallery images:', e);
+    } finally {
+      setLoadingGallery(false);
+    }
+  };
+
   useEffect(() => {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  useEffect(() => {
+    if (id) {
+      loadGalleryImages();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
+
+  const handleGalleryRefresh = () => {
+    loadGalleryImages();
+  };
+
+  const handleImageSelect = (imageId: string) => {
+    const image = galleryImages.find(img => img.id === imageId);
+    if (image) {
+      setSelectedImage(image);
+    }
+  };
+
+  const handleSettingsSave = async (settings: ImageDisplaySettings) => {
+    if (!selectedImage || !id) {
+      throw new Error('No image selected');
+    }
+
+    try {
+      const updated = await productGalleryService.updateImageDisplaySettings(
+        Number(id),
+        null, // variantId = null for master product
+        selectedImage.id,
+        settings
+      );
+
+      // Update local state
+      setGalleryImages(prev =>
+        prev.map(img => (img.id === updated.id ? updated : img))
+      );
+      setSelectedImage(updated);
+
+      console.log('✅ Display settings saved successfully');
+    } catch (e) {
+      console.error('❌ Failed to save display settings:', e);
+      throw e;
+    }
+  };
 
   // Navigation tabs
   const navTabs = (
@@ -139,7 +209,7 @@ const AdminProductGallery: React.FC = () => {
                   </h3>
                   <p className="section-description" style={{ margin: '4px 0 0 0', fontSize: 14, color: '#6b7280' }}>
                     Upload and manage product images. Images are stored in DigitalOcean Spaces and organized by product ID.
-                    The first image will be used as the main product image on the store.
+                    The primary (main) image will be used as the main product image on the store.
                   </p>
                 </div>
                 <ProductGalleryUpload
@@ -148,10 +218,111 @@ const AdminProductGallery: React.FC = () => {
                   existingImages={[]}
                   onImagesChange={(images) => {
                     console.log('Gallery images updated:', images);
-                    // Gallery images are now managed separately from product data
+                    // Refresh gallery images after upload
+                    handleGalleryRefresh();
                   }}
                 />
               </div>
+
+              {/* Product Card Preview & Customization Section */}
+              {galleryImages.length > 0 && (
+                <div className="product-card-customization-section">
+                  <div className="section-header" style={{ marginTop: 32, marginBottom: 16 }}>
+                    <h3 className="section-title" style={{ margin: 0, fontSize: 16, fontWeight: 600, color: '#1f2937' }}>
+                      Product Card Customization
+                    </h3>
+                    <p className="section-description" style={{ margin: '4px 0 0 0', fontSize: 14, color: '#6b7280' }}>
+                      Customize how the image appears in the product card on the /products page.
+                      Select an image and adjust zoom and position.
+                    </p>
+                  </div>
+
+                  {/* Image Picker */}
+                  {!loadingGallery && (
+                    <div className="image-picker-section" style={{ marginBottom: 16 }}>
+                      <label style={{ display: 'block', fontWeight: 600, marginBottom: 8, color: '#374151' }}>
+                        Select Image to Customize:
+                      </label>
+                      <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                        {galleryImages.map((image) => (
+                          <div
+                            key={image.id}
+                            onClick={() => handleImageSelect(image.id)}
+                            style={{
+                              position: 'relative',
+                              cursor: 'pointer',
+                              border: selectedImage?.id === image.id ? '3px solid #3b82f6' : '2px solid #e5e7eb',
+                              borderRadius: 8,
+                              overflow: 'hidden',
+                              width: 100,
+                              height: 100,
+                              transition: 'all 0.2s'
+                            }}
+                          >
+                            <img
+                              src={image.cdnUrl || image.url}
+                              alt={image.originalName}
+                              style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover'
+                              }}
+                            />
+                            {image.isPrimary && (
+                              <div style={{
+                                position: 'absolute',
+                                top: 4,
+                                right: 4,
+                                background: '#f59e0b',
+                                color: '#fff',
+                                padding: '2px 6px',
+                                borderRadius: 4,
+                                fontSize: 10,
+                                fontWeight: 600
+                              }}>
+                                ⭐ Main
+                              </div>
+                            )}
+                            {selectedImage?.id === image.id && (
+                              <div style={{
+                                position: 'absolute',
+                                bottom: 0,
+                                left: 0,
+                                right: 0,
+                                background: 'rgba(59, 130, 246, 0.9)',
+                                color: '#fff',
+                                padding: 4,
+                                fontSize: 10,
+                                textAlign: 'center',
+                                fontWeight: 600
+                              }}>
+                                SELECTED
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Preview Editor */}
+                  {selectedImage && (
+                    <ProductCardPreviewEditor
+                      imageUrl={selectedImage.cdnUrl || selectedImage.url}
+                      imageName={selectedImage.originalName}
+                      initialSettings={{
+                        zoom: selectedImage.cardDisplayZoom || 1.0,
+                        offsetX: selectedImage.cardDisplayOffsetX || 0,
+                        offsetY: selectedImage.cardDisplayOffsetY || 0
+                      }}
+                      onSettingsChange={(settings) => {
+                        console.log('Settings changed:', settings);
+                      }}
+                      onSave={handleSettingsSave}
+                    />
+                  )}
+                </div>
+              )}
             </div>
           )}
         </div>

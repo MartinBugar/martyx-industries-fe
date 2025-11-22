@@ -1,21 +1,24 @@
 /* ==========================================
-   MARTYX ADMIN LOGIN
-   Brand colors & grid background
+   MARTYX ADMIN LOGIN - HIGH TECH EDITION
+   Futuristic UI with brand colors (Yellow & Dark)
+   Compact Version
    ========================================== */
 
-/* Site Colors */
+/* Brand Colors */
 :root {
-  --martyx-bg: #0f1419;
-  --martyx-surface: #1a1f2e;
-  --martyx-card: #1e2530;
+  --martyx-bg: #0b0f12;
+  --martyx-surface: #11161b;
+  --martyx-card: #141a20;
   --martyx-accent: #F6C845;
   --martyx-accent-hover: #E6B82D;
-  --martyx-text: #ffffff;
-  --martyx-text-secondary: #e2e8f0;
-  --martyx-muted: #94a3b8;
-  --martyx-error: #ef4444;
-  --martyx-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  --martyx-radius: 12px;
+  --martyx-accent-glow: rgba(246, 200, 69, 0.6);
+  --martyx-text: #e7eef5;
+  --martyx-text-secondary: #a7b3c1;
+  --martyx-muted: #6b7785;
+  --martyx-error: #ff4757;
+  --martyx-success: #10d275;
+  --martyx-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  --martyx-radius: 14px;
 }
 
 /* ==========================================
@@ -33,7 +36,7 @@
   padding: 1rem;
 }
 
-/* Grid Background - same as main site */
+/* High-tech layered background */
 .martyx-admin-bg {
   position: fixed;
   top: 0;
@@ -42,11 +45,13 @@
   bottom: 0;
   background:
     radial-gradient(circle at 20% 20%, rgba(246, 200, 69, 0.08) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(246, 200, 69, 0.05) 0%, transparent 50%),
-    linear-gradient(135deg, #0f1419 0%, #1a1f2e 50%, #0b1426 100%);
+    radial-gradient(circle at 80% 80%, rgba(246, 200, 69, 0.06) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(246, 200, 69, 0.03) 0%, transparent 70%),
+    linear-gradient(135deg, #0b0f12 0%, #0f1419 50%, #0b0f12 100%);
   z-index: 0;
 }
 
+/* Animated tech grid */
 .martyx-admin-bg::before {
   content: '';
   position: absolute;
@@ -55,10 +60,30 @@
   right: 0;
   bottom: 0;
   background-image:
-    linear-gradient(rgba(246, 200, 69, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(246, 200, 69, 0.03) 1px, transparent 1px);
-  background-size: 50px 50px;
-  animation: gridMove 20s linear infinite;
+    linear-gradient(rgba(246, 200, 69, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(246, 200, 69, 0.08) 1px, transparent 1px);
+  background-size: 40px 40px;
+  animation: gridMove 25s linear infinite;
+  opacity: 0.6;
+}
+
+/* Scanline effect overlay */
+.martyx-admin-bg::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(246, 200, 69, 0.015) 2px,
+    rgba(246, 200, 69, 0.015) 4px
+  );
+  pointer-events: none;
+  animation: scanlines 8s linear infinite;
 }
 
 @keyframes gridMove {
@@ -66,36 +91,49 @@
     transform: translate(0, 0);
   }
   100% {
-    transform: translate(50px, 50px);
+    transform: translate(40px, 40px);
+  }
+}
+
+@keyframes scanlines {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(20px);
   }
 }
 
 /* ==========================================
-   CONTENT
+   CONTENT - Compact
    ========================================== */
 
 .martyx-admin-content {
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 440px;
+  max-width: 380px;
 }
 
 /* ==========================================
-   CARD
+   CARD - Compact High Tech Design
    ========================================== */
 
 .martyx-admin-card {
-  background: var(--martyx-card);
-  border: 1px solid rgba(246, 200, 69, 0.15);
+  background: rgba(20, 26, 32, 0.85);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(246, 200, 69, 0.2);
   border-radius: 20px;
-  padding: 3rem 2.5rem;
+  padding: 2rem 2rem;
   box-shadow:
     var(--martyx-shadow),
-    0 0 60px rgba(246, 200, 69, 0.08);
+    0 0 80px rgba(246, 200, 69, 0.1),
+    inset 0 1px 0 rgba(246, 200, 69, 0.1);
   position: relative;
+  overflow: hidden;
 }
 
+/* Top glow line */
 .martyx-admin-card::before {
   content: '';
   position: absolute;
@@ -105,117 +143,228 @@
   height: 2px;
   background: linear-gradient(90deg,
     transparent 0%,
-    var(--martyx-accent) 50%,
+    var(--martyx-accent) 30%,
+    var(--martyx-accent) 70%,
     transparent 100%);
-  opacity: 0.6;
+  opacity: 0.8;
+  animation: topGlow 3s ease-in-out infinite;
+}
+
+/* Tech corners */
+.martyx-admin-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  padding: 1px;
+  background:
+    linear-gradient(135deg,
+      rgba(246, 200, 69, 0.4) 0%,
+      transparent 20%,
+      transparent 80%,
+      rgba(246, 200, 69, 0.4) 100%);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+@keyframes topGlow {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scaleX(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scaleX(0.95);
+  }
 }
 
 /* ==========================================
-   HEADER
+   HEADER - Compact Futuristic
    ========================================== */
 
 .martyx-admin-header {
   text-align: center;
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.75rem;
+  position: relative;
 }
 
 .martyx-admin-shield {
-  width: 72px;
-  height: 72px;
-  margin: 0 auto 1.5rem;
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, rgba(246, 200, 69, 0.12), rgba(246, 200, 69, 0.06));
-  border: 2px solid rgba(246, 200, 69, 0.25);
+  background:
+    linear-gradient(135deg, rgba(246, 200, 69, 0.15), rgba(246, 200, 69, 0.05)),
+    radial-gradient(circle at center, rgba(246, 200, 69, 0.1), transparent);
+  border: 2px solid rgba(246, 200, 69, 0.3);
   border-radius: 16px;
   color: var(--martyx-accent);
   box-shadow:
-    0 4px 20px rgba(246, 200, 69, 0.15),
-    inset 0 0 20px rgba(246, 200, 69, 0.05);
+    0 8px 32px rgba(246, 200, 69, 0.2),
+    inset 0 0 40px rgba(246, 200, 69, 0.08),
+    0 0 0 1px rgba(246, 200, 69, 0.1) inset;
+  position: relative;
+  animation: shieldPulse 4s ease-in-out infinite;
+}
+
+.martyx-admin-shield svg {
+  width: 30px;
+  height: 30px;
+}
+
+/* Corner accents on shield */
+.martyx-admin-shield::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border: 1px solid rgba(246, 200, 69, 0.2);
+  border-radius: 20px;
+  clip-path: polygon(
+    0 0, 20% 0, 20% 1px, 1px 1px, 1px 20%, 0 20%,
+    0 0, 100% 0, 100% 20%, calc(100% - 1px) 20%, calc(100% - 1px) 1px, 80% 1px, 80% 0,
+    100% 100%, 80% 100%, 80% calc(100% - 1px), calc(100% - 1px) calc(100% - 1px), calc(100% - 1px) 80%, 100% 80%,
+    0 100%, 0 80%, 1px 80%, 1px calc(100% - 1px), 20% calc(100% - 1px), 20% 100%
+  );
+}
+
+@keyframes shieldPulse {
+  0%, 100% {
+    box-shadow:
+      0 8px 32px rgba(246, 200, 69, 0.2),
+      inset 0 0 40px rgba(246, 200, 69, 0.08),
+      0 0 0 1px rgba(246, 200, 69, 0.1) inset;
+  }
+  50% {
+    box-shadow:
+      0 8px 40px rgba(246, 200, 69, 0.3),
+      inset 0 0 50px rgba(246, 200, 69, 0.12),
+      0 0 0 1px rgba(246, 200, 69, 0.2) inset;
+  }
 }
 
 .martyx-admin-header h1 {
-  font-size: 1.875rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: var(--martyx-text);
-  margin: 0 0 0.5rem 0;
-  letter-spacing: -0.02em;
-  background: linear-gradient(135deg, var(--martyx-text) 0%, var(--martyx-accent) 100%);
+  margin: 0 0 0.375rem 0;
+  letter-spacing: 0.02em;
+  background: linear-gradient(135deg,
+    var(--martyx-text) 0%,
+    var(--martyx-accent) 60%,
+    var(--martyx-text) 100%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  background-size: 200% auto;
+  animation: shimmer 6s ease-in-out infinite;
+  text-shadow: 0 0 20px rgba(246, 200, 69, 0.3);
+}
+
+@keyframes shimmer {
+  0%, 100% {
+    background-position: 0% center;
+  }
+  50% {
+    background-position: 100% center;
+  }
 }
 
 .martyx-admin-header p {
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   color: var(--martyx-muted);
   margin: 0;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
-  font-weight: 500;
+  font-weight: 600;
+  opacity: 0.8;
 }
 
 /* ==========================================
-   ERROR
+   ERROR - Enhanced
    ========================================== */
 
 .martyx-admin-error {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  background: rgba(239, 68, 68, 0.08);
-  border: 1px solid rgba(239, 68, 68, 0.25);
+  gap: 0.625rem;
+  background: rgba(255, 71, 87, 0.08);
+  border: 1px solid rgba(255, 71, 87, 0.3);
   border-radius: 10px;
-  padding: 0.875rem 1rem;
-  margin-bottom: 1.5rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.25rem;
   color: var(--martyx-error);
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  box-shadow: 0 0 20px rgba(255, 71, 87, 0.1);
+  animation: errorPulse 2s ease-in-out infinite;
+}
+
+@keyframes errorPulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(255, 71, 87, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(255, 71, 87, 0.2);
+  }
 }
 
 .martyx-admin-error svg {
   flex-shrink: 0;
+  filter: drop-shadow(0 0 4px rgba(255, 71, 87, 0.5));
 }
 
 /* ==========================================
-   FORM
+   FORM - Compact Tech Style
    ========================================== */
 
 .martyx-admin-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 .martyx-form-field {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  position: relative;
 }
 
 .martyx-form-field label {
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-size: 0.75rem;
+  font-weight: 700;
   color: var(--martyx-text-secondary);
-  letter-spacing: 0.03em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.9;
 }
 
 .martyx-form-field input {
   width: 100%;
-  padding: 0.9375rem 1.125rem;
+  padding: 0.75rem 1rem;
   background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(246, 200, 69, 0.15);
   border-radius: var(--martyx-radius);
   color: var(--martyx-text);
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-sizing: border-box;
+  position: relative;
 }
 
 .martyx-form-field input::placeholder {
   color: var(--martyx-muted);
-  opacity: 0.5;
+  opacity: 0.3;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
 }
 
 .martyx-form-field input:focus {
@@ -223,38 +372,44 @@
   background: rgba(255, 255, 255, 0.05);
   border-color: var(--martyx-accent);
   box-shadow:
-    0 0 0 3px rgba(246, 200, 69, 0.1),
-    0 0 20px rgba(246, 200, 69, 0.15);
+    0 0 0 3px rgba(246, 200, 69, 0.12),
+    0 0 30px rgba(246, 200, 69, 0.15),
+    inset 0 1px 0 rgba(246, 200, 69, 0.1);
 }
 
 .martyx-form-field input:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
 /* ==========================================
-   SUBMIT BUTTON
+   SUBMIT BUTTON - Compact High Tech
    ========================================== */
 
 .martyx-admin-submit {
   width: 100%;
-  padding: 1.125rem 2rem;
-  background: linear-gradient(135deg, var(--martyx-accent) 0%, var(--martyx-accent-hover) 100%);
+  padding: 1rem 1.5rem;
+  background:
+    linear-gradient(135deg, var(--martyx-accent) 0%, var(--martyx-accent-hover) 100%);
   border: none;
   border-radius: var(--martyx-radius);
-  color: #0f1419;
+  color: #0b0f12;
   font-size: 0.9375rem;
   font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   margin-top: 0.5rem;
   box-shadow:
-    0 4px 20px rgba(246, 200, 69, 0.3),
-    0 0 40px rgba(246, 200, 69, 0.15);
+    0 8px 24px rgba(246, 200, 69, 0.35),
+    0 0 60px rgba(246, 200, 69, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
   position: relative;
   overflow: hidden;
 }
 
+/* Shine effect */
 .martyx-admin-submit::before {
   content: '';
   position: absolute;
@@ -262,7 +417,10 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent);
   transition: left 0.6s ease;
 }
 
@@ -271,18 +429,19 @@
 }
 
 .martyx-admin-submit:hover:not(:disabled) {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
   box-shadow:
-    0 8px 30px rgba(246, 200, 69, 0.4),
-    0 0 60px rgba(246, 200, 69, 0.25);
+    0 12px 40px rgba(246, 200, 69, 0.45),
+    0 0 80px rgba(246, 200, 69, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .martyx-admin-submit:active {
-  transform: translateY(0);
+  transform: translateY(-1px);
 }
 
 .martyx-admin-submit:disabled {
-  opacity: 0.7;
+  opacity: 0.6;
   cursor: not-allowed;
   transform: none;
 }
@@ -292,16 +451,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
+  gap: 0.625rem;
 }
 
 .martyx-spinner {
-  width: 18px;
-  height: 18px;
-  border: 2.5px solid rgba(15, 20, 25, 0.3);
-  border-top: 2.5px solid #0f1419;
+  width: 16px;
+  height: 16px;
+  border: 2.5px solid rgba(11, 15, 18, 0.3);
+  border-top: 2.5px solid #0b0f12;
   border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+  animation: spin 0.7s linear infinite;
 }
 
 @keyframes spin {
@@ -310,106 +469,194 @@
 }
 
 /* ==========================================
-   FOOTER BADGE
+   FOOTER BADGE - Compact Tech Style
    ========================================== */
 
 .martyx-admin-footer {
-  margin-top: 2rem;
+  margin-top: 1.5rem;
   text-align: center;
 }
 
 .martyx-security-badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  background: rgba(246, 200, 69, 0.06);
-  border: 1px solid rgba(246, 200, 69, 0.15);
+  gap: 0.375rem;
+  background: rgba(246, 200, 69, 0.08);
+  border: 1px solid rgba(246, 200, 69, 0.2);
   border-radius: 50px;
   padding: 0.5rem 1rem;
   color: var(--martyx-accent);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
+  box-shadow:
+    0 0 20px rgba(246, 200, 69, 0.1),
+    inset 0 1px 0 rgba(246, 200, 69, 0.1);
+  animation: badgePulse 3s ease-in-out infinite;
+}
+
+.martyx-security-badge svg {
+  filter: drop-shadow(0 0 4px rgba(246, 200, 69, 0.5));
+  width: 12px;
+  height: 12px;
+}
+
+@keyframes badgePulse {
+  0%, 100% {
+    box-shadow:
+      0 0 20px rgba(246, 200, 69, 0.1),
+      inset 0 1px 0 rgba(246, 200, 69, 0.1);
+  }
+  50% {
+    box-shadow:
+      0 0 30px rgba(246, 200, 69, 0.15),
+      inset 0 1px 0 rgba(246, 200, 69, 0.15);
+  }
 }
 
 /* ==========================================
-   MODAL
+   MODAL - Enhanced
    ========================================== */
 
 .martyx-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(12px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9999;
   padding: 1rem;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .martyx-modal {
-  background: var(--martyx-card);
-  border: 1px solid rgba(239, 68, 68, 0.25);
+  background: rgba(20, 26, 32, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 71, 87, 0.3);
   border-radius: 20px;
-  padding: 2.5rem 2rem;
-  max-width: 440px;
+  padding: 2rem 1.75rem;
+  max-width: 380px;
   width: 100%;
   text-align: center;
   box-shadow:
-    0 20px 60px rgba(0, 0, 0, 0.5),
-    0 0 80px rgba(239, 68, 68, 0.15);
+    0 20px 60px rgba(0, 0, 0, 0.6),
+    0 0 100px rgba(255, 71, 87, 0.2),
+    inset 0 1px 0 rgba(255, 71, 87, 0.1);
+  animation: modalSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.martyx-modal::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    var(--martyx-error) 50%,
+    transparent 100%);
+  opacity: 0.8;
+}
+
+@keyframes modalSlideIn {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .martyx-modal-icon {
-  width: 72px;
-  height: 72px;
-  margin: 0 auto 1.5rem;
+  width: 70px;
+  height: 70px;
+  margin: 0 auto 1.25rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(239, 68, 68, 0.08);
-  border: 2px solid rgba(239, 68, 68, 0.25);
+  background: rgba(255, 71, 87, 0.1);
+  border: 2px solid rgba(255, 71, 87, 0.3);
   border-radius: 50%;
   color: var(--martyx-error);
+  box-shadow:
+    0 0 40px rgba(255, 71, 87, 0.2),
+    inset 0 0 20px rgba(255, 71, 87, 0.1);
+  animation: iconPulse 2s ease-in-out infinite;
+}
+
+@keyframes iconPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow:
+      0 0 40px rgba(255, 71, 87, 0.2),
+      inset 0 0 20px rgba(255, 71, 87, 0.1);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow:
+      0 0 50px rgba(255, 71, 87, 0.3),
+      inset 0 0 30px rgba(255, 71, 87, 0.15);
+  }
 }
 
 .martyx-modal h2 {
-  font-size: 1.625rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: var(--martyx-text);
-  margin: 0 0 1rem 0;
-  letter-spacing: -0.02em;
+  margin: 0 0 0.875rem 0;
+  letter-spacing: -0.01em;
+  text-shadow: 0 0 20px rgba(255, 71, 87, 0.3);
 }
 
 .martyx-modal p {
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   color: var(--martyx-text-secondary);
   line-height: 1.6;
-  margin: 0 0 2rem 0;
+  margin: 0 0 1.5rem 0;
+  opacity: 0.9;
 }
 
 .martyx-modal button {
   padding: 0.875rem 2rem;
-  background: var(--martyx-error);
+  background: linear-gradient(135deg, var(--martyx-error) 0%, #e63946 100%);
   border: none;
   border-radius: 10px;
   color: white;
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow:
-    0 4px 20px rgba(239, 68, 68, 0.3),
-    0 0 40px rgba(239, 68, 68, 0.15);
+    0 8px 24px rgba(255, 71, 87, 0.35),
+    0 0 40px rgba(255, 71, 87, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .martyx-modal button:hover {
   transform: translateY(-2px);
   box-shadow:
-    0 8px 30px rgba(239, 68, 68, 0.4),
-    0 0 60px rgba(239, 68, 68, 0.25);
+    0 12px 40px rgba(255, 71, 87, 0.45),
+    0 0 60px rgba(255, 71, 87, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .martyx-modal button:active {
@@ -422,25 +669,32 @@
 
 @media (max-width: 480px) {
   .martyx-admin-card {
-    padding: 2rem 1.5rem;
+    padding: 1.75rem 1.5rem;
+    border-radius: 18px;
   }
 
   .martyx-admin-shield {
-    width: 64px;
-    height: 64px;
+    width: 54px;
+    height: 54px;
+  }
+
+  .martyx-admin-shield svg {
+    width: 26px;
+    height: 26px;
   }
 
   .martyx-admin-header h1 {
-    font-size: 1.5rem;
+    font-size: 1.375rem;
   }
 
   .martyx-modal {
-    padding: 2rem 1.5rem;
+    padding: 1.75rem 1.5rem;
+    border-radius: 18px;
   }
 
   .martyx-modal-icon {
-    width: 64px;
-    height: 64px;
+    width: 60px;
+    height: 60px;
   }
 
   .martyx-modal h2 {
@@ -454,9 +708,16 @@
 
 @media (prefers-reduced-motion: reduce) {
   .martyx-admin-bg::before,
+  .martyx-admin-bg::after,
+  .martyx-admin-card::before,
+  .martyx-admin-shield,
   .martyx-admin-submit::before,
-  .martyx-spinner {
-    animation: none;
+  .martyx-spinner,
+  .martyx-security-badge,
+  .martyx-modal-icon,
+  .martyx-admin-header h1,
+  .martyx-admin-error {
+    animation: none !important;
   }
 
   .martyx-admin-submit:hover,
@@ -469,5 +730,5 @@
 .martyx-admin-submit:focus-visible,
 .martyx-modal button:focus-visible {
   outline: 2px solid var(--martyx-accent);
-  outline-offset: 2px;
+  outline-offset: 3px;
 }

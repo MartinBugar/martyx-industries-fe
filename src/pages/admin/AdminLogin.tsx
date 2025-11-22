@@ -109,6 +109,7 @@ const AdminLogin: React.FC = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={loading}
                 autoComplete="email"
+                placeholder="XXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
                 required
               />
             </div>
@@ -121,6 +122,7 @@ const AdminLogin: React.FC = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={loading}
                 autoComplete="current-password"
+                placeholder="XXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
                 required
               />
             </div>

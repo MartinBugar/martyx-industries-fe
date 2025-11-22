@@ -285,21 +285,35 @@ const Products: React.FC = () => {
                                         <Link to={`/products/${p.masterProductId}`} className="product-card-link">
                                             <div className="product-card-image-container">
                                                 {mainImage ? (
-                                                    <OptimizedImage
-                                                        src={(() => {
-                                                            // If the image URL is already a CDN URL, use it directly
-                                                            const isCDNUrl = mainImage.includes('digitaloceanspaces.com') || mainImage.includes(import.meta.env.VITE_CDN_BASE || '');
-                                                            const finalSrc = isCDNUrl ? mainImage : (isCDNEnabled() ? getBestImageUrl(getBaseNameFromPath(mainImage), 800) : mainImage);
-                                                            if (import.meta.env.DEV && p.masterProductId === 1) {
-                                                                console.log(`🏷️ Product card for ${p.name} - Original:`, mainImage, '→ Final:', finalSrc, '(CDN URL detected:', isCDNUrl, ')');
-                                                            }
-                                                            return finalSrc;
-                                                        })()}
-                                                        alt={`${p.name} - main image`}
-                                                        className="product-card-image"
-                                                        priority={index < 6} // Prvých 6 produktov má prioritu
-                                                        placeholder="/images/product-placeholder.svg"
-                                                    />
+                                                    <>
+                                                        <OptimizedImage
+                                                            src={(() => {
+                                                                // If the image URL is already a CDN URL, use it directly
+                                                                const isCDNUrl = mainImage.includes('digitaloceanspaces.com') || mainImage.includes(import.meta.env.VITE_CDN_BASE || '');
+                                                                const finalSrc = isCDNUrl ? mainImage : (isCDNEnabled() ? getBestImageUrl(getBaseNameFromPath(mainImage), 800) : mainImage);
+                                                                if (import.meta.env.DEV && p.masterProductId === 1) {
+                                                                    console.log(`🏷️ Product card for ${p.name} - Original:`, mainImage, '→ Final:', finalSrc, '(CDN URL detected:', isCDNUrl, ')');
+                                                                }
+                                                                return finalSrc;
+                                                            })()}
+                                                            alt={`${p.name} - main image`}
+                                                            className="product-card-image product-card-image-main"
+                                                            priority={index < 6} // Prvých 6 produktov má prioritu
+                                                            placeholder="/images/product-placeholder.svg"
+                                                        />
+                                                        {p.gallery && p.gallery.length > 1 && (
+                                                            <OptimizedImage
+                                                                src={(() => {
+                                                                    const secondImage = p.gallery[1];
+                                                                    const isCDNUrl = secondImage.includes('digitaloceanspaces.com') || secondImage.includes(import.meta.env.VITE_CDN_BASE || '');
+                                                                    return isCDNUrl ? secondImage : (isCDNEnabled() ? getBestImageUrl(getBaseNameFromPath(secondImage), 800) : secondImage);
+                                                                })()}
+                                                                alt={`${p.name} - hover image`}
+                                                                className="product-card-image product-card-image-hover"
+                                                                placeholder="/images/product-placeholder.svg"
+                                                            />
+                                                        )}
+                                                    </>
                                                 ) : (
                                                     <div className="product-card-placeholder">
                                                         <svg width="48" height="48" viewBox="0 0 24 24" fill="none"
