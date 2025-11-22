@@ -17,7 +17,7 @@ import type { ProductTabDto } from '../../types/api';
 import { useAuth } from '../../context/useAuth';
 import { trackProductView, extractUTMParams } from '../../services/backendAnalyticsService';
 import { debounce } from '../../utils/debounce';
-import { logInfo, logWarn } from '../../services/logger';
+import { logInfo, logWarn, logError } from '../../services/logger';
 import { stockService } from '../../services/stockService';
 
 // Local inlined ProductDetails component (previously in components/ProductDetails/ProductDetails.tsx)
@@ -49,9 +49,9 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({product, onVariantChange
                 setStockInfo({ availableStock: 0, loading: true });
                 const stockData = await stockService.getAvailableStock(product.variantId);
                 setStockInfo({ availableStock: stockData.availableStock, loading: false });
-                console.log(`📦 Stock for variant ${product.variantId}:`, stockData.availableStock);
+                logInfo(`📦 Stock for variant ${product.variantId}:`, stockData.availableStock);
             } catch (error) {
-                console.error('Failed to fetch stock:', error);
+                logError('Failed to fetch stock:', error);
                 setStockInfo(null);
             }
         };
@@ -235,7 +235,7 @@ const ProductDetail: React.FC = () => {
 
             setTabsLoading(true);
             try {
-                console.log(`📋 Loading tabs for variant ${product.variantId}`);
+                logInfo(`📋 Loading tabs for variant ${product.variantId}`);
                 const tabs = await getTabsForVariant(product.variantId, i18n.language);
 
                 // Filter tabs based on user authentication
@@ -270,10 +270,10 @@ const ProductDetail: React.FC = () => {
                         updatedBy: null
                     };
                     visibleTabs.push(reviewsTab);
-                    console.log('✨ Added default Reviews tab');
+                    logInfo('✨ Added default Reviews tab');
                 }
 
-                console.log(`✅ Loaded ${visibleTabs.length} tabs (${tabs.length} total, +Reviews)`);
+                logInfo(`✅ Loaded ${visibleTabs.length} tabs (${tabs.length} total, +Reviews)`);
                 setBackendTabs(visibleTabs);
 
                 // Set first tab as active
@@ -281,7 +281,7 @@ const ProductDetail: React.FC = () => {
                     setActive(visibleTabs[0].tabKey);
                 }
             } catch (err) {
-                console.error('❌ Failed to load tabs:', err);
+                logError('❌ Failed to load tabs:', err);
                 setBackendTabs([]);
             } finally {
                 setTabsLoading(false);
@@ -296,7 +296,7 @@ const ProductDetail: React.FC = () => {
         if (!product || variantId === product.variantId) return;
 
         try {
-            console.log(`🔄 Switching to variant ${variantId}`);
+            logInfo(`🔄 Switching to variant ${variantId}`);
             setLoading(true);
 
             // Fetch product with the selected variant
@@ -310,9 +310,9 @@ const ProductDetail: React.FC = () => {
             // Reset active tab
             setActive('');
 
-            console.log('✅ Variant switched successfully:', updatedProduct.variantName);
+            logInfo('✅ Variant switched successfully:', updatedProduct.variantName);
         } catch (err) {
-            console.error('Failed to switch variant:', err);
+            logError('Failed to switch variant:', err);
             // Don't change product on error, keep current variant
         } finally {
             setLoading(false);
@@ -341,7 +341,7 @@ const ProductDetail: React.FC = () => {
                 const productData = await hybridProductService.getProductByStringId(id);
                 setProduct(productData);
             } catch (err) {
-                console.error('Failed to load product:', err);
+                logError('Failed to load product:', err);
                 // Check if the error is for inactive product
                 if ((err as any).code === 'PRODUCT_INACTIVE') {
                     setIsProductInactive(true);
@@ -388,11 +388,11 @@ const ProductDetail: React.FC = () => {
             if (!product || !id || hasLoadedGallery) return;
 
             try {
-                console.log(`🖼️ Loading gallery images from database for product: ${id}`);
+                logInfo(`🖼️ Loading gallery images from database for product: ${id}`);
 
                 // Load gallery images with metadata from database
                 const galleryData = await productGalleryService.getProductImages(id);
-                console.log(`📊 Loaded ${galleryData.length} gallery records from database:`, galleryData);
+                logInfo(`📊 Loaded ${galleryData.length} gallery records from database:`, galleryData);
 
                 if (galleryData.length > 0) {
                     // Sort by order field (ascending)
@@ -404,7 +404,7 @@ const ProductDetail: React.FC = () => {
                         thumbnailUrl: img.thumbnailUrl || img.cdnUrl || img.url
                     })).filter(img => img.url);
 
-                    console.log(`✅ Gallery images sorted by order:`, {
+                    logInfo(`✅ Gallery images sorted by order:`, {
                         totalImages: imageData.length,
                         orderInfo: sortedGallery.map(img => ({
                             fileName: img.fileName,
@@ -420,7 +420,7 @@ const ProductDetail: React.FC = () => {
                     const imageUrls = imageData.map(img => img.url);
                     setProduct(prev => prev ? { ...prev, gallery: imageUrls } : null);
                 } else {
-                    console.log('📁 No gallery images found in database - no gallery will be shown');
+                    logInfo('📁 No gallery images found in database - no gallery will be shown');
                     // No fallback - if no database images, show empty gallery
                     setGalleryImages([]);
                 }
@@ -429,10 +429,10 @@ const ProductDetail: React.FC = () => {
                 setHasLoadedGallery(true);
 
             } catch (error) {
-                console.error('❌ Failed to load gallery images from database:', error);
+                logError('❌ Failed to load gallery images from database:', error);
                 // No fallback - if database fails, show empty gallery
                 setGalleryImages([]);
-                console.log('🔄 Database gallery loading failed - showing empty gallery');
+                logInfo('🔄 Database gallery loading failed - showing empty gallery');
                 
                 // Mark as loaded even on error to prevent infinite retries
                 setHasLoadedGallery(true);
@@ -477,7 +477,7 @@ const ProductDetail: React.FC = () => {
 
     const activeTab = backendTabs.find(t => t.tabKey === active);
     if (import.meta.env.DEV && activeTab) {
-        console.log('📋 Active tab:', active, 'content type:', activeTab.contentType);
+        logInfo('📋 Active tab:', active, 'content type:', activeTab.contentType);
     }
 
     // Create an updated product object with database gallery images ONLY
@@ -485,7 +485,7 @@ const ProductDetail: React.FC = () => {
         if (!product) return null;
 
         if (import.meta.env.DEV) {
-            console.log('🔄 productWithGallery updated (database-only):', {
+            logInfo('🔄 productWithGallery updated (database-only):', {
                 masterProductId: product.masterProductId,
                 variantId: product.variantId,
                 galleryImagesCount: galleryImages.length,
@@ -658,7 +658,7 @@ const DynamicTabRenderer: React.FC<DynamicTabRendererProps> = ({ tab, product })
                         return <PrintInfoTab content={{ kind: 'printInfo', data: printData }} />;
                     }
                 } catch (e) {
-                    console.error('Failed to parse PrintInfo JSON:', e);
+                    logError('Failed to parse PrintInfo JSON:', e);
                 }
                 return <PrintInfoTab content={{ kind: 'text', text: tab.contentHtml || 'Print information not available.' }} />;
             case 'BuildInfoTab':
@@ -678,7 +678,7 @@ const DynamicTabRenderer: React.FC<DynamicTabRendererProps> = ({ tab, product })
             case 'ProductDownloads':
                 return <ProductDownloads masterProductId={product.masterProductId} variantId={product.variantId} tabId={tab.id} />;
             default:
-                console.warn(`Unknown component: ${componentName}, falling back to HTML render`);
+                logWarn(`Unknown component: ${componentName}, falling back to HTML render`);
                 return <div dangerouslySetInnerHTML={{ __html: tab.contentHtml || '' }} />;
         }
     }

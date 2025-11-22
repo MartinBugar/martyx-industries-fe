@@ -9,6 +9,7 @@ import ProductCardPreviewEditor, { type ImageDisplaySettings } from '../../compo
 import { productGalleryService, type GalleryImage } from '../../services/productGalleryService';
 import { hybridProductService } from '../../services/hybridProductService';
 import { type Product } from '../../data/productData';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 const AdminProductGallery: React.FC = () => {
   useTranslation('common');
@@ -17,8 +18,8 @@ const AdminProductGallery: React.FC = () => {
   // Debug: Log when component mounts
   React.useEffect(() => {
     if (import.meta.env.DEV) {
-      console.log('🖼️ AdminProductGallery mounted with ID:', id);
-      console.log('🖼️ Current URL:', window.location.pathname);
+      logInfo('🖼️ AdminProductGallery mounted with ID:', id);
+      logInfo('🖼️ Current URL:', window.location.pathname);
     }
   }, [id]);
 
@@ -46,7 +47,7 @@ const AdminProductGallery: React.FC = () => {
         const fullData = await hybridProductService.getProductById(Number(id));
         setFullProduct(fullData);
         if (import.meta.env.DEV) {
-          console.log('✅ Full product data loaded for preview:', {
+          logInfo('✅ Full product data loaded for preview:', {
             masterProductId: fullData.masterProductId,
             name: fullData.name,
             variantType: fullData.variantType,
@@ -56,7 +57,7 @@ const AdminProductGallery: React.FC = () => {
           });
         }
       } catch (e) {
-        console.warn('Could not load full product data for preview:', e);
+        logWarn('Could not load full product data for preview:', e);
         // Continue without preview if hybrid service fails
       }
     } catch (e: unknown) {
@@ -84,18 +85,18 @@ const AdminProductGallery: React.FC = () => {
         const refreshedProduct = await hybridProductService.getProductById(Number(id));
         setFullProduct(refreshedProduct);
         if (import.meta.env.DEV) {
-          console.log('✅ Product preview refreshed with new gallery:', {
+          logInfo('✅ Product preview refreshed with new gallery:', {
             masterProductId: refreshedProduct.masterProductId,
             galleryLength: refreshedProduct.gallery?.length || 0,
             gallery: refreshedProduct.gallery?.slice(0, 5) || []
           });
         }
       } catch (e) {
-        console.warn('Could not refresh product preview:', e);
+        logWarn('Could not refresh product preview:', e);
       }
 
     } catch (e: unknown) {
-      console.error('Failed to load gallery images:', e);
+      logError('Failed to load gallery images:', e);
     } finally {
       setLoadingGallery(false);
     }
@@ -147,9 +148,9 @@ const AdminProductGallery: React.FC = () => {
       );
       setSelectedImage(updated);
 
-      console.log('✅ Display settings saved successfully');
+      logInfo('✅ Display settings saved successfully');
     } catch (e) {
-      console.error('❌ Failed to save display settings:', e);
+      logError('❌ Failed to save display settings:', e);
       throw e;
     }
   };
@@ -158,10 +159,10 @@ const AdminProductGallery: React.FC = () => {
     if (!id) return;
     try {
       await productGalleryService.setPrimaryImage(Number(id), null, imageId);
-      console.log('✅ Primary image set successfully');
+      logInfo('✅ Primary image set successfully');
       await loadGalleryImages(); // Refresh gallery
     } catch (e) {
-      console.error('❌ Failed to set primary image:', e);
+      logError('❌ Failed to set primary image:', e);
       setError('Failed to set primary image');
     }
   };
@@ -170,10 +171,10 @@ const AdminProductGallery: React.FC = () => {
     if (!id) return;
     try {
       await productGalleryService.setHoverImage(Number(id), null, imageId);
-      console.log('✅ Hover image set successfully');
+      logInfo('✅ Hover image set successfully');
       await loadGalleryImages(); // Refresh gallery
     } catch (e) {
-      console.error('❌ Failed to set hover image:', e);
+      logError('❌ Failed to set hover image:', e);
       setError('Failed to set hover image');
     }
   };
@@ -283,7 +284,7 @@ const AdminProductGallery: React.FC = () => {
                   productName={product?.name || id || ''}
                   existingImages={[]}
                   onImagesChange={(images) => {
-                    console.log('Gallery images updated:', images);
+                    logInfo('Gallery images updated:', images);
                     // Refresh gallery images after upload
                     handleGalleryRefresh();
                   }}
@@ -460,7 +461,7 @@ const AdminProductGallery: React.FC = () => {
                         offsetY: selectedImage.cardDisplayOffsetY || 0
                       }}
                       onSettingsChange={(settings) => {
-                        console.log('Settings changed:', settings);
+                        logInfo('Settings changed:', settings);
                       }}
                       onSave={handleSettingsSave}
                     />

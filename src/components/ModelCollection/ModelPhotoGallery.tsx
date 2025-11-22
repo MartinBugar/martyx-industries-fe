@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getAuthToken } from '../../utils/tokenUtils';
 import { API_BASE_URL } from '../../services/apiUtils';
+import { logInfo, logWarn, logError } from '../../services/logger';
 import './ModelPhotoGallery.css';
 
 interface ModelPhoto {
@@ -52,11 +53,11 @@ const ModelPhotoGallery: React.FC<ModelPhotoGalleryProps> = ({ model, onClose, o
   useEffect(() => {
     // If model already has photos, use them, otherwise fetch
     if (model.photos && model.photos.length > 0) {
-      console.log('Using photos from model:', model.photos);
+      logInfo('Using photos from model:', model.photos);
       setPhotos(model.photos);
       setLoading(false);
     } else {
-      console.log('No photos in model, fetching from API...');
+      logInfo('No photos in model, fetching from API...');
       fetchPhotos();
     }
   }, [model.product_id, model.photos]);
@@ -96,15 +97,15 @@ const ModelPhotoGallery: React.FC<ModelPhotoGalleryProps> = ({ model, onClose, o
       }
 
       const data = await response.json();
-      console.log('Gallery API Response:', data);
-      console.log('Photos from response:', data.data?.photos || data.photos);
+      logInfo('Gallery API Response:', data);
+      logInfo('Photos from response:', data.data?.photos || data.photos);
       
       // Try different possible structures
       const photos = data.data?.photos || data.photos || [];
-      console.log('Setting photos:', photos);
+      logInfo('Setting photos:', photos);
       setPhotos(photos);
     } catch (err: any) {
-      console.error('Error fetching photos:', err);
+      logError('Error fetching photos:', err);
       setError(err.message || 'Nepodarilo sa načítať fotky');
     } finally {
       setLoading(false);
@@ -216,11 +217,11 @@ const ModelPhotoGallery: React.FC<ModelPhotoGalleryProps> = ({ model, onClose, o
 
       if (!response.ok) {
         if (response.status === 500) {
-          console.warn(`Backend endpoint DELETE /api/user-photos/${photoId} not implemented yet`);
+          logWarn(`Backend endpoint DELETE /api/user-photos/${photoId} not implemented yet`);
           
           // Mock delete for testing
           if (import.meta.env.VITE_MOCK_DELETES === 'true') {
-            console.log('🎭 Mock mode - simulating photo delete');
+            logInfo('🎭 Mock mode - simulating photo delete');
             setPhotos(prevPhotos => prevPhotos.filter(p => p.id !== photoId));
 
             // Notify parent component
@@ -256,9 +257,9 @@ const ModelPhotoGallery: React.FC<ModelPhotoGalleryProps> = ({ model, onClose, o
         closeLightbox();
       }
 
-      console.log('Photo deleted successfully');
+      logInfo('Photo deleted successfully');
     } catch (err: any) {
-      console.error('Error deleting photo:', err);
+      logError('Error deleting photo:', err);
       alert(err.message || 'Nepodarilo sa zmazať fotku. Skúste to znovu.');
     } finally {
       setDeletingPhotoId(null);

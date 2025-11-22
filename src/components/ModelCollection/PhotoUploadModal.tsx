@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getAuthToken, debugToken } from '../../utils/tokenUtils';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 interface PurchasedModel {
   order_id: string;
@@ -121,11 +122,11 @@ const PhotoUploadModal: React.FC<PhotoUploadModalProps> = ({ model, onClose, onS
       }
 
       // Debug token for troubleshooting
-      console.log('🔍 Upload Debug Info:');
-      console.log('Product ID:', model.product_id);
-      console.log('Product Name:', model.product_name);
-      console.log('Order ID:', model.order_id);
-      console.log('Files count:', selectedFiles.length);
+      logInfo('🔍 Upload Debug Info:');
+      logInfo('Product ID:', model.product_id);
+      logInfo('Product Name:', model.product_name);
+      logInfo('Order ID:', model.order_id);
+      logInfo('Files count:', selectedFiles.length);
       debugToken();
 
       const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
@@ -140,7 +141,7 @@ const PhotoUploadModal: React.FC<PhotoUploadModalProps> = ({ model, onClose, onS
         const selectedFile = selectedFiles[i];
 
         try {
-          console.log(`📤 Uploading file ${i + 1}/${totalFiles}: ${selectedFile.file.name}`);
+          logInfo(`📤 Uploading file ${i + 1}/${totalFiles}: ${selectedFile.file.name}`);
 
           const formData = new FormData();
           formData.append('product_id', model.product_id);
@@ -173,12 +174,12 @@ const PhotoUploadModal: React.FC<PhotoUploadModalProps> = ({ model, onClose, onS
 
             // Special handling for 500 errors
             if (response.status === 500) {
-              console.log('🚨 Backend Error 500 - Check server logs');
-              console.log('💡 Common causes:');
-              console.log('   - Spring Boot file size limit (default 1MB) - needs application.yml config');
-              console.log('   - Missing multipart configuration');
-              console.log('   - Database connection issues');
-              console.log('   - Digital Ocean Spaces credentials');
+              logInfo('🚨 Backend Error 500 - Check server logs');
+              logInfo('💡 Common causes:');
+              logInfo('   - Spring Boot file size limit (default 1MB) - needs application.yml config');
+              logInfo('   - Missing multipart configuration');
+              logInfo('   - Database connection issues');
+              logInfo('   - Digital Ocean Spaces credentials');
               throw new Error(`Server error pri nahrávaní ${selectedFile.file.name}. Skontrolujte server logs.`);
             }
 
@@ -191,7 +192,7 @@ const PhotoUploadModal: React.FC<PhotoUploadModalProps> = ({ model, onClose, onS
           }
 
           const result = await response.json();
-          console.log(`✅ File ${i + 1} uploaded successfully:`, result);
+          logInfo(`✅ File ${i + 1} uploaded successfully:`, result);
 
           uploadedCount++;
 
@@ -200,7 +201,7 @@ const PhotoUploadModal: React.FC<PhotoUploadModalProps> = ({ model, onClose, onS
           setUploadProgress(progress);
 
         } catch (fileError: any) {
-          console.error(`❌ Error uploading file ${i + 1}:`, fileError);
+          logError(`❌ Error uploading file ${i + 1}:`, fileError);
           errors.push(`${selectedFile.file.name}: ${fileError.message}`);
         }
       }
@@ -212,7 +213,7 @@ const PhotoUploadModal: React.FC<PhotoUploadModalProps> = ({ model, onClose, onS
 
       // Show partial success message if some failed
       if (errors.length > 0) {
-        console.warn('⚠️ Some uploads failed:', errors);
+        logWarn('⚠️ Some uploads failed:', errors);
         setError(`Nahraných ${uploadedCount}/${totalFiles} fotiek. Zlyhania: ${errors.join(', ')}`);
       }
 
@@ -228,16 +229,16 @@ const PhotoUploadModal: React.FC<PhotoUploadModalProps> = ({ model, onClose, onS
         onSuccess();
       }
     } catch (err: any) {
-      console.error('Upload error:', err);
+      logError('Upload error:', err);
       
       // If it's a 500 error (backend not implemented), offer mock mode
       if (err.message && err.message.includes('Backend chyba (500)')) {
-        console.log('💡 Suggestion: Enable mock mode for testing without backend');
-        console.log('   Add VITE_MOCK_UPLOADS=true to .env file');
+        logInfo('💡 Suggestion: Enable mock mode for testing without backend');
+        logInfo('   Add VITE_MOCK_UPLOADS=true to .env file');
         
         // Check if mock mode is enabled
         if (import.meta.env.VITE_MOCK_UPLOADS === 'true') {
-          console.log('🎭 Mock mode enabled - simulating successful upload');
+          logInfo('🎭 Mock mode enabled - simulating successful upload');
           
           // Simulate successful upload
           for (let i = 0; i <= 100; i += 20) {

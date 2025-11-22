@@ -1,3 +1,4 @@
+import { logInfo, logWarn, logError } from './logger';
 // API utilities
 import i18n from '../i18n';
 
@@ -22,7 +23,7 @@ export const decodeJWT = (token: string) => {
     );
     return JSON.parse(jsonPayload);
   } catch (error) {
-    console.error('Error decoding JWT token:', error);
+    logError('Error decoding JWT token:', error);
     return null;
   }
 };
@@ -66,7 +67,7 @@ export const handleResponse = async (response: Response) => {
         endpoint: new URL(response.url).pathname
       };
 
-      console.warn('Rate limit exceeded:', rateLimitError);
+      logWarn('Rate limit exceeded:', rateLimitError);
 
       // Dispatch rate limit event for global handling
       window.dispatchEvent(new CustomEvent('api:rateLimit', {
@@ -87,7 +88,7 @@ export const handleResponse = async (response: Response) => {
       const isGdprConsentStatus = response.url.includes('/api/gdpr/consent/status');
 
       if (!isGdprConsentStatus) {
-        console.log('Received 401 Unauthorized, clearing authentication data');
+        logInfo('Received 401 Unauthorized, clearing authentication data');
         // Clear expired token and user data
         localStorage.removeItem('user');
         localStorage.removeItem('token');
@@ -99,7 +100,7 @@ export const handleResponse = async (response: Response) => {
           detail: { reason: 'api_error' }
         }));
       } else {
-        console.warn('GDPR consent status request returned 401 - token may be invalid or expired');
+        logWarn('GDPR consent status request returned 401 - token may be invalid or expired');
       }
     }
 
@@ -191,7 +192,7 @@ export const withLangHeaders = (init?: RequestInit): RequestInit => {
   headers.set('Accept-Language', formattedLang);
 
   if (import.meta.env.VITE_DEBUG_I18N) {
-    console.log(`🌐 withLangHeaders: language="${formattedLang}"`);
+    logInfo(`🌐 withLangHeaders: language="${formattedLang}"`);
   }
 
   return {
@@ -237,5 +238,5 @@ try {
     }
   }
 } catch (e) {
-  console.warn('Auth bootstrap failed:', e);
+  logWarn('Auth bootstrap failed:', e);
 }

@@ -41,7 +41,9 @@
       "Bash(rm:*)",
       "Read(//a/GoldMann/martyx-academy-be/src/main/resources/**)",
       "Bash(npm uninstall:*)",
-      "Bash(tee:*)"
+      "Bash(tee:*)",
+      "Bash(xargs -I {} sh -c 'count=$(grep -c \"\"\"\"console\\.\"\"\"\" \"\"\"\"{}\"\"\"\" 2>/dev/null || echo 0); if [ \"\"\"\"$count\"\"\"\" -gt 5 ]; then echo \"\"\"\"$count {}\"\"\"\"; fi')",
+      "Bash(awk:*)"
     ],
     "deny": [],
     "ask": []

@@ -8,6 +8,7 @@ import UsernamePromptModal from '../UsernamePromptModal';
 import { getAuthToken } from '../../utils/tokenUtils';
 import { API_BASE_URL } from '../../services/apiUtils';
 import { profileService } from '../../services/profileService';
+import { logInfo, logWarn, logError } from '../../services/logger';
 import './ModelCollection.css';
 
 interface ModelPhoto {
@@ -64,7 +65,7 @@ const ModelCollection: React.FC = () => {
   const recalculateStats = (models: PurchasedModel[]): CollectionData => {
     const completedModels = models.filter(model => model.is_completed).length;
     
-    console.log('📊 Stats recalculated:', {
+    logInfo('📊 Stats recalculated:', {
       totalModels: models.length,
       completedModels,
       remainingModels: models.length - completedModels,
@@ -83,12 +84,12 @@ const ModelCollection: React.FC = () => {
     try {
       const token = getAuthToken();
       if (!token) {
-        console.warn('No auth token for loading model status');
+        logWarn('No auth token for loading model status');
         return { is_completed: false, is_public: false };
       }
 
       const url = `${API_BASE_URL}/api/user-models/${productId}/status?order_id=${orderId}`;
-      console.log(`🔍 Loading model status from: ${url}`);
+      logInfo(`🔍 Loading model status from: ${url}`);
       
       const response = await fetch(url, {
         method: 'GET',
@@ -98,39 +99,39 @@ const ModelCollection: React.FC = () => {
         }
       });
       
-      console.log(`📡 Response status: ${response.status} for product ${productId}, order ${orderId}`);
+      logInfo(`📡 Response status: ${response.status} for product ${productId}, order ${orderId}`);
 
       if (!response.ok) {
         if (response.status === 404) {
           // No status record exists yet, return defaults
-          console.log(`No status record found for product ${productId}, order ${orderId} - using defaults`);
+          logInfo(`No status record found for product ${productId}, order ${orderId} - using defaults`);
           return { is_completed: false, is_public: false };
         }
         
         if (response.status === 500) {
-          console.warn(`Backend endpoint GET /api/user-models/${productId}/status not implemented yet`);
+          logWarn(`Backend endpoint GET /api/user-models/${productId}/status not implemented yet`);
           return { is_completed: false, is_public: false };
         }
         
         // Log error response for debugging
         const errorText = await response.text();
-        console.error(`❌ Error response ${response.status}:`, errorText);
+        logError(`❌ Error response ${response.status}:`, errorText);
         throw new Error(`Failed to load model status: ${response.status} - ${errorText}`);
       }
 
       const data = await response.json();
-      console.log(`✅ Raw response data for ${productId}:`, data);
+      logInfo(`✅ Raw response data for ${productId}:`, data);
       
       // Handle different response formats
       const statusData = data.data || data; // Backend might wrap in "data" field
-      console.log(`📦 Extracted status data:`, statusData);
+      logInfo(`📦 Extracted status data:`, statusData);
       
       return {
         is_completed: statusData.is_completed || false,
         is_public: statusData.is_public || false
       };
     } catch (error) {
-      console.error(`Error loading model status for ${productId}:`, error);
+      logError(`Error loading model status for ${productId}:`, error);
       return { is_completed: false, is_public: false };
     }
   };
@@ -140,7 +141,7 @@ const ModelCollection: React.FC = () => {
     try {
       const token = getAuthToken();
       if (!token) {
-        console.warn('No auth token available for loading photos');
+        logWarn('No auth token available for loading photos');
         return [];
       }
 
@@ -162,7 +163,7 @@ const ModelCollection: React.FC = () => {
         }
         
         if (response.status === 500) {
-          console.warn(`Backend endpoint GET /api/user-photos/${productId} not implemented yet`);
+          logWarn(`Backend endpoint GET /api/user-photos/${productId} not implemented yet`);
           return [];
         }
         
@@ -173,7 +174,7 @@ const ModelCollection: React.FC = () => {
       const photos = data.data?.photos || [];
       return photos;
     } catch (error) {
-      console.error(`Error loading photos for product ${productId}:`, error);
+      logError(`Error loading photos for product ${productId}:`, error);
       return [];
     }
   };
@@ -207,7 +208,7 @@ const ModelCollection: React.FC = () => {
         
         completedOrders.forEach(order => {
           // Debug logging for order IDs
-          console.log('🔍 Order mapping:', {
+          logInfo('🔍 Order mapping:', {
             displayId: order.id,
             backendId: order.backendId,
             orderNumber: order.orderNumber,
@@ -235,11 +236,11 @@ const ModelCollection: React.FC = () => {
         });
 
         // Load photos and status for each model
-        console.log(`🚀 Starting to load data for ${models.length} models`);
+        logInfo(`🚀 Starting to load data for ${models.length} models`);
         
         await Promise.all(models.map(async (model) => {
           try {
-            console.log(`⏳ Loading data for model: ${model.product_name} (ID: ${model.product_id}, Order: ${model.order_id})`);
+            logInfo(`⏳ Loading data for model: ${model.product_name} (ID: ${model.product_id}, Order: ${model.order_id})`);
             
             // Load photos and status in parallel
             const [photos, status] = await Promise.all([
@@ -251,7 +252,7 @@ const ModelCollection: React.FC = () => {
             model.is_completed = status.is_completed;
             model.is_public = status.is_public;
             
-            console.log(`📦 Model ${model.product_name} loaded:`, {
+            logInfo(`📦 Model ${model.product_name} loaded:`, {
               productId: model.product_id,
               orderId: model.order_id,
               photos: photos.length,
@@ -260,7 +261,7 @@ const ModelCollection: React.FC = () => {
               finalIsPublic: status.is_public
             });
           } catch (error) {
-            console.error(`Failed to load data for ${model.product_name}:`, error);
+            logError(`Failed to load data for ${model.product_name}:`, error);
             model.photos = [];
             // Keep default values for status if loading fails
           }
@@ -272,7 +273,7 @@ const ModelCollection: React.FC = () => {
         setCollectionData(collectionData);
         setError(null);
       } catch (err) {
-        console.error('Error processing orders:', err);
+        logError('Error processing orders:', err);
         setError('Chyba pri spracovaní objednávok');
       } finally {
         setLoading(false);
@@ -336,7 +337,7 @@ const ModelCollection: React.FC = () => {
       };
     });
 
-    console.log('Photo removed from card view:', photoId);
+    logInfo('Photo removed from card view:', photoId);
   };
 
   const handleUsernameModalSuccess = () => {
@@ -377,11 +378,11 @@ const ModelCollection: React.FC = () => {
 
   //     if (!response.ok) {
   //       if (response.status === 500) {
-  //         console.warn(`Backend endpoint DELETE /api/user-photos/${photoId} not implemented yet`);
+  //         logWarn(`Backend endpoint DELETE /api/user-photos/${photoId} not implemented yet`);
 
   //         // Mock delete for testing
   //         if (import.meta.env.VITE_MOCK_DELETES === 'true') {
-  //           console.log('🎭 Mock mode - simulating photo delete');
+  //           logInfo('🎭 Mock mode - simulating photo delete');
 
   //           // Update local state
   //           setCollectionData(prevData => {
@@ -429,9 +430,9 @@ const ModelCollection: React.FC = () => {
   //       };
   //     });
 
-  //     console.log('Photo deleted successfully');
+  //     logInfo('Photo deleted successfully');
   //   } catch (err) {
-  //     console.error('Error deleting photo:', err);
+  //     logError('Error deleting photo:', err);
   //     alert((err as Error).message || t('errors.photo_delete_failed'));
   //   } finally {
   //     setDeletingPhotoId(null);
@@ -439,7 +440,7 @@ const ModelCollection: React.FC = () => {
   // };
 
   const updateModelStatus = async (productId: string, orderId: string, field: 'is_completed' | 'is_public', value: boolean) => {
-    console.log('🔄 Updating model status:', {
+    logInfo('🔄 Updating model status:', {
       productId,
       orderId,
       orderIdType: typeof orderId,
@@ -453,14 +454,14 @@ const ModelCollection: React.FC = () => {
       try {
         const { hasUsername } = await profileService.checkHasUsername();
         if (!hasUsername) {
-          console.log('⚠️ User needs username to make gallery public');
+          logInfo('⚠️ User needs username to make gallery public');
           // Store pending update and show username modal
           setPendingPublicUpdate({ productId, orderId });
           setShowUsernameModal(true);
           return;
         }
       } catch (err) {
-        console.error('Failed to check username:', err);
+        logError('Failed to check username:', err);
         // Continue anyway - backend will handle it
       }
     }
@@ -496,11 +497,11 @@ const ModelCollection: React.FC = () => {
 
       if (!response.ok) {
         if (response.status === 500) {
-          console.warn(`Backend endpoint PATCH /api/user-models/${productId}/status not implemented yet`);
+          logWarn(`Backend endpoint PATCH /api/user-models/${productId}/status not implemented yet`);
           
           // Mock update for testing
           if (import.meta.env.VITE_MOCK_UPDATES === 'true') {
-            console.log(`🎭 Mock mode - simulating ${field} update to ${value} for product ${productId}, order ${orderId}`);
+            logInfo(`🎭 Mock mode - simulating ${field} update to ${value} for product ${productId}, order ${orderId}`);
             
             // Update local state and recalculate stats
             setCollectionData(prev => {
@@ -536,9 +537,9 @@ const ModelCollection: React.FC = () => {
         return recalculateStats(updatedModels);
       });
 
-      console.log(`Model ${field} updated successfully to ${value} for product ${productId}, order ${orderId}`);
+      logInfo(`Model ${field} updated successfully to ${value} for product ${productId}, order ${orderId}`);
     } catch (err) {
-      console.error(`Error updating model ${field}:`, err);
+      logError(`Error updating model ${field}:`, err);
       alert((err as Error).message || t(`errors.${field === 'is_completed' ? 'completion_error' : 'visibility_error'}`));
     } finally {
       setUpdatingModel(null);

@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { logInfo, logWarn, logError } from '../../services/logger';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
@@ -73,9 +74,9 @@ const saveProgress = (
       timestamp: Date.now()
     };
     sessionStorage.setItem(CHECKOUT_PROGRESS_KEY, JSON.stringify(progress));
-    console.log('[Checkout] Progress saved to sessionStorage');
+    logInfo('[Checkout] Progress saved to sessionStorage');
   } catch (e) {
-    console.warn('[Checkout] Failed to save progress:', e);
+    logWarn('[Checkout] Failed to save progress:', e);
   }
 };
 
@@ -92,15 +93,15 @@ const loadProgress = (): CheckoutProgress | null => {
     const MAX_AGE = 24 * 60 * 60 * 1000; // 24 hours
 
     if (age > MAX_AGE) {
-      console.log('[Checkout] Saved progress expired (older than 24 hours)');
+      logInfo('[Checkout] Saved progress expired (older than 24 hours)');
       sessionStorage.removeItem(CHECKOUT_PROGRESS_KEY);
       return null;
     }
 
-    console.log('[Checkout] Loaded saved progress from', new Date(progress.timestamp).toLocaleString());
+    logInfo('[Checkout] Loaded saved progress from', new Date(progress.timestamp).toLocaleString());
     return progress;
   } catch (e) {
-    console.warn('[Checkout] Failed to load progress:', e);
+    logWarn('[Checkout] Failed to load progress:', e);
     return null;
   }
 };
@@ -109,9 +110,9 @@ const loadProgress = (): CheckoutProgress | null => {
 const clearProgress = (): void => {
   try {
     sessionStorage.removeItem(CHECKOUT_PROGRESS_KEY);
-    console.log('[Checkout] Progress cleared from sessionStorage');
+    logInfo('[Checkout] Progress cleared from sessionStorage');
   } catch (e) {
-    console.warn('[Checkout] Failed to clear progress:', e);
+    logWarn('[Checkout] Failed to clear progress:', e);
   }
 };
 
@@ -233,7 +234,7 @@ const Checkout: React.FC = () => {
 
   // Google Places Autocomplete handler
   const handlePlaceSelect = (address: ParsedAddress) => {
-    console.log('[Checkout] Google Places address selected:', address);
+    logInfo('[Checkout] Google Places address selected:', address);
 
     setValue('billingStreet', address.street);
     setValue('billingCity', address.city);
@@ -275,7 +276,7 @@ const Checkout: React.FC = () => {
     const first = currencies[0];
     const mixed = !currencies.every(c => c === first);
     if (mixed) {
-      console.warn('[Checkout] Mixed currencies detected in cart items:', currencies);
+      logWarn('[Checkout] Mixed currencies detected in cart items:', currencies);
     }
     return first;
   }, [items]);
@@ -323,7 +324,7 @@ const Checkout: React.FC = () => {
       try {
         const addresses = await addressService.getAllSavedAddresses();
         setSavedAddresses(addresses);
-        console.log('[Checkout] Loaded', addresses.length, 'saved addresses');
+        logInfo('[Checkout] Loaded', addresses.length, 'saved addresses');
 
         // Auto-select default or first address
         const defaultAddr = addresses.find(addr => addr.isDefault) || addresses[0];
@@ -332,7 +333,7 @@ const Checkout: React.FC = () => {
           applyAddress(defaultAddr);
         }
       } catch (error) {
-        console.error('[Checkout] Failed to load saved addresses:', error);
+        logError('[Checkout] Failed to load saved addresses:', error);
       } finally {
         setIsLoadingAddresses(false);
       }
@@ -353,9 +354,9 @@ const Checkout: React.FC = () => {
       try {
         const credits = await userCreditsService.getBalance();
         setUserCredits(credits);
-        console.log('[Checkout] User has €' + credits.creditBalance.toFixed(2) + ' in credits');
+        logInfo('[Checkout] User has €' + credits.creditBalance.toFixed(2) + ' in credits');
       } catch (error) {
-        console.error('[Checkout] Failed to load user credits:', error);
+        logError('[Checkout] Failed to load user credits:', error);
         setCreditsError('');
       } finally {
         setIsLoadingCredits(false);
@@ -370,7 +371,7 @@ const Checkout: React.FC = () => {
     const fetchShippingOptions = async () => {
       // Skip shipping if all products are digital
       if (!hasPhysicalProducts) {
-        console.log('[Checkout] All products are digital, skipping shipping options fetch');
+        logInfo('[Checkout] All products are digital, skipping shipping options fetch');
         setShippingOptions([]);
         setSelectedShipping(null);
         return;
@@ -413,7 +414,7 @@ const Checkout: React.FC = () => {
           setShippingError(t('shipping.no_options_available'));
         }
       } catch (error) {
-        console.error('Error fetching shipping options:', error);
+        logError('Error fetching shipping options:', error);
         setShippingError(t('shipping.calculation_failed'));
         setShippingOptions([]);
         setSelectedShipping(null);
@@ -503,9 +504,9 @@ const Checkout: React.FC = () => {
         );
 
         setReservationExpiresAt(new Date(response.expiresAt));
-        console.log('✅ Stock reserved until:', response.expiresAt);
+        logInfo('✅ Stock reserved until:', response.expiresAt);
       } catch (error) {
-        console.error('❌ Failed to reserve stock:', error);
+        logError('❌ Failed to reserve stock:', error);
         alert('Some items may not be available. Please check your cart.');
       }
     };
@@ -515,7 +516,7 @@ const Checkout: React.FC = () => {
     // Cleanup: release reservations when leaving checkout
     return () => {
       const sessionId = !user ? (localStorage.getItem('martyx_session_id') || undefined) : undefined;
-      stockReservationService.releaseReservations(sessionId).catch(console.error);
+      stockReservationService.releaseReservations(sessionId).catch(logError);
     };
   }, []); // Run once on mount
 
@@ -530,7 +531,7 @@ const Checkout: React.FC = () => {
     // Trigger validation for updated fields
     trigger(['billingStreet', 'billingCity', 'billingState', 'billingPostalCode', 'billingCountry']);
 
-    console.log('[Checkout] Applied address:', address.label || 'Unnamed address');
+    logInfo('[Checkout] Applied address:', address.label || 'Unnamed address');
   };
 
   // Handle saved address selection
@@ -576,7 +577,7 @@ const Checkout: React.FC = () => {
       if (label === null) return; // User cancelled
 
       const saved = addressService.saveAddress(addressToSave, label || undefined);
-      console.log('[Checkout] Saved address:', saved.label);
+      logInfo('[Checkout] Saved address:', saved.label);
 
       // Reload saved addresses
       const addresses = await addressService.getAllSavedAddresses();
@@ -586,7 +587,7 @@ const Checkout: React.FC = () => {
 
       alert(t('alerts.address_saved', { name: saved.label }));
     } catch (err: any) {
-      console.error('[Checkout] Failed to save address:', err);
+      logError('[Checkout] Failed to save address:', err);
       alert(t('alerts.address_save_failed', { error: err.message || 'Unknown error' }));
     }
   };
@@ -601,7 +602,7 @@ const Checkout: React.FC = () => {
 
     try {
       addressService.removeAddress(addressId);
-      console.log('[Checkout] Deleted address:', addressId);
+      logInfo('[Checkout] Deleted address:', addressId);
 
       // Reload saved addresses
       const addresses = await addressService.getAllSavedAddresses();
@@ -611,7 +612,7 @@ const Checkout: React.FC = () => {
         setSelectedAddressId('');
       }
     } catch (error) {
-      console.error('[Checkout] Failed to delete address:', error);
+      logError('[Checkout] Failed to delete address:', error);
     }
   };
 
@@ -669,7 +670,7 @@ const Checkout: React.FC = () => {
         setDiscountError(validation.error_message || 'Invalid discount code');
       }
     } catch (error) {
-      console.error('Error validating discount code:', error);
+      logError('Error validating discount code:', error);
       setDiscountError('Failed to validate discount code. Please try again.');
       setDiscountValidation(null);
     } finally {
@@ -718,7 +719,7 @@ const Checkout: React.FC = () => {
 
     setCreditsToApply(maxApplicable);
 
-    console.log('[Checkout] Applied €' + maxApplicable.toFixed(2) + ' in credits (max allowed: €' + maxAllowedCredits.toFixed(2) + ')');
+    logInfo('[Checkout] Applied €' + maxApplicable.toFixed(2) + ' in credits (max allowed: €' + maxAllowedCredits.toFixed(2) + ')');
   };
 
   // Handle credits removal
@@ -764,7 +765,7 @@ const Checkout: React.FC = () => {
 
   // Stripe error handler
   const handleStripeError = (err: unknown) => {
-    console.error('Stripe payment error:', err);
+    logError('Stripe payment error:', err);
     setPayStatus("error");
     alert(t('payment.failed'));
   };
@@ -795,7 +796,7 @@ const Checkout: React.FC = () => {
 
       // If all products are digital, skip shipping step (2) and go directly to payment (3)
       if (!hasPhysicalProducts) {
-        console.log('[Checkout] All products digital, skipping to payment step');
+        logInfo('[Checkout] All products digital, skipping to payment step');
         setCurrentStep(3);
         window.scrollTo({ top: 0, behavior: 'smooth' });
         return;
@@ -823,7 +824,7 @@ const Checkout: React.FC = () => {
     if (currentStep > 1) {
       // If on step 3 and all products are digital, skip back to step 1 (bypass shipping)
       if (currentStep === 3 && !hasPhysicalProducts) {
-        console.log('[Checkout] All products digital, skipping back to information step');
+        logInfo('[Checkout] All products digital, skipping back to information step');
         setCurrentStep(1);
         window.scrollTo({ top: 0, behavior: 'smooth' });
         return;
@@ -890,7 +891,7 @@ const Checkout: React.FC = () => {
         <ReservationTimer
           expiresAt={reservationExpiresAt}
           onExpired={() => {
-            console.warn('[Checkout] Stock reservation expired');
+            logWarn('[Checkout] Stock reservation expired');
             setReservationExpiresAt(null);
             alert('Your stock reservation has expired. Please review your cart and try again.');
           }}

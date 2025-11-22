@@ -1,3 +1,4 @@
+import { logInfo, logWarn, logError } from './logger';
 // Profile service
 import { handleResponse, API_BASE_URL, defaultHeaders, withLangHeaders } from './apiUtils';
 import type { User } from '../context/authTypes';
@@ -34,7 +35,7 @@ export const profileService = {
           }
         }
       } catch (e) {
-        console.error('Failed to get token from localStorage:', e);
+        logError('Failed to get token from localStorage:', e);
       }
 
       if (!token) {
@@ -54,7 +55,7 @@ export const profileService = {
 
       return await handleResponse(response);
     } catch (error) {
-      console.error('Fetch profile API error:', error);
+      logError('Fetch profile API error:', error);
       throw error;
     }
   },
@@ -70,7 +71,7 @@ export const profileService = {
 
       return await handleResponse(response);
     } catch (error) {
-      console.error('Update profile API error:', error);
+      logError('Update profile API error:', error);
       throw error;
     }
   },
@@ -95,7 +96,7 @@ export const profileService = {
 
       return await handleResponse(response);
     } catch (error) {
-      console.error('Check username API error:', error);
+      logError('Check username API error:', error);
       throw error;
     }
   },
@@ -121,7 +122,7 @@ export const profileService = {
 
       return await handleResponse(response);
     } catch (error) {
-      console.error('Set username API error:', error);
+      logError('Set username API error:', error);
       throw error;
     }
   },

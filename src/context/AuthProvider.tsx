@@ -26,7 +26,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Check if user and token are stored in localStorage on initial load
   useEffect(() => {
     const init = async () => {
-      console.log('🔄 AuthProvider init started');
+      logInfo('🔄 AuthProvider init started');
       
       // Try both secureLocalStorage and regular localStorage for compatibility
       let storedUser = secureLocalStorage.get('user', null);
@@ -52,23 +52,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
       }
       
-      console.log('📦 Stored data:', { hasUser: !!storedUser, hasToken: !!token, tokenType: typeof token });
+      logInfo('📦 Stored data:', { hasUser: !!storedUser, hasToken: !!token, tokenType: typeof token });
       
       // Check if token exists and is valid
       if (token && typeof token === 'string') {
         // Check if token is expired
         if (isTokenExpired(token)) {
-          console.log('❌ Access token has expired, attempting refresh');
+          logInfo('❌ Access token has expired, attempting refresh');
           const refreshSuccess = await refreshAccessToken();
 
           if (refreshSuccess && storedUser) {
-            console.log('✅ Token refreshed successfully, setting user');
+            logInfo('✅ Token refreshed successfully, setting user');
             setUser(storedUser as User);
 
             // Start auto-refresh timer
             startTokenRefresh();
           } else {
-            console.log('❌ Token refresh failed, logging out user');
+            logInfo('❌ Token refresh failed, logging out user');
             // Clear expired token and user data including refresh token
             secureLocalStorage.remove('user');
             secureLocalStorage.remove('token');
@@ -81,7 +81,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             setUser(null);
           }
         } else {
-          console.log('✅ Token is valid, setting auth');
+          logInfo('✅ Token is valid, setting auth');
           // Token is valid, set it for API requests
           setAuthToken(token);
 
@@ -90,17 +90,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             localStorage.getItem('refreshToken');
 
           if (refreshToken) {
-            console.log('🔄 Starting auto-refresh timer');
+            logInfo('🔄 Starting auto-refresh timer');
             startTokenRefresh();
           }
 
           // If user exists, set it in state
           if (storedUser && typeof storedUser === 'object') {
             try {
-              console.log('👤 Setting user from stored data');
+              logInfo('👤 Setting user from stored data');
               setUser(storedUser as User);
             } catch (error) {
-              console.error('❌ Failed to parse stored user:', error);
+              logError('❌ Failed to parse stored user:', error);
               secureLocalStorage.remove('user');
               secureLocalStorage.remove('token');
               secureLocalStorage.remove('refreshToken');
@@ -111,17 +111,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               stopTokenRefresh();
             }
           } else {
-            console.log('⚠️ No stored user found');
+            logInfo('⚠️ No stored user found');
           }
 
           // Defer fetching orders until the user opens the Order History tab
         }
       } else {
-        console.log('🚫 No valid token found');
+        logInfo('🚫 No valid token found');
       }
       
       // Set loading to false after attempting to restore authentication state
-      console.log('🏁 AuthProvider init completed, isLoading: false');
+      logInfo('🏁 AuthProvider init completed, isLoading: false');
       setIsLoading(false);
     };
     void init();
@@ -131,7 +131,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     const handleAuthLogout = (event: CustomEvent) => {
       const reason = event.detail?.reason || 'unknown';
-      console.log('Received auth:logout event, updating authentication state. Reason:', reason);
+      logInfo('Received auth:logout event, updating authentication state. Reason:', reason);
       stopTokenRefresh();
       setUser(null);
       secureLocalStorage.remove('user');
@@ -186,24 +186,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         orders: [] // Initialize empty orders array
       };
 
-      console.log('🔐 Login response:', { token, refreshToken, id, userEmail, emailConfirmed });
-      console.log('👤 Created user object:', newUser);
+      logInfo('🔐 Login response:', { token, refreshToken, id, userEmail, emailConfirmed });
+      logInfo('👤 Created user object:', newUser);
 
       // Store user data in state and localStorage
       setUser(newUser);
-      console.log('💾 Stored user in state:', newUser);
-      console.log('✅ isAuthenticated should now be:', !!newUser);
+      logInfo('💾 Stored user in state:', newUser);
+      logInfo('✅ isAuthenticated should now be:', !!newUser);
       secureLocalStorage.set('user', newUser);
       localStorage.setItem('user', JSON.stringify(newUser)); // Also store in regular localStorage
 
       // Store access token in localStorage (as plain string, not JSON)
-      console.log('🔑 Storing access token');
+      logInfo('🔑 Storing access token');
       secureLocalStorage.set('token', token);
       localStorage.setItem('token', token); // Store as plain string, not JSON
 
       // Store refresh token if provided
       if (refreshToken) {
-        console.log('🔄 Storing refresh token');
+        logInfo('🔄 Storing refresh token');
         secureLocalStorage.set('refreshToken', refreshToken);
         localStorage.setItem('refreshToken', refreshToken); // Store as plain string, not JSON
 
@@ -221,12 +221,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setHasLoadedOrders(false);
 
       // Dispatch cart merge event (CartContext will handle merging)
-      console.log('🛒 Dispatching cart:merge event');
+      logInfo('🛒 Dispatching cart:merge event');
       window.dispatchEvent(new CustomEvent('cart:merge'));
 
       return true;
     } catch (error) {
-      console.error('Login error:', error);
+      logError('Login error:', error);
       
       // Check if the error message contains text about account not being activated
       const errorMessage = error instanceof Error ? error.message : String(error);
@@ -257,7 +257,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         await authApi.logout(token);
       }
     } catch (error) {
-      console.error('Logout error:', error);
+      logError('Logout error:', error);
     } finally {
       // Clear user data and token regardless of API call success
       setUser(null);
@@ -270,7 +270,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       // CRITICAL: Clear shopping cart on logout
       // This prevents cart from persisting across different user sessions
-      console.log('[Auth] Clearing shopping cart on logout');
+      logInfo('[Auth] Clearing shopping cart on logout');
       localStorage.removeItem('martyx_cart_v1');
       localStorage.removeItem('martyx_session_id'); // Also clear guest session ID
 
@@ -289,7 +289,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     try {
       // Fetch profile data from backend
-      console.log("USER ID " + user.id);
+      logInfo("USER ID " + user.id);
       const profileData = await profileService.fetchProfile(user.id);
       
       // Create updated user object with avatar convenience property
@@ -310,7 +310,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       return true;
     } catch (error) {
-      console.error('Fetch profile error:', error);
+      logError('Fetch profile error:', error);
       return false;
     }
   };
@@ -347,7 +347,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       return true;
     } catch (error) {
-      console.error('Update profile error:', error);
+      logError('Update profile error:', error);
       return false;
     }
   };
@@ -377,7 +377,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       secureLocalStorage.set('user', updatedUser);
       return true;
     } catch (e) {
-      console.error('Failed to fetch user orders:', e);
+      logError('Failed to fetch user orders:', e);
       return false;
     } finally {
       setOrdersLoading(false);
@@ -421,7 +421,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         message: response.message || 'Password reset email sent successfully. Please check your email.'
       };
     } catch (error) {
-      console.error('Forgot password error:', error);
+      logError('Forgot password error:', error);
       return {
         success: false,
         message: 'Failed to send password reset email. Please try again.'
@@ -438,7 +438,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         message: response.message || 'Password reset successfully. You can now login with your new password.'
       };
     } catch (error) {
-      console.error('Reset password error:', error);
+      logError('Reset password error:', error);
       return {
         success: false,
         message: 'Failed to reset password. The token may be invalid or expired.'

@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import './ProductGalleryUpload.css';
 // Removed digitalOceanUpload import - now using backend API only
 import { productGalleryService } from '../../services/productGalleryService';
+import { logInfo, logWarn, logError } from '../../services/logger';
 
 interface ProductGalleryUploadProps {
   productId: string;
@@ -44,26 +45,26 @@ const ProductGalleryUpload: React.FC<ProductGalleryUploadProps> = ({
       const loadingState = isRefresh ? setRefreshing : setLoading;
       loadingState(true);
       
-      console.log(`🔍 ${isRefresh ? 'Refreshing' : 'Loading'} gallery images for product: ${productId}`);
+      logInfo(`🔍 ${isRefresh ? 'Refreshing' : 'Loading'} gallery images for product: ${productId}`);
 
       // Load gallery images from database (with metadata)
       let galleryImages: any[] = [];
 
       if (productGalleryService.isSpacesConfigured()) {
         try {
-          console.log('🔄 Loading gallery images from database...');
+          logInfo('🔄 Loading gallery images from database...');
           galleryImages = await productGalleryService.getProductImages(productId);
-          console.log('✅ Successfully loaded gallery images:', galleryImages);
+          logInfo('✅ Successfully loaded gallery images:', galleryImages);
         } catch (error) {
-          console.error('❌ Failed to load gallery images:', error);
+          logError('❌ Failed to load gallery images:', error);
           
           // If it's the first load and we get an error, don't try again automatically
           if (!isRefresh && !hasLoadedOnce) {
-            console.log('🚫 First load failed - will not auto-retry. Use refresh button to try again.');
+            logInfo('🚫 First load failed - will not auto-retry. Use refresh button to try again.');
           }
         }
       } else {
-        console.log('🚫 Gallery loading disabled or not configured');
+        logInfo('🚫 Gallery loading disabled or not configured');
       }
 
       // Convert to UploadedImage format with database IDs
@@ -93,9 +94,9 @@ const ProductGalleryUpload: React.FC<ProductGalleryUploadProps> = ({
       }
 
       setHasLoadedOnce(true);
-      console.log(`✅ ${isRefresh ? 'Refreshed' : 'Loaded'} ${imageObjects.length} gallery images for product ${productId}`);
+      logInfo(`✅ ${isRefresh ? 'Refreshed' : 'Loaded'} ${imageObjects.length} gallery images for product ${productId}`);
     } catch (error) {
-      console.error('❌ Failed to load gallery images:', error);
+      logError('❌ Failed to load gallery images:', error);
       
       // Only use fallback on first load
       if (!hasLoadedOnce && existingImages.length > 0) {
@@ -124,7 +125,7 @@ const ProductGalleryUpload: React.FC<ProductGalleryUploadProps> = ({
   // Check configuration on component mount
   React.useEffect(() => {
     if (import.meta.env.DEV) {
-      console.log('🔧 Backend API configuration:', productGalleryService.getConfigurationStatus());
+      logInfo('🔧 Backend API configuration:', productGalleryService.getConfigurationStatus());
     }
   }, []);
 
@@ -183,22 +184,22 @@ const ProductGalleryUpload: React.FC<ProductGalleryUploadProps> = ({
         // Update progress
         setUploadProgress({ current: i + 1, total: imageFiles.length, uploading: true });
 
-        console.log(`🚀 Sequential upload ${i + 1}/${imageFiles.length}: ${file.name}`);
+        logInfo(`🚀 Sequential upload ${i + 1}/${imageFiles.length}: ${file.name}`);
 
         // Upload single file
         await handleActualUpload(imageData.id, file);
         results.push({ success: true, id: imageData.id });
 
-        console.log(`✅ Upload ${i + 1}/${imageFiles.length} completed successfully`);
+        logInfo(`✅ Upload ${i + 1}/${imageFiles.length} completed successfully`);
 
         // Add delay between uploads (except for the last one)
         if (i < imageFiles.length - 1) {
-          console.log('⏱️ Waiting 200ms before next upload...');
+          logInfo('⏱️ Waiting 200ms before next upload...');
           await new Promise(resolve => setTimeout(resolve, 200));
         }
 
       } catch (error) {
-        console.error(`❌ Upload ${i + 1}/${imageFiles.length} failed:`, error);
+        logError(`❌ Upload ${i + 1}/${imageFiles.length} failed:`, error);
         results.push({
           success: false,
           id: imageData.id,
@@ -215,7 +216,7 @@ const ProductGalleryUpload: React.FC<ProductGalleryUploadProps> = ({
     const failed = results.filter(r => !r.success).length;
 
     if (import.meta.env.DEV) {
-      console.log(`📊 Upload Summary: ${successful}/${imageFiles.length} uploaded successfully, ${failed} failed`);
+      logInfo(`📊 Upload Summary: ${successful}/${imageFiles.length} uploaded successfully, ${failed} failed`);
     }
 
     // Show user-friendly summary
@@ -236,11 +237,11 @@ const ProductGalleryUpload: React.FC<ProductGalleryUploadProps> = ({
     try {
       // Check if DigitalOcean Spaces is configured
       if (!productGalleryService.isSpacesConfigured()) {
-        console.error('❌ Backend API not configured:', productGalleryService.getConfigurationStatus());
+        logError('❌ Backend API not configured:', productGalleryService.getConfigurationStatus());
         throw new Error('DigitalOcean Spaces credentials not configured. Please check .env.local file.');
       }
 
-      console.log('🚀 Starting upload via backend API...', {
+      logInfo('🚀 Starting upload via backend API...', {
         productId,
         fileName: file.name,
         fileSize: file.size,
@@ -250,7 +251,7 @@ const ProductGalleryUpload: React.FC<ProductGalleryUploadProps> = ({
       // Calculate order (next available order number)
       const currentOrder = images.length;
       
-      console.log('📊 Upload parameters:', {
+      logInfo('📊 Upload parameters:', {
         productId,
         order: currentOrder,
         expectedURL: `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'}/api/master-products/${productId}/gallery/upload-json`
@@ -263,13 +264,13 @@ const ProductGalleryUpload: React.FC<ProductGalleryUploadProps> = ({
         order: currentOrder
       });
 
-      console.log('✅ Backend response:', uploadResponse);
+      logInfo('✅ Backend response:', uploadResponse);
 
       if (!uploadResponse.success) {
         throw new Error(`Backend upload failed: ${uploadResponse.message || 'Unknown error'}`);
       }
 
-      console.log('✅ Upload successful via backend API:', uploadResponse.image);
+      logInfo('✅ Upload successful via backend API:', uploadResponse.image);
       
       // Update the image with the database response
       setImages(prev => prev.map(img =>
@@ -292,7 +293,7 @@ const ProductGalleryUpload: React.FC<ProductGalleryUploadProps> = ({
       onImagesChange?.(updatedImages);
 
     } catch (error) {
-      console.error('❌ Upload failed:', error);
+      logError('❌ Upload failed:', error);
       
       let errorMessage = 'Upload failed';
       if (error instanceof Error) {
@@ -324,18 +325,18 @@ const ProductGalleryUpload: React.FC<ProductGalleryUploadProps> = ({
     if (!imageToRemove) return;
 
     try {
-      console.log('🗑️ Removing image:', imageToRemove.url);
+      logInfo('🗑️ Removing image:', imageToRemove.url);
 
       // If it has a galleryImageId, delete via backend API
       if (imageToRemove.galleryImageId) {
         try {
-          console.log('🗑️ Deleting image via backend API:', imageToRemove.galleryImageId);
+          logInfo('🗑️ Deleting image via backend API:', imageToRemove.galleryImageId);
           const deleteResponse = await productGalleryService.deleteImage(productId, imageToRemove.galleryImageId);
           if (!deleteResponse.success) {
-            console.warn('⚠️ Backend deletion failed, but will remove from UI');
+            logWarn('⚠️ Backend deletion failed, but will remove from UI');
           }
         } catch (apiError) {
-          console.warn('⚠️ Failed to delete via backend API:', apiError);
+          logWarn('⚠️ Failed to delete via backend API:', apiError);
         }
       }
 
@@ -346,9 +347,9 @@ const ProductGalleryUpload: React.FC<ProductGalleryUploadProps> = ({
         return updated;
       });
 
-      console.log('✅ Image removed successfully');
+      logInfo('✅ Image removed successfully');
     } catch (error) {
-      console.error('❌ Failed to remove image:', error);
+      logError('❌ Failed to remove image:', error);
       // Still remove from UI even if deletion fails
       setImages(prev => {
         const updated = prev.filter(img => img.id !== id);
@@ -408,9 +409,9 @@ const ProductGalleryUpload: React.FC<ProductGalleryUploadProps> = ({
             productId,
             imageOrders
           });
-          console.log('✅ Images reordered successfully');
+          logInfo('✅ Images reordered successfully');
         } catch (error) {
-          console.error('❌ Failed to update order on backend:', error);
+          logError('❌ Failed to update order on backend:', error);
         }
       }
 
@@ -418,7 +419,7 @@ const ProductGalleryUpload: React.FC<ProductGalleryUploadProps> = ({
       onImagesChange?.(reorderedImages.map(img => img.url));
 
     } catch (error) {
-      console.error('❌ Failed to reorder images:', error);
+      logError('❌ Failed to reorder images:', error);
     } finally {
       setReordering(false);
       setDraggedIndex(null);
@@ -427,7 +428,7 @@ const ProductGalleryUpload: React.FC<ProductGalleryUploadProps> = ({
 
   const handleSetPrimary = async (imageId: string) => {
     try {
-      console.log('⭐ Setting image as primary:', imageId);
+      logInfo('⭐ Setting image as primary:', imageId);
 
       // Call backend API to set image as primary
       await productGalleryService.setPrimaryImage(
@@ -442,13 +443,13 @@ const ProductGalleryUpload: React.FC<ProductGalleryUploadProps> = ({
         isPrimary: img.galleryImageId === imageId
       })));
 
-      console.log('✅ Successfully set image as primary');
+      logInfo('✅ Successfully set image as primary');
 
       // Refresh gallery to ensure sync with backend
       await loadGalleryImages(true);
 
     } catch (error) {
-      console.error('❌ Failed to set primary image:', error);
+      logError('❌ Failed to set primary image:', error);
       alert('Failed to set image as primary. Please try again.');
     }
   };

@@ -1,4 +1,5 @@
 import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
+import { logInfo, logWarn, logError } from './logger';
 
 export interface GalleryImage {
   id: string;
@@ -131,7 +132,7 @@ export class ProductGalleryService {
       }
 
       if (import.meta.env.DEV) {
-        console.log('📤 Uploading to backend via JSON API:', {
+        logInfo('📤 Uploading to backend via JSON API:', {
           url: `${API_BASE_URL}/api/master-products/${request.productId}/gallery/upload-json`,
           payload: {
             fileName: jsonRequest.fileName,
@@ -173,11 +174,11 @@ export class ProductGalleryService {
         }
         
         if (import.meta.env.DEV) {
-          console.error('❌ Backend returned 500 error:', errorDetails);
-          console.warn('⚠️ This might be due to:');
-          console.warn('1. Backend service implementation missing');
-          console.warn('2. DigitalOcean Spaces configuration missing on backend');
-          console.warn('3. Database connection issues');
+          logError('❌ Backend returned 500 error:', errorDetails);
+          logWarn('⚠️ This might be due to:');
+          logWarn('1. Backend service implementation missing');
+          logWarn('2. DigitalOcean Spaces configuration missing on backend');
+          logWarn('3. Database connection issues');
         }
         
         throw new Error(`Backend server error: ${errorDetails}`);
@@ -185,7 +186,7 @@ export class ProductGalleryService {
       
       if (response.status === 404) {
         if (import.meta.env.DEV) {
-          console.warn('⚠️ Backend JSON upload API not found, using legacy metadata-only approach');
+          logWarn('⚠️ Backend JSON upload API not found, using legacy metadata-only approach');
         }
         return this.uploadImageJsonLegacy(request);
       }
@@ -205,14 +206,14 @@ export class ProductGalleryService {
       const result = await handleResponse(response);
       
       if (import.meta.env.DEV) {
-        console.log('✅ Image upload completed via JSON API');
+        logInfo('✅ Image upload completed via JSON API');
       }
       
       return result;
 
     } catch (error) {
       if (import.meta.env.DEV) {
-        console.error('❌ JSON image upload failed:', error);
+        logError('❌ JSON image upload failed:', error);
       }
       throw error;
     }
@@ -278,15 +279,15 @@ export class ProductGalleryService {
       const result = await handleResponse(response);
       
       if (import.meta.env.DEV) {
-        console.log('✅ Image metadata saved via legacy approach (file not actually uploaded)');
-        console.warn('🚨 IMPORTANT: Implement backend upload API to actually upload files to DigitalOcean Spaces');
+        logInfo('✅ Image metadata saved via legacy approach (file not actually uploaded)');
+        logWarn('🚨 IMPORTANT: Implement backend upload API to actually upload files to DigitalOcean Spaces');
       }
       
       return result;
 
     } catch (error) {
       if (import.meta.env.DEV) {
-        console.error('❌ Legacy upload failed:', error);
+        logError('❌ Legacy upload failed:', error);
       }
       throw error;
     }
@@ -383,13 +384,13 @@ export class ProductGalleryService {
       const imageUrls = sortedImages.map(img => img.cdnUrl || img.url).filter(Boolean);
       
       if (import.meta.env.DEV && imageUrls.length > 0) {
-        console.log(`📸 Loaded ${imageUrls.length} images for product ${productId}`);
+        logInfo(`📸 Loaded ${imageUrls.length} images for product ${productId}`);
       }
       
       return imageUrls;
     } catch (error) {
       if (import.meta.env.DEV) {
-        console.warn(`Failed to load images for product ${productId}:`, error);
+        logWarn(`Failed to load images for product ${productId}:`, error);
       }
       return [];
     }
@@ -428,21 +429,21 @@ export class ProductGalleryService {
 
       if (!response.ok) {
         if (import.meta.env.DEV) {
-          console.warn(`Backend delete API returned ${response.status}`);
+          logWarn(`Backend delete API returned ${response.status}`);
         }
         // Don't throw error - backend might not have this endpoint implemented yet
         return true;
       }
 
       if (import.meta.env.DEV) {
-        console.log('✅ Image deleted via backend API:', key);
+        logInfo('✅ Image deleted via backend API:', key);
       }
       
       return true;
 
     } catch (error) {
       if (import.meta.env.DEV) {
-        console.error('❌ Failed to delete image via backend:', error);
+        logError('❌ Failed to delete image via backend:', error);
       }
       // Return true to not break UI - deletion might have worked
       return true;
@@ -548,7 +549,7 @@ export class ProductGalleryService {
 
       return handleResponse(response);
     } catch (error) {
-      console.error('❌ Master product image upload failed:', error);
+      logError('❌ Master product image upload failed:', error);
       throw error;
     }
   }
@@ -582,7 +583,7 @@ export class ProductGalleryService {
       }
 
       if (import.meta.env.DEV) {
-        console.log(`📤 Uploading variant image to: ${API_BASE_URL}/api/master-products/${masterProductId}/variants/${variantId}/gallery/upload-json`);
+        logInfo(`📤 Uploading variant image to: ${API_BASE_URL}/api/master-products/${masterProductId}/variants/${variantId}/gallery/upload-json`);
       }
 
       const response = await fetch(`${API_BASE_URL}/api/master-products/${masterProductId}/variants/${variantId}/gallery/upload-json`, withLangHeaders({
@@ -597,7 +598,7 @@ export class ProductGalleryService {
 
       return handleResponse(response);
     } catch (error) {
-      console.error('❌ Variant image upload failed:', error);
+      logError('❌ Variant image upload failed:', error);
       throw error;
     }
   }

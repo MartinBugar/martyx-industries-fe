@@ -1,3 +1,4 @@
+import { logInfo, logWarn, logError } from './logger';
 // Import common API utilities
 import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders, updateAuthorizationHeader } from './apiUtils';
 import type {
@@ -18,7 +19,7 @@ export const authApi = {
       
       return await handleResponse(response) as AuthResponse;
     } catch (error) {
-      console.error('Login API error:', error);
+      logError('Login API error:', error);
       throw error;
     }
   },
@@ -36,7 +37,7 @@ export const authApi = {
       
       return handleResponse(response);
     } catch (error) {
-      console.error('Logout API error:', error);
+      logError('Logout API error:', error);
       throw error;
     }
   },
@@ -52,7 +53,7 @@ export const authApi = {
       
       return await handleResponse(response) as ResetPasswordResponse;
     } catch (error) {
-      console.error('Forgot password API error:', error);
+      logError('Forgot password API error:', error);
       throw error;
     }
   },
@@ -68,7 +69,7 @@ export const authApi = {
 
       return await handleResponse(response) as ResetPasswordResponse;
     } catch (error) {
-      console.error('Reset password API error:', error);
+      logError('Reset password API error:', error);
       throw error;
     }
   },
@@ -84,7 +85,7 @@ export const authApi = {
 
       return await handleResponse(response) as AuthResponse;
     } catch (error) {
-      console.error('Refresh token API error:', error);
+      logError('Refresh token API error:', error);
       throw error;
     }
   },

@@ -1,3 +1,4 @@
+import { logInfo, logWarn, logError } from './services/logger';
 /**
  * Optimized App Component with Code Splitting and Performance Improvements
  * 
@@ -167,7 +168,7 @@ const MainContent = React.memo(() => {
 
   // Debug log whenever user changes
   React.useEffect(() => {
-    console.log('🎯 MainContent - Auth state:', {
+    logInfo('🎯 MainContent - Auth state:', {
       user,
       isAuthenticated,
       userId: user?.id,
@@ -475,7 +476,7 @@ function AppContent() {
       initializeGA4();
     } catch (e) {
       if (import.meta.env.DEV) {
-        console.warn('GA4 initialization failed:', e);
+        logWarn('GA4 initialization failed:', e);
       }
     }
   });
@@ -488,11 +489,11 @@ function AppContent() {
         if (!alreadyTracked) {
           visitorService.trackVisit().then((result) => {
             if (result && import.meta.env.DEV) {
-              console.log('Visit tracked successfully. Total visits:', result.totalCount);
+              logInfo('Visit tracked successfully. Total visits:', result.totalCount);
             }
           }).catch((err) => {
             if (import.meta.env.DEV) {
-              console.warn('Visitor tracking failed:', err);
+              logWarn('Visitor tracking failed:', err);
             }
           });
           window.sessionStorage.setItem('visitTracked', 'true');
@@ -500,7 +501,7 @@ function AppContent() {
       }
     } catch (e) {
       if (import.meta.env.DEV) {
-        console.warn('Visitor tracking setup error:', e);
+        logWarn('Visitor tracking setup error:', e);
       }
     }
   });
@@ -509,7 +510,7 @@ function AppContent() {
   // useEffectOnce(() => {
   //   advancedCache.preloadCriticalData().catch(err => {
   //     if (import.meta.env.DEV) {
-  //       console.warn('Failed to preload critical data:', err);
+  //       logWarn('Failed to preload critical data:', err);
   //     }
   //   });
   // });

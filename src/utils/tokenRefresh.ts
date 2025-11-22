@@ -1,5 +1,6 @@
 import { authApi, setAuthToken } from '../services/api';
 import { secureLocalStorage } from './security';
+import { logInfo, logWarn, logError } from '../services/logger';
 
 /**
  * Token refresh utility
@@ -21,7 +22,7 @@ export const startTokenRefresh = () => {
     await refreshAccessToken();
   }, 25 * 60 * 1000); // 25 minutes
 
-  console.log('🔄 Token auto-refresh started (every 25 minutes)');
+  logInfo('🔄 Token auto-refresh started (every 25 minutes)');
 };
 
 /**
@@ -31,7 +32,7 @@ export const stopTokenRefresh = () => {
   if (refreshInterval) {
     clearInterval(refreshInterval);
     refreshInterval = null;
-    console.log('⏸️ Token auto-refresh stopped');
+    logInfo('⏸️ Token auto-refresh stopped');
   }
 };
 
@@ -43,11 +44,11 @@ export const refreshAccessToken = async (): Promise<boolean> => {
     const refreshToken = secureLocalStorage.get('refreshToken', null);
 
     if (!refreshToken) {
-      console.warn('⚠️ No refresh token found, cannot refresh access token');
+      logWarn('⚠️ No refresh token found, cannot refresh access token');
       return false;
     }
 
-    console.log('🔄 Refreshing access token...');
+    logInfo('🔄 Refreshing access token...');
     const response = await authApi.refreshToken(refreshToken);
 
     // Update access token
@@ -62,10 +63,10 @@ export const refreshAccessToken = async (): Promise<boolean> => {
       localStorage.setItem('refreshToken', response.refreshToken);
     }
 
-    console.log('✅ Access token refreshed successfully');
+    logInfo('✅ Access token refreshed successfully');
     return true;
   } catch (error) {
-    console.error('❌ Failed to refresh access token:', error);
+    logError('❌ Failed to refresh access token:', error);
 
     // If refresh fails (invalid/expired refresh token), trigger logout
     // Dispatch custom event for AuthProvider to handle
@@ -91,7 +92,7 @@ export const shouldRefreshToken = (token: string): boolean => {
     // Refresh if less than 5 minutes until expiry
     return timeUntilExpiry < 5 * 60 * 1000;
   } catch (error) {
-    console.error('Failed to parse token:', error);
+    logError('Failed to parse token:', error);
     return true; // Refresh to be safe
   }
 };

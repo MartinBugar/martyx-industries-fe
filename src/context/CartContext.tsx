@@ -8,6 +8,7 @@ import { useAuth } from './useAuth';
 import { trackAddToCart, trackRemoveFromCart } from '../services/analyticsService';
 import { useDebouncedCallback } from '../hooks/useDebouncedCallback';
 import { stockService } from '../services/stockService';
+import { logInfo, logWarn, logError } from '../services/logger';
 
 // Props for the CartProvider component
 interface CartProviderProps {
@@ -130,7 +131,7 @@ async function convertCartItemDto(item: CartItemDto): Promise<CartItem | null> {
       addedAt: Date.now(),
     };
   } catch (error) {
-    console.error('[Cart] Failed to fetch product details for variant', item.variantId, ':', error);
+    logError('[Cart] Failed to fetch product details for variant', item.variantId, ':', error);
     return null;
   }
 }
@@ -151,23 +152,23 @@ function safeLoad(): CartItem[] {
 
     // Log expired items if any
     if (expiredItems.length > 0) {
-      console.log(`[Cart] Removed ${expiredItems.length} expired item(s) (older than ${CART_EXPIRATION_DAYS} days)`);
+      logInfo(`[Cart] Removed ${expiredItems.length} expired item(s) (older than ${CART_EXPIRATION_DAYS} days)`);
       expiredItems.forEach(item => {
         const daysOld = Math.floor((Date.now() - item.addedAt) / (24 * 60 * 60 * 1000));
-        console.log(`[Cart] Expired: ${item.product.name} (${daysOld} days old)`);
+        logInfo(`[Cart] Expired: ${item.product.name} (${daysOld} days old)`);
       });
 
       // Update localStorage with only active items
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(activeItems));
       } catch (e) {
-        console.warn('[Cart] Failed to update cart after removing expired items:', e);
+        logWarn('[Cart] Failed to update cart after removing expired items:', e);
       }
     }
 
     return activeItems;
   } catch (e) {
-    console.warn('[Cart] Failed to load persisted cart:', e);
+    logWarn('[Cart] Failed to load persisted cart:', e);
     return [];
   }
 }
@@ -180,12 +181,12 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const [items, setItems] = useState<CartItem[]>(() => {
     const paymentInProgress = sessionStorage.getItem('payment_in_progress');
     if (paymentInProgress === 'true') {
-      console.log('[Cart] Payment in progress detected - clearing localStorage and initializing with empty cart');
+      logInfo('[Cart] Payment in progress detected - clearing localStorage and initializing with empty cart');
       // Clear localStorage immediately to prevent any re-sync attempts
       try {
         localStorage.removeItem(STORAGE_KEY);
       } catch (e) {
-        console.warn('[Cart] Failed to clear localStorage:', e);
+        logWarn('[Cart] Failed to clear localStorage:', e);
       }
       return [];
     }
@@ -200,7 +201,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     (variantId: number, quantity: number) => {
       void cartService
         .updateQuantity(variantId, quantity, isAuthenticated ? undefined : sessionId)
-        .catch(err => console.warn('[Cart] Failed to update quantity in backend:', err));
+        .catch(err => logWarn('[Cart] Failed to update quantity in backend:', err));
     },
     500
   );
@@ -210,7 +211,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
     } catch (e) {
-      console.warn('[Cart] Failed to persist cart:', e);
+      logWarn('[Cart] Failed to persist cart:', e);
     }
   }, [items]);
 
@@ -224,7 +225,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         // This prevents cart sync while user is on Stripe checkout page
         const paymentInProgress = sessionStorage.getItem('payment_in_progress');
         if (paymentInProgress === 'true') {
-          console.log('[Cart] Payment in progress - clearing local cart state and waiting for StripeSuccess');
+          logInfo('[Cart] Payment in progress - clearing local cart state and waiting for StripeSuccess');
           // Clear items from state immediately to prevent re-sync
           setItems([]);
           // Don't clear the flag yet - StripeSuccess will handle it
@@ -232,7 +233,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
           return;
         }
 
-        console.log('[Cart] Syncing with backend...');
+        logInfo('[Cart] Syncing with backend...');
 
         // Get current localStorage cart
         const localItems = safeLoad();
@@ -246,7 +247,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         // Use new items array from backend (CartItemDto[])
         if (backendCart.items && Array.isArray(backendCart.items) && backendCart.items.length > 0) {
           // Fetch complete product details for each cart item
-          console.log('[Cart] Fetching complete product details for', backendCart.items.length, 'items...');
+          logInfo('[Cart] Fetching complete product details for', backendCart.items.length, 'items...');
           const itemPromises = backendCart.items.map(item => convertCartItemDto(item));
           const convertedItems = await Promise.all(itemPromises);
 
@@ -254,19 +255,19 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
           const validItems = convertedItems.filter((item): item is CartItem => item !== null);
 
           if (validItems.length < backendCart.items.length) {
-            console.warn('[Cart]', backendCart.items.length - validItems.length, 'items failed to load complete details');
+            logWarn('[Cart]', backendCart.items.length - validItems.length, 'items failed to load complete details');
           }
 
-          console.log('[Cart] Synced from backend:', validItems.length, 'items with complete details');
+          logInfo('[Cart] Synced from backend:', validItems.length, 'items with complete details');
           setItems(validItems);
         } else if (backendCart.items && backendCart.items.length === 0) {
           // Backend has empty cart
-          console.log('[Cart] Backend cart is empty');
+          logInfo('[Cart] Backend cart is empty');
 
           if (localItems.length > 0) {
             // localStorage has items - push them to backend
             // This handles offline cart recovery
-            console.log('[Cart] No cart in backend, but localStorage has', localItems.length, 'items. Syncing localStorage → backend...');
+            logInfo('[Cart] No cart in backend, but localStorage has', localItems.length, 'items. Syncing localStorage → backend...');
             setItems(localItems);
 
             // Push each item to backend using updateQuantity to SET quantity, not ADD
@@ -288,23 +289,23 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
                     isAuthenticated ? undefined : sessionId
                   );
                 } catch (addErr) {
-                  console.warn('[Cart] Failed to sync item to backend:', addErr);
+                  logWarn('[Cart] Failed to sync item to backend:', addErr);
                 }
               }
             }
-            console.log('[Cart] Successfully synced localStorage cart to backend');
+            logInfo('[Cart] Successfully synced localStorage cart to backend');
           } else {
             // Both backend and localStorage are empty
-            console.log('[Cart] No cart in backend and localStorage is empty');
+            logInfo('[Cart] No cart in backend and localStorage is empty');
             setItems([]);
           }
         }
       } catch (error) {
-        console.warn('[Cart] Failed to sync with backend, using localStorage:', error);
+        logWarn('[Cart] Failed to sync with backend, using localStorage:', error);
         // If backend fails, keep localStorage cart
         const localItems = safeLoad();
         if (localItems.length > 0) {
-          console.log('[Cart] Using localStorage cart with', localItems.length, 'items');
+          logInfo('[Cart] Using localStorage cart with', localItems.length, 'items');
           setItems(localItems);
         }
       } finally {
@@ -322,12 +323,12 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const addToCart = (product: Product): 'added' | 'limit' | 'out_of_stock' | 'discontinued' | 'pre_order' => {
     // Check availability status first
     if (product.availabilityStatus === 'OUT_OF_STOCK') {
-      console.warn('[Cart] Product is out of stock:', product.name);
+      logWarn('[Cart] Product is out of stock:', product.name);
       return 'out_of_stock';
     }
 
     if (product.availabilityStatus === 'DISCONTINUED') {
-      console.warn('[Cart] Product is discontinued:', product.name);
+      logWarn('[Cart] Product is discontinued:', product.name);
       return 'discontinued';
     }
 
@@ -336,7 +337,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
     // For physical products, check stock quantity
     if (!isDigitalProduct && product.stockQuantity <= 0) {
-      console.warn('[Cart] Product stock is 0:', product.name, 'Stock:', product.stockQuantity);
+      logWarn('[Cart] Product stock is 0:', product.name, 'Stock:', product.stockQuantity);
       return 'out_of_stock';
     }
 
@@ -355,7 +356,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         // Check if adding one more would exceed available stock
         const newQuantity = existingItem.quantity + 1;
         if (!isDigitalProduct && newQuantity > product.stockQuantity) {
-          console.warn('[Cart] Cannot add more items. Stock limit reached:', product.stockQuantity);
+          logWarn('[Cart] Cannot add more items. Stock limit reached:', product.stockQuantity);
           result = 'limit';
           return prevItems;
         }
@@ -373,9 +374,9 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
           .catch(err => {
             // If duplicate/conflict, ignore - the other request will succeed
             if (err?.message?.includes('already in cart') || err?.status === 409) {
-              console.log('[Cart] Item already being added, ignoring duplicate request');
+              logInfo('[Cart] Item already being added, ignoring duplicate request');
             } else {
-              console.warn('[Cart] Failed to add to backend:', err);
+              logWarn('[Cart] Failed to add to backend:', err);
             }
           });
 
@@ -399,9 +400,9 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
           .catch(err => {
             // If duplicate/conflict, ignore - the other request will succeed
             if (err?.message?.includes('already in cart') || err?.status === 409) {
-              console.log('[Cart] Item already being added, ignoring duplicate request');
+              logInfo('[Cart] Item already being added, ignoring duplicate request');
             } else {
-              console.warn('[Cart] Failed to add to backend:', err);
+              logWarn('[Cart] Failed to add to backend:', err);
             }
           });
 
@@ -427,7 +428,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       if (!isNaN(variantIdNum)) {
         void cartService
           .removeItem(variantIdNum, isAuthenticated ? undefined : sessionId)
-          .catch(err => console.warn('[Cart] Failed to remove from backend:', err));
+          .catch(err => logWarn('[Cart] Failed to remove from backend:', err));
       }
 
       // Track analytics
@@ -467,7 +468,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       prevItems.forEach(item => {
         void cartService
           .removeItem(item.product.variantId, isAuthenticated ? undefined : sessionId)
-          .catch(err => console.warn('[Cart] Failed to clear item from backend:', err));
+          .catch(err => logWarn('[Cart] Failed to clear item from backend:', err));
       });
 
       return [];
@@ -477,7 +478,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   // Merge guest cart with user cart after login
   const mergeCart = useCallback(async (): Promise<boolean> => {
     try {
-      console.log('[Cart] Merging guest cart with user cart...');
+      logInfo('[Cart] Merging guest cart with user cart...');
 
       // Call backend merge endpoint
       const mergedCart = await cartService.mergeCart(sessionId);
@@ -485,7 +486,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       // Use new items array from backend
       if (mergedCart.items && Array.isArray(mergedCart.items)) {
         // Fetch complete product details for each merged cart item
-        console.log('[Cart] Fetching complete product details for', mergedCart.items.length, 'merged items...');
+        logInfo('[Cart] Fetching complete product details for', mergedCart.items.length, 'merged items...');
         const itemPromises = mergedCart.items.map(item => convertCartItemDto(item));
         const convertedItems = await Promise.all(itemPromises);
 
@@ -493,10 +494,10 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         const validItems = convertedItems.filter((item): item is CartItem => item !== null);
 
         if (validItems.length < mergedCart.items.length) {
-          console.warn('[Cart]', mergedCart.items.length - validItems.length, 'merged items failed to load complete details');
+          logWarn('[Cart]', mergedCart.items.length - validItems.length, 'merged items failed to load complete details');
         }
 
-        console.log('[Cart] Merged cart from backend:', validItems.length, 'items with complete details');
+        logInfo('[Cart] Merged cart from backend:', validItems.length, 'items with complete details');
         setItems(validItems);
 
         // Clear guest session ID after successful merge
@@ -507,7 +508,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
       return false;
     } catch (error) {
-      console.error('[Cart] Failed to merge cart:', error);
+      logError('[Cart] Failed to merge cart:', error);
       return false;
     }
   }, [sessionId]);
@@ -515,7 +516,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   // Listen for cart merge event from AuthProvider (after login)
   useEffect(() => {
     const handleCartMerge = () => {
-      console.log('[Cart] Received cart:merge event');
+      logInfo('[Cart] Received cart:merge event');
       void mergeCart();
     };
 
@@ -531,7 +532,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     const validateCartStock = async () => {
       if (items.length === 0) return;
 
-      console.log('[Cart] Validating stock for', items.length, 'items...');
+      logInfo('[Cart] Validating stock for', items.length, 'items...');
 
       const updates: { variantId: number; oldQty: number; newQty: number; productName: string }[] = [];
       const removals: { variantId: number; productName: string }[] = [];
@@ -563,7 +564,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
             }
           }
         } catch (error) {
-          console.error(`[Cart] Failed to validate stock for variant ${item.product.variantId}:`, error);
+          logError(`[Cart] Failed to validate stock for variant ${item.product.variantId}:`, error);
         }
       }
 
@@ -584,7 +585,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
               // Sync to backend
               void cartService
                 .updateQuantity(update.variantId, update.newQty, isAuthenticated ? undefined : sessionId)
-                .catch(err => console.warn('[Cart] Failed to update quantity in backend:', err));
+                .catch(err => logWarn('[Cart] Failed to update quantity in backend:', err));
             }
           }
 
@@ -595,7 +596,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
             // Sync to backend
             void cartService
               .removeItem(removal.variantId, isAuthenticated ? undefined : sessionId)
-              .catch(err => console.warn('[Cart] Failed to remove item from backend:', err));
+              .catch(err => logWarn('[Cart] Failed to remove item from backend:', err));
           }
 
           return updatedItems;
@@ -611,9 +612,9 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         }
 
         alert(`🔄 Cart Updated\n\n${messages.join('\n\n')}`);
-        console.warn('[Cart] Stock validation completed:', { updates, removals });
+        logWarn('[Cart] Stock validation completed:', { updates, removals });
       } else {
-        console.log('[Cart] ✅ All items in stock');
+        logInfo('[Cart] ✅ All items in stock');
       }
     };
 

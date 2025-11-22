@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import ProductCard from '../ProductCard/ProductCard';
 import { type Product } from '../../data/productData';
 import { productGalleryService } from '../../services/productGalleryService';
+import { logInfo, logError } from '../../services/logger';
 import './ProductCardPreviewEditor.css';
 
 export interface ImageDisplaySettings {
@@ -81,7 +82,7 @@ const ProductCardPreviewEditor: React.FC<ProductCardPreviewEditorProps> = ({
         const urls = sortedGallery.map(img => img.cdnUrl || img.url).filter(Boolean);
 
         if (import.meta.env.DEV) {
-          console.log('🖼️ ProductCardPreviewEditor - Gallery loaded from DB:', {
+          logInfo('🖼️ ProductCardPreviewEditor - Gallery loaded from DB:', {
             masterProductId: product.masterProductId,
             totalImages: urls.length,
             mainImage: urls[0]?.substring(0, 50) + '...',
@@ -97,7 +98,7 @@ const ProductCardPreviewEditor: React.FC<ProductCardPreviewEditorProps> = ({
 
         setGalleryUrls(urls);
       } catch (error) {
-        console.error('Failed to load gallery for preview:', error);
+        logError('Failed to load gallery for preview:', error);
         setGalleryUrls([]);
       }
     };
@@ -166,7 +167,7 @@ const ProductCardPreviewEditor: React.FC<ProductCardPreviewEditorProps> = ({
       : [imageUrl, imageUrl]; // Fallback: duplicate if gallery not loaded yet
 
     if (import.meta.env.DEV) {
-      console.log('🖼️ ProductCardPreviewEditor - Building preview product:', {
+      logInfo('🖼️ ProductCardPreviewEditor - Building preview product:', {
         hasProduct: !!product,
         galleryUrlsLength: galleryUrls.length,
         previewGalleryLength: previewGallery.length,

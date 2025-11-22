@@ -9,6 +9,7 @@ import {
 import { getCurrentLanguage } from './apiUtils';
 import { getLocalizedHardcodedProductDataForService } from '../utils/productTranslationUtils';
 import i18n from '../i18n';
+import { logInfo, logWarn, logError } from './logger';
 
 interface ProductError extends Error {
   code?: string;
@@ -29,13 +30,13 @@ export class HybridProductService {
   constructor() {
     // Listen for language changes and clear cache
     i18n.on('languageChanged', () => {
-      console.log('🌐 Language changed, clearing product cache');
+      logInfo('🌐 Language changed, clearing product cache');
       this.clearCache();
     });
 
     // Force clear cache in development to ensure fresh data
     if (import.meta.env.DEV) {
-      console.log('🧹 DEV: Force clearing product cache for fresh data');
+      logInfo('🧹 DEV: Force clearing product cache for fresh data');
       this.clearCache();
     }
   }
@@ -56,7 +57,7 @@ export class HybridProductService {
     };
 
     if (import.meta.env.DEV) {
-      console.log('🔧 HybridService: getHardcodedDataByMasterProductId for', masterProductId);
+      logInfo('🔧 HybridService: getHardcodedDataByMasterProductId for', masterProductId);
     }
 
     return result;
@@ -87,7 +88,7 @@ export class HybridProductService {
     try {
       return JSON.parse(jsonString) as T;
     } catch (error) {
-      console.error('Failed to parse JSON field:', error, 'Value:', jsonString);
+      logError('Failed to parse JSON field:', error, 'Value:', jsonString);
       return fallback;
     }
   }
@@ -102,10 +103,10 @@ export class HybridProductService {
     allVariants: ProductVariantDto[],
     hardcodedData: HardcodedProductData | null
   ): Product {
-    console.log('🔀 HybridService: mergeProductData called');
-    console.log('🔀 MasterProduct:', masterProduct);
-    console.log('🔀 Selected Variant:', variant);
-    console.log('🔀 All Variants:', allVariants.length);
+    logInfo('🔀 HybridService: mergeProductData called');
+    logInfo('🔀 MasterProduct:', masterProduct);
+    logInfo('🔀 Selected Variant:', variant);
+    logInfo('🔀 All Variants:', allVariants.length);
 
     const features = hardcodedData?.features || [];
 
@@ -192,7 +193,7 @@ export class HybridProductService {
       buildInfo: masterProduct.buildInfo ?? undefined
     };
 
-    console.log('🔀 HybridService: final result:', {
+    logInfo('🔀 HybridService: final result:', {
       masterProductId: result.masterProductId,
       variantId: result.variantId,
       variantName: result.variantName,
@@ -226,7 +227,7 @@ export class HybridProductService {
     this.lastCacheTime = 0;
     this.lastCacheLanguage = '';
     if (import.meta.env.DEV) {
-      console.log('🧹 HybridService: Cache cleared');
+      logInfo('🧹 HybridService: Cache cleared');
     }
   }
 
@@ -238,7 +239,7 @@ export class HybridProductService {
     try {
       // Use cache for all products (no category filter) if valid
       if (!category && this.allProductsCache && this.isCacheValid()) {
-        console.log('📦 Using cached products');
+        logInfo('📦 Using cached products');
         return this.allProductsCache;
       }
 
@@ -254,7 +255,7 @@ export class HybridProductService {
       } else if (masterProductsResponse && 'content' in masterProductsResponse && Array.isArray(masterProductsResponse.content)) {
         masterProducts = (masterProductsResponse as PaginatedResponse<MasterProductDto>).content;
       } else {
-        console.error('Backend returned unexpected response format:', masterProductsResponse);
+        logError('Backend returned unexpected response format:', masterProductsResponse);
         throw new Error('Invalid response format from backend: expected array or paginated response');
       }
 
@@ -273,7 +274,7 @@ export class HybridProductService {
           const activeVariants = variants.filter(v => v.active);
 
           if (activeVariants.length === 0) {
-            console.warn(`Master product ${masterProduct.id} has no active variants, skipping`);
+            logWarn(`Master product ${masterProduct.id} has no active variants, skipping`);
             continue;
           }
 
@@ -291,7 +292,7 @@ export class HybridProductService {
 
           hybridProducts.push(mergedProduct);
         } catch (error) {
-          console.error(`Failed to fetch variants for master product ${masterProduct.id}:`, error);
+          logError(`Failed to fetch variants for master product ${masterProduct.id}:`, error);
           // Skip this product if variants can't be fetched
           continue;
         }
@@ -304,11 +305,11 @@ export class HybridProductService {
         this.lastCacheLanguage = currentLanguage;
       }
 
-      console.log(`✅ Fetched ${hybridProducts.length} products with variants`);
+      logInfo(`✅ Fetched ${hybridProducts.length} products with variants`);
       return hybridProducts;
 
     } catch (error) {
-      console.error('Failed to fetch products from backend:', error);
+      logError('Failed to fetch products from backend:', error);
       throw error;
     }
   }
@@ -324,13 +325,13 @@ export class HybridProductService {
       // Check cache first
       if (this.productCache.has(masterProductId) && this.isCacheValid()) {
         if (import.meta.env.MODE === 'development') {
-          console.log(`📦 Using cached product ${masterProductId} for language: ${currentLanguage}`);
+          logInfo(`📦 Using cached product ${masterProductId} for language: ${currentLanguage}`);
         }
         return this.productCache.get(masterProductId)!;
       }
 
       if (import.meta.env.MODE === 'development') {
-        console.log(`🔄 Fetching master product ${masterProductId} from backend for language: ${currentLanguage}`);
+        logInfo(`🔄 Fetching master product ${masterProductId} from backend for language: ${currentLanguage}`);
       }
 
       // Fetch master product from backend
@@ -377,7 +378,7 @@ export class HybridProductService {
         throw error;
       }
 
-      console.error(`Failed to fetch product ${masterProductId} from backend:`, error);
+      logError(`Failed to fetch product ${masterProductId} from backend:`, error);
       throw error;
     }
   }
@@ -425,7 +426,7 @@ export class HybridProductService {
       return this.mergeProductData(masterProduct, variant, activeVariants, hardcodedData);
 
     } catch (error) {
-      console.error(`Failed to fetch product by variant ${variantId}:`, error);
+      logError(`Failed to fetch product by variant ${variantId}:`, error);
       throw error;
     }
   }

@@ -3,6 +3,7 @@ import { wishlistService } from '../services/wishlistService';
 import { hybridProductService } from '../services/hybridProductService';
 import { useAuth } from './useAuth';
 import type { WishlistContextType, WishlistItem, WishlistStats } from '../types/wishlist';
+import { logError } from '../services/logger';
 
 const WishlistContext = createContext<WishlistContextType | undefined>(undefined);
 
@@ -60,7 +61,7 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
       setTotalCount(wishlistData.totalCount);
       setLastUpdated(wishlistData.lastUpdated);
     } catch (err: any) {
-      console.error('Failed to load wishlist:', err);
+      logError('Failed to load wishlist:', err);
 
       // Handle authentication errors from backend
       if (err.message?.includes('Authentication required') || err.message?.includes('session has expired')) {
@@ -94,7 +95,7 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
       const statsData = await wishlistService.getStats();
       setStats(statsData);
     } catch (err: any) {
-      console.error('Failed to load wishlist stats:', err);
+      logError('Failed to load wishlist stats:', err);
       // Stats are non-critical, fail silently
       setStats(null);
     }
@@ -141,7 +142,7 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
 
       return true;
     } catch (err: any) {
-      console.error('Failed to add to wishlist:', err);
+      logError('Failed to add to wishlist:', err);
 
       // Handle backend errors with proper error messages
       if (err.message?.includes('Authentication required') || err.message?.includes('session has expired')) {
@@ -196,7 +197,7 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
 
       return true;
     } catch (err: any) {
-      console.error('Failed to remove from wishlist:', err);
+      logError('Failed to remove from wishlist:', err);
 
       // Handle backend errors with proper error messages
       if (err.message?.includes('Authentication required') || err.message?.includes('session has expired')) {
@@ -237,7 +238,7 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
 
       return removedCount;
     } catch (err) {
-      console.error('Failed to cleanup wishlist:', err);
+      logError('Failed to cleanup wishlist:', err);
       setError('Failed to cleanup wishlist');
       throw err;
     }
@@ -256,7 +257,7 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
       await loadWishlist();
       await loadStats();
     } catch (err: any) {
-      console.error('Failed to add multiple items to wishlist:', err);
+      logError('Failed to add multiple items to wishlist:', err);
 
       if (err.message?.includes('Authentication required') || err.message?.includes('session has expired')) {
         setError('Please log in to add items to wishlist');
@@ -282,7 +283,7 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
       await loadWishlist();
       await loadStats();
     } catch (err: any) {
-      console.error('Failed to remove multiple items from wishlist:', err);
+      logError('Failed to remove multiple items from wishlist:', err);
 
       if (err.message?.includes('Authentication required') || err.message?.includes('session has expired')) {
         setError('Please log in to remove items from wishlist');
