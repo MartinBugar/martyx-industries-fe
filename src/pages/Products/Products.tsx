@@ -322,16 +322,23 @@ const Products: React.FC = () => {
                                             <div className="product-card-content">
                                                 <h3 className="product-card-title">{p.name}</h3>
                                                 <p className="product-card-description">{p.description}</p>
-                                                <div className="product-card-price">
-                                                    {(() => {
-                                                        const { prefix, price } = getPriceDisplay(p);
-                                                        return `${prefix}${price.toFixed(2)} ${p.currency === 'EUR' ? '€' : p.currency}`;
-                                                    })()}
-                                                </div>
                                             </div>
                                         </Link>
 
-                                        <div className="product-card-actions">
+                                        <div className="product-card-footer">
+                                            <div className="product-card-price">
+                                                {(() => {
+                                                    const { prefix, price } = getPriceDisplay(p);
+                                                    return (
+                                                        <>
+                                                            {prefix}{price.toFixed(2)}
+                                                            <span>€</span>
+                                                        </>
+                                                    );
+                                                })()}
+                                            </div>
+
+                                            <div className="product-card-actions">
                                             <button
                                                 className={`add-to-cart-btn${popups[popupKey]?.visible ? ` is-popup ${popups[popupKey].variant}` : ''}`}
                                                 onClick={handleAdd(p)}
@@ -378,6 +385,7 @@ const Products: React.FC = () => {
                           </span>
                                                 )}
                                             </button>
+                                            </div>
                                         </div>
                                     </article>
                                 );
