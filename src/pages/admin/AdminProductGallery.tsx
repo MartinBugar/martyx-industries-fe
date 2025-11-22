@@ -7,7 +7,6 @@ import { adminProductsService, type BaseProduct } from '../../services/adminProd
 import ProductGalleryUpload from '../../components/ProductGalleryUpload/ProductGalleryUpload';
 import ProductCardPreviewEditor, { type ImageDisplaySettings } from '../../components/ProductCardPreviewEditor/ProductCardPreviewEditor';
 import { productGalleryService, type GalleryImage } from '../../services/productGalleryService';
-import ProductCard from '../../components/ProductCard/ProductCard';
 import { hybridProductService } from '../../services/hybridProductService';
 import { type Product } from '../../data/productData';
 
@@ -122,7 +121,11 @@ const AdminProductGallery: React.FC = () => {
         Number(id),
         null, // variantId = null for master product
         selectedImage.id,
-        settings
+        {
+          cardDisplayZoom: settings.zoom,
+          cardDisplayOffsetX: settings.offsetX,
+          cardDisplayOffsetY: settings.offsetY
+        }
       );
 
       // Update local state
@@ -138,9 +141,28 @@ const AdminProductGallery: React.FC = () => {
     }
   };
 
-  // Dummy handler for add to cart in preview (admin mode - doesn't actually add)
-  const handlePreviewAddToCart = () => {
-    console.log('🛒 Preview: Add to cart clicked (admin mode - no action)');
+  const handleSetPrimary = async (imageId: string) => {
+    if (!id) return;
+    try {
+      await productGalleryService.setPrimaryImage(Number(id), null, imageId);
+      console.log('✅ Primary image set successfully');
+      await loadGalleryImages(); // Refresh gallery
+    } catch (e) {
+      console.error('❌ Failed to set primary image:', e);
+      setError('Failed to set primary image');
+    }
+  };
+
+  const handleSetHover = async (imageId: string) => {
+    if (!id) return;
+    try {
+      await productGalleryService.setHoverImage(Number(id), null, imageId);
+      console.log('✅ Hover image set successfully');
+      await loadGalleryImages(); // Refresh gallery
+    } catch (e) {
+      console.error('❌ Failed to set hover image:', e);
+      setError('Failed to set hover image');
+    }
   };
 
   // Navigation tabs
@@ -276,78 +298,138 @@ const AdminProductGallery: React.FC = () => {
                       </label>
                       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }} role="group" aria-label="Product images gallery">
                         {galleryImages.map((image) => (
-                          <button
-                            key={image.id}
-                            type="button"
-                            onClick={() => handleImageSelect(image.id)}
-                            onKeyPress={(e) => {
-                              if (e.key === 'Enter' || e.key === ' ') {
-                                e.preventDefault();
-                                handleImageSelect(image.id);
-                              }
-                            }}
-                            aria-label={`${image.originalName}${image.isPrimary ? ' - Main image' : ''}${selectedImage?.id === image.id ? ' - Currently selected' : ''}`}
-                            aria-pressed={selectedImage?.id === image.id}
-                            className="image-picker-button"
-                            style={{
-                              position: 'relative',
-                              cursor: 'pointer',
-                              border: selectedImage?.id === image.id ? '3px solid #3b82f6' : '2px solid #e5e7eb',
-                              borderRadius: 8,
-                              overflow: 'hidden',
-                              width: 100,
-                              height: 100,
-                              transition: 'all 0.2s',
-                              padding: 0,
-                              background: 'none'
-                            }}
-                          >
-                            <img
-                              src={image.cdnUrl || image.url}
-                              alt=""
-                              role="presentation"
-                              loading="lazy"
+                          <div key={image.id} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                            <button
+                              type="button"
+                              onClick={() => handleImageSelect(image.id)}
+                              onKeyPress={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                  e.preventDefault();
+                                  handleImageSelect(image.id);
+                                }
+                              }}
+                              aria-label={`${image.originalName}${image.isPrimary ? ' - Main image' : ''}${selectedImage?.id === image.id ? ' - Currently selected' : ''}`}
+                              aria-pressed={selectedImage?.id === image.id}
+                              className="image-picker-button"
                               style={{
-                                width: '100%',
-                                height: '100%',
-                                objectFit: 'cover',
-                                display: 'block'
+                                position: 'relative',
+                                cursor: 'pointer',
+                                border: selectedImage?.id === image.id ? '3px solid #3b82f6' : '2px solid #e5e7eb',
+                                borderRadius: 8,
+                                overflow: 'hidden',
+                                width: 120,
+                                height: 120,
+                                transition: 'all 0.2s',
+                                padding: 0,
+                                background: 'none'
                               }}
-                            />
-                            {image.isPrimary && (
-                              <div style={{
-                                position: 'absolute',
-                                top: 4,
-                                right: 4,
-                                background: '#f59e0b',
-                                color: '#fff',
-                                padding: '2px 6px',
-                                borderRadius: 4,
-                                fontSize: 10,
-                                fontWeight: 600
-                              }}
-                              aria-label="Main image badge">
-                                ⭐ Main
-                              </div>
-                            )}
-                            {selectedImage?.id === image.id && (
-                              <div style={{
-                                position: 'absolute',
-                                bottom: 0,
-                                left: 0,
-                                right: 0,
-                                background: 'rgba(59, 130, 246, 0.9)',
-                                color: '#fff',
-                                padding: 4,
-                                fontSize: 10,
-                                textAlign: 'center',
-                                fontWeight: 600
-                              }}
-                              aria-hidden="true">
-                                SELECTED
-                              </div>
-                            )}
-                          </button>
+                            >
+                              <img
+                                src={image.cdnUrl || image.url}
+                                alt=""
+                                role="presentation"
+                                loading="lazy"
+                                style={{
+                                  width: '100%',
+                                  height: '100%',
+                                  objectFit: 'cover',
+                                  display: 'block'
+                                }}
+                              />
+                              {image.isPrimary && (
+                                <div style={{
+                                  position: 'absolute',
+                                  top: 4,
+                                  left: 4,
+                                  background: '#f59e0b',
+                                  color: '#fff',
+                                  padding: '2px 6px',
+                                  borderRadius: 4,
+                                  fontSize: 10,
+                                  fontWeight: 600
+                                }}
+                                aria-label="Main image badge">
+                                  ⭐ Main
+                                </div>
+                              )}
+                              {image.isHover && (
+                                <div style={{
+                                  position: 'absolute',
+                                  top: 4,
+                                  right: 4,
+                                  background: '#8b5cf6',
+                                  color: '#fff',
+                                  padding: '2px 6px',
+                                  borderRadius: 4,
+                                  fontSize: 10,
+                                  fontWeight: 600
+                                }}
+                                aria-label="Hover image badge">
+                                  👆 Hover
+                                </div>
+                              )}
+                              {selectedImage?.id === image.id && (
+                                <div style={{
+                                  position: 'absolute',
+                                  bottom: 0,
+                                  left: 0,
+                                  right: 0,
+                                  background: 'rgba(59, 130, 246, 0.9)',
+                                  color: '#fff',
+                                  padding: 4,
+                                  fontSize: 10,
+                                  textAlign: 'center',
+                                  fontWeight: 600
+                                }}
+                                aria-hidden="true">
+                                  SELECTED
+                                </div>
+                              )}
+                            </button>
+                            {/* Action buttons */}
+                            <div style={{ display: 'flex', gap: 4, width: 120 }}>
+                              <button
+                                type="button"
+                                onClick={() => handleSetPrimary(image.id)}
+                                disabled={image.isPrimary || image.isHover}
+                                title={image.isHover ? 'Cannot set hover image as primary' : image.isPrimary ? 'Already primary' : 'Set as primary image'}
+                                style={{
+                                  flex: 1,
+                                  padding: '4px 6px',
+                                  fontSize: 9,
+                                  fontWeight: 600,
+                                  border: 'none',
+                                  borderRadius: 4,
+                                  background: (image.isPrimary || image.isHover) ? '#d1d5db' : '#f59e0b',
+                                  color: '#fff',
+                                  cursor: (image.isPrimary || image.isHover) ? 'not-allowed' : 'pointer',
+                                  opacity: (image.isPrimary || image.isHover) ? 0.5 : 1
+                                }}
+                              >
+                                ⭐
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleSetHover(image.id)}
+                                disabled={image.isHover || image.isPrimary}
+                                title={image.isPrimary ? 'Cannot set primary image as hover' : image.isHover ? 'Already hover' : 'Set as hover image'}
+                                style={{
+                                  flex: 1,
+                                  padding: '4px 6px',
+                                  fontSize: 9,
+                                  fontWeight: 600,
+                                  border: 'none',
+                                  borderRadius: 4,
+                                  background: (image.isHover || image.isPrimary) ? '#d1d5db' : '#8b5cf6',
+                                  color: '#fff',
+                                  cursor: (image.isHover || image.isPrimary) ? 'not-allowed' : 'pointer',
+                                  opacity: (image.isHover || image.isPrimary) ? 0.5 : 1
+                                }}
+                              >
+                                👆
+                              </button>
+                            </div>
+                          </div>
                         ))}
                       </div>
                     </div>

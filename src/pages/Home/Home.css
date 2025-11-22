@@ -2,8 +2,8 @@
 
 /* Import component styles used in this page */
 @import url('../../components/home/Hero.css');
-@import url('../../components/home/FeaturedProducts.css');
-/* Removed @import of old home.css - conflicts with ProductCard component hover effects */
+/* Removed FeaturedProducts.css - using ProductCard component instead */
+/* Removed home.css - conflicts with ProductCard component hover effects */
 
 /* ========== MINIMALIST MODERN HERO (2025) ========== */
 
@@ -470,6 +470,8 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
 }
+
+/* ProductCard component handles all hover effects - no overrides needed */
 
 /* Responsive Featured Products Grid */
 @media (max-width: 1024px) {
@@ -1555,26 +1557,8 @@
     }
 }
 
-/* Featured Products Grid */
-.featured-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-}
-
-@media (min-width: 640px) {
-    .featured-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (min-width: 1024px) {
-    .featured-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
 /* Product cards now use ProductCard component - no custom styles needed */
+/* Featured grid styles are defined above (lines 468-518) */
 
 /* Accessibility helpers */
 .sr-only {

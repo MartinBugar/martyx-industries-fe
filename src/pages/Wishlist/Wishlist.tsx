@@ -34,7 +34,6 @@ const Wishlist: React.FC = () => {
   const [viewMode] = useState<'grid' | 'list'>('grid');
   const [showStats, setShowStats] = useState(false);
   const [productsData, setProductsData] = useState<Map<number, Product>>(new Map());
-  const [loadingProducts, setLoadingProducts] = useState(false);
 
   useEffect(() => {
     // Only redirect to login if auth is not loading and user is not authenticated
@@ -58,7 +57,6 @@ const Wishlist: React.FC = () => {
         return;
       }
 
-      setLoadingProducts(true);
       const newProductsData = new Map<number, Product>();
 
       try {
@@ -71,14 +69,39 @@ const Wishlist: React.FC = () => {
             try {
               const galleryData = await productGalleryService.getProductImages(product.masterProductId.toString());
 
-              // Sort: PRIMARY image first, then by order (same logic as Products page)
+              // Sort: PRIMARY image first, HOVER image second, then by order (same logic as Products page)
               const sortedGallery = galleryData.sort((a, b) => {
                 // Primary image always goes first
                 if (a.isPrimary && !b.isPrimary) return -1;
                 if (!a.isPrimary && b.isPrimary) return 1;
+                // Hover image goes second (after primary)
+                if (a.isHover && !b.isHover) return -1;
+                if (!a.isHover && b.isHover) return 1;
                 // Otherwise sort by order
                 return (a.order || 0) - (b.order || 0);
               });
+
+              // Fallback: if no hover image is set, ensure backwards compatibility
+              // by placing the second non-primary image (by order) in position [1]
+              const hasHoverImage = sortedGallery.some(img => img.isHover);
+              if (!hasHoverImage && sortedGallery.length >= 2) {
+                const nonPrimaryImages = galleryData
+                  .filter(img => !img.isPrimary)
+                  .sort((a, b) => (a.order || 0) - (b.order || 0));
+
+                if (nonPrimaryImages.length >= 2) {
+                  // Find the second non-primary image by order
+                  const secondNonPrimary = nonPrimaryImages[1];
+                  const currentIndex = sortedGallery.findIndex(img => img.id === secondNonPrimary.id);
+
+                  // Move it to position 1 if not already there
+                  if (currentIndex > 1) {
+                    sortedGallery.splice(currentIndex, 1);
+                    sortedGallery.splice(1, 0, secondNonPrimary);
+                  }
+                }
+              }
+
               const galleryUrls = sortedGallery.map(img => img.cdnUrl || img.url).filter(Boolean);
 
               if (import.meta.env.DEV) {
@@ -128,8 +151,6 @@ const Wishlist: React.FC = () => {
         if (import.meta.env.DEV) {
           console.error('Failed to fetch products data:', err);
         }
-      } finally {
-        setLoadingProducts(false);
       }
     };
 

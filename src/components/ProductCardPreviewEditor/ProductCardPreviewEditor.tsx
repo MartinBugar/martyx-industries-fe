@@ -25,7 +25,6 @@ interface ProductCardPreviewEditorProps {
  */
 const ProductCardPreviewEditor: React.FC<ProductCardPreviewEditorProps> = ({
   imageUrl,
-  imageName,
   initialSettings = { zoom: 1.0, offsetX: 0, offsetY: 0 },
   onSettingsChange,
   onSave,
@@ -34,7 +33,7 @@ const ProductCardPreviewEditor: React.FC<ProductCardPreviewEditorProps> = ({
   const [settings, setSettings] = useState<ImageDisplaySettings>(initialSettings);
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
-  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const debounceTimerRef = useRef<number | null>(null);
 
   // Update local settings when initial settings change (e.g., when selecting different image)
   useEffect(() => {
@@ -114,14 +113,10 @@ const ProductCardPreviewEditor: React.FC<ProductCardPreviewEditorProps> = ({
     requiresShipping: true,
     features: ['Premium Quality', 'Fast Shipping', 'Professional Grade'],
     modelPath: '',
-    gallery: [imageUrl],
+    // Include same image twice for hover effect preview (main + hover)
+    gallery: [imageUrl, imageUrl],
     interactionInstructions: [],
     availableVariants: []
-  };
-
-  // Dummy handler for add to cart in preview (doesn't actually add)
-  const handlePreviewAddToCart = () => {
-    console.log('🛒 Preview: Add to cart clicked (editor mode - no action)');
   };
 
   // Calculate CSS custom properties for image transformation
@@ -146,7 +141,7 @@ const ProductCardPreviewEditor: React.FC<ProductCardPreviewEditorProps> = ({
             product={previewProduct}
             showWishlistButton={true}
             showAddToCart={true}
-            onAddToCart={handlePreviewAddToCart}
+            onAddToCart={() => {}}
             disableLink={true}
             priority={true}
           />

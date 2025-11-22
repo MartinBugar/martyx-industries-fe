@@ -57,7 +57,7 @@ const MatrixBackground: React.FC<MatrixBackgroundProps> = ({
   color = '#C9A000',
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationFrameRef = useRef<number>();
+  const animationFrameRef = useRef<number | undefined>(undefined);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -90,17 +90,6 @@ const MatrixBackground: React.FC<MatrixBackgroundProps> = ({
       dropStartTimes[i] = currentTime + (Math.random() * 5000); // Stagger start times
       dropActive[i] = false; // Initially inactive
     }
-
-    // Color variations for depth effect (lighter chars appear closer)
-    const getColorVariant = (baseOpacity: number) => {
-      const colors = [
-        `${color}${Math.floor(baseOpacity * 0.3 * 255).toString(16).padStart(2, '0')}`, // Far
-        `${color}${Math.floor(baseOpacity * 0.5 * 255).toString(16).padStart(2, '0')}`, // Mid
-        `${color}${Math.floor(baseOpacity * 0.7 * 255).toString(16).padStart(2, '0')}`, // Near
-        `${color}${Math.floor(baseOpacity * 255).toString(16).padStart(2, '0')}`,       // Closest
-      ];
-      return colors[Math.floor(Math.random() * colors.length)];
-    };
 
     // Main animation loop
     const draw = () => {

@@ -60,72 +60,84 @@ const ProductCard: React.FC<ProductCardProps> = ({
     return isCDNUrl ? imageUrl : (isCDNEnabled() ? getBestImageUrl(getBaseNameFromPath(imageUrl), 800) : imageUrl);
   };
 
-  // Content wrapper component - either Link or div based on disableLink prop
-  const ContentWrapper = disableLink ? 'div' : Link;
-  const wrapperProps = disableLink ? {} : { to: `/products/${product.masterProductId}` };
+  // Shared image container content - ensures hover image works everywhere
+  const imageContainerContent = (
+    <div className="product-card-image-container">
+      {mainImage ? (
+        <>
+          <OptimizedImage
+            src={getImageUrl(mainImage)}
+            alt={`${product.name} - main image`}
+            className="product-card-image product-card-image-main"
+            priority={priority}
+            placeholder="/images/product-placeholder.svg"
+          />
+          {hoverImage && (
+            <OptimizedImage
+              src={getImageUrl(hoverImage)}
+              alt={`${product.name} - hover image`}
+              className="product-card-image product-card-image-hover"
+              placeholder="/images/product-placeholder.svg"
+            />
+          )}
+        </>
+      ) : (
+        <div className="product-card-placeholder">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
+            <circle cx="12" cy="13" r="3"></circle>
+          </svg>
+        </div>
+      )}
+
+      {showWishlistButton && (
+        <div className="product-card-wishlist">
+          <WishlistButton
+            productId={product.masterProductId}
+            size="small"
+            variant="icon"
+          />
+        </div>
+      )}
+
+      {isUnavailable && (
+        <div className="unavailable-overlay">
+          <span>Unavailable</span>
+        </div>
+      )}
+
+      {product.variantType === 'DIGITAL_ONLY' && (
+        <div className="product-badge">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          Digital
+        </div>
+      )}
+    </div>
+  );
+
+  // Shared content section
+  const contentSection = (
+    <div className="product-card-content">
+      <h3 className="product-card-title">{product.name}</h3>
+      <p className="product-card-description">{product.description}</p>
+    </div>
+  );
 
   return (
     <article className={`product-card ${isUnavailable ? 'product-card--unavailable' : ''} ${className}`}>
-      <ContentWrapper {...wrapperProps} className="product-card-link">
-        <div className="product-card-image-container">
-          {mainImage ? (
-            <>
-              <OptimizedImage
-                src={getImageUrl(mainImage)}
-                alt={`${product.name} - main image`}
-                className="product-card-image product-card-image-main"
-                priority={priority}
-                placeholder="/images/product-placeholder.svg"
-              />
-              {hoverImage && (
-                <OptimizedImage
-                  src={getImageUrl(hoverImage)}
-                  alt={`${product.name} - hover image`}
-                  className="product-card-image product-card-image-hover"
-                  placeholder="/images/product-placeholder.svg"
-                />
-              )}
-            </>
-          ) : (
-            <div className="product-card-placeholder">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
-                <circle cx="12" cy="13" r="3"></circle>
-              </svg>
-            </div>
-          )}
-
-          {showWishlistButton && (
-            <div className="product-card-wishlist">
-              <WishlistButton
-                productId={product.masterProductId}
-                size="small"
-                variant="icon"
-              />
-            </div>
-          )}
-
-          {isUnavailable && (
-            <div className="unavailable-overlay">
-              <span>Unavailable</span>
-            </div>
-          )}
-
-          {product.variantType === 'DIGITAL_ONLY' && (
-            <div className="product-badge">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="12" y1="15" x2="12" y2="3"></line>
-              </svg>
-              Digital
-            </div>
-          )}
+      {disableLink ? (
+        <div className="product-card-link">
+          {imageContainerContent}
+          {contentSection}
         </div>
-
-        <div className="product-card-content">
-          <h3 className="product-card-title">{product.name}</h3>
-          <p className="product-card-description">{product.description}</p>
-        </div>
-      </ContentWrapper>
+      ) : (
+        <Link to={`/products/${product.masterProductId}`} className="product-card-link">
+          {imageContainerContent}
+          {contentSection}
+        </Link>
+      )}
 
       <div className="product-card-footer">
         <div className="product-card-price">

@@ -3,16 +3,22 @@
 /* Base optimized image styles - only what's needed for optimization */
 .optimized-image {
   /* Zachovaj všetky existujúce štýly, pridaj len optimalizácie */
+  /* NEPOUŽÍVAME opacity - nechávame to na parent CSS (napr. ProductCard) */
 }
 
 .optimized-image.loading {
   /* Jemný loading efekt bez narušenia layoutu */
   filter: blur(0.5px);
+  /* Nízka špecificita - loading opacity len ak parent to nenastaví */
+  opacity: 0.9;
 }
 
 .optimized-image.loaded {
   /* Smooth transition keď sa obrázok načíta */
   filter: none;
+  /* Opacity sa vracia na default (1) alebo parent CSS prevezme kontrolu */
+  opacity: 1;
 }
 
-/* Žiadne ďalšie štýly - necháme existujúce CSS triedy fungovať normálne */
+/* DÔLEŽITÉ: ProductCard CSS (.product-card-image-main, .product-card-image-hover)
+   majú vyššiu špecificitu a prepisujú tieto opacity hodnoty pre hover efekty */

@@ -33,7 +33,7 @@ const ParticlesBackground: React.FC<ParticlesBackgroundProps> = ({
   speed = 0.5,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationFrameRef = useRef<number>();
+  const animationFrameRef = useRef<number | undefined>(undefined);
   const particlesRef = useRef<Particle[]>([]);
 
   useEffect(() => {

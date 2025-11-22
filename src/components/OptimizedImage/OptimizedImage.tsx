@@ -78,12 +78,11 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   // Kombinuj existujúce className s našimi optimalizačnými triedami
   const combinedClassName = `${className} optimized-image ${loaded ? 'loaded' : 'loading'}`.trim();
 
-  // Kombinuj existujúce style s našimi optimalizačnými štýlmi
+  // Kombinuj existujúce style - NEPOUŽÍVAME inline opacity/transition
+  // Nechávame CSS triedy kontrolovať opacity (napr. ProductCard hover effects)
   const combinedStyle = {
-    ...style,
-    // Pridaj len minimálne potrebné štýly pre optimalizáciu
-    transition: loaded ? 'opacity 0.3s ease' : 'none',
-    opacity: loaded ? 1 : (priority || eager ? 1 : 0.8)
+    ...style
+    // Odstránené inline opacity a transition - CSS má plnú kontrolu
   };
 
   // Determine which source to use

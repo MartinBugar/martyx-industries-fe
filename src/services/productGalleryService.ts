@@ -13,6 +13,7 @@ export interface GalleryImage {
   thumbnailUrl?: string;
   order: number;
   isPrimary?: boolean;  // true = hlavný obrázok produktu
+  isHover?: boolean;    // true = hover obrázok pre product card
 
   // Product card display settings
   cardDisplayZoom?: number;     // Zoom level (1.00 = 100%, range: 0.5-3.0)
@@ -656,6 +657,32 @@ export class ProductGalleryService {
 
     if (!response.ok) {
       throw new Error(`Failed to set primary image: ${response.status}`);
+    }
+
+    return handleResponse(response);
+  }
+
+  /**
+   * Set image as hover image for master product or variant
+   */
+  async setHoverImage(masterProductId: number, variantId: number | null, imageId: string): Promise<GalleryImage> {
+    const endpoint = variantId
+      ? `${API_BASE_URL}/api/master-products/${masterProductId}/variants/${variantId}/gallery/${imageId}/set-hover`
+      : `${API_BASE_URL}/api/master-products/${masterProductId}/gallery/${imageId}/set-hover`;
+
+    const headers = { ...defaultHeaders };
+    const token = localStorage.getItem('token');
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(endpoint, withLangHeaders({
+      method: 'PUT',
+      headers: headers as HeadersInit,
+    }));
+
+    if (!response.ok) {
+      throw new Error(`Failed to set hover image: ${response.status}`);
     }
 
     return handleResponse(response);

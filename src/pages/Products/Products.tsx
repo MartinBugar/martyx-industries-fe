@@ -42,14 +42,39 @@ const Products: React.FC = () => {
                         try {
                             const galleryData = await productGalleryService.getProductImages(product.masterProductId.toString());
 
-                            // Sort: PRIMARY image first, then by order
+                            // Sort: PRIMARY image first, HOVER image second, then by order
                             const sortedGallery = galleryData.sort((a, b) => {
                                 // Primary image always goes first
                                 if (a.isPrimary && !b.isPrimary) return -1;
                                 if (!a.isPrimary && b.isPrimary) return 1;
+                                // Hover image goes second (after primary)
+                                if (a.isHover && !b.isHover) return -1;
+                                if (!a.isHover && b.isHover) return 1;
                                 // Otherwise sort by order
                                 return (a.order || 0) - (b.order || 0);
                             });
+
+                            // Fallback: if no hover image is set, ensure backwards compatibility
+                            // by placing the second non-primary image (by order) in position [1]
+                            const hasHoverImage = sortedGallery.some(img => img.isHover);
+                            if (!hasHoverImage && sortedGallery.length >= 2) {
+                                const nonPrimaryImages = galleryData
+                                    .filter(img => !img.isPrimary)
+                                    .sort((a, b) => (a.order || 0) - (b.order || 0));
+
+                                if (nonPrimaryImages.length >= 2) {
+                                    // Find the second non-primary image by order
+                                    const secondNonPrimary = nonPrimaryImages[1];
+                                    const currentIndex = sortedGallery.findIndex(img => img.id === secondNonPrimary.id);
+
+                                    // Move it to position 1 if not already there
+                                    if (currentIndex > 1) {
+                                        sortedGallery.splice(currentIndex, 1);
+                                        sortedGallery.splice(1, 0, secondNonPrimary);
+                                    }
+                                }
+                            }
+
                             const galleryUrls = sortedGallery.map(img => img.cdnUrl || img.url).filter(Boolean);
 
                             if (import.meta.env.DEV) {
