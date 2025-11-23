@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Save, X} from 'lucide-react';
+import {Save} from 'lucide-react';
 import {Button} from '../ui';
 import type {ProductVariantDto} from '../../services/adminProductsService';
 
