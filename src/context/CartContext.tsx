@@ -528,106 +528,125 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   }, [mergeCart]);
 
   // Periodic stock validation (every 60 seconds)
+  // Fixed: Interval is created ONCE on mount to prevent interval stacking
   useEffect(() => {
     const validateCartStock = async () => {
-      if (items.length === 0) return;
-
-      logInfo('[Cart] Validating stock for', items.length, 'items...');
-
-      const updates: { variantId: number; oldQty: number; newQty: number; productName: string }[] = [];
-      const removals: { variantId: number; productName: string }[] = [];
-
-      // Check stock for each item
-      for (const item of items) {
-        try {
-          const stockData = await stockService.getAvailableStock(item.product.variantId);
-
-          // Skip digital products (they don't have stock constraints)
-          if (item.product.variantType === 'DIGITAL_ONLY') continue;
-
-          // If item quantity exceeds available stock
-          if (item.quantity > stockData.availableStock) {
-            if (stockData.availableStock > 0) {
-              // Reduce quantity to match available stock
-              updates.push({
-                variantId: item.product.variantId,
-                oldQty: item.quantity,
-                newQty: stockData.availableStock,
-                productName: item.product.name
-              });
-            } else {
-              // No stock available - mark for removal
-              removals.push({
-                variantId: item.product.variantId,
-                productName: item.product.name
-              });
-            }
-          }
-        } catch (error) {
-          logError(`[Cart] Failed to validate stock for variant ${item.product.variantId}:`, error);
+      // Access current items via setItems callback to get latest state without dependency
+      setItems(currentItems => {
+        // Skip validation if cart is empty
+        if (currentItems.length === 0) {
+          logInfo('[Cart] Skipping stock validation - cart is empty');
+          return currentItems;
         }
-      }
 
-      // Apply updates and removals
-      if (updates.length > 0 || removals.length > 0) {
-        setItems(prevItems => {
-          let updatedItems = [...prevItems];
+        logInfo('[Cart] Validating stock for', currentItems.length, 'items...');
 
-          // Update quantities
-          for (const update of updates) {
-            const index = updatedItems.findIndex(i => i.product.variantId === update.variantId);
-            if (index >= 0) {
-              updatedItems[index] = {
-                ...updatedItems[index],
-                quantity: update.newQty
-              };
+        // Run async validation in background without blocking state update
+        (async () => {
+          const updates: { variantId: number; oldQty: number; newQty: number; productName: string }[] = [];
+          const removals: { variantId: number; productName: string }[] = [];
 
-              // Sync to backend
-              void cartService
-                .updateQuantity(update.variantId, update.newQty, isAuthenticated ? undefined : sessionId)
-                .catch(err => logWarn('[Cart] Failed to update quantity in backend:', err));
+          // Check stock for each item
+          for (const item of currentItems) {
+            try {
+              const stockData = await stockService.getAvailableStock(item.product.variantId);
+
+              // Skip digital products (they don't have stock constraints)
+              if (item.product.variantType === 'DIGITAL_ONLY') continue;
+
+              // If item quantity exceeds available stock
+              if (item.quantity > stockData.availableStock) {
+                if (stockData.availableStock > 0) {
+                  // Reduce quantity to match available stock
+                  updates.push({
+                    variantId: item.product.variantId,
+                    oldQty: item.quantity,
+                    newQty: stockData.availableStock,
+                    productName: item.product.name
+                  });
+                } else {
+                  // No stock available - mark for removal
+                  removals.push({
+                    variantId: item.product.variantId,
+                    productName: item.product.name
+                  });
+                }
+              }
+            } catch (error) {
+              logError(`[Cart] Failed to validate stock for variant ${item.product.variantId}:`, error);
             }
           }
 
-          // Remove out-of-stock items
-          for (const removal of removals) {
-            updatedItems = updatedItems.filter(i => i.product.variantId !== removal.variantId);
+          // Apply updates and removals
+          if (updates.length > 0 || removals.length > 0) {
+            setItems(prevItems => {
+              let updatedItems = [...prevItems];
 
-            // Sync to backend
-            void cartService
-              .removeItem(removal.variantId, isAuthenticated ? undefined : sessionId)
-              .catch(err => logWarn('[Cart] Failed to remove item from backend:', err));
+              // Update quantities
+              for (const update of updates) {
+                const index = updatedItems.findIndex(i => i.product.variantId === update.variantId);
+                if (index >= 0) {
+                  updatedItems[index] = {
+                    ...updatedItems[index],
+                    quantity: update.newQty
+                  };
+
+                  // Sync to backend
+                  void cartService
+                    .updateQuantity(update.variantId, update.newQty, isAuthenticated ? undefined : sessionId)
+                    .catch(err => logWarn('[Cart] Failed to update quantity in backend:', err));
+                }
+              }
+
+              // Remove out-of-stock items
+              for (const removal of removals) {
+                updatedItems = updatedItems.filter(i => i.product.variantId !== removal.variantId);
+
+                // Sync to backend
+                void cartService
+                  .removeItem(removal.variantId, isAuthenticated ? undefined : sessionId)
+                  .catch(err => logWarn('[Cart] Failed to remove item from backend:', err));
+              }
+
+              return updatedItems;
+            });
+
+            // Notify user about changes
+            const messages: string[] = [];
+            if (updates.length > 0) {
+              messages.push(`Updated quantities:\n${updates.map(u => `  • ${u.productName}: ${u.oldQty} → ${u.newQty}`).join('\n')}`);
+            }
+            if (removals.length > 0) {
+              messages.push(`Removed (out of stock):\n${removals.map(r => `  • ${r.productName}`).join('\n')}`);
+            }
+
+            alert(`🔄 Cart Updated\n\n${messages.join('\n\n')}`);
+            logWarn('[Cart] Stock validation completed:', { updates, removals });
+          } else {
+            logInfo('[Cart] ✅ All items in stock');
           }
+        })();
 
-          return updatedItems;
-        });
-
-        // Notify user about changes
-        const messages: string[] = [];
-        if (updates.length > 0) {
-          messages.push(`Updated quantities:\n${updates.map(u => `  • ${u.productName}: ${u.oldQty} → ${u.newQty}`).join('\n')}`);
-        }
-        if (removals.length > 0) {
-          messages.push(`Removed (out of stock):\n${removals.map(r => `  • ${r.productName}`).join('\n')}`);
-        }
-
-        alert(`🔄 Cart Updated\n\n${messages.join('\n\n')}`);
-        logWarn('[Cart] Stock validation completed:', { updates, removals });
-      } else {
-        logInfo('[Cart] ✅ All items in stock');
-      }
+        // Return current items unchanged (async validation happens in background)
+        return currentItems;
+      });
     };
 
     // Run validation immediately on mount
     void validateCartStock();
 
-    // Set up interval for periodic validation (60 seconds)
+    // Set up interval for periodic validation (60 seconds) - created ONCE
     const interval = setInterval(() => {
       void validateCartStock();
     }, 60000); // 60 seconds
 
-    return () => clearInterval(interval);
-  }, [items, isAuthenticated, sessionId]);
+    logInfo('[Cart] Stock validation interval created');
+
+    return () => {
+      clearInterval(interval);
+      logInfo('[Cart] Stock validation interval cleared');
+    };
+  }, [isAuthenticated, sessionId]); // Removed 'items' from dependencies to prevent interval recreation
 
   // Memoize totals
   const totals = useMemo(() => {

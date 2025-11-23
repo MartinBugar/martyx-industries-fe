@@ -67,11 +67,18 @@ const ParticlesBackground: React.FC<ParticlesBackgroundProps> = ({
     };
     initParticles();
 
-    // Animation loop
+    // Animation loop (OPTIMIZED)
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      particlesRef.current.forEach((particle) => {
+      const particles = particlesRef.current;
+      const maxDistance = 150;
+      const maxDistanceSquared = maxDistance * maxDistance; // Avoid sqrt in distance check
+
+      // Update and draw particles
+      for (let i = 0; i < particles.length; i++) {
+        const particle = particles[i];
+
         // Update position
         particle.x += particle.vx;
         particle.y += particle.vy;
@@ -87,24 +94,35 @@ const ParticlesBackground: React.FC<ParticlesBackgroundProps> = ({
         ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
         ctx.fillStyle = `${color}${Math.floor(particle.opacity * 255).toString(16).padStart(2, '0')}`;
         ctx.fill();
+      }
 
-        // Draw connection lines between close particles
-        particlesRef.current.forEach((otherParticle) => {
+      // Draw connection lines (OPTIMIZED: avoid duplicate checks)
+      for (let i = 0; i < particles.length; i++) {
+        const particle = particles[i];
+
+        // Only check particles after this one (i+1 onwards) to avoid duplicate connections
+        for (let j = i + 1; j < particles.length; j++) {
+          const otherParticle = particles[j];
+
           const dx = particle.x - otherParticle.x;
           const dy = particle.y - otherParticle.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
+          const distanceSquared = dx * dx + dy * dy; // Squared distance (no sqrt yet)
 
-          if (distance < 150) {
+          // Use squared distance comparison (much faster than sqrt)
+          if (distanceSquared < maxDistanceSquared) {
+            // Only calculate sqrt when we need the actual distance for opacity
+            const distance = Math.sqrt(distanceSquared);
+
             ctx.beginPath();
             ctx.moveTo(particle.x, particle.y);
             ctx.lineTo(otherParticle.x, otherParticle.y);
-            const lineOpacity = (1 - distance / 150) * 0.3; // More visible lines
+            const lineOpacity = (1 - distance / maxDistance) * 0.3;
             ctx.strokeStyle = `${color}${Math.floor(lineOpacity * 255).toString(16).padStart(2, '0')}`;
             ctx.lineWidth = 1;
             ctx.stroke();
           }
-        });
-      });
+        }
+      }
 
       animationFrameRef.current = requestAnimationFrame(animate);
     };

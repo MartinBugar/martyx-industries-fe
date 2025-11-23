@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { type Product } from '../../data/productData';
@@ -176,8 +176,8 @@ const Home: React.FC = () => {
     };
   }, []);
 
-  // Helper function to render star rating
-  const renderStars = (rating: number) => {
+  // Helper function to render star rating (memoized)
+  const renderStars = useCallback((rating: number) => {
     return (
       <div className="star-rating">
         {[1, 2, 3, 4, 5].map((star) => (
@@ -188,10 +188,10 @@ const Home: React.FC = () => {
         ))}
       </div>
     );
-  };
+  }, []);
 
-  // Helper function to format relative date
-  const formatRelativeDate = (dateStr: string): string => {
+  // Helper function to format relative date (memoized)
+  const formatRelativeDate = useCallback((dateStr: string): string => {
     const date = new Date(dateStr);
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
@@ -209,9 +209,10 @@ const Home: React.FC = () => {
       const years = Math.floor(diffDays / 365);
       return years === 1 ? '1 year ago' : `${years} years ago`;
     }
-  };
+  }, []);
 
-  const handleAdd = (p: Product) => () => {
+  // Handle add to cart with popup feedback (memoized)
+  const handleAdd = useCallback((p: Product) => () => {
     const status = addToCart(p);
     const isLimit = status === 'limit';
     const message = isLimit ? t('cart.add_limit', { ns: 'products' }) : t('cart.add_success', { ns: 'products' });
@@ -230,7 +231,7 @@ const Home: React.FC = () => {
       }));
       delete timersRef.current[key];
     }, 2000);
-  };
+  }, [addToCart, t]);
 
   logInfo('🎨 [HOME] About to render. visibilityMap:', visibilityMap);
   logInfo('🎨 [HOME] testimonials.length:', testimonials.length);

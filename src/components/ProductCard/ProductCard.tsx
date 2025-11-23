@@ -39,7 +39,7 @@ const getPriceDisplay = (product: Product): { prefix: string; price: number } =>
   return { prefix: '', price: product.priceWithVat };
 };
 
-const ProductCard: React.FC<ProductCardProps> = ({
+const ProductCard: React.FC<ProductCardProps> = React.memo(({
   product,
   onAddToCart,
   showWishlistButton = true,
@@ -213,6 +213,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
       {children}
     </article>
   );
-};
+});
+
+ProductCard.displayName = 'ProductCard';
 
 export default ProductCard;
