@@ -219,7 +219,6 @@ const Checkout: React.FC = () => {
 
   // Credit config from DB
   const [creditConfig, setCreditConfig] = useState<CreditUsageConfigDto | null>(null);
-  const [isLoadingCreditConfig, setIsLoadingCreditConfig] = useState(false);
 
   // Shipping state
   const [shippingOptions, setShippingOptions] = useState<ShippingOptionDto[]>([]);
@@ -374,7 +373,6 @@ const Checkout: React.FC = () => {
   // Load credit usage config on mount
   useEffect(() => {
     const loadCreditConfig = async () => {
-      setIsLoadingCreditConfig(true);
       try {
         const config = await creditUsageConfigService.getPublicConfig();
         setCreditConfig(config);
@@ -389,8 +387,6 @@ const Checkout: React.FC = () => {
           allowCreditsWithDiscounts: true,
           creditsEnabled: true
         });
-      } finally {
-        setIsLoadingCreditConfig(false);
       }
     };
     loadCreditConfig();

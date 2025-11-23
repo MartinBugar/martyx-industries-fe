@@ -29,8 +29,7 @@ export const creditUsageConfigService = {
    * Used by frontend for UX validation in checkout.
    */
   async getPublicConfig(): Promise<CreditUsageConfigDto> {
-    const response = await apiClient.get<CreditUsageConfigDto>(PUBLIC_API_BASE);
-    return response.data;
+    return await apiClient.get<CreditUsageConfigDto>(PUBLIC_API_BASE);
   },
 
   /**
@@ -38,8 +37,7 @@ export const creditUsageConfigService = {
    * Includes audit fields (createdAt, updatedBy, etc.)
    */
   async getAdminConfig(): Promise<CreditUsageConfigDto> {
-    const response = await apiClient.get<CreditUsageConfigDto>(ADMIN_API_BASE);
-    return response.data;
+    return await apiClient.get<CreditUsageConfigDto>(ADMIN_API_BASE);
   },
 
   /**
@@ -48,7 +46,6 @@ export const creditUsageConfigService = {
   async updateConfig(
     config: Omit<CreditUsageConfigDto, 'id' | 'createdAt' | 'updatedAt' | 'updatedBy'>
   ): Promise<CreditUsageConfigDto> {
-    const response = await apiClient.put<CreditUsageConfigDto>(ADMIN_API_BASE, config);
-    return response.data;
+    return await apiClient.put<CreditUsageConfigDto>(ADMIN_API_BASE, config);
   },
 };
