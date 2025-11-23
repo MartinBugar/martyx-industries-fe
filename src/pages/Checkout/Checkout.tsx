@@ -503,8 +503,15 @@ const Checkout: React.FC = () => {
           sessionId
         );
 
-        setReservationExpiresAt(new Date(response.expiresAt));
-        logInfo('✅ Stock reserved until:', response.expiresAt);
+        // Check if expiresAt is null (digital products don't need reservations)
+        if (response.expiresAt) {
+          setReservationExpiresAt(new Date(response.expiresAt));
+          logInfo('✅ Stock reserved until:', response.expiresAt);
+        } else {
+          // Digital products - no reservation needed
+          setReservationExpiresAt(null);
+          logInfo('✅ No stock reservation needed (digital products)');
+        }
       } catch (error) {
         logError('❌ Failed to reserve stock:', error);
         alert('Some items may not be available. Please check your cart.');

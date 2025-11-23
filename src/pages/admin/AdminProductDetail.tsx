@@ -519,6 +519,7 @@ const AdminProductDetail: React.FC = () => {
         <VariantEditor
           variant={editingVariant}
           masterProductId={Number(id)}
+          masterProductName={product?.name}
           onSave={handleSaveVariant}
           onCancel={() => {
             setShowVariantEditor(false);

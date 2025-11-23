@@ -1,7 +1,8 @@
 import { API_BASE_URL, defaultHeaders, handleResponse } from './apiUtils';
 import type {
   StockMovementDto,
-  StockAlertDto
+  StockAlertDto,
+  InventoryItemDto
 } from '../types/inventory';
 
 /**
@@ -243,5 +244,47 @@ export const adminInventoryService = {
     });
 
     return await handleResponse(resp);
+  },
+
+  // ===== Inventory Items =====
+
+  /**
+   * Get all inventory items (product variants with stock information)
+   * @param page - Page number (default: 0)
+   * @param size - Page size (default: 20)
+   * @param sortBy - Sort field (default: 'masterProductName')
+   * @param sortDir - Sort direction (default: 'ASC')
+   * @param search - Optional search query (SKU or product/variant name)
+   * @param status - Optional status filter (IN_STOCK, LOW_STOCK, OUT_OF_STOCK, etc.)
+   * @returns Paginated list of inventory items
+   */
+  async getAllInventoryItems(
+    page: number = 0,
+    size: number = 20,
+    sortBy: string = 'masterProductName',
+    sortDir: string = 'ASC',
+    search?: string,
+    status?: string
+  ): Promise<PageResponse<InventoryItemDto>> {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+      sort: `${sortBy},${sortDir}`
+    });
+
+    if (search) {
+      params.append('search', search);
+    }
+
+    if (status) {
+      params.append('status', status);
+    }
+
+    const resp = await fetch(`${API_BASE_URL}/api/admin/inventory/items?${params}`, {
+      method: 'GET',
+      headers: jsonHeaders(),
+    });
+
+    return await handleResponse(resp) as PageResponse<InventoryItemDto>;
   },
 };

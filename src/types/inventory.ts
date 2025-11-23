@@ -197,3 +197,28 @@ export interface PurchaseOrderCreateDto {
   internal_notes?: string;
   items?: string; // JSON array: [{product_id, variant_id, quantity, unit_cost}]
 }
+
+/**
+ * Inventory Item DTO
+ * Combines product variant with stock information for inventory list
+ */
+export interface InventoryItemDto {
+  variantId: number;
+  sku: string;
+  variantName: string;
+  masterProductId?: number;
+  masterProductName?: string;
+  category?: string;
+  priceWithVat: number;
+  currency: string;
+  stockQuantity: number;
+  trackInventory: boolean;
+  availabilityStatus: string; // IN_STOCK, LOW_STOCK, OUT_OF_STOCK, PRE_ORDER, DISCONTINUED, BACKORDERED
+  lowStockThreshold?: number;
+  reorderPoint?: number;
+  reorderQuantity?: number;
+  active: boolean;
+  reservedQuantity: number;
+  availableQuantity: number;
+  imageUrl?: string;
+}
