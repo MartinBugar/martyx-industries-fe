@@ -250,6 +250,20 @@ const Home: React.FC = () => {
             />
           )}
           <div className="hero-dark-overlay" />
+
+          <div className="hero-content">
+            <h1 className="hero-title">{t('hero.title')}</h1>
+            <p className="hero-subtitle">{t('hero.subtitle')}</p>
+
+            <div className="hero-buttons">
+              <Link to="/products" className="hero-btn hero-btn-primary">
+                {t('hero.shop_kits')}
+              </Link>
+              <Link to="/gallery" className="hero-btn hero-btn-secondary">
+                {t('hero.download_stl')}
+              </Link>
+            </div>
+          </div>
         </section>
       )}
 
