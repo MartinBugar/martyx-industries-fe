@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Search, X, Package, AlertTriangle, CheckCircle } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
@@ -10,7 +9,6 @@ import { Button, Badge, SkeletonTable } from '../../components/ui';
 import { useDebounce } from '../../hooks/useDebounce';
 
 const AdminInventory: React.FC = () => {
-  const { t } = useTranslation('common');
   const [items, setItems] = useState<InventoryItemDto[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
