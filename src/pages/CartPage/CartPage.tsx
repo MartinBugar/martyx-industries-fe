@@ -133,10 +133,10 @@ const CartPage: React.FC<CartPageProps> = ({
 
   // Fetch real shipping costs from backend (same logic as Checkout page)
   useEffect(() => {
-    const hasPhysicalProducts = items.some(i => i.product.requiresShipping);
+    const needsShipping = items.some(i => i.product.requiresShipping);
 
     // Only fetch shipping if we have physical products
-    if (!hasPhysicalProducts || items.length === 0) {
+    if (!needsShipping || items.length === 0) {
       setCheapestShipping(0);
       return;
     }
@@ -198,7 +198,7 @@ const CartPage: React.FC<CartPageProps> = ({
   };
 
   const subtotal = getTotalPrice();
-  const hasPhysicalProducts = items.some(i => i.product.requiresShipping);
+  const needsShipping = items.some(i => i.product.requiresShipping);
   // Use fetched shipping cost instead of hardcoded value
   // While loading, use null to show loading state; otherwise use fetched value or 0
   let shipping = isLoadingShipping ? null : (cheapestShipping ?? 0);
@@ -434,7 +434,7 @@ const CartPage: React.FC<CartPageProps> = ({
               <h2 className="summary-title">{t('order_summary.title')}</h2>
 
               {/* Free Shipping Progress Bar */}
-              {hasPhysicalProducts && !hasFreeShipping && (
+              {needsShipping && !hasFreeShipping && (
                 <div className="free-shipping-banner">
                   <div className="free-shipping-text">
                     🚚 {t('cart.add_more_for_free_shipping', 'Add')} {formatPrice(amountToFreeShipping)} {t('cart.more_for_free_shipping', 'more for FREE shipping!')}
@@ -449,7 +449,7 @@ const CartPage: React.FC<CartPageProps> = ({
                 </div>
               )}
 
-              {hasPhysicalProducts && hasFreeShipping && (
+              {needsShipping && hasFreeShipping && (
                 <div className="free-shipping-banner free-shipping-achieved">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M5 12.5L10 17.5L20 6.5"/>
@@ -512,7 +512,7 @@ const CartPage: React.FC<CartPageProps> = ({
                 <span>{formatPrice(vatAmount)}</span>
               </div>
 
-              {hasPhysicalProducts ? (
+              {needsShipping ? (
                 <div className="summary-row">
                   <span>{t('order_summary.shipping')}</span>
                   <span>
