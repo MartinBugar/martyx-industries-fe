@@ -3,6 +3,7 @@ import './ProductGalleryUpload.css';
 // Removed digitalOceanUpload import - now using backend API only
 import { productGalleryService } from '../../services/productGalleryService';
 import { logInfo, logWarn, logError } from '../../services/logger';
+import { API_BASE_URL } from '../../services/apiUtils';
 
 interface ProductGalleryUploadProps {
   productId: string;
@@ -254,7 +255,7 @@ const ProductGalleryUpload: React.FC<ProductGalleryUploadProps> = ({
       logInfo('📊 Upload parameters:', {
         productId,
         order: currentOrder,
-        expectedURL: `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'}/api/master-products/${productId}/gallery/upload-json`
+        expectedURL: `${API_BASE_URL}/api/master-products/${productId}/gallery/upload-json`
       });
       
       // Upload via backend API using JSON approach (handles Spaces upload and database metadata save)

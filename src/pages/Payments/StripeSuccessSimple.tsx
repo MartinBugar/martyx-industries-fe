@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { API_BASE_URL } from '../../services/apiUtils';
 
 /**
  * Simplified Stripe Success page for debugging
@@ -20,7 +21,7 @@ const StripeSuccessSimple: React.FC = () => {
 
     // Test API call
     setDebug('Fetching payment details...');
-    fetch(`http://localhost:8080/api/stripe/payment-details?session_id=${sessionId}`)
+    fetch(`${API_BASE_URL}/api/stripe/payment-details?session_id=${sessionId}`)
       .then(response => {
         setDebug(`Response status: ${response.status}`);
         return response.json();

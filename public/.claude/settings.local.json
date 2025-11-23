@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/Martin/WebstormProjects/martyx-industries-fe/src/components/admin/**)",
+      "Read(//c/Users/Martin/WebstormProjects/martyx-industries-fe/src/pages/admin/**)",
+      "Read(//c/Users/Martin/WebstormProjects/martyx-industries-fe/src/**)",
+      "Read(//a/CODING/MARTYX-INDUSTRIES.COM/martyx-indystries-be/**)",
+      "Bash(find:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

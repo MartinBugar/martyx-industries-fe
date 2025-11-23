@@ -21,7 +21,7 @@ const CartPage: React.FC<CartPageProps> = ({
   onClose,
   onCheckout
 }) => {
-  const { items, removeFromCart, updateQuantity, getTotalItems, getTotalPrice } = useCart();
+  const { items, removeFromCart, updateQuantity, getTotalItems, getTotalPrice, hasPhysicalProducts } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation(['checkout', 'common']);
@@ -418,7 +418,8 @@ const CartPage: React.FC<CartPageProps> = ({
               </table>
 
               {/* Gift Tier Progress Bar - Under cart items */}
-              <GiftProgressBar cartTotal={subtotal} compact={true} />
+              {/* Only show gifts for physical products (not DIGITAL_ONLY) */}
+              {hasPhysicalProducts() && <GiftProgressBar cartTotal={subtotal} compact={true} />}
 
               <button className="continue-shopping" onClick={handleBackToShopping} aria-label={t('cart.continue_shopping')}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

@@ -639,6 +639,12 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const getTotalItems = () => totals.totalItems;
   const getTotalPrice = () => totals.totalPrice;
 
+  // Check if cart has at least one physical product (not DIGITAL_ONLY)
+  // Returns true if there's any PHYSICAL_ONLY or HYBRID product
+  const hasPhysicalProducts = useCallback((): boolean => {
+    return items.some(item => item.product.variantType !== 'DIGITAL_ONLY');
+  }, [items]);
+
   // Provide the cart context to children components
   return (
     <CartContext.Provider value={{
@@ -649,7 +655,8 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       clearCart,
       getTotalItems,
       getTotalPrice,
-      mergeCart
+      mergeCart,
+      hasPhysicalProducts
     }}>
       {children}
     </CartContext.Provider>

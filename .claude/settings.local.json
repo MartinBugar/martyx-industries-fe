@@ -8,7 +8,9 @@
       "Bash(done)",
       "Bash(for file in \"src/pages/UserGallery/PhotoGrid.tsx\" \"src/pages/UserGallery/UserGallery.tsx\" \"src/pages/UserGallery/UserGalleryDetail.tsx\")",
       "Bash(xargs sed:*)",
-      "Bash(for:*)"
+      "Bash(for:*)",
+      "Read(//a/CODING/MARTYX-INDUSTRIES.COM/martyx-indystries-be/**)",
+      "Read(//a/CODING/MARTYX-INDUSTRIES.COM/**)"
     ],
     "deny": [],
     "ask": []

@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getAuthToken, debugToken } from '../../utils/tokenUtils';
 import { logInfo, logWarn, logError } from '../../services/logger';
+import { API_BASE_URL } from '../../services/apiUtils';
 
 interface Photo {
   id: number;
@@ -142,8 +143,8 @@ const PhotoUploadModal: React.FC<PhotoUploadModalProps> = ({ model, onClose, onS
       logInfo('Files count:', selectedFiles.length);
       debugToken();
 
-      const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
-      const apiUrl = `${baseUrl}/api/user-photos/upload`;
+      const apiUrl = `${API_BASE_URL}/api/user-photos/upload`;
+      logInfo('Upload URL:', apiUrl);
 
       let uploadedCount = 0;
       const totalFiles = selectedFiles.length;

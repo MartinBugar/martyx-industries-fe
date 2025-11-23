@@ -40,6 +40,7 @@ export interface CartContextType {
   getTotalItems: () => number;
   getTotalPrice: () => number;
   mergeCart: () => Promise<boolean>;
+  hasPhysicalProducts: () => boolean; // Check if cart has at least one physical product
 }
 
 // Create the context with a default value
