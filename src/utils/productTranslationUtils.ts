@@ -1,7 +1,6 @@
 import type { TFunction } from 'i18next';
 import i18n from '../i18n';
 import { type ProductTab, type TabContent, type HardcodedProductData } from '../data/productData';
-import endeavourBuildPdf from '../assets/buildguide/1/endeavourBuild.pdf';
 import { logInfo, logWarn } from '../services/logger';
 
 /**
@@ -92,20 +91,6 @@ export const getLocalizedTabs = (productId: string, t: TFunction): ProductTab[] 
       id: 'Details',
       label: t('tabs.details'),
       content: detailsContent
-    },
-    {
-      id: 'Download',
-      label: t('tabs.download'),
-      content: {
-        kind: 'downloads',
-        items: [
-          {
-            label: t('downloads.build_guide'),
-            url: endeavourBuildPdf,
-            format: 'PDF'
-          }
-        ]
-      }
     },
     {
       id: 'Features',

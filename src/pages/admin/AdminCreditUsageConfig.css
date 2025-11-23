@@ -1,0 +1,210 @@
+/* Admin Credit Usage Config Styles */
+.admin-credit-usage-config {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.config-card {
+    background: white;
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.config-section {
+    margin-bottom: 2rem;
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.config-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #333;
+}
+
+.help-text {
+    font-size: 0.85rem;
+    color: #666;
+    margin: 0;
+}
+
+.hint-text {
+    font-size: 0.8rem;
+    color: #888;
+    font-style: italic;
+    margin-top: 0.25rem;
+}
+
+.config-input {
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+.config-input:focus {
+    outline: none;
+    border-color: #007bff;
+}
+
+.checkbox-group {
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 1rem;
+    background: #f9f9f9;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.checkbox-label span {
+    flex: 1;
+}
+
+.config-item {
+    padding: 1rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    background: #f9f9f9;
+}
+
+.config-item label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #666;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.config-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #333;
+    margin: 0.5rem 0;
+}
+
+.config-desc {
+    font-size: 0.85rem;
+    color: #666;
+    margin: 0.5rem 0 0 0;
+}
+
+.config-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin: 0.5rem 0;
+}
+
+.config-badge.enabled {
+    background: #d4edda;
+    color: #155724;
+}
+
+.config-badge.disabled {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.button-group {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e0e0e0;
+}
+
+.config-footer {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e0e0e0;
+    font-size: 0.85rem;
+    color: #888;
+    font-style: italic;
+}
+
+.info-section {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.5rem;
+    border-left: 4px solid #007bff;
+}
+
+.info-section h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.info-section ul {
+    margin: 0;
+    padding-left: 1.5rem;
+}
+
+.info-section li {
+    margin-bottom: 0.75rem;
+    line-height: 1.6;
+}
+
+.warning-box {
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 4px;
+    padding: 1rem;
+    margin-top: 1rem;
+    color: #856404;
+}
+
+.warning-box strong {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.loading-spinner,
+.error-message {
+    text-align: center;
+    padding: 3rem;
+    font-size: 1.1rem;
+}
+
+.error-message {
+    color: #dc3545;
+}

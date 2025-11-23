@@ -13,6 +13,7 @@ import { shippingService } from '../../services/shippingService';
 import { discountService } from '../../services/discountService';
 import { addressService, type SavedAddress } from '../../services/addressService';
 import { userCreditsService, type UserCreditDto } from '../../services/referralService';
+import { creditUsageConfigService, type CreditUsageConfigDto } from '../../services/creditUsageConfigService';
 import { useGooglePlacesAutocomplete, type ParsedAddress } from '../../hooks/useGooglePlacesAutocomplete';
 import type { ShippingOptionDto } from '../../types/shipping';
 import type { DiscountValidationDto } from '../../types/discounts';
@@ -216,6 +217,10 @@ const Checkout: React.FC = () => {
   const [creditsToApply, setCreditsToApply] = useState<number>(0);
   const [creditsError, setCreditsError] = useState('');
 
+  // Credit config from DB
+  const [creditConfig, setCreditConfig] = useState<CreditUsageConfigDto | null>(null);
+  const [isLoadingCreditConfig, setIsLoadingCreditConfig] = useState(false);
+
   // Shipping state
   const [shippingOptions, setShippingOptions] = useState<ShippingOptionDto[]>([]);
   const [selectedShipping, setSelectedShipping] = useState<ShippingOptionDto | null>(null);
@@ -365,6 +370,31 @@ const Checkout: React.FC = () => {
 
     loadUserCredits();
   }, [user]);
+
+  // Load credit usage config on mount
+  useEffect(() => {
+    const loadCreditConfig = async () => {
+      setIsLoadingCreditConfig(true);
+      try {
+        const config = await creditUsageConfigService.getPublicConfig();
+        setCreditConfig(config);
+        logInfo('[Checkout] Loaded credit config:', config);
+      } catch (error) {
+        logError('[Checkout] Failed to load credit config:', error);
+        // Fallback to defaults if config fails to load
+        setCreditConfig({
+          id: 1,
+          minOrderValueForCredits: 20.00,
+          maxCreditPercentage: 0.50,
+          allowCreditsWithDiscounts: true,
+          creditsEnabled: true
+        });
+      } finally {
+        setIsLoadingCreditConfig(false);
+      }
+    };
+    loadCreditConfig();
+  }, []);
 
   // Fetch shipping options when entering step 2
   useEffect(() => {
@@ -700,19 +730,25 @@ const Checkout: React.FC = () => {
       return;
     }
 
+    // Check if config is loaded
+    if (!creditConfig) {
+      setCreditsError('Loading credit configuration...');
+      return;
+    }
+
     setCreditsError('');
     const totals = calculateTotals();
     const totalBeforeCredits = totals.subtotal - totals.discount + totals.shipping;
 
-    // BUSINESS RULE 1: Minimum order value of €20 to use credits
-    const MINIMUM_ORDER_VALUE = 20.00;
+    // BUSINESS RULE 1: Minimum order value to use credits (from DB config)
+    const MINIMUM_ORDER_VALUE = creditConfig.minOrderValueForCredits;
     if (totals.subtotal < MINIMUM_ORDER_VALUE) {
       setCreditsError(`Credits can only be used on orders of €${MINIMUM_ORDER_VALUE.toFixed(2)} or more. Current order: €${totals.subtotal.toFixed(2)}`);
       return;
     }
 
-    // BUSINESS RULE 2: Maximum 50% of order can be paid with credits
-    const MAX_CREDIT_PERCENTAGE = 0.50;
+    // BUSINESS RULE 2: Maximum % of order can be paid with credits (from DB config)
+    const MAX_CREDIT_PERCENTAGE = creditConfig.maxCreditPercentage;
     const maxAllowedCredits = totals.subtotal * MAX_CREDIT_PERCENTAGE;
 
     // Calculate applicable amount considering all constraints:
@@ -739,12 +775,14 @@ const Checkout: React.FC = () => {
   // Calculate maximum credits user can apply based on business rules
   const calculateMaxApplicableCredits = useMemo(() => {
     if (!userCredits || userCredits.creditBalance <= 0) return null;
+    if (!creditConfig) return null; // Wait for config to load
 
     const totals = calculateTotals();
     const totalBeforeCredits = totals.subtotal - totals.discount + totals.shipping;
 
-    const MINIMUM_ORDER_VALUE = 20.00;
-    const MAX_CREDIT_PERCENTAGE = 0.50;
+    // Use values from DB config
+    const MINIMUM_ORDER_VALUE = creditConfig.minOrderValueForCredits;
+    const MAX_CREDIT_PERCENTAGE = creditConfig.maxCreditPercentage;
 
     // Check minimum order value
     if (totals.subtotal < MINIMUM_ORDER_VALUE) {
@@ -769,7 +807,7 @@ const Checkout: React.FC = () => {
       isLimitedByBalance: userCredits.creditBalance < maxAllowedCredits,
       isLimitedByOrderValue: maxAllowedCredits < userCredits.creditBalance
     };
-  }, [userCredits, items, discountValidation, selectedShipping]);
+  }, [userCredits, items, discountValidation, selectedShipping, creditConfig]);
 
   // Stripe error handler
   const handleStripeError = (err: unknown) => {

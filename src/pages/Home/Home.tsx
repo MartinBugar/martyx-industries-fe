@@ -28,8 +28,8 @@ const Home: React.FC = () => {
 
   // Try to import hero image via bundler; fallback to CSS placeholder if not present
   const heroAlt = t('hero.image_alt');
-  const heroMap = import.meta.glob('../../assets/home/tank.png', { eager: true, as: 'url' });
-  const heroSrc = (heroMap['../../assets/home/tank.png'] as string) || '/assets/hero-tank.png';
+  const heroMap = import.meta.glob('../../assets/home/hero.png', { eager: true, as: 'url' });
+  const heroSrc = (heroMap['../../assets/home/hero.png'] as string) || '/assets/hero.png';
 
   // Load visibility settings for homepage sections
   useEffect(() => {
@@ -237,41 +237,24 @@ const Home: React.FC = () => {
   logInfo('🎨 [HOME] Will show testimonials?', visibilityMap.testimonials !== false && testimonials.length > 0);
 
   return (
-    <div className="home-root" aria-label="Home Page">
-      {/* 1) Hero - Minimalist Modern */}
+    <>
+      {/* Hero Section - Above home-root */}
       {visibilityMap.hero !== false && (
-      <section className="hero-modern" aria-label="Hero">
-        <div className="hero-background">
+        <section className="hero-section">
           {heroSrc && (
             <OptimizedImage
               src={heroSrc}
               alt={heroAlt}
               priority={true}
-              className="hero-bg-image"
+              className="hero-tank-image"
             />
           )}
-          <div className="hero-overlay" />
-        </div>
-
-        <div className="container hero-container">
-          <div className="hero-content-minimal">
-            <h1 className="hero-title-minimal">{t('hero.title')}</h1>
-            <p className="hero-subtitle-minimal">{t('hero.subtitle')}</p>
-
-            <div className="hero-ctas-minimal">
-              <Link to="/products" className="btn-minimal btn-primary">
-                {t('hero.shop_kits')}
-              </Link>
-              <Link to="/gallery" className="btn-minimal btn-secondary">
-                {t('hero.download_stl')}
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+          <div className="hero-dark-overlay" />
+        </section>
       )}
 
-      {/* 2) Engineering Journey */}
+      <div className="home-root" aria-label="Home Page">
+        {/* 2) Engineering Journey */}
       {visibilityMap.how_it_works !== false && (
       <section className="engineering-journey" aria-label={t('how_it_works.title')}>
         <div className="container">
@@ -390,7 +373,8 @@ const Home: React.FC = () => {
         </div>
       </section>
       )}
-    </div>
+      </div>
+    </>
   );
 };
 

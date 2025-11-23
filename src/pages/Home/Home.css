@@ -5,210 +5,33 @@
 /* Removed FeaturedProducts.css - using ProductCard component instead */
 /* Removed home.css - conflicts with ProductCard component hover effects */
 
-/* ========== MINIMALIST MODERN HERO (2025) ========== */
-
-.hero-modern {
+/* ========== HERO SECTION ========== */
+.hero-section {
+  width: 100vw;
   position: relative;
-  min-height: 90vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  margin-top: -5rem;
 }
 
-/* Full-width background image */
-.hero-background {
-  position: absolute;
-  top: 0;
-  left: 0;
+.hero-tank-image {
   width: 100%;
-  height: 100%;
-  z-index: 0;
-}
-
-.hero-bg-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
+  height: auto;
+  display: block;
+  pointer-events: none;
   user-select: none;
 }
 
-/* Clean dark overlay */
-.hero-overlay {
+.hero-dark-overlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    to bottom,
-    rgba(11, 15, 20, 0.7) 0%,
-    rgba(11, 15, 20, 0.85) 100%
-  );
-}
-
-.hero-container {
-  position: relative;
-  z-index: 1;
-}
-
-/* Minimal content - centered, clean */
-.hero-content-minimal {
-  max-width: 850px;
-  margin: 0 auto;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  gap: 2.5rem;
-  padding: 0 2rem;
-}
-
-/* Ultra-bold minimalist title */
-.hero-title-minimal {
-  font-size: clamp(3rem, 8vw, 6.5rem);
-  font-weight: 900;
-  line-height: 1.05;
-  letter-spacing: -0.04em;
-  color: #ffffff;
-  margin: 0;
-  text-shadow: 0 2px 40px rgba(0, 0, 0, 0.5);
-}
-
-/* Clean subtitle - one line */
-.hero-subtitle-minimal {
-  font-size: clamp(1.1rem, 2.5vw, 1.5rem);
-  line-height: 1.6;
-  color: rgba(255, 255, 255, 0.85);
-  max-width: 650px;
-  margin: 0 auto;
-  font-weight: 400;
-}
-
-/* Simple CTA buttons */
-.hero-ctas-minimal {
-  display: flex;
-  gap: 1.25rem;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.btn-minimal {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1.25rem 3rem;
-  font-size: 1.1rem;
-  font-weight: 600;
-  border-radius: 8px;
-  text-decoration: none;
-  transition: all 0.2s ease;
-  border: none;
-  cursor: pointer;
-  min-width: 180px;
-}
-
-.btn-minimal.btn-primary {
-  background: var(--accent);
-  color: #0B0F14;
-}
-
-.btn-minimal.btn-primary:hover {
-  background: #FCD34D;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(246, 200, 69, 0.4);
-}
-
-.btn-minimal.btn-secondary {
-  background: transparent;
-  color: #ffffff;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-}
-
-.btn-minimal.btn-secondary:hover {
-  border-color: rgba(255, 255, 255, 0.6);
-  background: rgba(255, 255, 255, 0.05);
-}
-
-/* Responsive */
-@media (max-width: 1024px) {
-  .hero-modern {
-    min-height: 85vh;
-  }
-
-  .hero-content-minimal {
-    gap: 2rem;
-  }
-
-  .hero-title-minimal {
-    font-size: clamp(2.5rem, 7vw, 5rem);
-  }
-
-  .hero-subtitle-minimal {
-    font-size: clamp(1rem, 2.3vw, 1.3rem);
-  }
-}
-
-@media (max-width: 768px) {
-  .hero-modern {
-    min-height: 80vh;
-  }
-
-  .hero-content-minimal {
-    gap: 1.75rem;
-    padding: 0 1.5rem;
-  }
-
-  .hero-title-minimal {
-    font-size: clamp(2rem, 6vw, 4rem);
-  }
-
-  .hero-subtitle-minimal {
-    font-size: clamp(0.95rem, 2.2vw, 1.2rem);
-  }
-
-  .hero-ctas-minimal {
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .btn-minimal {
-    width: 100%;
-    max-width: 360px;
-    padding: 1.125rem 2.5rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .hero-modern {
-    min-height: 75vh;
-  }
-
-  .hero-content-minimal {
-    padding: 0 1rem;
-  }
-
-  .hero-title-minimal {
-    font-size: clamp(1.75rem, 5.5vw, 3rem);
-  }
-
-  .btn-minimal {
-    padding: 1rem 2rem;
-    font-size: 1rem;
-  }
-}
-
-/* Accessibility */
-@media (prefers-reduced-motion: reduce) {
-  .btn-minimal:hover {
-    transform: none;
-  }
-}
-
-@media (prefers-contrast: high) {
-  .hero-overlay {
-    background: rgba(0, 0, 0, 0.9);
-  }
+  background: rgba(0, 0, 0, 0.7);
+  pointer-events: none;
 }
 
 /* ========== ENGINEERING JOURNEY SECTION ========== */
