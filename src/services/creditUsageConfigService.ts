@@ -7,7 +7,7 @@
  * - Admin:  PUT /api/admin/credit-usage-config (ADMIN role)
  */
 
-import { apiClient } from './apiUtils';
+import { apiClient } from './apiClient';
 
 export interface CreditUsageConfigDto {
   id: number; // Always 1 (singleton)
