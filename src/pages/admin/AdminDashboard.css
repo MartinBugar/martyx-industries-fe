@@ -532,14 +532,14 @@
 
     .dashboard-tab.active {
         background: var(--admin-accent);
-        color: #ffffff;
+        color: #000000 !important;
         border-color: var(--admin-accent);
         font-weight: 600;
     }
 
     .dashboard-tab.active::before {
         opacity: 1;
-        filter: brightness(0) saturate(100%) invert(100%);
+        filter: brightness(0) saturate(100%) invert(0%);
     }
 
     .kpi-row {
@@ -933,8 +933,8 @@
 
 .dashboard-tab.active {
     background: var(--admin-accent);
-    color: #ffffff;
-    border-color: #3B82F6;
+    color: #000000 !important;
+    border-color: var(--admin-accent);
     font-weight: 600;
 }
 
@@ -1283,8 +1283,8 @@
 
   .dashboard-tab.active {
     background: var(--admin-accent);
-    color: #FFFFFF;
-    border-color: #3B82F6;
+    color: #000000 !important;
+    border-color: var(--admin-accent);
   }
 
   /* Enhanced section headers */

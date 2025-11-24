@@ -19,10 +19,13 @@ const CategoryBar: React.FC = () => {
 
   useEffect(() => {
     loadCategories();
-    // Trigger mount animation after component is ready
-    requestAnimationFrame(() => {
+
+    // Trigger animation after a short delay to ensure DOM is painted
+    const timer = setTimeout(() => {
       setIsMounted(true);
-    });
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
@@ -56,7 +59,7 @@ const CategoryBar: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="category-bar loading">
+      <div className={`category-bar loading ${isMounted ? 'mounted' : ''}`}>
         <div className="category-bar-content">
           <div className="category-skeleton"></div>
         </div>

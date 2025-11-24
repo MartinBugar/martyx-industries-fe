@@ -31,19 +31,29 @@
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   border-top: none; /* Seamless connection to navbar */
 
-  /* Initial state - hidden under navbar */
-  transform: translateY(-100%);
+  /* Initial state - use max-height for animation */
+  max-height: 0;
+  overflow: hidden;
   opacity: 0;
 
-  /* Smooth slide-in transition */
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-              opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Hardware acceleration */
+  will-change: max-height, opacity;
 }
 
-/* Mounted state - slide in from under navbar */
+/* Mounted state - slide in animation */
 .category-bar.mounted {
-  transform: translateY(0);
-  opacity: 1;
+  animation: slideInFromTop 0.6s ease-out forwards !important;
+}
+
+@keyframes slideInFromTop {
+  0% {
+    max-height: 0;
+    opacity: 0;
+  }
+  100% {
+    max-height: 100px; /* Enough for category bar */
+    opacity: 1;
+  }
 }
 
 /* Container - full width */
@@ -150,12 +160,24 @@
   outline: none;
 }
 
-/* Loading state */
+/* Loading state - also use slide-in animation */
 .category-bar.loading {
   min-height: 42px;
   display: flex;
   align-items: center;
   justify-content: center;
+
+  /* Start hidden like normal state */
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+
+  will-change: max-height, opacity;
+}
+
+/* Make loading state visible when mounted */
+.category-bar.loading.mounted {
+  animation: slideInFromTop 0.6s ease-out forwards !important;
 }
 
 .category-skeleton {
@@ -255,8 +277,11 @@
 
 /* Accessibility - Reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .category-bar {
-    animation: none;
+  .category-bar,
+  .category-bar.loading {
+    animation: none !important;
+    max-height: 100px !important;
+    opacity: 1 !important;
   }
 
   .category-item:hover {
