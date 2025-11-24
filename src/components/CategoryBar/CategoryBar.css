@@ -30,19 +30,26 @@
     0 1px 3px rgba(0, 0, 0, 0.1);
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   border-top: none; /* Seamless connection to navbar */
+}
 
-  /* Initial state - use max-height for animation */
+/* Initial state - collapsed and hidden */
+.category-bar.initial {
   max-height: 0;
   overflow: hidden;
   opacity: 0;
+}
 
-  /* Hardware acceleration */
+/* Animating state - slide in animation */
+.category-bar.animating {
+  animation: slideInFromTop 0.6s ease-out forwards !important;
   will-change: max-height, opacity;
 }
 
-/* Mounted state - slide in animation */
-.category-bar.mounted {
-  animation: slideInFromTop 0.6s ease-out forwards !important;
+/* Complete state - static expanded state (prevents re-triggering animation) */
+.category-bar.complete {
+  max-height: 70px;
+  opacity: 1;
+  overflow: visible; /* Allow content to be visible */
 }
 
 @keyframes slideInFromTop {

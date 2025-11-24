@@ -15,19 +15,26 @@ const CategoryBar: React.FC = () => {
   const [categories, setCategories] = useState<ProductCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
-  const [isMounted, setIsMounted] = useState(false);
+  // Three-state animation: 'initial' -> 'animating' -> 'complete'
+  const [animationState, setAnimationState] = useState<'initial' | 'animating' | 'complete'>('initial');
 
   useEffect(() => {
     loadCategories();
 
-    // Animate slide-in only once when component mounts
-    // Component is now persistent in App.tsx, so it won't remount on category changes
+    // Start animation after brief delay
     const timer = setTimeout(() => {
-      setIsMounted(true);
+      setAnimationState('animating');
     }, 100);
 
     return () => clearTimeout(timer);
   }, []);
+
+  // Handle animation end to prevent re-triggering on re-renders
+  const handleAnimationEnd = () => {
+    if (animationState === 'animating') {
+      setAnimationState('complete');
+    }
+  };
 
   useEffect(() => {
     // Extract active category from URL
@@ -60,7 +67,10 @@ const CategoryBar: React.FC = () => {
 
   if (loading) {
     return (
-      <div className={`category-bar loading ${isMounted ? 'mounted' : ''}`}>
+      <div
+        className={`category-bar loading ${animationState}`}
+        onAnimationEnd={handleAnimationEnd}
+      >
         <div className="category-bar-content">
           <div className="category-skeleton"></div>
         </div>
@@ -70,7 +80,8 @@ const CategoryBar: React.FC = () => {
 
   return (
     <nav
-      className={`category-bar ${isMounted ? 'mounted' : ''}`}
+      className={`category-bar ${animationState}`}
+      onAnimationEnd={handleAnimationEnd}
       role="navigation"
       aria-label="Product categories"
     >

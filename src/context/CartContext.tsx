@@ -24,7 +24,12 @@ const CART_EXPIRATION_MS = CART_EXPIRATION_DAYS * 24 * 60 * 60 * 1000; // 30 day
 // Digital product constraints
 const MAX_DIGITAL_PRODUCT_QUANTITY = 1; // Digital products can only be purchased once per order
 
-// Generate a cryptographically secure unique session ID for guest users
+/**
+ * Generate a cryptographically secure unique session ID for guest users
+ * Uses crypto.getRandomValues() for 128 bits of entropy
+ *
+ * @returns Session ID in format "guest_{hex}" where hex is 32 characters
+ */
 function generateSessionId(): string {
   // Use crypto.getRandomValues() for cryptographic randomness (much better than Math.random())
   const array = new Uint8Array(16); // 128 bits of entropy
@@ -36,7 +41,12 @@ function generateSessionId(): string {
   return `guest_${hex}`;
 }
 
-// Get or create session ID
+/**
+ * Get existing session ID from localStorage or create a new one
+ * Session ID persists across page reloads for guest users
+ *
+ * @returns Session ID string
+ */
 function getSessionId(): string {
   let sessionId = localStorage.getItem(SESSION_ID_KEY);
   if (!sessionId) {
@@ -46,7 +56,13 @@ function getSessionId(): string {
   return sessionId;
 }
 
-// Convert full Product to CartProduct (only keep fields needed in cart)
+/**
+ * Convert full Product object to CartProduct (strips unnecessary fields)
+ * Only keeps fields needed for cart display and processing
+ *
+ * @param product - Full product object from product service
+ * @returns CartProduct with only essential cart fields
+ */
 function toCartProduct(product: Product): CartProduct {
   return {
     variantId: product.variantId,
@@ -225,6 +241,17 @@ async function convertCartItemDto(item: CartItemDto): Promise<CartItem | null> {
   }
 }
 
+/**
+ * Safely load cart items from localStorage with validation and cleanup
+ * Performs the following operations:
+ * 1. Loads and parses cart data from localStorage
+ * 2. Filters out invalid items (type checking)
+ * 3. Removes expired items (older than CART_EXPIRATION_DAYS)
+ * 4. Validates and fixes digital product quantities
+ * 5. Updates localStorage if changes were made
+ *
+ * @returns Array of valid, non-expired, validated cart items (empty array on error)
+ */
 function safeLoad(): CartItem[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);

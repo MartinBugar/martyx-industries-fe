@@ -525,3 +525,41 @@ a.admin-nav-tab.active:focus *,
     justify-content: center;
   }
 }
+
+/* ========================================
+   FINAL OVERRIDE - HIGHEST PRIORITY
+   ======================================== */
+
+/* This MUST be at the end to override everything including global styles */
+.admin-nav-tab.active,
+a[class*="admin-nav-tab"][class*="active"],
+Link.admin-nav-tab.active {
+  background: linear-gradient(135deg, #F6C845 0%, #f5b624 100%) !important;
+  color: #000000 !important;
+  border-color: #F6C845 !important;
+}
+
+/* Force black on child elements */
+.admin-nav-tab.active svg,
+.admin-nav-tab.active span,
+.admin-nav-tab.active *,
+a[class*="admin-nav-tab"][class*="active"] svg,
+a[class*="admin-nav-tab"][class*="active"] span,
+a[class*="admin-nav-tab"][class*="active"] * {
+  color: #000000 !important;
+  fill: currentColor !important;
+}
+
+/* Dashboard tabs - FINAL OVERRIDE */
+.dashboard-tab.active,
+button[class*="dashboard-tab"][class*="active"] {
+  background: linear-gradient(135deg, #F6C845 0%, #f5b624 100%) !important;
+  color: #000000 !important;
+  border-color: #F6C845 !important;
+}
+
+.dashboard-tab.active::before,
+button[class*="dashboard-tab"][class*="active"]::before {
+  opacity: 1 !important;
+  filter: brightness(0) saturate(100%) invert(0%) !important;
+}
