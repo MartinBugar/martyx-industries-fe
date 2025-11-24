@@ -656,7 +656,7 @@ const VariantCard: React.FC<VariantCardProps> = ({
           {/* Action Buttons - Prevent click propagation */}
           <div style={{ display: 'flex', gap: 8 }} onClick={(e) => e.stopPropagation()}>
             <Button
-              variant={variant.active ? 'warning' : 'success'}
+              variant={variant.active ? 'danger' : 'info'}
               size="sm"
               onClick={onToggleActive}
               title={variant.active ? 'Disable variant (hide from store)' : 'Enable variant (show in store)'}
