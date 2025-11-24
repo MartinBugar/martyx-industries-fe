@@ -270,6 +270,11 @@ const MainContent = React.memo(() => {
                 <AdminProducts />
               </RequireAdmin>
             } />
+            <Route path="/admin/categories" element={
+              <RequireAdmin>
+                <AdminCategories />
+              </RequireAdmin>
+            } />
             <Route path="/admin/inventory" element={
               <RequireAdmin>
                 <AdminInventory />

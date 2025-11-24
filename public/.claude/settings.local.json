@@ -6,7 +6,8 @@
       "Read(//c/Users/Martin/WebstormProjects/martyx-industries-fe/src/**)",
       "Read(//a/CODING/MARTYX-INDUSTRIES.COM/martyx-indystries-be/**)",
       "Bash(find:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(npx tsc:*)"
     ],
     "deny": [],
     "ask": []
