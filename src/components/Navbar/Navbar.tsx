@@ -5,6 +5,7 @@ import {Link, NavLink, useNavigate, useLocation} from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useWishlist } from "../../context/WishlistContext";
 import LanguageSwitcher from "../LanguageSwitcher";
+import MiniCart from "../MiniCart/MiniCart";
 const miLogo = "/logo/logo.png";
 
 /**
@@ -34,6 +35,7 @@ export default function Navbar({cartCount = 0, onSearchSubmit, user, onLogout}: 
     const { t } = useTranslation(['nav', 'common']);
     const { items: wishlistItems } = useWishlist();
     const [drawerOpen, setDrawerOpen] = useState(false);
+    const [miniCartOpen, setMiniCartOpen] = useState(false);
     const [q, setQ] = useState("");
     const navigate = useNavigate();
     const location = useLocation();
@@ -41,6 +43,7 @@ export default function Navbar({cartCount = 0, onSearchSubmit, user, onLogout}: 
     const panelRef = useRef<HTMLDivElement>(null);
     const searchInputRef = useRef<HTMLInputElement>(null);
     const prevBodyPrRef = useRef<string | undefined>(undefined);
+    const cartButtonRef = useRef<HTMLButtonElement>(null);
 
     /** Add hydrated class to enable transitions after React hydration */
     useEffect(() => {
@@ -85,9 +88,10 @@ export default function Navbar({cartCount = 0, onSearchSubmit, user, onLogout}: 
         return () => window.removeEventListener("keydown", onKey);
     }, []);
 
-    // Close drawer on route change
+    // Close drawer and minicart on route change
     useEffect(() => {
         setDrawerOpen(false);
+        setMiniCartOpen(false);
     }, [location.pathname]);
 
     const handleOverlayClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
@@ -152,6 +156,14 @@ export default function Navbar({cartCount = 0, onSearchSubmit, user, onLogout}: 
             setDrawerOpen(false);
         }
     }, [onLogout, fallbackLogout]);
+
+    const handleToggleMiniCart = useCallback(() => {
+        setMiniCartOpen(prev => !prev);
+    }, []);
+
+    const handleCloseMiniCart = useCallback(() => {
+        setMiniCartOpen(false);
+    }, []);
 
     const Drawer = (
         <div
@@ -330,12 +342,27 @@ export default function Navbar({cartCount = 0, onSearchSubmit, user, onLogout}: 
                                 <span className="visually-hidden">{t('nav:wishlist', 'Wishlist')}</span>
                             </Link>
 
-                            {/* Cart (always visible) */}
-                            <Link to="/cart" className="mi-iconbtn" aria-label={t('nav:cart')}>
-                                <CartIcon/>
-                                {cartCount > 0 && <span className="mi-badge" aria-live="polite">{cartCount}</span>}
-                                <span className="visually-hidden">{t('nav:cart')}</span>
-                            </Link>
+                            {/* Cart with MiniCart dropdown (desktop) */}
+                            <div style={{ position: 'relative' }}>
+                                <button
+                                    ref={cartButtonRef}
+                                    type="button"
+                                    className="mi-iconbtn"
+                                    style={{ cursor: 'pointer' }}
+                                    aria-label={t('nav:cart')}
+                                    aria-expanded={miniCartOpen}
+                                    onClick={handleToggleMiniCart}
+                                >
+                                    <CartIcon/>
+                                    {cartCount > 0 && <span className="mi-badge" aria-live="polite">{cartCount}</span>}
+                                    <span className="visually-hidden">{t('nav:cart')}</span>
+                                </button>
+                                <MiniCart
+                                    isOpen={miniCartOpen}
+                                    onClose={handleCloseMiniCart}
+                                    anchorRef={cartButtonRef}
+                                />
+                            </div>
 
                             {/* MOBILE: hamburger (bez SVG/pseudo) */}
                             <button
@@ -391,8 +418,7 @@ function WishlistIcon() {
 
 function CartIcon() {
     return (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-             aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
             <circle cx="10" cy="20" r="1"/>
             <circle cx="18" cy="20" r="1"/>
             <path d="M2 3h2l2.4 12.3A2 2 0 0 0 8.8 17h8.9a2 2 0 0 0 2-1.6L22 7H6"/>

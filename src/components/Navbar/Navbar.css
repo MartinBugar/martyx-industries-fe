@@ -1011,18 +1011,34 @@ html.hydrated .shop-header .cart-icon {
     border-radius: 999px;
     background: transparent;
     color: var(--text);
+    overflow: visible;
 }
 
 .mi-iconbtn svg {
-    display: block;
-    width: 18px;
-    height: 18px;
+    display: block !important;
+    width: 18px !important;
+    height: 18px !important;
+    max-width: 18px !important;
+    max-height: 18px !important;
+    min-width: 18px !important;
+    min-height: 18px !important;
+    stroke: currentColor !important;
+    fill: none !important;
+    stroke-width: 2 !important;
+    pointer-events: none;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
-/* Force icon stroke to inherit currentColor and avoid accidental fills hiding it */
-.mi-iconbtn svg, .mi-iconbtn svg * {
-    stroke: currentColor;
-    fill: none;
+/* Apply stroke to all SVG children */
+.mi-iconbtn svg *,
+.mi-iconbtn svg circle,
+.mi-iconbtn svg path {
+    stroke: currentColor !important;
+    fill: none !important;
+    stroke-width: 2 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 .mi-iconbtn:hover {
@@ -1584,10 +1600,7 @@ body.mi-lock-scroll {
     border-radius: 2px;
 }
 
-/* istota, aby farba barov vždy dedila z tlačidla */
-.mi-iconbtn {
-    color: var(--text) !important;
-}
+/* istota, aby farba barov vždy dedila z tlačidla - removed duplicate */
 
 /* --- CSS-only hamburger icon (nezavisle od SVG) --- */
 .mi-menu-icon {
@@ -1626,10 +1639,7 @@ body.mi-lock-scroll {
 
 /* dolna ciara */
 
-/* pre istotu farbu ikon setni sem (dedene cez currentColor) */
-.mi-iconbtn {
-    color: var(--text) !important;
-}
+/* pre istotu farbu ikon setni sem (dedene cez currentColor) - removed duplicate */
 
 
 /* Drawer header: search + close */
@@ -1711,10 +1721,7 @@ body.mi-lock-scroll {
     transform: translateY(-50%) rotate(-45deg);
 }
 
-/* istota: farba ikon dedí z tlačidla */
-.mi-closebtn, .mi-iconbtn {
-    color: var(--text) !important;
-}
+/* istota: farba ikon dedí z tlačidla - removed duplicate */
 
 /* Drawer header: search + close (už máš) */
 /* ...mi-drawer__header, .mi-drawer__search, .mi-drawer__searchbox... */
@@ -1769,10 +1776,7 @@ body.mi-lock-scroll {
     transform: translateY(-50%) rotate(-45deg);
 }
 
-/* istota: farba ikon dedí z tlačidla */
-.mi-closebtn, .mi-iconbtn {
-    color: var(--text) !important;
-}
+/* istota: farba ikon dedí z tlačidla - removed duplicate */
 
 /* Kruh zostáva – len doplníme textový znak × */
 .mi-closebtn {

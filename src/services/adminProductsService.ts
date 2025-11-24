@@ -423,6 +423,18 @@ export const adminProductsService = {
   },
 
   /**
+   * Toggle variant active status (enable/disable).
+   * Safe endpoint that only modifies the active flag without affecting other variant data.
+   */
+  async toggleVariantActive(id: string | number): Promise<{ id: number; active: boolean; message: string }> {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/variants/${id}/toggle-active`, {
+      method: 'PATCH',
+      headers: defaultHeaders as HeadersInit,
+    });
+    return await handleResponse(resp) as { id: number; active: boolean; message: string };
+  },
+
+  /**
    * Delete variant
    */
   async deleteVariant(id: string | number): Promise<MessageResponse | void> {

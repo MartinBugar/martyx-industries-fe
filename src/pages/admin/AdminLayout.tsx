@@ -57,6 +57,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ title, children, navTabs }) =
           <Link to="/admin/campaigns" className={location.pathname.startsWith('/admin/campaigns') ? 'admin-link-active' : ''}>Campaigns</Link>
           <Link to="/admin/discounts" className={location.pathname.startsWith('/admin/discounts') ? 'admin-link-active' : ''}>Discount Codes</Link>
           <Link to="/admin/referral-config" className={location.pathname.startsWith('/admin/referral-config') ? 'admin-link-active' : ''}>Referral Config</Link>
+          <Link to="/admin/credit-usage-config" className={location.pathname.startsWith('/admin/credit-usage-config') ? 'admin-link-active' : ''}>Credit Usage Config</Link>
           <Link to="/admin/gift-tiers" className={location.pathname.startsWith('/admin/gift-tiers') ? 'admin-link-active' : ''}>Gift Tiers</Link>
           <Link to="/admin/segments" className={location.pathname.startsWith('/admin/segments') ? 'admin-link-active' : ''}>Segments</Link>
           <Link to="/admin/abandoned-carts" className={location.pathname.startsWith('/admin/abandoned-carts') ? 'admin-link-active' : ''}>Abandoned Carts</Link>

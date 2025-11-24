@@ -123,6 +123,27 @@ const AdminProductDetail: React.FC = () => {
     }
   };
 
+  const handleToggleVariantActive = async (variantId: number, currentActive: boolean) => {
+    // Show confirmation dialog when disabling a variant
+    if (currentActive) {
+      const confirmed = window.confirm(
+        'Are you sure you want to disable this variant?\n\n' +
+        'Disabled variants will not be visible in the public store, but all data will be preserved. ' +
+        'You can re-enable it at any time.'
+      );
+      if (!confirmed) return;
+    }
+
+    try {
+      const result = await adminProductsService.toggleVariantActive(variantId);
+      await load();
+      setSavedMsg(result.message);
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Failed to toggle variant status';
+      setError(message);
+    }
+  };
+
   // Component CRUD handlers
   const handleAddComponent = (variantId: number) => {
     setComponentVariantId(variantId);
@@ -500,6 +521,7 @@ const AdminProductDetail: React.FC = () => {
                           productId={id!}
                           onEdit={() => handleEditVariant(variant)}
                           onDelete={() => variant.id && handleDeleteVariant(variant.id)}
+                          onToggleActive={() => variant.id && handleToggleVariantActive(variant.id, variant.active ?? true)}
                           onAddComponent={() => variant.id && handleAddComponent(variant.id)}
                           onEditComponent={(comp) => variant.id && handleEditComponent(comp, variant.id)}
                           onDeleteComponent={handleDeleteComponent}
@@ -550,6 +572,7 @@ interface VariantCardProps {
   productId: string;
   onEdit: () => void;
   onDelete: () => void;
+  onToggleActive: () => void;
   onAddComponent: () => void;
   onEditComponent: (component: VariantComponentDto) => void;
   onDeleteComponent: (componentId: number) => void;
@@ -560,6 +583,7 @@ const VariantCard: React.FC<VariantCardProps> = ({
   productId,
   onEdit,
   onDelete,
+  onToggleActive,
   onAddComponent,
   onEditComponent,
   onDeleteComponent,
@@ -587,7 +611,15 @@ const VariantCard: React.FC<VariantCardProps> = ({
   };
 
   return (
-    <div className="admin-card" style={{ marginBottom: '16px' }}>
+    <div
+      className="admin-card"
+      style={{
+        marginBottom: '16px',
+        opacity: variant.active ? 1 : 0.6,
+        border: variant.active ? '1px solid #e2e8f0' : '1px solid #fbbf24',
+        background: variant.active ? 'white' : '#fffbeb'
+      }}
+    >
       {/* Header - Clickable */}
       <div
         style={{
@@ -597,7 +629,7 @@ const VariantCard: React.FC<VariantCardProps> = ({
           transition: 'background 0.2s ease',
         }}
         onClick={() => setExpanded(!expanded)}
-        onMouseEnter={(e) => e.currentTarget.style.background = '#f8fafc'}
+        onMouseEnter={(e) => e.currentTarget.style.background = variant.active ? '#f8fafc' : '#fef3c7'}
         onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16 }}>
@@ -609,7 +641,7 @@ const VariantCard: React.FC<VariantCardProps> = ({
               </h4>
               <Badge variant="info" size="sm">{variant.sku}</Badge>
               <Badge variant={variant.active ? 'success' : 'warning'} size="sm">
-                {variant.active ? 'Active' : 'Inactive'}
+                {variant.active ? 'Active' : 'Disabled'}
               </Badge>
             </div>
 
@@ -631,6 +663,14 @@ const VariantCard: React.FC<VariantCardProps> = ({
 
           {/* Action Buttons - Prevent click propagation */}
           <div style={{ display: 'flex', gap: 8 }} onClick={(e) => e.stopPropagation()}>
+            <Button
+              variant={variant.active ? 'warning' : 'success'}
+              size="sm"
+              onClick={onToggleActive}
+              title={variant.active ? 'Disable variant (hide from store)' : 'Enable variant (show in store)'}
+            >
+              {variant.active ? '👁️ Disable' : '✅ Enable'}
+            </Button>
             <Link
               to={`/admin/products/${productId}/variants/${variant.id}/tabs`}
               className="btn btn-info btn-sm"
