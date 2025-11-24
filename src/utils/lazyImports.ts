@@ -60,6 +60,7 @@ export const AdminCompanySettings = lazy(() => import('../pages/admin/AdminCompa
 export const AdminDiscounts = lazy(() => import('../pages/admin/AdminDiscounts'));
 export const AdminReferralConfig = lazy(() => import('../pages/admin/AdminReferralConfig'));
 export const AdminCreditUsageConfig = lazy(() => import('../pages/admin/AdminCreditUsageConfig'));
+export const AdminAccountLockoutConfig = lazy(() => import('../pages/admin/AdminAccountLockoutConfig'));
 export const AdminEmailTemplates = lazy(() => import('../pages/admin/AdminEmailTemplates'));
 export const AdminXpConfig = lazy(() => import('../pages/admin/AdminXpConfig'));
 export const AdminInvoices = lazy(() => import('../pages/admin/AdminInvoices'));
