@@ -1,6 +1,34 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ErrorBoundary } from '../../components/ui';
+import {
+  LayoutDashboard,
+  ShoppingBag,
+  Package,
+  Warehouse,
+  Star,
+  ShoppingCart,
+  FileText,
+  Truck,
+  Users,
+  Megaphone,
+  Tag,
+  ShoppingBasket,
+  UserCheck,
+  Sparkles,
+  Award,
+  UserPlus,
+  Coins,
+  Gift,
+  Image,
+  Settings,
+  Mail,
+  ShieldAlert,
+  Database,
+  ChevronDown,
+  ChevronRight,
+  FolderTree
+} from 'lucide-react';
 import './AdminLayout.css';
 import '../../styles/admin-theme.css';
 
@@ -10,6 +38,20 @@ interface AdminLayoutProps {
   navTabs?: React.ReactNode;
 }
 
+// Navigation structure with collapsible groups
+interface NavItem {
+  path: string;
+  label: string;
+  icon?: React.ReactNode;
+}
+
+interface NavGroup {
+  id: string;
+  label: string;
+  icon: React.ReactNode;
+  items?: NavItem[];
+  path?: string; // For top-level items without children
+}
 
 const AdminLayout: React.FC<AdminLayoutProps> = ({ title, children, navTabs }) => {
   const navigate = useNavigate();
@@ -18,6 +60,23 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ title, children, navTabs }) =
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  // Collapsible groups state - load from localStorage
+  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>(() => {
+    if (typeof window === 'undefined') return {};
+    const saved = localStorage.getItem('adminCollapsedGroups');
+    // Default: all groups collapsed
+    if (!saved) {
+      return {
+        catalog: true,
+        sales: true,
+        marketing: true,
+        gamification: true,
+        settings: true
+      };
+    }
+    return JSON.parse(saved);
+  });
+
   const handleLogout = () => {
     window.localStorage.removeItem('adminAuthed');
     navigate('/admin');
@@ -25,6 +84,105 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ title, children, navTabs }) =
 
   // Close sidebar when route changes
   useEffect(() => { setSidebarOpen(false); }, [location.pathname]);
+
+  // Save collapsed state to localStorage
+  useEffect(() => {
+    localStorage.setItem('adminCollapsedGroups', JSON.stringify(collapsedGroups));
+  }, [collapsedGroups]);
+
+  const toggleGroup = (groupId: string) => {
+    setCollapsedGroups(prev => ({
+      ...prev,
+      [groupId]: !prev[groupId]
+    }));
+  };
+
+  // Define navigation structure with logical grouping
+  const navigationGroups: NavGroup[] = [
+    {
+      id: 'dashboard',
+      label: 'Dashboard',
+      icon: <LayoutDashboard size={20} />,
+      path: '/admin/panel'
+    },
+    {
+      id: 'catalog',
+      label: 'Catalog',
+      icon: <ShoppingBag size={20} />,
+      items: [
+        { path: '/admin/products', label: 'Products' },
+        { path: '/admin/categories', label: 'Categories' },
+        { path: '/admin/inventory', label: 'Inventory / Sklad' },
+        { path: '/admin/reviews', label: 'Reviews' }
+      ]
+    },
+    {
+      id: 'sales',
+      label: 'Sales',
+      icon: <ShoppingCart size={20} />,
+      items: [
+        { path: '/admin/orders', label: 'Orders' },
+        { path: '/admin/invoices', label: 'Invoices' },
+        { path: '/admin/shipping', label: 'Shipping' }
+      ]
+    },
+    {
+      id: 'customers',
+      label: 'Customers',
+      icon: <Users size={20} />,
+      path: '/admin/users'
+    },
+    {
+      id: 'marketing',
+      label: 'Marketing',
+      icon: <Megaphone size={20} />,
+      items: [
+        { path: '/admin/campaigns', label: 'Campaigns' },
+        { path: '/admin/discounts', label: 'Discount Codes' },
+        { path: '/admin/abandoned-carts', label: 'Abandoned Carts' },
+        { path: '/admin/segments', label: 'Segments' }
+      ]
+    },
+    {
+      id: 'gamification',
+      label: 'Gamification',
+      icon: <Sparkles size={20} />,
+      items: [
+        { path: '/admin/xp-config', label: 'XP Configuration' },
+        { path: '/admin/cassandra-ranks', label: 'Cassandra Ranks' },
+        { path: '/admin/referral-config', label: 'Referral Config' },
+        { path: '/admin/credit-usage-config', label: 'Credit Usage Config' },
+        { path: '/admin/gift-tiers', label: 'Gift Tiers' }
+      ]
+    },
+    {
+      id: 'content',
+      label: 'Content',
+      icon: <Image size={20} />,
+      path: '/admin/gallery'
+    },
+    {
+      id: 'settings',
+      label: 'Settings',
+      icon: <Settings size={20} />,
+      items: [
+        { path: '/admin/email-templates', label: 'Email Templates' },
+        { path: '/admin/account-lockout-config', label: 'Account Lockout Config' },
+        { path: '/admin/cassandra', label: 'Cassandra DB' }
+      ]
+    }
+  ];
+
+  // Helper to check if path is active
+  const isPathActive = (path: string): boolean => {
+    return location.pathname === path || location.pathname.startsWith(path + '/');
+  };
+
+  // Helper to check if group has active item
+  const isGroupActive = (group: NavGroup): boolean => {
+    if (group.path) return isPathActive(group.path);
+    return group.items?.some(item => isPathActive(item.path)) || false;
+  };
 
   if (!isAuthed) {
     // Public view for admin login page
@@ -43,33 +201,75 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ title, children, navTabs }) =
     <div className="admin-shell">
       {/* Sidebar */}
       <aside className={`admin-sidebar${sidebarOpen ? ' is-open' : ''}`} id="admin-sidebar" aria-label="Admin navigation">
-        <div className="admin-sidebar-title">Admin Panel</div>
-        <nav>
-          <Link to="/admin/panel" className={location.pathname === '/admin/panel' ? 'admin-link-active' : ''}>Dashboard</Link>
-          <Link to="/admin/users" className={location.pathname.startsWith('/admin/users') ? 'admin-link-active' : ''}>Users</Link>
-          <Link to="/admin/products" className={location.pathname.startsWith('/admin/products') ? 'admin-link-active' : ''}>Products</Link>
-          <Link to="/admin/categories" className={location.pathname.startsWith('/admin/categories') ? 'admin-link-active' : ''}>Categories</Link>
-          <Link to="/admin/inventory" className={location.pathname.startsWith('/admin/inventory') ? 'admin-link-active' : ''}>Inventory / Sklad</Link>
-          <Link to="/admin/reviews" className={location.pathname.startsWith('/admin/reviews') ? 'admin-link-active' : ''}>Reviews</Link>
-          <Link to="/admin/orders" className={location.pathname.startsWith('/admin/orders') || location.pathname.startsWith('/admin/manual-orders') ? 'admin-link-active' : ''}>Orders</Link>
-          <Link to="/admin/invoices" className={location.pathname.startsWith('/admin/invoices') ? 'admin-link-active' : ''}>Invoices</Link>
-          <Link to="/admin/shipping" className={location.pathname.startsWith('/admin/shipping') ? 'admin-link-active' : ''}>Shipping</Link>
-          <Link to="/admin/gallery" className={location.pathname.startsWith('/admin/gallery') ? 'admin-link-active' : ''}>Gallery</Link>
-          <Link to="/admin/campaigns" className={location.pathname.startsWith('/admin/campaigns') ? 'admin-link-active' : ''}>Campaigns</Link>
-          <Link to="/admin/discounts" className={location.pathname.startsWith('/admin/discounts') ? 'admin-link-active' : ''}>Discount Codes</Link>
-          <Link to="/admin/referral-config" className={location.pathname.startsWith('/admin/referral-config') ? 'admin-link-active' : ''}>Referral Config</Link>
-          <Link to="/admin/credit-usage-config" className={location.pathname.startsWith('/admin/credit-usage-config') ? 'admin-link-active' : ''}>Credit Usage Config</Link>
-          <Link to="/admin/account-lockout-config" className={location.pathname.startsWith('/admin/account-lockout-config') ? 'admin-link-active' : ''}>Account Lockout Config</Link>
-          <Link to="/admin/gift-tiers" className={location.pathname.startsWith('/admin/gift-tiers') ? 'admin-link-active' : ''}>Gift Tiers</Link>
-          <Link to="/admin/segments" className={location.pathname.startsWith('/admin/segments') ? 'admin-link-active' : ''}>Segments</Link>
-          <Link to="/admin/abandoned-carts" className={location.pathname.startsWith('/admin/abandoned-carts') ? 'admin-link-active' : ''}>Abandoned Carts</Link>
-          <Link to="/admin/email-templates" className={location.pathname.startsWith('/admin/email-templates') ? 'admin-link-active' : ''}>Email Templates</Link>
-          <Link to="/admin/cassandra" className={location.pathname === '/admin/cassandra' ? 'admin-link-active' : ''}>CASSANDRA</Link>
-          <Link to="/admin/cassandra-ranks" className={location.pathname === '/admin/cassandra-ranks' ? 'admin-link-active' : ''}>Cassandra Ranks</Link>
-          <Link to="/admin/xp-config" className={location.pathname === '/admin/xp-config' ? 'admin-link-active' : ''}>XP Configuration</Link>
+        <div className="admin-sidebar-header">
+          <div className="admin-sidebar-logo">
+            <img src="/logo/logo.png" alt="Martyx Industries" className="admin-logo-img" />
+            <div className="admin-logo-text">
+              <div className="admin-logo-line">MARTYX</div>
+              <div className="admin-logo-line">INDUSTRIES</div>
+            </div>
+          </div>
+        </div>
+
+        <nav className="admin-nav">
+          {navigationGroups.map((group) => {
+            const isActive = isGroupActive(group);
+            const isCollapsed = collapsedGroups[group.id];
+
+            // Top-level link (no children)
+            if (group.path) {
+              return (
+                <Link
+                  key={group.id}
+                  to={group.path}
+                  className={`admin-nav-item ${isActive ? 'active' : ''}`}
+                >
+                  <span className="admin-nav-icon">{group.icon}</span>
+                  <span className="admin-nav-label">{group.label}</span>
+                </Link>
+              );
+            }
+
+            // Collapsible group
+            return (
+              <div key={group.id} className={`admin-nav-group ${isActive ? 'active' : ''}`}>
+                <button
+                  className="admin-nav-group-header"
+                  onClick={() => toggleGroup(group.id)}
+                  aria-expanded={!isCollapsed}
+                >
+                  <span className="admin-nav-icon">{group.icon}</span>
+                  <span className="admin-nav-label">{group.label}</span>
+                  <span className="admin-nav-chevron">
+                    {isCollapsed ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
+                  </span>
+                </button>
+
+                {!isCollapsed && group.items && (
+                  <div className="admin-nav-group-items">
+                    {group.items.map((item) => (
+                      <Link
+                        key={item.path}
+                        to={item.path}
+                        className={`admin-nav-subitem ${isPathActive(item.path) ? 'active' : ''}`}
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </nav>
-        <div className="admin-logout-wrap">
-          <button onClick={handleLogout}>Logout</button>
+
+        <div className="admin-sidebar-footer">
+          <button className="admin-logout-btn" onClick={handleLogout}>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 14H3.33333C2.97971 14 2.64057 13.8595 2.39052 13.6095C2.14048 13.3594 2 13.0203 2 12.6667V3.33333C2 2.97971 2.14048 2.64057 2.39052 2.39052C2.64057 2.14048 2.97971 2 3.33333 2H6M10.6667 11.3333L14 8M14 8L10.6667 4.66667M14 8H6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            Logout
+          </button>
         </div>
       </aside>
 

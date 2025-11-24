@@ -4,22 +4,34 @@
    ============================================================================= */
 
 .category-bar {
-  /* Dark golden background */
-  background: linear-gradient(135deg, #B8860B 0%, #9A7209 100%);
+  /* Yellow background matching sign-up button */
+  background: #F6C845;
 
-  /* Sticky behavior */
+  /* Sticky behavior - attached to navbar bottom with no gap */
   position: sticky;
-  top: 70px; /* Below main navbar (adjust based on your navbar height) */
+  top: 68px; /* Exactly where navbar ends */
   z-index: 999;
+
+  /* Break out of parent container - full viewport width */
+  width: 100vw;
+  margin-left: calc(-50vw + 50%); /* Center and expand to full width */
+  margin-right: calc(-50vw + 50%);
+  margin-top: 0 !important; /* No gap at top */
+  margin-bottom: 0;
+  left: 0;
+  right: 0;
+
+  /* Remove any spacing */
+  padding: 0;
 
   /* Subtle shadow */
   box-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.15),
-    0 2px 4px rgba(0, 0, 0, 0.1);
+    0 2px 8px rgba(0, 0, 0, 0.15),
+    0 1px 3px rgba(0, 0, 0, 0.1);
 
   /* Borders */
-  border-bottom: 2px solid rgba(218, 165, 32, 0.3);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-top: none; /* No gap between navbar */
 
   /* Animation */
   animation: slideDown 0.3s ease-out;
@@ -36,15 +48,17 @@
   }
 }
 
-/* Container */
+/* Container - full width */
 .category-bar-content {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 24px;
+  width: 100%;
+  max-width: none; /* Full width of screen */
+  margin: 0;
+  padding: 0 20px;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 56px;
+  min-height: 42px; /* Reduced height */
+  box-sizing: border-box;
 }
 
 /* Category list */
@@ -64,15 +78,15 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 10px 20px;
+  padding: 6px 16px; /* Reduced padding for less height */
   background: transparent;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
 
-  /* Dark text on golden background */
-  color: #2C1810;
+  /* Dark text on yellow background */
+  color: #0B0F14;
 
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   letter-spacing: 0.3px;
   cursor: pointer;
@@ -95,25 +109,25 @@
 
 /* Count badge */
 .category-count {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 500;
-  color: rgba(44, 24, 16, 0.7);
+  color: rgba(11, 15, 20, 0.65);
   margin-left: 2px;
 }
 
 /* Hover state */
 .category-item:hover {
-  background: rgba(255, 255, 255, 0.15);
-  color: #000;
-  transform: translateY(-2px);
+  background: rgba(0, 0, 0, 0.08);
+  color: #0B0F14;
+  transform: translateY(-1px);
 }
 
 /* Active state */
 .category-item.active {
-  background: rgba(255, 255, 255, 0.25);
-  color: #000;
+  background: rgba(0, 0, 0, 0.12);
+  color: #0B0F14;
   font-weight: 700;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* Active underline indicator */
@@ -123,14 +137,14 @@
   bottom: 0;
   left: 10%;
   right: 10%;
-  height: 3px;
-  background: #2C1810;
+  height: 2px;
+  background: #0B0F14;
   border-radius: 2px 2px 0 0;
 }
 
 /* Focus state (keyboard navigation) */
 .category-item:focus {
-  outline: 2px solid #2C1810;
+  outline: 2px solid #0B0F14;
   outline-offset: 2px;
 }
 
@@ -140,7 +154,7 @@
 
 /* Loading state */
 .category-bar.loading {
-  min-height: 56px;
+  min-height: 42px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -148,16 +162,16 @@
 
 .category-skeleton {
   width: 600px;
-  height: 36px;
+  height: 20px;
   background: linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0.1) 25%,
-    rgba(255, 255, 255, 0.2) 50%,
-    rgba(255, 255, 255, 0.1) 75%
+    rgba(0, 0, 0, 0.05) 25%,
+    rgba(0, 0, 0, 0.1) 50%,
+    rgba(0, 0, 0, 0.05) 75%
   );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
-  border-radius: 8px;
+  border-radius: 6px;
 }
 
 @keyframes shimmer {
@@ -176,7 +190,7 @@
 /* Tablet */
 @media (max-width: 768px) {
   .category-bar {
-    top: 60px; /* Adjust for smaller navbar */
+    top: 68px; /* Stuck to navbar on tablet */
   }
 
   .category-bar-content {
@@ -215,12 +229,12 @@
 /* Small mobile */
 @media (max-width: 480px) {
   .category-bar {
-    top: 56px;
+    top: 68px;
   }
 
   .category-bar-content {
     padding: 0 12px;
-    min-height: 48px;
+    min-height: 36px;
   }
 
   .category-item {
@@ -236,7 +250,7 @@
     top: 0;
     bottom: 0;
     width: 40px;
-    background: linear-gradient(to right, transparent, #B8860B);
+    background: linear-gradient(to right, transparent, #F6C845);
     pointer-events: none;
   }
 }

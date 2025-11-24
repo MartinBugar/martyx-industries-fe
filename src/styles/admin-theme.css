@@ -1,22 +1,31 @@
 /**
- * Modern Minimalist Admin Panel Design System
- * Created: 2025-10-23
+ * Martyx Industries Admin Panel Design System 2025
+ * Updated: 2025-11-24
  *
  * Design Philosophy:
- * - Clean, flat design without gradients
+ * - Dark sidebar with gold accent
+ * - Clean, modern minimalist design
  * - Subtle shadows for depth
- * - Professional blue/slate color palette
+ * - Professional gold/slate color palette (Martyx brand)
  * - Clear visual hierarchy
  * - Responsive and accessible
  */
 
 :root {
+  /* ===== MARTYX BRAND COLORS ===== */
+  --martyx-gold: #F6C845;             /* Primary gold - brand accent */
+  --martyx-gold-dark: #f5b624;        /* Darker gold - hover states */
+  --martyx-gold-light: #f8d36e;       /* Lighter gold - backgrounds */
+  --martyx-dark: #0F172A;             /* Deep slate - primary text */
+  --martyx-darker: #0b0f12;           /* Ultra dark - sidebar bg */
+  --martyx-darkest: #070a0d;          /* Darkest - sidebar footer */
+
   /* ===== PRIMARY COLOR PALETTE ===== */
   --admin-primary: #0F172A;           /* Deep slate - primary text */
   --admin-secondary: #64748B;         /* Slate gray - secondary text */
-  --admin-accent: #3B82F6;            /* Blue - primary actions */
-  --admin-accent-hover: #2563EB;      /* Darker blue - hover */
-  --admin-accent-light: #DBEAFE;      /* Light blue - backgrounds */
+  --admin-accent: #F6C845;            /* Gold - primary actions (MARTYX BRAND) */
+  --admin-accent-hover: #f5b624;      /* Darker gold - hover */
+  --admin-accent-light: #FEF3C7;      /* Light gold - backgrounds */
 
   /* ===== STATUS COLORS ===== */
   --admin-success: #10B981;           /* Green */
@@ -134,9 +143,10 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: var(--admin-accent);
+  background: linear-gradient(90deg, var(--admin-accent) 0%, var(--admin-accent-hover) 100%);
   opacity: 0;
   transition: opacity var(--admin-transition-base);
+  box-shadow: 0 -2px 12px rgba(246, 200, 69, 0.4);
 }
 
 .admin-kpi-card:hover::after {
@@ -202,15 +212,18 @@
 }
 
 .admin-btn-primary {
-  background: var(--admin-accent);
-  color: white;
+  background: linear-gradient(135deg, var(--admin-accent) 0%, var(--admin-accent-hover) 100%);
+  color: var(--martyx-darker);
   border-color: var(--admin-accent);
+  font-weight: var(--admin-font-semibold);
+  box-shadow: 0 4px 12px rgba(246, 200, 69, 0.25);
 }
 
 .admin-btn-primary:hover:not(:disabled) {
-  background: var(--admin-accent-hover);
+  background: linear-gradient(135deg, var(--admin-accent-hover) 0%, var(--martyx-gold-dark) 100%);
   border-color: var(--admin-accent-hover);
-  box-shadow: var(--admin-shadow-md);
+  box-shadow: 0 8px 20px rgba(246, 200, 69, 0.35);
+  transform: translateY(-1px);
 }
 
 .admin-btn-secondary {

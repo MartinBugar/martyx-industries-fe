@@ -10,7 +10,8 @@
       "Bash(xargs sed:*)",
       "Bash(for:*)",
       "Read(//a/CODING/MARTYX-INDUSTRIES.COM/martyx-indystries-be/**)",
-      "Read(//a/CODING/MARTYX-INDUSTRIES.COM/**)"
+      "Read(//a/CODING/MARTYX-INDUSTRIES.COM/**)",
+      "Bash(npm run dev)"
     ],
     "deny": [],
     "ask": []
