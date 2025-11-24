@@ -295,7 +295,8 @@ const CartPage: React.FC<CartPageProps> = ({
                 <tbody>
                   {items.map(item => {
                     const isDigital = item.product.variantType === 'DIGITAL_ONLY';
-                    const thumb = item.product.gallery?.[0];
+                    // Use optimized thumbnail for faster loading
+                    const thumb = item.product.thumbnailUrl || item.product.imageUrl || item.product.gallery?.[0];
 
                     return (
                       <tr key={item.product.variantId} className="cart-item">

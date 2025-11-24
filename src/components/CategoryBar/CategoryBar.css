@@ -47,9 +47,9 @@
 
 /* Complete state - static expanded state (prevents re-triggering animation) */
 .category-bar.complete {
-  max-height: 70px;
+  max-height: none; /* No restriction after animation completes */
   opacity: 1;
-  overflow: visible; /* Allow content to be visible */
+  /* overflow defaults to visible */
 }
 
 @keyframes slideInFromTop {
@@ -167,24 +167,31 @@
   outline: none;
 }
 
-/* Loading state - also use slide-in animation */
+/* Loading state */
 .category-bar.loading {
   min-height: 36px; /* Match reduced container height */
   display: flex;
   align-items: center;
   justify-content: center;
+}
 
-  /* Start hidden like normal state */
+/* Loading initial state */
+.category-bar.loading.initial {
   max-height: 0;
   overflow: hidden;
   opacity: 0;
+}
 
+/* Loading animating state */
+.category-bar.loading.animating {
+  animation: slideInFromTop 0.6s ease-out forwards !important;
   will-change: max-height, opacity;
 }
 
-/* Make loading state visible when mounted */
-.category-bar.loading.mounted {
-  animation: slideInFromTop 0.6s ease-out forwards !important;
+/* Loading complete state */
+.category-bar.loading.complete {
+  max-height: none;
+  opacity: 1;
 }
 
 .category-skeleton {
@@ -284,10 +291,12 @@
 
 /* Accessibility - Reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .category-bar,
-  .category-bar.loading {
+  .category-bar.initial,
+  .category-bar.animating,
+  .category-bar.loading.initial,
+  .category-bar.loading.animating {
     animation: none !important;
-    max-height: 100px !important;
+    max-height: 70px !important;
     opacity: 1 !important;
   }
 
