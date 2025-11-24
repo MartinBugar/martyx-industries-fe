@@ -153,8 +153,10 @@ const DynamicProductTabs: React.FC<DynamicProductTabsProps> = ({
 
   if (loading) {
     return (
-      <div className="product-tabs-loading">
-        <p>Loading tabs...</p>
+      <div className="tabs-loading-container">
+        <div className="tabs-loading-bar">
+          <div className="tabs-loading-progress"></div>
+        </div>
       </div>
     );
   }

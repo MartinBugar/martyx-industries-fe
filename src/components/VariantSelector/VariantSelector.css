@@ -344,6 +344,60 @@
   }
 }
 
+/* Static variant display (non-interactive, for single variant products) */
+.variant-display-static {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: default;
+  transition: all 0.2s ease;
+}
+
+.variant-display-static:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* Responsive adjustments for static display - match select styling */
+@media (max-width: 767px) {
+  .variant-display-static {
+    font-size: 0.9rem;
+    padding: 0.625rem 0.875rem;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .variant-display-static {
+    font-size: 0.975rem;
+    padding: 0.8rem 1.1rem;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1399px) {
+  .variant-display-static {
+    font-size: 1rem;
+    padding: 0.825rem 1.1rem;
+    border-radius: 8px;
+  }
+}
+
+@media (min-width: 1400px) and (max-width: 1600px) and (min-height: 900px) and (max-height: 1100px) {
+  .variant-display-static {
+    font-size: 1.05rem;
+    padding: 0.95rem 1.25rem;
+    border-radius: 10px;
+    border-width: 1.5px;
+  }
+
+  .variant-display-static:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+}
+
 /* Accessibility - high contrast mode */
 @media (prefers-contrast: high) {
   .variant-select {

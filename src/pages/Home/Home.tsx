@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { type Product } from '../../data/productData';
+import { type Product, type ProductVariant } from '../../data/productData';
 import { hybridProductService } from '../../services/hybridProductService';
 import { useCart } from '../../context/useCart';
 import ProductCard from '../../components/ProductCard/ProductCard';
@@ -9,6 +9,7 @@ import OptimizedImage from '../../components/OptimizedImage/OptimizedImage';
 import { productGalleryService } from '../../services/productGalleryService';
 import { homePageSettingsService, type VisibilityMap } from '../../services/homePageSettingsService';
 import { testimonialService, type Testimonial } from '../../services/testimonialService';
+import VariantSelectorModal from '../../components/VariantSelectorModal/VariantSelectorModal';
 import './Home.css';
 import { logInfo, logWarn, logError } from '../../services/logger';
 
@@ -25,6 +26,10 @@ const Home: React.FC = () => {
   type Popup = { visible: boolean; message: string; variant: 'success' | 'warning' };
   const [popups, setPopups] = useState<Record<string, Popup>>({});
   const timersRef = useRef<Record<string, number>>({});
+
+  // Variant Selector Modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   // Try to import hero image via bundler; fallback to CSS placeholder if not present
   const heroAlt = t('hero.image_alt');
@@ -213,12 +218,56 @@ const Home: React.FC = () => {
 
   // Handle add to cart with popup feedback (memoized)
   const handleAdd = useCallback((p: Product) => () => {
-    const status = addToCart(p);
+    const hasMultipleVariants = p.availableVariants && p.availableVariants.length > 1;
+
+    if (hasMultipleVariants) {
+      // Open modal for variant selection
+      setSelectedProduct(p);
+      setIsModalOpen(true);
+    } else {
+      // Direct add to cart for single variant products
+      const status = addToCart(p);
+      showPopup(p.variantId.toString(), status);
+    }
+  }, [addToCart]);
+
+  // Handle add to cart from modal (with selected variant and quantity)
+  const handleAddFromModal = useCallback((selectedVariant: ProductVariant, quantity: number) => {
+    if (!selectedProduct) return;
+
+    // Create a temporary product object with the selected variant data
+    const productWithVariant: Product = {
+      ...selectedProduct,
+      variantId: selectedVariant.variantId,
+      variantName: selectedVariant.variantName,
+      sku: selectedVariant.sku,
+      priceWithVat: selectedVariant.priceWithVat,
+      priceWithoutVat: selectedVariant.priceWithoutVat,
+      currency: selectedVariant.currency,
+      variantType: selectedVariant.variantType,
+      stockQuantity: selectedVariant.stockQuantity,
+      availabilityStatus: selectedVariant.availabilityStatus
+    };
+
+    // Add to cart multiple times for quantity
+    let overallStatus: 'added' | 'limit' | 'out_of_stock' | 'discontinued' | 'pre_order' = 'added';
+    for (let i = 0; i < quantity; i++) {
+      const status = addToCart(productWithVariant);
+      if (status !== 'added') {
+        overallStatus = status;
+        break;
+      }
+    }
+
+    showPopup(selectedVariant.variantId.toString(), overallStatus);
+  }, [addToCart, selectedProduct]);
+
+  // Show popup notification
+  const showPopup = useCallback((key: string, status: 'added' | 'limit' | 'out_of_stock' | 'discontinued' | 'pre_order') => {
     const isLimit = status === 'limit';
     const message = isLimit ? t('cart.add_limit', { ns: 'products' }) : t('cart.add_success', { ns: 'products' });
     const variant: Popup['variant'] = isLimit ? 'warning' : 'success';
 
-    const key = p.variantId.toString();
     setPopups(prev => ({ ...prev, [key]: { visible: true, message, variant } }));
 
     const existing = timersRef.current[key];
@@ -231,7 +280,7 @@ const Home: React.FC = () => {
       }));
       delete timersRef.current[key];
     }, 2000);
-  }, [addToCart, t]);
+  }, [t]);
 
   logInfo('🎨 [HOME] About to render. visibilityMap:', visibilityMap);
   logInfo('🎨 [HOME] testimonials.length:', testimonials.length);
@@ -389,6 +438,16 @@ const Home: React.FC = () => {
       </section>
       )}
       </div>
+
+      {/* Variant Selector Modal */}
+      {selectedProduct && (
+        <VariantSelectorModal
+          product={selectedProduct}
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onAddToCart={handleAddFromModal}
+        />
+      )}
     </>
   );
 };

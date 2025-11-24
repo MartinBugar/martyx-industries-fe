@@ -97,6 +97,7 @@ import {
   AdminDiscounts,
   AdminReferralConfig,
   AdminCreditUsageConfig,
+  AdminAccountLockoutConfig,
   AdminEmailTemplates,
   AdminXpConfig,
   AdminInvoices,
@@ -386,6 +387,11 @@ const MainContent = React.memo(() => {
             <Route path="/admin/credit-usage-config" element={
               <RequireAdmin>
                 <AdminCreditUsageConfig />
+              </RequireAdmin>
+            } />
+            <Route path="/admin/account-lockout-config" element={
+              <RequireAdmin>
+                <AdminAccountLockoutConfig />
               </RequireAdmin>
             } />
             <Route path="/admin/segments" element={

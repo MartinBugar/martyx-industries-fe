@@ -1,9 +1,10 @@
-/* About Page - Modern Minimalist Design */
+/* About Page - Modern Minimalist Design with Story */
 
 .about-page {
   background: var(--background);
   color: var(--text-primary);
   min-height: 100vh;
+  position: relative;
 }
 
 /* ========== HERO SECTION ========== */
@@ -33,29 +34,39 @@
   font-size: clamp(1.1rem, 2.5vw, 1.4rem);
   line-height: 1.7;
   color: var(--text-muted);
-  margin: 0;
+  margin: 0 0 1rem 0;
   max-width: 800px;
-  margin: 0 auto;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-/* ========== STORY SECTION ========== */
+.about-hero .hero-subtitle {
+  font-size: 1.1rem;
+  color: var(--accent);
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
 
-.about-story {
+/* ========== ORIGIN STORY SECTION ========== */
+
+.about-origin {
   padding: 6rem 0;
   background: var(--background);
 }
 
-.about-story .story-content {
-  max-width: 800px;
+.about-origin .origin-content {
+  max-width: 900px;
   margin: 0 auto;
 }
 
-.about-story .section-header {
+.about-origin .section-header {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
 }
 
-.about-story .section-header h2 {
+.about-origin .section-header h2 {
   font-size: clamp(2rem, 4vw, 3rem);
   font-weight: 800;
   color: var(--text-primary);
@@ -63,19 +74,121 @@
   letter-spacing: -0.02em;
 }
 
-.about-story .story-text {
+.about-origin .origin-story {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.origin-paragraph {
   font-size: 1.15rem;
   line-height: 1.8;
   color: var(--text-muted);
-  text-align: center;
   margin: 0;
+  text-align: left;
+}
+
+.origin-paragraph.highlight {
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 1.2rem;
+  border-left: 4px solid var(--accent);
+  padding-left: 1.5rem;
+  font-style: italic;
+}
+
+/* ========== PHILOSOPHY SECTION ========== */
+
+.about-philosophy {
+  padding: 6rem 0;
+  background: var(--surface);
+}
+
+.about-philosophy .section-header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.about-philosophy .section-header h2 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.philosophy-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.philosophy-card {
+  background: var(--background);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 2.5rem 2rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.philosophy-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--accent);
+  box-shadow: 0 12px 32px rgba(246, 200, 69, 0.2);
+}
+
+.philosophy-icon {
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(246, 200, 69, 0.1);
+  border-radius: 16px;
+  color: var(--accent);
+  transition: all 0.3s ease;
+}
+
+.philosophy-card:hover .philosophy-icon {
+  background: rgba(246, 200, 69, 0.2);
+  transform: scale(1.05);
+}
+
+.philosophy-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.philosophy-description {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.philosophy-benefit {
+  font-size: 0.9rem;
+  color: var(--accent);
+  font-weight: 600;
+  margin: 0;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* ========== VALUES SECTION ========== */
 
 .about-values {
   padding: 6rem 0;
-  background: var(--surface);
+  background: var(--background);
 }
 
 .about-values .section-header {
@@ -100,8 +213,8 @@
 }
 
 .value-card {
-  background: var(--background);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
   padding: 2.5rem 2rem;
   text-align: center;
@@ -114,7 +227,7 @@
 
 .value-card:hover {
   transform: translateY(-4px);
-  border-color: var(--accent);
+  border-color: rgba(255, 255, 255, 0.15);
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
 }
 
@@ -153,7 +266,7 @@
 
 .about-stats {
   padding: 5rem 0;
-  background: var(--background);
+  background: var(--surface);
 }
 
 .stats-grid {
@@ -167,7 +280,7 @@
 .stat-item {
   text-align: center;
   padding: 2rem 1.5rem;
-  background: var(--surface);
+  background: var(--background);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
   transition: all 0.2s ease;
@@ -190,6 +303,38 @@
   font-size: 0.95rem;
   color: var(--text-muted);
   font-weight: 500;
+}
+
+/* ========== TEAM SECTION ========== */
+
+.about-team {
+  padding: 6rem 0;
+  background: var(--background);
+}
+
+.about-team .team-content {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.about-team .section-header {
+  margin-bottom: 2rem;
+}
+
+.about-team .section-header h2 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.team-description {
+  font-size: 1.15rem;
+  line-height: 1.8;
+  color: var(--text-muted);
+  margin: 0;
 }
 
 /* ========== CTA SECTION ========== */
@@ -225,6 +370,7 @@
   display: flex;
   justify-content: center;
   gap: 1.25rem;
+  flex-wrap: wrap;
 }
 
 .btn-cta {
@@ -232,8 +378,6 @@
   align-items: center;
   gap: 0.75rem;
   padding: 1.25rem 3rem;
-  background: var(--accent);
-  color: #0B0F14;
   text-decoration: none;
   border-radius: 8px;
   font-size: 1.1rem;
@@ -243,18 +387,52 @@
   cursor: pointer;
 }
 
-.btn-cta:hover {
+.btn-cta.primary {
+  background: var(--accent);
+  color: #0B0F14;
+}
+
+.btn-cta.primary:hover {
   background: #FCD34D;
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(246, 200, 69, 0.4);
+}
+
+.btn-cta.secondary {
+  background: transparent;
+  color: var(--text-primary);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-cta.secondary:hover {
+  border-color: var(--accent);
+  background: rgba(246, 200, 69, 0.1);
+  transform: translateY(-2px);
 }
 
 .btn-cta svg {
   transition: transform 0.2s ease;
 }
 
-.btn-cta:hover svg {
+.btn-cta.primary:hover svg {
   transform: translateX(4px);
+}
+
+/* ========== FLOATING CASSANDRA MASCOT ========== */
+
+.about-floating-mascot {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.floating-mascot-image-about {
+  width: 300px;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.3));
 }
 
 /* ========== RESPONSIVE ========== */
@@ -264,6 +442,7 @@
     padding: 6rem 0 5rem;
   }
 
+  .philosophy-grid,
   .values-grid {
     grid-template-columns: 1fr;
     gap: 1.5rem;
@@ -275,8 +454,10 @@
     gap: 1.5rem;
   }
 
-  .about-story,
+  .about-origin,
+  .about-philosophy,
   .about-values,
+  .about-team,
   .about-cta {
     padding: 5rem 0;
   }
@@ -287,18 +468,23 @@
     padding: 5rem 0 4rem;
   }
 
-  .about-story,
+  .about-origin,
+  .about-philosophy,
   .about-values,
   .about-stats,
+  .about-team,
   .about-cta {
     padding: 4rem 0;
   }
 
+  .about-philosophy .section-header,
   .about-values .section-header,
-  .about-story .section-header {
+  .about-origin .section-header,
+  .about-team .section-header {
     margin-bottom: 2.5rem;
   }
 
+  .philosophy-card,
   .value-card {
     padding: 2rem 1.5rem;
   }
@@ -317,6 +503,11 @@
     max-width: 360px;
     justify-content: center;
   }
+
+  /* Hide Cassandra on mobile/tablet */
+  .about-floating-mascot {
+    display: none;
+  }
 }
 
 @media (max-width: 480px) {
@@ -324,9 +515,11 @@
     padding: 4rem 0 3rem;
   }
 
-  .about-story,
+  .about-origin,
+  .about-philosophy,
   .about-values,
   .about-stats,
+  .about-team,
   .about-cta {
     padding: 3rem 0;
   }
@@ -335,21 +528,34 @@
     margin-bottom: 1.5rem;
   }
 
+  .origin-paragraph {
+    font-size: 1rem;
+  }
+
+  .origin-paragraph.highlight {
+    font-size: 1.05rem;
+    padding-left: 1rem;
+  }
+
+  .philosophy-card,
   .value-card {
     padding: 1.75rem 1.25rem;
     gap: 1.25rem;
   }
 
+  .philosophy-icon,
   .value-icon {
     width: 64px;
     height: 64px;
   }
 
+  .philosophy-icon svg,
   .value-icon svg {
     width: 28px;
     height: 28px;
   }
 
+  .philosophy-title,
   .value-title {
     font-size: 1.35rem;
   }
@@ -371,17 +577,23 @@
     padding: 1.125rem 2.5rem;
     font-size: 1rem;
   }
+
+  .team-description {
+    font-size: 1rem;
+  }
 }
 
 /* ========== ACCESSIBILITY ========== */
 
 @media (prefers-reduced-motion: reduce) {
+  .philosophy-card,
   .value-card,
   .stat-item,
   .btn-cta {
     transition: none;
   }
 
+  .philosophy-card:hover,
   .value-card:hover,
   .stat-item:hover,
   .btn-cta:hover {

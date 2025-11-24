@@ -1,56 +1,74 @@
 {
-  "title": "Martyx Industries",
-  "lead": "We engineer 3D‑printed RC platforms and parts that are easy to build, maintain, and upgrade. Designed, tested, and refined so you can spend more time driving and less time troubleshooting.",
-  "features": {
-    "title": "What We Do",
-    "precision": {
-      "title": "Engineering Precision",
-      "description": "CAD-designed components with perfect hardware compatibility and optimal performance."
+  "title": "Our Story",
+  "lead": "From garage to global RC community. Welcome to Martyx Industries — where precision engineering meets passion for RC modeling.",
+
+  "hero": {
+    "subtitle": "Where engineering meets passion"
+  },
+
+  "origin": {
+    "title": "How It All Started",
+    "paragraph_1": "It all started with a simple question: \"Why do RC models have to be so complicated to assemble?\"",
+    "paragraph_2": "As an avid RC enthusiast and engineer, I was tired of glue sticks, incompatible parts, and endless waiting for adhesives to dry. I wanted to build, not wait. I wanted precision-engineered parts that just fit.",
+    "paragraph_3": "So I took my 3D printer, CAD software, and mechanical engineering know-how — and started creating. The first prototype was far from perfect, but the principle worked: no glue, just screws. Modular design. Precise tolerances.",
+    "paragraph_4": "Today, after hundreds of hours of testing, dozens of iterations, and endless feedback from the community, we deliver what I always wanted: RC kits that simply work."
+  },
+
+  "philosophy": {
+    "title": "Our Philosophy",
+    "no_glue": {
+      "title": "No Glue. Just Engineering.",
+      "description": "Every model is designed with precision-fit screw connections. Why? Because we want you to disassemble, upgrade, and repair your build anytime. That's real DIY.",
+      "benefit": "Easy maintenance • Simple upgrades • Reusable"
     },
-    "quality": {
-      "title": "Tested Quality",
-      "description": "Every design is stress-tested and refined through real-world testing and feedback."
+    "modular": {
+      "title": "Modular Design",
+      "description": "Our models are designed like LEGO for adults. Every subsystem is a standalone module — chassis, electronics, body. Want to experiment? Go ahead!",
+      "benefit": "Flexible • Customizable • Expandable"
     },
-    "support": {
-      "title": "Complete Support",
-      "description": "Comprehensive documentation, BOMs, and community support for all your builds."
+    "tested": {
+      "title": "Field Tested",
+      "description": "Every design goes through hundreds of hours of real-world testing. Not in CAD simulations — in actual terrain, on real printers, with real users.",
+      "benefit": "Proven • Reliable • Functional"
     }
   },
-  "story": {
-    "title": "Our Story",
-    "description": "Born from a passion for RC engineering, we combine modern 3D printing technology with precision design to democratize high-quality RC vehicle construction for enthusiasts worldwide."
+
+  "values": {
+    "title": "What Drives Us Forward",
+    "precision": {
+      "title": "Engineering Precision",
+      "description": "Every part is designed in CAD software with tolerances down to tenths of a millimeter. It's not just a 3D model — it's a mechanical drawing."
+    },
+    "community": {
+      "title": "Community First",
+      "description": "We listen to our users. Every feedback, bug report, and improvement suggestion is our priority. You make us better."
+    },
+    "quality": {
+      "title": "Quality Over Quantity",
+      "description": "We'd rather make one model perfectly than ten average ones. Every kit is the result of weeks of work and testing."
+    }
   },
-  "cta": {
-    "shop_products": "Shop Products",
-    "contact_us": "Contact Us"
-  },
+
   "stats": {
-    "models": "Unique models",
-    "customers": "Satisfied customers",
-    "monthly": "New models monthly",
-    "download": "Instant download"
+    "parts": "500+ Parts",
+    "build_time": "40+ Hours Build",
+    "no_screws": "0 Drops of Glue",
+    "community": "2000+ Enthusiasts"
   },
-  "mission": {
-    "title": "Our mission",
-    "description": "We combine passion for RC modeling with cutting-edge 3D printing technology. Our STL files are designed with maximum attention to detail, optimized for easy printing and perfect results."
+
+  "team": {
+    "title": "Small Team, Big Dreams",
+    "description": "We're a small team of engineers, designers, and RC enthusiasts who believe the best things come from passion, not corporate spreadsheets. Every model is a personal project we pour our hearts into."
   },
-  "why": {
-    "title": "Why choose us?",
-    "description": "With more than 5 years of experience in 3D modeling and RC modeling, we bring you proven solutions that work. We test each model on different types of printers and materials."
-  },
-  "features": {
-    "professional": "Professionally designed models",
-    "optimized": "Optimized for all printer types",
-    "guides": "Detailed guides and supports",
-    "community": "Community of enthusiasts",
-    "tested": "Tested on real projects",
-    "updates": "Regular model updates",
-    "support_sk": "Customer support in Slovak",
-    "guarantee": "Compatibility guarantee"
-  },
+
   "cta": {
-    "title": "Ready to start your project?",
-    "description": "Explore our collection of premium STL models and start creating amazing RC models today!",
-    "button": "Browse catalog"
+    "title": "Ready to Build Something Amazing?",
+    "description": "Explore our RC kits and experience what it's like to build something that's engineering-first.",
+    "button": "Explore Products",
+    "contact": "Or contact us"
+  },
+
+  "features": {
+    "title": "Why Martyx Industries?"
   }
 }

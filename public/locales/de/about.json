@@ -1,56 +1,74 @@
 {
-  "title": "Über Martyx Industries",
-  "lead": "Wir entwickeln 3D-gedruckte RC-Plattformen und Teile, die einfach zu bauen, zu warten und zu upgraden sind. Entworfen, getestet und verfeinert, damit Sie mehr Zeit mit Fahren und weniger Zeit mit Fehlerbehebung verbringen können.",
-  "features": {
-    "title": "Was wir machen",
-    "precision": {
-      "title": "Ingenieurspräzision",
-      "description": "CAD-entworfene Komponenten mit perfekter Hardware-Kompatibilität und optimaler Leistung."
+  "title": "Unsere Geschichte",
+  "lead": "Von der Garage zur globalen RC-Community. Willkommen bei Martyx Industries — wo Präzisionstechnik auf Leidenschaft für RC-Modellbau trifft.",
+
+  "hero": {
+    "subtitle": "Wo Engineering auf Leidenschaft trifft"
+  },
+
+  "origin": {
+    "title": "Wie alles begann",
+    "paragraph_1": "Alles begann mit einer einfachen Frage: \"Warum müssen RC-Modelle so kompliziert zusammenzubauen sein?\"",
+    "paragraph_2": "Als begeisterter RC-Enthusiast und Ingenieur hatte ich genug von Klebstoff, inkompatiblen Teilen und endlosem Warten, bis der Kleber trocknet. Ich wollte bauen, nicht warten. Ich wollte präzisionsgefertigte Teile, die einfach passen.",
+    "paragraph_3": "Also nahm ich meinen 3D-Drucker, CAD-Software und mein Know-how im Maschinenbau — und fing an zu erschaffen. Der erste Prototyp war alles andere als perfekt, aber das Prinzip funktionierte: kein Kleber, nur Schrauben. Modulares Design. Präzise Toleranzen.",
+    "paragraph_4": "Heute, nach hunderten Stunden Tests, dutzenden Iterationen und endlosem Feedback aus der Community, liefern wir das, was ich immer wollte: RC-Bausätze, die einfach funktionieren."
+  },
+
+  "philosophy": {
+    "title": "Unsere Philosophie",
+    "no_glue": {
+      "title": "Kein Kleber. Nur Engineering.",
+      "description": "Jedes Modell ist mit präzisen Schraubverbindungen konstruiert. Warum? Weil wir wollen, dass Sie Ihren Build jederzeit zerlegen, upgraden und reparieren können. Das ist echtes DIY.",
+      "benefit": "Einfache Wartung • Simple Upgrades • Wiederverwendbar"
     },
-    "quality": {
-      "title": "Getestete Qualität",
-      "description": "Jedes Design wird durch reale Tests und Feedback belastet und verfeinert."
+    "modular": {
+      "title": "Modulares Design",
+      "description": "Unsere Modelle sind wie LEGO für Erwachsene konzipiert. Jedes Subsystem ist ein eigenständiges Modul — Fahrgestell, Elektronik, Karosserie. Experimentieren Sie gerne!",
+      "benefit": "Flexibel • Anpassbar • Erweiterbar"
     },
-    "support": {
-      "title": "Vollständige Unterstützung",
-      "description": "Umfassende Dokumentation, Stücklisten und Community-Support für alle Ihre Builds."
+    "tested": {
+      "title": "Im Feld getestet",
+      "description": "Jedes Design durchläuft hunderte Stunden realer Tests. Nicht in CAD-Simulationen — im echten Gelände, auf echten Druckern, mit echten Benutzern.",
+      "benefit": "Bewährt • Zuverlässig • Funktional"
     }
   },
-  "story": {
-    "title": "Unsere Geschichte",
-    "description": "Geboren aus der Leidenschaft für RC-Technik, kombinieren wir moderne 3D-Drucktechnologie mit Präzisionsdesign, um hochwertige RC-Fahrzeugkonstruktion für Enthusiasten weltweit zu demokratisieren."
+
+  "values": {
+    "title": "Was uns antreibt",
+    "precision": {
+      "title": "Ingenieurspräzision",
+      "description": "Jedes Teil wird in CAD-Software mit Toleranzen bis auf Zehntel Millimeter entworfen. Es ist nicht nur ein 3D-Modell — es ist eine mechanische Zeichnung."
+    },
+    "community": {
+      "title": "Community First",
+      "description": "Wir hören unseren Benutzern zu. Jedes Feedback, jeder Bug-Report und jeder Verbesserungsvorschlag ist unsere Priorität. Sie machen uns besser."
+    },
+    "quality": {
+      "title": "Qualität über Quantität",
+      "description": "Wir machen lieber ein Modell perfekt als zehn durchschnittliche. Jeder Bausatz ist das Ergebnis wochenlanger Arbeit und Tests."
+    }
   },
-  "cta": {
-    "shop_products": "Produkte kaufen",
-    "contact_us": "Kontaktieren Sie uns"
-  },
+
   "stats": {
-    "models": "Einzigartige Modelle",
-    "customers": "Zufriedene Kunden",
-    "monthly": "Neue Modelle monatlich",
-    "download": "Sofortiger Download"
+    "parts": "500+ Teile",
+    "build_time": "40+ Stunden Bauzeit",
+    "no_screws": "0 Tropfen Kleber",
+    "community": "2000+ Enthusiasten"
   },
-  "mission": {
-    "title": "Unsere Mission",
-    "description": "Wir verbinden die Leidenschaft für RC-Modellbau mit modernster 3D-Drucktechnologie. Unsere STL-Dateien sind mit maximaler Detailgenauigkeit entworfen, optimiert für einfachen Druck und perfekte Ergebnisse."
+
+  "team": {
+    "title": "Kleines Team, Große Träume",
+    "description": "Wir sind ein kleines Team aus Ingenieuren, Designern und RC-Enthusiasten, die glauben, dass die besten Dinge aus Leidenschaft entstehen, nicht aus Unternehmens-Spreadsheets. Jedes Modell ist ein persönliches Projekt, in das wir unser Herz stecken."
   },
-  "why": {
-    "title": "Warum uns wählen?",
-    "description": "Mit mehr als 5 Jahren Erfahrung in der 3D-Modellierung und dem RC-Modellbau bringen wir Ihnen bewährte Lösungen, die funktionieren. Wir testen jedes Modell auf verschiedenen Druckertypen und Materialien."
-  },
-  "features": {
-    "professional": "Professionell gestaltete Modelle",
-    "optimized": "Optimiert für alle Druckertypen",
-    "guides": "Detaillierte Anleitungen und Support",
-    "community": "Gemeinschaft von Enthusiasten",
-    "tested": "Getestet an realen Projekten",
-    "updates": "Regelmäßige Modell-Updates",
-    "support_sk": "Kundensupport auf Slowakisch",
-    "guarantee": "Kompatibilitätsgarantie"
-  },
+
   "cta": {
-    "title": "Bereit, Ihr Projekt zu starten?",
-    "description": "Erkunden Sie unsere Sammlung von Premium-STL-Modellen und beginnen Sie noch heute mit der Erstellung erstaunlicher RC-Modelle!",
-    "button": "Katalog durchsuchen"
+    "title": "Bereit, etwas Erstaunliches zu bauen?",
+    "description": "Entdecken Sie unsere RC-Bausätze und erleben Sie, wie es ist, etwas zu bauen, das Engineering-first ist.",
+    "button": "Produkte entdecken",
+    "contact": "Oder kontaktieren Sie uns"
+  },
+
+  "features": {
+    "title": "Warum Martyx Industries?"
   }
 }

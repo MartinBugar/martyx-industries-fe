@@ -24,17 +24,14 @@ export const authApi = {
     }
   },
   
-  // Logout endpoint (if needed)
-  logout: async (token: string) => {
+  // Logout endpoint - clears httpOnly refresh token cookie
+  logout: async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/logout`, withLangHeaders({
+      const response = await fetch(`${API_BASE_URL}/api/auth/logout`, withLangHeaders({
         method: 'POST',
-        headers: {
-          ...defaultHeaders,
-          'Authorization': `Bearer ${token}`,
-        } as HeadersInit,
+        headers: defaultHeaders as HeadersInit,
       }));
-      
+
       return handleResponse(response);
     } catch (error) {
       logError('Logout API error:', error);
@@ -74,13 +71,13 @@ export const authApi = {
     }
   },
 
-  // Refresh access token using refresh token
-  refreshToken: async (refreshToken: string): Promise<AuthResponse> => {
+  // Refresh access token using httpOnly cookie (no parameter needed)
+  refreshToken: async (): Promise<AuthResponse> => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/auth/refresh`, withLangHeaders({
         method: 'POST',
         headers: defaultHeaders as HeadersInit,
-        body: JSON.stringify({ refreshToken }),
+        // No body needed - refresh token is in httpOnly cookie
       }));
 
       return await handleResponse(response) as AuthResponse;

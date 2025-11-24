@@ -1,6 +1,7 @@
 import React from 'react';
 import { type ProductVariant, type DifficultyLevel } from '../../data/productData';
 import DifficultyBadge from '../DifficultyBadge/DifficultyBadge';
+import { getVariantTypeShort, getAvailabilityText, formatPrice, isOutOfStock } from '../../utils/variantUtils';
 import './VariantSelector.css';
 
 interface VariantSelectorProps {
@@ -23,27 +24,6 @@ const VariantSelector: React.FC<VariantSelectorProps> = ({
 
   const currentVariant = variants.find(v => v.variantId === currentVariantId);
 
-  const getVariantTypeShort = (type: ProductVariant['variantType']) => {
-    const badges: Record<typeof type, string> = {
-      'DIGITAL_ONLY': 'Digital',
-      'PHYSICAL_ONLY': 'Physical',
-      'HYBRID': 'Hybrid'
-    };
-    return badges[type];
-  };
-
-  const getAvailabilityText = (status: ProductVariant['availabilityStatus']) => {
-    const texts: Record<typeof status, string> = {
-      'IN_STOCK': '✓ In Stock',
-      'LOW_STOCK': '⚠ Low Stock',
-      'OUT_OF_STOCK': '✗ Out of Stock',
-      'PRE_ORDER': '⏰ Pre-Order',
-      'DISCONTINUED': '✗ Discontinued',
-      'BACKORDERED': '⏰ Backordered'
-    };
-    return texts[status];
-  };
-
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const variantId = parseInt(e.target.value);
     if (!isNaN(variantId) && variantId !== currentVariantId) {
@@ -65,18 +45,17 @@ const VariantSelector: React.FC<VariantSelectorProps> = ({
           aria-label="Select product variant"
         >
           {variants.map((variant) => {
-            const isOutOfStock = variant.availabilityStatus === 'OUT_OF_STOCK' ||
-                                 variant.availabilityStatus === 'DISCONTINUED';
+            const variantOutOfStock = isOutOfStock(variant.availabilityStatus);
 
             return (
               <option
                 key={variant.variantId}
                 value={variant.variantId}
-                disabled={isOutOfStock}
+                disabled={variantOutOfStock}
               >
-                {variant.variantName} - {variant.priceWithVat.toFixed(2)} {variant.currency === 'EUR' ? '€' : variant.currency}
+                {variant.variantName} - {formatPrice(variant.priceWithVat, variant.currency)}
                 {' '}({getVariantTypeShort(variant.variantType)})
-                {isOutOfStock ? ' - Out of Stock' : ''}
+                {variantOutOfStock ? ' - Out of Stock' : ''}
               </option>
             );
           })}

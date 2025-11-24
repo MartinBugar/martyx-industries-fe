@@ -784,33 +784,7 @@ html {
 /* Responsive Design for Floating Mascot */
 @media (max-width: 768px) {
   .products-floating-mascot {
-    bottom: 1.5rem;
-    right: 1.5rem;
-  }
-  
-  .floating-mascot-image-products {
-    width: 260px;
+    display: none; /* Skryť na mobiloch a tabletoch */
   }
 }
 
-@media (max-width: 480px) {
-  .products-floating-mascot {
-    bottom: 1rem;
-    right: 1rem;
-  }
-  
-  .floating-mascot-image-products {
-    width: 200px;
-  }
-}
-
-@media (max-width: 360px) {
-  .products-floating-mascot {
-    bottom: 0.75rem;
-    right: 0.75rem;
-  }
-  
-  .floating-mascot-image-products {
-    width: 160px;
-  }
-}

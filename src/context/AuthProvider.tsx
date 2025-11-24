@@ -86,14 +86,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           // Token is valid, set it for API requests
           setAuthToken(token);
 
-          // Check if refresh token exists and start auto-refresh
-          const refreshToken = secureLocalStorage.get('refreshToken', null) ||
-            localStorage.getItem('refreshToken');
-
-          if (refreshToken) {
-            logInfo('🔄 Starting auto-refresh timer');
-            startTokenRefresh();
-          }
+          // Start auto-refresh timer (refresh token is in httpOnly cookie)
+          logInfo('🔄 Starting auto-refresh timer');
+          startTokenRefresh();
 
           // If user exists, set it in state
           if (storedUser && typeof storedUser === 'object') {
@@ -137,10 +132,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(null);
       secureLocalStorage.remove('user');
       secureLocalStorage.remove('token');
-      secureLocalStorage.remove('refreshToken');
+      // Note: refreshToken is now in httpOnly cookie, cleared by backend
       localStorage.removeItem('user');
       localStorage.removeItem('token');
-      localStorage.removeItem('refreshToken');
       removeAuthToken();
     };
 
@@ -170,7 +164,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const response = await authApi.login(email, password);
 
       // Extract data from response
-      const { token, refreshToken, id, email: userEmail, emailConfirmed } = response;
+      // Note: refreshToken is now in httpOnly cookie, not in response body
+      const { token, id, email: userEmail, emailConfirmed } = response;
 
       // Check if email is confirmed
       if (emailConfirmed === false) {
@@ -187,7 +182,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         orders: [] // Initialize empty orders array
       };
 
-      logInfo('🔐 Login response:', { token, refreshToken, id, userEmail, emailConfirmed });
+      logInfo('🔐 Login response:', { token, id, userEmail, emailConfirmed });
       logInfo('👤 Created user object:', newUser);
 
       // Store user data in state and localStorage
@@ -202,15 +197,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       secureLocalStorage.set('token', token);
       localStorage.setItem('token', token); // Store as plain string, not JSON
 
-      // Store refresh token if provided
-      if (refreshToken) {
-        logInfo('🔄 Storing refresh token');
-        secureLocalStorage.set('refreshToken', refreshToken);
-        localStorage.setItem('refreshToken', refreshToken); // Store as plain string, not JSON
-
-        // Start auto-refresh timer
-        startTokenRefresh();
-      }
+      // Refresh token is now in httpOnly cookie (set by backend)
+      // Start auto-refresh timer to keep access token fresh
+      logInfo('🔄 Starting auto-refresh timer');
+      startTokenRefresh();
 
       // Reset rate limiter on successful login
       loginRateLimiter.reset(identifier);
@@ -250,13 +240,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Stop auto-refresh timer
       stopTokenRefresh();
 
-      // Get token from secureLocalStorage
-      const token = secureLocalStorage.get('token', null);
-
-      // If token exists, call the logout API endpoint
-      if (token) {
-        await authApi.logout(token);
-      }
+      // Call logout API endpoint to clear httpOnly cookie
+      await authApi.logout();
     } catch (error) {
       logError('Logout error:', error);
     } finally {
@@ -264,10 +249,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(null);
       secureLocalStorage.remove('user');
       secureLocalStorage.remove('token');
-      secureLocalStorage.remove('refreshToken');
       localStorage.removeItem('user'); // Also clear regular localStorage
       localStorage.removeItem('token'); // Also clear regular localStorage
-      localStorage.removeItem('refreshToken'); // Also clear refresh token
+      // Note: refreshToken cookie is cleared by backend /logout endpoint
 
       // CRITICAL: Clear shopping cart on logout
       // This prevents cart from persisting across different user sessions

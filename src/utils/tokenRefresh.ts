@@ -37,31 +37,23 @@ export const stopTokenRefresh = () => {
 };
 
 /**
- * Manually refresh access token
+ * Manually refresh access token using httpOnly cookie
+ * No refresh token parameter needed - it's automatically sent in httpOnly cookie
  */
 export const refreshAccessToken = async (): Promise<boolean> => {
   try {
-    const refreshToken = secureLocalStorage.get('refreshToken', null);
+    logInfo('🔄 Refreshing access token using httpOnly cookie...');
+    const response = await authApi.refreshToken();
 
-    if (!refreshToken) {
-      logWarn('⚠️ No refresh token found, cannot refresh access token');
-      return false;
-    }
-
-    logInfo('🔄 Refreshing access token...');
-    const response = await authApi.refreshToken(refreshToken);
-
-    // Update access token
+    // Update access token in memory only (NOT localStorage for better security)
     const newAccessToken = response.token;
-    secureLocalStorage.set('token', newAccessToken);
-    localStorage.setItem('token', newAccessToken);
     setAuthToken(newAccessToken);
 
-    // If backend returned new refresh token, update it too
-    if (response.refreshToken) {
-      secureLocalStorage.set('refreshToken', response.refreshToken);
-      localStorage.setItem('refreshToken', response.refreshToken);
-    }
+    // Store token temporarily in localStorage for bootstrap on page reload
+    // This is less secure than pure memory storage but needed for SPA navigation
+    // Note: Refresh token stays in httpOnly cookie (inaccessible to JavaScript)
+    secureLocalStorage.set('token', newAccessToken);
+    localStorage.setItem('token', newAccessToken);
 
     logInfo('✅ Access token refreshed successfully');
     return true;

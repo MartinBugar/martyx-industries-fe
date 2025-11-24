@@ -12,6 +12,7 @@ import WishlistButton from '../../components/WishlistButton';
 import { getLCPPreloadAttributes, getBaseNameFromPath, isCDNEnabled } from '../../utils/cdnImages';
 import { productGalleryService } from '../../services/productGalleryService';
 import VariantSelector from '../../components/VariantSelector/VariantSelector';
+import SingleVariantDisplay from '../../components/VariantSelector/SingleVariantDisplay';
 import { getTabsForVariant, canViewTab, renderTabContent } from '../../services/productTabService';
 import type { ProductTabDto } from '../../types/api';
 import { useAuth } from '../../context/useAuth';
@@ -86,12 +87,20 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({product, onVariantChange
         <div id="details" className="product-details">
             <h2>{product.name}</h2>
 
-            {/* Variant Selector */}
+            {/* Variant Selector - Multiple Variants */}
             {product.availableVariants && product.availableVariants.length > 1 && onVariantChange && (
                 <VariantSelector
                     variants={product.availableVariants}
                     currentVariantId={product.variantId}
                     onVariantChange={onVariantChange}
+                    difficultyLevel={product.difficultyLevel}
+                />
+            )}
+
+            {/* Single Variant Display */}
+            {product.availableVariants && product.availableVariants.length === 1 && (
+                <SingleVariantDisplay
+                    variant={product.availableVariants[0]}
                     difficultyLevel={product.difficultyLevel}
                 />
             )}
@@ -578,7 +587,11 @@ const ProductDetail: React.FC = () => {
                 {/* Tab Navigation */}
                 <nav className="product-bookmarks" aria-label="Product sections" role="tablist">
                     {tabsLoading && (
-                        <div className="dev-warning">Loading tabs...</div>
+                        <div className="tabs-loading-container">
+                            <div className="tabs-loading-bar">
+                                <div className="tabs-loading-progress"></div>
+                            </div>
+                        </div>
                     )}
                     {!tabsLoading && backendTabs.length === 0 && (
                         <div className="dev-warning">

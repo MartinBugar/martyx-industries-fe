@@ -190,7 +190,7 @@ const formatLanguageForBackend = (lang: string): string => {
 };
 
 /**
- * Add language headers to fetch init options
+ * Add language headers to fetch init options and enable credentials for cookies
  */
 export const withLangHeaders = (init?: RequestInit): RequestInit => {
   const headers = new Headers(init?.headers);
@@ -205,6 +205,7 @@ export const withLangHeaders = (init?: RequestInit): RequestInit => {
   return {
     ...init,
     headers,
+    credentials: 'include',  // CRITICAL: Required for httpOnly cookie authentication
   };
 };
 
