@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { adminCategoryService } from '../../services/adminCategoryService';
 import { adminProductCategoryService } from '../../services/adminProductCategoryService';
-import { ProductCategory } from '../../types/category';
+import type { ProductCategory } from '../../types/category';
 import { X } from 'lucide-react';
 
 interface CategorySelectorProps {

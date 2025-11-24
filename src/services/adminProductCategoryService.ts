@@ -3,7 +3,7 @@
  */
 
 import { apiClient } from './apiClient';
-import { ProductCategory } from '../types/category';
+import type { ProductCategory } from '../types/category';
 
 export const adminProductCategoryService = {
     /**
