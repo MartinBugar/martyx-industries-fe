@@ -1,4 +1,4 @@
-import apiClient from './apiClient';
+import { apiClient } from './apiClient';
 import type { ProductCategory } from '../types/category';
 
 /**
@@ -14,8 +14,7 @@ export const categoryService = {
    * Returns: [3D Printed Models, Tools, Merchandise]
    */
   async getAllCategories(): Promise<ProductCategory[]> {
-    const response = await apiClient.get<ProductCategory[]>(CATEGORY_ENDPOINT);
-    return response.data;
+    return await apiClient.get<ProductCategory[]>(CATEGORY_ENDPOINT);
   },
 
   /**
@@ -23,7 +22,6 @@ export const categoryService = {
    * Example: /products/3d-printed-models
    */
   async getCategoryBySlug(slug: string): Promise<ProductCategory> {
-    const response = await apiClient.get<ProductCategory>(`${CATEGORY_ENDPOINT}/${slug}`);
-    return response.data;
+    return await apiClient.get<ProductCategory>(`${CATEGORY_ENDPOINT}/${slug}`);
   }
 };

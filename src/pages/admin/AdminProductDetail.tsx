@@ -8,6 +8,7 @@ import { adminProductsService, type MasterProductDto, type ProductVariantDto, ty
 import { Button, Badge } from '../../components/ui';
 import VariantEditor from '../../components/admin/VariantEditor';
 import ComponentEditor from '../../components/admin/ComponentEditor';
+import CategorySelector from '../../components/admin/CategorySelector';
 
 const AdminProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -310,20 +311,6 @@ const AdminProductDetail: React.FC = () => {
                       />
                     </div>
                     <div>
-                      <label className="form-label">Category</label>
-                      <select
-                        className="form-input"
-                        value={product.productCategory || 'MODEL_KIT'}
-                        onChange={(e) => updateField('productCategory', e.target.value)}
-                      >
-                        <option value="MODEL_KIT">Model Kit</option>
-                        <option value="MERCHANDISE">Merchandise</option>
-                        <option value="ELECTRONICS">Electronics</option>
-                        <option value="ACCESSORIES">Accessories</option>
-                        <option value="DIGITAL_DOWNLOAD">Digital Download</option>
-                      </select>
-                    </div>
-                    <div>
                       <label className="form-label">Manufacturer</label>
                       <input
                         className="form-input"
@@ -401,6 +388,11 @@ const AdminProductDetail: React.FC = () => {
                         value={product.sortOrder || 0}
                         onChange={(e) => updateField('sortOrder', Number(e.target.value))}
                       />
+                    </div>
+
+                    {/* Category Assignment */}
+                    <div style={{ gridColumn: '1 / -1', marginTop: 16 }}>
+                      {id && <CategorySelector productId={parseInt(id)} />}
                     </div>
 
                     {/* Status Flags */}

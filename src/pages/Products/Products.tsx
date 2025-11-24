@@ -36,7 +36,10 @@ const Products: React.FC = () => {
             try {
                 setLoading(true);
                 setError(null);
-                const productsList = await hybridProductService.getProducts();
+
+                // Get category filter from URL
+                const categorySlug = searchParams.get('category') || undefined;
+                const productsList = await hybridProductService.getProducts(categorySlug);
                 
                 // Load gallery for each product from database
                 const productsWithGallery = await Promise.all(
@@ -114,7 +117,7 @@ const Products: React.FC = () => {
         };
 
         loadProductsWithGallery();
-    }, [i18n.language]); // Reload products when language changes
+    }, [i18n.language, searchParams]); // Reload products when language or category changes
 
     // Update search term when URL search param changes
     useEffect(() => {

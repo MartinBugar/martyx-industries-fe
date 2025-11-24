@@ -1,4 +1,4 @@
-import apiClient from './apiClient';
+import { apiClient } from './apiClient';
 import type { ProductCategory } from '../types/category';
 
 /**
@@ -12,32 +12,28 @@ export const adminCategoryService = {
    * Get all categories (including inactive) for admin panel
    */
   async getAllCategories(): Promise<ProductCategory[]> {
-    const response = await apiClient.get<ProductCategory[]>(ADMIN_CATEGORY_ENDPOINT);
-    return response.data;
+    return await apiClient.get<ProductCategory[]>(ADMIN_CATEGORY_ENDPOINT);
   },
 
   /**
    * Get category by ID
    */
   async getCategoryById(id: number): Promise<ProductCategory> {
-    const response = await apiClient.get<ProductCategory>(`${ADMIN_CATEGORY_ENDPOINT}/${id}`);
-    return response.data;
+    return await apiClient.get<ProductCategory>(`${ADMIN_CATEGORY_ENDPOINT}/${id}`);
   },
 
   /**
    * Create new category
    */
   async createCategory(category: Partial<ProductCategory>): Promise<ProductCategory> {
-    const response = await apiClient.post<ProductCategory>(ADMIN_CATEGORY_ENDPOINT, category);
-    return response.data;
+    return await apiClient.post<ProductCategory>(ADMIN_CATEGORY_ENDPOINT, category);
   },
 
   /**
    * Update existing category
    */
   async updateCategory(id: number, category: Partial<ProductCategory>): Promise<ProductCategory> {
-    const response = await apiClient.put<ProductCategory>(`${ADMIN_CATEGORY_ENDPOINT}/${id}`, category);
-    return response.data;
+    return await apiClient.put<ProductCategory>(`${ADMIN_CATEGORY_ENDPOINT}/${id}`, category);
   },
 
   /**
@@ -51,7 +47,6 @@ export const adminCategoryService = {
    * Toggle category active status
    */
   async toggleActive(id: number): Promise<ProductCategory> {
-    const response = await apiClient.patch<ProductCategory>(`${ADMIN_CATEGORY_ENDPOINT}/${id}/toggle-active`);
-    return response.data;
+    return await apiClient.patch<ProductCategory>(`${ADMIN_CATEGORY_ENDPOINT}/${id}/toggle-active`);
   }
 };
