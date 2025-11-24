@@ -152,9 +152,11 @@ const MiniCart: React.FC<MiniCartProps> = ({ isOpen, onClose, anchorRef }) => {
                           <span className="minicart-item-badge">DIGITAL</span>
                         )}
                       </div>
-                      <div className="minicart-item-price">
-                        {formatPrice(item.product.priceWithVat * item.quantity, item.product.currency)}
-                      </div>
+                    </div>
+
+                    {/* Price */}
+                    <div className="minicart-item-price">
+                      {formatPrice(item.product.priceWithVat * item.quantity, item.product.currency)}
                     </div>
 
                     {/* Remove Button */}

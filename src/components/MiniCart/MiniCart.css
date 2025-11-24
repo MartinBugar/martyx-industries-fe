@@ -248,6 +248,7 @@
   flex-direction: column;
   gap: 4px;
   min-width: 0; /* Enable text truncation */
+  padding-right: 8px; /* Space before price */
 }
 
 .minicart-item-name {
@@ -293,11 +294,15 @@
   letter-spacing: 0.5px;
 }
 
+/* Price - now outside details, aligned to right and vertically centered */
 .minicart-item-price {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   color: #F6C845;
-  margin-top: 2px;
+  flex-shrink: 0;
+  align-self: center;
+  padding-right: 32px; /* Space for remove button */
+  white-space: nowrap;
 }
 
 /* Remove Button */
