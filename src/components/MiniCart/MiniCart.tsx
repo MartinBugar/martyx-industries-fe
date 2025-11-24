@@ -121,7 +121,7 @@ const MiniCart: React.FC<MiniCartProps> = ({ isOpen, onClose, anchorRef }) => {
             {/* Items List */}
             <div className="minicart-items">
               {displayItems.map((item) => {
-                const thumb = item.product.imageUrl || item.product.gallery?.[0];
+                const thumb = item.product.thumbnailUrl || item.product.imageUrl || item.product.gallery?.[0];
                 const isDigital = item.product.variantType === 'DIGITAL_ONLY';
 
                 return (

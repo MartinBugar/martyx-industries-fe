@@ -62,6 +62,7 @@ export interface CartItemDto {
   priceWithVat: number;
   subtotal: number;
   imageUrl?: string;
+  thumbnailUrl?: string; // Optimized thumbnail for cart display
 }
 
 /**

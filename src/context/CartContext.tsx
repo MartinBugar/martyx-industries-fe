@@ -113,7 +113,8 @@ async function convertCartItemDto(item: CartItemDto): Promise<CartItem | null> {
       name: item.masterProductName, // Use master product name from CartItemDto
       variantName: variant.variantName,
       priceWithVat: variant.priceWithVat,
-      imageUrl: item.imageUrl, // Use image from CartItemDto
+      imageUrl: item.imageUrl, // Use full image from CartItemDto
+      thumbnailUrl: item.thumbnailUrl, // Use thumbnail for cart/minicart display
       availabilityStatus: variant.availabilityStatus,
       stockQuantity: variant.stockQuantity,
       variantType: variant.variantType,

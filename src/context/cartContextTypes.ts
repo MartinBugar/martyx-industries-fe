@@ -10,6 +10,7 @@ export interface CartProduct {
   variantName: string;
   priceWithVat: number;
   imageUrl?: string;
+  thumbnailUrl?: string; // Optimized thumbnail for cart/minicart display
   availabilityStatus: 'IN_STOCK' | 'LOW_STOCK' | 'OUT_OF_STOCK' | 'PRE_ORDER' | 'DISCONTINUED' | 'BACKORDERED';
   stockQuantity: number;
   availableStock?: number; // Real-time available stock (total - reserved)
