@@ -15,9 +15,14 @@ const CategoryBar: React.FC = () => {
   const [categories, setCategories] = useState<ProductCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     loadCategories();
+    // Trigger mount animation after component is ready
+    requestAnimationFrame(() => {
+      setIsMounted(true);
+    });
   }, []);
 
   useEffect(() => {
@@ -60,7 +65,11 @@ const CategoryBar: React.FC = () => {
   }
 
   return (
-    <nav className="category-bar" role="navigation" aria-label="Product categories">
+    <nav
+      className={`category-bar ${isMounted ? 'mounted' : ''}`}
+      role="navigation"
+      aria-label="Product categories"
+    >
       <div className="category-bar-content">
         <ul className="category-list">
           {/* "All Products" button */}

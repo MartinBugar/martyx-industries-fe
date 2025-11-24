@@ -78,6 +78,39 @@ function isItemExpired(item: CartItem): boolean {
 }
 
 /**
+ * Validate and fix cart items on initialization
+ * - Digital products are limited to quantity 1
+ * - Returns fixed items and logs any corrections made
+ */
+function validateAndFixCartItems(items: CartItem[]): CartItem[] {
+  const fixedItems: CartItem[] = [];
+  const corrections: string[] = [];
+
+  for (const item of items) {
+    const isDigital = item.product.variantType === 'DIGITAL_ONLY';
+
+    // Fix digital products with quantity > 1
+    if (isDigital && item.quantity > 1) {
+      corrections.push(`${item.product.name}: ${item.quantity} → 1 (Digital products limited to 1 per cart)`);
+      fixedItems.push({
+        ...item,
+        quantity: 1
+      });
+    } else {
+      fixedItems.push(item);
+    }
+  }
+
+  // Log corrections if any were made
+  if (corrections.length > 0) {
+    logWarn(`[Cart] Fixed ${corrections.length} invalid cart item(s):`);
+    corrections.forEach(msg => logWarn(`  • ${msg}`));
+  }
+
+  return fixedItems;
+}
+
+/**
  * Type guard for CartItem with backward compatibility
  */
 function isCartItem(value: unknown): value is CartItem {
@@ -158,16 +191,22 @@ function safeLoad(): CartItem[] {
         const daysOld = Math.floor((Date.now() - item.addedAt) / (24 * 60 * 60 * 1000));
         logInfo(`[Cart] Expired: ${item.product.name} (${daysOld} days old)`);
       });
+    }
 
-      // Update localStorage with only active items
+    // Validate and fix digital product quantities
+    const fixedItems = validateAndFixCartItems(activeItems);
+
+    // Update localStorage if we made any changes (expired items removed or quantities fixed)
+    if (expiredItems.length > 0 || fixedItems !== activeItems) {
       try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(activeItems));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(fixedItems));
+        logInfo('[Cart] Updated localStorage after validation');
       } catch (e) {
-        logWarn('[Cart] Failed to update cart after removing expired items:', e);
+        logWarn('[Cart] Failed to update cart after validation:', e);
       }
     }
 
-    return activeItems;
+    return fixedItems;
   } catch (e) {
     logWarn('[Cart] Failed to load persisted cart:', e);
     return [];
@@ -259,8 +298,31 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
             logWarn('[Cart]', backendCart.items.length - validItems.length, 'items failed to load complete details');
           }
 
-          logInfo('[Cart] Synced from backend:', validItems.length, 'items with complete details');
-          setItems(validItems);
+          // Validate and fix digital product quantities
+          const fixedItems = validateAndFixCartItems(validItems);
+
+          // Sync corrected quantities back to backend
+          for (let i = 0; i < validItems.length; i++) {
+            const original = validItems[i];
+            const fixed = fixedItems[i];
+
+            // If quantity was corrected, update backend
+            if (original.quantity !== fixed.quantity) {
+              try {
+                await cartService.updateQuantity(
+                  fixed.product.variantId,
+                  fixed.quantity,
+                  isAuthenticated ? undefined : sessionId
+                );
+                logInfo(`[Cart] Synced corrected quantity to backend: ${fixed.product.name} (${original.quantity} → ${fixed.quantity})`);
+              } catch (err) {
+                logWarn(`[Cart] Failed to sync corrected quantity to backend for ${fixed.product.name}:`, err);
+              }
+            }
+          }
+
+          logInfo('[Cart] Synced from backend:', fixedItems.length, 'items with complete details');
+          setItems(fixedItems);
         } else if (backendCart.items && backendCart.items.length === 0) {
           // Backend has empty cart
           logInfo('[Cart] Backend cart is empty');
@@ -498,8 +560,31 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
           logWarn('[Cart]', mergedCart.items.length - validItems.length, 'merged items failed to load complete details');
         }
 
-        logInfo('[Cart] Merged cart from backend:', validItems.length, 'items with complete details');
-        setItems(validItems);
+        // Validate and fix digital product quantities
+        const fixedItems = validateAndFixCartItems(validItems);
+
+        // Sync corrected quantities back to backend
+        for (let i = 0; i < validItems.length; i++) {
+          const original = validItems[i];
+          const fixed = fixedItems[i];
+
+          // If quantity was corrected, update backend
+          if (original.quantity !== fixed.quantity) {
+            try {
+              await cartService.updateQuantity(
+                fixed.product.variantId,
+                fixed.quantity,
+                isAuthenticated ? undefined : sessionId
+              );
+              logInfo(`[Cart] Synced corrected quantity to backend after merge: ${fixed.product.name} (${original.quantity} → ${fixed.quantity})`);
+            } catch (err) {
+              logWarn(`[Cart] Failed to sync corrected quantity to backend for ${fixed.product.name}:`, err);
+            }
+          }
+        }
+
+        logInfo('[Cart] Merged cart from backend:', fixedItems.length, 'items with complete details');
+        setItems(fixedItems);
 
         // Clear guest session ID after successful merge
         localStorage.removeItem(SESSION_ID_KEY);
