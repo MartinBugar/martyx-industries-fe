@@ -3,37 +3,35 @@
    Displays: All | 🏎️ 3D Printed Models | 🔧 Tools | 🎁 Merchandise
    ============================================================================= */
 
+/* =============================================================================
+   CategoryBar - Yellow sticky secondary navbar (extension of main navbar)
+   Full viewport width, attached directly below navbar with zero gap
+   ============================================================================= */
+
 .category-bar {
-  /* Yellow background matching sign-up button */
+  /* Yellow background matching sign-up button (#F6C845) */
   background: #F6C845;
 
-  /* Sticky behavior - attached to navbar bottom with no gap */
+  /* Sticky positioning - attached to navbar (68px height) with zero gap */
   position: sticky;
   top: 68px; /* Exactly where navbar ends */
-  z-index: 999;
+  z-index: 999; /* Below main navbar (3000) but above page content */
 
-  /* Break out of parent container - full viewport width */
+  /* Break out of parent container constraints - full viewport width */
   width: 100vw;
-  margin-left: calc(-50vw + 50%); /* Center and expand to full width */
-  margin-right: calc(-50vw + 50%);
-  margin-top: 0 !important; /* No gap at top */
-  margin-bottom: 0;
-  left: 0;
-  right: 0;
+  margin: 0; /* Zero margin on all sides */
+  margin-left: calc(-50vw + 50%) !important; /* Break out left */
+  margin-right: calc(-50vw + 50%) !important; /* Break out right */
+  padding: 0; /* Container handles internal padding */
 
-  /* Remove any spacing */
-  padding: 0;
-
-  /* Subtle shadow */
+  /* Visual polish */
   box-shadow:
     0 2px 8px rgba(0, 0, 0, 0.15),
     0 1px 3px rgba(0, 0, 0, 0.1);
-
-  /* Borders */
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  border-top: none; /* No gap between navbar */
+  border-top: none; /* Seamless connection to navbar */
 
-  /* Animation */
+  /* Smooth entrance animation */
   animation: slideDown 0.3s ease-out;
 }
 

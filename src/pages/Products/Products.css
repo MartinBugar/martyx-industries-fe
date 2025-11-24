@@ -18,11 +18,18 @@
   --products-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Page Layout */
+/* =============================================================================
+   Products Page Layout
+   ============================================================================= */
+
 .products-page {
   min-height: 100vh;
   background: var(--products-bg);
   position: relative;
+
+  /* Zero spacing at top - CategoryBar sits flush against navbar */
+  margin: 0;
+  padding: 0;
 }
 
 /* Product Card Wishlist Positioning */
@@ -58,11 +65,11 @@
 
 
 
-/* Main Container */
+/* Main Container - Content below CategoryBar */
 .products-container {
   max-width: var(--max-content-width);
-  margin: 0 auto;
-  padding: 1rem 1.5rem 2rem 1.5rem;
+  margin: 0 auto; /* Center horizontally */
+  padding: 1rem 1.5rem 2rem 1.5rem; /* Top padding creates space below CategoryBar */
 }
 
 /* Toolbar - Refined */
