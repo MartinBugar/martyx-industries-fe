@@ -1,6 +1,6 @@
 import { authApi, setAuthToken } from '../services/api';
 import { secureLocalStorage } from './security';
-import { logInfo, logWarn, logError } from '../services/logger';
+import { logInfo, logError } from '../services/logger';
 
 /**
  * Token refresh utility

@@ -7,7 +7,7 @@ import './MiniCart.css';
 interface MiniCartProps {
   isOpen: boolean;
   onClose: () => void;
-  anchorRef?: React.RefObject<HTMLElement>;
+  anchorRef?: React.RefObject<HTMLElement | HTMLButtonElement | null>;
 }
 
 const MAX_ITEMS_DISPLAY = 3;

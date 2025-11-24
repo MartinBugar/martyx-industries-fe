@@ -4,30 +4,14 @@ import { ErrorBoundary } from '../../components/ui';
 import {
   LayoutDashboard,
   ShoppingBag,
-  Package,
-  Warehouse,
-  Star,
   ShoppingCart,
-  FileText,
-  Truck,
   Users,
   Megaphone,
-  Tag,
-  ShoppingBasket,
-  UserCheck,
   Sparkles,
-  Award,
-  UserPlus,
-  Coins,
-  Gift,
   Image,
   Settings,
-  Mail,
-  ShieldAlert,
-  Database,
   ChevronDown,
-  ChevronRight,
-  FolderTree
+  ChevronRight
 } from 'lucide-react';
 import './AdminLayout.css';
 import '../../styles/admin-theme.css';
