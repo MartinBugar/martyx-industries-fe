@@ -8,7 +8,6 @@ import ProductCard from '../../components/ProductCard/ProductCard';
 import OptimizedImage from '../../components/OptimizedImage/OptimizedImage';
 import { productGalleryService } from '../../services/productGalleryService';
 import VariantSelectorModal from '../../components/VariantSelectorModal/VariantSelectorModal';
-import CategoryBar from '../../components/CategoryBar/CategoryBar';
 import './Products.css';
 import { logInfo, logWarn, logError } from '../../services/logger';
 
@@ -248,36 +247,9 @@ const Products: React.FC = () => {
 
     return (
         <div className="products-page">
-            {/* Golden Category Bar (sticky) */}
-            <CategoryBar />
-
             <div className="products-container">
                 {/* Toolbar */}
                 <div className="products-toolbar">
-                    <div className="search-container">
-                        <svg className="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                             stroke="currentColor" strokeWidth="2">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <path d="m21 21-4.35-4.35"></path>
-                        </svg>
-                        <input
-                            type="text"
-                            placeholder={t('search_placeholder')}
-                            value={searchTerm}
-                            onChange={(e) => {
-                                const newSearchTerm = e.target.value;
-                                setSearchTerm(newSearchTerm);
-                                // Update URL parameter
-                                if (newSearchTerm.trim()) {
-                                    setSearchParams({search: newSearchTerm});
-                                } else {
-                                    setSearchParams({});
-                                }
-                            }}
-                            className="search-input"
-                        />
-                    </div>
-
                     <div className="sort-container">
                         <select
                             value={sortBy}

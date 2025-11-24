@@ -25,6 +25,7 @@ import { useCart } from './context/useCart'
 
 // Core components (not lazy loaded as they're needed immediately)
 import Navbar from './components/Navbar/Navbar'
+import CategoryBar from './components/CategoryBar/CategoryBar'
 import { useAuth } from './context/useAuth'
 // Cart component will be loaded via lazy import
 import Footer from './components/Footer/Footer'
@@ -170,6 +171,7 @@ const MainContent = React.memo(() => {
   const navigate = useNavigate();
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
+  const isProductsRoute = location.pathname.startsWith('/products');
 
   // Debug log whenever user changes
   React.useEffect(() => {
@@ -203,13 +205,16 @@ const MainContent = React.memo(() => {
       </Suspense>
       
       {!isAdminRoute && (
-        <Navbar 
-          cartCount={getTotalItems()} 
-          user={user} 
-          onLogout={handleLogout} 
+        <Navbar
+          cartCount={getTotalItems()}
+          user={user}
+          onLogout={handleLogout}
         />
       )}
-      
+
+      {/* Category Bar - only shown on /products and /products/:id pages */}
+      {isProductsRoute && <CategoryBar />}
+
       {!isAdminRoute && showCart && (
         <Suspense fallback={<div className="cart-loading">Loading cart...</div>}>
           <CartPage

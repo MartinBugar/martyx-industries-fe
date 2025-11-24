@@ -394,11 +394,38 @@
 }
 
 .admin-nav-tab.active {
-  background: linear-gradient(135deg, var(--martyx-gold) 0%, var(--martyx-gold-dark) 100%);
+  background: linear-gradient(135deg, var(--martyx-gold) 0%, var(--martyx-gold-dark) 100%) !important;
   color: #000000 !important;
-  border-color: var(--martyx-gold);
-  font-weight: 600;
-  box-shadow: 0 2px 8px rgba(246, 200, 69, 0.3);
+  border-color: var(--martyx-gold) !important;
+  font-weight: 600 !important;
+  box-shadow: 0 2px 8px rgba(246, 200, 69, 0.3) !important;
+}
+
+/* Force black text and icons in active nav tabs - ULTRA SPECIFIC */
+a.admin-nav-tab.active,
+a.admin-nav-tab.active:hover,
+a.admin-nav-tab.active:focus,
+.admin-topbar a.admin-nav-tab.active,
+.admin-nav-tabs a.admin-nav-tab.active,
+.admin-nav-tab.active:link,
+.admin-nav-tab.active:visited,
+.admin-topbar .admin-nav-tab.active,
+.admin-nav-tabs .admin-nav-tab.active {
+  color: #000000 !important;
+  text-decoration: none !important;
+  background: linear-gradient(135deg, var(--martyx-gold) 0%, var(--martyx-gold-dark) 100%) !important;
+}
+
+a.admin-nav-tab.active *,
+a.admin-nav-tab.active:hover *,
+a.admin-nav-tab.active:focus *,
+.admin-topbar a.admin-nav-tab.active *,
+.admin-nav-tabs a.admin-nav-tab.active *,
+.admin-topbar .admin-nav-tab.active *,
+.admin-nav-tabs .admin-nav-tab.active *,
+.admin-nav-tab.active:link *,
+.admin-nav-tab.active:visited * {
+  color: #000000 !important;
 }
 
 .admin-nav-tab:focus-visible,

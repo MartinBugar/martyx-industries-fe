@@ -20,7 +20,8 @@ const CategoryBar: React.FC = () => {
   useEffect(() => {
     loadCategories();
 
-    // Trigger animation after a short delay to ensure DOM is painted
+    // Animate slide-in only once when component mounts
+    // Component is now persistent in App.tsx, so it won't remount on category changes
     const timer = setTimeout(() => {
       setIsMounted(true);
     }, 100);

@@ -20,7 +20,6 @@ import { trackProductView, extractUTMParams } from '../../services/backendAnalyt
 import { debounce } from '../../utils/debounce';
 import { logInfo, logWarn, logError } from '../../services/logger';
 import { stockService } from '../../services/stockService';
-import CategoryBar from '../../components/CategoryBar/CategoryBar';
 
 // Local inlined ProductDetails component (previously in components/ProductDetails/ProductDetails.tsx)
 interface ProductDetailsProps {
@@ -581,9 +580,6 @@ const ProductDetail: React.FC = () => {
 
     return (
         <div className="product-detail-page">
-            {/* Golden Category Bar (sticky) */}
-            <CategoryBar />
-
             <div className="product-container">
                 {productWithGallery && <ProductView product={productWithGallery} galleryData={galleryImages}/>}
                 <ProductDetails product={product} onVariantChange={handleVariantChange}/>

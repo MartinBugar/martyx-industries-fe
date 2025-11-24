@@ -80,18 +80,21 @@ function isItemExpired(item: CartItem): boolean {
 /**
  * Validate and fix cart items on initialization
  * - Digital products are limited to quantity 1
- * - Returns fixed items and logs any corrections made
+ * - Returns fixed items and a flag indicating if any changes were made
  */
-function validateAndFixCartItems(items: CartItem[]): CartItem[] {
+function validateAndFixCartItems(items: CartItem[]): { items: CartItem[], hasChanges: boolean } {
+  let hasChanges = false;
   const fixedItems: CartItem[] = [];
   const corrections: string[] = [];
 
   for (const item of items) {
-    const isDigital = item.product.variantType === 'DIGITAL_ONLY';
+    // Null safety check for variantType
+    const isDigital = item.product?.variantType === 'DIGITAL_ONLY';
 
     // Fix digital products with quantity > 1
     if (isDigital && item.quantity > 1) {
-      corrections.push(`${item.product.name}: ${item.quantity} → 1 (Digital products limited to 1 per cart)`);
+      hasChanges = true;
+      corrections.push(`${item.product.name || 'Unknown Product'}: ${item.quantity} → 1 (Digital products limited to 1 per cart)`);
       fixedItems.push({
         ...item,
         quantity: 1
@@ -107,7 +110,7 @@ function validateAndFixCartItems(items: CartItem[]): CartItem[] {
     corrections.forEach(msg => logWarn(`  • ${msg}`));
   }
 
-  return fixedItems;
+  return { items: fixedItems, hasChanges };
 }
 
 /**
@@ -194,10 +197,10 @@ function safeLoad(): CartItem[] {
     }
 
     // Validate and fix digital product quantities
-    const fixedItems = validateAndFixCartItems(activeItems);
+    const { items: fixedItems, hasChanges } = validateAndFixCartItems(activeItems);
 
-    // Update localStorage if we made any changes (expired items removed or quantities fixed)
-    if (expiredItems.length > 0 || fixedItems !== activeItems) {
+    // Update localStorage only if we made actual changes (expired items removed or quantities fixed)
+    if (expiredItems.length > 0 || hasChanges) {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(fixedItems));
         logInfo('[Cart] Updated localStorage after validation');
@@ -299,24 +302,30 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
           }
 
           // Validate and fix digital product quantities
-          const fixedItems = validateAndFixCartItems(validItems);
+          const { items: fixedItems, hasChanges } = validateAndFixCartItems(validItems);
 
-          // Sync corrected quantities back to backend
-          for (let i = 0; i < validItems.length; i++) {
-            const original = validItems[i];
-            const fixed = fixedItems[i];
+          // Sync corrected quantities back to backend (only if changes were made)
+          if (hasChanges) {
+            // Find items that were corrected by comparing with original validItems
+            const correctedItems = fixedItems.filter((fixed, index) => {
+              const original = validItems[index];
+              return original && original.quantity !== fixed.quantity;
+            });
 
-            // If quantity was corrected, update backend
-            if (original.quantity !== fixed.quantity) {
+            // Update backend for each corrected item
+            for (const fixed of correctedItems) {
+              const original = validItems.find(v => v.product.variantId === fixed.product.variantId);
+              if (!original) continue;
+
               try {
                 await cartService.updateQuantity(
                   fixed.product.variantId,
                   fixed.quantity,
                   isAuthenticated ? undefined : sessionId
                 );
-                logInfo(`[Cart] Synced corrected quantity to backend: ${fixed.product.name} (${original.quantity} → ${fixed.quantity})`);
+                logInfo(`[Cart] Synced corrected quantity to backend: ${fixed.product.name || 'Unknown'} [ID: ${fixed.product.variantId}] (${original.quantity} → ${fixed.quantity})`);
               } catch (err) {
-                logWarn(`[Cart] Failed to sync corrected quantity to backend for ${fixed.product.name}:`, err);
+                logWarn(`[Cart] Failed to sync corrected quantity to backend for ${fixed.product.name || 'Unknown'} [ID: ${fixed.product.variantId}]:`, err);
               }
             }
           }
@@ -410,8 +419,8 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       if (existingItemIndex >= 0) {
         const existingItem = prevItems[existingItemIndex];
 
-        // If the variant is DIGITAL_ONLY, enforce max quantity of 1
-        if (existingItem.product.variantType === 'DIGITAL_ONLY') {
+        // If the variant is DIGITAL_ONLY, enforce max quantity of 1 - null safety check
+        if (existingItem.product?.variantType === 'DIGITAL_ONLY') {
           result = 'limit';
           return prevItems;
         }
@@ -513,7 +522,8 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     setItems(prevItems =>
       prevItems.map(item => {
         if (item.product.variantId.toString() !== variantId) return item;
-        const isDigital = item.product.variantType === 'DIGITAL_ONLY';
+        // Null safety check for variantType
+        const isDigital = item.product?.variantType === 'DIGITAL_ONLY';
         const nextQty = isDigital ? 1 : quantity;
 
         // Sync to backend with debouncing (prevents excessive API calls during rapid changes)
@@ -561,24 +571,30 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         }
 
         // Validate and fix digital product quantities
-        const fixedItems = validateAndFixCartItems(validItems);
+        const { items: fixedItems, hasChanges } = validateAndFixCartItems(validItems);
 
-        // Sync corrected quantities back to backend
-        for (let i = 0; i < validItems.length; i++) {
-          const original = validItems[i];
-          const fixed = fixedItems[i];
+        // Sync corrected quantities back to backend (only if changes were made)
+        if (hasChanges) {
+          // Find items that were corrected by comparing with original validItems
+          const correctedItems = fixedItems.filter((fixed, index) => {
+            const original = validItems[index];
+            return original && original.quantity !== fixed.quantity;
+          });
 
-          // If quantity was corrected, update backend
-          if (original.quantity !== fixed.quantity) {
+          // Update backend for each corrected item
+          for (const fixed of correctedItems) {
+            const original = validItems.find(v => v.product.variantId === fixed.product.variantId);
+            if (!original) continue;
+
             try {
               await cartService.updateQuantity(
                 fixed.product.variantId,
                 fixed.quantity,
                 isAuthenticated ? undefined : sessionId
               );
-              logInfo(`[Cart] Synced corrected quantity to backend after merge: ${fixed.product.name} (${original.quantity} → ${fixed.quantity})`);
+              logInfo(`[Cart] Synced corrected quantity to backend after merge: ${fixed.product.name || 'Unknown'} [ID: ${fixed.product.variantId}] (${original.quantity} → ${fixed.quantity})`);
             } catch (err) {
-              logWarn(`[Cart] Failed to sync corrected quantity to backend for ${fixed.product.name}:`, err);
+              logWarn(`[Cart] Failed to sync corrected quantity to backend for ${fixed.product.name || 'Unknown'} [ID: ${fixed.product.variantId}]:`, err);
             }
           }
         }
@@ -637,8 +653,8 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
             try {
               const stockData = await stockService.getAvailableStock(item.product.variantId);
 
-              // Skip digital products (they don't have stock constraints)
-              if (item.product.variantType === 'DIGITAL_ONLY') continue;
+              // Skip digital products (they don't have stock constraints) - null safety check
+              if (item.product?.variantType === 'DIGITAL_ONLY') continue;
 
               // If item quantity exceeds available stock
               if (item.quantity > stockData.availableStock) {
@@ -747,7 +763,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   // Check if cart has at least one physical product (not DIGITAL_ONLY)
   // Returns true if there's any PHYSICAL_ONLY or HYBRID product
   const hasPhysicalProducts = useCallback((): boolean => {
-    return items.some(item => item.product.variantType !== 'DIGITAL_ONLY');
+    return items.some(item => item.product?.variantType !== 'DIGITAL_ONLY');
   }, [items]);
 
   // Provide the cart context to children components
