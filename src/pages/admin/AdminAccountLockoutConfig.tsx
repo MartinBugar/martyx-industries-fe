@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import AdminLayout from './AdminLayout';
 import { Button } from '../../components/ui';
-import { accountLockoutConfigService, type AccountLockoutConfigDto } from '../../services/accountLockoutConfigService';
+import { accountLockoutConfigService, type AccountLockoutConfigDto, type LockedUserDto } from '../../services/accountLockoutConfigService';
 import { useErrors } from '../../context/ErrorContext';
 import './AdminCreditUsageConfig.css'; // Reuse existing CSS
 import { logInfo, logError } from '../../services/logger';
@@ -14,8 +14,14 @@ const AdminAccountLockoutConfig: React.FC = () => {
     const [editedValues, setEditedValues] = useState<Partial<AccountLockoutConfigDto>>({});
     const [saving, setSaving] = useState(false);
 
+    // Locked users state
+    const [lockedUsers, setLockedUsers] = useState<LockedUserDto[]>([]);
+    const [loadingUsers, setLoadingUsers] = useState(false);
+    const [showOnlyLocked, setShowOnlyLocked] = useState(false);
+
     useEffect(() => {
         loadConfig();
+        loadLockedUsers();
     }, []);
 
     const loadConfig = async () => {
@@ -35,6 +41,28 @@ const AdminAccountLockoutConfig: React.FC = () => {
             });
         } finally {
             setLoading(false);
+        }
+    };
+
+    const loadLockedUsers = async () => {
+        try {
+            setLoadingUsers(true);
+            logInfo('🔄 Loading locked users...');
+            const data = showOnlyLocked
+                ? await accountLockoutConfigService.getLockedUsers()
+                : await accountLockoutConfigService.getUsersWithFailedAttempts();
+            setLockedUsers(data);
+            logInfo(`✅ Loaded ${data.length} users`);
+        } catch (error) {
+            logError('❌ Failed to load locked users:', error);
+            addError({
+                message: 'Failed to load locked users. Please try again.',
+                severity: 'error',
+                recoverable: true,
+                action: loadLockedUsers
+            });
+        } finally {
+            setLoadingUsers(false);
         }
     };
 
@@ -101,6 +129,97 @@ const AdminAccountLockoutConfig: React.FC = () => {
 
     const getEditedValue = (field: keyof AccountLockoutConfigDto, originalValue: number | boolean) => {
         return editedValues[field] ?? originalValue;
+    };
+
+    const handleUnlockUser = async (userId: number, email: string) => {
+        if (!window.confirm(`Are you sure you want to unlock account ${email}?`)) {
+            return;
+        }
+
+        try {
+            logInfo(`🔓 Unlocking user ${email}...`);
+            await accountLockoutConfigService.unlockUser(userId);
+            logInfo(`✅ User ${email} unlocked`);
+
+            addError({
+                message: `Successfully unlocked account ${email}`,
+                severity: 'info',
+                recoverable: false
+            });
+
+            // Reload users list
+            await loadLockedUsers();
+        } catch (error) {
+            logError(`❌ Failed to unlock user ${email}:`, error);
+            addError({
+                message: `Failed to unlock account ${email}. Please try again.`,
+                severity: 'error',
+                recoverable: true
+            });
+        }
+    };
+
+    const handleLockUser = async (userId: number, email: string) => {
+        const durationInput = window.prompt(
+            `How many minutes should ${email} be locked for?`,
+            '30'
+        );
+
+        if (!durationInput) {
+            return; // User cancelled
+        }
+
+        const durationMinutes = parseInt(durationInput, 10);
+        if (isNaN(durationMinutes) || durationMinutes <= 0) {
+            addError({
+                message: 'Invalid duration. Please enter a positive number.',
+                severity: 'error',
+                recoverable: false
+            });
+            return;
+        }
+
+        try {
+            logInfo(`🔒 Locking user ${email} for ${durationMinutes} minutes...`);
+            await accountLockoutConfigService.lockUser(userId, durationMinutes);
+            logInfo(`✅ User ${email} locked`);
+
+            addError({
+                message: `Successfully locked account ${email} for ${durationMinutes} minutes`,
+                severity: 'info',
+                recoverable: false
+            });
+
+            // Reload users list
+            await loadLockedUsers();
+        } catch (error) {
+            logError(`❌ Failed to lock user ${email}:`, error);
+            addError({
+                message: `Failed to lock account ${email}. Please try again.`,
+                severity: 'error',
+                recoverable: true
+            });
+        }
+    };
+
+    const formatDate = (dateString?: string) => {
+        if (!dateString) return 'N/A';
+        return new Date(dateString).toLocaleString();
+    };
+
+    const formatTimeRemaining = (lockedUntil?: string) => {
+        if (!lockedUntil) return '';
+        const until = new Date(lockedUntil);
+        const now = new Date();
+        const diffMs = until.getTime() - now.getTime();
+        if (diffMs <= 0) return 'Expired';
+
+        const minutes = Math.floor(diffMs / 60000);
+        if (minutes < 60) return `${minutes} min`;
+
+        const hours = Math.floor(minutes / 60);
+        const remainingMinutes = minutes % 60;
+        return `${hours}h ${remainingMinutes}m`;
     };
 
     if (loading) {
@@ -252,6 +371,170 @@ const AdminAccountLockoutConfig: React.FC = () => {
                             {config.updatedAt ? new Date(config.updatedAt).toLocaleString() : 'Unknown'}
                         </div>
                     )}
+                </div>
+
+                {/* Locked Users Section */}
+                <div className="config-card">
+                    <div className="config-section">
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                            <h3 className="section-title">🔒 Users with Failed Login Attempts</h3>
+                            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem' }}>
+                                    <input
+                                        type="checkbox"
+                                        checked={showOnlyLocked}
+                                        onChange={(e) => {
+                                            setShowOnlyLocked(e.target.checked);
+                                            setTimeout(loadLockedUsers, 0);
+                                        }}
+                                    />
+                                    Show only locked
+                                </label>
+                                <Button onClick={loadLockedUsers} variant="secondary" disabled={loadingUsers}>
+                                    {loadingUsers ? '🔄 Loading...' : '🔄 Refresh'}
+                                </Button>
+                            </div>
+                        </div>
+
+                        {loadingUsers ? (
+                            <div className="loading-spinner">Loading users...</div>
+                        ) : lockedUsers.length === 0 ? (
+                            <div style={{ textAlign: 'center', padding: '2rem', color: '#666' }}>
+                                {showOnlyLocked
+                                    ? '✅ No locked users found'
+                                    : '✅ No users with failed login attempts'}
+                            </div>
+                        ) : (
+                            <div style={{ overflowX: 'auto' }}>
+                                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+                                    <thead>
+                                        <tr style={{ background: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>
+                                            <th style={{ padding: '0.75rem', textAlign: 'left' }}>Status</th>
+                                            <th style={{ padding: '0.75rem', textAlign: 'left' }}>Email</th>
+                                            <th style={{ padding: '0.75rem', textAlign: 'left' }}>Name</th>
+                                            <th style={{ padding: '0.75rem', textAlign: 'center' }}>Failed Attempts</th>
+                                            <th style={{ padding: '0.75rem', textAlign: 'left' }}>Last Failed Login</th>
+                                            <th style={{ padding: '0.75rem', textAlign: 'left' }}>Last IP</th>
+                                            <th style={{ padding: '0.75rem', textAlign: 'left' }}>Locked Until</th>
+                                            <th style={{ padding: '0.75rem', textAlign: 'center' }}>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {lockedUsers.map((user) => (
+                                            <tr key={user.userId} style={{ borderBottom: '1px solid #dee2e6' }}>
+                                                <td style={{ padding: '0.75rem' }}>
+                                                    {user.currentlyLocked ? (
+                                                        <span style={{
+                                                            background: '#f8d7da',
+                                                            color: '#721c24',
+                                                            padding: '0.25rem 0.5rem',
+                                                            borderRadius: '4px',
+                                                            fontSize: '0.85rem',
+                                                            fontWeight: 600
+                                                        }}>
+                                                            🔒 LOCKED
+                                                        </span>
+                                                    ) : (
+                                                        <span style={{
+                                                            background: '#fff3cd',
+                                                            color: '#856404',
+                                                            padding: '0.25rem 0.5rem',
+                                                            borderRadius: '4px',
+                                                            fontSize: '0.85rem',
+                                                            fontWeight: 600
+                                                        }}>
+                                                            ⚠️ Warning
+                                                        </span>
+                                                    )}
+                                                </td>
+                                                <td style={{ padding: '0.75rem', fontWeight: 500 }}>{user.email}</td>
+                                                <td style={{ padding: '0.75rem' }}>
+                                                    {user.firstName && user.lastName
+                                                        ? `${user.firstName} ${user.lastName}`
+                                                        : 'N/A'}
+                                                </td>
+                                                <td style={{ padding: '0.75rem', textAlign: 'center', fontWeight: 600 }}>
+                                                    {user.failedLoginAttempts || 0}
+                                                </td>
+                                                <td style={{ padding: '0.75rem', fontSize: '0.85rem' }}>
+                                                    {formatDate(user.lastFailedLogin)}
+                                                </td>
+                                                <td style={{ padding: '0.75rem', fontSize: '0.85rem', fontFamily: 'monospace' }}>
+                                                    {user.lastFailedLoginIp || 'N/A'}
+                                                </td>
+                                                <td style={{ padding: '0.75rem' }}>
+                                                    {user.currentlyLocked ? (
+                                                        <div>
+                                                            <div style={{ fontSize: '0.85rem' }}>{formatDate(user.lockedUntil)}</div>
+                                                            <div style={{ fontSize: '0.75rem', color: '#dc3545', fontWeight: 600 }}>
+                                                                ({formatTimeRemaining(user.lockedUntil)} remaining)
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <span style={{ color: '#666' }}>Not locked</span>
+                                                    )}
+                                                </td>
+                                                <td style={{ padding: '0.75rem', textAlign: 'center' }}>
+                                                    <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
+                                                        {user.currentlyLocked ? (
+                                                            <button
+                                                                onClick={() => handleUnlockUser(user.userId, user.email)}
+                                                                style={{
+                                                                    padding: '0.4rem 0.8rem',
+                                                                    background: '#28a745',
+                                                                    color: 'white',
+                                                                    border: 'none',
+                                                                    borderRadius: '4px',
+                                                                    cursor: 'pointer',
+                                                                    fontSize: '0.85rem',
+                                                                    fontWeight: 500
+                                                                }}
+                                                            >
+                                                                🔓 Unlock
+                                                            </button>
+                                                        ) : (
+                                                            <>
+                                                                <button
+                                                                    onClick={() => handleLockUser(user.userId, user.email)}
+                                                                    style={{
+                                                                        padding: '0.4rem 0.8rem',
+                                                                        background: '#dc3545',
+                                                                        color: 'white',
+                                                                        border: 'none',
+                                                                        borderRadius: '4px',
+                                                                        cursor: 'pointer',
+                                                                        fontSize: '0.85rem',
+                                                                        fontWeight: 500
+                                                                    }}
+                                                                >
+                                                                    🔒 Lock
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => handleUnlockUser(user.userId, user.email)}
+                                                                    style={{
+                                                                        padding: '0.4rem 0.8rem',
+                                                                        background: '#6c757d',
+                                                                        color: 'white',
+                                                                        border: 'none',
+                                                                        borderRadius: '4px',
+                                                                        cursor: 'pointer',
+                                                                        fontSize: '0.85rem',
+                                                                        fontWeight: 500
+                                                                    }}
+                                                                >
+                                                                    Reset
+                                                                </button>
+                                                            </>
+                                                        )}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 {/* Info Section */}

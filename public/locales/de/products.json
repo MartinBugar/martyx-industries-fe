@@ -15,6 +15,14 @@
     "add_success": "Produkt wurde zum Warenkorb hinzugefügt",
     "add_limit": "Nur 1 Stück dieses Produkts ist im Warenkorb erlaubt"
   },
+  "variant": {
+    "configuration_label": "Konfiguration",
+    "configuration_region": "Produktkonfiguration",
+    "selected_configuration": "Ausgewählte Konfiguration",
+    "select_variant_aria": "Produktvariante auswählen",
+    "out_of_stock": "Nicht auf Lager",
+    "only_left": "Nur noch {{count}} verfügbar"
+  },
   "type": {
     "digital": "Digital",
     "physical": "Physisch"

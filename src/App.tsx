@@ -72,6 +72,7 @@ import {
   AdminUsers,
   AdminUserDetail,
   AdminProducts,
+  AdminCategories,
   AdminInventory,
   AdminProductDetail,
   AdminProductGallery,

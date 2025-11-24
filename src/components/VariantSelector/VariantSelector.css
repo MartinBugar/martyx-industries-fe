@@ -400,11 +400,17 @@
 
 /* Accessibility - high contrast mode */
 @media (prefers-contrast: high) {
-  .variant-select {
+  .variant-select,
+  .variant-display-static {
     border-width: 2px;
   }
 
   .variant-select:focus {
+    outline: 3px solid rgba(100, 200, 255, 0.8);
+    outline-offset: 2px;
+  }
+
+  .variant-display-static:focus-visible {
     outline: 3px solid rgba(100, 200, 255, 0.8);
     outline-offset: 2px;
   }
@@ -420,7 +426,8 @@
 /* Accessibility - reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .variant-select,
-  .variant-select-arrow {
+  .variant-select-arrow,
+  .variant-display-static {
     transition: none;
   }
 

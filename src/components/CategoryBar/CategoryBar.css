@@ -1,0 +1,264 @@
+/* =============================================================================
+   CategoryBar - Golden sticky secondary navbar for product categories
+   Displays: All | 🏎️ 3D Printed Models | 🔧 Tools | 🎁 Merchandise
+   ============================================================================= */
+
+.category-bar {
+  /* Dark golden background */
+  background: linear-gradient(135deg, #B8860B 0%, #9A7209 100%);
+
+  /* Sticky behavior */
+  position: sticky;
+  top: 70px; /* Below main navbar (adjust based on your navbar height) */
+  z-index: 999;
+
+  /* Subtle shadow */
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.15),
+    0 2px 4px rgba(0, 0, 0, 0.1);
+
+  /* Borders */
+  border-bottom: 2px solid rgba(218, 165, 32, 0.3);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+  /* Animation */
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Container */
+.category-bar-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 56px;
+}
+
+/* Category list */
+.category-list {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 4px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Category item button */
+.category-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+
+  /* Dark text on golden background */
+  color: #2C1810;
+
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+  position: relative;
+  white-space: nowrap;
+}
+
+/* Icon */
+.category-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+/* Name */
+.category-name {
+  font-weight: 600;
+}
+
+/* Count badge */
+.category-count {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(44, 24, 16, 0.7);
+  margin-left: 2px;
+}
+
+/* Hover state */
+.category-item:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #000;
+  transform: translateY(-2px);
+}
+
+/* Active state */
+.category-item.active {
+  background: rgba(255, 255, 255, 0.25);
+  color: #000;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Active underline indicator */
+.category-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 10%;
+  right: 10%;
+  height: 3px;
+  background: #2C1810;
+  border-radius: 2px 2px 0 0;
+}
+
+/* Focus state (keyboard navigation) */
+.category-item:focus {
+  outline: 2px solid #2C1810;
+  outline-offset: 2px;
+}
+
+.category-item:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Loading state */
+.category-bar.loading {
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.category-skeleton {
+  width: 600px;
+  height: 36px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1) 25%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.1) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ============================================================================
+   Responsive Design
+   ============================================================================ */
+
+/* Tablet */
+@media (max-width: 768px) {
+  .category-bar {
+    top: 60px; /* Adjust for smaller navbar */
+  }
+
+  .category-bar-content {
+    padding: 0 16px;
+  }
+
+  .category-list {
+    /* Horizontal scroll on mobile */
+    overflow-x: auto;
+    overflow-y: hidden;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .category-list::-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
+  }
+
+  .category-item {
+    padding: 8px 16px;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .category-icon {
+    font-size: 16px;
+  }
+
+  .category-count {
+    display: none; /* Hide counts on mobile to save space */
+  }
+}
+
+/* Small mobile */
+@media (max-width: 480px) {
+  .category-bar {
+    top: 56px;
+  }
+
+  .category-bar-content {
+    padding: 0 12px;
+    min-height: 48px;
+  }
+
+  .category-item {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+
+  /* Scroll indicator (optional fade effect) */
+  .category-list::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 40px;
+    background: linear-gradient(to right, transparent, #B8860B);
+    pointer-events: none;
+  }
+}
+
+/* Accessibility - Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .category-bar {
+    animation: none;
+  }
+
+  .category-item:hover {
+    transform: none;
+  }
+
+  .category-skeleton {
+    animation: none;
+  }
+}
+
+/* Print styles */
+@media print {
+  .category-bar {
+    display: none;
+  }
+}

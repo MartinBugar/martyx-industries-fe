@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { type ProductVariant, type DifficultyLevel } from '../../data/productData';
 import DifficultyBadge from '../DifficultyBadge/DifficultyBadge';
 import { getVariantTypeShort, getAvailabilityText, formatPrice, isLowStock } from '../../utils/variantUtils';
@@ -20,14 +21,16 @@ const SingleVariantDisplay: React.FC<SingleVariantDisplayProps> = ({
   variant,
   difficultyLevel
 }) => {
+  const { t } = useTranslation('products');
+
   return (
     <div
       className="variant-selector-compact"
       role="region"
-      aria-label="Product configuration"
+      aria-label={t('variant.configuration_region', 'Product configuration')}
     >
       <div className="variant-label" role="text">
-        Configuration:
+        {t('variant.configuration_label', 'Configuration')}:
       </div>
 
       <div
@@ -35,7 +38,7 @@ const SingleVariantDisplay: React.FC<SingleVariantDisplayProps> = ({
         role="status"
         aria-live="polite"
         aria-atomic="true"
-        aria-label={`Selected configuration: ${variant.variantName}, ${formatPrice(variant.priceWithVat, variant.currency)}`}
+        aria-label={`${t('variant.selected_configuration', 'Selected configuration')}: ${variant.variantName}, ${formatPrice(variant.priceWithVat, variant.currency)}`}
       >
         {variant.variantName} - {formatPrice(variant.priceWithVat, variant.currency)}
         {' '}({getVariantTypeShort(variant.variantType)})
@@ -48,12 +51,12 @@ const SingleVariantDisplay: React.FC<SingleVariantDisplayProps> = ({
         {difficultyLevel && (
           <DifficultyBadge level={difficultyLevel} showLink={true} size="small" />
         )}
-        <span className={`variant-availability ${variant.availabilityStatus.toLowerCase()}`}>
+        <span className={`variant-availability ${variant.availabilityStatus?.toLowerCase() || 'unknown'}`}>
           {getAvailabilityText(variant.availabilityStatus)}
         </span>
         {isLowStock(variant.stockQuantity) && (
           <span className="variant-stock-low">
-            Only {variant.stockQuantity} left
+            {t('variant.only_left', 'Only {{count}} left', { count: variant.stockQuantity })}
           </span>
         )}
       </div>

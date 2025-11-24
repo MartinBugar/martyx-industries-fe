@@ -132,30 +132,6 @@ const About: React.FC = () => {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="about-stats">
-        <div className="container">
-          <div className="stats-grid">
-            <div className="stat-item">
-              <div className="stat-number">500+</div>
-              <div className="stat-label">{t('stats.parts')}</div>
-            </div>
-            <div className="stat-item">
-              <div className="stat-number">40+</div>
-              <div className="stat-label">{t('stats.build_time')}</div>
-            </div>
-            <div className="stat-item">
-              <div className="stat-number">0</div>
-              <div className="stat-label">{t('stats.no_screws')}</div>
-            </div>
-            <div className="stat-item">
-              <div className="stat-number">2000+</div>
-              <div className="stat-label">{t('stats.community')}</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Team Section - NEW */}
       <section className="about-team">
         <div className="container">

@@ -1,7 +1,8 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { type ProductVariant, type DifficultyLevel } from '../../data/productData';
 import DifficultyBadge from '../DifficultyBadge/DifficultyBadge';
-import { getVariantTypeShort, getAvailabilityText, formatPrice, isOutOfStock } from '../../utils/variantUtils';
+import { getVariantTypeShort, getAvailabilityText, formatPrice, isOutOfStock, isLowStock } from '../../utils/variantUtils';
 import './VariantSelector.css';
 
 interface VariantSelectorProps {
@@ -17,6 +18,8 @@ const VariantSelector: React.FC<VariantSelectorProps> = ({
   onVariantChange,
   difficultyLevel
 }) => {
+  const { t } = useTranslation('products');
+
   // Don't render if there's only one variant or no variants
   if (!variants || variants.length <= 1) {
     return null;
@@ -34,7 +37,7 @@ const VariantSelector: React.FC<VariantSelectorProps> = ({
   return (
     <div className="variant-selector-compact">
       <label htmlFor="variant-select" className="variant-label">
-        Configuration:
+        {t('variant.configuration_label', 'Configuration')}:
       </label>
       <div className="variant-select-wrapper">
         <select
@@ -42,7 +45,7 @@ const VariantSelector: React.FC<VariantSelectorProps> = ({
           className="variant-select"
           value={currentVariantId}
           onChange={handleChange}
-          aria-label="Select product variant"
+          aria-label={t('variant.select_variant_aria', 'Select product variant')}
         >
           {variants.map((variant) => {
             const variantOutOfStock = isOutOfStock(variant.availabilityStatus);
@@ -55,7 +58,7 @@ const VariantSelector: React.FC<VariantSelectorProps> = ({
               >
                 {variant.variantName} - {formatPrice(variant.priceWithVat, variant.currency)}
                 {' '}({getVariantTypeShort(variant.variantType)})
-                {variantOutOfStock ? ' - Out of Stock' : ''}
+                {variantOutOfStock ? ` - ${t('variant.out_of_stock', 'Out of Stock')}` : ''}
               </option>
             );
           })}
@@ -73,12 +76,12 @@ const VariantSelector: React.FC<VariantSelectorProps> = ({
           {difficultyLevel && (
             <DifficultyBadge level={difficultyLevel} showLink={true} size="small" />
           )}
-          <span className={`variant-availability ${currentVariant.availabilityStatus.toLowerCase()}`}>
+          <span className={`variant-availability ${currentVariant.availabilityStatus?.toLowerCase() || 'unknown'}`}>
             {getAvailabilityText(currentVariant.availabilityStatus)}
           </span>
-          {currentVariant.stockQuantity > 0 && currentVariant.stockQuantity <= 10 && (
+          {isLowStock(currentVariant.stockQuantity) && (
             <span className="variant-stock-low">
-              Only {currentVariant.stockQuantity} left
+              {t('variant.only_left', 'Only {{count}} left', { count: currentVariant.stockQuantity })}
             </span>
           )}
         </div>

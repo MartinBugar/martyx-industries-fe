@@ -15,6 +15,14 @@
     "add_success": "Product was added to cart",
     "add_limit": "Only 1 piece of this product is allowed in cart"
   },
+  "variant": {
+    "configuration_label": "Configuration",
+    "configuration_region": "Product configuration",
+    "selected_configuration": "Selected configuration",
+    "select_variant_aria": "Select product variant",
+    "out_of_stock": "Out of Stock",
+    "only_left": "Only {{count}} left"
+  },
   "type": {
     "digital": "Digital",
     "physical": "Physical"

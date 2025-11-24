@@ -8,6 +8,7 @@ import ProductCard from '../../components/ProductCard/ProductCard';
 import OptimizedImage from '../../components/OptimizedImage/OptimizedImage';
 import { productGalleryService } from '../../services/productGalleryService';
 import VariantSelectorModal from '../../components/VariantSelectorModal/VariantSelectorModal';
+import CategoryBar from '../../components/CategoryBar/CategoryBar';
 import './Products.css';
 import { logInfo, logWarn, logError } from '../../services/logger';
 
@@ -244,6 +245,9 @@ const Products: React.FC = () => {
 
     return (
         <div className="products-page">
+            {/* Golden Category Bar (sticky) */}
+            <CategoryBar />
+
             <div className="products-container">
                 {/* Toolbar */}
                 <div className="products-toolbar">

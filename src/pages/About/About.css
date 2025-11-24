@@ -262,49 +262,6 @@
   margin: 0;
 }
 
-/* ========== STATS SECTION ========== */
-
-.about-stats {
-  padding: 5rem 0;
-  background: var(--surface);
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.stat-item {
-  text-align: center;
-  padding: 2rem 1.5rem;
-  background: var(--background);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  transition: all 0.2s ease;
-}
-
-.stat-item:hover {
-  border-color: rgba(255, 255, 255, 0.15);
-  transform: translateY(-2px);
-}
-
-.stat-number {
-  font-size: 3rem;
-  font-weight: 900;
-  color: var(--accent);
-  line-height: 1;
-  margin-bottom: 0.75rem;
-}
-
-.stat-label {
-  font-size: 0.95rem;
-  color: var(--text-muted);
-  font-weight: 500;
-}
-
 /* ========== TEAM SECTION ========== */
 
 .about-team {
@@ -449,11 +406,6 @@
     max-width: 600px;
   }
 
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem;
-  }
-
   .about-origin,
   .about-philosophy,
   .about-values,
@@ -471,7 +423,6 @@
   .about-origin,
   .about-philosophy,
   .about-values,
-  .about-stats,
   .about-team,
   .about-cta {
     padding: 4rem 0;
@@ -487,10 +438,6 @@
   .philosophy-card,
   .value-card {
     padding: 2rem 1.5rem;
-  }
-
-  .stat-number {
-    font-size: 2.5rem;
   }
 
   .cta-actions {
@@ -518,7 +465,6 @@
   .about-origin,
   .about-philosophy,
   .about-values,
-  .about-stats,
   .about-team,
   .about-cta {
     padding: 3rem 0;
@@ -560,19 +506,6 @@
     font-size: 1.35rem;
   }
 
-  .stats-grid {
-    grid-template-columns: 1fr;
-    gap: 1.25rem;
-  }
-
-  .stat-item {
-    padding: 1.5rem 1.25rem;
-  }
-
-  .stat-number {
-    font-size: 2rem;
-  }
-
   .btn-cta {
     padding: 1.125rem 2.5rem;
     font-size: 1rem;
@@ -588,14 +521,12 @@
 @media (prefers-reduced-motion: reduce) {
   .philosophy-card,
   .value-card,
-  .stat-item,
   .btn-cta {
     transition: none;
   }
 
   .philosophy-card:hover,
   .value-card:hover,
-  .stat-item:hover,
   .btn-cta:hover {
     transform: none;
   }

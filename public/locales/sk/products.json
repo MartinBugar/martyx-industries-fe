@@ -15,6 +15,14 @@
     "add_success": "Produkt bol pridaný do košíka",
     "add_limit": "Len 1 kus tohto produktu je povolený v košíku"
   },
+  "variant": {
+    "configuration_label": "Konfigurácia",
+    "configuration_region": "Konfigurácia produktu",
+    "selected_configuration": "Vybraná konfigurácia",
+    "select_variant_aria": "Vyberte variant produktu",
+    "out_of_stock": "Nie je skladom",
+    "only_left": "Zostáva len {{count}}"
+  },
   "type": {
     "digital": "Digitálny",
     "physical": "Fyzický"

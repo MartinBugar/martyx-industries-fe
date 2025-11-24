@@ -38,14 +38,31 @@ export const getAvailabilityText = (status: AvailabilityStatus): string => {
 };
 
 /**
- * Format price with currency symbol
- * @param price - The price amount
- * @param currency - The currency code (e.g., "EUR", "USD")
- * @returns Formatted price string (e.g., "29.99 €")
+ * Currency symbol mapping for common currencies
  */
-export const formatPrice = (price: number, currency: string): string => {
+const CURRENCY_SYMBOLS: Record<string, string> = {
+    'EUR': '€',
+    'USD': '$',
+    'GBP': '£',
+    'CZK': 'Kč',
+    'PLN': 'zł',
+    'HUF': 'Ft',
+};
+
+/**
+ * Format price with currency symbol
+ * @param price - The price amount (can be null/undefined)
+ * @param currency - The currency code (e.g., "EUR", "USD") (can be null/undefined)
+ * @returns Formatted price string (e.g., "29.99 €") or default "0.00 €" if invalid
+ */
+export const formatPrice = (price: number | null | undefined, currency: string | null | undefined): string => {
+    // Handle null/undefined inputs
+    if (price == null || currency == null) {
+        return '0.00 €';
+    }
+
     const formattedPrice = price.toFixed(2);
-    const symbol = currency === 'EUR' ? '€' : currency;
+    const symbol = CURRENCY_SYMBOLS[currency] || currency;
     return `${formattedPrice} ${symbol}`;
 };
 
@@ -60,10 +77,14 @@ export const isOutOfStock = (status: AvailabilityStatus): boolean => {
 
 /**
  * Check if stock is low
- * @param stockQuantity - Current stock quantity
+ * @param stockQuantity - Current stock quantity (can be null/undefined)
  * @param threshold - Low stock threshold (default: 10)
- * @returns True if stock is low but available
+ * @returns True if stock is low but available, false if null/undefined/negative
  */
-export const isLowStock = (stockQuantity: number, threshold: number = 10): boolean => {
+export const isLowStock = (stockQuantity: number | null | undefined, threshold: number = 10): boolean => {
+    // Handle null/undefined and negative values
+    if (stockQuantity == null || stockQuantity < 0) {
+        return false;
+    }
     return stockQuantity > 0 && stockQuantity <= threshold;
 };
