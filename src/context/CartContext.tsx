@@ -15,10 +15,14 @@ interface CartProviderProps {
   children: ReactNode;
 }
 
+// Cart storage and session configuration
 const STORAGE_KEY = 'martyx_cart_v1';
 const SESSION_ID_KEY = 'martyx_session_id';
 const CART_EXPIRATION_DAYS = 30; // Cart items expire after 30 days
 const CART_EXPIRATION_MS = CART_EXPIRATION_DAYS * 24 * 60 * 60 * 1000; // 30 days in milliseconds
+
+// Digital product constraints
+const MAX_DIGITAL_PRODUCT_QUANTITY = 1; // Digital products can only be purchased once per order
 
 // Generate a cryptographically secure unique session ID for guest users
 function generateSessionId(): string {
@@ -68,7 +72,11 @@ function isRecord(value: unknown): value is UnknownRecord {
 }
 
 /**
- * Check if an item is expired (older than 30 days)
+ * Check if a cart item has expired (older than CART_EXPIRATION_DAYS)
+ * Items without addedAt timestamp are considered expired (legacy data)
+ *
+ * @param item - Cart item to check
+ * @returns true if item is expired or missing timestamp, false otherwise
  */
 function isItemExpired(item: CartItem): boolean {
   if (!item.addedAt) return true; // If no timestamp, consider it expired (legacy data)
@@ -79,8 +87,11 @@ function isItemExpired(item: CartItem): boolean {
 
 /**
  * Validate and fix cart items on initialization
- * - Digital products are limited to quantity 1
+ * - Digital products are limited to quantity defined by MAX_DIGITAL_PRODUCT_QUANTITY
  * - Returns fixed items and a flag indicating if any changes were made
+ *
+ * @param items - Array of cart items to validate
+ * @returns Object containing fixed items array and hasChanges boolean flag
  */
 function validateAndFixCartItems(items: CartItem[]): { items: CartItem[], hasChanges: boolean } {
   let hasChanges = false;
@@ -91,13 +102,13 @@ function validateAndFixCartItems(items: CartItem[]): { items: CartItem[], hasCha
     // Null safety check for variantType
     const isDigital = item.product?.variantType === 'DIGITAL_ONLY';
 
-    // Fix digital products with quantity > 1
-    if (isDigital && item.quantity > 1) {
+    // Fix digital products with quantity > MAX_DIGITAL_PRODUCT_QUANTITY
+    if (isDigital && item.quantity > MAX_DIGITAL_PRODUCT_QUANTITY) {
       hasChanges = true;
-      corrections.push(`${item.product.name || 'Unknown Product'}: ${item.quantity} → 1 (Digital products limited to 1 per cart)`);
+      corrections.push(`${item.product.name || 'Unknown Product'}: ${item.quantity} → ${MAX_DIGITAL_PRODUCT_QUANTITY} (Digital products limited to ${MAX_DIGITAL_PRODUCT_QUANTITY} per cart)`);
       fixedItems.push({
         ...item,
-        quantity: 1
+        quantity: MAX_DIGITAL_PRODUCT_QUANTITY
       });
     } else {
       fixedItems.push(item);
@@ -111,6 +122,47 @@ function validateAndFixCartItems(items: CartItem[]): { items: CartItem[], hasCha
   }
 
   return { items: fixedItems, hasChanges };
+}
+
+/**
+ * Sync corrected cart item quantities back to the backend
+ * Compares original and fixed items, updates backend for any quantity changes
+ *
+ * @param validItems - Original items before validation
+ * @param fixedItems - Items after validation fixes
+ * @param isAuthenticated - Whether user is authenticated (affects sessionId usage)
+ * @param sessionId - Guest session ID (used for non-authenticated users)
+ * @param context - Context string for logging (e.g., "sync", "merge")
+ */
+async function syncCorrectedQuantitiesToBackend(
+  validItems: CartItem[],
+  fixedItems: CartItem[],
+  isAuthenticated: boolean,
+  sessionId: string,
+  context: string = 'sync'
+): Promise<void> {
+  // Find items that were corrected by comparing with original validItems
+  const correctedItems = fixedItems.filter((fixed, index) => {
+    const original = validItems[index];
+    return original && original.quantity !== fixed.quantity;
+  });
+
+  // Update backend for each corrected item
+  for (const fixed of correctedItems) {
+    const original = validItems.find(v => v.product.variantId === fixed.product.variantId);
+    if (!original) continue;
+
+    try {
+      await cartService.updateQuantity(
+        fixed.product.variantId,
+        fixed.quantity,
+        isAuthenticated ? undefined : sessionId
+      );
+      logInfo(`[Cart] Synced corrected quantity to backend (${context}): ${fixed.product.name || 'Unknown'} [ID: ${fixed.product.variantId}] (${original.quantity} → ${fixed.quantity})`);
+    } catch (err) {
+      logWarn(`[Cart] Failed to sync corrected quantity to backend (${context}) for ${fixed.product.name || 'Unknown'} [ID: ${fixed.product.variantId}]:`, err);
+    }
+  }
 }
 
 /**
@@ -306,28 +358,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
           // Sync corrected quantities back to backend (only if changes were made)
           if (hasChanges) {
-            // Find items that were corrected by comparing with original validItems
-            const correctedItems = fixedItems.filter((fixed, index) => {
-              const original = validItems[index];
-              return original && original.quantity !== fixed.quantity;
-            });
-
-            // Update backend for each corrected item
-            for (const fixed of correctedItems) {
-              const original = validItems.find(v => v.product.variantId === fixed.product.variantId);
-              if (!original) continue;
-
-              try {
-                await cartService.updateQuantity(
-                  fixed.product.variantId,
-                  fixed.quantity,
-                  isAuthenticated ? undefined : sessionId
-                );
-                logInfo(`[Cart] Synced corrected quantity to backend: ${fixed.product.name || 'Unknown'} [ID: ${fixed.product.variantId}] (${original.quantity} → ${fixed.quantity})`);
-              } catch (err) {
-                logWarn(`[Cart] Failed to sync corrected quantity to backend for ${fixed.product.name || 'Unknown'} [ID: ${fixed.product.variantId}]:`, err);
-              }
-            }
+            await syncCorrectedQuantitiesToBackend(validItems, fixedItems, isAuthenticated, sessionId, 'backend sync');
           }
 
           logInfo('[Cart] Synced from backend:', fixedItems.length, 'items with complete details');
@@ -524,7 +555,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         if (item.product.variantId.toString() !== variantId) return item;
         // Null safety check for variantType
         const isDigital = item.product?.variantType === 'DIGITAL_ONLY';
-        const nextQty = isDigital ? 1 : quantity;
+        const nextQty = isDigital ? MAX_DIGITAL_PRODUCT_QUANTITY : quantity;
 
         // Sync to backend with debouncing (prevents excessive API calls during rapid changes)
         debouncedUpdateQuantity(item.product.variantId, nextQty);
@@ -575,28 +606,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
         // Sync corrected quantities back to backend (only if changes were made)
         if (hasChanges) {
-          // Find items that were corrected by comparing with original validItems
-          const correctedItems = fixedItems.filter((fixed, index) => {
-            const original = validItems[index];
-            return original && original.quantity !== fixed.quantity;
-          });
-
-          // Update backend for each corrected item
-          for (const fixed of correctedItems) {
-            const original = validItems.find(v => v.product.variantId === fixed.product.variantId);
-            if (!original) continue;
-
-            try {
-              await cartService.updateQuantity(
-                fixed.product.variantId,
-                fixed.quantity,
-                isAuthenticated ? undefined : sessionId
-              );
-              logInfo(`[Cart] Synced corrected quantity to backend after merge: ${fixed.product.name || 'Unknown'} [ID: ${fixed.product.variantId}] (${original.quantity} → ${fixed.quantity})`);
-            } catch (err) {
-              logWarn(`[Cart] Failed to sync corrected quantity to backend for ${fixed.product.name || 'Unknown'} [ID: ${fixed.product.variantId}]:`, err);
-            }
-          }
+          await syncCorrectedQuantitiesToBackend(validItems, fixedItems, isAuthenticated, sessionId, 'cart merge');
         }
 
         logInfo('[Cart] Merged cart from backend:', fixedItems.length, 'items with complete details');
