@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import DOMPurify from 'dompurify';
 import { type TabContent } from '../../data/productData';
 import { reviewsService, type Review as ReviewModel } from '../../services/reviewsService';
 import { useAuth } from '../../context/useAuth';
@@ -19,7 +20,7 @@ const renderTabBody = (content: TabContent) => {
   switch (content.kind) {
     case 'text':
       return (
-        <div className="rich-text" dangerouslySetInnerHTML={{ __html: content.text }} />
+        <div className="rich-text" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content.text) }} />
       );
     case 'list':
       return (

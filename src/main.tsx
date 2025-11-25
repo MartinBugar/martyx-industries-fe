@@ -6,6 +6,7 @@ import './i18n'
 import App from './App.tsx'
 import { initializeModelViewerConfig } from './utils/modelViewerConfig'
 import { initializeLanguage } from './utils/languageUtils'
+import { initializeCSRFToken } from './utils/csrf'
 import './utils/debugAuth' // Import debug utilities for console access
 
 // Initialize model-viewer configuration for production optimization
@@ -13,6 +14,9 @@ initializeModelViewerConfig();
 
 // Initialize language from localStorage
 initializeLanguage();
+
+// Initialize CSRF token for security
+initializeCSRFToken();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

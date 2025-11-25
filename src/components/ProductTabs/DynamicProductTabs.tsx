@@ -6,6 +6,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import DOMPurify from 'dompurify';
 import type { ProductTabDto } from '../../types/api';
 import { getTabsForMasterProduct, getTabsForVariant, canViewTab, renderTabContent } from '../../services/productTabService';
 import { useAuth } from '../../context/useAuth';
@@ -122,7 +123,7 @@ const DynamicProductTabs: React.FC<DynamicProductTabsProps> = ({
         return (
           <div
             className={`rich-text ${tab.cssClass || ''}`}
-            dangerouslySetInnerHTML={{ __html: content as string }}
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content as string) }}
           />
         );
 

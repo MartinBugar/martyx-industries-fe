@@ -143,7 +143,6 @@
 }
 
 .hero-tank-image {
-    margin-top: 45px;
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -155,6 +154,29 @@
     -ms-user-select: none;
     -webkit-touch-callout: none;
     -webkit-tap-highlight-color: transparent;
+}
+
+/* Mobile - shift image down */
+@media (max-width: 768px) {
+    .hero-tank-image {
+        margin-top: 45px;
+    }
+}
+
+/* Desktop - show full hero image */
+@media (min-width: 769px) {
+    .hero-img-wrap {
+        aspect-ratio: auto;
+        max-width: 500px;
+        min-height: 500px;
+        background-color: transparent;
+        box-shadow: none;
+    }
+
+    .hero-tank-image {
+        object-fit: contain;
+        height: auto;
+    }
 }
 
 .hero-tank-image:hover {
@@ -491,10 +513,16 @@
 
     /* Better visual balance */
     .hero-img-wrap {
-        max-width: 550px;
+        aspect-ratio: 3 / 4;
+        max-width: 450px;
         border-radius: 20px;
         box-shadow: 0 0 0 1px var(--accent-soft, rgba(246, 200, 69, 0.15)) inset,
                     0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    .hero-tank-image {
+        margin-top: 0;
+        object-fit: contain;
     }
 
     /* Hero section container enhancements */
@@ -547,7 +575,13 @@
     }
 
     .hero-img-wrap {
-        max-width: 480px;
+        aspect-ratio: 3 / 4;
+        max-width: 400px;
         border-radius: 18px;
+    }
+
+    .hero-tank-image {
+        margin-top: 0;
+        object-fit: contain;
     }
 }

@@ -1,6 +1,7 @@
 import React from 'react';
 import {useParams} from 'react-router-dom';
 import {useTranslation} from 'react-i18next';
+import DOMPurify from 'dompurify';
 import {type Product} from '../../data/productData';
 import {hybridProductService} from '../../services/hybridProductService';
 import ProductView from '../../components/ProductView/ProductView';
@@ -692,13 +693,13 @@ const DynamicTabRenderer: React.FC<DynamicTabRendererProps> = ({ tab, product })
                 return <ProductDownloads masterProductId={product.masterProductId} variantId={product.variantId} tabId={tab.id} />;
             default:
                 logWarn(`Unknown component: ${componentName}, falling back to HTML render`);
-                return <div dangerouslySetInnerHTML={{ __html: tab.contentHtml || '' }} />;
+                return <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(tab.contentHtml || '') }} />;
         }
     }
 
     // Render HTML content
     if (rendered.type === 'html' && typeof rendered.content === 'string') {
-        return <div dangerouslySetInnerHTML={{ __html: rendered.content }} />;
+        return <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(rendered.content) }} />;
     }
 
     // Render Markdown content

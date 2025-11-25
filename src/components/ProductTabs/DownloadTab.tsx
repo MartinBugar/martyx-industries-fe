@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import DOMPurify from 'dompurify';
 import { type TabContent } from '../../data/productData';
 import { getAttachmentsForVariant, trackDownload } from '../../services/productAttachmentService';
 import type { ProductAttachmentDto } from '../../types/api';
@@ -96,7 +97,7 @@ const DownloadTab: React.FC<DownloadTabProps> = ({ content, variantId }) => {
       return (
         <div
           className="rich-text"
-          dangerouslySetInnerHTML={{ __html: content.text }}
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content.text) }}
         />
       );
     case 'list':

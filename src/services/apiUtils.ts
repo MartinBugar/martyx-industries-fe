@@ -1,6 +1,7 @@
 import { logInfo, logWarn, logError } from './logger';
 // API utilities
 import i18n from '../i18n';
+import { getCSRFToken, initializeCSRFToken } from '../utils/csrf';
 
 // Define the type for headers
 export interface ApiHeaders {
@@ -191,12 +192,22 @@ const formatLanguageForBackend = (lang: string): string => {
 
 /**
  * Add language headers to fetch init options and enable credentials for cookies
+ * Also adds CSRF token for state-changing requests (POST, PUT, PATCH, DELETE)
  */
 export const withLangHeaders = (init?: RequestInit): RequestInit => {
   const headers = new Headers(init?.headers);
   const formattedLang = formatLanguageForBackend(getCurrentLanguage());
 
   headers.set('Accept-Language', formattedLang);
+
+  // Add CSRF token for state-changing requests (POST, PUT, PATCH, DELETE)
+  const method = (init?.method || 'GET').toUpperCase();
+  if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
+    const csrfToken = getCSRFToken();
+    if (csrfToken) {
+      headers.set('X-CSRF-Token', csrfToken);
+    }
+  }
 
   if (import.meta.env.VITE_DEBUG_I18N) {
     logInfo(`🌐 withLangHeaders: language="${formattedLang}"`);

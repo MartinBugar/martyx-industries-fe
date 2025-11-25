@@ -1,15 +1,17 @@
 /**
  * Debug utilities for authentication issues
  * These functions can be called from browser console for troubleshooting
+ *
+ * SECURITY: Only available in development mode
  */
 
 import { debugToken, clearAuthData } from './tokenUtils';
-import { logInfo } from '../services/logger';
+import { logInfo, logWarn } from '../services/logger';
 
-// Make functions available globally for console debugging
+// Make functions available globally for console debugging (DEV only)
 declare global {
   interface Window {
-    debugAuth: {
+    debugAuth?: {
       debugToken: () => void;
       clearAuthData: () => void;
       quickFix: () => void;
@@ -22,15 +24,21 @@ declare global {
  * Clears all auth data and provides instructions
  */
 const quickFix = (): void => {
+  // Only allow in development mode
+  if (import.meta.env.PROD) {
+    logWarn('Debug functions are disabled in production for security');
+    return;
+  }
+
   logInfo('🚨 JWT Authentication Quick Fix');
   logInfo('================================');
-  
+
   // Debug current state first
   debugToken();
-  
+
   // Clear all auth data
   clearAuthData();
-  
+
   logInfo('');
   logInfo('📋 Next steps:');
   logInfo('1. Refresh the page (F5)');
@@ -44,18 +52,42 @@ const quickFix = (): void => {
   logInfo('- CORS configuration');
 };
 
-// Attach to window for console access
+/**
+ * Wrapped debug functions that check for production mode
+ */
+const safeDebugToken = (): void => {
+  if (import.meta.env.PROD) {
+    logWarn('Debug functions are disabled in production for security');
+    return;
+  }
+  debugToken();
+};
+
+const safeClearAuthData = (): void => {
+  if (import.meta.env.PROD) {
+    logWarn('Debug functions are disabled in production for security');
+    return;
+  }
+  clearAuthData();
+};
+
+// Attach to window for console access - ONLY in development mode
 if (typeof window !== 'undefined') {
-  window.debugAuth = {
-    debugToken,
-    clearAuthData,
-    quickFix
-  };
-  
-  logInfo('🔧 Debug utilities available:');
-  logInfo('- window.debugAuth.debugToken() - Show token info');
-  logInfo('- window.debugAuth.clearAuthData() - Clear all auth data');
-  logInfo('- window.debugAuth.quickFix() - Quick fix for JWT issues');
+  if (import.meta.env.DEV) {
+    window.debugAuth = {
+      debugToken: safeDebugToken,
+      clearAuthData: safeClearAuthData,
+      quickFix
+    };
+
+    logInfo('🔧 Debug utilities available (DEV only):');
+    logInfo('- window.debugAuth.debugToken() - Show token info');
+    logInfo('- window.debugAuth.clearAuthData() - Clear all auth data');
+    logInfo('- window.debugAuth.quickFix() - Quick fix for JWT issues');
+  } else {
+    // In production, don't expose debug utilities
+    delete window.debugAuth;
+  }
 }
 
-export { debugToken, clearAuthData, quickFix };
+export { safeDebugToken as debugToken, safeClearAuthData as clearAuthData, quickFix };
