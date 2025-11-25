@@ -352,7 +352,7 @@ export interface BillingAddress {
   isCompany?: boolean;
 }
 
-// PayPal Order Creation
+// Stripe Order Creation
 export interface CreatePaymentRequest {
   orderItems: Array<{
     product: { id: number };

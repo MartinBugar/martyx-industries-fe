@@ -22,7 +22,7 @@ export interface PaymentDTO {
   orderNumber?: string | number;
   amount?: number | string;
   currency?: string;
-  paymentMethod?: 'PAYPAL' | string;
+  paymentMethod?: 'STRIPE' | string;
   status?: 'PENDING' | 'COMPLETED' | 'CANCELLED' | 'REFUNDED' | 'FAILED' | string;
   transactionId?: string;
   payerId?: string | null;
@@ -70,46 +70,6 @@ export interface PaymentDTO {
 }
 
 export const paymentService = {
-  createPayPalPayment: async (order: PaymentOrderDTO): Promise<PaymentDTO> => {
-    // Provide frontend success/cancel URLs so backend redirects back to our app after PayPal approval
-    const origin = window.location.origin;
-    const successUrl = `${origin}/payment/paypal/success`;
-    const cancelUrl = `${origin}/payment/paypal/cancel`;
-
-    // Extend payload with redirect URLs (backend can choose to use these)
-    const payload: PaymentOrderDTO & { successUrl: string; cancelUrl: string } = { ...order, successUrl, cancelUrl };
-
-    const response = await fetch(`${API_BASE_URL}/api/payments/paypal/create`, withLangHeaders({
-      method: 'POST',
-      headers: defaultHeaders as HeadersInit,
-      body: JSON.stringify(payload),
-    }));
-    return (await handleResponse(response)) as PaymentDTO;
-  },
-
-  executePayPalPayment: async (paymentId: string, payerEmail: string): Promise<PaymentDTO> => {
-    const url = new URL(`${API_BASE_URL}/api/payments/paypal/success`);
-    url.searchParams.set('paymentId', paymentId);
-    url.searchParams.set('PayerEmail', payerEmail);
-
-    const response = await fetch(url.toString(), withLangHeaders({
-      method: 'GET',
-      headers: defaultHeaders as HeadersInit,
-    }));
-    return (await handleResponse(response)) as PaymentDTO;
-  },
-
-  cancelPayPalPayment: async (paymentId: string) => {
-    const url = new URL(`${API_BASE_URL}/api/payments/paypal/cancel`);
-    url.searchParams.set('paymentId', paymentId);
-
-    const response = await fetch(url.toString(), {
-      method: 'GET',
-      headers: defaultHeaders as HeadersInit,
-    });
-    return await handleResponse(response);
-  },
-
   getPaymentDetails: async (paymentId: string): Promise<PaymentDTO> => {
     const response = await fetch(`${API_BASE_URL}/api/payments/${paymentId}`, withLangHeaders({
       method: 'GET',
@@ -118,5 +78,3 @@ export const paymentService = {
     return (await handleResponse(response)) as PaymentDTO;
   },
 };
-
-

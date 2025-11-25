@@ -46,7 +46,6 @@
     "title": "Payment Information",
     "method": "Payment Method",
     "credit_card": "Credit Card",
-    "paypal": "PayPal",
     "bank_transfer": "Bank Transfer",
     "card_number": "Card Number",
     "expiry_date": "Expiry Date",

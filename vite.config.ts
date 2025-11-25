@@ -35,12 +35,6 @@ export default defineConfig({
             'zod'
           ],
 
-          // Payment vendors chunk
-          'payment-vendor': [
-            '@paypal/paypal-js',
-            '@paypal/react-paypal-js'
-          ],
-
           // Utilities chunk
           'utils-vendor': [
             'lucide-react',

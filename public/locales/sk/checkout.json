@@ -46,7 +46,6 @@
     "title": "Platobné informácie",
     "method": "Spôsob platby",
     "credit_card": "Platobná karta",
-    "paypal": "PayPal",
     "bank_transfer": "Bankový prevod",
     "card_number": "Číslo karty",
     "expiry_date": "Dátum expirácie",

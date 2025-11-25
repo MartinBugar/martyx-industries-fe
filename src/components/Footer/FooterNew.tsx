@@ -89,13 +89,6 @@ const TrustIcons: React.FC = () => {
         <span>Mastercard</span>
       </div>
 
-      <div className="footer-new-payment">
-        <svg viewBox="0 0 48 32" fill="currentColor">
-          <path d="M20 12c0-2.2 1.8-4 4-4s4 1.8 4 4v8c0 2.2-1.8 4-4 4s-4-1.8-4-4v-8z" fill="none" stroke="currentColor" strokeWidth="1.5"/>
-        </svg>
-        <span>PayPal</span>
-      </div>
-
       {/* Trust Badges */}
       <div className="footer-new-badge">
         <Shield />

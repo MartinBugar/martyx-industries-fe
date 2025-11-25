@@ -15,8 +15,6 @@
   "dependencies": {
     "@google/model-viewer": "^4.1.0",
     "@hookform/resolvers": "^5.2.2",
-    "@paypal/paypal-js": "^8.2.0",
-    "@paypal/react-paypal-js": "^8.8.3",
     "@tiptap/extension-link": "^3.11.0",
     "@tiptap/extension-placeholder": "^3.11.0",
     "@tiptap/react": "^3.11.0",
