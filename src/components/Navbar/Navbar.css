@@ -1518,6 +1518,7 @@ html.hydrated .shop-header .cart-icon {
 }
 
 .mi-drawer-action-btn {
+    position: relative;
     flex: 1;
     display: flex;
     align-items: center;
