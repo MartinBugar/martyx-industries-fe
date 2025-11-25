@@ -1,7 +1,7 @@
 import { logInfo, logWarn, logError } from './logger';
 // API utilities
 import i18n from '../i18n';
-import { getCSRFToken, initializeCSRFToken } from '../utils/csrf';
+import { getCSRFToken } from '../utils/csrf';
 
 // Define the type for headers
 export interface ApiHeaders {
