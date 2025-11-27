@@ -9,8 +9,9 @@
  * - Caching capabilities
  */
 
-import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
+import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders, isTokenExpired } from './apiUtils';
 import { advancedCache } from '../utils/advancedCache';
+import { refreshAccessToken, shouldRefreshToken } from '../utils/tokenRefresh';
 
 interface RequestConfig<T = unknown> {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
@@ -52,6 +53,21 @@ class ApiClient {
       retryDelay = this.DEFAULT_RETRY_DELAY,
       staleWhileRevalidate = false
     } = config;
+
+    // =========================================================================
+    // CRITICAL: Check and refresh token BEFORE making any authenticated request
+    // =========================================================================
+    // Skip auth endpoints to avoid infinite loop
+    const isAuthEndpoint = endpoint.includes('/api/auth/');
+
+    if (!isAuthEndpoint) {
+      const token = localStorage.getItem('token');
+      if (token && shouldRefreshToken(token)) {
+        // Token expired or expiring soon - refresh it proactively
+        await refreshAccessToken();
+        // Note: refreshAccessToken() updates defaultHeaders['Authorization']
+      }
+    }
 
     const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;
     const requestKey = `${method}:${url}:${JSON.stringify(body)}`;

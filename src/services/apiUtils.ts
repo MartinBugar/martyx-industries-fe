@@ -86,6 +86,31 @@ export const handleResponse = async (response: Response) => {
       throw error;
     }
 
+    // Handle 403 Forbidden responses (likely CSRF token validation failure)
+    if (response.status === 403) {
+      // Check if this is a CSRF-protected endpoint that failed validation
+      const isCsrfProtectedEndpoint =
+        response.url.includes('/api/auth/refresh') ||
+        response.url.includes('/api/auth/logout') ||
+        response.url.includes('/api/cart') ||
+        response.url.includes('/api/payments');
+
+      if (isCsrfProtectedEndpoint) {
+        logError('❌ 403 Forbidden on CSRF-protected endpoint - CSRF token may be missing or invalid');
+        logInfo('🔒 Attempting to reinitialize CSRF token...');
+
+        // Dispatch CSRF error event for global handling
+        window.dispatchEvent(new CustomEvent('api:csrfError', {
+          detail: {
+            endpoint: response.url,
+            message: 'CSRF token validation failed. Please try again.'
+          }
+        }));
+      } else {
+        logWarn('403 Forbidden response from:', response.url);
+      }
+    }
+
     // Handle 401 Unauthorized responses (expired/invalid tokens)
     if (response.status === 401) {
       // Don't auto-logout for GDPR consent status endpoint
@@ -193,19 +218,45 @@ const formatLanguageForBackend = (lang: string): string => {
 /**
  * Add language headers to fetch init options and enable credentials for cookies
  * Also adds CSRF token for state-changing requests (POST, PUT, PATCH, DELETE)
+ *
+ * CRITICAL FIX: Manually copies headers from plain object to Headers instance
+ * because new Headers(plainObject) doesn't always copy all properties correctly
  */
 export const withLangHeaders = (init?: RequestInit): RequestInit => {
-  const headers = new Headers(init?.headers);
-  const formattedLang = formatLanguageForBackend(getCurrentLanguage());
+  const headers = new Headers();
 
+  // STEP 1: Manually copy headers from init (if provided)
+  if (init?.headers) {
+    // If init.headers is a plain object, manually copy each property
+    if (init.headers instanceof Headers) {
+      init.headers.forEach((value, key) => {
+        headers.set(key, value);
+      });
+    } else if (typeof init.headers === 'object') {
+      // Plain object - manually copy properties
+      Object.entries(init.headers).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          headers.set(key, String(value));
+        }
+      });
+    }
+  }
+
+  // STEP 2: Add language header
+  const formattedLang = formatLanguageForBackend(getCurrentLanguage());
   headers.set('Accept-Language', formattedLang);
 
-  // Add CSRF token for state-changing requests (POST, PUT, PATCH, DELETE)
+  // STEP 3: Add CSRF token for state-changing requests (POST, PUT, PATCH, DELETE)
   const method = (init?.method || 'GET').toUpperCase();
   if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
     const csrfToken = getCSRFToken();
+    logInfo(`🔐 [withLangHeaders] Method=${method}, CSRF token=${csrfToken ? csrfToken.substring(0, 20) + '...' : 'NULL'}`);
     if (csrfToken) {
-      headers.set('X-CSRF-Token', csrfToken);
+      headers.set('X-XSRF-TOKEN', csrfToken);
+      logInfo(`✅ [withLangHeaders] Added X-XSRF-TOKEN header`);
+    } else {
+      logWarn(`⚠️ [withLangHeaders] CSRF token is NULL - header not added!`);
+      logInfo(`📋 [withLangHeaders] document.cookie = ${document.cookie}`);
     }
   }
 

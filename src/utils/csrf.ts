@@ -1,117 +1,110 @@
 /**
  * CSRF Token Management
  * Poskytuje ochranu proti Cross-Site Request Forgery útokom
+ *
+ * Backend (Spring Security) generuje CSRF token a ukladá ho do cookie XSRF-TOKEN.
+ * Frontend číta tento token z cookie a posiela ho v X-XSRF-TOKEN headeri.
+ *
+ * Security: Cookie je httpOnly=false (čitateľná JavaScriptom), ale používa SameSite=Lax
+ * pre ochranu pred CSRF. Token samotný validuje backend pri každom POST/PUT/PATCH/DELETE requeste.
  */
 
 import React from 'react';
-import { logError } from '../services/logger';
+import { logError, logWarn } from '../services/logger';
 
-const CSRF_TOKEN_KEY = 'csrf_token';
-const CSRF_HEADER_NAME = 'X-CSRF-Token';
-
-/**
- * Generuje nový CSRF token
- */
-export const generateCSRFToken = (): string => {
-  // Použitie crypto API pre bezpečné generovanie tokenu
-  const array = new Uint8Array(32);
-  crypto.getRandomValues(array);
-  return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
-};
+const CSRF_COOKIE_NAME = 'XSRF-TOKEN';
+const CSRF_HEADER_NAME = 'X-XSRF-TOKEN';
 
 /**
- * Uloží CSRF token do session storage
+ * Získa hodnotu cookie podľa mena
  */
-export const setCSRFToken = (token: string): void => {
+const getCookie = (name: string): string | null => {
   try {
-    sessionStorage.setItem(CSRF_TOKEN_KEY, token);
+    const cookies = document.cookie.split(';');
+    for (const cookie of cookies) {
+      const [cookieName, cookieValue] = cookie.split('=').map(c => c.trim());
+      if (cookieName === name) {
+        return decodeURIComponent(cookieValue);
+      }
+    }
+    return null;
   } catch (error) {
-    logError('Failed to store CSRF token:', error);
-  }
-};
-
-/**
- * Získa CSRF token zo session storage
- */
-export const getCSRFToken = (): string | null => {
-  try {
-    return sessionStorage.getItem(CSRF_TOKEN_KEY);
-  } catch (error) {
-    logError('Failed to retrieve CSRF token:', error);
+    logError('Failed to read cookie:', error);
     return null;
   }
 };
 
 /**
- * Vymaže CSRF token
+ * Získa CSRF token z cookie (generovaný backendom)
+ * Backend automaticky nastaví XSRF-TOKEN cookie pri prvom requeste.
  */
-export const clearCSRFToken = (): void => {
-  try {
-    sessionStorage.removeItem(CSRF_TOKEN_KEY);
-  } catch (error) {
-    logError('Failed to clear CSRF token:', error);
-  }
+export const getCSRFToken = (): string | null => {
+  return getCookie(CSRF_COOKIE_NAME);
 };
 
 /**
- * Inicializuje CSRF token ak neexistuje
- */
-export const initializeCSRFToken = (): string => {
-  let token = getCSRFToken();
-  
-  if (!token) {
-    token = generateCSRFToken();
-    setCSRFToken(token);
-  }
-  
-  return token;
-};
-
-/**
- * Pridá CSRF token do HTTP headers
+ * Pridá CSRF token do HTTP headers ak existuje
+ * Token sa číta z cookie XSRF-TOKEN ktorú nastavil backend.
  */
 export const addCSRFTokenToHeaders = (headers: Record<string, string> = {}): Record<string, string> => {
   const token = getCSRFToken();
-  
+
   if (token) {
     headers[CSRF_HEADER_NAME] = token;
+  } else {
+    // Token môže chýbať pri prvom requeste - backend ho vygeneruje
+    logWarn('CSRF token not found in cookie. Backend will generate it on first request.');
   }
-  
+
   return headers;
 };
 
 /**
- * Validuje CSRF token
- */
-export const validateCSRFToken = (token: string): boolean => {
-  const storedToken = getCSRFToken();
-  return storedToken !== null && token === storedToken;
-};
-
-/**
  * CSRF Token Hook pre React komponenty
+ * Monitoruje dostupnosť CSRF tokenu z cookie.
  */
 export const useCSRFToken = () => {
   const [token, setToken] = React.useState<string | null>(() => getCSRFToken());
-  
+
   React.useEffect(() => {
-    // Inicializuj token ak neexistuje
-    if (!token) {
-      const newToken = initializeCSRFToken();
-      setToken(newToken);
-    }
+    // Periodicky kontroluj či backend nastavil token
+    const interval = setInterval(() => {
+      const currentToken = getCSRFToken();
+      if (currentToken && currentToken !== token) {
+        setToken(currentToken);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
   }, [token]);
-  
-  const refreshToken = React.useCallback(() => {
-    const newToken = generateCSRFToken();
-    setCSRFToken(newToken);
-    setToken(newToken);
-    return newToken;
-  }, []);
-  
+
   return {
     token,
-    refreshToken,
     addToHeaders: addCSRFTokenToHeaders
   };
+};
+
+// Backward compatibility exports (deprecated, ale ponechané pre existujúci kód)
+export const generateCSRFToken = (): string => {
+  logWarn('generateCSRFToken() is deprecated. Backend generates CSRF tokens.');
+  return '';
+};
+
+export const setCSRFToken = (_token: string): void => {
+  logWarn('setCSRFToken() is deprecated. Backend manages CSRF tokens via cookies.');
+};
+
+export const clearCSRFToken = (): void => {
+  // Cookie sa maže backendom, frontend ju iba číta
+  logWarn('clearCSRFToken() is deprecated. Backend manages CSRF token lifecycle.');
+};
+
+export const initializeCSRFToken = (): string => {
+  logWarn('initializeCSRFToken() is deprecated. Backend initializes CSRF tokens.');
+  return getCSRFToken() || '';
+};
+
+export const validateCSRFToken = (_token: string): boolean => {
+  logWarn('validateCSRFToken() is deprecated. Backend validates CSRF tokens.');
+  return true;
 };

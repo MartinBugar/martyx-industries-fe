@@ -9,6 +9,8 @@ import { ordersService } from '../services/ordersService';
 import { secureLocalStorage, loginRateLimiter } from '../utils/security';
 import { startTokenRefresh, stopTokenRefresh, refreshAccessToken } from '../utils/tokenRefresh';
 import { logInfo, logError } from '../services/logger';
+import { getCSRFToken } from '../utils/csrf';
+import { API_BASE_URL } from '../services/apiUtils';
 
 // Props for the AuthProvider component
 interface AuthProviderProps {
@@ -24,11 +26,52 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [ordersLoading, setOrdersLoading] = useState<boolean>(false);
   const [hasLoadedOrders, setHasLoadedOrders] = useState<boolean>(false);
   
+  /**
+   * Initialize CSRF token by calling backend endpoint.
+   * This ensures XSRF-TOKEN cookie is set before any authenticated requests.
+   */
+  const initializeCSRF = async (): Promise<boolean> => {
+    try {
+      const csrfToken = getCSRFToken();
+      if (!csrfToken) {
+        logInfo('🔒 CSRF token missing, initializing...');
+        // Call CSRF endpoint to generate token cookie
+        await fetch(`${API_BASE_URL}/api/auth/csrf`, {
+          method: 'GET',
+          credentials: 'include', // Required to receive cookie
+        });
+
+        // Wait a moment for browser to write cookie
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        // Verify cookie was set
+        const newToken = getCSRFToken();
+        if (newToken) {
+          logInfo('✅ CSRF token initialized successfully:', newToken.substring(0, 20) + '...');
+          return true;
+        } else {
+          logError('❌ CSRF token not found after initialization - cookie may be blocked');
+          return false;
+        }
+      } else {
+        logInfo('✅ CSRF token already exists:', csrfToken.substring(0, 20) + '...');
+        return true;
+      }
+    } catch (error) {
+      logError('❌ Failed to initialize CSRF token:', error);
+      // Non-critical error - don't block app initialization
+      return false;
+    }
+  };
+
   // Check if user and token are stored in localStorage on initial load
   useEffect(() => {
     const init = async () => {
       logInfo('🔄 AuthProvider init started');
-      
+
+      // STEP 1: Initialize CSRF token FIRST (required for refresh/logout)
+      await initializeCSRF();
+
       // Try both secureLocalStorage and regular localStorage for compatibility
       let storedUser = secureLocalStorage.get('user', null);
       let token: string | null = secureLocalStorage.get('token', null);
@@ -211,6 +254,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Defer fetching user's orders until the Order History tab is opened
       setHasLoadedOrders(false);
 
+      // CRITICAL: Ensure CSRF token exists BEFORE dispatching cart:merge
+      // Cart merge is a POST request that requires CSRF protection
+      logInfo('🔒 Ensuring CSRF token exists before cart merge...');
+      const csrfReady = await initializeCSRF();
+
+      if (!csrfReady) {
+        logError('⚠️ CSRF token initialization failed - cart merge may fail');
+        // Continue anyway - cart merge will fail but user stays logged in
+      }
+
       // Dispatch cart merge event (CartContext will handle merging)
       logInfo('🛒 Dispatching cart:merge event');
       window.dispatchEvent(new CustomEvent('cart:merge'));
@@ -239,6 +292,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       // Stop auto-refresh timer
       stopTokenRefresh();
+
+      // SECURITY: Ensure CSRF token exists before calling logout endpoint
+      // The logout endpoint requires CSRF protection because it reads refreshToken from httpOnly cookie
+      const csrfToken = getCSRFToken();
+      if (!csrfToken) {
+        logInfo('🔒 CSRF token missing before logout, initializing...');
+        await initializeCSRF();
+      }
 
       // Call logout API endpoint to clear httpOnly cookie
       await authApi.logout();

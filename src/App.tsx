@@ -108,6 +108,7 @@ import {
   AdminManualOrderCreate,
   AdminManualOrderHistory,
   AdminReviews,
+  AdminSystemSettings,
   ConstellationParticles
 } from './utils/lazyImports'
 
@@ -473,6 +474,11 @@ const MainContent = React.memo(() => {
             <Route path="/admin/reviews" element={
               <RequireAdmin>
                 <AdminReviews />
+              </RequireAdmin>
+            } />
+            <Route path="/admin/settings" element={
+              <RequireAdmin>
+                <AdminSystemSettings />
               </RequireAdmin>
             } />
           </Routes>

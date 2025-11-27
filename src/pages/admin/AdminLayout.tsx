@@ -150,6 +150,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ title, children, navTabs }) =
       label: 'Settings',
       icon: <Settings size={20} />,
       items: [
+        { path: '/admin/settings', label: 'System Settings' },
         { path: '/admin/email-templates', label: 'Email Templates' },
         { path: '/admin/account-lockout-config', label: 'Account Lockout Config' },
         { path: '/admin/cassandra', label: 'Cassandra DB' }

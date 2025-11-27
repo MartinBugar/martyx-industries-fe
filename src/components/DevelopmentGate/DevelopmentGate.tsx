@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './DevelopmentGate.css';
+import { devGateService } from '../../services/devGateService';
+import { logInfo, logError } from '../../services/logger';
 
 interface DevelopmentGateProps {
   onAccess: () => void;
@@ -9,29 +11,88 @@ const DevelopmentGate: React.FC<DevelopmentGateProps> = ({ onAccess }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [gateEnabled, setGateEnabled] = useState(false);
 
   useEffect(() => {
-    const stored = sessionStorage.getItem('dev-access');
-    if (stored === 'granted') {
-      setIsAuthenticated(true);
-      onAccess();
-    }
+    const checkGateStatus = async () => {
+      try {
+        // Check if dev gate is enabled on backend
+        const status = await devGateService.getStatus();
+        setGateEnabled(status.enabled);
+
+        if (!status.enabled) {
+          // Gate is disabled, grant access immediately
+          logInfo('🔓 Dev gate is disabled, granting access');
+          setIsAuthenticated(true);
+          onAccess();
+          setIsLoading(false);
+          return;
+        }
+
+        // Gate is enabled, check session storage
+        const stored = sessionStorage.getItem('dev-access');
+        if (stored === 'granted') {
+          logInfo('✅ Dev gate session valid');
+          setIsAuthenticated(true);
+          onAccess();
+        }
+      } catch (error) {
+        logError('❌ Failed to check dev gate status:', error);
+        // On error, assume gate is disabled for better UX
+        setIsAuthenticated(true);
+        onAccess();
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkGateStatus();
   }, [onAccess]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === 'demo') {
-      sessionStorage.setItem('dev-access', 'granted');
-      setIsAuthenticated(true);
-      onAccess();
-    } else {
-      setError('Nesprávne heslo');
+    setError('');
+
+    try {
+      logInfo('🔐 Validating dev gate password...');
+      const result = await devGateService.validatePassword(password);
+
+      if (result.valid) {
+        logInfo('✅ Dev gate password valid');
+        sessionStorage.setItem('dev-access', 'granted');
+        setIsAuthenticated(true);
+        onAccess();
+      } else {
+        logError('❌ Invalid dev gate password');
+        setError('Nesprávne heslo');
+        setPassword('');
+      }
+    } catch (error) {
+      logError('❌ Failed to validate dev gate password:', error);
+      setError('Chyba pri overovaní hesla. Skúste znova.');
       setPassword('');
     }
   };
 
   if (isAuthenticated) {
     return null;
+  }
+
+  // Show loading state while checking gate status
+  if (isLoading) {
+    return (
+      <div className="development-gate">
+        <div className="gate-right" style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div className="gate-content">
+            <div className="gate-header">
+              <h1>MARTYX INDUSTRIES</h1>
+              <h2>Načítavam...</h2>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (

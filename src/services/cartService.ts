@@ -1,4 +1,4 @@
-import { API_BASE_URL, defaultHeaders, handleResponse } from './apiUtils';
+import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
 import type { ShoppingCartDto } from '../types/customer';
 
 /**
@@ -17,10 +17,12 @@ export const cartService = {
   async getCart(sessionId?: string): Promise<ShoppingCartDto> {
     const params = sessionId ? `?sessionId=${encodeURIComponent(sessionId)}` : '';
 
-    const resp = await fetch(`${API_BASE_URL}/api/cart/${params}`, {
-      method: 'GET',
-      headers: jsonHeaders(),
-    });
+    const resp = await fetch(`${API_BASE_URL}/api/cart/${params}`,
+      withLangHeaders({
+        method: 'GET',
+        headers: jsonHeaders(),
+      })
+    );
 
     return await handleResponse(resp) as ShoppingCartDto;
   },
@@ -39,11 +41,13 @@ export const cartService = {
   ): Promise<ShoppingCartDto> {
     const params = sessionId ? `?sessionId=${encodeURIComponent(sessionId)}` : '';
 
-    const resp = await fetch(`${API_BASE_URL}/api/cart/items${params}`, {
-      method: 'POST',
-      headers: jsonHeaders(),
-      body: JSON.stringify({ variantId, quantity }),
-    });
+    const resp = await fetch(`${API_BASE_URL}/api/cart/items${params}`,
+      withLangHeaders({
+        method: 'POST',
+        headers: jsonHeaders(),
+        body: JSON.stringify({ variantId, quantity }),
+      })
+    );
 
     return await handleResponse(resp) as ShoppingCartDto;
   },
@@ -62,11 +66,13 @@ export const cartService = {
   ): Promise<ShoppingCartDto> {
     const params = sessionId ? `?sessionId=${encodeURIComponent(sessionId)}` : '';
 
-    const resp = await fetch(`${API_BASE_URL}/api/cart/items/${variantId}${params}`, {
-      method: 'PUT',
-      headers: jsonHeaders(),
-      body: JSON.stringify({ quantity }),
-    });
+    const resp = await fetch(`${API_BASE_URL}/api/cart/items/${variantId}${params}`,
+      withLangHeaders({
+        method: 'PUT',
+        headers: jsonHeaders(),
+        body: JSON.stringify({ quantity }),
+      })
+    );
 
     return await handleResponse(resp) as ShoppingCartDto;
   },
@@ -80,10 +86,12 @@ export const cartService = {
   async removeItem(variantId: number, sessionId?: string): Promise<ShoppingCartDto> {
     const params = sessionId ? `?sessionId=${encodeURIComponent(sessionId)}` : '';
 
-    const resp = await fetch(`${API_BASE_URL}/api/cart/items/${variantId}${params}`, {
-      method: 'DELETE',
-      headers: jsonHeaders(),
-    });
+    const resp = await fetch(`${API_BASE_URL}/api/cart/items/${variantId}${params}`,
+      withLangHeaders({
+        method: 'DELETE',
+        headers: jsonHeaders(),
+      })
+    );
 
     return await handleResponse(resp) as ShoppingCartDto;
   },
@@ -92,14 +100,19 @@ export const cartService = {
    * Merges a guest cart into the user's cart after login
    * @param guestSessionId - Guest session ID
    * @returns Merged cart
+   *
+   * IMPORTANT: Uses withLangHeaders() to ensure:
+   * - Authorization header is included (from defaultHeaders)
+   * - CSRF token is included (X-XSRF-TOKEN header)
+   * - Credentials (cookies) are sent with request
    */
   async mergeCart(guestSessionId: string): Promise<ShoppingCartDto> {
     const resp = await fetch(
       `${API_BASE_URL}/api/cart/merge?guestSessionId=${encodeURIComponent(guestSessionId)}`,
-      {
+      withLangHeaders({
         method: 'POST',
-        headers: jsonHeaders(),
-      }
+        headers: defaultHeaders as HeadersInit,
+      })
     );
 
     return await handleResponse(resp) as ShoppingCartDto;

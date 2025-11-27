@@ -1,6 +1,8 @@
 import { authApi, setAuthToken } from '../services/api';
 import { secureLocalStorage } from './security';
 import { logInfo, logError } from '../services/logger';
+import { getCSRFToken } from './csrf';
+import { API_BASE_URL } from '../services/apiUtils';
 
 /**
  * Token refresh utility
@@ -39,9 +41,23 @@ export const stopTokenRefresh = () => {
 /**
  * Manually refresh access token using httpOnly cookie
  * No refresh token parameter needed - it's automatically sent in httpOnly cookie
+ *
+ * SECURITY: Ensures CSRF token exists before calling /api/auth/refresh
+ * The refresh endpoint requires CSRF protection because it reads refreshToken from httpOnly cookie
  */
 export const refreshAccessToken = async (): Promise<boolean> => {
   try {
+    // STEP 1: Ensure CSRF token exists before calling refresh endpoint
+    const csrfToken = getCSRFToken();
+    if (!csrfToken) {
+      logInfo('🔒 CSRF token missing before refresh, initializing...');
+      await fetch(`${API_BASE_URL}/api/auth/csrf`, {
+        method: 'GET',
+        credentials: 'include', // Required to receive CSRF cookie
+      });
+      logInfo('✅ CSRF token initialized before refresh');
+    }
+
     logInfo('🔄 Refreshing access token using httpOnly cookie...');
     const response = await authApi.refreshToken();
 

@@ -77,11 +77,14 @@ const Contact: React.FC = () => {
         }
       }
 
-      // Submit to backend (only required fields)
+      // Submit to backend (with anti-bot fields)
       await contactService.sendMessage({
         email: formData.email,
         subject: formData.subject,
-        text: formData.text
+        text: formData.text,
+        website: formData.website || '',
+        formStartTime: formData.formStartTime,
+        verificationToken: formData.verificationToken
       });
 
       // Success

@@ -418,6 +418,10 @@ export interface ContactFormRequest {
   email: string;
   subject: string;
   text: string;
+  // Anti-bot fields
+  website?: string;  // Honeypot field - should be empty
+  formStartTime?: number;  // Timestamp when form was loaded
+  verificationToken?: string;  // Token starting with "verify_"
 }
 
 export interface ContactFormResponse {

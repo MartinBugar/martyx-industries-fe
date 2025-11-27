@@ -70,6 +70,7 @@ export const AdminShippingZones = lazy(() => import('../pages/admin/AdminShippin
 export const AdminManualOrderCreate = lazy(() => import('../pages/admin/AdminManualOrderCreate'));
 export const AdminManualOrderHistory = lazy(() => import('../pages/admin/AdminManualOrderHistory'));
 export const AdminReviews = lazy(() => import('../pages/admin/AdminReviews'));
+export const AdminSystemSettings = lazy(() => import('../pages/admin/AdminSystemSettings'));
 
 // Components - lazy loaded for non-critical features
 export const EmailConfirmation = lazy(() => import('../components/EmailConfirmation/EmailConfirmation'));
