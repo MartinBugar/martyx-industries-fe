@@ -9,7 +9,7 @@
  * - Caching capabilities
  */
 
-import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders, isTokenExpired } from './apiUtils';
+import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
 import { advancedCache } from '../utils/advancedCache';
 import { refreshAccessToken, shouldRefreshToken } from '../utils/tokenRefresh';
 
