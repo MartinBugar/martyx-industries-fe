@@ -12,14 +12,12 @@ const DevelopmentGate: React.FC<DevelopmentGateProps> = ({ onAccess }) => {
   const [error, setError] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [gateEnabled, setGateEnabled] = useState(false);
 
   useEffect(() => {
     const checkGateStatus = async () => {
       try {
         // Check if dev gate is enabled on backend
         const status = await devGateService.getStatus();
-        setGateEnabled(status.enabled);
 
         if (!status.enabled) {
           // Gate is disabled, grant access immediately
