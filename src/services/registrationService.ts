@@ -97,12 +97,12 @@ export const registrationService = {
   // Resend confirmation email
   resendConfirmation: async (email: string): Promise<{ success: boolean; message: string }> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/resend-confirmation`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/resend-confirmation`, withLangHeaders({
         method: 'POST',
         headers: defaultHeaders as HeadersInit,
         body: JSON.stringify({ email }),
-      });
-      
+      }));
+
       const data = await handleResponse(response);
       return { success: true, message: data.message || 'Confirmation email sent successfully!' };
     } catch (error) {

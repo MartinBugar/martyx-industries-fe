@@ -99,14 +99,6 @@ class ApiClient {
       return this.pendingRequests.get(requestKey)! as Promise<T>;
     }
 
-    // Debug: Check if Authorization header is set
-    if (import.meta.env.DEV) {
-      const hasAuth = 'Authorization' in defaultHeaders;
-      if (!hasAuth && !endpoint.includes('/api/auth/') && !endpoint.includes('/api/public/')) {
-        console.warn(`[ApiClient] No Authorization header for ${method} ${endpoint}`);
-      }
-    }
-
     const requestPromise = this.executeRequest<T>(url, withLangHeaders({
       method,
       headers: { ...defaultHeaders, ...headers } as HeadersInit,
