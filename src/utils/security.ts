@@ -1,24 +1,16 @@
 /**
  * Bezpečnostné utility funkcie pre frontend
  * Poskytuje ochranu proti XSS, injection útokom a ďalším bezpečnostným rizikám
+ *
+ * NOTE: For HTML sanitization, use DOMPurify library directly:
+ *   import DOMPurify from 'dompurify';
+ *   DOMPurify.sanitize(htmlString);
+ *
+ * DOMPurify is the industry-standard library for XSS prevention and is
+ * already used consistently across all components rendering user HTML.
  */
 
 import { logWarn, logError } from '../services/logger';
-
-/**
- * HTML Sanitization - ochrana proti XSS útokom
- */
-export const sanitizeHtml = (input: string): string => {
-  if (typeof input !== 'string') return '';
-  
-  return input
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#x27;')
-    .replace(/\//g, '&#x2F;');
-};
 
 /**
  * Sanitizácia textu pre zobrazenie v UI
