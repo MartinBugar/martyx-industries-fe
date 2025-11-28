@@ -10,6 +10,7 @@ import { productGalleryService } from '../../services/productGalleryService';
 import VariantSelectorModal from '../../components/VariantSelectorModal/VariantSelectorModal';
 import './Products.css';
 import { logInfo, logWarn, logError } from '../../services/logger';
+import { useSeo } from '../../hooks/useSeo';
 
 const Products: React.FC = () => {
     const {addToCart} = useCart();
@@ -20,6 +21,16 @@ const Products: React.FC = () => {
     const [searchParams] = useSearchParams();
     const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
     const [sortBy, setSortBy] = useState<'name' | 'price' | 'newest'>('newest');
+
+    // Get category from URL for SEO
+    const categorySlug = searchParams.get('category');
+
+    // SEO: Fetch and apply meta tags for category pages
+    useSeo({
+        type: categorySlug ? 'category' : 'homepage',
+        slug: categorySlug || undefined,
+        includeSchema: false // Category pages don't need JSON-LD
+    });
 
     type Popup = { visible: boolean; message: string; variant: 'success' | 'warning' };
     const [popups, setPopups] = useState<Record<string, Popup>>({});
@@ -36,9 +47,8 @@ const Products: React.FC = () => {
                 setLoading(true);
                 setError(null);
 
-                // Get category filter from URL
-                const categorySlug = searchParams.get('category') || undefined;
-                const productsList = await hybridProductService.getProducts(categorySlug);
+                // Get category filter from URL (reuse categorySlug from hook)
+                const productsList = await hybridProductService.getProducts(categorySlug || undefined);
                 
                 // Load gallery for each product from database
                 const productsWithGallery = await Promise.all(

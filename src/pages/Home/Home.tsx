@@ -12,6 +12,7 @@ import { testimonialService, type Testimonial } from '../../services/testimonial
 import VariantSelectorModal from '../../components/VariantSelectorModal/VariantSelectorModal';
 import './Home.css';
 import { logInfo, logWarn, logError } from '../../services/logger';
+import { useSeo } from '../../hooks/useSeo';
 
 const Home: React.FC = () => {
   logInfo('🏠 [HOME] Component is rendering!');
@@ -19,6 +20,9 @@ const Home: React.FC = () => {
   const { t, i18n } = useTranslation('home');
   const [products, setProducts] = useState<Product[]>([]);
   const [visibilityMap, setVisibilityMap] = useState<VisibilityMap>({});
+
+  // SEO: Fetch and apply meta tags + JSON-LD schema for AI search optimization
+  useSeo({ type: 'homepage', includeSchema: true });
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   logInfo('🏠 [HOME] Testimonials state:', testimonials);
   const featured = useMemo(() => products.slice(0, 6), [products]);

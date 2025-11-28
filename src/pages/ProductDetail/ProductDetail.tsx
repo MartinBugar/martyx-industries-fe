@@ -21,6 +21,7 @@ import { trackProductView, extractUTMParams } from '../../services/backendAnalyt
 import { debounce } from '../../utils/debounce';
 import { logInfo, logWarn, logError } from '../../services/logger';
 import { stockService } from '../../services/stockService';
+import { useSeo } from '../../hooks/useSeo';
 
 // Local inlined ProductDetails component (previously in components/ProductDetails/ProductDetails.tsx)
 interface ProductDetailsProps {
@@ -232,6 +233,14 @@ const ProductDetail: React.FC = () => {
     const [isProductInactive, setIsProductInactive] = React.useState(false);
     const [galleryImages, setGalleryImages] = React.useState<Array<{ url: string; thumbnailUrl?: string }>>([]);
     const [hasLoadedGallery, setHasLoadedGallery] = React.useState(false);
+
+    // SEO: Fetch and apply meta tags + JSON-LD schema for AI search optimization
+    useSeo({
+        type: 'product',
+        slug: id,
+        skip: !id || loading,
+        includeSchema: true
+    });
 
     // Backend tabs state
     const [backendTabs, setBackendTabs] = React.useState<ProductTabDto[]>([]);
