@@ -132,6 +132,11 @@ const Registration: React.FC = () => {
 
             if (err.code === 'EMAIL_ALREADY_REGISTERED' || err.message === 'EMAIL_ALREADY_REGISTERED') {
                 setGeneralError('Tento email sa už používa. Skúste iný email alebo sa prihláste.');
+            } else if (err.code === 'GDPR_CONSENT_REQUIRED') {
+                setGeneralError('Musíte súhlasiť s podmienkami ochrany osobných údajov.');
+            } else if (err.message && err.message !== 'An error occurred') {
+                // Show detailed validation error from backend
+                setGeneralError(err.message);
             } else {
                 setGeneralError('Nastala chyba pri registrácii. Skúste to znovu.');
             }
@@ -283,7 +288,7 @@ const Registration: React.FC = () => {
                                 <input
                                     type={showPassword ? 'text' : 'password'}
                                     id="password"
-                                    placeholder="Zadajte heslo (min. 6 znakov)"
+                                    placeholder="Zadajte heslo (min. 8 znakov)"
                                     className={`form-input ${errors.password ? 'error' : ''}`}
                                     autoComplete="new-password"
                                     {...register('password')}

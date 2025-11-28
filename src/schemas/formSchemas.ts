@@ -21,12 +21,12 @@ export const emailSchema = z
 
 /**
  * Password validation schema
- * - Minimum 6 characters
+ * - Minimum 8 characters
  * - Required field
  */
 export const passwordSchema = z
   .string()
-  .min(6, { message: 'Heslo musí mať minimálne 6 znakov' });
+  .min(8, { message: 'Heslo musí mať minimálne 8 znakov' });
 
 /**
  * Phone number validation schema

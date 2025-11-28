@@ -113,11 +113,11 @@ export const handleResponse = async (response: Response) => {
 
     // Handle 401 Unauthorized responses (expired/invalid tokens)
     if (response.status === 401) {
-      // Don't auto-logout for GDPR consent status endpoint
-      // This endpoint is called on Settings page load and shouldn't trigger logout
+      // Don't auto-logout for certain endpoints that shouldn't trigger logout
       const isGdprConsentStatus = response.url.includes('/api/gdpr/consent/status');
+      const isDevGateStatus = response.url.includes('/api/dev-gate/');
 
-      if (!isGdprConsentStatus) {
+      if (!isGdprConsentStatus && !isDevGateStatus) {
         logInfo('Received 401 Unauthorized, clearing authentication data');
         // Clear expired token and user data
         localStorage.removeItem('user');

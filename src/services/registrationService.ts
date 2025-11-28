@@ -40,6 +40,16 @@ export const registrationService = {
                 if (data && typeof data.message === 'string') {
                     message = data.message;
                 }
+                // Extract validation details if available (backend returns details array)
+                if (data && Array.isArray(data.details) && data.details.length > 0) {
+                    const validationMessages = data.details
+                        .map((detail: { field?: string; message?: string }) => detail.message || detail.field)
+                        .filter(Boolean)
+                        .join('. ');
+                    if (validationMessages) {
+                        message = validationMessages;
+                    }
+                }
             } catch {
                 // ignore JSON parse errors
             }
