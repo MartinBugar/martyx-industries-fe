@@ -3,9 +3,9 @@ import {
   seoService,
   applyMetaTags,
   applyJsonLdSchema,
-  cleanupSeoTags,
-  MetaTagsResponse
+  cleanupSeoTags
 } from '../services/seoService';
+import type { MetaTagsResponse } from '../services/seoService';
 import { logError, logInfo } from '../services/logger';
 
 // Debounce delay to prevent race conditions during rapid navigation
