@@ -436,9 +436,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     if (!user) return;
 
     // Create new order with id and date
+    // Use crypto.randomUUID() for cryptographically secure unique IDs
     const newOrder: Order = {
       ...order,
-      id: Math.random().toString(36).substr(2, 9), // Generate a random ID
+      id: crypto.randomUUID(),
       date: new Date().toISOString()
     };
 

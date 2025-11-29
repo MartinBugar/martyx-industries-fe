@@ -450,7 +450,9 @@ const Checkout: React.FC = () => {
     };
 
     fetchShippingOptions();
-  }, [currentStep, hasPhysicalProducts]);
+    // Note: formData.billingCountry and formData.shippingCountry are the key dependencies
+    // that trigger shipping recalculation when address changes
+  }, [currentStep, hasPhysicalProducts, formData.billingCountry, formData.shippingCountry, formData.shipToDifferentAddress, formData.billingPostalCode, formData.shippingPostalCode]);
 
   // GA4 Analytics: Track begin_checkout when component mounts
   useEffect(() => {
