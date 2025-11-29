@@ -138,7 +138,8 @@ export const handleResponse = async (response: Response) => {
     interface ErrorWithData extends Error {
       errorData?: typeof errorData;
     }
-    const error = new Error(errorData.errorCode || 'Unknown error') as ErrorWithData;
+    // BE can return error code as 'code' or 'errorCode'
+    const error = new Error(errorData.code || errorData.errorCode || 'Unknown error') as ErrorWithData;
     error.errorData = errorData;
     throw error;
   }
