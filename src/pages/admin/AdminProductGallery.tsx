@@ -73,11 +73,13 @@ const AdminProductGallery: React.FC = () => {
     setLoadingGallery(true);
     try {
       const images = await productGalleryService.getMasterProductGallery(Number(id));
-      setGalleryImages(images);
+      // Ensure images is always an array (API may return null)
+      const safeImages = Array.isArray(images) ? images : [];
+      setGalleryImages(safeImages);
 
       // Auto-select primary image or first image
-      const primaryImage = images.find(img => img.isPrimary);
-      const defaultImage = primaryImage || images[0] || null;
+      const primaryImage = safeImages.find(img => img.isPrimary);
+      const defaultImage = primaryImage || safeImages[0] || null;
       setSelectedImage(defaultImage);
 
       // Reload full product data to update ProductCard preview with new gallery
@@ -119,6 +121,7 @@ const AdminProductGallery: React.FC = () => {
   };
 
   const handleImageSelect = (imageId: string) => {
+    if (!Array.isArray(galleryImages)) return;
     const image = galleryImages.find(img => img.id === imageId);
     if (image) {
       setSelectedImage(image);
@@ -292,7 +295,7 @@ const AdminProductGallery: React.FC = () => {
               </div>
 
               {/* Product Card Preview & Customization Section */}
-              {galleryImages.length > 0 && fullProduct && (
+              {Array.isArray(galleryImages) && galleryImages.length > 0 && fullProduct && (
                 <div className="product-card-customization-section">
                   <div className="section-header" style={{ marginTop: 32, marginBottom: 16 }}>
                     <h3 className="section-title" style={{ margin: 0, fontSize: 16, fontWeight: 600, color: '#1f2937' }}>
