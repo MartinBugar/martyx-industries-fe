@@ -1,4 +1,4 @@
-import { API_BASE_URL, defaultHeaders, handleResponse } from './apiUtils';
+import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
 
 export interface AdminOrderItem {
   id?: number | string;
@@ -107,28 +107,28 @@ export const adminOrdersService = {
       orderItems: [],
       ...payload,
     };
-    const resp = await fetch(`${API_BASE_URL}/api/admin/orders`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/orders`, withLangHeaders({
       method: 'POST',
       headers: jsonHeaders(),
       body: JSON.stringify(body),
-    });
+    }));
     return await handleResponse(resp) as AdminOrderDTO;
   },
 
   async updateOrder(id: string | number, payload: Partial<AdminOrderDTO>): Promise<AdminOrderDTO> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/orders/${id}`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/orders/${id}`, withLangHeaders({
       method: 'PUT',
       headers: jsonHeaders(),
       body: JSON.stringify(payload),
-    });
+    }));
     return await handleResponse(resp) as AdminOrderDTO;
   },
 
   async deleteOrder(id: string | number): Promise<void> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/orders/${id}`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/orders/${id}`, withLangHeaders({
       method: 'DELETE',
       headers: jsonHeaders(),
-    });
+    }));
     // Some backends return 200 with message, others 204
     if (resp.status === 204) return;
     await handleResponse(resp);

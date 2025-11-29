@@ -1,4 +1,4 @@
-import { API_BASE_URL, defaultHeaders, handleResponse } from './apiUtils';
+import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
 
 // =========================================================================
 // MASTER PRODUCT TYPES (New Architecture)
@@ -267,11 +267,11 @@ export const adminProductsService = {
    * Create new master product
    */
   async createMasterProduct(payload: MasterProductDto): Promise<MasterProductDto> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/products`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/products`, withLangHeaders({
       method: 'POST',
       headers: defaultHeaders as HeadersInit,
       body: JSON.stringify(payload),
-    });
+    }));
     return await handleResponse(resp) as MasterProductDto;
   },
 
@@ -279,11 +279,11 @@ export const adminProductsService = {
    * Update existing master product
    */
   async updateMasterProduct(id: string | number, payload: MasterProductDto): Promise<MasterProductDto> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/products/${id}`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/products/${id}`, withLangHeaders({
       method: 'PUT',
       headers: defaultHeaders as HeadersInit,
       body: JSON.stringify(payload),
-    });
+    }));
     if (resp.status === 204) {
       return await adminProductsService.getMasterProductById(id);
     }
@@ -294,10 +294,10 @@ export const adminProductsService = {
    * Delete master product
    */
   async deleteMasterProduct(id: string | number): Promise<MessageResponse | void> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/products/${id}`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/products/${id}`, withLangHeaders({
       method: 'DELETE',
       headers: defaultHeaders as HeadersInit,
-    });
+    }));
     if (resp.status === 204) return;
     return await handleResponse(resp) as MessageResponse;
   },
@@ -402,11 +402,11 @@ export const adminProductsService = {
    * Create new variant for a master product
    */
   async createVariant(masterProductId: string | number, payload: ProductVariantDto): Promise<ProductVariantDto> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/products/${masterProductId}/variants`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/products/${masterProductId}/variants`, withLangHeaders({
       method: 'POST',
       headers: defaultHeaders as HeadersInit,
       body: JSON.stringify(payload),
-    });
+    }));
     return await handleResponse(resp) as ProductVariantDto;
   },
 
@@ -414,11 +414,11 @@ export const adminProductsService = {
    * Update existing variant
    */
   async updateVariant(id: string | number, payload: ProductVariantDto): Promise<ProductVariantDto> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/variants/${id}`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/variants/${id}`, withLangHeaders({
       method: 'PUT',
       headers: defaultHeaders as HeadersInit,
       body: JSON.stringify(payload),
-    });
+    }));
     return await handleResponse(resp) as ProductVariantDto;
   },
 
@@ -427,10 +427,10 @@ export const adminProductsService = {
    * Safe endpoint that only modifies the active flag without affecting other variant data.
    */
   async toggleVariantActive(id: string | number): Promise<{ id: number; active: boolean; message: string }> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/variants/${id}/toggle-active`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/variants/${id}/toggle-active`, withLangHeaders({
       method: 'PATCH',
       headers: defaultHeaders as HeadersInit,
-    });
+    }));
     return await handleResponse(resp) as { id: number; active: boolean; message: string };
   },
 
@@ -438,10 +438,10 @@ export const adminProductsService = {
    * Delete variant
    */
   async deleteVariant(id: string | number): Promise<MessageResponse | void> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/variants/${id}`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/variants/${id}`, withLangHeaders({
       method: 'DELETE',
       headers: defaultHeaders as HeadersInit,
-    });
+    }));
     if (resp.status === 204) return;
     return await handleResponse(resp) as MessageResponse;
   },
@@ -454,11 +454,11 @@ export const adminProductsService = {
    * Create new component for a variant
    */
   async createComponent(variantId: string | number, payload: VariantComponentDto): Promise<VariantComponentDto> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/variants/${variantId}/components`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/variants/${variantId}/components`, withLangHeaders({
       method: 'POST',
       headers: defaultHeaders as HeadersInit,
       body: JSON.stringify(payload),
-    });
+    }));
     return await handleResponse(resp) as VariantComponentDto;
   },
 
@@ -466,11 +466,11 @@ export const adminProductsService = {
    * Update existing component
    */
   async updateComponent(id: string | number, payload: VariantComponentDto): Promise<VariantComponentDto> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/components/${id}`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/components/${id}`, withLangHeaders({
       method: 'PUT',
       headers: defaultHeaders as HeadersInit,
       body: JSON.stringify(payload),
-    });
+    }));
     return await handleResponse(resp) as VariantComponentDto;
   },
 
@@ -478,10 +478,10 @@ export const adminProductsService = {
    * Delete component
    */
   async deleteComponent(id: string | number): Promise<MessageResponse | void> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/components/${id}`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/components/${id}`, withLangHeaders({
       method: 'DELETE',
       headers: defaultHeaders as HeadersInit,
-    });
+    }));
     if (resp.status === 204) return;
     return await handleResponse(resp) as MessageResponse;
   },

@@ -1,4 +1,4 @@
-import { API_BASE_URL, defaultHeaders, handleResponse } from './apiUtils';
+import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
 import type {
   ReturnRequestDto,
   ReturnRequestUpdateDto,
@@ -84,11 +84,11 @@ export const adminReturnService = {
    * @returns Updated return request
    */
   async updateReturn(id: number, dto: ReturnRequestUpdateDto): Promise<ReturnRequestDto> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/returns/${id}`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/returns/${id}`, withLangHeaders({
       method: 'PUT',
       headers: jsonHeaders(),
       body: JSON.stringify(dto),
-    });
+    }));
 
     return await handleResponse(resp) as ReturnRequestDto;
   },
@@ -100,11 +100,11 @@ export const adminReturnService = {
    * @returns Updated return request
    */
   async approveReturn(id: number, dto: RmaApprovalDto): Promise<ReturnRequestDto> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/returns/${id}/approve`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/returns/${id}/approve`, withLangHeaders({
       method: 'POST',
       headers: jsonHeaders(),
       body: JSON.stringify(dto),
-    });
+    }));
 
     return await handleResponse(resp) as ReturnRequestDto;
   },
@@ -116,11 +116,11 @@ export const adminReturnService = {
    * @returns Updated return request
    */
   async rejectReturn(id: number, reason: string): Promise<ReturnRequestDto> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/returns/${id}/reject`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/returns/${id}/reject`, withLangHeaders({
       method: 'POST',
       headers: jsonHeaders(),
       body: JSON.stringify({ reason }),
-    });
+    }));
 
     return await handleResponse(resp) as ReturnRequestDto;
   },
@@ -131,10 +131,10 @@ export const adminReturnService = {
    * @returns Updated return request
    */
   async markAsReceived(id: number): Promise<ReturnRequestDto> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/returns/${id}/received`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/returns/${id}/received`, withLangHeaders({
       method: 'POST',
       headers: jsonHeaders(),
-    });
+    }));
 
     return await handleResponse(resp) as ReturnRequestDto;
   },
@@ -146,11 +146,11 @@ export const adminReturnService = {
    * @returns Updated return request
    */
   async inspectReturn(id: number, payload: { passed: boolean; notes?: string }): Promise<ReturnRequestDto> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/returns/${id}/inspect`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/returns/${id}/inspect`, withLangHeaders({
       method: 'POST',
       headers: jsonHeaders(),
       body: JSON.stringify(payload),
-    });
+    }));
 
     return await handleResponse(resp) as ReturnRequestDto;
   },
@@ -162,11 +162,11 @@ export const adminReturnService = {
    * @returns Updated return request
    */
   async processRefund(id: number, payload: { amount: number; refundMethod: string }): Promise<ReturnRequestDto> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/returns/${id}/refund`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/returns/${id}/refund`, withLangHeaders({
       method: 'POST',
       headers: jsonHeaders(),
       body: JSON.stringify(payload),
-    });
+    }));
 
     return await handleResponse(resp) as ReturnRequestDto;
   },
@@ -177,10 +177,10 @@ export const adminReturnService = {
    * @returns Updated return request
    */
   async completeReturn(id: number): Promise<ReturnRequestDto> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/returns/${id}/complete`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/returns/${id}/complete`, withLangHeaders({
       method: 'POST',
       headers: jsonHeaders(),
-    });
+    }));
 
     return await handleResponse(resp) as ReturnRequestDto;
   },

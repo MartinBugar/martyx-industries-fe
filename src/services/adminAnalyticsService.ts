@@ -1,4 +1,4 @@
-import { API_BASE_URL, defaultHeaders, handleResponse } from './apiUtils';
+import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
 import type {
   AnalyticsEventDto,
   ConversionFunnelDto,
@@ -149,10 +149,10 @@ export const adminAnalyticsService = {
    * @returns Aggregation result
    */
   async aggregateDailyMetrics(date: string): Promise<Record<string, any>> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/analytics/aggregate/${date}`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/analytics/aggregate/${date}`, withLangHeaders({
       method: 'POST',
       headers: jsonHeaders(),
-    });
+    }));
 
     return await handleResponse(resp);
   },

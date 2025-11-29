@@ -1,4 +1,4 @@
-import { API_BASE_URL, defaultHeaders, handleResponse } from './apiUtils';
+import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
 import type {
   DiscountCodeDto,
   DiscountCodeCreateDto,
@@ -91,11 +91,11 @@ export const adminDiscountService = {
    * @returns Created discount code
    */
   async createDiscount(dto: DiscountCodeCreateDto): Promise<DiscountCodeDto> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/discounts`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/discounts`, withLangHeaders({
       method: 'POST',
       headers: jsonHeaders(),
       body: JSON.stringify(dto),
-    });
+    }));
 
     return await handleResponse(resp) as DiscountCodeDto;
   },
@@ -107,11 +107,11 @@ export const adminDiscountService = {
    * @returns Updated discount code
    */
   async updateDiscount(id: number, dto: DiscountCodeCreateDto): Promise<DiscountCodeDto> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/discounts/${id}`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/discounts/${id}`, withLangHeaders({
       method: 'PUT',
       headers: jsonHeaders(),
       body: JSON.stringify(dto),
-    });
+    }));
 
     return await handleResponse(resp) as DiscountCodeDto;
   },
@@ -122,10 +122,10 @@ export const adminDiscountService = {
    * @returns Success response
    */
   async deleteDiscount(id: number): Promise<{ message: string }> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/discounts/${id}`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/discounts/${id}`, withLangHeaders({
       method: 'DELETE',
       headers: jsonHeaders(),
-    });
+    }));
 
     return await handleResponse(resp);
   },
@@ -136,10 +136,10 @@ export const adminDiscountService = {
    * @returns Updated discount code
    */
   async deactivateDiscount(id: number): Promise<DiscountCodeDto> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/discounts/${id}/deactivate`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/discounts/${id}/deactivate`, withLangHeaders({
       method: 'PUT',
       headers: jsonHeaders(),
-    });
+    }));
 
     return await handleResponse(resp) as DiscountCodeDto;
   },

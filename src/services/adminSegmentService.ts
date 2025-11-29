@@ -1,4 +1,4 @@
-import { API_BASE_URL, defaultHeaders, handleResponse } from './apiUtils';
+import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
 import type { CustomerSegmentDto } from '../types/customer';
 import type { User } from '../context/authTypes';
 
@@ -53,11 +53,11 @@ export const adminSegmentService = {
    * @returns Created segment
    */
   async createSegment(dto: CustomerSegmentDto): Promise<CustomerSegmentDto> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/segments`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/segments`, withLangHeaders({
       method: 'POST',
       headers: jsonHeaders(),
       body: JSON.stringify(dto),
-    });
+    }));
 
     return await handleResponse(resp) as CustomerSegmentDto;
   },
@@ -69,11 +69,11 @@ export const adminSegmentService = {
    * @returns Updated segment
    */
   async updateSegment(id: number, dto: CustomerSegmentDto): Promise<CustomerSegmentDto> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/segments/${id}`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/segments/${id}`, withLangHeaders({
       method: 'PUT',
       headers: jsonHeaders(),
       body: JSON.stringify(dto),
-    });
+    }));
 
     return await handleResponse(resp) as CustomerSegmentDto;
   },
@@ -84,10 +84,10 @@ export const adminSegmentService = {
    * @returns Success response
    */
   async deleteSegment(id: number): Promise<{ message: string }> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/segments/${id}`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/segments/${id}`, withLangHeaders({
       method: 'DELETE',
       headers: jsonHeaders(),
-    });
+    }));
 
     return await handleResponse(resp);
   },
@@ -128,10 +128,10 @@ export const adminSegmentService = {
    * @returns Recalculated segment
    */
   async recalculateSegment(id: number): Promise<CustomerSegmentDto> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/segments/${id}/recalculate`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/segments/${id}/recalculate`, withLangHeaders({
       method: 'POST',
       headers: jsonHeaders(),
-    });
+    }));
 
     return await handleResponse(resp) as CustomerSegmentDto;
   },
@@ -141,10 +141,10 @@ export const adminSegmentService = {
    * @returns List of recalculated segments
    */
   async recalculateAllSegments(): Promise<CustomerSegmentDto[]> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/segments/recalculate-all`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/segments/recalculate-all`, withLangHeaders({
       method: 'POST',
       headers: jsonHeaders(),
-    });
+    }));
 
     return await handleResponse(resp) as CustomerSegmentDto[];
   },

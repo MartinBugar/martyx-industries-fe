@@ -1,4 +1,4 @@
-import { API_BASE_URL, defaultHeaders, handleResponse } from './apiUtils';
+import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
 import type {
   StockMovementDto,
   StockAlertDto,
@@ -77,11 +77,11 @@ export const adminInventoryService = {
    * @returns Created stock movement
    */
   async recordStockMovement(dto: StockMovementDto): Promise<StockMovementDto> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/inventory/movements`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/inventory/movements`, withLangHeaders({
       method: 'POST',
       headers: jsonHeaders(),
       body: JSON.stringify(dto),
-    });
+    }));
 
     return await handleResponse(resp) as StockMovementDto;
   },
@@ -189,10 +189,10 @@ export const adminInventoryService = {
    * @returns Updated stock alert
    */
   async acknowledgeAlert(id: number, adminId: number): Promise<StockAlertDto> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/inventory/alerts/${id}/acknowledge?adminId=${adminId}`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/inventory/alerts/${id}/acknowledge?adminId=${adminId}`, withLangHeaders({
       method: 'PUT',
       headers: jsonHeaders(),
-    });
+    }));
 
     return await handleResponse(resp) as StockAlertDto;
   },
@@ -204,11 +204,11 @@ export const adminInventoryService = {
    * @returns Updated stock alert
    */
   async resolveAlert(id: number, notes: string): Promise<StockAlertDto> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/inventory/alerts/${id}/resolve`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/inventory/alerts/${id}/resolve`, withLangHeaders({
       method: 'PUT',
       headers: jsonHeaders(),
       body: JSON.stringify({ notes }),
-    });
+    }));
 
     return await handleResponse(resp) as StockAlertDto;
   },
@@ -221,10 +221,10 @@ export const adminInventoryService = {
    * @returns Reconciliation result
    */
   async reconcileStock(variantId: number): Promise<Record<string, any>> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/inventory/reconcile/${variantId}`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/inventory/reconcile/${variantId}`, withLangHeaders({
       method: 'POST',
       headers: jsonHeaders(),
-    });
+    }));
 
     return await handleResponse(resp);
   },
@@ -237,11 +237,11 @@ export const adminInventoryService = {
    * @returns Adjustment result
    */
   async adjustStock(variantId: number, quantity: number, reason: string): Promise<Record<string, any>> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/inventory/adjust/${variantId}`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/inventory/adjust/${variantId}`, withLangHeaders({
       method: 'POST',
       headers: jsonHeaders(),
       body: JSON.stringify({ quantity, reason }),
-    });
+    }));
 
     return await handleResponse(resp);
   },

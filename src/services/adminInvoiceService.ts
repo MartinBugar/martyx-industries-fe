@@ -1,4 +1,4 @@
-import {API_BASE_URL, defaultHeaders, handleResponse} from './apiUtils';
+import {API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders} from './apiUtils';
 import {logError} from './logger';
 import type {CompanySettingsDto, InvoiceDto} from '../types/invoice';
 
@@ -112,10 +112,10 @@ export const adminInvoiceService = {
      * @returns Created invoice
      */
     async generateInvoice(orderId: number): Promise<InvoiceDto> {
-        const resp = await fetch(`${API_BASE_URL}/api/admin/invoices/generate/${orderId}`, {
+        const resp = await fetch(`${API_BASE_URL}/api/admin/invoices/generate/${orderId}`, withLangHeaders({
             method: 'POST',
             headers: jsonHeaders(),
-        });
+        }));
 
         return await handleResponse(resp) as InvoiceDto;
     },
@@ -126,10 +126,10 @@ export const adminInvoiceService = {
      * @returns Updated invoice
      */
     async regenerateInvoice(id: number): Promise<InvoiceDto> {
-        const resp = await fetch(`${API_BASE_URL}/api/admin/invoices/${id}/regenerate`, {
+        const resp = await fetch(`${API_BASE_URL}/api/admin/invoices/${id}/regenerate`, withLangHeaders({
             method: 'POST',
             headers: jsonHeaders(),
-        });
+        }));
 
         return await handleResponse(resp) as InvoiceDto;
     },
@@ -153,11 +153,11 @@ export const adminInvoiceService = {
      * @returns Updated company settings
      */
     async updateCompanySettings(dto: CompanySettingsDto): Promise<CompanySettingsDto> {
-        const resp = await fetch(`${API_BASE_URL}/api/admin/invoices/company-settings`, {
+        const resp = await fetch(`${API_BASE_URL}/api/admin/invoices/company-settings`, withLangHeaders({
             method: 'PUT',
             headers: jsonHeaders(),
             body: JSON.stringify(dto),
-        });
+        }));
 
         return await handleResponse(resp) as CompanySettingsDto;
     },
@@ -217,11 +217,11 @@ export const adminInvoiceService = {
     async resendInvoiceEmail(id: number, email?: string): Promise<{ message: string }> {
         const body = email ? JSON.stringify({email}) : undefined;
 
-        const resp = await fetch(`${API_BASE_URL}/api/admin/invoices/${id}/resend-email`, {
+        const resp = await fetch(`${API_BASE_URL}/api/admin/invoices/${id}/resend-email`, withLangHeaders({
             method: 'POST',
             headers: jsonHeaders(),
             body,
-        });
+        }));
 
         return await handleResponse(resp) as { message: string };
     },

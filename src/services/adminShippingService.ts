@@ -1,4 +1,4 @@
-import { API_BASE_URL, defaultHeaders, handleResponse } from './apiUtils';
+import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
 import type {
   ShippingZoneDto,
   ShippingRateDto,
@@ -51,11 +51,11 @@ export const adminShippingService = {
    * @returns Created zone
    */
   async createZone(dto: ShippingZoneDto): Promise<ShippingZoneDto> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/shipping/zones`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/shipping/zones`, withLangHeaders({
       method: 'POST',
       headers: jsonHeaders(),
       body: JSON.stringify(dto),
-    });
+    }));
 
     return await handleResponse(resp) as ShippingZoneDto;
   },
@@ -67,11 +67,11 @@ export const adminShippingService = {
    * @returns Updated zone
    */
   async updateZone(id: number, dto: ShippingZoneDto): Promise<ShippingZoneDto> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/shipping/zones/${id}`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/shipping/zones/${id}`, withLangHeaders({
       method: 'PUT',
       headers: jsonHeaders(),
       body: JSON.stringify(dto),
-    });
+    }));
 
     return await handleResponse(resp) as ShippingZoneDto;
   },
@@ -82,10 +82,10 @@ export const adminShippingService = {
    * @returns Success response
    */
   async deleteZone(id: number): Promise<{ message: string }> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/shipping/zones/${id}`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/shipping/zones/${id}`, withLangHeaders({
       method: 'DELETE',
       headers: jsonHeaders(),
-    });
+    }));
 
     return await handleResponse(resp);
   },
@@ -139,11 +139,11 @@ export const adminShippingService = {
    * @returns Created rate
    */
   async createRate(dto: ShippingRateDto): Promise<ShippingRateDto> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/shipping/rates`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/shipping/rates`, withLangHeaders({
       method: 'POST',
       headers: jsonHeaders(),
       body: JSON.stringify(dto),
-    });
+    }));
 
     return await handleResponse(resp) as ShippingRateDto;
   },
@@ -155,11 +155,11 @@ export const adminShippingService = {
    * @returns Updated rate
    */
   async updateRate(id: number, dto: ShippingRateDto): Promise<ShippingRateDto> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/shipping/rates/${id}`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/shipping/rates/${id}`, withLangHeaders({
       method: 'PUT',
       headers: jsonHeaders(),
       body: JSON.stringify(dto),
-    });
+    }));
 
     return await handleResponse(resp) as ShippingRateDto;
   },
@@ -170,10 +170,10 @@ export const adminShippingService = {
    * @returns Success response
    */
   async deleteRate(id: number): Promise<{ message: string }> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/shipping/rates/${id}`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/shipping/rates/${id}`, withLangHeaders({
       method: 'DELETE',
       headers: jsonHeaders(),
-    });
+    }));
 
     return await handleResponse(resp);
   },
@@ -186,11 +186,11 @@ export const adminShippingService = {
    * @returns Created shipment response
    */
   async createShipment(request: CreateShipmentRequest): Promise<CreateShipmentResponse> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/shipping/shipments`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/shipping/shipments`, withLangHeaders({
       method: 'POST',
       headers: jsonHeaders(),
       body: JSON.stringify(request),
-    });
+    }));
 
     return await handleResponse(resp) as CreateShipmentResponse;
   },
@@ -244,10 +244,10 @@ export const adminShippingService = {
    * @returns Updated shipment
    */
   async updateShipmentStatus(id: number, status: ShipmentStatus): Promise<Shipment> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/shipping/shipments/${id}/status?status=${status}`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/shipping/shipments/${id}/status?status=${status}`, withLangHeaders({
       method: 'PUT',
       headers: jsonHeaders(),
-    });
+    }));
 
     return await handleResponse(resp) as Shipment;
   },
@@ -258,10 +258,10 @@ export const adminShippingService = {
    * @returns Success response
    */
   async cancelShipment(id: number): Promise<{ message: string }> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/shipping/shipments/${id}`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/shipping/shipments/${id}`, withLangHeaders({
       method: 'DELETE',
       headers: jsonHeaders(),
-    });
+    }));
 
     return await handleResponse(resp);
   },
@@ -285,10 +285,10 @@ export const adminShippingService = {
    * @returns Success message
    */
   async refreshAllTracking(): Promise<{ message: string }> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/shipping/shipments/refresh-tracking`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/shipping/shipments/refresh-tracking`, withLangHeaders({
       method: 'POST',
       headers: jsonHeaders(),
-    });
+    }));
 
     return await handleResponse(resp);
   },

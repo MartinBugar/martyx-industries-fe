@@ -1,4 +1,4 @@
-import { API_BASE_URL, defaultHeaders, handleResponse } from './apiUtils';
+import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
 import type {
   SupplierDto,
   PurchaseOrderDto,
@@ -79,11 +79,11 @@ export const adminSupplierService = {
    * @returns Created supplier
    */
   async createSupplier(dto: SupplierDto): Promise<SupplierDto> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/suppliers`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/suppliers`, withLangHeaders({
       method: 'POST',
       headers: jsonHeaders(),
       body: JSON.stringify(dto),
-    });
+    }));
 
     return await handleResponse(resp) as SupplierDto;
   },
@@ -95,11 +95,11 @@ export const adminSupplierService = {
    * @returns Updated supplier
    */
   async updateSupplier(id: number, dto: SupplierDto): Promise<SupplierDto> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/suppliers/${id}`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/suppliers/${id}`, withLangHeaders({
       method: 'PUT',
       headers: jsonHeaders(),
       body: JSON.stringify(dto),
-    });
+    }));
 
     return await handleResponse(resp) as SupplierDto;
   },
@@ -110,10 +110,10 @@ export const adminSupplierService = {
    * @returns Success response
    */
   async deleteSupplier(id: number): Promise<{ message: string }> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/suppliers/${id}`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/suppliers/${id}`, withLangHeaders({
       method: 'DELETE',
       headers: jsonHeaders(),
-    });
+    }));
 
     return await handleResponse(resp);
   },
@@ -166,11 +166,11 @@ export const adminSupplierService = {
    * @returns Created purchase order
    */
   async createPurchaseOrder(dto: PurchaseOrderCreateDto): Promise<PurchaseOrderDto> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/suppliers/purchase-orders`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/suppliers/purchase-orders`, withLangHeaders({
       method: 'POST',
       headers: jsonHeaders(),
       body: JSON.stringify(dto),
-    });
+    }));
 
     return await handleResponse(resp) as PurchaseOrderDto;
   },
@@ -195,10 +195,10 @@ export const adminSupplierService = {
    * @returns Updated purchase order
    */
   async receivePurchaseOrder(id: number): Promise<PurchaseOrderDto> {
-    const resp = await fetch(`${API_BASE_URL}/api/admin/suppliers/purchase-orders/${id}/receive`, {
+    const resp = await fetch(`${API_BASE_URL}/api/admin/suppliers/purchase-orders/${id}/receive`, withLangHeaders({
       method: 'PUT',
       headers: jsonHeaders(),
-    });
+    }));
 
     return await handleResponse(resp) as PurchaseOrderDto;
   },
