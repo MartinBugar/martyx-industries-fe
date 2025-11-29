@@ -366,8 +366,16 @@ export const VariantEditor: React.FC<VariantEditorProps> = ({
                   >
                     <option value="DIGITAL_ONLY">Digital Only</option>
                     <option value="PHYSICAL_ONLY">Physical Only</option>
-                    <option value="HYBRID">Hybrid (Digital + Physical)</option>
+                    {/* HYBRID is deprecated - only show if editing existing HYBRID variant */}
+                    {formData.variantType === 'HYBRID' && (
+                      <option value="HYBRID" disabled>Hybrid (DEPRECATED - convert to separate variants)</option>
+                    )}
                   </select>
+                  {formData.variantType === 'HYBRID' && (
+                    <p style={{ color: 'var(--admin-warning)', fontSize: '0.75rem', marginTop: '0.25rem' }}>
+                      ⚠️ HYBRID is deprecated. Please create separate Digital and Physical variants instead.
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label style={labelStyle}>Fulfillment Type</label>
@@ -386,7 +394,10 @@ export const VariantEditor: React.FC<VariantEditorProps> = ({
                   >
                     <option value="DIGITAL">Digital Delivery</option>
                     <option value="PHYSICAL">Physical Shipping</option>
-                    <option value="MIXED">Mixed (Digital + Shipping)</option>
+                    {/* MIXED is deprecated - only show if editing existing MIXED variant */}
+                    {formData.fulfillmentType === 'MIXED' && (
+                      <option value="MIXED" disabled>Mixed (DEPRECATED)</option>
+                    )}
                   </select>
                 </div>
                 <div>

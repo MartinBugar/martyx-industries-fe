@@ -15,6 +15,7 @@ export interface CreateCheckoutSessionRequest {
   shippingRateId?: number;
   shippingCost?: number;
   creditsToApply?: number; // Optional: Amount of user credits to apply
+  digitalContentConsent?: boolean; // Required for digital products (EU Consumer Rights)
 }
 
 export interface CreateCheckoutSessionResponse {
@@ -117,6 +118,7 @@ export class StripeService {
    * @param userInfo - User/billing information
    * @param creditsToApply - Optional: Amount of user credits to apply
    * @param discountCode - Optional: Discount code to apply
+   * @param digitalContentConsent - Optional: EU Consumer Rights consent for digital products
    * @returns CreateCheckoutSessionRequest
    */
   createCheckoutRequest(
@@ -144,7 +146,8 @@ export class StripeService {
       vatId?: string;
     },
     creditsToApply?: number,
-    discountCode?: string
+    discountCode?: string,
+    digitalContentConsent?: boolean
   ): CreateCheckoutSessionRequest {
     const orderItems = cartItems.map(item => ({
       product: { id: item.id },
@@ -173,7 +176,8 @@ export class StripeService {
         vatId: userInfo.vatId || ''
       } : undefined,
       ...(creditsToApply && creditsToApply > 0 && { creditsToApply }),
-      ...(discountCode && discountCode.trim() && { discountCode: discountCode.trim() })
+      ...(discountCode && discountCode.trim() && { discountCode: discountCode.trim() }),
+      ...(digitalContentConsent !== undefined && { digitalContentConsent })
     };
   }
 }

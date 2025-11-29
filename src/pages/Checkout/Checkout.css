@@ -398,6 +398,40 @@
   border-radius: 2px;
 }
 
+/* Digital Content Consent - EU Consumer Rights Directive */
+.digital-consent-field {
+  background: rgba(52, 152, 219, 0.08);
+  border: 1px solid rgba(52, 152, 219, 0.3);
+  border-radius: var(--radius);
+  padding: var(--space-md);
+  margin-top: var(--space-md);
+}
+
+.digital-consent-notice {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+  color: var(--text-primary);
+}
+
+.digital-consent-notice .notice-icon {
+  font-size: 1.25rem;
+}
+
+.digital-consent-notice strong {
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+}
+
+.digital-consent-info {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: var(--space-xs);
+  padding-left: calc(1.25rem + var(--space-sm));
+  line-height: 1.5;
+}
+
 /* Saved Addresses Section */
 .saved-addresses-section {
   margin-bottom: var(--space-md);

@@ -186,7 +186,13 @@
     "fill_required_fields": "Vyplňte prosím všetky povinné polia správne",
     "select_shipping_method": "Vyberte prosím spôsob doručenia",
     "accept_terms": "Musíte akceptovať Obchodné podmienky, aby ste mohli pokračovať",
-    "accept_privacy": "Musíte akceptovať Zásady ochrany osobných údajov, aby ste mohli pokračovať"
+    "accept_privacy": "Musíte akceptovať Zásady ochrany osobných údajov, aby ste mohli pokračovať",
+    "accept_digital_consent": "Prosím potvrďte, že rozumiete, že digitálne produkty nie je možné vrátiť po ich doručení"
+  },
+  "digital_consent": {
+    "title": "Upozornenie o digitálnom produkte",
+    "checkbox_label": "Rozumiem a súhlasím, že digitálne produkty budú doručené ihneď po platbe a vzdávam sa práva na odstúpenie od zmluvy pre digitálny obsah po začatí doručovania.",
+    "legal_notice": "V súlade so Smernicou EÚ o právach spotrebiteľov (2011/83/EÚ, článok 16m) nie je možné digitálny obsah doručený okamžite vrátiť po začatí sťahovania alebo prístupu."
   },
   "confirmation": {
     "title": "Objednávka potvrdená!",

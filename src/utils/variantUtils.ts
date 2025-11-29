@@ -3,21 +3,44 @@
  * Shared helper functions for variant display and formatting
  */
 
+/**
+ * Product variant types.
+ * Note: HYBRID is deprecated as of V80 migration. Use separate DIGITAL_ONLY and PHYSICAL_ONLY variants.
+ */
 export type VariantType = 'DIGITAL_ONLY' | 'PHYSICAL_ONLY' | 'HYBRID';
 export type AvailabilityStatus = 'IN_STOCK' | 'LOW_STOCK' | 'OUT_OF_STOCK' | 'PRE_ORDER' | 'DISCONTINUED' | 'BACKORDERED';
 
 /**
  * Get short display text for variant type
  * @param type - The variant type
- * @returns Short display text (e.g., "Digital", "Physical", "Hybrid")
+ * @returns Short display text (e.g., "Digital", "Physical")
  */
 export const getVariantTypeShort = (type: VariantType): string => {
     const badges: Record<VariantType, string> = {
         'DIGITAL_ONLY': 'Digital',
         'PHYSICAL_ONLY': 'Physical',
-        'HYBRID': 'Hybrid'
+        'HYBRID': 'Physical' // DEPRECATED: Show as Physical for backwards compatibility
     };
     return badges[type];
+};
+
+/**
+ * Check if variant is digital (requires digital content consent)
+ * @param type - The variant type
+ * @returns True if variant is digital only
+ */
+export const isDigitalVariant = (type: VariantType): boolean => {
+    return type === 'DIGITAL_ONLY';
+};
+
+/**
+ * Check if variant requires shipping
+ * @param type - The variant type
+ * @returns True if variant requires physical shipping
+ */
+export const requiresShipping = (type: VariantType): boolean => {
+    // PHYSICAL_ONLY and HYBRID (deprecated) require shipping
+    return type === 'PHYSICAL_ONLY' || type === 'HYBRID';
 };
 
 /**

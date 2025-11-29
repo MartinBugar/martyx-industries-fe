@@ -186,7 +186,13 @@
     "fill_required_fields": "Please fill in all required fields correctly",
     "select_shipping_method": "Please select a shipping method",
     "accept_terms": "Please accept the Terms & Conditions to continue",
-    "accept_privacy": "Please accept the Privacy Policy to continue"
+    "accept_privacy": "Please accept the Privacy Policy to continue",
+    "accept_digital_consent": "Please acknowledge that you understand digital products cannot be refunded once delivered"
+  },
+  "digital_consent": {
+    "title": "Digital Product Notice",
+    "checkbox_label": "I understand and agree that digital products will be delivered immediately after payment and I waive my right of withdrawal for digital content once delivery begins.",
+    "legal_notice": "In accordance with EU Consumer Rights Directive (2011/83/EU, Article 16m), digital content delivered immediately cannot be refunded once the download or access begins."
   },
   "confirmation": {
     "title": "Order Confirmed!",

@@ -186,7 +186,13 @@
     "fill_required_fields": "Bitte füllen Sie alle erforderlichen Felder korrekt aus",
     "select_shipping_method": "Bitte wählen Sie eine Versandart",
     "accept_terms": "Bitte akzeptieren Sie die AGB, um fortzufahren",
-    "accept_privacy": "Bitte akzeptieren Sie die Datenschutzerklärung, um fortzufahren"
+    "accept_privacy": "Bitte akzeptieren Sie die Datenschutzerklärung, um fortzufahren",
+    "accept_digital_consent": "Bitte bestätigen Sie, dass Sie verstehen, dass digitale Produkte nach der Lieferung nicht zurückgegeben werden können"
+  },
+  "digital_consent": {
+    "title": "Hinweis zu digitalen Produkten",
+    "checkbox_label": "Ich verstehe und stimme zu, dass digitale Produkte sofort nach der Zahlung geliefert werden und ich auf mein Widerrufsrecht für digitale Inhalte verzichte, sobald die Lieferung beginnt.",
+    "legal_notice": "Gemäß der EU-Verbraucherrechtsrichtlinie (2011/83/EU, Artikel 16m) können sofort gelieferte digitale Inhalte nach Beginn des Downloads oder des Zugriffs nicht zurückgegeben werden."
   },
   "confirmation": {
     "title": "Bestellung bestätigt!",

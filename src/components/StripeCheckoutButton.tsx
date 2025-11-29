@@ -27,6 +27,7 @@ type Props = {
   disabled?: boolean;
   creditsToApply?: number; // Optional: Amount of user credits to apply
   discountCode?: string; // Optional: Discount code to apply
+  digitalContentConsent?: boolean; // Required for digital products (EU Consumer Rights)
 };
 
 export default function StripeCheckoutButton({
@@ -40,7 +41,8 @@ export default function StripeCheckoutButton({
   onError,
   disabled = false,
   creditsToApply,
-  discountCode
+  discountCode,
+  digitalContentConsent
 }: Props) {
   const [loading, setLoading] = useState(false);
 
@@ -114,7 +116,8 @@ export default function StripeCheckoutButton({
           vatId: billingAddress?.vatId || ''
         },
         creditsToApply,
-        discountCode
+        discountCode,
+        digitalContentConsent
       );
 
       const sessionResponse = await stripeService.createCheckoutSession(request);

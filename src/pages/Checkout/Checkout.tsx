@@ -262,6 +262,14 @@ const Checkout: React.FC = () => {
     return items.some(item => item.product.requiresShipping);
   }, [items]);
 
+  // Check if cart contains any digital products (requires consent for immediate delivery)
+  const hasDigitalProducts = useMemo(() => {
+    return items.some(item => item.product.variantType === 'DIGITAL_ONLY');
+  }, [items]);
+
+  // Digital content consent state (required for orders with digital products)
+  const [digitalContentConsent, setDigitalContentConsent] = useState(false);
+
   // Calculate cart weight
   const calculateCartWeight = () => {
     return items.reduce((total, item) => {
@@ -1646,6 +1654,32 @@ const Checkout: React.FC = () => {
                     <span className="field-error">{errors.privacyAccepted.message}</span>
                   )}
                 </div>
+
+                {/* Digital Content Consent - REQUIRED for digital products (EU Consumer Rights Directive) */}
+                {hasDigitalProducts && (
+                  <div className="form-field checkbox-field digital-consent-field">
+                    <div className="digital-consent-notice">
+                      <span className="notice-icon">📄</span>
+                      <strong>{t('digital_consent.title')}</strong>
+                    </div>
+                    <label className="checkbox-label legal-checkbox">
+                      <input
+                        type="checkbox"
+                        checked={digitalContentConsent}
+                        onChange={(e) => setDigitalContentConsent(e.target.checked)}
+                        required
+                      />
+                      <span>
+                        {t('digital_consent.checkbox_label')} *
+                      </span>
+                    </label>
+                    {!digitalContentConsent && (
+                      <p className="digital-consent-info">
+                        {t('digital_consent.legal_notice')}
+                      </p>
+                    )}
+                  </div>
+                )}
               </div>
 
               <div className="stripe-container">
@@ -1669,9 +1703,10 @@ const Checkout: React.FC = () => {
                     isCompany: getValues('isCompany')
                   }}
                   onError={handleStripeError}
-                  disabled={!watch('termsAccepted')}
+                  disabled={!watch('termsAccepted') || (hasDigitalProducts && !digitalContentConsent)}
                   creditsToApply={creditsToApply}
                   discountCode={discountValidation?.valid ? discountValidation.code : undefined}
+                  digitalContentConsent={hasDigitalProducts ? digitalContentConsent : undefined}
                 />
               </div>
 
