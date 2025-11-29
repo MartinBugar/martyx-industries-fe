@@ -271,18 +271,33 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       return true;
     } catch (error) {
       logError('Login error:', error);
-      
-      // Check if the error message contains text about account not being activated
+
+      // Check if the error is about account not being activated
+      // The error can come in multiple forms:
+      // 1. error.errorData.code = "ACCOUNT_NOT_VERIFIED" (new BE response)
+      // 2. error.message = "ACCOUNT_DISABLED" (old errorCode from BE)
+      // 3. error.errorData.message contains activation text
       const errorMessage = error instanceof Error ? error.message : String(error);
-      if (errorMessage.includes('Account not activated') || 
-          errorMessage.includes('not activated') || 
-          errorMessage.toLowerCase().includes('confirm your registration')) {
+      const errorData = (error as { errorData?: { message?: string; code?: string } }).errorData;
+      const beMessage = errorData?.message || '';
+      const beCode = errorData?.code || '';
+
+      if (beCode === 'ACCOUNT_NOT_VERIFIED' ||
+          errorMessage === 'ACCOUNT_DISABLED' ||
+          beCode === 'ACCOUNT_DISABLED' ||
+          errorMessage.includes('Account not activated') ||
+          errorMessage.includes('not activated') ||
+          errorMessage.toLowerCase().includes('confirm your registration') ||
+          beMessage.includes('nie je aktivovaný') ||
+          beMessage.includes('Account not activated') ||
+          beMessage.includes('not activated') ||
+          beMessage.toLowerCase().includes('confirm your registration')) {
         return {
-          error: 'Account not activated. Please check your email and confirm your registration.',
+          error: beMessage || 'Váš účet nie je aktivovaný. Skontrolujte svoj email a potvrďte registráciu.',
           type: 'email_not_confirmed'
         };
       }
-      
+
       return false;
     }
   };
