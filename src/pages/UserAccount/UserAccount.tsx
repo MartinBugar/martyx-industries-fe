@@ -49,6 +49,9 @@ const UserAccount: React.FC = () => {
 
   // Load Cassandra data when cassandra tab is active
   useEffect(() => {
+    // Skip while auth is still loading to avoid race conditions
+    if (isLoading) return;
+
     if (activeTab === 'cassandra' && !cassandraData) {
       const loadCassandraData = async () => {
         try {
@@ -60,10 +63,13 @@ const UserAccount: React.FC = () => {
       };
       loadCassandraData();
     }
-  }, [activeTab, cassandraData]);
+  }, [activeTab, cassandraData, isLoading]);
 
   // Load referral data when referrals tab is active
   useEffect(() => {
+    // Skip while auth is still loading to avoid race conditions
+    if (isLoading) return;
+
     if (activeTab === 'referrals' && isAuthenticated) {
       const loadReferralData = async () => {
         try {
@@ -100,7 +106,7 @@ const UserAccount: React.FC = () => {
       };
       loadReferralData();
     }
-  }, [activeTab, isAuthenticated]);
+  }, [activeTab, isAuthenticated, isLoading]);
 
   // Show loading while authentication state is being restored
   if (isLoading) {

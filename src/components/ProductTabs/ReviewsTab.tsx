@@ -117,7 +117,7 @@ const StarRating: React.FC<{ value: number; onChange: (v: number) => void; id?: 
 
 const ReviewsTab: React.FC<ReviewsTabProps> = ({ content, productId }) => {
   const { t } = useTranslation('common');
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
   const [reviews, setReviews] = useState<Array<ReviewModel & { displayName: string; createdAt: string }>>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -142,6 +142,9 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ content, productId }) => {
 
   // Check if current user is ADMIN to conditionally show delete buttons
   useEffect(() => {
+    // Skip while auth is still loading to avoid race conditions
+    if (isAuthLoading) return;
+
     let cancelled = false;
     const check = async () => {
       if (!isAuthenticated) {
@@ -157,7 +160,7 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ content, productId }) => {
     };
     void check();
     return () => { cancelled = true; };
-  }, [isAuthenticated]);
+  }, [isAuthenticated, isAuthLoading]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

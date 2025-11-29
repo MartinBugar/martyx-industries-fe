@@ -28,10 +28,13 @@ const ReferralDashboard: React.FC = () => {
   const [shareLoading, setShareLoading] = useState(false);
 
   useEffect(() => {
+    // Skip while auth is still loading to avoid race conditions
+    if (isLoading) return;
+
     if (isAuthenticated) {
       loadReferralData();
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, isLoading]);
 
   const loadReferralData = async () => {
     try {

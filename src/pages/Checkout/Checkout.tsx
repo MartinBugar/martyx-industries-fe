@@ -139,7 +139,7 @@ const Checkout: React.FC = () => {
   const { t } = useTranslation('checkout');
   const { formatDate } = useFormatters();
   const { items, getTotalPrice, removeFromCart, updateQuantity } = useCart();
-  const { user } = useAuth();
+  const { user, isLoading: isAuthLoading } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [payStatus, setPayStatus] = useState<"idle"|"processing"|"success"|"error">("idle");
@@ -514,13 +514,27 @@ const Checkout: React.FC = () => {
     }
   }, [searchParams]);
 
-  // Stock Reservation: Reserve cart items on checkout mount
-  useEffect(() => {
-    const reserveStock = async () => {
-      if (items.length === 0) return;
+  // Track if stock reservation has been attempted
+  const [reservationAttempted, setReservationAttempted] = useState(false);
 
+  // Stock Reservation: Reserve cart items on checkout mount
+  // Note: We need to wait for auth to be determined before reserving
+  useEffect(() => {
+    // Skip if auth is still loading, no items, or if we've already attempted reservation
+    if (isAuthLoading || items.length === 0 || reservationAttempted) return;
+
+    const reserveStock = async () => {
       try {
+        // For guests, get session ID from localStorage (created by CartContext)
+        // For authenticated users, the backend will use their user ID from JWT
         const sessionId = !user ? (localStorage.getItem('martyx_session_id') || undefined) : undefined;
+
+        // Validate that we have either user or sessionId before calling API
+        if (!user && !sessionId) {
+          logWarn('⚠️ No user or sessionId available for stock reservation - skipping');
+          return;
+        }
+
         const response = await stockReservationService.reserveCartItems(
           items.map(item => ({
             variantId: item.product.variantId,
@@ -540,18 +554,29 @@ const Checkout: React.FC = () => {
         }
       } catch (error) {
         logError('❌ Failed to reserve stock:', error);
-        alert('Some items may not be available. Please check your cart.');
+        // Only show alert for actual stock issues, not auth problems
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        if (errorMessage.includes('Insufficient stock') || errorMessage.includes('out of stock')) {
+          alert('Some items may not be available. Please check your cart.');
+        } else {
+          logWarn('⚠️ Stock reservation failed but continuing checkout:', errorMessage);
+        }
+      } finally {
+        setReservationAttempted(true);
       }
     };
 
     reserveStock();
+  }, [isAuthLoading, items.length, user, reservationAttempted]);
 
-    // Cleanup: release reservations when leaving checkout
+  // Cleanup: release reservations when leaving checkout
+  useEffect(() => {
     return () => {
-      const sessionId = !user ? (localStorage.getItem('martyx_session_id') || undefined) : undefined;
+      const sessionId = localStorage.getItem('martyx_session_id') || undefined;
+      // Release reservations on unmount - best effort, don't block
       stockReservationService.releaseReservations(sessionId).catch(logError);
     };
-  }, []); // Run once on mount
+  }, []); // Run only on unmount
 
   // Apply saved address to form
   const applyAddress = (address: SavedAddress) => {

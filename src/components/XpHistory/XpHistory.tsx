@@ -5,7 +5,7 @@ import './XpHistory.css';
 import { logInfo, logError } from '../../services/logger';
 
 const XpHistory: React.FC = () => {
-    const { user } = useAuth();
+    const { user, isLoading: isAuthLoading } = useAuth();
     const [transactions, setTransactions] = useState<XpTransactionDto[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -14,10 +14,13 @@ const XpHistory: React.FC = () => {
     const pageSize = 20;
 
     useEffect(() => {
+        // Skip while auth is still loading to avoid race conditions
+        if (isAuthLoading) return;
+
         if (user) {
             loadTransactions();
         }
-    }, [user, page]);
+    }, [user, page, isAuthLoading]);
 
     const loadTransactions = async () => {
         try {

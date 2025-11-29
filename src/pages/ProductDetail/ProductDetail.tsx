@@ -226,7 +226,7 @@ const toYouTubeEmbedUrl = (url: string): string => {
 const ProductDetail: React.FC = () => {
     const {id} = useParams<{ id: string }>();
     const { i18n, t } = useTranslation('products');
-    const { user } = useAuth();
+    const { user, isLoading: isAuthLoading } = useAuth();
     const [product, setProduct] = React.useState<Product | null>(null);
     const [loading, setLoading] = React.useState(true);
     const [error, setError] = React.useState<string | null>(null);
@@ -249,6 +249,9 @@ const ProductDetail: React.FC = () => {
 
     // Load tabs from backend API when variant changes
     React.useEffect(() => {
+        // Skip while auth is still loading to avoid race conditions
+        if (isAuthLoading) return;
+
         const loadTabs = async () => {
             if (!product?.variantId) return;
 
@@ -308,7 +311,7 @@ const ProductDetail: React.FC = () => {
         };
 
         loadTabs();
-    }, [product?.variantId, i18n.language, user]);
+    }, [product?.variantId, i18n.language, user, isAuthLoading]);
 
     // Handle variant change
     const handleVariantChange = React.useCallback(async (variantId: number) => {

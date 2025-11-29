@@ -52,6 +52,9 @@ const Wishlist: React.FC = () => {
 
   // Optimized parallel fetching of product data
   useEffect(() => {
+    // Skip while auth is still loading to avoid race conditions
+    if (authLoading) return;
+
     const fetchProductsData = async () => {
       if (items.length === 0) {
         setProductsData(new Map());
@@ -156,7 +159,7 @@ const Wishlist: React.FC = () => {
     };
 
     fetchProductsData();
-  }, [items]);
+  }, [items, authLoading]);
 
 
 

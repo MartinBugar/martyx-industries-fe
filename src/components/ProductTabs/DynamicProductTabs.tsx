@@ -37,7 +37,7 @@ const DynamicProductTabs: React.FC<DynamicProductTabsProps> = ({
   variantId,
   locale = 'en'
 }) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
   const [tabs, setTabs] = useState<ProductTabDto[]>([]);
   const [activeTab, setActiveTab] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
@@ -45,6 +45,9 @@ const DynamicProductTabs: React.FC<DynamicProductTabsProps> = ({
 
   // Load tabs from API
   useEffect(() => {
+    // Skip while auth is still loading to avoid race conditions
+    if (isAuthLoading) return;
+
     const loadTabs = async () => {
       try {
         setLoading(true);
@@ -76,7 +79,7 @@ const DynamicProductTabs: React.FC<DynamicProductTabsProps> = ({
     };
 
     loadTabs();
-  }, [masterProductId, variantId, locale, isAuthenticated]);
+  }, [masterProductId, variantId, locale, isAuthenticated, isAuthLoading]);
 
   // Render component based on componentName
   const renderCustomComponent = (componentName: string, tabId?: number): React.ReactElement | null => {
