@@ -70,7 +70,10 @@ function toCartProduct(product: Product): CartProduct {
     name: product.name,
     variantName: product.variantName,
     priceWithVat: product.priceWithVat,
-    imageUrl: product.gallery?.[0],
+    // Use backend-provided images (primary image with isPrimary flag)
+    // Fallback to first gallery image if not available
+    imageUrl: product.imageUrl || product.gallery?.[0],
+    thumbnailUrl: product.thumbnailUrl || product.imageUrl || product.gallery?.[0],
     availabilityStatus: product.availabilityStatus,
     stockQuantity: product.stockQuantity,
     variantType: product.variantType,

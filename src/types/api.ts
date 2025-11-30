@@ -131,6 +131,10 @@ export interface ProductVariantDto {
   createdAt: string;
   updatedAt: string;
 
+  // Images (from master product gallery)
+  imageUrl?: string;       // Full-size primary image URL
+  thumbnailUrl?: string;   // Optimized thumbnail for cart/listing display
+
   // Components (What's Included)
   components?: VariantComponentDto[];
 }

@@ -92,6 +92,10 @@ export interface Product {
     availabilityStatus: 'IN_STOCK' | 'LOW_STOCK' | 'OUT_OF_STOCK' | 'PRE_ORDER' | 'DISCONTINUED' | 'BACKORDERED';
     requiresShipping: boolean;
 
+    // Images (from ProductVariantDto - backend provided)
+    imageUrl?: string;       // Full-size primary image URL
+    thumbnailUrl?: string;   // Optimized thumbnail for cart/listing
+
     // From hardcoded frontend data
     features: string[];
     modelPath: string;
