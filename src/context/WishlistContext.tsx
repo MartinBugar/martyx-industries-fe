@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useMemo, type ReactNode } from 'react';
 import { wishlistService } from '../services/wishlistService';
 import { hybridProductService } from '../services/hybridProductService';
 import { useAuth } from './useAuth';
@@ -357,7 +357,8 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
     }
   }, [isAuthenticated, loadWishlist, loadStats]);
 
-  const contextValue: WishlistContextType = {
+  // Memoize context value to prevent unnecessary re-renders
+  const contextValue = useMemo<WishlistContextType>(() => ({
     items,
     stats,
     isLoading,
@@ -374,7 +375,24 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
     removeMultiple,
     clearError,
     refreshWishlist
-  };
+  }), [
+    items,
+    stats,
+    isLoading,
+    error,
+    totalCount,
+    lastUpdated,
+    addToWishlist,
+    removeFromWishlist,
+    isInWishlist,
+    loadWishlist,
+    loadStats,
+    cleanupWishlist,
+    addMultiple,
+    removeMultiple,
+    clearError,
+    refreshWishlist
+  ]);
 
   return (
     <WishlistContext.Provider value={contextValue}>

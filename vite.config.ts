@@ -43,8 +43,8 @@ export default defineConfig({
         }
       }
     },
-    // Increase chunk size warning limit (default is 500kb)
-    chunkSizeWarningLimit: 1000
+    // Keep chunk size warning at default to catch large bundles early
+    chunkSizeWarningLimit: 500
   },
   server: {
     proxy: {

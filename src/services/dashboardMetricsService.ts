@@ -148,15 +148,7 @@ class DashboardMetricsService {
      * Fetches real-time performance and business metrics
      */
     async getComprehensiveMetrics(): Promise<DashboardMetrics> {
-        const response = await apiClient<DashboardMetrics>('/api/admin/dashboard/metrics', {
-            method: 'GET',
-        });
-
-        if (!response.success || !response.data) {
-            throw new Error(response.error || 'Failed to fetch dashboard metrics');
-        }
-
-        return response.data;
+        return apiClient.get<DashboardMetrics>('/api/admin/dashboard/metrics');
     }
 
     /**

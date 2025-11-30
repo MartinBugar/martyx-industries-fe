@@ -8,8 +8,8 @@ import {
     type RevenueSummary,
     type TopProduct
 } from '../../services/revenueAnalyticsService';
-import {type DashboardMetrics, dashboardMetricsService} from '../../services/dashboardMetricsService';
-import PerformanceMetrics from '../../components/Admin/PerformanceMetrics';
+import {type DashboardMetrics} from '../../services/dashboardMetricsService';
+import PerformanceMetrics from '../../components/admin/PerformanceMetrics';
 import VisitorChart from '../../components/Charts/VisitorChart';
 import './AdminDashboard.css';
 import { logInfo, logError } from '../../services/logger';
@@ -169,10 +169,12 @@ const AdminDashboard: React.FC = () => {
     const [systemHealthLoading, setSystemHealthLoading] = useState<boolean>(true);
     const [systemHealthError, setSystemHealthError] = useState<string | null>(null);
 
-    // Performance metrics state
-    const [performanceMetrics, setPerformanceMetrics] = useState<DashboardMetrics | null>(null);
-    const [metricsLoading, setMetricsLoading] = useState<boolean>(true);
-    const [metricsError, setMetricsError] = useState<string | null>(null);
+    // Performance metrics state (reserved for future PerformanceMetrics integration)
+    const [_performanceMetrics, _setPerformanceMetrics] = useState<DashboardMetrics | null>(null);
+    const [_metricsLoading, _setMetricsLoading] = useState<boolean>(true);
+    const [_metricsError, _setMetricsError] = useState<string | null>(null);
+    // Suppress unused variable warnings - these will be used when PerformanceMetrics component is fully integrated
+    void _performanceMetrics; void _setPerformanceMetrics; void _metricsLoading; void _setMetricsLoading; void _metricsError; void _setMetricsError;
 
     // Calculate chart statistics
     const calculateVisitorStats = (): ChartStats => {

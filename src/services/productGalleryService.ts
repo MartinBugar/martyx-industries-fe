@@ -689,6 +689,63 @@ export class ProductGalleryService {
     return handleResponse(response);
   }
 
+  // =========================================================================
+  // BATCH LOADING (Performance optimization - prevents N+1 queries)
+  // =========================================================================
+
+  /**
+   * Batch load galleries for multiple master products in ONE request.
+   * Prevents N+1 query problem when loading product lists.
+   */
+  async getBatchProductGalleries(productIds: number[]): Promise<Map<number, GalleryImage[]>> {
+    if (productIds.length === 0) return new Map();
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/master-products/galleries/batch`, withLangHeaders({
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        } as HeadersInit,
+        body: JSON.stringify({ productIds }),
+      }));
+
+      if (response.ok) {
+        const data = await handleResponse(response);
+        const result = new Map<number, GalleryImage[]>();
+        for (const [key, images] of Object.entries(data)) {
+          result.set(Number(key), images as GalleryImage[]);
+        }
+        return result;
+      }
+      throw new Error('Batch request failed');
+    } catch (error) {
+      // Fallback - parallel requests with rate limiting
+      logWarn('Batch gallery API failed, falling back to parallel requests:', error);
+      return this.getBatchProductGalleriesParallel(productIds);
+    }
+  }
+
+  /**
+   * Fallback: Load galleries in parallel with rate limiting.
+   * Used when batch API is not available.
+   */
+  private async getBatchProductGalleriesParallel(productIds: number[]): Promise<Map<number, GalleryImage[]>> {
+    const result = new Map<number, GalleryImage[]>();
+    const CONCURRENT_LIMIT = 6;
+
+    for (let i = 0; i < productIds.length; i += CONCURRENT_LIMIT) {
+      const chunk = productIds.slice(i, i + CONCURRENT_LIMIT);
+      const results = await Promise.all(
+        chunk.map(async (id) => ({
+          id,
+          images: await this.getMasterProductGallery(id).catch(() => [])
+        }))
+      );
+      results.forEach(({ id, images }) => result.set(id, images));
+    }
+    return result;
+  }
+
   /**
    * Update display settings for image in product card (zoom, position offset)
    */

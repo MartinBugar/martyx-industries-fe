@@ -9,7 +9,7 @@ import OptimizedImage from '../../components/OptimizedImage/OptimizedImage';
 import { productGalleryService } from '../../services/productGalleryService';
 import VariantSelectorModal from '../../components/VariantSelectorModal/VariantSelectorModal';
 import './Products.css';
-import { logInfo, logWarn, logError } from '../../services/logger';
+import { logInfo, logError } from '../../services/logger';
 import { useSeo } from '../../hooks/useSeo';
 
 const Products: React.FC = () => {
@@ -41,6 +41,7 @@ const Products: React.FC = () => {
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
     // Load products with database gallery from hybrid service
+    // OPTIMIZED: Uses batch loading to prevent N+1 queries
     useEffect(() => {
         const loadProductsWithGallery = async () => {
             try {
@@ -49,73 +50,60 @@ const Products: React.FC = () => {
 
                 // Get category filter from URL (reuse categorySlug from hook)
                 const productsList = await hybridProductService.getProducts(categorySlug || undefined);
-                
-                // Load gallery for each product from database
-                const productsWithGallery = await Promise.all(
-                    productsList.map(async (product) => {
-                        try {
-                            const galleryData = await productGalleryService.getProductImages(product.masterProductId.toString());
 
-                            // Sort: PRIMARY image first, HOVER image second, then by order
-                            const sortedGallery = galleryData.sort((a, b) => {
-                                // Primary image always goes first
-                                if (a.isPrimary && !b.isPrimary) return -1;
-                                if (!a.isPrimary && b.isPrimary) return 1;
-                                // Hover image goes second (after primary)
-                                if (a.isHover && !b.isHover) return -1;
-                                if (!a.isHover && b.isHover) return 1;
-                                // Otherwise sort by order
-                                return (a.order || 0) - (b.order || 0);
-                            });
+                // BATCH: Load ALL galleries in ONE request (prevents N+1 queries)
+                const productIds = productsList.map(p => p.masterProductId);
+                const galleriesMap = await productGalleryService.getBatchProductGalleries(productIds);
 
-                            // Fallback: if no hover image is set, ensure backwards compatibility
-                            // by placing the second non-primary image (by order) in position [1]
-                            const hasHoverImage = sortedGallery.some(img => img.isHover);
-                            if (!hasHoverImage && sortedGallery.length >= 2) {
-                                const nonPrimaryImages = galleryData
-                                    .filter(img => !img.isPrimary)
-                                    .sort((a, b) => (a.order || 0) - (b.order || 0));
+                if (import.meta.env.DEV) {
+                    logInfo(`📦 Batch loaded galleries for ${galleriesMap.size} products in 1 request`);
+                }
 
-                                if (nonPrimaryImages.length >= 2) {
-                                    // Find the second non-primary image by order
-                                    const secondNonPrimary = nonPrimaryImages[1];
-                                    const currentIndex = sortedGallery.findIndex(img => img.id === secondNonPrimary.id);
+                // Process each product with pre-loaded gallery data
+                const productsWithGallery = productsList.map((product) => {
+                    const galleryData = galleriesMap.get(product.masterProductId) || [];
 
-                                    // Move it to position 1 if not already there
-                                    if (currentIndex > 1) {
-                                        sortedGallery.splice(currentIndex, 1);
-                                        sortedGallery.splice(1, 0, secondNonPrimary);
-                                    }
-                                }
+                    // Sort: PRIMARY image first, HOVER image second, then by order
+                    const sortedGallery = [...galleryData].sort((a, b) => {
+                        // Primary image always goes first
+                        if (a.isPrimary && !b.isPrimary) return -1;
+                        if (!a.isPrimary && b.isPrimary) return 1;
+                        // Hover image goes second (after primary)
+                        if (a.isHover && !b.isHover) return -1;
+                        if (!a.isHover && b.isHover) return 1;
+                        // Otherwise sort by order
+                        return (a.order || 0) - (b.order || 0);
+                    });
+
+                    // Fallback: if no hover image is set, ensure backwards compatibility
+                    // by placing the second non-primary image (by order) in position [1]
+                    const hasHoverImage = sortedGallery.some(img => img.isHover);
+                    if (!hasHoverImage && sortedGallery.length >= 2) {
+                        const nonPrimaryImages = galleryData
+                            .filter(img => !img.isPrimary)
+                            .sort((a, b) => (a.order || 0) - (b.order || 0));
+
+                        if (nonPrimaryImages.length >= 2) {
+                            // Find the second non-primary image by order
+                            const secondNonPrimary = nonPrimaryImages[1];
+                            const currentIndex = sortedGallery.findIndex(img => img.id === secondNonPrimary.id);
+
+                            // Move it to position 1 if not already there
+                            if (currentIndex > 1) {
+                                sortedGallery.splice(currentIndex, 1);
+                                sortedGallery.splice(1, 0, secondNonPrimary);
                             }
-
-                            const galleryUrls = sortedGallery.map(img => img.cdnUrl || img.url).filter(Boolean);
-
-                            if (import.meta.env.DEV) {
-                                logInfo(`🏷️ Product ${product.masterProductId} (${product.name}) gallery loaded:`, {
-                                    galleryCount: galleryUrls.length,
-                                    mainImage: galleryUrls[0] || 'none',
-                                    orderInfo: sortedGallery.slice(0, 3).map(img => ({
-                                        fileName: img.fileName,
-                                        order: img.order
-                                    }))
-                                });
-                            }
-
-                            return {
-                                ...product,
-                                gallery: galleryUrls // Replace empty gallery with database gallery
-                            };
-                        } catch (galleryError) {
-                            logWarn(`Failed to load gallery for product ${product.masterProductId}:`, galleryError);
-                            return {
-                                ...product,
-                                gallery: [] // Keep empty gallery if loading fails
-                            };
                         }
-                    })
-                );
-                
+                    }
+
+                    const galleryUrls = sortedGallery.map(img => img.cdnUrl || img.url).filter(Boolean);
+
+                    return {
+                        ...product,
+                        gallery: galleryUrls // Replace empty gallery with database gallery
+                    };
+                });
+
                 setProducts(productsWithGallery);
             } catch (err) {
                 logError('Failed to load products:', err);
@@ -126,7 +114,7 @@ const Products: React.FC = () => {
         };
 
         loadProductsWithGallery();
-    }, [i18n.language, searchParams]); // Reload products when language or category changes
+    }, [i18n.language, searchParams, categorySlug]); // Reload products when language or category changes
 
     // Update search term when URL search param changes
     useEffect(() => {

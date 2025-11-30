@@ -12,7 +12,10 @@
       "Read(//a/CODING/MARTYX-INDUSTRIES.COM/martyx-indystries-be/**)",
       "Read(//a/CODING/MARTYX-INDUSTRIES.COM/**)",
       "Bash(npm run dev)",
-      "Bash(wc:*)"
+      "Bash(wc:*)",
+      "Bash(dir:*)",
+      "Bash(cat:*)",
+      "Bash(findstr:*)"
     ],
     "deny": [],
     "ask": []
