@@ -358,6 +358,19 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
           return;
         }
 
+        // CRITICAL: On payment success page, DON'T sync with backend
+        // Backend might still have old cart (webhook processing can be delayed)
+        // The success page will explicitly clear the cart
+        const isOnSuccessPage = window.location.pathname.includes('/success');
+        const recentPaymentCleared = sessionStorage.getItem('cart_cleared_after_payment');
+        if (isOnSuccessPage || recentPaymentCleared) {
+          logInfo('[Cart] On success page or recent payment - skipping backend sync, clearing cart');
+          setItems([]);
+          localStorage.removeItem(STORAGE_KEY);
+          setIsSyncing(false);
+          return;
+        }
+
         logInfo('[Cart] Syncing with backend...');
 
         // Get current localStorage cart
