@@ -60,12 +60,33 @@ export const profileService = {
     }
   },
   
-  // Update user profile data
-  updateProfile: async (userId: string, profileData: ProfileUpdateData): Promise<Partial<User>> => {
+  // Update user profile data - uses /api/users/me for current user (not admin endpoint)
+  updateProfile: async (_userId: string, profileData: ProfileUpdateData): Promise<Partial<User>> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/users/${userId}`, withLangHeaders({
+      // Get token from localStorage
+      let token: string | null = null;
+      const tokenRaw = localStorage.getItem('token');
+      if (tokenRaw) {
+        try {
+          token = JSON.parse(tokenRaw);
+        } catch {
+          token = tokenRaw;
+        }
+      }
+
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      const headers = {
+        ...defaultHeaders,
+        'Authorization': `Bearer ${token}`,
+      };
+
+      // Use /api/users/me endpoint (not admin /api/users/{id})
+      const response = await fetch(`${API_BASE_URL}/api/users/me`, withLangHeaders({
         method: 'PUT',
-        headers: defaultHeaders as HeadersInit,
+        headers: headers as HeadersInit,
         body: JSON.stringify(profileData),
       }));
 
