@@ -24,6 +24,13 @@ export interface ServerMetrics {
         freeMemoryMB: number;
         usagePercent: number;
     };
+    jvmHeap?: {
+        maxHeapMB: number;
+        allocatedMB: number;
+        usedMB: number;
+        freeMB: number;
+        usagePercent: number;
+    };
     cpu: {
         availableProcessors: number;
         processCpuLoad: number;

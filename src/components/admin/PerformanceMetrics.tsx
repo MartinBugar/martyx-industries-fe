@@ -116,11 +116,19 @@ const PerformanceMetrics: React.FC = () => {
                 <h2 className="section-title">🖥️ Server Performance</h2>
                 <div className="metrics-grid">
                     <MetricCard
-                        title="Memory Usage"
+                        title="System RAM"
                         value={`${serverMetrics.memory.usagePercent.toFixed(1)}%`}
                         subtitle={`${serverMetrics.memory.usedMemoryMB} MB / ${serverMetrics.memory.maxMemoryMB} MB`}
                         status={getMemoryStatus()}
                     />
+                    {serverMetrics.jvmHeap && (
+                        <MetricCard
+                            title="JVM Heap"
+                            value={`${serverMetrics.jvmHeap.usagePercent.toFixed(1)}%`}
+                            subtitle={`${serverMetrics.jvmHeap.usedMB} MB / ${serverMetrics.jvmHeap.maxHeapMB} MB`}
+                            status={serverMetrics.jvmHeap.usagePercent >= 85 ? 'critical' : serverMetrics.jvmHeap.usagePercent >= 70 ? 'warning' : 'healthy'}
+                        />
+                    )}
                     <MetricCard
                         title="CPU Load"
                         value={`${serverMetrics.cpu.processCpuLoad.toFixed(1)}%`}
