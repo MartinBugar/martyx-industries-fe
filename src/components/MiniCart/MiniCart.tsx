@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useCart } from '../../context/useCart';
@@ -82,7 +83,9 @@ const MiniCart: React.FC<MiniCartProps> = ({ isOpen, onClose, anchorRef }) => {
   const hasMoreItems = items.length > MAX_ITEMS_DISPLAY;
   const total = getTotalPrice();
 
-  return (
+  // Use Portal to render outside navbar's stacking context
+  // This ensures MiniCart appears above CategoryBar (z-index: 999)
+  const miniCartContent = (
     <div className="minicart-dropdown" ref={miniCartRef}>
       {/* Header */}
       <div className="minicart-header">
@@ -232,6 +235,11 @@ const MiniCart: React.FC<MiniCartProps> = ({ isOpen, onClose, anchorRef }) => {
       )}
     </div>
   );
+
+  // Render via Portal to escape navbar's stacking context
+  return typeof document !== 'undefined'
+    ? createPortal(miniCartContent, document.body)
+    : null;
 };
 
 export default MiniCart;
