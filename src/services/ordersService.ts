@@ -73,11 +73,15 @@ export const mapOrderDTOToOrder = (dto: OrderDTO): Order => {
     if (price == null) price = it.price;
     if (price == null && it.subtotal != null && quantity > 0) price = toNumber(it.subtotal) / quantity;
     const numericPrice = toNumber(price);
-    const productId = (it.productId ?? it.product?.id ?? it.id ?? `${idx+1}`).toString();
+    // OrderItem ID is required for digital product downloads
+    const id = (it.id ?? `${idx+1}`).toString();
+    // Master Product ID for product reference
+    const productId = (it.productId ?? it.product?.id ?? `${idx+1}`).toString();
     const rawType = it.productType ?? it.ProductType ?? it.product?.productType ?? it.product?.ProductType;
     const productType = rawType != null ? String(rawType) : undefined;
 
     return {
+      id,
       productId,
       productName,
       quantity,

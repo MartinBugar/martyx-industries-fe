@@ -5,7 +5,9 @@ export interface Order {
   backendId?: string;
   date: string;
   items: Array<{
-    productId: string;
+    id: string; // OrderItem ID - required for digital product downloads
+    productId: string; // Master Product ID
+    variantId?: string; // Variant ID (if applicable)
     productName: string;
     quantity: number;
     price: number; // unit price
