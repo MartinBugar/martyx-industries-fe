@@ -66,11 +66,20 @@ const StripeSuccess: React.FC = () => {
     logInfo('[StripeSuccess] Clearing payment_in_progress flag and cart localStorage');
     sessionStorage.removeItem('payment_in_progress');
 
+    // Set flag to prevent CartContext from restoring localStorage cart
+    // This flag is checked in CartContext's sync logic
+    sessionStorage.setItem('cart_cleared_after_payment', 'true');
+
     // Clear localStorage cart immediately
     // Backend already cleared cart via webhook, this is redundant safety measure
     logInfo('[StripeSuccess] Clearing cart localStorage');
     localStorage.removeItem('martyx_cart_v1');
     clearCart();
+
+    // Remove the flag after 10 seconds (enough time for any syncs to complete)
+    setTimeout(() => {
+      sessionStorage.removeItem('cart_cleared_after_payment');
+    }, 10000);
 
     // Fetch payment details from backend
     const fetchPaymentDetails = async () => {
