@@ -401,7 +401,16 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
           // Backend has empty cart
           logInfo('[Cart] Backend cart is empty');
 
-          if (localItems.length > 0) {
+          // CRITICAL: Check if we're on success page (URL contains /payment/success or /stripe/success)
+          // This prevents restoring localStorage cart after successful payment
+          const isOnSuccessPage = window.location.pathname.includes('/success');
+          const recentPayment = sessionStorage.getItem('cart_cleared_after_payment');
+
+          if (isOnSuccessPage || recentPayment) {
+            logInfo('[Cart] On success page or recent payment detected - not restoring localStorage cart');
+            localStorage.removeItem(STORAGE_KEY);
+            setItems([]);
+          } else if (localItems.length > 0) {
             // localStorage has items - push them to backend
             // This handles offline cart recovery
             logInfo('[Cart] No cart in backend, but localStorage has', localItems.length, 'items. Syncing localStorage → backend...');
