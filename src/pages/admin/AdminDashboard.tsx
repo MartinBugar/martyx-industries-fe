@@ -8,11 +8,13 @@ import {
     type RevenueSummary,
     type TopProduct
 } from '../../services/revenueAnalyticsService';
+import {type DashboardMetrics, dashboardMetricsService} from '../../services/dashboardMetricsService';
+import PerformanceMetrics from '../../components/Admin/PerformanceMetrics';
 import VisitorChart from '../../components/Charts/VisitorChart';
 import './AdminDashboard.css';
 import { logInfo, logError } from '../../services/logger';
 
-type DashboardSection = 'status' | 'visitors' | 'revenue';
+type DashboardSection = 'status' | 'visitors' | 'revenue' | 'performance';
 
 // Data interfaces for the dashboard
 interface ChartStats {
@@ -166,6 +168,11 @@ const AdminDashboard: React.FC = () => {
     const [systemHealth, setSystemHealth] = useState<SystemHealthResponse | null>(null);
     const [systemHealthLoading, setSystemHealthLoading] = useState<boolean>(true);
     const [systemHealthError, setSystemHealthError] = useState<string | null>(null);
+
+    // Performance metrics state
+    const [performanceMetrics, setPerformanceMetrics] = useState<DashboardMetrics | null>(null);
+    const [metricsLoading, setMetricsLoading] = useState<boolean>(true);
+    const [metricsError, setMetricsError] = useState<string | null>(null);
 
     // Calculate chart statistics
     const calculateVisitorStats = (): ChartStats => {
@@ -331,6 +338,14 @@ const AdminDashboard: React.FC = () => {
             >
                 Revenue
             </button>
+            <button
+                className={`dashboard-tab ${activeSection === 'performance' ? 'active' : ''}`}
+                data-tab="performance"
+                onClick={() => setActiveSection('performance')}
+                aria-label="Server and application performance metrics"
+            >
+                Performance
+            </button>
         </nav>
     );
 
@@ -470,6 +485,11 @@ const AdminDashboard: React.FC = () => {
                             </div>
                         </div>
                     </div>
+                )}
+
+                {/* PERFORMANCE Section */}
+                {activeSection === 'performance' && (
+                    <PerformanceMetrics />
                 )}
 
                 {/* STATUS Section */}
