@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ProductSearchSuggestion } from '../../services/productService';
+import type { ProductSearchSuggestion } from '../../services/productService';
 import './SearchSuggestions.css';
 
 interface SearchSuggestionsProps {

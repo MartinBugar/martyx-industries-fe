@@ -735,6 +735,9 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   // 3. Cart is not empty
   // This reduces API calls by ~80% compared to running on every page
   useEffect(() => {
+    // Track if component is mounted to prevent memory leaks
+    let isMounted = true;
+
     // Helper to check if current page needs stock validation
     const shouldValidateStock = (): boolean => {
       const path = window.location.pathname.toLowerCase();
@@ -773,7 +776,11 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         logInfo('[Cart] Validating stock for', currentItems.length, 'items...');
 
         // Run async validation in background without blocking state update
+        // Use IIFE with mounted check to prevent memory leaks
         (async () => {
+          // Early exit if component unmounted
+          if (!isMounted) return;
+
           const updates: { variantId: number; oldQty: number; newQty: number; productName: string }[] = [];
           const removals: { variantId: number; productName: string }[] = [];
 
@@ -784,6 +791,9 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
           // Check stock for each physical item
           for (const item of physicalItems) {
+            // Check mounted status before each async operation
+            if (!isMounted) return;
+
             try {
               const stockData = await stockService.getAvailableStock(item.product.variantId);
 
@@ -809,6 +819,9 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
               logError(`[Cart] Failed to validate stock for variant ${item.product.variantId}:`, error);
             }
           }
+
+          // Final mounted check before applying state updates
+          if (!isMounted) return;
 
           // Apply updates and removals
           if (updates.length > 0 || removals.length > 0) {
@@ -848,7 +861,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
             logWarn('[Cart] Stock validation - items updated:', { updates, removals });
 
             // Only show toast if user is actively on cart/checkout (important for them to know)
-            if (shouldValidateStock()) {
+            if (shouldValidateStock() && isMounted) {
               if (updates.length > 0) {
                 toast(`Cart updated: ${updates.map(u => `${u.productName}: ${u.oldQty} → ${u.newQty}`).join(', ')}`, {
                   icon: '🔄',
@@ -882,6 +895,8 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     logInfo('[Cart] Stock validation interval created (optimized - only runs on cart/checkout pages)');
 
     return () => {
+      // Mark component as unmounted to stop any pending async operations
+      isMounted = false;
       clearInterval(interval);
       logInfo('[Cart] Stock validation interval cleared');
     };

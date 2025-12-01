@@ -52,10 +52,12 @@ const SessionTimeoutWarning: React.FC = () => {
 
       // Show warning if within threshold
       if (remaining > 0 && remaining <= WARNING_THRESHOLD_MS) {
-        if (!showWarning) {
-          logInfo('[SessionWarning] Session expiring soon, showing warning');
-        }
-        setShowWarning(true);
+        setShowWarning(prevShowWarning => {
+          if (!prevShowWarning) {
+            logInfo('[SessionWarning] Session expiring soon, showing warning');
+          }
+          return true;
+        });
       } else {
         setShowWarning(false);
       }
@@ -63,7 +65,7 @@ const SessionTimeoutWarning: React.FC = () => {
       logWarn('[SessionWarning] Failed to check token:', error);
       setShowWarning(false);
     }
-  }, [isAuthenticated, showWarning]);
+  }, [isAuthenticated]); // Removed showWarning from dependencies - using functional update instead
 
   // Check periodically
   useEffect(() => {

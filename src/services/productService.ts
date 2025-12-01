@@ -219,11 +219,13 @@ export interface ProductSearchSuggestion {
  * Search products by name for autocomplete suggestions
  * @param query - Search query (min 2 characters)
  * @param limit - Maximum results (default 5, max 10)
+ * @param signal - Optional AbortSignal for cancelling the request
  * @returns Promise<ProductSearchSuggestion[]>
  */
 export async function searchProductSuggestions(
   query: string,
-  limit: number = 5
+  limit: number = 5,
+  signal?: AbortSignal
 ): Promise<ProductSearchSuggestion[]> {
   if (!query || query.trim().length < 2) {
     return [];
@@ -236,6 +238,7 @@ export async function searchProductSuggestions(
   const requestOptions = withLangHeaders({
     method: 'GET',
     headers: defaultHeaders as HeadersInit,
+    signal, // Pass abort signal to fetch
   });
 
   const response = await fetch(url.toString(), requestOptions);

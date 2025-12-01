@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { searchProductSuggestions, ProductSearchSuggestion } from '../services/productService';
+import { searchProductSuggestions } from '../services/productService';
+import type { ProductSearchSuggestion } from '../services/productService';
 
 interface UseSearchSuggestionsOptions {
   debounceMs?: number;
@@ -55,22 +56,28 @@ export function useSearchSuggestions(
       abortControllerRef.current.abort();
     }
     abortControllerRef.current = new AbortController();
+    const signal = abortControllerRef.current.signal;
 
     setIsLoading(true);
     setError(null);
 
     try {
-      const results = await searchProductSuggestions(searchQuery, maxResults);
+      // Pass abort signal to the API call
+      const results = await searchProductSuggestions(searchQuery, maxResults, signal);
       setSuggestions(results);
       setIsOpen(results.length > 0);
       setSelectedIndex(-1);
     } catch (err) {
+      // Ignore AbortError - this is expected when cancelling previous requests
       if (err instanceof Error && err.name !== 'AbortError') {
         setError(err.message);
         setSuggestions([]);
       }
     } finally {
-      setIsLoading(false);
+      // Only set loading to false if this request wasn't aborted
+      if (!signal.aborted) {
+        setIsLoading(false);
+      }
     }
   }, [minChars, maxResults]);
 

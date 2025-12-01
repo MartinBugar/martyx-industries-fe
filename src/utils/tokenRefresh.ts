@@ -76,11 +76,22 @@ export const refreshAccessToken = async (): Promise<boolean> => {
   } catch (error) {
     logError('❌ Failed to refresh access token:', error);
 
-    // If refresh fails (invalid/expired refresh token), trigger logout
-    // Dispatch custom event for AuthProvider to handle
-    window.dispatchEvent(new CustomEvent('auth:logout', {
-      detail: { reason: 'refresh_token_expired' }
-    }));
+    // Check if user was actually logged in before showing session expired notification
+    // If there's no stored user data, this was likely a stale token from a previous session
+    // and we should silently clean up without showing "Session Expired" notification
+    const hasStoredUser = localStorage.getItem('user') || secureLocalStorage.get('user', null);
+
+    if (hasStoredUser) {
+      // User was logged in - show session expired notification
+      window.dispatchEvent(new CustomEvent('auth:logout', {
+        detail: { reason: 'refresh_token_expired' }
+      }));
+    } else {
+      // No user data - silently clean up stale token without notification
+      logInfo('🧹 Cleaning up stale token (no user session to expire)');
+      localStorage.removeItem('token');
+      secureLocalStorage.remove('token');
+    }
 
     return false;
   }

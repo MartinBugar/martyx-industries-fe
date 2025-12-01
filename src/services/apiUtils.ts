@@ -116,8 +116,12 @@ export const handleResponse = async (response: Response) => {
       // Don't auto-logout for certain endpoints that shouldn't trigger logout
       const isGdprConsentStatus = response.url.includes('/api/gdpr/consent/status');
       const isDevGateStatus = response.url.includes('/api/dev-gate/');
+      const isAuthRefresh = response.url.includes('/api/auth/refresh');
 
-      if (!isGdprConsentStatus && !isDevGateStatus) {
+      if (!isGdprConsentStatus && !isDevGateStatus && !isAuthRefresh) {
+        // Check if user was actually logged in before showing session expired notification
+        const hasStoredUser = localStorage.getItem('user');
+
         logInfo('Received 401 Unauthorized, clearing authentication data');
         // Clear expired token and user data
         localStorage.removeItem('user');
@@ -125,12 +129,18 @@ export const handleResponse = async (response: Response) => {
         localStorage.removeItem('adminAuthed');
         // Remove authorization header using centralized function
         updateAuthorizationHeader(null);
-        // Dispatch logout event with api_error reason to distinguish from token expiration
-        window.dispatchEvent(new CustomEvent('auth:logout', {
-          detail: { reason: 'api_error' }
-        }));
+
+        // Only show "Session Expired" notification if user was actually logged in
+        if (hasStoredUser) {
+          // Dispatch logout event with api_error reason to distinguish from token expiration
+          window.dispatchEvent(new CustomEvent('auth:logout', {
+            detail: { reason: 'api_error' }
+          }));
+        } else {
+          logInfo('🧹 Cleaned up stale auth data (no active user session)');
+        }
       } else {
-        logWarn('GDPR consent status request returned 401 - token may be invalid or expired');
+        logWarn('Auth-related request returned 401 - token may be invalid or expired');
       }
     }
 
