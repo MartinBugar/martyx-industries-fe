@@ -13,6 +13,7 @@ import './App.css'
 import { Toaster } from 'react-hot-toast';
 import React, { useState, useCallback, Suspense, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 // Core providers and security
 import SecurityErrorBoundary from './components/security/SecurityErrorBoundary'
@@ -192,6 +193,7 @@ function AppWrapper() {
 const MainContent = React.memo(() => {
   const { getTotalItems } = useCart();
   const { user, logout, isAuthenticated } = useAuth();
+  const { t } = useTranslation('common');
   const [showCart, setShowCart] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -226,7 +228,7 @@ const MainContent = React.memo(() => {
     <div className="app-container">
       {/* Skip to main content link for keyboard/screen reader users */}
       <a href="#main-content" className="skip-to-main">
-        Skip to main content
+        {t('accessibility.skip_to_main')}
       </a>
 
       {/* Lazy load constellation particles only when needed */}

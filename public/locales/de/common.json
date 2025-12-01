@@ -181,6 +181,9 @@
     "delete_review": "Bewertung löschen",
     "download_invoice": "Rechnung herunterladen"
   },
+  "accessibility": {
+    "skip_to_main": "Zum Hauptinhalt springen"
+  },
   "placeholders": {
     "review_placeholder": "Teilen Sie Ihre Gedanken zu diesem Produkt..."
   },

@@ -182,6 +182,9 @@
     "delete_review": "Zmazať recenziu",
     "download_invoice": "Stiahnuť faktúru"
   },
+  "accessibility": {
+    "skip_to_main": "Preskočiť na hlavný obsah"
+  },
   "placeholders": {
     "review_placeholder": "Podeľte sa o svoje myšlienky o tomto produkte..."
   },

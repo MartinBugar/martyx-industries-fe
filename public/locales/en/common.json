@@ -182,6 +182,9 @@
     "delete_review": "Delete review",
     "download_invoice": "Download Invoice"
   },
+  "accessibility": {
+    "skip_to_main": "Skip to main content"
+  },
   "placeholders": {
     "review_placeholder": "Share your thoughts about this product..."
   },
