@@ -27,7 +27,7 @@ const Home: React.FC = () => {
   logInfo('🏠 [HOME] Testimonials state:', testimonials);
   const featured = useMemo(() => products.slice(0, 6), [products]);
 
-  type Popup = { visible: boolean; message: string; variant: 'success' | 'warning' };
+  type Popup = { visible: boolean; message: string; variant: 'success' | 'warning' | 'error' };
   const [popups, setPopups] = useState<Record<string, Popup>>({});
   const timersRef = useRef<Record<string, number>>({});
 
@@ -266,24 +266,50 @@ const Home: React.FC = () => {
     showPopup(selectedVariant.variantId.toString(), overallStatus);
   }, [addToCart, selectedProduct]);
 
-  // Show popup notification
+  // Show popup notification with specific messages for each stock status
   const showPopup = useCallback((key: string, status: 'added' | 'limit' | 'out_of_stock' | 'discontinued' | 'pre_order') => {
-    const isLimit = status === 'limit';
-    const message = isLimit ? t('cart.add_limit', { ns: 'products' }) : t('cart.add_success', { ns: 'products' });
-    const variant: Popup['variant'] = isLimit ? 'warning' : 'success';
+    let message: string;
+    let variant: Popup['variant'];
+
+    switch (status) {
+      case 'added':
+        message = t('cart.add_success', { ns: 'products' });
+        variant = 'success';
+        break;
+      case 'limit':
+        message = t('cart.add_limit', { ns: 'products', defaultValue: 'Maximum quantity reached' });
+        variant = 'warning';
+        break;
+      case 'out_of_stock':
+        message = t('cart.out_of_stock', { ns: 'products', defaultValue: 'Sorry, this item is currently out of stock' });
+        variant = 'error';
+        break;
+      case 'discontinued':
+        message = t('cart.discontinued', { ns: 'products', defaultValue: 'This product is no longer available' });
+        variant = 'error';
+        break;
+      case 'pre_order':
+        message = t('cart.pre_order', { ns: 'products', defaultValue: 'Added to cart (Pre-order)' });
+        variant = 'success';
+        break;
+      default:
+        message = t('cart.add_success', { ns: 'products' });
+        variant = 'success';
+    }
 
     setPopups(prev => ({ ...prev, [key]: { visible: true, message, variant } }));
 
     const existing = timersRef.current[key];
     if (existing) window.clearTimeout(existing);
 
+    // Extended timeout for error messages (4000ms vs 2000ms for success/warning)
     timersRef.current[key] = window.setTimeout(() => {
       setPopups(prev => ({
         ...prev,
         [key]: { ...(prev[key] || { message: '', variant: 'success' }), visible: false }
       }));
       delete timersRef.current[key];
-    }, 2000);
+    }, status === 'out_of_stock' || status === 'discontinued' ? 4000 : 2000);
   }, [t]);
 
   logInfo('🎨 [HOME] About to render. visibilityMap:', visibilityMap);

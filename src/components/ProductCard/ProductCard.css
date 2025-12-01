@@ -268,6 +268,11 @@
   color: white;
 }
 
+.add-to-cart-btn.is-popup.error {
+  background: #ef4444;
+  color: white;
+}
+
 .popup-message,
 .add-to-cart-text {
   display: flex;

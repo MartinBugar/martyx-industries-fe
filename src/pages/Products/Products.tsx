@@ -32,7 +32,7 @@ const Products: React.FC = () => {
         includeSchema: false // Category pages don't need JSON-LD
     });
 
-    type Popup = { visible: boolean; message: string; variant: 'success' | 'warning' };
+    type Popup = { visible: boolean; message: string; variant: 'success' | 'warning' | 'error' };
     const [popups, setPopups] = useState<Record<string, Popup>>({});
     const timersRef = useRef<Record<string, number>>({});
 
@@ -178,9 +178,34 @@ const Products: React.FC = () => {
 
     // Show popup notification
     const showPopup = (key: string, status: 'added' | 'limit' | 'out_of_stock' | 'discontinued' | 'pre_order') => {
-        const isLimit = status === 'limit';
-        const message = isLimit ? t('cart.add_limit') : t('cart.add_success');
-        const variant: Popup['variant'] = isLimit ? 'warning' : 'success';
+        let message: string;
+        let variant: Popup['variant'];
+
+        switch (status) {
+            case 'added':
+                message = t('cart.add_success');
+                variant = 'success';
+                break;
+            case 'limit':
+                message = t('cart.add_limit', 'Maximum quantity reached');
+                variant = 'warning';
+                break;
+            case 'out_of_stock':
+                message = t('cart.out_of_stock', 'Sorry, this item is currently out of stock');
+                variant = 'error';
+                break;
+            case 'discontinued':
+                message = t('cart.discontinued', 'This product is no longer available');
+                variant = 'error';
+                break;
+            case 'pre_order':
+                message = t('cart.pre_order', 'Added to cart (Pre-order)');
+                variant = 'success';
+                break;
+            default:
+                message = t('cart.add_success');
+                variant = 'success';
+        }
 
         setPopups(prev => ({...prev, [key]: {visible: true, message, variant}}));
 
@@ -193,7 +218,7 @@ const Products: React.FC = () => {
                 [key]: {...(prev[key] || {message: '', variant: 'success'}), visible: false}
             }));
             delete timersRef.current[key];
-        }, 2000);
+        }, status === 'out_of_stock' || status === 'discontinued' ? 4000 : 2000);
     };
 
 

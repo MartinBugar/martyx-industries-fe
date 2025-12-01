@@ -18,7 +18,7 @@ interface ProductCardProps {
   popupState?: {
     visible: boolean;
     message: string;
-    variant: 'success' | 'warning';
+    variant: 'success' | 'warning' | 'error';
   };
   className?: string;
   children?: React.ReactNode; // For additional content like wishlist meta
@@ -174,6 +174,12 @@ const ProductCard: React.FC<ProductCardProps> = React.memo(({
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     {popupState.variant === 'success' ? (
                       <polyline points="20,6 9,17 4,12"></polyline>
+                    ) : popupState.variant === 'error' ? (
+                      <>
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="15" y1="9" x2="9" y2="15"></line>
+                        <line x1="9" y1="9" x2="15" y2="15"></line>
+                      </>
                     ) : (
                       <circle cx="12" cy="12" r="10"></circle>
                     )}
