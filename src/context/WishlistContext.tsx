@@ -145,15 +145,18 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
     const previousStats = stats;
     const previousTotalCount = totalCount;
 
-    // Create optimistic item placeholder
+    // Create optimistic item placeholder with all required fields
     const optimisticItem: WishlistItem = {
       id: -Date.now(), // Temporary negative ID
       productId: numericId,
-      masterProductId: numericId,
       productName: 'Loading...',
+      productDescription: '',
       productPrice: 0,
+      productCurrency: 'EUR',
       productImageUrl: '',
+      productType: 'physical',
       isAvailable: true,
+      hasMultipleVariants: false,
       addedAt: new Date().toISOString()
     };
 
