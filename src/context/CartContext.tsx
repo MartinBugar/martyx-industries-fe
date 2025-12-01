@@ -479,7 +479,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     }
   }, [isAuthenticated]); // Re-sync when auth state changes
 
-  // Add a product to the cart with stock validation
+  // Add a product to the cart with stock validation and optimistic updates with rollback
   const addToCart = useCallback((product: Product): 'added' | 'limit' | 'out_of_stock' | 'discontinued' | 'pre_order' => {
     // Check availability status first
     if (product.availabilityStatus === 'OUT_OF_STOCK') {
@@ -502,7 +502,12 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     }
 
     let result: 'added' | 'limit' | 'out_of_stock' | 'discontinued' | 'pre_order' = 'added';
+    let previousItemsSnapshot: CartItem[] | null = null;
+
     setItems(prevItems => {
+      // Store snapshot for potential rollback
+      previousItemsSnapshot = prevItems;
+
       const existingItemIndex = prevItems.findIndex(item => item.product.variantId === product.variantId);
       if (existingItemIndex >= 0) {
         const existingItem = prevItems[existingItemIndex];
@@ -528,18 +533,6 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         };
         result = 'added';
 
-        // Sync to backend (non-blocking)
-        void cartService
-          .addItem(product.variantId, 1, isAuthenticated ? undefined : sessionId)
-          .catch(err => {
-            // If duplicate/conflict, ignore - the other request will succeed
-            if (err?.message?.includes('already in cart') || err?.status === 409) {
-              logInfo('[Cart] Item already being added, ignoring duplicate request');
-            } else {
-              logWarn('[Cart] Failed to add to backend:', err);
-            }
-          });
-
         // Track analytics
         trackAddToCart(product, 1);
 
@@ -554,50 +547,89 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         result = 'added';
         const updatedItems = [...prevItems, { product: toCartProduct(product), quantity: 1, addedAt: Date.now() }];
 
-        // Sync to backend (non-blocking)
-        void cartService
-          .addItem(product.variantId, 1, isAuthenticated ? undefined : sessionId)
-          .catch(err => {
-            // If duplicate/conflict, ignore - the other request will succeed
-            if (err?.message?.includes('already in cart') || err?.status === 409) {
-              logInfo('[Cart] Item already being added, ignoring duplicate request');
-            } else {
-              logWarn('[Cart] Failed to add to backend:', err);
-            }
-          });
-
         // Track analytics
         trackAddToCart(product, 1);
 
         return updatedItems;
       }
     });
+
+    // Sync to backend with rollback on critical errors
+    if (result === 'added') {
+      cartService
+        .addItem(product.variantId, 1, isAuthenticated ? undefined : sessionId)
+        .catch(err => {
+          // If duplicate/conflict, ignore - the other request will succeed
+          if (err?.message?.includes('already in cart') || err?.status === 409) {
+            logInfo('[Cart] Item already being added, ignoring duplicate request');
+            return;
+          }
+
+          // For critical errors (out of stock on server, etc.), rollback
+          if (err?.status === 400 || err?.message?.includes('stock') || err?.message?.includes('unavailable')) {
+            logWarn('[Cart] Backend rejected add, rolling back:', err);
+            if (previousItemsSnapshot) {
+              setItems(previousItemsSnapshot);
+              toast.error('Product is no longer available');
+            }
+          } else {
+            // For transient errors (network, 5xx), keep optimistic state
+            // Backend sync will recover on next load
+            logWarn('[Cart] Failed to add to backend (keeping optimistic state):', err);
+          }
+        });
+    }
+
     return result;
   }, [isAuthenticated, sessionId]);
 
-  // Remove a product from the cart by variant ID
+  // Remove a product from the cart by variant ID with optimistic update and rollback
   const removeFromCart = useCallback((variantId: string) => {
+    let previousItemsSnapshot: CartItem[] | null = null;
+    let removedItem: CartItem | undefined;
+
     setItems(prevItems => {
-      // Find the item being removed for analytics
-      const itemToRemove = prevItems.find(item => item.product.variantId.toString() === variantId);
+      // Store snapshot for potential rollback
+      previousItemsSnapshot = prevItems;
+
+      // Find the item being removed for analytics and potential rollback
+      removedItem = prevItems.find(item => item.product.variantId.toString() === variantId);
 
       const filtered = prevItems.filter(item => item.product.variantId.toString() !== variantId);
 
-      // Sync to backend (non-blocking)
-      const variantIdNum = parseInt(variantId, 10);
-      if (!isNaN(variantIdNum)) {
-        void cartService
-          .removeItem(variantIdNum, isAuthenticated ? undefined : sessionId)
-          .catch(err => logWarn('[Cart] Failed to remove from backend:', err));
-      }
-
       // Track analytics
-      if (itemToRemove) {
-        trackRemoveFromCart(itemToRemove.product, itemToRemove.quantity);
+      if (removedItem) {
+        trackRemoveFromCart(removedItem.product, removedItem.quantity);
       }
 
       return filtered;
     });
+
+    // Sync to backend with rollback on critical errors
+    const variantIdNum = parseInt(variantId, 10);
+    if (!isNaN(variantIdNum)) {
+      cartService
+        .removeItem(variantIdNum, isAuthenticated ? undefined : sessionId)
+        .catch(err => {
+          // 404 is OK - item already removed server-side
+          if (err?.status === 404) {
+            logInfo('[Cart] Item already removed from backend');
+            return;
+          }
+
+          // For critical errors, rollback
+          if (err?.status === 400 || err?.status === 403) {
+            logWarn('[Cart] Backend rejected remove, rolling back:', err);
+            if (previousItemsSnapshot) {
+              setItems(previousItemsSnapshot);
+              toast.error('Failed to remove item from cart');
+            }
+          } else {
+            // For transient errors, keep optimistic state
+            logWarn('[Cart] Failed to remove from backend (keeping optimistic state):', err);
+          }
+        });
+    }
   }, [isAuthenticated, sessionId]);
 
   // Update the quantity of a product in the cart by variant ID

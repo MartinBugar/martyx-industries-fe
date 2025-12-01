@@ -132,42 +132,83 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
       return false;
     }
 
+    const numericId = typeof productId === 'string' ? parseInt(productId) : productId;
+
+    // Check if already in wishlist (avoid duplicate optimistic add)
+    if (items.some(item => item.productId === numericId)) {
+      setError('Product is already in your wishlist');
+      return false;
+    }
+
+    // Store previous state for rollback
+    const previousItems = items;
+    const previousStats = stats;
+    const previousTotalCount = totalCount;
+
+    // Create optimistic item placeholder
+    const optimisticItem: WishlistItem = {
+      id: -Date.now(), // Temporary negative ID
+      productId: numericId,
+      masterProductId: numericId,
+      productName: 'Loading...',
+      productPrice: 0,
+      productImageUrl: '',
+      isAvailable: true,
+      addedAt: new Date().toISOString()
+    };
+
+    // OPTIMISTIC UPDATE: Update UI immediately
+    setError(null);
+    setItems(prev => [optimisticItem, ...prev]);
+    setTotalCount(prev => prev + 1);
+    setLastUpdated(new Date().toISOString());
+
+    // Update stats optimistically
+    if (stats) {
+      setStats(prev => prev ? {
+        ...prev,
+        totalItems: prev.totalItems + 1,
+        availableItems: prev.availableItems + 1
+      } : null);
+    }
+
     try {
-      setError(null);
+      // Backend call (non-blocking for UI)
       const newItem = await wishlistService.addToWishlist(productId);
-      
-      // Fix availability status immediately by checking actual product status
+
+      // Fix availability status by checking actual product status
       let correctedItem = newItem;
       try {
         await hybridProductService.getProductById(newItem.productId);
-        // If we can fetch the product successfully, it means it's active
         correctedItem = { ...newItem, isAvailable: true };
       } catch (error) {
-        // If we can't fetch the product (inactive or not found), mark as unavailable
         if (isErrorWithCode(error) && error.code === 'PRODUCT_INACTIVE') {
           correctedItem = { ...newItem, isAvailable: false };
         }
-        // For other errors (network, etc.), keep original status
       }
-      
-      setItems(prev => [correctedItem, ...prev]);
-      setTotalCount(prev => prev + 1);
-      setLastUpdated(new Date().toISOString());
 
-      // Update stats optimistically
-      if (stats) {
+      // Replace optimistic item with real data from server
+      setItems(prev => prev.map(item =>
+        item.id === optimisticItem.id ? correctedItem : item
+      ));
+
+      // Update stats with correct values
+      if (stats && !correctedItem.isAvailable) {
         setStats(prev => prev ? {
           ...prev,
-          totalItems: prev.totalItems + 1,
-          availableItems: correctedItem.isAvailable ? prev.availableItems + 1 : prev.availableItems,
-          unavailableItems: !correctedItem.isAvailable ? prev.unavailableItems + 1 : prev.unavailableItems,
-          totalValue: correctedItem.isAvailable ? prev.totalValue + correctedItem.productPrice : prev.totalValue
+          availableItems: prev.availableItems - 1,
+          unavailableItems: prev.unavailableItems + 1
         } : null);
       }
 
       return true;
     } catch (err: unknown) {
       logError('Failed to add to wishlist:', err);
+
+      // ROLLBACK: Restore previous state on error
+      setItems(previousItems);
+      setStats(previousStats);
+      setTotalCount(previousTotalCount);
 
       // Handle backend errors with proper error messages
       if (isErrorWithData(err)) {
@@ -192,7 +233,7 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
 
       return false;
     }
-  }, [isAuthenticated, stats]);
+  }, [isAuthenticated, items, stats, totalCount]);
 
   const removeFromWishlist = useCallback(async (productId: string | number): Promise<boolean> => {
     if (!isAuthenticated) {
@@ -200,33 +241,47 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
       return false;
     }
 
+    const numericId = typeof productId === 'string' ? parseInt(productId) : productId;
+    const removedItem = items.find(item => item.productId === numericId);
+
+    if (!removedItem) {
+      // Item not in wishlist, nothing to remove
+      return true;
+    }
+
+    // Store previous state for rollback
+    const previousItems = items;
+    const previousStats = stats;
+    const previousTotalCount = totalCount;
+
+    // OPTIMISTIC UPDATE: Remove from UI immediately
+    setError(null);
+    setItems(prev => prev.filter(item => item.productId !== numericId));
+    setTotalCount(prev => Math.max(0, prev - 1));
+    setLastUpdated(new Date().toISOString());
+
+    // Update stats optimistically
+    if (stats) {
+      setStats(prev => prev ? {
+        ...prev,
+        totalItems: Math.max(0, prev.totalItems - 1),
+        availableItems: removedItem.isAvailable ? Math.max(0, prev.availableItems - 1) : prev.availableItems,
+        unavailableItems: !removedItem.isAvailable ? Math.max(0, prev.unavailableItems - 1) : prev.unavailableItems,
+        totalValue: removedItem.isAvailable ? Math.max(0, prev.totalValue - removedItem.productPrice) : prev.totalValue
+      } : null);
+    }
+
     try {
-      setError(null);
-
-      // Convert productId to number for backend compatibility
-      const numericId = typeof productId === 'string' ? parseInt(productId) : productId;
-      const removedItem = items.find(item => item.productId === numericId);
-
+      // Backend call (UI already updated)
       await wishlistService.removeFromWishlist(productId);
-
-      setItems(prev => prev.filter(item => item.productId !== numericId));
-      setTotalCount(prev => Math.max(0, prev - 1));
-      setLastUpdated(new Date().toISOString());
-
-      // Update stats optimistically
-      if (stats && removedItem) {
-        setStats(prev => prev ? {
-          ...prev,
-          totalItems: Math.max(0, prev.totalItems - 1),
-          availableItems: removedItem.isAvailable ? Math.max(0, prev.availableItems - 1) : prev.availableItems,
-          unavailableItems: !removedItem.isAvailable ? Math.max(0, prev.unavailableItems - 1) : prev.unavailableItems,
-          totalValue: removedItem.isAvailable ? Math.max(0, prev.totalValue - removedItem.productPrice) : prev.totalValue
-        } : null);
-      }
-
       return true;
     } catch (err: unknown) {
       logError('Failed to remove from wishlist:', err);
+
+      // ROLLBACK: Restore previous state on error
+      setItems(previousItems);
+      setStats(previousStats);
+      setTotalCount(previousTotalCount);
 
       // Handle backend errors with proper error messages
       if (isErrorWithData(err)) {
@@ -237,7 +292,8 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
         } else if (err.message?.includes('403') || err.errorData?.status === 403) {
           setError('You do not have permission to modify this wishlist');
         } else if (err.message?.includes('404') || err.errorData?.status === 404) {
-          setError('Product not found in wishlist');
+          // Item was already removed server-side, keep optimistic state
+          return true;
         } else if (err.message?.includes('5') || (err.errorData?.status !== undefined && err.errorData.status >= 500)) {
           setError('Server error, please try again');
         } else {
@@ -249,7 +305,7 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
 
       return false;
     }
-  }, [isAuthenticated, items, stats]);
+  }, [isAuthenticated, items, stats, totalCount]);
 
   const isInWishlist = useCallback((productId: string | number): boolean => {
     const numericId = typeof productId === 'string' ? parseInt(productId) : productId;
