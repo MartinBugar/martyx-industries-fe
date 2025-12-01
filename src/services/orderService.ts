@@ -233,12 +233,13 @@ export const orderService = {
   // ===== ORDER HISTORY METHODS =====
 
   /**
-   * Get all orders for a specific user
-   * @param userId - User ID
+   * Get all orders for the current authenticated user
    * @param params - Query parameters for filtering, sorting, pagination
    */
-  getUserOrders: async (userId: number, params?: OrderListParams): Promise<OrderListResponse> => {
-    let url = `/api/orders/user/${userId}`;
+  getUserOrders: async (_userId?: number, params?: OrderListParams): Promise<OrderListResponse> => {
+    // Note: userId parameter is kept for backwards compatibility but not used
+    // Backend uses authenticated user's ID from JWT token
+    let url = `/api/orders/me`;
     if (params) {
       const queryParams = new URLSearchParams();
       if (params.page) queryParams.append('page', params.page.toString());

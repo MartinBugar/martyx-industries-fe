@@ -6,6 +6,8 @@ import { useTranslation } from "react-i18next";
 import { useWishlist } from "../../context/WishlistContext";
 import LanguageSwitcher from "../LanguageSwitcher";
 import MiniCart from "../MiniCart/MiniCart";
+import { useSearchSuggestions } from "../../hooks/useSearchSuggestions";
+import SearchSuggestions from "../SearchSuggestions/SearchSuggestions";
 const miLogo = "/logo/logo.png";
 
 /**
@@ -32,12 +34,24 @@ const LINKS: NavItem[] = [
 ];
 
 export default function Navbar({cartCount = 0, onSearchSubmit, user, onLogout}: Props) {
-    const { t } = useTranslation(['nav', 'common']);
+    const { t } = useTranslation(['nav', 'common', 'search']);
     const { items: wishlistItems } = useWishlist();
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [miniCartOpen, setMiniCartOpen] = useState(false);
-    const [q, setQ] = useState("");
     const navigate = useNavigate();
+
+    // Search suggestions hook
+    const {
+        query: q,
+        setQuery: setQ,
+        suggestions,
+        isLoading: suggestionsLoading,
+        isOpen: suggestionsOpen,
+        setIsOpen: setSuggestionsOpen,
+        clearSuggestions,
+        selectedIndex,
+        handleKeyDown: handleSuggestionsKeyDown,
+    } = useSearchSuggestions({ debounceMs: 300, minChars: 2, maxResults: 5 });
     const location = useLocation();
     const drawerRef = useRef<HTMLDivElement>(null);
     const panelRef = useRef<HTMLDivElement>(null);
@@ -102,7 +116,7 @@ export default function Navbar({cartCount = 0, onSearchSubmit, user, onLogout}: 
 
     const handleToggleDrawer = useCallback(() => setDrawerOpen(v => !v), []);
 
-    const onChangeQ = useCallback((e: React.ChangeEvent<HTMLInputElement>) => setQ(e.target.value), []);
+    const onChangeQ = useCallback((e: React.ChangeEvent<HTMLInputElement>) => setQ(e.target.value), [setQ]);
 
     /** Basic focus trap inside drawer panel */
     useEffect(() => {
@@ -133,11 +147,27 @@ export default function Navbar({cartCount = 0, onSearchSubmit, user, onLogout}: 
         e.preventDefault();
         const query = q.trim();
         if (!query) return;
+        clearSuggestions();
         (onSearchSubmit ?? ((qq: string) =>
                 navigate(`/products?search=${encodeURIComponent(qq)}`)
         ))(query);
         setDrawerOpen(false);
-    }, [q, onSearchSubmit, navigate]);
+    }, [q, onSearchSubmit, navigate, clearSuggestions]);
+
+    // Handle suggestion selection
+    const handleSuggestionSelect = useCallback((suggestion: { slug: string }) => {
+        clearSuggestions();
+        navigate(`/product/${suggestion.slug}`);
+        setDrawerOpen(false);
+    }, [navigate, clearSuggestions]);
+
+    // Handle keyboard navigation in search
+    const onSearchKeyDown = useCallback((e: React.KeyboardEvent) => {
+        const selected = handleSuggestionsKeyDown(e);
+        if (selected) {
+            handleSuggestionSelect(selected);
+        }
+    }, [handleSuggestionsKeyDown, handleSuggestionSelect]);
 
     const fallbackLogout = useCallback(() => {
         try {
@@ -291,21 +321,37 @@ export default function Navbar({cartCount = 0, onSearchSubmit, user, onLogout}: 
 
                         {/* Right actions */}
                         <div className="mi-actions">
-                            {/* Search (desktop) */}
-                            <form className="mi-search mi-desktop" role="search" aria-label={t('nav:search')}
-                                  onSubmit={submitSearch}>
-                                <div className="mi-panel">
-                                    <SearchIcon/>
-                                    <input
-                                        type="search"
-                                        name="q"
-                                        placeholder={t('nav:search_placeholder')}
-                                        autoComplete="off"
-                                        value={q}
-                                        onChange={onChangeQ}
-                                    />
-                                </div>
-                            </form>
+                            {/* Search (desktop) with suggestions */}
+                            <div className="mi-search-wrapper mi-desktop">
+                                <form className="mi-search" role="search" aria-label={t('nav:search')}
+                                      onSubmit={submitSearch}>
+                                    <div className="mi-panel">
+                                        <SearchIcon/>
+                                        <input
+                                            type="search"
+                                            name="q"
+                                            placeholder={t('nav:search_placeholder')}
+                                            autoComplete="off"
+                                            value={q}
+                                            onChange={onChangeQ}
+                                            onKeyDown={onSearchKeyDown}
+                                            onFocus={() => q.length >= 2 && suggestions.length > 0 && setSuggestionsOpen(true)}
+                                            aria-expanded={suggestionsOpen}
+                                            aria-controls="search-suggestions"
+                                            aria-autocomplete="list"
+                                        />
+                                    </div>
+                                </form>
+                                <SearchSuggestions
+                                    suggestions={suggestions}
+                                    isOpen={suggestionsOpen}
+                                    isLoading={suggestionsLoading}
+                                    selectedIndex={selectedIndex}
+                                    onSelect={handleSuggestionSelect}
+                                    onClose={clearSuggestions}
+                                    query={q}
+                                />
+                            </div>
 
                             {/* Auth / User (desktop) */}
                             {!user ? (

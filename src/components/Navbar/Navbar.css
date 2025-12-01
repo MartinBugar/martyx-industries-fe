@@ -1064,6 +1064,10 @@ html.hydrated .shop-header .cart-icon {
 }
 
 /* Search */
+.mi-search-wrapper {
+    position: relative;
+}
+
 .mi-search .mi-panel {
     display: flex;
     align-items: center;

@@ -199,4 +199,47 @@ export class ProductService {
 
 }
 
+/**
+ * Search suggestion result type (lightweight)
+ */
+export interface ProductSearchSuggestion {
+  id: number;
+  name: string;
+  slug: string;
+  shortDescription?: string;
+  featuredImageUrl?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  currency?: string;
+  onSale?: boolean;
+  inStock?: boolean;
+}
+
+/**
+ * Search products by name for autocomplete suggestions
+ * @param query - Search query (min 2 characters)
+ * @param limit - Maximum results (default 5, max 10)
+ * @returns Promise<ProductSearchSuggestion[]>
+ */
+export async function searchProductSuggestions(
+  query: string,
+  limit: number = 5
+): Promise<ProductSearchSuggestion[]> {
+  if (!query || query.trim().length < 2) {
+    return [];
+  }
+
+  const url = new URL(`${API_BASE_URL}/api/master-products/search`);
+  url.searchParams.set('q', query.trim());
+  url.searchParams.set('limit', String(Math.min(limit, 10)));
+
+  const requestOptions = withLangHeaders({
+    method: 'GET',
+    headers: defaultHeaders as HeadersInit,
+  });
+
+  const response = await fetch(url.toString(), requestOptions);
+  return handleResponse(response);
+}
+
 export const productService = new ProductService();

@@ -190,7 +190,7 @@ class AdminCampaignsService {
    * Get top performing campaigns
    */
   async getTopCampaigns(limit: number = 5) {
-    const url = `${this.baseUrl}/top?limit=${limit}`;
+    const url = `${this.baseUrl}/top-performing?limit=${limit}`;
     const response = await apiClient.get<{ success: boolean; data: EmailCampaign[] }>(url);
     return response.data;
   }
