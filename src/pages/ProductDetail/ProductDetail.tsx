@@ -237,10 +237,11 @@ const ProductDetail: React.FC = () => {
     const [hasLoadedGallery, setHasLoadedGallery] = React.useState(false);
 
     // SEO: Fetch and apply meta tags + JSON-LD schema for AI search optimization
+    // Use product.slug (not URL id) because URL uses numeric ID, but SEO API expects slug
     useSeo({
         type: 'product',
-        slug: id,
-        skip: !id || loading,
+        slug: product?.slug,
+        skip: !product?.slug || loading,
         includeSchema: true
     });
 
