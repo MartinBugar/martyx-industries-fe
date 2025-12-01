@@ -115,6 +115,7 @@ import {
   AdminTaxZones,
   AdminTaxZoneForm,
   AdminRoles,
+  AdminAuditLog,
   ConstellationParticles
 } from './utils/lazyImports'
 
@@ -535,6 +536,12 @@ const MainContent = React.memo(() => {
             <Route path="/admin/rbac/roles" element={
               <RequireAdmin>
                 <AdminRoles />
+              </RequireAdmin>
+            } />
+            {/* Audit Log */}
+            <Route path="/admin/audit" element={
+              <RequireAdmin>
+                <AdminAuditLog />
               </RequireAdmin>
             } />
           </Routes>
