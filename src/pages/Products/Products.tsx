@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState, useMemo} from 'react';
 import {useSearchParams} from 'react-router-dom';
 import {useTranslation} from 'react-i18next';
 import {type Product, type ProductVariant} from '../../data/productData';
@@ -197,21 +197,24 @@ const Products: React.FC = () => {
     };
 
 
-    // Filter and sort products
-    const filteredProducts = products
-        .filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()))
-        .sort((a, b) => {
-            switch (sortBy) {
-                case 'name':
-                    return a.name.localeCompare(b.name);
-                case 'price':
-                    return a.priceWithVat - b.priceWithVat;
-                case 'newest':
-                    return b.variantId - a.variantId;
-                default:
-                    return 0;
-            }
-        });
+    // PERFORMANCE: Memoize filtered and sorted products to prevent re-computation on every render
+    // Without useMemo, filtering and sorting runs on every parent re-render (e.g., popup state changes)
+    const filteredProducts = useMemo(() => {
+        return products
+            .filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()))
+            .sort((a, b) => {
+                switch (sortBy) {
+                    case 'name':
+                        return a.name.localeCompare(b.name);
+                    case 'price':
+                        return a.priceWithVat - b.priceWithVat;
+                    case 'newest':
+                        return b.variantId - a.variantId;
+                    default:
+                        return 0;
+                }
+            });
+    }, [products, searchTerm, sortBy]);
 
     // Show loading state
     if (loading) {
