@@ -15,6 +15,8 @@
     "email_already_exists": "E-Mail-Adresse existiert bereits.",
     "weak_password": "Passwort ist zu schwach.",
     "server_error": "Serverfehler. Bitte versuchen Sie es später erneut.",
+    "service_unavailable": "Dienst vorübergehend nicht verfügbar. Bitte versuchen Sie es später erneut.",
+    "conflict": "Ein Konflikt ist aufgetreten. Die Ressource wurde möglicherweise geändert.",
     "err_not_found": "Ressource nicht gefunden.",
     "err_bad_request": "Ungültige Anfrage. Bitte überprüfen Sie die Daten.",
     "err_internal": "Interner Serverfehler. Bitte versuchen Sie es später erneut.",
@@ -26,7 +28,98 @@
     "err_invalid_credentials": "Ungültige Anmeldedaten.",
     "err_email_exists": "E-Mail-Adresse ist bereits registriert.",
     "err_weak_password": "Passwort erfüllt nicht die Sicherheitsanforderungen.",
-    "err_session_expired": "Ihre Sitzung ist abgelaufen."
+    "err_session_expired": "Ihre Sitzung ist abgelaufen.",
+    "cart": {
+      "invalid_quantity": "Ungültige Produktmenge.",
+      "product_not_found": "Produkt nicht im Katalog gefunden.",
+      "out_of_stock": "Produkt ist nicht auf Lager.",
+      "invalid_variant": "Ungültige Produktvariante ausgewählt.",
+      "digital_product_limit": "Digitale Produkte können nur einmal gekauft werden.",
+      "empty": "Ihr Warenkorb ist leer.",
+      "item_not_found": "Artikel im Warenkorb nicht gefunden.",
+      "not_found": "Warenkorb nicht gefunden.",
+      "max_items_exceeded": "Maximale Anzahl der Warenkorbartikel überschritten.",
+      "product_not_available": "Produkt ist nicht mehr verfügbar.",
+      "insufficient_stock": "Nicht genügend auf Lager. Nur {{available}} Stück verfügbar."
+    },
+    "order": {
+      "not_found": "Bestellung nicht gefunden.",
+      "already_paid": "Diese Bestellung wurde bereits bezahlt.",
+      "invalid_status": "Ungültige Bestellstatusänderung.",
+      "unauthorized": "Sie sind nicht berechtigt, auf diese Bestellung zuzugreifen.",
+      "cancelled": "Diese Bestellung wurde storniert.",
+      "expired": "Diese Bestellung ist abgelaufen.",
+      "invalid_amount": "Ungültiger Bestellbetrag.",
+      "missing_billing_info": "Bitte vervollständigen Sie alle erforderlichen Rechnungsdaten."
+    },
+    "payment": {
+      "failed": "Zahlungsverarbeitung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+      "amount_mismatch": "Zahlungsbetrag stimmt nicht mit der Bestellsumme überein.",
+      "duplicate": "Diese Zahlung wurde bereits verarbeitet.",
+      "provider_error": "Zahlungsanbieter-Fehler. Bitte versuchen Sie es später erneut.",
+      "cancelled": "Zahlung wurde abgebrochen.",
+      "not_found": "Zahlung nicht gefunden.",
+      "refund_failed": "Rückerstattung fehlgeschlagen. Bitte kontaktieren Sie den Support."
+    },
+    "download": {
+      "expired": "Download-Link ist abgelaufen.",
+      "limit_exceeded": "Download-Limit überschritten.",
+      "not_found": "Download nicht gefunden.",
+      "unauthorized": "Sie sind nicht berechtigt, diese Datei herunterzuladen.",
+      "invalid_token": "Ungültiger Download-Token.",
+      "file_not_found": "Datei nicht im Speicher gefunden.",
+      "order_not_paid": "Bestellung muss vor dem Download bezahlt werden."
+    },
+    "product": {
+      "not_found": "Produkt nicht gefunden.",
+      "variant_not_found": "Produktvariante nicht gefunden.",
+      "unavailable": "Produkt ist nicht mehr verfügbar.",
+      "out_of_stock": "Produkt ist nicht auf Lager.",
+      "invalid_price": "Ungültiger Produktpreis."
+    },
+    "auth": {
+      "invalid_credentials": "Ungültige E-Mail oder Passwort.",
+      "token_expired": "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an.",
+      "token_invalid": "Ungültiges Authentifizierungstoken.",
+      "insufficient_permissions": "Sie haben keine Berechtigung für diese Aktion.",
+      "account_locked": "Ihr Konto wurde gesperrt. Bitte versuchen Sie es später erneut.",
+      "email_not_confirmed": "Bitte bestätigen Sie zuerst Ihre E-Mail-Adresse.",
+      "weak_password": "Passwort erfüllt nicht die Sicherheitsanforderungen.",
+      "email_already_exists": "Diese E-Mail-Adresse ist bereits registriert.",
+      "refresh_token_expired": "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an.",
+      "refresh_token_invalid": "Ungültige Sitzung. Bitte melden Sie sich erneut an.",
+      "token_revoked": "Ihre Sitzung wurde widerrufen. Bitte melden Sie sich erneut an.",
+      "user_not_found": "Benutzer nicht gefunden."
+    },
+    "discount": {
+      "invalid_code": "Ungültiger Rabattcode.",
+      "expired": "Dieser Rabattcode ist abgelaufen.",
+      "not_applicable": "Dieser Rabattcode kann nicht auf Ihre Bestellung angewendet werden.",
+      "usage_limit_exceeded": "Dieser Rabattcode hat sein Nutzungslimit erreicht.",
+      "minimum_not_met": "Mindestbestellwert für diesen Rabatt nicht erreicht."
+    },
+    "shipping": {
+      "rate_not_found": "Versandtarif nicht gefunden.",
+      "unavailable": "Versand ist für dieses Ziel nicht verfügbar.",
+      "invalid_address": "Ungültige Lieferadresse.",
+      "calculation_failed": "Versandkosten konnten nicht berechnet werden."
+    },
+    "invoice": {
+      "not_found": "Rechnung nicht gefunden.",
+      "generation_failed": "Rechnung konnte nicht erstellt werden.",
+      "unauthorized": "Sie sind nicht berechtigt, auf diese Rechnung zuzugreifen.",
+      "already_exists": "Rechnung für diese Bestellung existiert bereits."
+    },
+    "validation": {
+      "failed": "Validierung fehlgeschlagen. Bitte überprüfen Sie Ihre Eingaben.",
+      "missing_required_field": "Pflichtfeld fehlt.",
+      "invalid_format": "Ungültiges Format.",
+      "value_out_of_range": "Wert liegt außerhalb des zulässigen Bereichs."
+    },
+    "concurrency": {
+      "modified": "Diese Daten wurden von einem anderen Benutzer geändert. Bitte aktualisieren und erneut versuchen.",
+      "optimistic_lock": "Die Daten wurden während Ihrer Bearbeitung geändert. Bitte aktualisieren Sie die Seite."
+    }
   },
   "actions": {
     "save": "Speichern",

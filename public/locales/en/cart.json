@@ -25,5 +25,16 @@
     "subtotal": "Subtotal",
     "shipping": "Shipping",
     "total": "Total"
+  },
+  "errors": {
+    "out_of_stock": "Product \"{{product}}\" is currently out of stock",
+    "insufficient_stock": "Only {{available}} units of \"{{product}}\" are available",
+    "discontinued": "Product \"{{product}}\" has been discontinued",
+    "max_quantity_exceeded": "Maximum quantity for \"{{product}}\" is {{max}}",
+    "add_failed": "Failed to add product to cart",
+    "update_failed": "Failed to update cart",
+    "remove_failed": "Failed to remove item from cart",
+    "pre_order_only": "Product \"{{product}}\" is available for pre-order only",
+    "concurrent_modification": "Cart was modified by another session. Please refresh and try again."
   }
 }

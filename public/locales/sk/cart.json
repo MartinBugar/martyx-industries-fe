@@ -25,5 +25,16 @@
     "subtotal": "Medzisúčet",
     "shipping": "Doprava",
     "total": "Celkom"
+  },
+  "errors": {
+    "out_of_stock": "Produkt \"{{product}}\" nie je momentálne na sklade",
+    "insufficient_stock": "K dispozícii je len {{available}} kusov produktu \"{{product}}\"",
+    "discontinued": "Produkt \"{{product}}\" bol stiahnutý z predaja",
+    "max_quantity_exceeded": "Maximálny počet kusov pre \"{{product}}\" je {{max}}",
+    "add_failed": "Nepodarilo sa pridať produkt do košíka",
+    "update_failed": "Nepodarilo sa aktualizovať košík",
+    "remove_failed": "Nepodarilo sa odstrániť položku z košíka",
+    "pre_order_only": "Produkt \"{{product}}\" je dostupný len na predobjednávku",
+    "concurrent_modification": "Košík bol medzičasom zmenený. Obnovte stránku a skúste znova."
   }
 }

@@ -25,5 +25,16 @@
     "subtotal": "Zwischensumme",
     "shipping": "Versand",
     "total": "Gesamt"
+  },
+  "errors": {
+    "out_of_stock": "Produkt \"{{product}}\" ist derzeit nicht auf Lager",
+    "insufficient_stock": "Nur {{available}} Stück von \"{{product}}\" verfügbar",
+    "discontinued": "Produkt \"{{product}}\" wurde eingestellt",
+    "max_quantity_exceeded": "Maximale Menge für \"{{product}}\" ist {{max}}",
+    "add_failed": "Produkt konnte nicht zum Warenkorb hinzugefügt werden",
+    "update_failed": "Warenkorb konnte nicht aktualisiert werden",
+    "remove_failed": "Artikel konnte nicht aus dem Warenkorb entfernt werden",
+    "pre_order_only": "Produkt \"{{product}}\" ist nur zur Vorbestellung verfügbar",
+    "concurrent_modification": "Der Warenkorb wurde von einer anderen Sitzung geändert. Bitte aktualisieren Sie die Seite."
   }
 }

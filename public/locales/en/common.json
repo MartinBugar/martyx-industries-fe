@@ -15,6 +15,8 @@
     "email_already_exists": "Email address already exists.",
     "weak_password": "Password is too weak.",
     "server_error": "Server error. Please try again later.",
+    "service_unavailable": "Service temporarily unavailable. Please try again later.",
+    "conflict": "A conflict occurred. The resource may have been modified.",
     "err_not_found": "Resource not found.",
     "err_bad_request": "Bad request. Please check your input.",
     "err_internal": "Internal server error. Please try again later.",
@@ -26,7 +28,98 @@
     "err_invalid_credentials": "Invalid login credentials.",
     "err_email_exists": "Email address is already registered.",
     "err_weak_password": "Password does not meet security requirements.",
-    "err_session_expired": "Your session has expired."
+    "err_session_expired": "Your session has expired.",
+    "cart": {
+      "invalid_quantity": "Invalid product quantity.",
+      "product_not_found": "Product not found in catalog.",
+      "out_of_stock": "Product is out of stock.",
+      "invalid_variant": "Invalid product variant selected.",
+      "digital_product_limit": "Digital products can only be purchased once.",
+      "empty": "Your shopping cart is empty.",
+      "item_not_found": "Cart item not found.",
+      "not_found": "Shopping cart not found.",
+      "max_items_exceeded": "Maximum number of cart items exceeded.",
+      "product_not_available": "Product is no longer available.",
+      "insufficient_stock": "Not enough stock available. Only {{available}} items left."
+    },
+    "order": {
+      "not_found": "Order not found.",
+      "already_paid": "This order has already been paid.",
+      "invalid_status": "Invalid order status change.",
+      "unauthorized": "You are not authorized to access this order.",
+      "cancelled": "This order has been cancelled.",
+      "expired": "This order has expired.",
+      "invalid_amount": "Invalid order amount.",
+      "missing_billing_info": "Please complete all required billing information."
+    },
+    "payment": {
+      "failed": "Payment processing failed. Please try again.",
+      "amount_mismatch": "Payment amount does not match order total.",
+      "duplicate": "This payment has already been processed.",
+      "provider_error": "Payment provider error. Please try again later.",
+      "cancelled": "Payment was cancelled.",
+      "not_found": "Payment not found.",
+      "refund_failed": "Refund processing failed. Please contact support."
+    },
+    "download": {
+      "expired": "Download link has expired.",
+      "limit_exceeded": "Download limit exceeded.",
+      "not_found": "Download not found.",
+      "unauthorized": "You are not authorized to download this file.",
+      "invalid_token": "Invalid download token.",
+      "file_not_found": "File not found in storage.",
+      "order_not_paid": "Order must be paid before downloading."
+    },
+    "product": {
+      "not_found": "Product not found.",
+      "variant_not_found": "Product variant not found.",
+      "unavailable": "Product is no longer available.",
+      "out_of_stock": "Product is out of stock.",
+      "invalid_price": "Invalid product price."
+    },
+    "auth": {
+      "invalid_credentials": "Invalid email or password.",
+      "token_expired": "Your session has expired. Please log in again.",
+      "token_invalid": "Invalid authentication token.",
+      "insufficient_permissions": "You don't have permission to perform this action.",
+      "account_locked": "Your account has been locked. Please try again later.",
+      "email_not_confirmed": "Please confirm your email address first.",
+      "weak_password": "Password does not meet security requirements.",
+      "email_already_exists": "This email address is already registered.",
+      "refresh_token_expired": "Your session has expired. Please log in again.",
+      "refresh_token_invalid": "Invalid session. Please log in again.",
+      "token_revoked": "Your session has been revoked. Please log in again.",
+      "user_not_found": "User not found."
+    },
+    "discount": {
+      "invalid_code": "Invalid discount code.",
+      "expired": "This discount code has expired.",
+      "not_applicable": "This discount code cannot be applied to your order.",
+      "usage_limit_exceeded": "This discount code has reached its usage limit.",
+      "minimum_not_met": "Minimum order amount not met for this discount."
+    },
+    "shipping": {
+      "rate_not_found": "Shipping rate not found.",
+      "unavailable": "Shipping is not available for this destination.",
+      "invalid_address": "Invalid shipping address.",
+      "calculation_failed": "Failed to calculate shipping cost."
+    },
+    "invoice": {
+      "not_found": "Invoice not found.",
+      "generation_failed": "Failed to generate invoice.",
+      "unauthorized": "You are not authorized to access this invoice.",
+      "already_exists": "Invoice already exists for this order."
+    },
+    "validation": {
+      "failed": "Validation failed. Please check your input.",
+      "missing_required_field": "Required field is missing.",
+      "invalid_format": "Invalid format.",
+      "value_out_of_range": "Value is out of allowed range."
+    },
+    "concurrency": {
+      "modified": "This data was modified by another user. Please refresh and try again.",
+      "optimistic_lock": "The data was changed while you were editing. Please refresh the page."
+    }
   },
   "actions": {
     "save": "Save",

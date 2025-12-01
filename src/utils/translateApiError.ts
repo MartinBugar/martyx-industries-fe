@@ -31,69 +31,77 @@ export const translateApiError = (
   t: TFunction,
   args?: TranslationArgs
 ): string => {
-  let errorData: ApiErrorResponse | null = null;
+  let errorCode: string = 'ERR_INTERNAL';
+  let errorArgs: Record<string, unknown> = {};
 
   if (isErrorWithData(error)) {
     // Check if error has errorData attached (from handleResponse)
     if (error.errorData) {
-      errorData = error.errorData;
+      // Backend returns 'code' (new) or 'errorCode' (legacy)
+      errorCode = error.errorData.code || error.errorData.errorCode || error.message || 'ERR_INTERNAL';
+      errorArgs = error.errorData.args || {};
     } else {
-      // Fallback: try to parse error message as error code
-      const errorCode = error.message || 'ERR_INTERNAL';
-      errorData = {
-        timestamp: new Date().toISOString(),
-        path: '',
-        errorCode,
-        args: {}
-      };
+      // Fallback: use error message as error code
+      errorCode = error.message || 'ERR_INTERNAL';
     }
   } else if (error && typeof error === 'object') {
-    // Already parsed error object with unified contract
-    errorData = error as ApiErrorResponse;
+    // Already parsed error object
+    const errorObj = error as Record<string, unknown>;
+    errorCode = (errorObj.code || errorObj.errorCode || 'ERR_INTERNAL') as string;
+    errorArgs = (errorObj.args || {}) as Record<string, unknown>;
   } else if (typeof error === 'string') {
     // String error code
-    errorData = {
-      timestamp: new Date().toISOString(),
-      path: '',
-      errorCode: error,
-      args: {}
-    };
+    errorCode = error;
   }
 
-  if (!errorData) {
-    return t('errors.generic', args);
-  }
-
-  // Prepare translation arguments from error args and additional args
+  // Prepare translation arguments
   const translationArgs: TranslationArgs = {
-    ...errorData.args,
+    ...errorArgs,
     ...args,
   };
 
-  // Map errorCode to translation key using the API_ERROR_CODES mapping
-  const translationKey = API_ERROR_CODES[errorData.errorCode as keyof typeof API_ERROR_CODES];
-  
+  // Try to find translation using API_ERROR_CODES mapping
+  const translationKey = API_ERROR_CODES[errorCode as keyof typeof API_ERROR_CODES];
+
   if (translationKey) {
     const translatedMessage = t(translationKey, {
       defaultValue: '',
       ...translationArgs
     });
-    
+
     // If translation exists and is not empty, use it
     if (translatedMessage && translatedMessage !== translationKey) {
       return translatedMessage;
     }
   }
 
-  // Fallback: try direct mapping errors.{errorCode}
-  const directKey = `errors.${errorData.errorCode.toLowerCase()}`;
+  // Fallback: try direct mapping errors.{errorCode} (lowercase)
+  const directKey = `errors.${errorCode.toLowerCase()}`;
   const directTranslation = t(directKey, {
     defaultValue: '',
     ...translationArgs
   });
-  
+
   if (directTranslation && directTranslation !== directKey) {
     return directTranslation;
+  }
+
+  // Fallback: try nested path like errors.cart.out_of_stock for CART_003
+  // Convert CART_003 -> errors.cart.out_of_stock pattern
+  const parts = errorCode.split('_');
+  if (parts.length >= 2) {
+    const category = parts[0].toLowerCase();
+    // Try the mapped key from API_ERROR_CODES
+    const mappedKey = API_ERROR_CODES[errorCode as keyof typeof API_ERROR_CODES];
+    if (mappedKey) {
+      const nestedTranslation = t(mappedKey, {
+        defaultValue: '',
+        ...translationArgs
+      });
+      if (nestedTranslation && nestedTranslation !== mappedKey) {
+        return nestedTranslation;
+      }
+    }
   }
 
   // Ultimate fallback to generic error message

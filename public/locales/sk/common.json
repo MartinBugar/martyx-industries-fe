@@ -15,6 +15,8 @@
     "email_already_exists": "E-mailová adresa už existuje.",
     "weak_password": "Heslo je príliš slabé.",
     "server_error": "Chyba servera. Skúste to neskôr.",
+    "service_unavailable": "Služba je dočasne nedostupná. Skúste to neskôr.",
+    "conflict": "Nastala kolízia. Zdroj mohol byť medzičasom zmenený.",
     "err_not_found": "Zdroj sa nenašiel.",
     "err_bad_request": "Neplatná požiadavka. Skontrolujte údaje.",
     "err_internal": "Chyba servera. Skúste to neskôr.",
@@ -26,7 +28,98 @@
     "err_invalid_credentials": "Neplatné prihlasovacie údaje.",
     "err_email_exists": "E-mailová adresa je už registrovaná.",
     "err_weak_password": "Heslo nespĺňa bezpečnostné požiadavky.",
-    "err_session_expired": "Vaša relácia vypršala."
+    "err_session_expired": "Vaša relácia vypršala.",
+    "cart": {
+      "invalid_quantity": "Neplatné množstvo produktu.",
+      "product_not_found": "Produkt sa nenašiel v katalógu.",
+      "out_of_stock": "Produkt nie je na sklade.",
+      "invalid_variant": "Neplatný variant produktu.",
+      "digital_product_limit": "Digitálne produkty je možné zakúpiť len raz.",
+      "empty": "Váš košík je prázdny.",
+      "item_not_found": "Položka v košíku sa nenašla.",
+      "not_found": "Košík sa nenašiel.",
+      "max_items_exceeded": "Prekročený maximálny počet položiek v košíku.",
+      "product_not_available": "Produkt už nie je dostupný.",
+      "insufficient_stock": "Nedostatok na sklade. K dispozícii je len {{available}} kusov."
+    },
+    "order": {
+      "not_found": "Objednávka sa nenašla.",
+      "already_paid": "Táto objednávka už bola zaplatená.",
+      "invalid_status": "Neplatná zmena stavu objednávky.",
+      "unauthorized": "Nemáte oprávnenie na prístup k tejto objednávke.",
+      "cancelled": "Táto objednávka bola zrušená.",
+      "expired": "Táto objednávka vypršala.",
+      "invalid_amount": "Neplatná suma objednávky.",
+      "missing_billing_info": "Vyplňte prosím všetky povinné fakturačné údaje."
+    },
+    "payment": {
+      "failed": "Spracovanie platby zlyhalo. Skúste to znovu.",
+      "amount_mismatch": "Suma platby nesúhlasí s celkovou sumou objednávky.",
+      "duplicate": "Táto platba už bola spracovaná.",
+      "provider_error": "Chyba platobnej brány. Skúste to neskôr.",
+      "cancelled": "Platba bola zrušená.",
+      "not_found": "Platba sa nenašla.",
+      "refund_failed": "Vrátenie platby zlyhalo. Kontaktujte podporu."
+    },
+    "download": {
+      "expired": "Odkaz na stiahnutie vypršal.",
+      "limit_exceeded": "Prekročený limit sťahovaní.",
+      "not_found": "Súbor na stiahnutie sa nenašiel.",
+      "unauthorized": "Nemáte oprávnenie stiahnuť tento súbor.",
+      "invalid_token": "Neplatný token na stiahnutie.",
+      "file_not_found": "Súbor sa nenašiel v úložisku.",
+      "order_not_paid": "Pred stiahnutím musí byť objednávka zaplatená."
+    },
+    "product": {
+      "not_found": "Produkt sa nenašiel.",
+      "variant_not_found": "Variant produktu sa nenašiel.",
+      "unavailable": "Produkt už nie je dostupný.",
+      "out_of_stock": "Produkt nie je na sklade.",
+      "invalid_price": "Neplatná cena produktu."
+    },
+    "auth": {
+      "invalid_credentials": "Neplatný e-mail alebo heslo.",
+      "token_expired": "Vaša relácia vypršala. Prihláste sa znovu.",
+      "token_invalid": "Neplatný autentifikačný token.",
+      "insufficient_permissions": "Nemáte oprávnenie na vykonanie tejto akcie.",
+      "account_locked": "Váš účet bol zablokovaný. Skúste to neskôr.",
+      "email_not_confirmed": "Najprv potvrďte svoju e-mailovú adresu.",
+      "weak_password": "Heslo nespĺňa bezpečnostné požiadavky.",
+      "email_already_exists": "Táto e-mailová adresa je už registrovaná.",
+      "refresh_token_expired": "Vaša relácia vypršala. Prihláste sa znovu.",
+      "refresh_token_invalid": "Neplatná relácia. Prihláste sa znovu.",
+      "token_revoked": "Vaša relácia bola zrušená. Prihláste sa znovu.",
+      "user_not_found": "Používateľ sa nenašiel."
+    },
+    "discount": {
+      "invalid_code": "Neplatný zľavový kód.",
+      "expired": "Tento zľavový kód vypršal.",
+      "not_applicable": "Tento zľavový kód nie je možné použiť na vašu objednávku.",
+      "usage_limit_exceeded": "Tento zľavový kód dosiahol limit použití.",
+      "minimum_not_met": "Minimálna suma objednávky pre túto zľavu nebola dosiahnutá."
+    },
+    "shipping": {
+      "rate_not_found": "Sadzba dopravy sa nenašla.",
+      "unavailable": "Doprava nie je dostupná pre túto destináciu.",
+      "invalid_address": "Neplatná doručovacia adresa.",
+      "calculation_failed": "Nepodarilo sa vypočítať cenu dopravy."
+    },
+    "invoice": {
+      "not_found": "Faktúra sa nenašla.",
+      "generation_failed": "Nepodarilo sa vygenerovať faktúru.",
+      "unauthorized": "Nemáte oprávnenie na prístup k tejto faktúre.",
+      "already_exists": "Faktúra pre túto objednávku už existuje."
+    },
+    "validation": {
+      "failed": "Validácia zlyhala. Skontrolujte svoje údaje.",
+      "missing_required_field": "Povinné pole chýba.",
+      "invalid_format": "Neplatný formát.",
+      "value_out_of_range": "Hodnota je mimo povolený rozsah."
+    },
+    "concurrency": {
+      "modified": "Tieto dáta boli zmenené iným používateľom. Obnovte stránku a skúste znovu.",
+      "optimistic_lock": "Dáta boli zmenené počas vašej úpravy. Obnovte stránku."
+    }
   },
   "actions": {
     "save": "Uložiť",
