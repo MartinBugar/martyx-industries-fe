@@ -97,6 +97,10 @@ export interface AuthResponse {
 export interface LoginErrorResponse {
   error: string;
   type: string;
+  // Account lockout information (returned when account is locked)
+  accountLocked?: boolean;
+  lockedUntil?: string; // ISO 8601 datetime string
+  remainingSeconds?: number;
 }
 
 // Define the reset password request

@@ -2,7 +2,7 @@ import React, { useState, type ReactNode, useEffect, useMemo, useCallback } from
 import type { User } from './authTypes';
 import type { Order } from './authTypes';
 import { AuthContext } from './AuthContext';
-import { authApi, setAuthToken, removeAuthToken } from '../services/api';
+import { authApi, setAuthToken, removeAuthToken, AccountLockedError } from '../services/api';
 import { profileService } from '../services/profileService';
 import { isTokenExpired } from '../services/apiUtils';
 import { ordersService } from '../services/ordersService';
@@ -191,7 +191,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   // Login function - makes an API call to the backend
-  const login = useCallback(async (email: string, password: string): Promise<boolean | { error: string; type: string }> => {
+  const login = useCallback(async (email: string, password: string): Promise<boolean | { error: string; type: string; accountLocked?: boolean; lockedUntil?: string; remainingSeconds?: number }> => {
     try {
       // Rate limiting check
       const identifier = email.toLowerCase();
@@ -271,6 +271,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       return true;
     } catch (error) {
       logError('Login error:', error);
+
+      // Check if the error is about account lockout
+      if (error instanceof AccountLockedError) {
+        logInfo('🔒 Account is locked:', {
+          lockedUntil: error.lockedUntil,
+          remainingSeconds: error.remainingSeconds
+        });
+        return {
+          error: error.message,
+          type: 'account_locked',
+          accountLocked: true,
+          lockedUntil: error.lockedUntil || undefined,
+          remainingSeconds: error.remainingSeconds || undefined
+        };
+      }
 
       // Check if the error is about account not being activated
       // The error can come in multiple forms:

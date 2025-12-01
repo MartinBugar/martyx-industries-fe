@@ -3,7 +3,7 @@
  * Používa zdieľané komponenty a utility funkcie pre lepšiu údržbu kódu
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
@@ -78,11 +78,80 @@ const ConfirmationBanner: React.FC<ConfirmationBannerProps> = ({ status }) => {
 };
 
 /**
+ * Banner pre zobrazenie informácie o zablokovanom účte
+ */
+interface LockoutBannerProps {
+  remainingSeconds: number;
+}
+
+interface LockoutBannerPropsExtended extends LockoutBannerProps {
+  onUnlocked?: () => void;
+}
+
+const LockoutBanner: React.FC<LockoutBannerPropsExtended> = ({ remainingSeconds, onUnlocked }) => {
+  const { t } = useTranslation('auth');
+  const [timeLeft, setTimeLeft] = useState(remainingSeconds);
+
+  useEffect(() => {
+    if (timeLeft <= 0) {
+      onUnlocked?.();
+      return;
+    }
+
+    const timer = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          onUnlocked?.();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [timeLeft, onUnlocked]);
+
+  const formatTime = (seconds: number): string => {
+    if (seconds <= 0) return t('login.lockout.canRetry', 'Môžete skúsiť znova');
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    if (minutes > 0) {
+      return `${minutes} min ${secs} sek`;
+    }
+    return `${secs} sek`;
+  };
+
+  // Don't render if unlocked
+  if (timeLeft <= 0) return null;
+
+  return (
+    <div className="lockout-banner">
+      <div className="lockout-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+          <path d="M12 1C8.676 1 6 3.676 6 7v2H4v14h16V9h-2V7c0-3.324-2.676-6-6-6zm0 2c2.276 0 4 1.724 4 4v2H8V7c0-2.276 1.724-4 4-4zm0 10c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2z"/>
+        </svg>
+      </div>
+      <div className="lockout-content">
+        <h4>{t('login.lockout.title', 'Účet dočasne zablokovaný')}</h4>
+        <p>
+          {t('login.lockout.message', 'Váš účet bol zablokovaný kvôli príliš veľa neúspešným pokusom o prihlásenie.')}
+        </p>
+        <div className="lockout-timer">
+          <span className="timer-label">{t('login.lockout.unlockIn', 'Odomknutie za:')}</span>
+          <span className="timer-value">{formatTime(timeLeft)}</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/**
  * Sekcia pre opätovné odoslanie potvrdzovacieho emailu
  */
-const ResendConfirmation: React.FC<ResendConfirmationProps> = ({ 
-  onResend, 
-  isResending 
+const ResendConfirmation: React.FC<ResendConfirmationProps> = ({
+  onResend,
+  isResending
 }) => (
   <div className="resend-section">
     <div className="resend-icon">
@@ -128,6 +197,32 @@ const Login: React.FC<LoginProps> = ({ confirmationStatus = null }) => {
   const [isResending, setIsResending] = useState(false);
   const [generalError, setGeneralError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [lockoutInfo, setLockoutInfo] = useState<{ remainingSeconds: number } | null>(null);
+
+  // Restore lockout info from sessionStorage on mount (survives page refresh)
+  useEffect(() => {
+    const storedLockout = sessionStorage.getItem('loginLockout');
+    if (storedLockout) {
+      try {
+        const { expiresAt } = JSON.parse(storedLockout);
+        const remainingSeconds = Math.floor((expiresAt - Date.now()) / 1000);
+        if (remainingSeconds > 0) {
+          setLockoutInfo({ remainingSeconds });
+        } else {
+          // Lockout expired, remove from storage
+          sessionStorage.removeItem('loginLockout');
+        }
+      } catch {
+        sessionStorage.removeItem('loginLockout');
+      }
+    }
+  }, []);
+
+  // Callback when lockout expires
+  const handleLockoutExpired = useCallback(() => {
+    setLockoutInfo(null);
+    sessionStorage.removeItem('loginLockout');
+  }, []);
 
   // React Hook Form setup with zod validation
   const {
@@ -158,6 +253,7 @@ const Login: React.FC<LoginProps> = ({ confirmationStatus = null }) => {
   const handleLoginSubmit = useCallback(async (formData: LoginFormData) => {
     setGeneralError(null);
     setShowResendConfirmation(false);
+    setLockoutInfo(null);
 
     try {
       const result: boolean | LoginErrorResponse = await login(formData.email, formData.password);
@@ -165,10 +261,23 @@ const Login: React.FC<LoginProps> = ({ confirmationStatus = null }) => {
       if (result === true) {
         // Úspešné prihlásenie - presmerovanie na domovskú stránku
         navigate('/');
-      } else if (typeof result === 'object' && 'type' in result && result.type === 'email_not_confirmed') {
-        // Email nie je potvrdený - zobrazenie možnosti opätovného odoslania
-        setGeneralError(result.error);
-        setShowResendConfirmation(true);
+      } else if (typeof result === 'object' && 'type' in result) {
+        if (result.type === 'account_locked' && result.remainingSeconds) {
+          // Účet je zablokovaný - zobrazenie odpočtu
+          setLockoutInfo({ remainingSeconds: result.remainingSeconds });
+          setGeneralError(null); // Clear general error, lockout banner will show
+          // Store lockout info in sessionStorage to survive page refresh
+          sessionStorage.setItem('loginLockout', JSON.stringify({
+            expiresAt: Date.now() + (result.remainingSeconds * 1000)
+          }));
+        } else if (result.type === 'email_not_confirmed') {
+          // Email nie je potvrdený - zobrazenie možnosti opätovného odoslania
+          setGeneralError(result.error);
+          setShowResendConfirmation(true);
+        } else {
+          // Iné chyby prihlásenia
+          setGeneralError(result.error || 'Neplatný email alebo heslo');
+        }
       } else {
         // Iné chyby prihlásenia
         setGeneralError('Neplatný email alebo heslo');
@@ -230,14 +339,22 @@ const Login: React.FC<LoginProps> = ({ confirmationStatus = null }) => {
             <h1 className="form-title">{t('login.title')}</h1>
           </div>
 
+          {/* Lockout banner - zobrazí sa ak je účet zablokovaný */}
+          {lockoutInfo && (
+            <LockoutBanner
+              remainingSeconds={lockoutInfo.remainingSeconds}
+              onUnlocked={handleLockoutExpired}
+            />
+          )}
+
           {/* Chybové správy */}
-          {generalError && (
+          {generalError && !lockoutInfo && (
             <div className="form-error">
               <ErrorIcon />
               <span>{generalError}</span>
             </div>
           )}
-          
+
           {/* Resend confirmation sekcia */}
           {showResendConfirmation && (
             <ResendConfirmation
