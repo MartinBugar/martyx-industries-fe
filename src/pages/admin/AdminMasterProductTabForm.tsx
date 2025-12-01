@@ -462,6 +462,10 @@ const AdminMasterProductTabForm: React.FC = () => {
   const handleRemoveAttachment = async (attachmentId: number) => {
     if (!tabId) return;
 
+    if (!window.confirm('Are you sure you want to remove this attachment from the tab?')) {
+      return;
+    }
+
     try {
       await adminRemoveAttachmentFromTab(Number(tabId), attachmentId);
       await loadAttachments();
