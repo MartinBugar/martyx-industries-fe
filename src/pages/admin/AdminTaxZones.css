@@ -1,0 +1,495 @@
+/* Admin Tax Zones Page Styles */
+
+.admin-tax-zones {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  gap: 16px;
+}
+
+.header-content h1 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin: 0 0 4px;
+  color: var(--text-primary);
+}
+
+.header-content p {
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* Loading State */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: var(--text-secondary);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border-color);
+  border-top-color: var(--primary-color);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  border: 2px dashed var(--border-color);
+}
+
+.empty-state svg {
+  color: var(--text-tertiary);
+  margin-bottom: 16px;
+}
+
+.empty-state h3 {
+  margin: 0 0 8px;
+  color: var(--text-primary);
+}
+
+.empty-state p {
+  color: var(--text-secondary);
+  margin: 0 0 20px;
+}
+
+/* Tax Zone Cards */
+.tax-zones-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tax-zone-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+}
+
+.tax-zone-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.tax-zone-card.inactive {
+  opacity: 0.7;
+}
+
+.zone-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.zone-header:hover {
+  background: var(--bg-hover);
+}
+
+.zone-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.chevron {
+  color: var(--text-tertiary);
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+
+.chevron.expanded {
+  transform: rotate(90deg);
+}
+
+.zone-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.zone-title h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.zone-code {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 2px 8px;
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+  color: var(--text-secondary);
+  font-family: monospace;
+}
+
+.zone-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 16px;
+}
+
+.status-badge {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 12px;
+}
+
+.status-badge.active {
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+}
+
+.status-badge.inactive {
+  background: rgba(107, 114, 128, 0.1);
+  color: #6b7280;
+}
+
+.badge.reverse-charge {
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  background: rgba(59, 130, 246, 0.1);
+  color: #2563eb;
+  border-radius: 12px;
+}
+
+.zone-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.zone-countries {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 20px 12px;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.zone-countries svg {
+  flex-shrink: 0;
+}
+
+.zone-description {
+  padding: 0 20px 16px;
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* Tax Rates Section */
+.zone-rates {
+  border-top: 1px solid var(--border-color);
+  padding: 20px;
+  background: var(--bg-secondary);
+}
+
+.rates-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.rates-header h4 {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.rates-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.rates-table th,
+.rates-table td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.rates-table th {
+  font-weight: 500;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.rates-table tr:last-child td {
+  border-bottom: none;
+}
+
+.rates-table tr.inactive {
+  opacity: 0.6;
+}
+
+.rate-type {
+  font-size: 0.7rem;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.rate-type.standard {
+  background: rgba(59, 130, 246, 0.1);
+  color: #2563eb;
+}
+
+.rate-type.reduced {
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+}
+
+.rate-type.super_reduced {
+  background: rgba(139, 92, 246, 0.1);
+  color: #7c3aed;
+}
+
+.rate-type.zero {
+  background: rgba(107, 114, 128, 0.1);
+  color: #6b7280;
+}
+
+.rate-type.exempt {
+  background: rgba(249, 115, 22, 0.1);
+  color: #ea580c;
+}
+
+.rate-value {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.rate-value svg {
+  color: var(--text-tertiary);
+}
+
+.check-icon {
+  color: #059669;
+}
+
+.x-icon {
+  color: var(--text-tertiary);
+}
+
+.status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.status-dot.active {
+  background: #10b981;
+}
+
+.status-dot.inactive {
+  background: #9ca3af;
+}
+
+.rate-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.no-rates {
+  text-align: center;
+  padding: 30px 20px;
+  color: var(--text-secondary);
+}
+
+.no-rates svg {
+  margin-bottom: 8px;
+  opacity: 0.5;
+}
+
+.no-rates p {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background: var(--primary-color);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+}
+
+.btn-secondary {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+  background: var(--bg-tertiary);
+}
+
+.btn-danger {
+  background: #ef4444;
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #dc2626;
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 0.8rem;
+}
+
+.btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-icon:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.btn-icon.danger:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.btn-icon.sm {
+  width: 28px;
+  height: 28px;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-content {
+  background: var(--bg-primary);
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content h3 {
+  margin: 0 0 12px;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+}
+
+.modal-content p {
+  margin: 0 0 20px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .admin-tax-zones {
+    padding: 16px;
+  }
+
+  .page-header {
+    flex-direction: column;
+  }
+
+  .zone-header {
+    padding: 12px 16px;
+  }
+
+  .zone-info {
+    flex-wrap: wrap;
+  }
+
+  .zone-meta {
+    margin-left: 32px;
+    margin-top: 8px;
+    width: 100%;
+  }
+
+  .rates-table {
+    font-size: 0.8rem;
+  }
+
+  .rates-table th,
+  .rates-table td {
+    padding: 8px;
+  }
+}

@@ -112,6 +112,8 @@ import {
   AdminManualOrderHistory,
   AdminReviews,
   AdminSystemSettings,
+  AdminTaxZones,
+  AdminTaxZoneForm,
   ConstellationParticles
 } from './utils/lazyImports'
 
@@ -491,6 +493,21 @@ const MainContent = React.memo(() => {
             <Route path="/admin/shipping" element={
               <RequireAdmin>
                 <AdminShippingZones />
+              </RequireAdmin>
+            } />
+            <Route path="/admin/tax/zones" element={
+              <RequireAdmin>
+                <AdminTaxZones />
+              </RequireAdmin>
+            } />
+            <Route path="/admin/tax/zones/new" element={
+              <RequireAdmin>
+                <AdminTaxZoneForm />
+              </RequireAdmin>
+            } />
+            <Route path="/admin/tax/zones/:id/edit" element={
+              <RequireAdmin>
+                <AdminTaxZoneForm />
               </RequireAdmin>
             } />
             <Route path="/admin/manual-orders/create" element={
