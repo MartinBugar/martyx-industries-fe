@@ -9,7 +9,7 @@
  * - Caching capabilities
  */
 
-import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
+import { API_BASE_URL, API_PREFIX, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
 import { advancedCache } from '../utils/advancedCache';
 import { refreshAccessToken, shouldRefreshToken } from '../utils/tokenRefresh';
 
@@ -69,7 +69,22 @@ class ApiClient {
       }
     }
 
-    const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;
+    // Build URL with versioned API prefix
+    // If endpoint already starts with /api/, replace with versioned prefix
+    // If endpoint is a full URL, use as-is
+    let url: string;
+    if (endpoint.startsWith('http')) {
+      url = endpoint;
+    } else if (endpoint.startsWith('/api/')) {
+      // Replace /api/ with /api/v1/ for explicit versioning
+      url = `${API_BASE_URL}${API_PREFIX}${endpoint.substring(4)}`;
+    } else if (endpoint.startsWith('/')) {
+      // Add versioned prefix to path
+      url = `${API_BASE_URL}${API_PREFIX}${endpoint}`;
+    } else {
+      // Add versioned prefix with leading slash
+      url = `${API_BASE_URL}${API_PREFIX}/${endpoint}`;
+    }
     const requestKey = `${method}:${url}:${JSON.stringify(body)}`;
 
     // Check advanced cache for GET requests

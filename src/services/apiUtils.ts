@@ -189,6 +189,43 @@ const computeApiBaseUrl = (): string => {
 export const API_BASE_URL = computeApiBaseUrl();
 
 /**
+ * API Version prefix for explicit versioning.
+ *
+ * Backend supports:
+ * - /api/v1/* - Current stable version (rewrites to /api/*)
+ * - /api/v2/* - Optimized endpoints (dedicated controllers)
+ * - /api/* - Legacy (deprecated, use /api/v1/* instead)
+ *
+ * Using explicit versioning allows for future breaking changes
+ * without affecting existing clients.
+ */
+export const API_VERSION = 'v1';
+export const API_PREFIX = `/api/${API_VERSION}`;
+
+/**
+ * Build a versioned API URL.
+ *
+ * @param endpoint - API endpoint path (e.g., '/products', '/users/me')
+ * @returns Full URL with base URL and version prefix
+ *
+ * @example
+ * buildApiUrl('/products') => 'http://localhost:8080/api/v1/products'
+ * buildApiUrl('/users/me') => 'http://localhost:8080/api/v1/users/me'
+ */
+export const buildApiUrl = (endpoint: string): string => {
+  // If endpoint already has /api/ prefix, replace it with versioned prefix
+  if (endpoint.startsWith('/api/')) {
+    return `${API_BASE_URL}/api/${API_VERSION}${endpoint.substring(4)}`;
+  }
+  // If endpoint starts with /, add versioned prefix
+  if (endpoint.startsWith('/')) {
+    return `${API_BASE_URL}${API_PREFIX}${endpoint}`;
+  }
+  // Otherwise, add versioned prefix with leading slash
+  return `${API_BASE_URL}${API_PREFIX}/${endpoint}`;
+};
+
+/**
  * Get current language from i18n with fallback
  */
 export const getCurrentLanguage = (): string => {
