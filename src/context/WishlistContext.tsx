@@ -4,6 +4,7 @@ import { hybridProductService } from '../services/hybridProductService';
 import { useAuth } from './useAuth';
 import type { WishlistContextType, WishlistItem, WishlistStats } from '../types/wishlist';
 import { logError } from '../services/logger';
+import { triggerHaptic } from '../hooks/useHapticFeedback';
 
 const WishlistContext = createContext<WishlistContextType | undefined>(undefined);
 
@@ -165,6 +166,7 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
     setItems(prev => [optimisticItem, ...prev]);
     setTotalCount(prev => prev + 1);
     setLastUpdated(new Date().toISOString());
+    triggerHaptic('success'); // Haptic feedback for wishlist add
 
     // Update stats optimistically
     if (stats) {

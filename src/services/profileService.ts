@@ -87,6 +87,7 @@ export const profileService = {
       const response = await fetch(`${API_BASE_URL}/api/users/me`, withLangHeaders({
         method: 'PUT',
         headers: headers as HeadersInit,
+        credentials: 'include', // Required for CSRF cookie
         body: JSON.stringify(profileData),
       }));
 

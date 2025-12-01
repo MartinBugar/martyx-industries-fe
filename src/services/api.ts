@@ -57,17 +57,29 @@ export const authApi = {
   },
   
   // Logout endpoint - clears httpOnly refresh token cookie
+  // NOTE: This endpoint must work even with expired/invalid token
+  // We intentionally don't send Authorization header - logout should always succeed
   logout: async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/auth/logout`, withLangHeaders({
         method: 'POST',
-        headers: defaultHeaders as HeadersInit,
+        headers: {
+          'Content-Type': 'application/json',
+          // No Authorization header - logout must work without valid token
+        } as HeadersInit,
       }));
 
-      return handleResponse(response);
+      // Don't use handleResponse - we don't want 401 handling for logout
+      // Backend always returns 200 for logout (even if token was invalid)
+      if (!response.ok) {
+        logError('Logout returned non-OK status:', response.status);
+      }
+      return null;
     } catch (error) {
-      logError('Logout API error:', error);
-      throw error;
+      // Logout errors are not critical - local cleanup will happen anyway
+      logError('Logout API error (non-critical):', error);
+      // Don't throw - logout should always "succeed" from caller's perspective
+      return null;
     }
   },
 

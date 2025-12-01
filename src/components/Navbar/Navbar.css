@@ -291,6 +291,71 @@ html.hydrated .shop-header .cart-icon {
     justify-content: center;
     font-size: 0.8rem;
     font-weight: bold;
+    transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Bounce animation for cart badge when item added */
+.cart-count.bounce {
+    animation: cartBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes cartBounce {
+    0% { transform: scale(1); }
+    30% { transform: scale(1.4); }
+    50% { transform: scale(0.9); }
+    70% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+}
+
+/* Wishlist heart icon styles */
+.wishlist-icon {
+    position: relative;
+    cursor: pointer;
+    font-size: 1.5rem;
+    transition: transform 0.2s ease;
+}
+
+.wishlist-icon:hover {
+    transform: scale(1.1);
+}
+
+.wishlist-icon:active {
+    transform: scale(0.95);
+}
+
+/* Heart beat animation for wishlist */
+.wishlist-icon.heartbeat {
+    animation: heartBeat 0.6s ease-in-out;
+}
+
+@keyframes heartBeat {
+    0% { transform: scale(1); }
+    15% { transform: scale(1.3); }
+    30% { transform: scale(1); }
+    45% { transform: scale(1.2); }
+    60% { transform: scale(1); }
+}
+
+/* Wishlist count badge */
+.wishlist-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: #ec4899;
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: bold;
+    transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.wishlist-count.bounce {
+    animation: cartBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
 /* Responsive styles */

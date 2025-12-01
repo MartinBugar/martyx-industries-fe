@@ -193,19 +193,194 @@
   .order-confirmation-container {
     padding: 1rem;
   }
-  
+
   .order-success, .order-details, .digital-delivery, .next-steps {
     padding: 1.5rem;
   }
-  
+
   .success-icon {
     height: 60px;
     width: 60px;
     line-height: 60px;
     font-size: 2rem;
   }
-  
+
   .order-success h1 {
     font-size: 1.5rem;
+  }
+}
+
+/* =========================================================================
+   PRINT STYLES - Clean, professional order confirmation for printing
+   ========================================================================= */
+@media print {
+  /* Hide non-essential elements */
+  .shop-header,
+  .footer,
+  .next-steps,
+  .continue-shopping-btn,
+  .download-btn,
+  nav,
+  header,
+  .cookie-consent,
+  .chat-widget,
+  button:not(.print-btn) {
+    display: none !important;
+  }
+
+  /* Reset page layout */
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 12pt !important;
+    line-height: 1.4 !important;
+  }
+
+  .app-container,
+  .main-content {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .order-confirmation-container {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .order-confirmation-content {
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  /* Success header - simplified for print */
+  .order-success {
+    background: white !important;
+    color: black !important;
+    border-bottom: 2px solid #333 !important;
+    padding: 1rem 0 !important;
+  }
+
+  .success-icon {
+    display: none !important;
+  }
+
+  .order-success h1 {
+    font-size: 18pt !important;
+    color: black !important;
+    margin: 0 !important;
+  }
+
+  .order-success p {
+    color: #333 !important;
+    font-size: 10pt !important;
+  }
+
+  /* Order details - clean formatting */
+  .order-details {
+    padding: 1rem 0 !important;
+    border-bottom: 1px solid #ccc !important;
+  }
+
+  .order-details h2 {
+    font-size: 14pt !important;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 0.5rem;
+  }
+
+  .order-info {
+    background: white !important;
+    padding: 0.5rem 0 !important;
+  }
+
+  .info-row {
+    padding: 0.4rem 0 !important;
+    border-bottom: 1px dotted #ccc !important;
+    font-size: 11pt !important;
+  }
+
+  .info-row span:first-child {
+    font-weight: bold !important;
+  }
+
+  /* Digital delivery section */
+  .digital-delivery {
+    padding: 1rem 0 !important;
+  }
+
+  .digital-delivery h2 {
+    font-size: 14pt !important;
+  }
+
+  .email-status {
+    background: #f5f5f5 !important;
+    border: 1px solid #ddd !important;
+    padding: 0.5rem !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .download-info {
+    background: #fffacd !important;
+    border: 1px solid #ddd !important;
+    padding: 0.5rem !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Order items table */
+  .order-items {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin: 1rem 0 !important;
+  }
+
+  .order-items th,
+  .order-items td {
+    border: 1px solid #ddd !important;
+    padding: 0.5rem !important;
+    text-align: left !important;
+  }
+
+  .order-items th {
+    background: #f5f5f5 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Page break control */
+  .order-confirmation-content {
+    page-break-inside: avoid;
+  }
+
+  .order-details,
+  .digital-delivery {
+    page-break-inside: avoid;
+  }
+
+  /* Add print date and URL */
+  .order-confirmation-container::after {
+    content: "Printed on: " attr(data-print-date);
+    display: block;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #ccc;
+    font-size: 9pt;
+    color: #666;
+    text-align: center;
+  }
+
+  /* Links - show URL */
+  a[href]::after {
+    content: " (" attr(href) ")";
+    font-size: 9pt;
+    color: #666;
+  }
+
+  /* Hide animations */
+  * {
+    animation: none !important;
+    transition: none !important;
   }
 }

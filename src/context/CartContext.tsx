@@ -10,6 +10,8 @@ import { useDebouncedCallback } from '../hooks/useDebouncedCallback';
 import { stockService } from '../services/stockService';
 import { logInfo, logWarn, logError } from '../services/logger';
 import toast from 'react-hot-toast';
+import { triggerHaptic } from '../hooks/useHapticFeedback';
+import { playSoundEffect } from '../hooks/useSoundEffects';
 
 // Props for the CartProvider component
 interface CartProviderProps {
@@ -554,6 +556,15 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       }
     });
 
+    // Trigger haptic and sound feedback based on result
+    if (result === 'added') {
+      triggerHaptic('success');
+      playSoundEffect('addToCart');
+    } else if (result === 'limit' || result === 'out_of_stock') {
+      triggerHaptic('warning');
+      playSoundEffect('error');
+    }
+
     // Sync to backend with rollback on critical errors
     if (result === 'added') {
       cartService
@@ -604,6 +615,10 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
       return filtered;
     });
+
+    // Haptic and sound feedback for removal
+    triggerHaptic('light');
+    playSoundEffect('removeFromCart');
 
     // Sync to backend with rollback on critical errors
     const variantIdNum = parseInt(variantId, 10);
