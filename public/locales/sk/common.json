@@ -201,6 +201,17 @@
     "tryAgain": "Skúsiť znovu",
     "homeButton": "Na hlavnú stránku"
   },
+  "recentlyViewed": {
+    "title": "Naposledy prezerané",
+    "empty": "Žiadne naposledy prezerané produkty"
+  },
+  "sessionWarning": {
+    "title": "Relácia končí",
+    "message": "Vaša relácia vyprší o {{time}}. Chcete zostať prihlásený?",
+    "extend": "Zostať prihlásený",
+    "extending": "Predlžujem...",
+    "logout": "Odhlásiť sa"
+  },
   "placeholders": {
     "review_placeholder": "Podeľte sa o svoje myšlienky o tomto produkte..."
   },

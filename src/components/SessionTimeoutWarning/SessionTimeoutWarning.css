@@ -1,0 +1,134 @@
+.session-warning-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.session-warning-modal {
+  background: var(--card, #141a20);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.session-warning-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.session-warning-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text, #ffffff);
+  margin-bottom: 0.75rem;
+}
+
+.session-warning-message {
+  font-size: 1rem;
+  color: var(--text-muted, rgba(255, 255, 255, 0.7));
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.session-warning-timer {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--warning, #f59e0b);
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 1.5rem;
+}
+
+.session-warning-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.session-warning-btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.session-warning-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.session-warning-btn-primary {
+  background: linear-gradient(135deg, var(--accent, #00d4ff) 0%, #0099cc 100%);
+  color: #000;
+}
+
+.session-warning-btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 212, 255, 0.3);
+}
+
+.session-warning-btn-secondary {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--text, #ffffff);
+}
+
+.session-warning-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .session-warning-modal {
+    padding: 1.5rem;
+  }
+
+  .session-warning-actions {
+    flex-direction: column;
+  }
+
+  .session-warning-btn {
+    width: 100%;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .session-warning-overlay,
+  .session-warning-modal {
+    animation: none;
+  }
+}

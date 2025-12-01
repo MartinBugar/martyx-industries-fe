@@ -200,6 +200,17 @@
     "tryAgain": "Erneut versuchen",
     "homeButton": "Zur Startseite"
   },
+  "recentlyViewed": {
+    "title": "Zuletzt angesehen",
+    "empty": "Keine kürzlich angesehenen Produkte"
+  },
+  "sessionWarning": {
+    "title": "Sitzung läuft ab",
+    "message": "Ihre Sitzung läuft in {{time}} ab. Möchten Sie angemeldet bleiben?",
+    "extend": "Angemeldet bleiben",
+    "extending": "Wird verlängert...",
+    "logout": "Abmelden"
+  },
   "placeholders": {
     "review_placeholder": "Teilen Sie Ihre Gedanken zu diesem Produkt..."
   },

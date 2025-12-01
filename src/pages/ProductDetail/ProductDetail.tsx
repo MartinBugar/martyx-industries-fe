@@ -19,6 +19,7 @@ import type { ProductTabDto } from '../../types/api';
 import { useAuth } from '../../context/useAuth';
 import { trackProductView, extractUTMParams } from '../../services/backendAnalyticsService';
 import { debounce } from '../../utils/debounce';
+import { useRecentlyViewed } from '../../hooks/useRecentlyViewed';
 import { logInfo, logWarn, logError } from '../../services/logger';
 import { stockService } from '../../services/stockService';
 import { useSeo } from '../../hooks/useSeo';
@@ -398,12 +399,18 @@ const ProductDetail: React.FC = () => {
         []
     );
 
+    // Recently viewed products tracking
+    const { addProduct: addToRecentlyViewed } = useRecentlyViewed();
+
     // Track product view analytics when product is loaded
     React.useEffect(() => {
         if (!product) return;
 
         debouncedTrackView(product.masterProductId, user?.id ? parseInt(user.id, 10) : undefined);
-    }, [product?.masterProductId, user?.id, debouncedTrackView]); // Track when product ID or user changes
+
+        // Track in recently viewed (using masterProductId)
+        addToRecentlyViewed(product.masterProductId);
+    }, [product?.masterProductId, user?.id, debouncedTrackView, addToRecentlyViewed]); // Track when product ID or user changes
 
     // Load gallery images from database (with metadata and proper ordering) - ONCE per product
     React.useEffect(() => {

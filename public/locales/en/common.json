@@ -201,6 +201,17 @@
     "tryAgain": "Try Again",
     "homeButton": "Back to Home"
   },
+  "recentlyViewed": {
+    "title": "Recently Viewed",
+    "empty": "No recently viewed products"
+  },
+  "sessionWarning": {
+    "title": "Session Expiring",
+    "message": "Your session will expire in {{time}}. Would you like to stay logged in?",
+    "extend": "Stay Logged In",
+    "extending": "Extending...",
+    "logout": "Log Out"
+  },
   "placeholders": {
     "review_placeholder": "Share your thoughts about this product..."
   },

@@ -32,6 +32,7 @@ import { useAuth } from './context/useAuth'
 // Cart component will be loaded via lazy import
 import Footer from './components/Footer/Footer'
 import SessionExpiredNotification from './components/SessionExpiredNotification/SessionExpiredNotification'
+import SessionTimeoutWarning from './components/SessionTimeoutWarning/SessionTimeoutWarning'
 import CookieConsent from './components/CookieConsent/CookieConsent'
 import RequireAdmin from './pages/admin/RequireAdmin'
 import { useIOSNoZoomOnFocus } from './hooks/useIOSNoZoomOnFocus'
@@ -592,6 +593,7 @@ function AppContent() {
       <ScrollToTop />
       <ReferralTracker />
       <MainContent />
+      <SessionTimeoutWarning />
       <RateLimitNotification
         error={rateLimitError}
         onClose={() => setRateLimitError(null)}
