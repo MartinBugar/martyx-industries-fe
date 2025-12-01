@@ -73,6 +73,7 @@ export const AdminReviews = lazy(() => import('../pages/admin/AdminReviews'));
 export const AdminSystemSettings = lazy(() => import('../pages/admin/AdminSystemSettings'));
 export const AdminTaxZones = lazy(() => import('../pages/admin/AdminTaxZones'));
 export const AdminTaxZoneForm = lazy(() => import('../pages/admin/AdminTaxZoneForm'));
+export const AdminRoles = lazy(() => import('../pages/admin/AdminRoles'));
 
 // Components - lazy loaded for non-critical features
 export const EmailConfirmation = lazy(() => import('../components/EmailConfirmation/EmailConfirmation'));
