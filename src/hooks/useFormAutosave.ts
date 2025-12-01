@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useRef } from 'react';
+import { useEffect, useCallback, useRef, useState } from 'react';
 import { logInfo, logWarn } from '../services/logger';
 
 interface UseFormAutosaveOptions<T> {
@@ -50,6 +50,10 @@ export function useFormAutosave<T extends Record<string, unknown>>({
 }: UseFormAutosaveOptions<T>) {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastSavedRef = useRef<string>('');
+
+  // State for saved data - loaded once on mount
+  const [savedData, setSavedData] = useState<Partial<T> | null>(null);
+  const isInitializedRef = useRef(false);
 
   // Filter out excluded fields before saving
   const filterData = useCallback((formData: T): Partial<T> => {
@@ -186,17 +190,33 @@ export function useFormAutosave<T extends Record<string, unknown>>({
     };
   }, [data, enabled, saveData]);
 
+  // Load saved data only once on mount
+  useEffect(() => {
+    if (!isInitializedRef.current) {
+      isInitializedRef.current = true;
+      setSavedData(loadSavedData());
+    }
+  }, [loadSavedData]);
+
+  // Clear savedData state when clearSavedData is called
+  const clearSavedDataWithState = useCallback(() => {
+    clearSavedData();
+    setSavedData(null);
+  }, [clearSavedData]);
+
   return {
-    /** Saved form data (null if none exists or expired) */
-    savedData: loadSavedData(),
+    /** Saved form data (null if none exists or expired) - loaded once on mount */
+    savedData,
     /** Clear all saved data for this form */
-    clearSavedData,
+    clearSavedData: clearSavedDataWithState,
     /** Check if there's valid saved data */
     hasSavedData,
     /** Get the timestamp of the last save */
     getLastSaveTime,
     /** Manually trigger a save */
-    saveNow: () => saveData(data)
+    saveNow: () => saveData(data),
+    /** Reload saved data from storage */
+    reloadSavedData: () => setSavedData(loadSavedData())
   };
 }
 
