@@ -99,7 +99,6 @@ export const translateApiError = (
   // Convert CART_003 -> errors.cart.out_of_stock pattern
   const parts = errorCode.split('_');
   if (parts.length >= 2) {
-    const category = parts[0].toLowerCase();
     // Try the mapped key from API_ERROR_CODES
     const mappedKey = API_ERROR_CODES[errorCode as keyof typeof API_ERROR_CODES];
     if (mappedKey) {
