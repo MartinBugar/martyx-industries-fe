@@ -89,3 +89,88 @@ export const SkeletonCard: React.FC<SkeletonCardProps> = ({ hasImage = false, li
     </div>
   );
 };
+
+// Product Card Skeleton - matches ProductCard layout
+export const ProductCardSkeleton: React.FC = () => {
+  return (
+    <div className="skeleton-product-card" aria-hidden="true">
+      {/* Image placeholder */}
+      <Skeleton
+        variant="rectangular"
+        height={200}
+        className="skeleton-product-image"
+        animation="wave"
+      />
+      {/* Content area */}
+      <div className="skeleton-product-content">
+        {/* Title */}
+        <Skeleton variant="text" height={24} width="85%" animation="wave" />
+        {/* Description lines */}
+        <Skeleton variant="text" height={14} width="100%" animation="wave" />
+        <Skeleton variant="text" height={14} width="90%" animation="wave" />
+        <Skeleton variant="text" height={14} width="70%" animation="wave" />
+      </div>
+      {/* Footer - price and button */}
+      <div className="skeleton-product-footer">
+        <Skeleton variant="text" height={28} width={80} animation="wave" />
+        <Skeleton variant="rectangular" height={44} width={120} animation="wave" />
+      </div>
+    </div>
+  );
+};
+
+// Product Grid Skeleton - shows multiple product skeletons
+export interface ProductGridSkeletonProps {
+  count?: number;
+}
+
+export const ProductGridSkeleton: React.FC<ProductGridSkeletonProps> = ({ count = 6 }) => {
+  return (
+    <div className="skeleton-products-grid" role="status" aria-label="Loading products">
+      {Array.from({ length: count }).map((_, i) => (
+        <ProductCardSkeleton key={`skeleton-${i}`} />
+      ))}
+    </div>
+  );
+};
+
+// Order Item Skeleton - for order history
+export const OrderItemSkeleton: React.FC = () => {
+  return (
+    <div className="skeleton-order-item" aria-hidden="true">
+      <div className="skeleton-order-header">
+        <Skeleton variant="text" height={20} width={150} animation="wave" />
+        <Skeleton variant="text" height={16} width={100} animation="wave" />
+      </div>
+      <div className="skeleton-order-details">
+        <Skeleton variant="text" height={14} width="60%" animation="wave" />
+        <Skeleton variant="text" height={14} width="40%" animation="wave" />
+      </div>
+      <div className="skeleton-order-footer">
+        <Skeleton variant="rectangular" height={32} width={120} animation="wave" />
+      </div>
+    </div>
+  );
+};
+
+// Checkout Summary Skeleton
+export const CheckoutSummarySkeleton: React.FC = () => {
+  return (
+    <div className="skeleton-checkout-summary" aria-hidden="true">
+      <Skeleton variant="text" height={24} width="50%" animation="wave" />
+      <div className="skeleton-summary-items">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={`item-${i}`} className="skeleton-summary-row">
+            <Skeleton variant="text" height={16} width="70%" animation="wave" />
+            <Skeleton variant="text" height={16} width={60} animation="wave" />
+          </div>
+        ))}
+      </div>
+      <div className="skeleton-summary-divider" />
+      <div className="skeleton-summary-row skeleton-total">
+        <Skeleton variant="text" height={20} width={80} animation="wave" />
+        <Skeleton variant="text" height={24} width={100} animation="wave" />
+      </div>
+    </div>
+  );
+};

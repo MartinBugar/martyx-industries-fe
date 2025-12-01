@@ -8,6 +8,7 @@ import ProductCard from '../../components/ProductCard/ProductCard';
 import OptimizedImage from '../../components/OptimizedImage/OptimizedImage';
 import { productGalleryService } from '../../services/productGalleryService';
 import VariantSelectorModal from '../../components/VariantSelectorModal/VariantSelectorModal';
+import { ProductGridSkeleton } from '../../components/ui/Skeleton';
 import './Products.css';
 import { logInfo, logError } from '../../services/logger';
 import { useSeo } from '../../hooks/useSeo';
@@ -241,12 +242,21 @@ const Products: React.FC = () => {
             });
     }, [products, searchTerm, sortBy]);
 
-    // Show loading state
+    // Show loading state with skeleton
     if (loading) {
         return (
             <div className="products-page">
                 <div className="products-container">
-                    <div className="loading-message">{t('loading')}</div>
+                    {/* Toolbar skeleton */}
+                    <div className="products-toolbar">
+                        <div className="sort-container">
+                            <div className="sort-select skeleton-select" style={{ opacity: 0.5 }} />
+                        </div>
+                    </div>
+                    {/* Products grid skeleton */}
+                    <div className="products-grid-container">
+                        <ProductGridSkeleton count={6} />
+                    </div>
                 </div>
             </div>
         );
