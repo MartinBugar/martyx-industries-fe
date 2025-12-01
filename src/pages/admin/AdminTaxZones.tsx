@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Edit, Trash2, Globe, MapPin, ChevronRight, Percent, Check, X } from 'lucide-react';
-import { adminTaxService, TaxZone, TaxRate } from '../../services/adminTaxService';
+import { adminTaxService, TaxZone } from '../../services/adminTaxService';
 import { logError } from '../../services/logger';
 import toast from 'react-hot-toast';
 import './AdminTaxZones.css';
@@ -16,61 +16,71 @@ const AdminTaxZones: React.FC = () => {
   const navigate = useNavigate();
   const [zones, setZones] = useState<TaxZone[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState(false);
   const [expandedZone, setExpandedZone] = useState<number | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<{ type: 'zone' | 'rate'; id: number } | null>(null);
 
-  // Load tax zones on mount
-  useEffect(() => {
-    loadTaxZones();
-  }, []);
-
-  const loadTaxZones = async () => {
+  // Load tax zones with proper cleanup to prevent memory leaks
+  const loadTaxZones = useCallback(async (signal?: AbortSignal) => {
     try {
       setLoading(true);
+      // Backend now returns zones with rates in single query (no N+1)
       const data = await adminTaxService.getAllTaxZones();
 
-      // Load rates for each zone
-      const zonesWithRates = await Promise.all(
-        data.map(async (zone) => {
-          const fullZone = await adminTaxService.getTaxZoneById(zone.id);
-          return fullZone;
-        })
-      );
+      // Check if component was unmounted
+      if (signal?.aborted) return;
 
-      setZones(zonesWithRates);
+      setZones(data);
     } catch (error) {
+      if (signal?.aborted) return;
       logError('Failed to load tax zones:', error);
       toast.error('Failed to load tax zones');
     } finally {
-      setLoading(false);
+      if (!signal?.aborted) {
+        setLoading(false);
+      }
     }
-  };
+  }, []);
 
-  const handleDeleteZone = async (id: number) => {
+  // Load tax zones on mount with cleanup
+  useEffect(() => {
+    const abortController = new AbortController();
+    loadTaxZones(abortController.signal);
+
+    return () => {
+      abortController.abort();
+    };
+  }, [loadTaxZones]);
+
+  const handleDeleteZone = useCallback(async (id: number) => {
     try {
+      setDeleting(true);
+      setDeleteConfirm(null);
       await adminTaxService.deleteTaxZone(id);
       toast.success('Tax zone deleted');
-      loadTaxZones();
+      await loadTaxZones();
     } catch (error) {
       logError('Failed to delete tax zone:', error);
       toast.error('Failed to delete tax zone');
     } finally {
-      setDeleteConfirm(null);
+      setDeleting(false);
     }
-  };
+  }, [loadTaxZones]);
 
-  const handleDeleteRate = async (id: number) => {
+  const handleDeleteRate = useCallback(async (id: number) => {
     try {
+      setDeleting(true);
+      setDeleteConfirm(null);
       await adminTaxService.deleteTaxRate(id);
       toast.success('Tax rate deleted');
-      loadTaxZones();
+      await loadTaxZones();
     } catch (error) {
       logError('Failed to delete tax rate:', error);
       toast.error('Failed to delete tax rate');
     } finally {
-      setDeleteConfirm(null);
+      setDeleting(false);
     }
-  };
+  }, [loadTaxZones]);
 
   const toggleZone = (zoneId: number) => {
     setExpandedZone(expandedZone === zoneId ? null : zoneId);
@@ -277,6 +287,7 @@ const AdminTaxZones: React.FC = () => {
               </button>
               <button
                 className="btn btn-danger"
+                disabled={deleting}
                 onClick={() => {
                   if (deleteConfirm.type === 'zone') {
                     handleDeleteZone(deleteConfirm.id);
@@ -285,7 +296,7 @@ const AdminTaxZones: React.FC = () => {
                   }
                 }}
               >
-                Delete
+                {deleting ? 'Deleting...' : 'Delete'}
               </button>
             </div>
           </div>
