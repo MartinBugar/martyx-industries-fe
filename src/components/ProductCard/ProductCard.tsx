@@ -168,6 +168,15 @@ const ProductCard: React.FC<ProductCardProps> = React.memo(({
               onClick={() => onAddToCart(product)}
               disabled={isUnavailable || !!popupState?.visible}
               aria-live="polite"
+              aria-label={
+                popupState?.visible
+                  ? popupState.message
+                  : hasMultipleVariants
+                    ? `Select options for ${product.name}`
+                    : isUnavailable
+                      ? `${product.name} is unavailable`
+                      : `Add ${product.name} to cart`
+              }
             >
               {popupState?.visible ? (
                 <span className="popup-message">
