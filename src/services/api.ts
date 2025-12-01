@@ -1,6 +1,8 @@
 import { logError, logInfo } from './logger';
 // Import common API utilities
 import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders, updateAuthorizationHeader } from './apiUtils';
+// Import secure token manager
+import { setAccessToken, clearAuthData } from '../utils/tokenManager';
 import type {
   AuthResponse,
   ResetPasswordResponse
@@ -132,12 +134,25 @@ export const authApi = {
   },
 };
 
-// Function to add auth token to requests
+/**
+ * Set auth token for API requests
+ * SECURITY: Token is stored in memory only (via tokenManager)
+ * and also set in Authorization header for immediate use
+ */
 export const setAuthToken = (token: string) => {
+  // Store in memory (secure)
+  setAccessToken(token);
+  // Set header for API requests
   updateAuthorizationHeader(token);
 };
 
-// Function to remove auth token from requests
+/**
+ * Remove auth token from API requests
+ * Clears both memory storage and Authorization header
+ */
 export const removeAuthToken = () => {
+  // Clear from memory
+  clearAuthData();
+  // Clear header
   updateAuthorizationHeader(null);
 };

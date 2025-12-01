@@ -335,25 +335,54 @@ export const updateAuthorizationHeader = (token: string | null) => {
   }
 };
 
-// Bootstrap Authorization header from stored token on module load to survive refreshes
+/**
+ * Bootstrap Authorization header on module load
+ *
+ * SECURITY: This bootstraps from localStorage for backwards compatibility.
+ * New logins store token in memory only (tokenManager).
+ * On page refresh, AuthProvider will call /refresh endpoint.
+ *
+ * MIGRATION: This localStorage bootstrap can be removed after all users
+ * have been migrated to the new memory-only flow.
+ */
 try {
   if (typeof window !== 'undefined') {
-    const token = window.localStorage.getItem('token');
-
-    if (token && typeof token === 'string' && token.length > 0) {
-      const payload = decodeJWT(token);
-      const now = Math.floor(Date.now() / 1000);
-
-      if (payload && typeof payload.exp === 'number' && payload.exp > now) {
-        // Token valid: set Authorization header for immediate API calls
-        updateAuthorizationHeader(token);
-      } else {
-        // Expired/invalid token: cleanup
-        window.localStorage.removeItem('token');
-        window.localStorage.removeItem('user');
-        window.localStorage.removeItem('adminAuthed');
+    // Import tokenManager dynamically to avoid circular dependency
+    import('../utils/tokenManager').then(({ bootstrapFromLocalStorage, getAccessToken }) => {
+      // First try to get token from memory (if already set)
+      const memoryToken = getAccessToken();
+      if (memoryToken) {
+        updateAuthorizationHeader(memoryToken);
+        logInfo('🔐 Using token from memory');
+        return;
       }
-    }
+
+      // Fallback: Bootstrap from localStorage (migration period)
+      const bootstrapped = bootstrapFromLocalStorage();
+      if (bootstrapped) {
+        const token = getAccessToken();
+        if (token) {
+          updateAuthorizationHeader(token);
+        }
+      }
+    }).catch(e => {
+      logWarn('TokenManager bootstrap failed:', e);
+
+      // Fallback to direct localStorage read
+      const token = window.localStorage.getItem('token');
+      if (token && typeof token === 'string' && token.length > 0) {
+        const payload = decodeJWT(token);
+        const now = Math.floor(Date.now() / 1000);
+
+        if (payload && typeof payload.exp === 'number' && payload.exp > now) {
+          updateAuthorizationHeader(token);
+        } else {
+          window.localStorage.removeItem('token');
+          window.localStorage.removeItem('user');
+          window.localStorage.removeItem('adminAuthed');
+        }
+      }
+    });
   }
 } catch (e) {
   logWarn('Auth bootstrap failed:', e);
