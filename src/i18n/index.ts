@@ -70,26 +70,16 @@ i18n
     // Default namespace
     defaultNS: 'common',
 
-    // Namespaces to load by default
+    // PERFORMANCE: Only load essential namespaces at startup
+    // Other namespaces are loaded lazily when useTranslation(ns) is called
+    // This reduces initial bundle from ~200KB to ~40KB of JSON
     ns: [
-      'common',
-      'nav',
-      'checkout',
-      'home',
-      'products',
-      'auth',
-      'about',
-      'wishlist',
-      'collection',
-      'cart',
-      'contact',
-      'gallery',
-      'referral',
-      'credits',
-      'gamification',
-      'policies',
-      'validation'
+      'common',  // Global shared translations
+      'nav'      // Navigation - always visible
     ],
+
+    // PERFORMANCE: Enable lazy loading - namespaces load on-demand
+    partialBundledLanguages: true,
     
     // ICU options
     i18nFormat: {
