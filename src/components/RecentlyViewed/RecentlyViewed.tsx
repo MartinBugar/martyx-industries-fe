@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useRecentlyViewed } from '../../hooks/useRecentlyViewed';
-import { hybridProductService } from '../../services/hybridProductService';
+import React, {useEffect, useState} from 'react';
+import {useTranslation} from 'react-i18next';
+import {useRecentlyViewed} from '../../hooks/useRecentlyViewed';
+import {hybridProductService} from '../../services/hybridProductService';
 import ProductCard from '../ProductCard/ProductCard';
-import { ProductCardSkeleton } from '../ui/Skeleton';
-import type { Product } from '../../types/product';
-import { logError } from '../../services/logger';
+import {ProductCardSkeleton} from '../ui/Skeleton';
+import type {Product} from '../../data/productData';
+import {logError} from '../../services/logger';
 import './RecentlyViewed.css';
 
 interface RecentlyViewedProps {
@@ -93,7 +93,7 @@ const RecentlyViewed: React.FC<RecentlyViewedProps> = ({
           ))
         ) : (
           products.map(product => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard key={product.masterProductId} product={product} />
           ))
         )}
       </div>
