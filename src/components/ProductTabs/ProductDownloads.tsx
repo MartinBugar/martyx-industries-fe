@@ -12,8 +12,7 @@ import React, { useEffect, useState } from 'react';
 import { Download, FileText, File, AlertCircle } from 'lucide-react';
 import {
   getAttachmentsForMasterProduct,
-  getAttachmentsForVariant,
-  trackDownload
+  getAttachmentsForVariant
 } from '../../services/productAttachmentService';
 import { getAttachmentsForTab } from '../../services/productTabService';
 import type { ProductAttachmentDto } from '../../types/api';
@@ -77,21 +76,13 @@ const ProductDownloads: React.FC<ProductDownloadsProps> = ({
 
   const handleDownload = async (attachment: ProductAttachmentDto) => {
     try {
-      // Track download
-      await trackDownload(attachment.id);
+      // Use backend proxy endpoint to bypass CORS issues with CDN
+      // This endpoint also tracks downloads automatically
+      const proxyUrl = `/api/public/product-attachments/${attachment.id}/file`;
 
-      // Prepare download URL
-      let url = attachment.cdnUrl || attachment.fileUrl;
-
-      // Ensure URL has protocol (https://)
-      if (url && !url.startsWith('http://') && !url.startsWith('https://')) {
-        url = 'https://' + url;
-      }
-
-      // Use downloadFile service for reliable cross-origin downloads
-      await downloadFile(url, {
+      await downloadFile(proxyUrl, {
         suggestedName: attachment.displayLabel || attachment.fileName || 'download',
-        withCredentials: false, // CDN URLs don't need credentials
+        withCredentials: true, // Backend needs credentials for rate limiting
       });
     } catch (err) {
       logError('Error downloading file:', err);
