@@ -13,7 +13,7 @@ interface MiniCartProps {
 
 const MAX_ITEMS_DISPLAY = 3;
 
-const MiniCart: React.FC<MiniCartProps> = ({ isOpen, onClose, anchorRef }) => {
+const MiniCart: React.FC<MiniCartProps> = React.memo(({ isOpen, onClose, anchorRef }) => {
   const { items, removeFromCart, getTotalItems, getTotalPrice } = useCart();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation(['cart', 'common']);
@@ -240,6 +240,8 @@ const MiniCart: React.FC<MiniCartProps> = ({ isOpen, onClose, anchorRef }) => {
   return typeof document !== 'undefined'
     ? createPortal(miniCartContent, document.body)
     : null;
-};
+});
+
+MiniCart.displayName = 'MiniCart';
 
 export default MiniCart;

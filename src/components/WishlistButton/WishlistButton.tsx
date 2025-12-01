@@ -12,7 +12,7 @@ interface WishlistButtonProps {
   showTooltip?: boolean;
 }
 
-const WishlistButton: React.FC<WishlistButtonProps> = ({
+const WishlistButton: React.FC<WishlistButtonProps> = React.memo(({
   productId,
   size = 'medium',
   variant = 'icon',
@@ -166,6 +166,8 @@ const WishlistButton: React.FC<WishlistButtonProps> = ({
       )}
     </button>
   );
-};
+});
+
+WishlistButton.displayName = 'WishlistButton';
 
 export default WishlistButton;

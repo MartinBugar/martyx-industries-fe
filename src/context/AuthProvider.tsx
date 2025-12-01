@@ -1,4 +1,4 @@
-import React, { useState, type ReactNode, useEffect } from 'react';
+import React, { useState, type ReactNode, useEffect, useMemo, useCallback } from 'react';
 import type { User } from './authTypes';
 import type { Order } from './authTypes';
 import { AuthContext } from './AuthContext';
@@ -191,7 +191,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   // Login function - makes an API call to the backend
-  const login = async (email: string, password: string): Promise<boolean | { error: string; type: string }> => {
+  const login = useCallback(async (email: string, password: string): Promise<boolean | { error: string; type: string }> => {
     try {
       // Rate limiting check
       const identifier = email.toLowerCase();
@@ -300,10 +300,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       return false;
     }
-  };
+  }, []);
 
   // Logout function - makes an API call to the backend if a token exists
-  const logout = async () => {
+  const logout = useCallback(async () => {
     try {
       // Stop auto-refresh timer
       stopTokenRefresh();
@@ -342,10 +342,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Remove auth token from future API requests
       removeAuthToken();
     }
-  };
+  }, []);
 
   // Fetch user profile data from backend
-  const fetchProfile = async (): Promise<boolean> => {
+  const fetchProfile = useCallback(async (): Promise<boolean> => {
     if (!user) return false;
 
     try {
@@ -374,10 +374,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       logError('Fetch profile error:', error);
       return false;
     }
-  };
+  }, [user]);
 
   // Update user profile
-  const updateProfile = async (profileData: Partial<User>): Promise<boolean> => {
+  const updateProfile = useCallback(async (profileData: Partial<User>): Promise<boolean> => {
     if (!user) return false;
 
     try {
@@ -411,10 +411,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       logError('Update profile error:', error);
       return false;
     }
-  };
+  }, [user]);
 
   // Fetch orders from backend and update user state
-  const refreshOrders = async (): Promise<boolean> => {
+  const refreshOrders = useCallback(async (): Promise<boolean> => {
     setOrdersLoading(true);
     try {
       const fetchedOrders = await ordersService.fetchMyOrders();
@@ -444,10 +444,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setOrdersLoading(false);
       setHasLoadedOrders(true);
     }
-  };
+  }, [user]);
 
   // Add an order to user's order history
-  const addOrder = (order: Omit<Order, 'id' | 'date'>) => {
+  const addOrder = useCallback((order: Omit<Order, 'id' | 'date'>) => {
     if (!user) return;
 
     // Create new order with id and date
@@ -467,15 +467,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Update state and secureLocalStorage
     setUser(updatedUser);
     secureLocalStorage.set('user', updatedUser);
-  };
+  }, [user]);
 
   // Get user's order history
-  const getOrders = (): Order[] => {
+  const getOrders = useCallback((): Order[] => {
     return user?.orders || [];
-  };
+  }, [user]);
 
   // Request password reset (forgot password)
-  const forgotPassword = async (email: string): Promise<{ success: boolean; message: string }> => {
+  const forgotPassword = useCallback(async (email: string): Promise<{ success: boolean; message: string }> => {
     try {
       const response = await authApi.forgotPassword(email);
       return {
@@ -489,10 +489,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         message: 'Failed to send password reset email. Please try again.'
       };
     }
-  };
+  }, []);
 
   // Reset password with token
-  const resetPassword = async (token: string, password: string): Promise<{ success: boolean; message: string }> => {
+  const resetPassword = useCallback(async (token: string, password: string): Promise<{ success: boolean; message: string }> => {
     try {
       const response = await authApi.resetPassword(token, password);
       return {
@@ -506,26 +506,44 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         message: 'Failed to reset password. The token may be invalid or expired.'
       };
     }
-  };
+  }, []);
+
+  // PERFORMANCE: Memoize context value to prevent unnecessary re-renders
+  // Without this, every state change creates a new object and triggers ALL consumers to re-render
+  const contextValue = useMemo(() => ({
+    user,
+    isAuthenticated: !!user,
+    isLoading,
+    login,
+    logout,
+    updateProfile,
+    fetchProfile,
+    addOrder,
+    getOrders,
+    refreshOrders,
+    ordersLoading,
+    hasLoadedOrders,
+    forgotPassword,
+    resetPassword
+  }), [
+    user,
+    isLoading,
+    login,
+    logout,
+    updateProfile,
+    fetchProfile,
+    addOrder,
+    getOrders,
+    refreshOrders,
+    ordersLoading,
+    hasLoadedOrders,
+    forgotPassword,
+    resetPassword
+  ]);
 
   // Provide the auth context to children components
   return (
-    <AuthContext.Provider value={{
-      user,
-      isAuthenticated: !!user,
-      isLoading,
-      login,
-      logout,
-      updateProfile,
-      fetchProfile,
-      addOrder,
-      getOrders,
-      refreshOrders,
-      ordersLoading,
-      hasLoadedOrders,
-      forgotPassword,
-      resetPassword
-    }}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );

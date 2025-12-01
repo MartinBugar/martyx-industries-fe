@@ -14,7 +14,7 @@ interface OptimizedImageProps extends Omit<React.ImgHTMLAttributes<HTMLImageElem
   style?: React.CSSProperties;
 }
 
-const OptimizedImage: React.FC<OptimizedImageProps> = ({
+const OptimizedImage: React.FC<OptimizedImageProps> = React.memo(({
   src,
   alt,
   width,
@@ -137,6 +137,8 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
       {...imgProps} // Spread všetky ostatné props
     />
   );
-};
+});
+
+OptimizedImage.displayName = 'OptimizedImage';
 
 export default OptimizedImage;
