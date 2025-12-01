@@ -1,0 +1,152 @@
+/* ProductCard Skeleton - Loading placeholder */
+
+/* Skeleton Animation */
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Base skeleton element style */
+.product-card-skeleton {
+  background: var(--products-card, var(--card));
+  border: 1px solid var(--products-border, rgba(231, 238, 245, 0.1));
+  border-radius: var(--products-radius-lg, var(--radius-lg));
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-shadow: var(--products-shadow, 0 1px 3px rgba(0, 0, 0, 0.3));
+}
+
+/* Skeleton shimmer effect */
+.product-card-skeleton .skeleton-image,
+.product-card-skeleton .skeleton-title,
+.product-card-skeleton .skeleton-description,
+.product-card-skeleton .skeleton-price,
+.product-card-skeleton .skeleton-button {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  border-radius: 4px;
+}
+
+/* Image placeholder - matches product-card-image-container */
+.skeleton-image {
+  aspect-ratio: 3/2;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.03);
+  border-radius: 0 !important;
+}
+
+/* Content area - matches product-card-content */
+.skeleton-content {
+  padding: 1.35rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Title placeholder - matches product-card-title */
+.skeleton-title {
+  height: 1.2rem;
+  width: 90%;
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.skeleton-title-short {
+  width: 60%;
+  margin-bottom: 0.5rem;
+}
+
+/* Description placeholder - matches product-card-description */
+.skeleton-description {
+  height: 0.875rem;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+.skeleton-description-short {
+  width: 75%;
+}
+
+/* Footer - matches product-card-footer */
+.skeleton-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0 1.35rem 1.35rem 1.35rem;
+}
+
+/* Price placeholder - matches product-card-price */
+.skeleton-price {
+  height: 1.65rem;
+  width: 5rem;
+  background-color: rgba(246, 200, 69, 0.1);
+}
+
+/* Button placeholder - matches add-to-cart-btn */
+.skeleton-button {
+  height: 2.75rem;
+  flex: 1;
+  background-color: rgba(246, 200, 69, 0.15);
+  border-radius: var(--products-radius, 12px);
+}
+
+/* Light Mode Adjustments */
+@media (prefers-color-scheme: light) {
+  .product-card-skeleton .skeleton-image,
+  .product-card-skeleton .skeleton-title,
+  .product-card-skeleton .skeleton-description,
+  .product-card-skeleton .skeleton-price,
+  .product-card-skeleton .skeleton-button {
+    background: linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.06) 0%,
+      rgba(0, 0, 0, 0.1) 50%,
+      rgba(0, 0, 0, 0.06) 100%
+    );
+    background-size: 200% 100%;
+  }
+
+  .skeleton-image {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+
+  .skeleton-title {
+    background-color: rgba(0, 0, 0, 0.08);
+  }
+
+  .skeleton-description {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+
+  .skeleton-price {
+    background-color: rgba(246, 200, 69, 0.15);
+  }
+
+  .skeleton-button {
+    background-color: rgba(246, 200, 69, 0.2);
+  }
+}
+
+/* Reduced motion - disable animation */
+@media (prefers-reduced-motion: reduce) {
+  .product-card-skeleton .skeleton-image,
+  .product-card-skeleton .skeleton-title,
+  .product-card-skeleton .skeleton-description,
+  .product-card-skeleton .skeleton-price,
+  .product-card-skeleton .skeleton-button {
+    animation: none;
+  }
+}

@@ -224,11 +224,16 @@ const MainContent = React.memo(() => {
 
   return (
     <div className="app-container">
+      {/* Skip to main content link for keyboard/screen reader users */}
+      <a href="#main-content" className="skip-to-main">
+        Skip to main content
+      </a>
+
       {/* Lazy load constellation particles only when needed */}
       <Suspense fallback={null}>
         <ConstellationParticles />
       </Suspense>
-      
+
       {!isAdminRoute && (
         <Navbar
           cartCount={getTotalItems()}
@@ -250,7 +255,7 @@ const MainContent = React.memo(() => {
         </Suspense>
       )}
 
-      <main className="main-content" style={isAdminRoute ? { padding: 0 } : undefined}>
+      <main id="main-content" className="main-content" style={isAdminRoute ? { padding: 0 } : undefined} tabIndex={-1}>
         <Suspense fallback={null}>
           <Routes>
             {/* Public routes */}

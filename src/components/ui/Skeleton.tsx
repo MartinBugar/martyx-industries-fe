@@ -174,3 +174,100 @@ export const CheckoutSummarySkeleton: React.FC = () => {
     </div>
   );
 };
+
+// Product Detail Page Skeleton - matches ProductDetail layout
+export const ProductDetailSkeleton: React.FC = () => {
+  return (
+    <div className="skeleton-product-detail" role="status" aria-label="Loading product details">
+      <div className="skeleton-product-detail-grid">
+        {/* Left: Image gallery skeleton */}
+        <div className="skeleton-product-gallery">
+          <Skeleton
+            variant="rectangular"
+            className="skeleton-main-image"
+            animation="wave"
+          />
+          <div className="skeleton-thumbnail-row">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton
+                key={`thumb-${i}`}
+                variant="rectangular"
+                className="skeleton-thumbnail"
+                animation="wave"
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Right: Product info skeleton */}
+        <div className="skeleton-product-info">
+          {/* Title */}
+          <Skeleton variant="text" height={36} width="80%" animation="wave" />
+          {/* Subtitle/category */}
+          <Skeleton variant="text" height={20} width="40%" animation="wave" />
+
+          {/* Price */}
+          <div className="skeleton-price-section">
+            <Skeleton variant="text" height={40} width={120} animation="wave" />
+          </div>
+
+          {/* Description lines */}
+          <div className="skeleton-description">
+            <Skeleton variant="text" height={16} width="100%" animation="wave" />
+            <Skeleton variant="text" height={16} width="95%" animation="wave" />
+            <Skeleton variant="text" height={16} width="85%" animation="wave" />
+            <Skeleton variant="text" height={16} width="90%" animation="wave" />
+          </div>
+
+          {/* Variant selector */}
+          <div className="skeleton-variant-selector">
+            <Skeleton variant="text" height={20} width={100} animation="wave" />
+            <div className="skeleton-variant-options">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <Skeleton
+                  key={`variant-${i}`}
+                  variant="rectangular"
+                  height={44}
+                  width={100}
+                  animation="wave"
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Add to cart button */}
+          <Skeleton
+            variant="rectangular"
+            height={52}
+            className="skeleton-add-to-cart"
+            animation="wave"
+          />
+
+          {/* Wishlist button */}
+          <Skeleton variant="rectangular" height={44} width={150} animation="wave" />
+        </div>
+      </div>
+
+      {/* Tabs skeleton */}
+      <div className="skeleton-tabs-section">
+        <div className="skeleton-tab-headers">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton
+              key={`tab-${i}`}
+              variant="rectangular"
+              height={40}
+              width={100}
+              animation="wave"
+            />
+          ))}
+        </div>
+        <div className="skeleton-tab-content">
+          <Skeleton variant="text" height={18} width="100%" animation="wave" />
+          <Skeleton variant="text" height={18} width="90%" animation="wave" />
+          <Skeleton variant="text" height={18} width="95%" animation="wave" />
+          <Skeleton variant="text" height={18} width="80%" animation="wave" />
+        </div>
+      </div>
+    </div>
+  );
+};

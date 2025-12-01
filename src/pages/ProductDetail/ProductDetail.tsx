@@ -22,6 +22,7 @@ import { debounce } from '../../utils/debounce';
 import { logInfo, logWarn, logError } from '../../services/logger';
 import { stockService } from '../../services/stockService';
 import { useSeo } from '../../hooks/useSeo';
+import { ProductDetailSkeleton } from '../../components/ui/Skeleton';
 
 // Local inlined ProductDetails component (previously in components/ProductDetails/ProductDetails.tsx)
 interface ProductDetailsProps {
@@ -525,12 +526,12 @@ const ProductDetail: React.FC = () => {
         };
     }, [product, galleryImages, hasLoadedGallery]);
 
-    // Show loading state
+    // Show loading state with skeleton
     if (loading) {
         return (
             <div className="product-detail-page">
                 <div className="product-container">
-                    <div className="loading-message">Loading product...</div>
+                    <ProductDetailSkeleton />
                 </div>
             </div>
         );
