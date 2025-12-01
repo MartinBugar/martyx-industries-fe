@@ -4,6 +4,7 @@ import { getAuthToken } from '../../utils/tokenUtils';
 import { API_BASE_URL } from '../../services/apiUtils';
 import { logInfo, logWarn, logError } from '../../services/logger';
 import './ModelPhotoGallery.css';
+import toast from 'react-hot-toast';
 
 interface ModelPhoto {
   id: number;
@@ -262,7 +263,7 @@ const ModelPhotoGallery: React.FC<ModelPhotoGalleryProps> = ({ model, onClose, o
     } catch (err: unknown) {
       logError('Error deleting photo:', err);
       const message = err instanceof Error ? err.message : 'Nepodarilo sa zmazať fotku. Skúste to znovu.';
-      alert(message);
+      toast.error(message);
     } finally {
       setDeletingPhotoId(null);
     }

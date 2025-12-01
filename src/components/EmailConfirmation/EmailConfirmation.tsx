@@ -3,6 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { registrationService } from '../../services/registrationService';
 import './EmailConfirmation.css';
 import { logError } from '../../services/logger';
+import toast from 'react-hot-toast';
 
 const EmailConfirmation: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -43,21 +44,21 @@ const EmailConfirmation: React.FC = () => {
 
   const handleResendConfirmation = async () => {
     if (!email.trim()) {
-      alert('Please enter your email address');
+      toast.error('Please enter your email address');
       return;
     }
 
     setIsResending(true);
     try {
       const result = await registrationService.resendConfirmation(email);
-      
+
       if (result.success) {
-        alert(result.message);
+        toast.success(result.message);
       } else {
-        alert(result.message);
+        toast.error(result.message);
       }
     } catch (error) {
-      alert('Failed to resend confirmation email. Please try again.');
+      toast.error('Failed to resend confirmation email. Please try again.');
       logError('Resend confirmation error:', error);
     } finally {
       setIsResending(false);

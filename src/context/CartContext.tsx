@@ -9,6 +9,7 @@ import { trackAddToCart, trackRemoveFromCart } from '../services/analyticsServic
 import { useDebouncedCallback } from '../hooks/useDebouncedCallback';
 import { stockService } from '../services/stockService';
 import { logInfo, logWarn, logError } from '../services/logger';
+import toast from 'react-hot-toast';
 
 // Props for the CartProvider component
 interface CartProviderProps {
@@ -814,16 +815,19 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
             // Notify user about changes (use console instead of alert for better UX)
             logWarn('[Cart] Stock validation - items updated:', { updates, removals });
 
-            // Only show alert if user is actively on cart/checkout (important for them to know)
+            // Only show toast if user is actively on cart/checkout (important for them to know)
             if (shouldValidateStock()) {
-              const messages: string[] = [];
               if (updates.length > 0) {
-                messages.push(`Updated quantities:\n${updates.map(u => `  • ${u.productName}: ${u.oldQty} → ${u.newQty}`).join('\n')}`);
+                toast(`Cart updated: ${updates.map(u => `${u.productName}: ${u.oldQty} → ${u.newQty}`).join(', ')}`, {
+                  icon: '🔄',
+                  duration: 5000,
+                });
               }
               if (removals.length > 0) {
-                messages.push(`Removed (out of stock):\n${removals.map(r => `  • ${r.productName}`).join('\n')}`);
+                toast.error(`Removed (out of stock): ${removals.map(r => r.productName).join(', ')}`, {
+                  duration: 5000,
+                });
               }
-              alert(`🔄 Cart Updated\n\n${messages.join('\n\n')}`);
             }
           } else {
             logInfo('[Cart] ✅ All items in stock');

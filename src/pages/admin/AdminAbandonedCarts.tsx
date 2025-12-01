@@ -8,6 +8,7 @@ import {
   type AbandonmentStatsDto
 } from '../../services/adminAbandonedCartService';
 import './AdminAbandonedCarts.css';
+import toast from 'react-hot-toast';
 
 const AdminAbandonedCarts: React.FC = () => {
   // Tab state
@@ -65,10 +66,10 @@ const AdminAbandonedCarts: React.FC = () => {
     setIsLoading(true);
     try {
       const detected = await adminAbandonedCartService.detectAbandonedCarts();
-      alert(`Detected ${detected.length} abandoned carts`);
+      toast.success(`Detected ${detected.length} abandoned carts`);
       await loadCarts();
     } catch (e: unknown) {
-      alert(e instanceof Error ? e.message : 'Failed to detect abandoned carts');
+      toast.error(e instanceof Error ? e.message : 'Failed to detect abandoned carts');
     } finally {
       setIsLoading(false);
     }
@@ -81,10 +82,10 @@ const AdminAbandonedCarts: React.FC = () => {
     setActionLoading(cartId);
     try {
       await adminAbandonedCartService.sendRecoveryEmail(cartId, discountCode || undefined);
-      alert('Recovery email sent successfully!');
+      toast.success('Recovery email sent successfully!');
       await loadCarts();
     } catch (e: unknown) {
-      alert(e instanceof Error ? e.message : 'Failed to send recovery email');
+      toast.error(e instanceof Error ? e.message : 'Failed to send recovery email');
     } finally {
       setActionLoading(null);
     }
@@ -97,10 +98,10 @@ const AdminAbandonedCarts: React.FC = () => {
     setActionLoading(cartId);
     try {
       await adminAbandonedCartService.markCartAsRecovered(cartId);
-      alert('Cart marked as recovered');
+      toast.success('Cart marked as recovered');
       await loadCarts();
     } catch (e: unknown) {
-      alert(e instanceof Error ? e.message : 'Failed to mark as recovered');
+      toast.error(e instanceof Error ? e.message : 'Failed to mark as recovered');
     } finally {
       setActionLoading(null);
     }

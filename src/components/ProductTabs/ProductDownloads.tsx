@@ -20,6 +20,7 @@ import type { ProductAttachmentDto } from '../../types/api';
 import { downloadFile } from '../../services/download';
 import './ProductDownloads.css';
 import { logInfo, logError } from '../../services/logger';
+import toast from 'react-hot-toast';
 
 interface ProductDownloadsProps {
   masterProductId?: number;
@@ -94,7 +95,7 @@ const ProductDownloads: React.FC<ProductDownloadsProps> = ({
       });
     } catch (err) {
       logError('Error downloading file:', err);
-      alert('Failed to download file. Please try again.');
+      toast.error('Failed to download file. Please try again.');
     }
   };
 

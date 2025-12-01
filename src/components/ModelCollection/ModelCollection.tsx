@@ -10,6 +10,7 @@ import { API_BASE_URL } from '../../services/apiUtils';
 import { profileService } from '../../services/profileService';
 import { logInfo, logWarn, logError } from '../../services/logger';
 import './ModelCollection.css';
+import toast from 'react-hot-toast';
 
 interface ModelPhoto {
   id: number;
@@ -540,7 +541,7 @@ const ModelCollection: React.FC = () => {
       logInfo(`Model ${field} updated successfully to ${value} for product ${productId}, order ${orderId}`);
     } catch (err) {
       logError(`Error updating model ${field}:`, err);
-      alert((err as Error).message || t(`errors.${field === 'is_completed' ? 'completion_error' : 'visibility_error'}`));
+      toast.error((err as Error).message || t(`errors.${field === 'is_completed' ? 'completion_error' : 'visibility_error'}`));
     } finally {
       setUpdatingModel(null);
     }

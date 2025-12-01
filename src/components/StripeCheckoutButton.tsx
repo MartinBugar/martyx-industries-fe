@@ -3,6 +3,7 @@ import type { CartItem } from '../context/cartContextTypes';
 import { stripeService } from '../services/stripeService';
 import { stockService } from '../services/stockService';
 import { logInfo, logError } from '../services/logger';
+import toast from 'react-hot-toast';
 
 type Props = {
   items: CartItem[];
@@ -82,8 +83,10 @@ export default function StripeCheckoutButton({
         setLoading(false);
         const errorMessage = outOfStockItems.map(item =>
           `${item.productName}: requested ${item.requestedQty}, available ${item.availableQty}`
-        ).join('\n');
-        alert(`⚠️ Some items are no longer available:\n\n${errorMessage}\n\nPlease update your cart and try again.`);
+        ).join(', ');
+        toast.error(`Some items are no longer available: ${errorMessage}. Please update your cart.`, {
+          duration: 6000,
+        });
         logError('[StripeCheckout] Stock validation failed:', outOfStockItems);
         return; // Abort checkout
       }

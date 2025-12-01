@@ -8,6 +8,7 @@ import Lightbox from './Lightbox';
 import type { UserProfile, PublicModel, PublicPhoto } from '../../types/userGallery';
 import './UserGalleryDetail.css';
 import { logError } from '../../services/logger';
+import toast from 'react-hot-toast';
 
 const UserGalleryDetail: React.FC = () => {
   const { userId } = useParams<{ userId: string }>();
@@ -52,7 +53,7 @@ const UserGalleryDetail: React.FC = () => {
   // Handle like photo
   const handleLikePhoto = async (photoId: number, isLiked: boolean) => {
     if (!currentUser) {
-      alert(t('errors.login_required', 'Please log in to like photos'));
+      toast.error(t('errors.login_required', 'Please log in to like photos'));
       return;
     }
 
@@ -93,7 +94,7 @@ const UserGalleryDetail: React.FC = () => {
       }
     } catch (err) {
       logError('Error liking photo:', err);
-      alert(err instanceof Error ? err.message : 'Failed to like photo');
+      toast.error(err instanceof Error ? err.message : 'Failed to like photo');
     }
   };
 

@@ -4,6 +4,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import toast from 'react-hot-toast';
 import { useCart } from '../../context/useCart';
 import { useAuth } from '../../context/useAuth';
 import { useFormatters } from '../../hooks/useFormatters';
@@ -564,10 +565,10 @@ const Checkout: React.FC = () => {
         }
       } catch (error) {
         logError('❌ Failed to reserve stock:', error);
-        // Only show alert for actual stock issues, not auth problems
+        // Only show toast for actual stock issues, not auth problems
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         if (errorMessage.includes('Insufficient stock') || errorMessage.includes('out of stock')) {
-          alert('Some items may not be available. Please check your cart.');
+          toast.error('Some items may not be available. Please check your cart.');
         } else {
           logWarn('⚠️ Stock reservation failed but continuing checkout:', errorMessage);
         }
@@ -622,13 +623,13 @@ const Checkout: React.FC = () => {
   // @ts-ignore - Reserved for future "save address" button
   const handleSaveCurrentAddress = async () => {
     if (!user) {
-      alert(t('alerts.sign_in_required'));
+      toast.error(t('alerts.sign_in_required'));
       return;
     }
 
     // Validate that address fields are filled
     if (!formData.billingStreet || !formData.billingCity || !formData.billingPostalCode || !formData.billingCountry) {
-      alert(t('alerts.complete_billing_first'));
+      toast.error(t('alerts.complete_billing_first'));
       return;
     }
 
@@ -653,11 +654,11 @@ const Checkout: React.FC = () => {
       setSelectedAddressId(saved.id || '');
       setShowSaveAddressOption(false);
 
-      alert(t('alerts.address_saved', { name: saved.label }));
+      toast.success(t('alerts.address_saved', { name: saved.label }));
     } catch (err: unknown) {
       logError('[Checkout] Failed to save address:', err);
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-      alert(t('alerts.address_save_failed', { error: errorMessage }));
+      toast.error(t('alerts.address_save_failed', { error: errorMessage }));
     }
   };
 
@@ -844,18 +845,18 @@ const Checkout: React.FC = () => {
   const handleStripeError = (err: unknown) => {
     logError('Stripe payment error:', err);
     setPayStatus("error");
-    alert(t('payment.failed'));
+    toast.error(t('payment.failed'));
   };
 
   // Validate legal consents before payment
   // @ts-ignore - Reserved for validation logic
   const validateLegalConsents = (): boolean => {
     if (!formData.termsAccepted) {
-      alert(t('alerts.accept_terms'));
+      toast.error(t('alerts.accept_terms'));
       return false;
     }
     if (!formData.privacyAccepted) {
-      alert(t('alerts.accept_privacy'));
+      toast.error(t('alerts.accept_privacy'));
       return false;
     }
     return true;
@@ -867,7 +868,7 @@ const Checkout: React.FC = () => {
       // Validate Information step
       const isValid = await validateStep1();
       if (!isValid) {
-        alert(t('alerts.fill_required_fields'));
+        toast.error(t('alerts.fill_required_fields'));
         return;
       }
 
@@ -883,7 +884,7 @@ const Checkout: React.FC = () => {
     if (currentStep === 2) {
       // Validate shipping selection (only for physical products)
       if (hasPhysicalProducts && !selectedShipping) {
-        alert(t('alerts.select_shipping_method'));
+        toast.error(t('alerts.select_shipping_method'));
         return;
       }
     }
@@ -970,7 +971,7 @@ const Checkout: React.FC = () => {
           onExpired={() => {
             logWarn('[Checkout] Stock reservation expired');
             setReservationExpiresAt(null);
-            alert('Your stock reservation has expired. Please review your cart and try again.');
+            toast.error('Your stock reservation has expired. Please review your cart and try again.', { duration: 6000 });
           }}
         />
       )}

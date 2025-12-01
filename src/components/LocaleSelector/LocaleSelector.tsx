@@ -6,6 +6,7 @@ import { changeLanguageWithPersistence } from '../../utils/languageUtils';
 import type { SupportedLocales } from '../../types/api';
 import type { SupportedLanguage } from '../../i18n';
 import { logInfo, logError } from '../../services/logger';
+import toast from 'react-hot-toast';
 
 /**
  * Component that loads supported locales from backend and displays them
@@ -50,7 +51,7 @@ const LocaleSelector: React.FC = () => {
     } catch (err) {
       logError('Failed to change language:', err);
       const errorMessage = translateApiError(err, t);
-      alert(errorMessage);
+      toast.error(errorMessage);
     }
   };
 

@@ -10,6 +10,7 @@ import { adminGalleryService, type AdminUserPhotosResponse, type AdminModelInfo 
 import { adminAbandonedCartService, type ShoppingCartDto } from '../../services/adminAbandonedCartService';
 import type { UserGalleryDetail } from '../../types/userGallery';
 import { logInfo, logError } from '../../services/logger';
+import toast from 'react-hot-toast';
 
 type AdminUserTab = 'details' | 'gallery';
 
@@ -310,11 +311,11 @@ const AdminUserDetail: React.FC = () => {
     setCartError(null);
     try {
       await adminAbandonedCartService.sendRecoveryEmail(cartId, discountCode || undefined);
-      alert('Recovery email sent successfully!');
+      toast.success('Recovery email sent successfully!');
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Failed to send recovery email';
       setCartError(msg);
-      alert(`Error: ${msg}`);
+      toast.error(`Error: ${msg}`);
     } finally {
       setSendingRecoveryEmail(false);
     }
@@ -325,7 +326,7 @@ const AdminUserDetail: React.FC = () => {
 
   const handleBulkAction = async (action: 'delete') => {
     if (selectedPhotos.size === 0) {
-      alert('Please select photos first');
+      toast.error('Please select photos first');
       return;
     }
 
@@ -333,7 +334,7 @@ const AdminUserDetail: React.FC = () => {
     const reason = window.prompt(`Enter reason for deleting ${photoIds.length} photos:`) || '';
     
     if (!reason.trim()) {
-      alert('Reason is required for photo deletion');
+      toast.error('Reason is required for photo deletion');
       return;
     }
 
@@ -349,10 +350,10 @@ const AdminUserDetail: React.FC = () => {
       // Reload admin gallery data and clear selection
       await loadAdminGallery();
       setSelectedPhotos(new Set());
-      alert(`Successfully deleted ${photoIds.length} photos`);
+      toast.success(`Successfully deleted ${photoIds.length} photos`);
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to delete photos';
-      alert(`Error: ${msg}`);
+      toast.error(`Error: ${msg}`);
     } finally {
       setBulkActionLoading(false);
     }
@@ -416,7 +417,7 @@ const AdminUserDetail: React.FC = () => {
       await loadAdminGallery();
     } catch (err) {
       const msg = err instanceof Error ? err.message : `Failed to perform model ${action}`;
-      alert(`Error: ${msg}`);
+      toast.error(`Error: ${msg}`);
     } finally {
       setModelActionLoading(prev => {
         const newSet = new Set(prev);

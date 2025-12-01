@@ -6,6 +6,7 @@ import './AdminButtonOverrides.css';
 import { adminInvoiceService, type PageResponse } from '../../services/adminInvoiceService';
 import type { InvoiceDto } from '../../types/invoice';
 import { Button, Badge, SkeletonTable } from '../../components/ui';
+import toast from 'react-hot-toast';
 
 const AdminInvoices: React.FC = () => {
   const [invoices, setInvoices] = useState<InvoiceDto[]>([]);
@@ -94,7 +95,7 @@ const AdminInvoices: React.FC = () => {
       await adminInvoiceService.downloadAndSaveInvoicePdf(invoice.order_id, invoice.invoice_number);
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Download failed';
-      alert(`Error: ${msg}`);
+      toast.error(`Error: ${msg}`);
     }
   };
 
@@ -104,11 +105,11 @@ const AdminInvoices: React.FC = () => {
 
     try {
       await adminInvoiceService.regenerateInvoice(invoice.order_id);
-      alert('Invoice regenerated successfully');
+      toast.success('Invoice regenerated successfully');
       await loadInvoices(page);
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Regenerate failed';
-      alert(`Error: ${msg}`);
+      toast.error(`Error: ${msg}`);
     }
   };
 
@@ -135,7 +136,7 @@ const AdminInvoices: React.FC = () => {
   // Bulk download
   const handleBulkDownload = async () => {
     if (selectedIds.size === 0) {
-      alert('No invoices selected');
+      toast.error('No invoices selected');
       return;
     }
 
@@ -144,11 +145,11 @@ const AdminInvoices: React.FC = () => {
     setBulkDownloading(true);
     try {
       await adminInvoiceService.bulkDownloadInvoices(selectedInvoices);
-      alert(`Downloaded ${selectedInvoices.length} invoice(s) successfully`);
+      toast.success(`Downloaded ${selectedInvoices.length} invoice(s) successfully`);
       setSelectedIds(new Set());
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Bulk download failed';
-      alert(`Error: ${msg}`);
+      toast.error(`Error: ${msg}`);
     } finally {
       setBulkDownloading(false);
     }
@@ -172,7 +173,7 @@ const AdminInvoices: React.FC = () => {
         resendInvoiceId,
         resendEmail.trim() || undefined
       );
-      alert('Invoice email sent successfully');
+      toast.success('Invoice email sent successfully');
       setResendModalOpen(false);
       setResendInvoiceId(null);
       setResendEmail('');

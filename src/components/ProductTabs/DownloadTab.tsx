@@ -7,6 +7,7 @@ import type { ProductAttachmentDto } from '../../types/api';
 import { downloadFile } from '../../services/download';
 import './ProductTabs.css';
 import { logError } from '../../services/logger';
+import toast from 'react-hot-toast';
 
 interface DownloadTabProps {
   content: TabContent;
@@ -51,7 +52,7 @@ const DownloadTab: React.FC<DownloadTabProps> = ({ content, variantId }) => {
       });
     } catch (error) {
       logError('Download failed', error);
-      alert('Failed to download file. Please try again.');
+      toast.error('Failed to download file. Please try again.');
     }
   };
 

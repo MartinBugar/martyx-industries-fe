@@ -6,6 +6,7 @@ import { userGalleryService } from '../../services/userGalleryService';
 import Lightbox from './Lightbox';
 import './PhotoGrid.css';
 import { logError } from '../../services/logger';
+import toast from 'react-hot-toast';
 
 interface PhotoGridProps {
   photos: PublicPhotoWithUser[];
@@ -38,7 +39,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ photos, onPhotoLikeChange }) => {
   // Handle like/unlike
   const handleLike = async (photoId: number, isLiked: boolean) => {
     if (!currentUser) {
-      alert(t('errors.login_required', 'You must be logged in to like photos'));
+      toast.error(t('errors.login_required', 'You must be logged in to like photos'));
       return;
     }
 
@@ -67,7 +68,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({ photos, onPhotoLikeChange }) => {
       }
     } catch (error) {
       logError('Error toggling like:', error);
-      alert(t('errors.like_failed', 'Failed to like photo. Please try again.'));
+      toast.error(t('errors.like_failed', 'Failed to like photo. Please try again.'));
     }
   };
 

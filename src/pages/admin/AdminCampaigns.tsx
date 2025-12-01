@@ -11,6 +11,7 @@ import {
 } from '../../services/adminCampaignsService';
 import './AdminCampaigns.css';
 import { logError } from '../../services/logger';
+import toast from 'react-hot-toast';
 
 const AdminCampaigns: React.FC = () => {
   // Tab state
@@ -108,11 +109,11 @@ const AdminCampaigns: React.FC = () => {
       if (editingCampaignId) {
         // Update existing campaign
         await adminCampaignsService.updateCampaign(editingCampaignId, formData);
-        alert('Campaign updated successfully!');
+        toast.success('Campaign updated successfully!');
       } else {
         // Create new campaign
         await adminCampaignsService.createCampaign(formData);
-        alert('Campaign created successfully!');
+        toast.success('Campaign created successfully!');
       }
 
       // Reset form
@@ -128,7 +129,7 @@ const AdminCampaigns: React.FC = () => {
       await loadCampaigns();
       setActiveTab('campaigns');
     } catch (e: unknown) {
-      alert(e instanceof Error ? e.message : `Failed to ${editingCampaignId ? 'update' : 'create'} campaign`);
+      toast.error(e instanceof Error ? e.message : `Failed to ${editingCampaignId ? 'update' : 'create'} campaign`);
     } finally {
       setIsLoading(false);
     }
@@ -140,10 +141,10 @@ const AdminCampaigns: React.FC = () => {
 
     try {
       await adminCampaignsService.sendCampaign(campaignId);
-      alert('Campaign sent successfully!');
+      toast.success('Campaign sent successfully!');
       await loadCampaigns();
     } catch (e: unknown) {
-      alert(e instanceof Error ? e.message : 'Failed to send campaign');
+      toast.error(e instanceof Error ? e.message : 'Failed to send campaign');
     }
   };
 

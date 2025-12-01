@@ -7,6 +7,7 @@ import cassandraRankService, {
 } from '../../services/cassandraRankService';
 import './AdminCassandraRanks.css';
 import { logInfo, logError } from '../../services/logger';
+import toast from 'react-hot-toast';
 
 const AdminCassandraRanks: React.FC = () => {
     const [ranks, setRanks] = useState<CassandraRankImageDto[]>([]);
@@ -45,7 +46,7 @@ const AdminCassandraRanks: React.FC = () => {
             await loadRanks(); // Reload all ranks
         } catch (error) {
             logError(`❌ Upload failed for rank ${rank}:`, error);
-            alert(`Upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            toast.error(`Upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
         } finally {
             setUploadingRank(null);
         }
@@ -79,7 +80,7 @@ const AdminCassandraRanks: React.FC = () => {
             await loadRanks();
         } catch (error) {
             logError(`❌ Failed to update description for rank ${rank}:`, error);
-            alert('Failed to update description. Please try again.');
+            toast.error('Failed to update description. Please try again.');
         }
     };
 
@@ -103,7 +104,7 @@ const AdminCassandraRanks: React.FC = () => {
             await loadRanks();
         } catch (error) {
             logError(`❌ Failed to delete image for rank ${rank}:`, error);
-            alert('Failed to delete image. Please try again.');
+            toast.error('Failed to delete image. Please try again.');
         }
     };
 

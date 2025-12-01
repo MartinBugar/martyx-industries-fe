@@ -4,6 +4,7 @@ import './ProductGalleryUpload.css';
 import { productGalleryService } from '../../services/productGalleryService';
 import { logInfo, logWarn, logError } from '../../services/logger';
 import { API_BASE_URL } from '../../services/apiUtils';
+import toast from 'react-hot-toast';
 
 interface ProductGalleryUploadProps {
   productId: string;
@@ -451,7 +452,7 @@ const ProductGalleryUpload: React.FC<ProductGalleryUploadProps> = ({
 
     } catch (error) {
       logError('❌ Failed to set primary image:', error);
-      alert('Failed to set image as primary. Please try again.');
+      toast.error('Failed to set image as primary. Please try again.');
     }
   };
 

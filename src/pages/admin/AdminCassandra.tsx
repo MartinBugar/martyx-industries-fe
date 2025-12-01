@@ -7,6 +7,7 @@ import './AdminButtonOverrides.css';
 import { Button } from '../../components/ui';
 import cassandraImageService, { type CassandraImageDto, type UploadImageResponse } from '../../services/cassandraImageService';
 import { logInfo, logError } from '../../services/logger';
+import toast from 'react-hot-toast';
 
 const AdminCassandra: React.FC = () => {
     const [images, setImages] = useState<CassandraImageDto[]>([]);
@@ -89,7 +90,7 @@ const AdminCassandra: React.FC = () => {
         const imageFiles = files.filter(file => file.type.startsWith('image/'));
 
         if (imageFiles.length === 0) {
-            alert('Please select image files only');
+            toast.error('Please select image files only');
             return;
         }
 
@@ -168,7 +169,7 @@ const AdminCassandra: React.FC = () => {
             await loadImages();
         } catch (error) {
             logError('❌ Failed to delete image:', error);
-            alert('Failed to delete image. Please try again.');
+            toast.error('Failed to delete image. Please try again.');
         }
     };
 

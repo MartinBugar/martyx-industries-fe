@@ -8,6 +8,7 @@ import {
   type CreateSegmentRequest,
 } from '../../services/adminSegmentsService';
 import './AdminSegments.css';
+import toast from 'react-hot-toast';
 
 const AdminSegments: React.FC = () => {
   // Tab state
@@ -53,7 +54,7 @@ const AdminSegments: React.FC = () => {
       JSON.parse(formData.criteria);
 
       await adminSegmentsService.createSegment(formData);
-      alert('Segment created successfully!');
+      toast.success('Segment created successfully!');
       setFormData({
         segmentName: '',
         segmentCode: '',
@@ -66,9 +67,9 @@ const AdminSegments: React.FC = () => {
       setActiveTab('list');
     } catch (e: unknown) {
       if (e instanceof SyntaxError) {
-        alert('Invalid JSON in criteria field');
+        toast.error('Invalid JSON in criteria field');
       } else {
-        alert(e instanceof Error ? e.message : 'Failed to create segment');
+        toast.error(e instanceof Error ? e.message : 'Failed to create segment');
       }
     } finally {
       setIsLoading(false);
@@ -86,15 +87,15 @@ const AdminSegments: React.FC = () => {
       JSON.parse(formData.criteria);
 
       await adminSegmentsService.updateSegment(selectedSegment.id, formData);
-      alert('Segment updated successfully!');
+      toast.success('Segment updated successfully!');
       setSelectedSegment(null);
       await loadSegments();
       setActiveTab('list');
     } catch (e: unknown) {
       if (e instanceof SyntaxError) {
-        alert('Invalid JSON in criteria field');
+        toast.error('Invalid JSON in criteria field');
       } else {
-        alert(e instanceof Error ? e.message : 'Failed to update segment');
+        toast.error(e instanceof Error ? e.message : 'Failed to update segment');
       }
     } finally {
       setIsLoading(false);
@@ -107,10 +108,10 @@ const AdminSegments: React.FC = () => {
 
     try {
       await adminSegmentsService.deleteSegment(segmentId);
-      alert('Segment deleted successfully!');
+      toast.success('Segment deleted successfully!');
       await loadSegments();
     } catch (e: unknown) {
-      alert(e instanceof Error ? e.message : 'Failed to delete segment');
+      toast.error(e instanceof Error ? e.message : 'Failed to delete segment');
     }
   };
 
@@ -119,10 +120,10 @@ const AdminSegments: React.FC = () => {
     setIsRecalculating(segmentId);
     try {
       await adminSegmentsService.recalculateSegment(segmentId);
-      alert('Segment recalculated successfully!');
+      toast.success('Segment recalculated successfully!');
       await loadSegments();
     } catch (e: unknown) {
-      alert(e instanceof Error ? e.message : 'Failed to recalculate segment');
+      toast.error(e instanceof Error ? e.message : 'Failed to recalculate segment');
     } finally {
       setIsRecalculating(null);
     }
@@ -135,10 +136,10 @@ const AdminSegments: React.FC = () => {
     setIsLoading(true);
     try {
       await adminSegmentsService.recalculateAllSegments();
-      alert('All segments recalculated successfully!');
+      toast.success('All segments recalculated successfully!');
       await loadSegments();
     } catch (e: unknown) {
-      alert(e instanceof Error ? e.message : 'Failed to recalculate segments');
+      toast.error(e instanceof Error ? e.message : 'Failed to recalculate segments');
     } finally {
       setIsLoading(false);
     }

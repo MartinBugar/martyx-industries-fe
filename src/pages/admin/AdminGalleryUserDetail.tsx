@@ -10,6 +10,7 @@ import {
 import { Button, Badge } from '../../components/ui';
 import GalleryPhotoCard from '../../components/admin/GalleryPhotoCard';
 import BulkActionsBar from '../../components/admin/BulkActionsBar';
+import toast from 'react-hot-toast';
 
 const AdminGalleryUserDetail: React.FC = () => {
   const { userId } = useParams<{ userId: string }>();
@@ -106,7 +107,7 @@ const AdminGalleryUserDetail: React.FC = () => {
       setDeleteConfirmDialog(null);
       await loadUserPhotos(); // Reload data
     } catch (e: unknown) {
-      alert(e instanceof Error ? e.message : 'Failed to delete photo');
+      toast.error(e instanceof Error ? e.message : 'Failed to delete photo');
     } finally {
       setIsDeleting(false);
     }
@@ -126,7 +127,7 @@ const AdminGalleryUserDetail: React.FC = () => {
       setBulkDeleteConfirmDialog(false);
       await loadUserPhotos(); // Reload data
     } catch (e: unknown) {
-      alert(e instanceof Error ? e.message : 'Failed to delete photos');
+      toast.error(e instanceof Error ? e.message : 'Failed to delete photos');
     } finally {
       setIsBulkDeleting(false);
     }
@@ -153,7 +154,7 @@ const AdminGalleryUserDetail: React.FC = () => {
       setStatusChangeDialog(null);
       await loadUserPhotos(); // Reload data
     } catch (e: unknown) {
-      alert(e instanceof Error ? e.message : 'Failed to update model status');
+      toast.error(e instanceof Error ? e.message : 'Failed to update model status');
     } finally {
       setIsUpdatingModelStatus(false);
     }
@@ -189,7 +190,7 @@ const AdminGalleryUserDetail: React.FC = () => {
   const handleBulkMakePublic = async () => {
     // This would need backend support for bulk make public/private
     // For now, show message
-    alert('Bulk visibility change feature coming soon!');
+    toast.error('Bulk visibility change feature coming soon!');
   };
 
   const handleToggleModelVisibility = async (productId: string, currentStatus: boolean) => {

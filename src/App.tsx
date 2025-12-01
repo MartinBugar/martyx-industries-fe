@@ -1,7 +1,7 @@
 import { logInfo, logWarn } from './services/logger';
 /**
  * Optimized App Component with Code Splitting and Performance Improvements
- * 
+ *
  * Key optimizations:
  * - Lazy loading of all pages for better bundle splitting
  * - Memoized components to prevent unnecessary re-renders
@@ -10,6 +10,7 @@ import { logInfo, logWarn } from './services/logger';
  */
 
 import './App.css'
+import { Toaster } from 'react-hot-toast';
 import React, { useState, useCallback, Suspense, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom'
 
@@ -154,6 +155,29 @@ function AppWrapper() {
               <CartProvider>
                 <WishlistProvider>
                   <AppContent />
+                  <Toaster
+                    position="top-right"
+                    toastOptions={{
+                      duration: 4000,
+                      style: {
+                        background: '#1a1a2e',
+                        color: '#fff',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                      },
+                      success: {
+                        iconTheme: {
+                          primary: '#10b981',
+                          secondary: '#fff',
+                        },
+                      },
+                      error: {
+                        iconTheme: {
+                          primary: '#ef4444',
+                          secondary: '#fff',
+                        },
+                      },
+                    }}
+                  />
                 </WishlistProvider>
               </CartProvider>
             </UserSettingsProvider>

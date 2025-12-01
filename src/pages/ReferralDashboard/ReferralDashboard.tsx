@@ -11,6 +11,7 @@ import {
 } from '../../services/referralService';
 import './ReferralDashboard.css';
 import { logError } from '../../services/logger';
+import toast from 'react-hot-toast';
 
 const ReferralDashboard: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -74,10 +75,10 @@ const ReferralDashboard: React.FC = () => {
       setShareLoading(true);
       await referralService.shareViaEmail({ emails: [shareEmail] });
       setShareEmail('');
-      alert(t('shareSuccess'));
+      toast.success(t('shareSuccess'));
     } catch (error) {
       logError('Failed to share:', error);
-      alert(t('shareFailed'));
+      toast.error(t('shareFailed'));
     } finally {
       setShareLoading(false);
     }
