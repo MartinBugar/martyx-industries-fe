@@ -1,6 +1,7 @@
 import React, { Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import LoadingSpinner from '../components/LoadingSpinner/LoadingSpinner';
+import PageTransition from '../components/PageTransition/PageTransition';
 
 // Lazy load hlavných stránok
 const Home = React.lazy(() => import('../pages/Home/Home'));
@@ -20,6 +21,9 @@ const AdminDashboard = React.lazy(() => import('../pages/admin/AdminDashboard'))
 const StripeSuccess = React.lazy(() => import('../pages/Payments/StripeSuccess'));
 const StripeCancel = React.lazy(() => import('../pages/Payments/StripeCancel'));
 
+// Error pages
+const NotFound = React.lazy(() => import('../pages/NotFound/NotFound'));
+
 // Loading component s vašimi farbami
 const PageLoader: React.FC = () => (
   <div style={{
@@ -36,26 +40,31 @@ const PageLoader: React.FC = () => (
 const AppRoutes: React.FC = () => {
   return (
     <Suspense fallback={<PageLoader />}>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/products" element={<Products />} />
-        <Route path="/products/:id" element={<ProductDetail />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/wishlist" element={<Wishlist />} />
-        <Route path="/cart" element={<CartPage />} />
-        <Route path="/account" element={<UserAccount />} />
+      <PageTransition>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/products" element={<Products />} />
+          <Route path="/products/:id" element={<ProductDetail />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/wishlist" element={<Wishlist />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/account" element={<UserAccount />} />
 
-        {/* Referral Program - Redirect to account with referrals tab */}
-        <Route path="/referrals" element={<Navigate to="/account?tab=referrals" replace />} />
+          {/* Referral Program - Redirect to account with referrals tab */}
+          <Route path="/referrals" element={<Navigate to="/account?tab=referrals" replace />} />
 
-        <Route path="/admin" element={<AdminLogin />} />
-        <Route path="/admin/panel" element={<AdminDashboard />} />
+          <Route path="/admin" element={<AdminLogin />} />
+          <Route path="/admin/panel" element={<AdminDashboard />} />
 
-        {/* Payment Success/Cancel Routes */}
-        <Route path="/stripe/success" element={<StripeSuccess />} />
-        <Route path="/payment/cancelled" element={<StripeCancel />} />
-      </Routes>
+          {/* Payment Success/Cancel Routes */}
+          <Route path="/stripe/success" element={<StripeSuccess />} />
+          <Route path="/payment/cancelled" element={<StripeCancel />} />
+
+          {/* 404 - Catch all unmatched routes */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </PageTransition>
     </Suspense>
   );
 };

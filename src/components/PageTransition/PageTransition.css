@@ -1,0 +1,48 @@
+/* Page Transition Animations */
+
+.page-transition {
+  width: 100%;
+  min-height: 100%;
+}
+
+/* Fade In Animation */
+.page-transition-fadeIn {
+  animation: pageTransitionFadeIn 0.2s ease-out forwards;
+}
+
+/* Fade Out Animation */
+.page-transition-fadeOut {
+  animation: pageTransitionFadeOut 0.15s ease-in forwards;
+}
+
+@keyframes pageTransitionFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pageTransitionFadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+/* Accessibility: Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .page-transition-fadeIn,
+  .page-transition-fadeOut {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}

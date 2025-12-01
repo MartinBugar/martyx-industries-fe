@@ -185,6 +185,22 @@
   "accessibility": {
     "skip_to_main": "Preskočiť na hlavný obsah"
   },
+  "notFound": {
+    "title": "Stránka sa nenašla",
+    "description": "Stránka, ktorú hľadáte, neexistuje alebo bola presunutá.",
+    "suggestions": "Tu sú užitočné odkazy:",
+    "home": "Prejsť na hlavnú stránku",
+    "products": "Prehliadať produkty",
+    "contact": "Kontaktovať podporu",
+    "goBack": "Späť",
+    "homeButton": "Na hlavnú stránku"
+  },
+  "serverError": {
+    "title": "Niečo sa pokazilo",
+    "description": "Máme technické problémy. Skúste to prosím neskôr.",
+    "tryAgain": "Skúsiť znovu",
+    "homeButton": "Na hlavnú stránku"
+  },
   "placeholders": {
     "review_placeholder": "Podeľte sa o svoje myšlienky o tomto produkte..."
   },

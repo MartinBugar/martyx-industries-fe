@@ -184,6 +184,22 @@
   "accessibility": {
     "skip_to_main": "Zum Hauptinhalt springen"
   },
+  "notFound": {
+    "title": "Seite nicht gefunden",
+    "description": "Die Seite, die Sie suchen, existiert nicht oder wurde verschoben.",
+    "suggestions": "Hier sind einige hilfreiche Links:",
+    "home": "Zur Startseite",
+    "products": "Produkte durchsuchen",
+    "contact": "Support kontaktieren",
+    "goBack": "Zurück",
+    "homeButton": "Zur Startseite"
+  },
+  "serverError": {
+    "title": "Etwas ist schiefgelaufen",
+    "description": "Wir haben technische Schwierigkeiten. Bitte versuchen Sie es später erneut.",
+    "tryAgain": "Erneut versuchen",
+    "homeButton": "Zur Startseite"
+  },
   "placeholders": {
     "review_placeholder": "Teilen Sie Ihre Gedanken zu diesem Produkt..."
   },
