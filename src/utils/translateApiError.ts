@@ -54,11 +54,20 @@ export const translateApiError = (
     errorCode = error;
   }
 
-  // Prepare translation arguments
-  const translationArgs: TranslationArgs = {
-    ...errorArgs,
-    ...args,
-  };
+  // Prepare translation arguments - filter out non-primitive values
+  const translationArgs: TranslationArgs = {};
+
+  // Copy errorArgs, filtering to only valid translation types
+  for (const [key, value] of Object.entries(errorArgs)) {
+    if (typeof value === 'string' || typeof value === 'number' || value instanceof Date) {
+      translationArgs[key] = value;
+    }
+  }
+
+  // Merge with explicit args (these take precedence)
+  if (args) {
+    Object.assign(translationArgs, args);
+  }
 
   // Try to find translation using API_ERROR_CODES mapping
   const translationKey = API_ERROR_CODES[errorCode as keyof typeof API_ERROR_CODES];
