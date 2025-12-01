@@ -76,7 +76,7 @@ export const generateDeviceFingerprint = async (): Promise<string> => {
   } catch (error) {
     logWarn('Failed to generate device fingerprint:', error);
     // Return a fallback fingerprint based on what we can get
-    return hashString(navigator.userAgent + screen.width + screen.height);
+    return await hashString(navigator.userAgent + screen.width + screen.height);
   }
 };
 

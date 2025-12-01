@@ -3,6 +3,8 @@ import { logError, logInfo } from './logger';
 import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders, updateAuthorizationHeader } from './apiUtils';
 // Import secure token manager
 import { setAccessToken, clearAuthData } from '../utils/tokenManager';
+// Import device fingerprint for security
+import { getDeviceFingerprint } from '../utils/deviceFingerprint';
 import type {
   AuthResponse,
   ResetPasswordResponse
@@ -28,10 +30,17 @@ export class AccountLockedError extends Error {
 // Authentication API endpoints
 export const authApi = {
   // Login endpoint - handles account lockout (423 status) specially
+  // SECURITY: Sends device fingerprint for token theft detection
   login: async (email: string, password: string): Promise<AuthResponse> => {
+    // Get device fingerprint for security
+    const fingerprint = await getDeviceFingerprint();
+
     const response = await fetch(`${API_BASE_URL}/api/auth/login`, withLangHeaders({
       method: 'POST',
-      headers: defaultHeaders as HeadersInit,
+      headers: {
+        ...defaultHeaders,
+        'X-Device-Fingerprint': fingerprint,  // SECURITY: For token theft detection
+      } as HeadersInit,
       body: JSON.stringify({ email, password }),
     }));
 
@@ -118,11 +127,18 @@ export const authApi = {
   },
 
   // Refresh access token using httpOnly cookie (no parameter needed)
+  // SECURITY: Sends device fingerprint for token theft detection
   refreshToken: async (): Promise<AuthResponse> => {
     try {
+      // Get device fingerprint for security validation
+      const fingerprint = await getDeviceFingerprint();
+
       const response = await fetch(`${API_BASE_URL}/api/auth/refresh`, withLangHeaders({
         method: 'POST',
-        headers: defaultHeaders as HeadersInit,
+        headers: {
+          ...defaultHeaders,
+          'X-Device-Fingerprint': fingerprint,  // SECURITY: For token theft detection
+        } as HeadersInit,
         // No body needed - refresh token is in httpOnly cookie
       }));
 
