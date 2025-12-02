@@ -118,6 +118,10 @@ import {
   AdminAuditLog,
   AdminProductImport,
   AdminReports,
+  AdminTickets,
+  AdminTicketDetail,
+  AdminRefunds,
+  AdminRefundDetail,
   ConstellationParticles
 } from './utils/lazyImports'
 
@@ -556,6 +560,28 @@ const MainContent = React.memo(() => {
             <Route path="/admin/reports" element={
               <RequireAdmin>
                 <AdminReports />
+              </RequireAdmin>
+            } />
+            {/* Tickets */}
+            <Route path="/admin/tickets" element={
+              <RequireAdmin>
+                <AdminTickets />
+              </RequireAdmin>
+            } />
+            <Route path="/admin/tickets/:id" element={
+              <RequireAdmin>
+                <AdminTicketDetail />
+              </RequireAdmin>
+            } />
+            {/* Refunds */}
+            <Route path="/admin/refunds" element={
+              <RequireAdmin>
+                <AdminRefunds />
+              </RequireAdmin>
+            } />
+            <Route path="/admin/refunds/:id" element={
+              <RequireAdmin>
+                <AdminRefundDetail />
               </RequireAdmin>
             } />
           </Routes>
