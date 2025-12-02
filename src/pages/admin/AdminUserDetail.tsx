@@ -55,8 +55,8 @@ const AdminUserDetail: React.FC = () => {
     title: t('admin.confirm_delete_user'),
     message: t('admin.confirm_delete_user'),
     variant: 'danger',
-    confirmText: t('common.delete'),
-    cancelText: t('common.cancel')
+    confirmText: t('actions.delete'),
+    cancelText: t('actions.cancel')
   });
 
   const loadUser = async () => {

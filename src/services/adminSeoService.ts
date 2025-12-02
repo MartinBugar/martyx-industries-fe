@@ -1,4 +1,6 @@
-import api from './api';
+import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
+
+const BASE_URL = `${API_BASE_URL}/api/admin/seo`;
 
 // === Types ===
 
@@ -87,38 +89,44 @@ export interface LoopValidationDto {
 // === SEO Audit API ===
 
 export const performAudit = async (): Promise<SeoAuditDto> => {
-  const response = await api.get('/admin/seo/audit');
-  return response.data;
+  const response = await fetch(`${BASE_URL}/audit`, withLangHeaders({
+    headers: defaultHeaders as HeadersInit,
+  }));
+  return handleResponse(response);
 };
 
 export const getProductSeoIssues = async (limit = 50): Promise<SeoIssueDto[]> => {
-  const response = await api.get('/admin/seo/audit/products', {
-    params: { limit }
-  });
-  return response.data;
+  const params = new URLSearchParams({ limit: limit.toString() });
+  const response = await fetch(`${BASE_URL}/audit/products?${params}`, withLangHeaders({
+    headers: defaultHeaders as HeadersInit,
+  }));
+  return handleResponse(response);
 };
 
 export const getCategorySeoIssues = async (limit = 50): Promise<SeoIssueDto[]> => {
-  const response = await api.get('/admin/seo/audit/categories', {
-    params: { limit }
-  });
-  return response.data;
+  const params = new URLSearchParams({ limit: limit.toString() });
+  const response = await fetch(`${BASE_URL}/audit/categories?${params}`, withLangHeaders({
+    headers: defaultHeaders as HeadersInit,
+  }));
+  return handleResponse(response);
 };
 
 export const getBlogPostSeoIssues = async (limit = 50): Promise<SeoIssueDto[]> => {
-  const response = await api.get('/admin/seo/audit/blog-posts', {
-    params: { limit }
-  });
-  return response.data;
+  const params = new URLSearchParams({ limit: limit.toString() });
+  const response = await fetch(`${BASE_URL}/audit/blog-posts?${params}`, withLangHeaders({
+    headers: defaultHeaders as HeadersInit,
+  }));
+  return handleResponse(response);
 };
 
 // === Redirects API ===
 
 export const getAllRedirects = async (page = 0, size = 20, sort = 'createdAt,desc'): Promise<PageResponse<RedirectDto>> => {
-  const response = await api.get('/admin/seo/redirects', {
-    params: { page, size, sort }
-  });
-  return response.data;
+  const params = new URLSearchParams({ page: page.toString(), size: size.toString(), sort });
+  const response = await fetch(`${BASE_URL}/redirects?${params}`, withLangHeaders({
+    headers: defaultHeaders as HeadersInit,
+  }));
+  return handleResponse(response);
 };
 
 export const filterRedirects = async (
@@ -127,73 +135,105 @@ export const filterRedirects = async (
   page = 0,
   size = 20
 ): Promise<PageResponse<RedirectDto>> => {
-  const response = await api.get('/admin/seo/redirects/filter', {
-    params: { active, type, page, size }
-  });
-  return response.data;
+  const params = new URLSearchParams({ page: page.toString(), size: size.toString() });
+  if (active !== undefined) params.append('active', active.toString());
+  if (type) params.append('type', type);
+  const response = await fetch(`${BASE_URL}/redirects/filter?${params}`, withLangHeaders({
+    headers: defaultHeaders as HeadersInit,
+  }));
+  return handleResponse(response);
 };
 
 export const searchRedirects = async (query: string, page = 0, size = 20): Promise<PageResponse<RedirectDto>> => {
-  const response = await api.get('/admin/seo/redirects/search', {
-    params: { query, page, size }
-  });
-  return response.data;
+  const params = new URLSearchParams({ query, page: page.toString(), size: size.toString() });
+  const response = await fetch(`${BASE_URL}/redirects/search?${params}`, withLangHeaders({
+    headers: defaultHeaders as HeadersInit,
+  }));
+  return handleResponse(response);
 };
 
 export const getRedirectById = async (id: number): Promise<RedirectDto> => {
-  const response = await api.get(`/admin/seo/redirects/${id}`);
-  return response.data;
+  const response = await fetch(`${BASE_URL}/redirects/${id}`, withLangHeaders({
+    headers: defaultHeaders as HeadersInit,
+  }));
+  return handleResponse(response);
 };
 
 export const createRedirect = async (request: RedirectRequest): Promise<RedirectDto> => {
-  const response = await api.post('/admin/seo/redirects', request);
-  return response.data;
+  const response = await fetch(`${BASE_URL}/redirects`, withLangHeaders({
+    method: 'POST',
+    headers: defaultHeaders as HeadersInit,
+    body: JSON.stringify(request),
+  }));
+  return handleResponse(response);
 };
 
 export const updateRedirect = async (id: number, request: RedirectRequest): Promise<RedirectDto> => {
-  const response = await api.put(`/admin/seo/redirects/${id}`, request);
-  return response.data;
+  const response = await fetch(`${BASE_URL}/redirects/${id}`, withLangHeaders({
+    method: 'PUT',
+    headers: defaultHeaders as HeadersInit,
+    body: JSON.stringify(request),
+  }));
+  return handleResponse(response);
 };
 
 export const deleteRedirect = async (id: number): Promise<void> => {
-  await api.delete(`/admin/seo/redirects/${id}`);
+  const response = await fetch(`${BASE_URL}/redirects/${id}`, withLangHeaders({
+    method: 'DELETE',
+    headers: defaultHeaders as HeadersInit,
+  }));
+  if (!response.ok) {
+    throw new Error('Failed to delete redirect');
+  }
 };
 
 export const toggleRedirectActive = async (id: number): Promise<RedirectDto> => {
-  const response = await api.post(`/admin/seo/redirects/${id}/toggle`);
-  return response.data;
+  const response = await fetch(`${BASE_URL}/redirects/${id}/toggle`, withLangHeaders({
+    method: 'POST',
+    headers: defaultHeaders as HeadersInit,
+  }));
+  return handleResponse(response);
 };
 
 export const getRedirectStats = async (): Promise<RedirectStatsDto> => {
-  const response = await api.get('/admin/seo/redirects/stats');
-  return response.data;
+  const response = await fetch(`${BASE_URL}/redirects/stats`, withLangHeaders({
+    headers: defaultHeaders as HeadersInit,
+  }));
+  return handleResponse(response);
 };
 
 export const getMostUsedRedirects = async (limit = 10): Promise<RedirectDto[]> => {
-  const response = await api.get('/admin/seo/redirects/most-used', {
-    params: { limit }
-  });
-  return response.data;
+  const params = new URLSearchParams({ limit: limit.toString() });
+  const response = await fetch(`${BASE_URL}/redirects/most-used?${params}`, withLangHeaders({
+    headers: defaultHeaders as HeadersInit,
+  }));
+  return handleResponse(response);
 };
 
 export const importRedirects = async (redirects: RedirectRequest[]): Promise<ImportResultDto> => {
-  const response = await api.post('/admin/seo/redirects/import', redirects);
-  return response.data;
+  const response = await fetch(`${BASE_URL}/redirects/import`, withLangHeaders({
+    method: 'POST',
+    headers: defaultHeaders as HeadersInit,
+    body: JSON.stringify(redirects),
+  }));
+  return handleResponse(response);
 };
 
 export const validateLoop = async (sourceUrl: string, targetUrl: string): Promise<LoopValidationDto> => {
-  const response = await api.get('/admin/seo/redirects/validate-loop', {
-    params: { sourceUrl, targetUrl }
-  });
-  return response.data;
+  const params = new URLSearchParams({ sourceUrl, targetUrl });
+  const response = await fetch(`${BASE_URL}/redirects/validate-loop?${params}`, withLangHeaders({
+    headers: defaultHeaders as HeadersInit,
+  }));
+  return handleResponse(response);
 };
 
 export const resolveRedirect = async (sourceUrl: string): Promise<RedirectDto | null> => {
   try {
-    const response = await api.get('/admin/seo/redirects/resolve', {
-      params: { sourceUrl }
-    });
-    return response.data;
+    const params = new URLSearchParams({ sourceUrl });
+    const response = await fetch(`${BASE_URL}/redirects/resolve?${params}`, withLangHeaders({
+      headers: defaultHeaders as HeadersInit,
+    }));
+    return handleResponse(response);
   } catch {
     return null;
   }

@@ -219,7 +219,7 @@ export async function getTickets(
   if (params.sort) searchParams.append('sort', params.sort);
 
   const response = await fetch(`${BASE_URL}?${searchParams}`, {
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
   });
   return handleResponse(response);
 }
@@ -227,28 +227,28 @@ export async function getTickets(
 export async function searchTickets(query: string, page = 0, size = 20): Promise<Page<TicketDto>> {
   const searchParams = new URLSearchParams({ q: query, page: page.toString(), size: size.toString() });
   const response = await fetch(`${BASE_URL}/search?${searchParams}`, {
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
   });
   return handleResponse(response);
 }
 
 export async function getTicketById(id: number): Promise<TicketDto> {
   const response = await fetch(`${BASE_URL}/${id}`, {
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
   });
   return handleResponse(response);
 }
 
 export async function getTicketDetail(id: number): Promise<TicketDetailDto> {
   const response = await fetch(`${BASE_URL}/${id}/detail`, {
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
   });
   return handleResponse(response);
 }
 
 export async function getTicketByNumber(ticketNumber: string): Promise<TicketDto> {
   const response = await fetch(`${BASE_URL}/number/${ticketNumber}`, {
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
   });
   return handleResponse(response);
 }
@@ -256,7 +256,7 @@ export async function getTicketByNumber(ticketNumber: string): Promise<TicketDto
 export async function createTicket(request: CreateTicketRequest): Promise<TicketDto> {
   const response = await fetch(BASE_URL, {
     method: 'POST',
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
     body: JSON.stringify(request),
   });
   return handleResponse(response);
@@ -265,7 +265,7 @@ export async function createTicket(request: CreateTicketRequest): Promise<Ticket
 export async function updateTicket(id: number, request: UpdateTicketRequest): Promise<TicketDto> {
   const response = await fetch(`${BASE_URL}/${id}`, {
     method: 'PUT',
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
     body: JSON.stringify(request),
   });
   return handleResponse(response);
@@ -274,7 +274,7 @@ export async function updateTicket(id: number, request: UpdateTicketRequest): Pr
 export async function deleteTicket(id: number): Promise<void> {
   const response = await fetch(`${BASE_URL}/${id}`, {
     method: 'DELETE',
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
   });
   if (!response.ok) {
     throw new Error('Failed to delete ticket');
@@ -286,7 +286,7 @@ export async function deleteTicket(id: number): Promise<void> {
 export async function getTicketsByUser(userId: number, page = 0, size = 20): Promise<Page<TicketDto>> {
   const searchParams = new URLSearchParams({ page: page.toString(), size: size.toString() });
   const response = await fetch(`${BASE_URL}/user/${userId}?${searchParams}`, {
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
   });
   return handleResponse(response);
 }
@@ -294,7 +294,7 @@ export async function getTicketsByUser(userId: number, page = 0, size = 20): Pro
 export async function getTicketsByGuestEmail(email: string, page = 0, size = 20): Promise<Page<TicketDto>> {
   const searchParams = new URLSearchParams({ email, page: page.toString(), size: size.toString() });
   const response = await fetch(`${BASE_URL}/guest?${searchParams}`, {
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
   });
   return handleResponse(response);
 }
@@ -302,14 +302,14 @@ export async function getTicketsByGuestEmail(email: string, page = 0, size = 20)
 export async function getMyTickets(page = 0, size = 20): Promise<Page<TicketDto>> {
   const searchParams = new URLSearchParams({ page: page.toString(), size: size.toString() });
   const response = await fetch(`${BASE_URL}/my-tickets?${searchParams}`, {
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
   });
   return handleResponse(response);
 }
 
 export async function getTicketsByOrder(orderId: number): Promise<TicketDto[]> {
   const response = await fetch(`${BASE_URL}/order/${orderId}`, {
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
   });
   return handleResponse(response);
 }
@@ -319,7 +319,7 @@ export async function getTicketsByOrder(orderId: number): Promise<TicketDto[]> {
 export async function assignTicket(ticketId: number, staffId: number): Promise<TicketDto> {
   const response = await fetch(`${BASE_URL}/${ticketId}/assign?staffId=${staffId}`, {
     method: 'POST',
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
   });
   return handleResponse(response);
 }
@@ -327,7 +327,7 @@ export async function assignTicket(ticketId: number, staffId: number): Promise<T
 export async function assignTicketToMe(ticketId: number): Promise<TicketDto> {
   const response = await fetch(`${BASE_URL}/${ticketId}/assign-to-me`, {
     method: 'POST',
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
   });
   return handleResponse(response);
 }
@@ -335,7 +335,7 @@ export async function assignTicketToMe(ticketId: number): Promise<TicketDto> {
 export async function unassignTicket(ticketId: number): Promise<TicketDto> {
   const response = await fetch(`${BASE_URL}/${ticketId}/unassign`, {
     method: 'POST',
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
   });
   return handleResponse(response);
 }
@@ -343,7 +343,7 @@ export async function unassignTicket(ticketId: number): Promise<TicketDto> {
 export async function changeTicketStatus(ticketId: number, status: TicketStatus): Promise<TicketDto> {
   const response = await fetch(`${BASE_URL}/${ticketId}/status?status=${status}`, {
     method: 'POST',
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
   });
   return handleResponse(response);
 }
@@ -351,7 +351,7 @@ export async function changeTicketStatus(ticketId: number, status: TicketStatus)
 export async function changeTicketPriority(ticketId: number, priority: TicketPriority): Promise<TicketDto> {
   const response = await fetch(`${BASE_URL}/${ticketId}/priority?priority=${priority}`, {
     method: 'POST',
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
   });
   return handleResponse(response);
 }
@@ -359,7 +359,7 @@ export async function changeTicketPriority(ticketId: number, priority: TicketPri
 export async function resolveTicket(ticketId: number, resolutionMessage: string): Promise<TicketDto> {
   const response = await fetch(`${BASE_URL}/${ticketId}/resolve`, {
     method: 'POST',
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
     body: JSON.stringify({ resolutionMessage }),
   });
   return handleResponse(response);
@@ -368,7 +368,7 @@ export async function resolveTicket(ticketId: number, resolutionMessage: string)
 export async function closeTicket(ticketId: number): Promise<TicketDto> {
   const response = await fetch(`${BASE_URL}/${ticketId}/close`, {
     method: 'POST',
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
   });
   return handleResponse(response);
 }
@@ -376,7 +376,7 @@ export async function closeTicket(ticketId: number): Promise<TicketDto> {
 export async function reopenTicket(ticketId: number): Promise<TicketDto> {
   const response = await fetch(`${BASE_URL}/${ticketId}/reopen`, {
     method: 'POST',
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
   });
   return handleResponse(response);
 }
@@ -385,7 +385,7 @@ export async function reopenTicket(ticketId: number): Promise<TicketDto> {
 
 export async function getTicketMessages(ticketId: number): Promise<TicketMessageDto[]> {
   const response = await fetch(`${BASE_URL}/${ticketId}/messages`, {
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
   });
   return handleResponse(response);
 }
@@ -393,7 +393,7 @@ export async function getTicketMessages(ticketId: number): Promise<TicketMessage
 export async function addMessage(ticketId: number, request: AddTicketMessageRequest): Promise<TicketMessageDto> {
   const response = await fetch(`${BASE_URL}/${ticketId}/messages`, {
     method: 'POST',
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
     body: JSON.stringify(request),
   });
   return handleResponse(response);
@@ -402,7 +402,7 @@ export async function addMessage(ticketId: number, request: AddTicketMessageRequ
 export async function addInternalNote(ticketId: number, content: string): Promise<TicketMessageDto> {
   const response = await fetch(`${BASE_URL}/${ticketId}/internal-note`, {
     method: 'POST',
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
     body: JSON.stringify({ content }),
   });
   return handleResponse(response);
@@ -413,7 +413,7 @@ export async function addInternalNote(ticketId: number, content: string): Promis
 export async function bulkUpdateStatus(ticketIds: number[], status: TicketStatus): Promise<{ updated: number }> {
   const response = await fetch(`${BASE_URL}/bulk/status`, {
     method: 'POST',
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
     body: JSON.stringify({ ticketIds, status }),
   });
   return handleResponse(response);
@@ -422,7 +422,7 @@ export async function bulkUpdateStatus(ticketIds: number[], status: TicketStatus
 export async function bulkAssign(ticketIds: number[], staffId: number): Promise<{ updated: number }> {
   const response = await fetch(`${BASE_URL}/bulk/assign`, {
     method: 'POST',
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
     body: JSON.stringify({ ticketIds, staffId }),
   });
   return handleResponse(response);
@@ -432,21 +432,21 @@ export async function bulkAssign(ticketIds: number[], staffId: number): Promise<
 
 export async function getAllCategories(): Promise<TicketCategoryDto[]> {
   const response = await fetch(`${BASE_URL}/categories`, {
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
   });
   return handleResponse(response);
 }
 
 export async function getActiveCategories(): Promise<TicketCategoryDto[]> {
   const response = await fetch(`${BASE_URL}/categories/active`, {
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
   });
   return handleResponse(response);
 }
 
 export async function getCategoryById(id: number): Promise<TicketCategoryDto> {
   const response = await fetch(`${BASE_URL}/categories/${id}`, {
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
   });
   return handleResponse(response);
 }
@@ -454,7 +454,7 @@ export async function getCategoryById(id: number): Promise<TicketCategoryDto> {
 export async function createCategory(request: TicketCategoryRequest): Promise<TicketCategoryDto> {
   const response = await fetch(`${BASE_URL}/categories`, {
     method: 'POST',
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
     body: JSON.stringify(request),
   });
   return handleResponse(response);
@@ -463,7 +463,7 @@ export async function createCategory(request: TicketCategoryRequest): Promise<Ti
 export async function updateCategory(id: number, request: TicketCategoryRequest): Promise<TicketCategoryDto> {
   const response = await fetch(`${BASE_URL}/categories/${id}`, {
     method: 'PUT',
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
     body: JSON.stringify(request),
   });
   return handleResponse(response);
@@ -472,7 +472,7 @@ export async function updateCategory(id: number, request: TicketCategoryRequest)
 export async function deleteCategory(id: number): Promise<void> {
   const response = await fetch(`${BASE_URL}/categories/${id}`, {
     method: 'DELETE',
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
   });
   if (!response.ok) {
     throw new Error('Failed to delete category');
@@ -483,14 +483,14 @@ export async function deleteCategory(id: number): Promise<void> {
 
 export async function getAllCannedResponses(): Promise<CannedResponseDto[]> {
   const response = await fetch(`${BASE_URL}/canned-responses`, {
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
   });
   return handleResponse(response);
 }
 
 export async function getCannedResponsesByCategory(categoryId: number): Promise<CannedResponseDto[]> {
   const response = await fetch(`${BASE_URL}/canned-responses/category/${categoryId}`, {
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
   });
   return handleResponse(response);
 }
@@ -498,14 +498,14 @@ export async function getCannedResponsesByCategory(categoryId: number): Promise<
 export async function searchCannedResponses(query: string): Promise<CannedResponseDto[]> {
   const searchParams = new URLSearchParams({ q: query });
   const response = await fetch(`${BASE_URL}/canned-responses/search?${searchParams}`, {
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
   });
   return handleResponse(response);
 }
 
 export async function getCannedResponseByShortcut(shortcut: string): Promise<CannedResponseDto> {
   const response = await fetch(`${BASE_URL}/canned-responses/shortcut/${shortcut}`, {
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
   });
   return handleResponse(response);
 }
@@ -513,7 +513,7 @@ export async function getCannedResponseByShortcut(shortcut: string): Promise<Can
 export async function createCannedResponse(request: CannedResponseDto): Promise<CannedResponseDto> {
   const response = await fetch(`${BASE_URL}/canned-responses`, {
     method: 'POST',
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
     body: JSON.stringify(request),
   });
   return handleResponse(response);
@@ -522,7 +522,7 @@ export async function createCannedResponse(request: CannedResponseDto): Promise<
 export async function updateCannedResponse(id: number, request: CannedResponseDto): Promise<CannedResponseDto> {
   const response = await fetch(`${BASE_URL}/canned-responses/${id}`, {
     method: 'PUT',
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
     body: JSON.stringify(request),
   });
   return handleResponse(response);
@@ -531,7 +531,7 @@ export async function updateCannedResponse(id: number, request: CannedResponseDt
 export async function deleteCannedResponse(id: number): Promise<void> {
   const response = await fetch(`${BASE_URL}/canned-responses/${id}`, {
     method: 'DELETE',
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
   });
   if (!response.ok) {
     throw new Error('Failed to delete canned response');
@@ -542,28 +542,28 @@ export async function deleteCannedResponse(id: number): Promise<void> {
 
 export async function getTicketStats(): Promise<TicketStatsDto> {
   const response = await fetch(`${BASE_URL}/stats`, {
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
   });
   return handleResponse(response);
 }
 
 export async function getAvailableStatuses(): Promise<string[]> {
   const response = await fetch(`${BASE_URL}/statuses`, {
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
   });
   return handleResponse(response);
 }
 
 export async function getAvailablePriorities(): Promise<string[]> {
   const response = await fetch(`${BASE_URL}/priorities`, {
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
   });
   return handleResponse(response);
 }
 
 export async function getAvailableSources(): Promise<string[]> {
   const response = await fetch(`${BASE_URL}/sources`, {
-    headers: withLangHeaders(defaultHeaders()),
+    ...withLangHeaders({ headers: defaultHeaders as HeadersInit }),
   });
   return handleResponse(response);
 }

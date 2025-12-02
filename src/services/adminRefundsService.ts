@@ -1,4 +1,6 @@
-import api from './api';
+import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
+
+const BASE_URL = `${API_BASE_URL}/api/admin/refunds`;
 
 // Types
 export type RefundStatus =
@@ -133,10 +135,11 @@ export const getAllRefunds = async (
   page: number = 0,
   size: number = 20
 ): Promise<Page<RefundDto>> => {
-  const response = await api.get('/api/admin/refunds', {
-    params: { page, size }
-  });
-  return response.data;
+  const params = new URLSearchParams({ page: page.toString(), size: size.toString() });
+  const response = await fetch(`${BASE_URL}?${params}`, withLangHeaders({
+    headers: defaultHeaders as HeadersInit,
+  }));
+  return handleResponse(response);
 };
 
 export const getRefundsWithFilters = async (
@@ -149,10 +152,15 @@ export const getRefundsWithFilters = async (
   page: number = 0,
   size: number = 20
 ): Promise<Page<RefundDto>> => {
-  const response = await api.get('/api/admin/refunds/filter', {
-    params: { ...filters, page, size }
-  });
-  return response.data;
+  const params = new URLSearchParams({ page: page.toString(), size: size.toString() });
+  if (filters.status) params.append('status', filters.status);
+  if (filters.reason) params.append('reason', filters.reason);
+  if (filters.startDate) params.append('startDate', filters.startDate);
+  if (filters.endDate) params.append('endDate', filters.endDate);
+  const response = await fetch(`${BASE_URL}/filter?${params}`, withLangHeaders({
+    headers: defaultHeaders as HeadersInit,
+  }));
+  return handleResponse(response);
 };
 
 export const searchRefunds = async (
@@ -160,10 +168,11 @@ export const searchRefunds = async (
   page: number = 0,
   size: number = 20
 ): Promise<Page<RefundDto>> => {
-  const response = await api.get('/api/admin/refunds/search', {
-    params: { q: query, page, size }
-  });
-  return response.data;
+  const params = new URLSearchParams({ q: query, page: page.toString(), size: size.toString() });
+  const response = await fetch(`${BASE_URL}/search?${params}`, withLangHeaders({
+    headers: defaultHeaders as HeadersInit,
+  }));
+  return handleResponse(response);
 };
 
 export const getRefundsByStatus = async (
@@ -171,104 +180,163 @@ export const getRefundsByStatus = async (
   page: number = 0,
   size: number = 20
 ): Promise<Page<RefundDto>> => {
-  const response = await api.get(`/api/admin/refunds/status/${status}`, {
-    params: { page, size }
-  });
-  return response.data;
+  const params = new URLSearchParams({ page: page.toString(), size: size.toString() });
+  const response = await fetch(`${BASE_URL}/status/${status}?${params}`, withLangHeaders({
+    headers: defaultHeaders as HeadersInit,
+  }));
+  return handleResponse(response);
 };
 
 export const getPendingRefunds = async (): Promise<RefundDto[]> => {
-  const response = await api.get('/api/admin/refunds/pending');
-  return response.data;
+  const response = await fetch(`${BASE_URL}/pending`, withLangHeaders({
+    headers: defaultHeaders as HeadersInit,
+  }));
+  return handleResponse(response);
 };
 
 export const getRecentRefunds = async (limit: number = 10): Promise<RefundDto[]> => {
-  const response = await api.get('/api/admin/refunds/recent', {
-    params: { limit }
-  });
-  return response.data;
+  const params = new URLSearchParams({ limit: limit.toString() });
+  const response = await fetch(`${BASE_URL}/recent?${params}`, withLangHeaders({
+    headers: defaultHeaders as HeadersInit,
+  }));
+  return handleResponse(response);
 };
 
 export const getRefundsByOrderId = async (orderId: number): Promise<RefundDto[]> => {
-  const response = await api.get(`/api/admin/refunds/order/${orderId}`);
-  return response.data;
+  const response = await fetch(`${BASE_URL}/order/${orderId}`, withLangHeaders({
+    headers: defaultHeaders as HeadersInit,
+  }));
+  return handleResponse(response);
 };
 
 export const getRefundById = async (id: number): Promise<RefundDto> => {
-  const response = await api.get(`/api/admin/refunds/${id}`);
-  return response.data;
+  const response = await fetch(`${BASE_URL}/${id}`, withLangHeaders({
+    headers: defaultHeaders as HeadersInit,
+  }));
+  return handleResponse(response);
 };
 
 export const getRefundByNumber = async (refundNumber: string): Promise<RefundDto> => {
-  const response = await api.get(`/api/admin/refunds/number/${refundNumber}`);
-  return response.data;
+  const response = await fetch(`${BASE_URL}/number/${refundNumber}`, withLangHeaders({
+    headers: defaultHeaders as HeadersInit,
+  }));
+  return handleResponse(response);
 };
 
 export const createRefund = async (request: CreateRefundRequest): Promise<RefundDto> => {
-  const response = await api.post('/api/admin/refunds', request);
-  return response.data;
+  const response = await fetch(BASE_URL, withLangHeaders({
+    method: 'POST',
+    headers: defaultHeaders as HeadersInit,
+    body: JSON.stringify(request),
+  }));
+  return handleResponse(response);
 };
 
 export const updateRefund = async (id: number, request: UpdateRefundRequest): Promise<RefundDto> => {
-  const response = await api.put(`/api/admin/refunds/${id}`, request);
-  return response.data;
+  const response = await fetch(`${BASE_URL}/${id}`, withLangHeaders({
+    method: 'PUT',
+    headers: defaultHeaders as HeadersInit,
+    body: JSON.stringify(request),
+  }));
+  return handleResponse(response);
 };
 
 export const deleteRefund = async (id: number): Promise<void> => {
-  await api.delete(`/api/admin/refunds/${id}`);
+  const response = await fetch(`${BASE_URL}/${id}`, withLangHeaders({
+    method: 'DELETE',
+    headers: defaultHeaders as HeadersInit,
+  }));
+  if (!response.ok) {
+    throw new Error('Failed to delete refund');
+  }
 };
 
 // Workflow Actions
 export const processRefund = async (id: number, request: ProcessRefundRequest): Promise<RefundDto> => {
-  const response = await api.post(`/api/admin/refunds/${id}/process`, request);
-  return response.data;
+  const response = await fetch(`${BASE_URL}/${id}/process`, withLangHeaders({
+    method: 'POST',
+    headers: defaultHeaders as HeadersInit,
+    body: JSON.stringify(request),
+  }));
+  return handleResponse(response);
 };
 
 export const approveRefund = async (id: number, notes?: string): Promise<RefundDto> => {
-  const response = await api.post(`/api/admin/refunds/${id}/approve`, { notes });
-  return response.data;
+  const response = await fetch(`${BASE_URL}/${id}/approve`, withLangHeaders({
+    method: 'POST',
+    headers: defaultHeaders as HeadersInit,
+    body: JSON.stringify({ notes }),
+  }));
+  return handleResponse(response);
 };
 
 export const rejectRefund = async (id: number, reason: string): Promise<RefundDto> => {
-  const response = await api.post(`/api/admin/refunds/${id}/reject`, { reason });
-  return response.data;
+  const response = await fetch(`${BASE_URL}/${id}/reject`, withLangHeaders({
+    method: 'POST',
+    headers: defaultHeaders as HeadersInit,
+    body: JSON.stringify({ reason }),
+  }));
+  return handleResponse(response);
 };
 
 export const executeRefund = async (id: number): Promise<RefundDto> => {
-  const response = await api.post(`/api/admin/refunds/${id}/execute`);
-  return response.data;
+  const response = await fetch(`${BASE_URL}/${id}/execute`, withLangHeaders({
+    method: 'POST',
+    headers: defaultHeaders as HeadersInit,
+  }));
+  return handleResponse(response);
 };
 
 export const cancelRefund = async (id: number): Promise<RefundDto> => {
-  const response = await api.post(`/api/admin/refunds/${id}/cancel`);
-  return response.data;
+  const response = await fetch(`${BASE_URL}/${id}/cancel`, withLangHeaders({
+    method: 'POST',
+    headers: defaultHeaders as HeadersInit,
+  }));
+  return handleResponse(response);
 };
 
 export const completeRefund = async (id: number, providerRefundId?: string): Promise<RefundDto> => {
-  const response = await api.post(`/api/admin/refunds/${id}/complete`, { providerRefundId });
-  return response.data;
+  const response = await fetch(`${BASE_URL}/${id}/complete`, withLangHeaders({
+    method: 'POST',
+    headers: defaultHeaders as HeadersInit,
+    body: JSON.stringify({ providerRefundId }),
+  }));
+  return handleResponse(response);
 };
 
 export const failRefund = async (id: number, error: string): Promise<RefundDto> => {
-  const response = await api.post(`/api/admin/refunds/${id}/fail`, { error });
-  return response.data;
+  const response = await fetch(`${BASE_URL}/${id}/fail`, withLangHeaders({
+    method: 'POST',
+    headers: defaultHeaders as HeadersInit,
+    body: JSON.stringify({ error }),
+  }));
+  return handleResponse(response);
 };
 
 // Notes and Notification
 export const addRefundNotes = async (id: number, notes: string): Promise<RefundDto> => {
-  const response = await api.post(`/api/admin/refunds/${id}/notes`, { notes });
-  return response.data;
+  const response = await fetch(`${BASE_URL}/${id}/notes`, withLangHeaders({
+    method: 'POST',
+    headers: defaultHeaders as HeadersInit,
+    body: JSON.stringify({ notes }),
+  }));
+  return handleResponse(response);
 };
 
 export const markCustomerNotified = async (id: number): Promise<RefundDto> => {
-  const response = await api.post(`/api/admin/refunds/${id}/notify`);
-  return response.data;
+  const response = await fetch(`${BASE_URL}/${id}/notify`, withLangHeaders({
+    method: 'POST',
+    headers: defaultHeaders as HeadersInit,
+  }));
+  return handleResponse(response);
 };
 
 // Statistics
 export const getRefundStats = async (): Promise<RefundStatsDto> => {
-  const response = await api.get('/api/admin/refunds/stats');
-  return response.data;
+  const response = await fetch(`${BASE_URL}/stats`, withLangHeaders({
+    headers: defaultHeaders as HeadersInit,
+  }));
+  return handleResponse(response);
 };
 
 export const getRefundsProcessedByUser = async (
@@ -276,21 +344,26 @@ export const getRefundsProcessedByUser = async (
   page: number = 0,
   size: number = 20
 ): Promise<Page<RefundDto>> => {
-  const response = await api.get(`/api/admin/refunds/processed-by/${userId}`, {
-    params: { page, size }
-  });
-  return response.data;
+  const params = new URLSearchParams({ page: page.toString(), size: size.toString() });
+  const response = await fetch(`${BASE_URL}/processed-by/${userId}?${params}`, withLangHeaders({
+    headers: defaultHeaders as HeadersInit,
+  }));
+  return handleResponse(response);
 };
 
 // Enums
 export const getRefundStatuses = async (): Promise<RefundStatus[]> => {
-  const response = await api.get('/api/admin/refunds/statuses');
-  return response.data;
+  const response = await fetch(`${BASE_URL}/statuses`, withLangHeaders({
+    headers: defaultHeaders as HeadersInit,
+  }));
+  return handleResponse(response);
 };
 
 export const getRefundReasons = async (): Promise<RefundReason[]> => {
-  const response = await api.get('/api/admin/refunds/reasons');
-  return response.data;
+  const response = await fetch(`${BASE_URL}/reasons`, withLangHeaders({
+    headers: defaultHeaders as HeadersInit,
+  }));
+  return handleResponse(response);
 };
 
 // ==================== Helper Functions ====================

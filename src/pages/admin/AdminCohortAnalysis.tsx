@@ -84,8 +84,8 @@ const formatPercent = (value: number): string => {
   return `${value.toFixed(1)}%`;
 };
 
-const formatChange = (value: number | null): string => {
-  if (value === null) return '-';
+const formatChange = (value: number | null | undefined): string => {
+  if (value == null) return '-';
   const sign = value >= 0 ? '+' : '';
   return `${sign}${value.toFixed(1)}%`;
 };

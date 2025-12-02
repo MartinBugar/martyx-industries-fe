@@ -10,16 +10,13 @@ import {
   performAudit,
   type SeoAuditDto,
   type SeoIssueDto,
-  formatDate,
   getSeverityColor,
   getSeverityBgColor,
   getScoreColor,
-  getScoreBgColor,
   getEntityTypeLabel,
   getIssueTypeLabel
 } from '../../services/adminSeoService';
 import {
-  Search,
   RefreshCw,
   AlertTriangle,
   CheckCircle,
@@ -28,7 +25,6 @@ import {
   FolderOpen,
   FileText,
   ArrowRight,
-  TrendingUp,
   Target,
   Gauge
 } from 'lucide-react';

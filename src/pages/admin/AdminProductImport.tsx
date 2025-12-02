@@ -4,7 +4,6 @@
  */
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
 import {
   Upload,
   Download,
@@ -46,7 +45,6 @@ import type {
 import './AdminProductImport.css';
 
 const AdminProductImport: React.FC = () => {
-  const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Tab state

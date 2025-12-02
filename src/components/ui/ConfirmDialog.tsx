@@ -231,7 +231,7 @@ export interface UseConfirmDialogReturn {
   /** Open the confirm dialog */
   confirm: (options?: UseConfirmDialogOptions) => Promise<boolean>;
   /** ConfirmDialog component props to spread */
-  dialogProps: Omit<ConfirmDialogProps, 'onConfirm' | 'onCancel'>;
+  dialogProps: ConfirmDialogProps;
   /** Current loading state */
   isLoading: boolean;
   /** Set loading state */
@@ -270,7 +270,7 @@ export const useConfirmDialog = (
   const [isOpen, setIsOpen] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const [options, setOptions] = React.useState<UseConfirmDialogOptions>(defaultOptions);
-  const resolveRef = React.useRef<(value: boolean) => void>();
+  const resolveRef = React.useRef<(value: boolean) => void>(undefined);
 
   const confirm = useCallback((overrideOptions?: UseConfirmDialogOptions): Promise<boolean> => {
     setOptions({ ...defaultOptions, ...overrideOptions });
@@ -292,10 +292,7 @@ export const useConfirmDialog = (
     setIsOpen(false);
   }, []);
 
-  const dialogProps: Omit<ConfirmDialogProps, 'onConfirm' | 'onCancel'> & {
-    onConfirm: () => void;
-    onCancel: () => void;
-  } = {
+  const dialogProps: ConfirmDialogProps = {
     isOpen,
     title: options.title || 'Confirm',
     message: options.message || 'Are you sure?',

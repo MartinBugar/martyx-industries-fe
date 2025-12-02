@@ -201,10 +201,6 @@ const AdminRefundDetail: React.FC = () => {
   return (
     <AdminLayout
       title={`Refund ${refund.refundNumber}`}
-      breadcrumbs={[
-        { label: 'Refundy', href: '/admin/refunds' },
-        { label: refund.refundNumber }
-      ]}
     >
       <div className="admin-refund-detail">
         {/* Header with actions */}

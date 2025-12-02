@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
 import {
   TrendingUp,
   TrendingDown,
@@ -40,8 +39,6 @@ import './AdminFunnelAnalytics.css';
 type DatePreset = 'today' | 'yesterday' | 'last7days' | 'last30days' | 'thisMonth' | 'lastMonth' | 'custom';
 
 const AdminFunnelAnalytics: React.FC = () => {
-  const { t } = useTranslation();
-
   // State
   const [report, setReport] = useState<FunnelReportDto | null>(null);
   const [loading, setLoading] = useState(true);

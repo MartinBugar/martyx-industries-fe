@@ -34,7 +34,6 @@ import {
   Eye,
   Calendar,
   User,
-  Tag,
   Clock,
   ChevronLeft,
   ChevronRight,
@@ -61,7 +60,7 @@ const AdminBlogPosts: React.FC = () => {
 
   // Filters
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('');
+  const [statusFilter] = useState<string>('');
   const [categoryFilter, setCategoryFilter] = useState<string>('');
 
   // UI state

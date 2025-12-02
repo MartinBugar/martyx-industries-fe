@@ -273,10 +273,10 @@ const AdminGallery: React.FC = () => {
                           <span className="mobile-field-value">{formatDate(user.lastUploadDate)}</span>
                         </div>
                         <div className="mobile-field">
-                          <span className="mobile-field-label">Status:</span>
+                          <span className="mobile-field-label">Gallery:</span>
                           <span className="mobile-field-value">
-                            <Badge variant={user.isActive ? 'success' : 'danger'} size="sm">
-                              {user.isActive ? 'Active' : 'Inactive'}
+                            <Badge variant={user.isActive ? 'success' : 'default'} size="sm">
+                              {user.isActive ? 'Public' : 'Private'}
                             </Badge>
                           </span>
                         </div>
@@ -297,7 +297,7 @@ const AdminGallery: React.FC = () => {
                       <th style={{ width: 100, textAlign: 'center' }}>Public</th>
                       <th style={{ width: 100, textAlign: 'center' }}>Pending</th>
                       <th style={{ width: 140 }}>Last Upload</th>
-                      <th style={{ width: 100, textAlign: 'center' }}>Status</th>
+                      <th style={{ width: 100, textAlign: 'center' }}>Gallery</th>
                       <th style={{ width: 120, textAlign: 'center' }}>Actions</th>
                     </tr>
                   </thead>
@@ -344,8 +344,8 @@ const AdminGallery: React.FC = () => {
                           </td>
                           <td>{formatDate(user.lastUploadDate)}</td>
                           <td style={{ textAlign: 'center' }}>
-                            <Badge variant={user.isActive ? 'success' : 'danger'} size="sm">
-                              {user.isActive ? 'Active' : 'Inactive'}
+                            <Badge variant={user.isActive ? 'success' : 'default'} size="sm">
+                              {user.isActive ? 'Public' : 'Private'}
                             </Badge>
                           </td>
                           <td style={{ textAlign: 'center' }}>
