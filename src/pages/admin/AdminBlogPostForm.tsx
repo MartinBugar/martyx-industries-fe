@@ -13,7 +13,8 @@ import {
   getAllCategories,
   getAllTags,
   getStatuses,
-  type BlogPostDto,
+  formatScheduledAt,
+  parseScheduledAt,
   type BlogCategoryDto,
   type BlogTagDto,
   type CreateBlogPostRequest,
@@ -32,7 +33,6 @@ import {
   Clock,
   AlertCircle,
   X,
-  Plus,
   Check
 } from 'lucide-react';
 import './AdminBlogPostForm.css';
@@ -95,7 +95,7 @@ const AdminBlogPostForm: React.FC = () => {
         categoryId: post.categoryId || undefined,
         tagIds: post.tags?.map(t => t.id) || [],
         relatedProductIds: post.relatedProductIds || '',
-        scheduledAt: post.scheduledAt || '',
+        scheduledAt: parseScheduledAt(post.scheduledAt),
         featured: post.featured,
         allowComments: post.allowComments
       });
@@ -194,7 +194,7 @@ const AdminBlogPostForm: React.FC = () => {
       const request = {
         ...formData,
         categoryId: formData.categoryId || undefined,
-        scheduledAt: formData.scheduledAt || undefined
+        scheduledAt: formatScheduledAt(formData.scheduledAt)
       };
 
       if (isEditing) {
@@ -213,11 +213,34 @@ const AdminBlogPostForm: React.FC = () => {
   };
 
   const handleSaveAsDraft = async () => {
-    setFormData(prev => ({ ...prev, status: 'DRAFT' }));
-    // Submit will be triggered by the status change
-    const form = document.querySelector('form');
-    if (form) {
-      form.requestSubmit();
+    if (!formData.title.trim()) {
+      setError('Názov článku je povinný');
+      return;
+    }
+
+    setSaving(true);
+    setError(null);
+
+    try {
+      const request = {
+        ...formData,
+        status: 'DRAFT', // Force DRAFT status
+        categoryId: formData.categoryId || undefined,
+        scheduledAt: formatScheduledAt(formData.scheduledAt)
+      };
+
+      if (isEditing) {
+        await updatePost(parseInt(id!), request as UpdateBlogPostRequest);
+      } else {
+        await createPost(request);
+      }
+
+      navigate('/admin/blog/posts');
+    } catch (err: any) {
+      console.error('Failed to save post:', err);
+      setError(err.response?.data?.message || 'Nepodarilo sa uložiť článok');
+    } finally {
+      setSaving(false);
     }
   };
 

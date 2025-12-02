@@ -288,6 +288,28 @@ export const getStatuses = async (): Promise<StatusOption[]> => {
 
 // === Helpers ===
 
+/**
+ * Converts datetime-local input value to ISO format for backend.
+ * Input: "2025-12-02T14:30" -> Output: "2025-12-02T14:30:00"
+ */
+export const formatScheduledAt = (dateTimeLocal: string | undefined): string | undefined => {
+  if (!dateTimeLocal) return undefined;
+  // datetime-local returns YYYY-MM-DDTHH:mm, add seconds for backend
+  return dateTimeLocal.includes(':') && dateTimeLocal.split(':').length === 2
+    ? `${dateTimeLocal}:00`
+    : dateTimeLocal;
+};
+
+/**
+ * Converts ISO datetime from backend to datetime-local input format.
+ * Input: "2025-12-02T14:30:00" -> Output: "2025-12-02T14:30"
+ */
+export const parseScheduledAt = (isoDateTime: string | null): string => {
+  if (!isoDateTime) return '';
+  // Remove seconds and timezone for datetime-local input
+  return isoDateTime.substring(0, 16);
+};
+
 export const formatDate = (dateString: string | null): string => {
   if (!dateString) return '-';
   return new Date(dateString).toLocaleDateString('sk-SK', {
