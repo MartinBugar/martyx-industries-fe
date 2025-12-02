@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Eye } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import {
   type TicketDto,
@@ -423,7 +424,7 @@ const AdminTickets: React.FC = () => {
                             title="Otvoriť detail"
                             onClick={() => handleTicketClick(ticket)}
                           >
-                            <span role="img" aria-label="view">👁</span>
+                            <Eye size={16} />
                           </button>
                         </td>
                       </tr>

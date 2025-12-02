@@ -46,7 +46,7 @@ import type {
 import './AdminProductImport.css';
 
 const AdminProductImport: React.FC = () => {
-  useTranslation();
+  const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Tab state
