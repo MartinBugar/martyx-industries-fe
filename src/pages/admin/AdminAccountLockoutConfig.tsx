@@ -3,7 +3,7 @@ import AdminLayout from './AdminLayout';
 import { Button, Badge, SkeletonTable, ConfirmDialog, useConfirmDialog } from '../../components/ui';
 import { accountLockoutConfigService, type AccountLockoutConfigDto, type LockedUserDto } from '../../services/accountLockoutConfigService';
 import { useErrors } from '../../context/ErrorContext';
-import { Shield, Lock, Unlock, Save, Edit, X, RefreshCw, Clock, AlertTriangle, Info, User } from 'lucide-react';
+import { Shield, Lock, Unlock, Save, Edit, X, RefreshCw, AlertTriangle, Info, User } from 'lucide-react';
 import { logInfo, logError } from '../../services/logger';
 import './AdminUsers.css';
 import './AdminButtonOverrides.css';
@@ -347,7 +347,7 @@ const AdminAccountLockoutConfig: React.FC = () => {
                                         {lockedUsers.map((user) => (
                                             <tr key={user.userId}>
                                                 <td>
-                                                    <Badge variant={user.currentlyLocked ? 'error' : 'warning'} size="sm">
+                                                    <Badge variant={user.currentlyLocked ? 'danger' : 'warning'} size="sm">
                                                         {user.currentlyLocked ? <><Lock size={12} style={{ marginRight: 4 }} /> Locked</> : 'Warning'}
                                                     </Badge>
                                                 </td>

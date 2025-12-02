@@ -318,7 +318,7 @@ const AdminAuditLog: React.FC = () => {
 
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '6px' }}>
-                      <Badge variant="neutral" size="sm" style={{ backgroundColor: `${getActionColor(log.action)}20`, color: getActionColor(log.action), border: 'none' }}>
+                      <Badge variant="secondary" size="sm" style={{ backgroundColor: `${getActionColor(log.action)}20`, color: getActionColor(log.action), border: 'none' }}>
                         {log.actionDisplayName}
                       </Badge>
                       <span style={{ fontSize: '13px', color: 'var(--admin-primary)', fontWeight: 500 }}>{log.entityType}</span>
@@ -387,13 +387,13 @@ const AdminAuditLog: React.FC = () => {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
               <div>
                 <div style={{ fontSize: '12px', color: 'var(--admin-secondary)', marginBottom: '4px' }}>Action</div>
-                <Badge variant="neutral" size="sm" style={{ backgroundColor: `${getActionColor(selectedLog.action)}20`, color: getActionColor(selectedLog.action), border: 'none' }}>
+                <Badge variant="secondary" size="sm" style={{ backgroundColor: `${getActionColor(selectedLog.action)}20`, color: getActionColor(selectedLog.action), border: 'none' }}>
                   {selectedLog.actionDisplayName}
                 </Badge>
               </div>
               <div>
                 <div style={{ fontSize: '12px', color: 'var(--admin-secondary)', marginBottom: '4px' }}>Status</div>
-                <Badge variant={selectedLog.success ? 'success' : 'error'} size="sm">
+                <Badge variant={selectedLog.success ? 'success' : 'danger'} size="sm">
                   {selectedLog.success ? 'Success' : 'Failed'}
                 </Badge>
               </div>

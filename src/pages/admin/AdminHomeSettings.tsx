@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import AdminLayout from './AdminLayout';
 import { homePageSettingsService, type HomePageSetting } from '../../services/homePageSettingsService';
 import { Button, Badge, SkeletonTable } from '../../components/ui';
-import { Save, Eye, EyeOff, GripVertical } from 'lucide-react';
+import { Save, Eye, EyeOff } from 'lucide-react';
 import './AdminUsers.css';
 import './AdminButtonOverrides.css';
 import { logError } from '../../services/logger';
@@ -167,7 +167,7 @@ const AdminHomeSettings: React.FC = () => {
                         <span style={{ fontSize: '13px', color: 'var(--admin-secondary)' }}>
                           Order: <strong style={{ color: 'var(--admin-accent)' }}>{setting.displayOrder}</strong>
                         </span>
-                        <Badge variant={setting.isVisible ? 'success' : 'neutral'} size="sm">
+                        <Badge variant={setting.isVisible ? 'success' : 'secondary'} size="sm">
                           {setting.isVisible ? (
                             <><Eye size={12} style={{ marginRight: 4 }} /> Visible</>
                           ) : (

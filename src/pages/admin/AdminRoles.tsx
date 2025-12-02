@@ -232,7 +232,7 @@ const AdminRoles: React.FC = () => {
                               </div>
                               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                                 {codes.map(code => (
-                                  <Badge key={code} variant="neutral" size="sm">
+                                  <Badge key={code} variant="secondary" size="sm">
                                     {code.split('.')[1]}
                                   </Badge>
                                 ))}

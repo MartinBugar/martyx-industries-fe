@@ -219,7 +219,7 @@ const AdminTaxZones: React.FC = () => {
                                 <tr key={rate.id} style={{ opacity: rate.active ? 1 : 0.6 }}>
                                   <td style={{ fontWeight: 500 }}>{rate.name}</td>
                                   <td>
-                                    <Badge variant="neutral" size="sm">{rate.rateType}</Badge>
+                                    <Badge variant="secondary" size="sm">{rate.rateType}</Badge>
                                   </td>
                                   <td>
                                     <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 600, color: 'var(--admin-accent)' }}>

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { ConfirmDialog, useConfirmDialog, Button, Badge, SkeletonTable } from '../../components/ui';
+import { ConfirmDialog, useConfirmDialog, Button, SkeletonTable } from '../../components/ui';
 import { X, ChevronLeft, ChevronRight, Upload, Trash2, Image, Database } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import cassandraImageService, { type CassandraImageDto, type UploadImageResponse } from '../../services/cassandraImageService';
