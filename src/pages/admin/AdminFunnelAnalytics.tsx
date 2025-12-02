@@ -177,7 +177,7 @@ const AdminFunnelAnalytics: React.FC = () => {
           <div className="kpi-content">
             <span className="kpi-value">{formatNumber(report.totalVisitors)}</span>
             <span className="kpi-label">Návštevníci</span>
-            {report.visitorsChange !== null && (
+            {report.visitorsChange != null && (
               <span className={`kpi-change ${report.visitorsChange >= 0 ? 'positive' : 'negative'}`}>
                 {report.visitorsChange >= 0 ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
                 {formatChange(report.visitorsChange)}
@@ -193,7 +193,7 @@ const AdminFunnelAnalytics: React.FC = () => {
           <div className="kpi-content">
             <span className="kpi-value">{formatNumber(report.totalPurchases)}</span>
             <span className="kpi-label">Nákupy</span>
-            {report.purchasesChange !== null && (
+            {report.purchasesChange != null && (
               <span className={`kpi-change ${report.purchasesChange >= 0 ? 'positive' : 'negative'}`}>
                 {report.purchasesChange >= 0 ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
                 {formatChange(report.purchasesChange)}
@@ -209,7 +209,7 @@ const AdminFunnelAnalytics: React.FC = () => {
           <div className="kpi-content">
             <span className="kpi-value">{formatPercent(report.overallConversionRate)}</span>
             <span className="kpi-label">Konverzia</span>
-            {report.conversionRateChange !== null && (
+            {report.conversionRateChange != null && (
               <span className={`kpi-change ${report.conversionRateChange >= 0 ? 'positive' : 'negative'}`}>
                 {report.conversionRateChange >= 0 ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
                 {report.conversionRateChange >= 0 ? '+' : ''}{report.conversionRateChange.toFixed(2)}pp
@@ -225,7 +225,7 @@ const AdminFunnelAnalytics: React.FC = () => {
           <div className="kpi-content">
             <span className="kpi-value">{formatCurrency(report.totalRevenue)}</span>
             <span className="kpi-label">Tržby</span>
-            {report.revenueChange !== null && (
+            {report.revenueChange != null && (
               <span className={`kpi-change ${report.revenueChange >= 0 ? 'positive' : 'negative'}`}>
                 {report.revenueChange >= 0 ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
                 {formatChange(report.revenueChange)}

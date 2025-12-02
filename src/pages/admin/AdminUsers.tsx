@@ -73,7 +73,7 @@ const AdminUsers: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page]);
 
   // Load users on mount
   useEffect(() => {

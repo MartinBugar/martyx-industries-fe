@@ -5,15 +5,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import AdminLayout from './AdminLayout';
-import {
-  getCohortReport,
-  CohortReportDto,
-  CohortDto,
-  formatNumber,
-  formatCurrency,
-  formatPercent,
-  formatChange
-} from '../../services/adminCohortService';
+import adminCohortService from '../../services/adminCohortService';
 import {
   Users,
   TrendingUp,
@@ -28,6 +20,75 @@ import {
   ChevronUp
 } from 'lucide-react';
 import './AdminCohortAnalysis.css';
+
+// Local type definitions (to avoid Vite module resolution issues)
+interface RetentionPeriodDto {
+  periodIndex: number;
+  periodLabel: string;
+  activeUsers: number;
+  retentionRate: number;
+  totalOrders: number;
+  periodRevenue: number;
+  averageOrderValue: number;
+  retentionColor: string;
+}
+
+interface CohortDto {
+  cohortId: string;
+  cohortLabel: string;
+  cohortPeriod: string;
+  cohortSize: number;
+  retentionPeriods: RetentionPeriodDto[];
+  totalRevenue: number;
+  averageOrderValue: number;
+  averageOrdersPerUser: number;
+  lifetimeValue: number;
+  repeatPurchaseRate: number;
+  sizeChangePercent: number | null;
+  revenueChangePercent: number | null;
+  ltvChangePercent: number | null;
+}
+
+interface CohortReportDto {
+  cohortType: string;
+  granularity: string;
+  startDate: string;
+  endDate: string;
+  cohorts: CohortDto[];
+  totalCohorts: number;
+  totalUsers: number;
+  totalRevenue: number;
+  overallAverageLtv: number;
+  overallRetentionRate: number;
+  periodLabels: string[];
+  averageRetentionByPeriod: Record<number, number>;
+  bestRetentionCohort: CohortDto | null;
+  worstRetentionCohort: CohortDto | null;
+  highestLtvCohort: CohortDto | null;
+  largestCohort: CohortDto | null;
+}
+
+// Helper functions
+const formatNumber = (value: number): string => {
+  return new Intl.NumberFormat('sk-SK').format(value);
+};
+
+const formatCurrency = (value: number): string => {
+  return new Intl.NumberFormat('sk-SK', {
+    style: 'currency',
+    currency: 'EUR'
+  }).format(value);
+};
+
+const formatPercent = (value: number): string => {
+  return `${value.toFixed(1)}%`;
+};
+
+const formatChange = (value: number | null): string => {
+  if (value === null) return '-';
+  const sign = value >= 0 ? '+' : '';
+  return `${sign}${value.toFixed(1)}%`;
+};
 
 type CohortType = 'ACQUISITION' | 'BEHAVIORAL' | 'VALUE';
 type Granularity = 'MONTHLY' | 'QUARTERLY';
@@ -57,7 +118,7 @@ const AdminCohortAnalysis: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await getCohortReport(cohortType, granularity, startDate, endDate, maxPeriods);
+      const data = await adminCohortService.getCohortReport(cohortType, granularity, startDate, endDate, maxPeriods);
       setReport(data);
     } catch (err) {
       console.error('Failed to load cohort report:', err);
