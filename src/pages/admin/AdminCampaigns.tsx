@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Mail, Send, Clock, TrendingUp, Users, BarChart3, Plus } from 'lucide-react';
 import AdminLayout from './AdminLayout';
-import { Button, Badge } from '../../components/ui';
+import { Button, Badge, ConfirmDialog, useConfirmDialog } from '../../components/ui';
 import {
   adminCampaignsService,
   type EmailCampaign,
@@ -27,6 +27,13 @@ const AdminCampaigns: React.FC = () => {
 
   // Edit state
   const [editingCampaignId, setEditingCampaignId] = useState<number | null>(null);
+
+  const { confirm, dialogProps } = useConfirmDialog({
+    title: 'Confirm Send',
+    variant: 'warning',
+    confirmText: 'Send',
+    cancelText: 'Cancel',
+  });
 
   // Form state for creating/editing campaign
   const [formData, setFormData] = useState<CreateCampaignRequest>({
@@ -136,8 +143,12 @@ const AdminCampaigns: React.FC = () => {
   };
 
   // Send campaign
-  const handleSendCampaign = async (campaignId: number) => {
-    if (!window.confirm('Are you sure you want to send this campaign now?')) return;
+  const handleSendCampaign = useCallback(async (campaignId: number) => {
+    const confirmed = await confirm({
+      message: 'Are you sure you want to send this campaign now?',
+    });
+
+    if (!confirmed) return;
 
     try {
       await adminCampaignsService.sendCampaign(campaignId);
@@ -146,7 +157,7 @@ const AdminCampaigns: React.FC = () => {
     } catch (e: unknown) {
       toast.error(e instanceof Error ? e.message : 'Failed to send campaign');
     }
-  };
+  }, [confirm]);
 
   // Load data on mount
   useEffect(() => {
@@ -556,6 +567,7 @@ const AdminCampaigns: React.FC = () => {
           </div>
         )}
       </div>
+      <ConfirmDialog {...dialogProps} />
     </AdminLayout>
   );
 };

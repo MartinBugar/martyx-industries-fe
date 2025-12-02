@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { ConfirmDialog, useConfirmDialog } from '../../components/ui';
 import { useNavigate } from 'react-router-dom';
 import AdminLayout from './AdminLayout';
 import {
@@ -55,6 +56,15 @@ const AdminRefunds: React.FC = () => {
   const [rejectReason, setRejectReason] = useState('');
   const [actionLoading, setActionLoading] = useState<number | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+
+  // Confirm dialog
+  const { confirm, dialogProps } = useConfirmDialog({
+    title: 'Zrušiť refund',
+    message: 'Naozaj chcete zrušiť tento refund?',
+    variant: 'warning',
+    confirmText: 'Zrušiť refund',
+    cancelText: 'Späť'
+  });
 
   // Load stats
   useEffect(() => {
@@ -175,9 +185,16 @@ const AdminRefunds: React.FC = () => {
     }
   };
 
-  const handleCancel = async (e: React.MouseEvent, refundId: number) => {
+  const handleCancel = useCallback(async (e: React.MouseEvent, refundId: number) => {
     e.stopPropagation();
-    if (!window.confirm('Naozaj chcete zrušiť tento refund?')) return;
+    const confirmed = await confirm({
+      title: 'Zrušiť refund',
+      message: 'Naozaj chcete zrušiť tento refund?',
+      variant: 'warning',
+      confirmText: 'Zrušiť refund',
+      cancelText: 'Späť'
+    });
+    if (!confirmed) return;
     setActionLoading(refundId);
     setActionError(null);
     try {
@@ -190,7 +207,7 @@ const AdminRefunds: React.FC = () => {
     } finally {
       setActionLoading(null);
     }
-  };
+  }, [confirm, loadRefunds]);
 
   // Navigation Tabs
   const NavTabs = (
@@ -499,6 +516,8 @@ const AdminRefunds: React.FC = () => {
             </div>
           </div>
         )}
+
+        <ConfirmDialog {...dialogProps} />
       </div>
     </AdminLayout>
   );

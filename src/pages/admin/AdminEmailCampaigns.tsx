@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Mail, Plus, Eye, Send, Archive, BarChart2, TrendingUp, MousePointer } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import './AdminDiscounts.css';
 import './AdminButtonOverrides.css';
 import { adminCampaignsService, type EmailCampaign, type CampaignPerformance, type CustomerSegment, type CreateCampaignRequest } from '../../services/adminCampaignsService';
-import { Badge, Button, SkeletonTable } from '../../components/ui';
+import { Badge, Button, SkeletonTable, ConfirmDialog, useConfirmDialog } from '../../components/ui';
 import { logError } from '../../services/logger';
 
 type TabType = 'all-campaigns' | 'create-campaign' | 'campaign-details';
@@ -38,6 +38,15 @@ const AdminEmailCampaigns: React.FC = () => {
 
   // Campaign details state
   const [viewingCampaign, setViewingCampaign] = useState<CampaignPerformance | null>(null);
+
+  // Confirm dialog
+  const { confirm, dialogProps } = useConfirmDialog({
+    title: 'Confirm Action',
+    message: 'Are you sure?',
+    variant: 'warning',
+    confirmText: 'Confirm',
+    cancelText: 'Cancel'
+  });
 
   const loadCampaigns = async () => {
     setLoading(true);
@@ -136,8 +145,15 @@ const AdminEmailCampaigns: React.FC = () => {
     }
   };
 
-  const handleSendNow = async (campaignId: number) => {
-    if (!window.confirm('Are you sure you want to send this campaign immediately?')) return;
+  const handleSendNow = useCallback(async (campaignId: number) => {
+    const confirmed = await confirm({
+      title: 'Send Campaign',
+      message: 'Are you sure you want to send this campaign immediately?',
+      variant: 'warning',
+      confirmText: 'Send Now',
+      cancelText: 'Cancel'
+    });
+    if (!confirmed) return;
     setError(null);
     try {
       await adminCampaignsService.sendCampaign(campaignId);
@@ -146,10 +162,17 @@ const AdminEmailCampaigns: React.FC = () => {
       const msg = e instanceof Error ? e.message : 'Failed to send campaign';
       setError(msg);
     }
-  };
+  }, [confirm]);
 
-  const handleArchive = async (campaignId: number) => {
-    if (!window.confirm('Are you sure you want to archive this campaign?')) return;
+  const handleArchive = useCallback(async (campaignId: number) => {
+    const confirmed = await confirm({
+      title: 'Archive Campaign',
+      message: 'Are you sure you want to archive this campaign?',
+      variant: 'warning',
+      confirmText: 'Archive',
+      cancelText: 'Cancel'
+    });
+    if (!confirmed) return;
     setError(null);
     try {
       await adminCampaignsService.archiveCampaign(campaignId);
@@ -158,7 +181,7 @@ const AdminEmailCampaigns: React.FC = () => {
       const msg = e instanceof Error ? e.message : 'Failed to archive campaign';
       setError(msg);
     }
-  };
+  }, [confirm]);
 
   const formatDate = (dateStr?: string): string => {
     if (!dateStr) return '—';
@@ -663,6 +686,8 @@ const AdminEmailCampaigns: React.FC = () => {
               </div>
             </div>
           )}
+
+          <ConfirmDialog {...dialogProps} />
         </div>
       </div>
     </AdminLayout>

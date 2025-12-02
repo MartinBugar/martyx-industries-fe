@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Eye, X, Search, Package } from 'lucide-react';
@@ -6,7 +6,7 @@ import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
 import './AdminButtonOverrides.css';
 import { adminProductsService, type MasterProductDto, type PageResponse } from '../../services/adminProductsService';
-import { Button, Badge, SkeletonTable } from '../../components/ui';
+import { Button, Badge, SkeletonTable, ConfirmDialog, useConfirmDialog } from '../../components/ui';
 import { useDebounce } from '../../hooks/useDebounce';
 
 type CreateMasterProduct = {
@@ -59,7 +59,15 @@ const AdminProducts: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const debouncedSearch = useDebounce(searchQuery, 500);
 
-  const loadProducts = async (pageNum: number = page, search?: string) => {
+  // Accessible confirm dialog
+  const { confirm, dialogProps } = useConfirmDialog({
+    title: t('admin.confirm_delete'),
+    variant: 'danger',
+    confirmText: t('common.delete'),
+    cancelText: t('common.cancel'),
+  });
+
+  const loadProducts = useCallback(async (pageNum: number = page, search?: string) => {
     setLoading(true);
     setError(null);
     try {
@@ -136,8 +144,13 @@ const AdminProducts: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id: string | number) => {
-    if (!window.confirm(t('common:admin.confirm_delete_product'))) return;
+  const handleDelete = useCallback(async (id: string | number, productName: string) => {
+    const confirmed = await confirm({
+      title: t('admin.confirm_delete'),
+      message: t('admin.confirm_delete_product_message', { name: productName }),
+    });
+    if (!confirmed) return;
+
     setError(null);
     try {
       await adminProductsService.deleteMasterProduct(id);
@@ -146,7 +159,7 @@ const AdminProducts: React.FC = () => {
       const msg = e instanceof Error ? e.message : t('common:admin.failed_delete_product');
       setError(msg);
     }
-  };
+  }, [confirm, t]);
 
   const getCategoryLabel = (cat?: string | null): string => {
     if (!cat) return '—';
@@ -409,7 +422,7 @@ const AdminProducts: React.FC = () => {
                         <Link to={`/admin/products/${p.id}`} className="btn btn-outline btn-sm" title="View/Edit product">
                           <Eye size={14} />
                         </Link>
-                        <Button variant="danger" size="sm" onClick={() => handleDelete(p.id!)} title="Delete product">
+                        <Button variant="danger" size="sm" onClick={() => handleDelete(p.id!, p.name || 'Unknown')} title="Delete product">
                           <X size={14} />
                         </Button>
                       </div>
@@ -503,7 +516,7 @@ const AdminProducts: React.FC = () => {
                           <Link to={`/admin/products/${p.id}`} className="btn btn-outline btn-sm" title="View/Edit product">
                             <Eye size={14} />
                           </Link>
-                          <Button variant="danger" size="sm" onClick={() => handleDelete(p.id!)} title="Delete product">
+                          <Button variant="danger" size="sm" onClick={() => handleDelete(p.id!, p.name || 'Unknown')} title="Delete product">
                             <X size={14} />
                           </Button>
                         </div>
@@ -548,6 +561,9 @@ const AdminProducts: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Accessible confirmation dialog */}
+      <ConfirmDialog {...dialogProps} />
     </AdminLayout>
   );
 };

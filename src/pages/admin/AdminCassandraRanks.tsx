@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { ConfirmDialog, useConfirmDialog } from '../../components/ui';
 import AdminLayout from './AdminLayout';
 import { Button } from '../../components/ui';
 import cassandraRankService, {
@@ -16,6 +17,15 @@ const AdminCassandraRanks: React.FC = () => {
     const [uploadingRank, setUploadingRank] = useState<string | null>(null);
     const [editedDescriptions, setEditedDescriptions] = useState<Record<string, string>>({});
     const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+
+    // Confirm dialog
+    const { confirm, dialogProps } = useConfirmDialog({
+        title: 'Delete Image',
+        message: 'Are you sure you want to delete this image?',
+        variant: 'danger',
+        confirmText: 'Delete',
+        cancelText: 'Cancel'
+    });
 
     useEffect(() => {
         loadRanks();
@@ -93,8 +103,15 @@ const AdminCassandraRanks: React.FC = () => {
         });
     };
 
-    const handleDeleteImage = async (rank: Rank) => {
-        if (!window.confirm(`Are you sure you want to delete the image for ${rank}?`)) return;
+    const handleDeleteImage = useCallback(async (rank: Rank) => {
+        const confirmed = await confirm({
+            title: 'Delete Image',
+            message: `Are you sure you want to delete the image for ${rank}?`,
+            variant: 'danger',
+            confirmText: 'Delete',
+            cancelText: 'Cancel'
+        });
+        if (!confirmed) return;
 
         try {
             logInfo(`🗑️ Deleting image for rank: ${rank}`);
@@ -106,7 +123,7 @@ const AdminCassandraRanks: React.FC = () => {
             logError(`❌ Failed to delete image for rank ${rank}:`, error);
             toast.error('Failed to delete image. Please try again.');
         }
-    };
+    }, [confirm]);
 
     if (loading) {
         return (
@@ -255,6 +272,8 @@ const AdminCassandraRanks: React.FC = () => {
                         );
                     })}
                 </div>
+
+                <ConfirmDialog {...dialogProps} />
             </div>
         </AdminLayout>
     );

@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { ConfirmDialog, useConfirmDialog } from '../../components/ui';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import AdminLayout from './AdminLayout';
 import {
@@ -37,6 +38,15 @@ const AdminRefundDetail: React.FC = () => {
   const [rejectReason, setRejectReason] = useState('');
   const [showNotesModal, setShowNotesModal] = useState(false);
   const [newNote, setNewNote] = useState('');
+
+  // Confirm dialog
+  const { confirm, dialogProps } = useConfirmDialog({
+    title: 'Potvrdiť akciu',
+    message: 'Naozaj chcete vykonať túto akciu?',
+    variant: 'warning',
+    confirmText: 'Potvrdiť',
+    cancelText: 'Zrušiť'
+  });
 
   useEffect(() => {
     if (id) {
@@ -99,9 +109,16 @@ const AdminRefundDetail: React.FC = () => {
     }
   };
 
-  const handleCancel = async () => {
+  const handleCancel = useCallback(async () => {
     if (!refund) return;
-    if (!window.confirm('Naozaj chcete zrušiť tento refund?')) return;
+    const confirmed = await confirm({
+      title: 'Zrušiť refund',
+      message: 'Naozaj chcete zrušiť tento refund?',
+      variant: 'warning',
+      confirmText: 'Zrušiť refund',
+      cancelText: 'Späť'
+    });
+    if (!confirmed) return;
     setActionLoading(true);
     try {
       const updated = await cancelRefund(refund.id);
@@ -111,11 +128,18 @@ const AdminRefundDetail: React.FC = () => {
     } finally {
       setActionLoading(false);
     }
-  };
+  }, [refund, confirm]);
 
-  const handleDelete = async () => {
+  const handleDelete = useCallback(async () => {
     if (!refund) return;
-    if (!window.confirm('Naozaj chcete vymazať tento refund? Táto akcia je nezvratná.')) return;
+    const confirmed = await confirm({
+      title: 'Vymazať refund',
+      message: 'Naozaj chcete vymazať tento refund? Táto akcia je nezvratná.',
+      variant: 'danger',
+      confirmText: 'Vymazať',
+      cancelText: 'Zrušiť'
+    });
+    if (!confirmed) return;
     setActionLoading(true);
     try {
       await deleteRefund(refund.id);
@@ -125,7 +149,7 @@ const AdminRefundDetail: React.FC = () => {
     } finally {
       setActionLoading(false);
     }
-  };
+  }, [refund, confirm, navigate]);
 
   const handleAddNote = async () => {
     if (!refund || !newNote.trim()) return;
@@ -475,6 +499,8 @@ const AdminRefundDetail: React.FC = () => {
             </div>
           </div>
         )}
+
+        <ConfirmDialog {...dialogProps} />
       </div>
     </AdminLayout>
   );

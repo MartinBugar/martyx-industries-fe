@@ -1,11 +1,11 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {Clock, Plus, Ticket, X, XCircle, BarChart3, TrendingUp, Users, DollarSign, Edit} from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import './AdminDiscounts.css';
 import './AdminButtonOverrides.css';
 import {adminDiscountService, type PageResponse} from '../../services/adminDiscountService';
 import type {DiscountCodeCreateDto, DiscountCodeDto, DiscountUsageStatsDto} from '../../types/discounts';
-import {Badge, Button, SkeletonTable} from '../../components/ui';
+import {Badge, Button, SkeletonTable, ConfirmDialog, useConfirmDialog} from '../../components/ui';
 
 type CreateDiscountData = {
   code: string;
@@ -62,6 +62,13 @@ const AdminDiscounts: React.FC = () => {
   const [showStatsModal, setShowStatsModal] = useState<boolean>(false);
   const [selectedStats, setSelectedStats] = useState<DiscountUsageStatsDto | null>(null);
   const [loadingStats, setLoadingStats] = useState<boolean>(false);
+
+  const { confirm, dialogProps } = useConfirmDialog({
+    title: 'Confirm Delete',
+    variant: 'danger',
+    confirmText: 'Delete',
+    cancelText: 'Cancel',
+  });
 
   // Search with debounce (for future implementation)
   // const [searchQuery, setSearchQuery] = useState<string>('');
@@ -174,8 +181,13 @@ const AdminDiscounts: React.FC = () => {
     setActiveTab('create-discount');
   };
 
-  const handleDelete = async (id: number) => {
-    if (!window.confirm('Are you sure you want to delete this discount code?')) return;
+  const handleDelete = useCallback(async (id: number) => {
+    const confirmed = await confirm({
+      message: 'Are you sure you want to delete this discount code?',
+    });
+
+    if (!confirmed) return;
+
     setError(null);
     try {
       await adminDiscountService.deleteDiscount(id);
@@ -184,10 +196,16 @@ const AdminDiscounts: React.FC = () => {
       const msg = e instanceof Error ? e.message : 'Failed to delete discount';
       setError(msg);
     }
-  };
+  }, [confirm]);
 
-  const handleDeactivate = async (id: number) => {
-    if (!window.confirm('Are you sure you want to deactivate this discount code?')) return;
+  const handleDeactivate = useCallback(async (id: number) => {
+    const confirmed = await confirm({
+      title: 'Confirm Deactivate',
+      message: 'Are you sure you want to deactivate this discount code?',
+    });
+
+    if (!confirmed) return;
+
     setError(null);
     try {
       await adminDiscountService.deactivateDiscount(id);
@@ -196,7 +214,7 @@ const AdminDiscounts: React.FC = () => {
       const msg = e instanceof Error ? e.message : 'Failed to deactivate discount';
       setError(msg);
     }
-  };
+  }, [confirm, page, activeFilter]);
 
   const handleViewStats = async (id: number) => {
     setLoadingStats(true);
@@ -781,6 +799,7 @@ const AdminDiscounts: React.FC = () => {
           </div>
         </div>
       )}
+      <ConfirmDialog {...dialogProps} />
     </AdminLayout>
   );
 };

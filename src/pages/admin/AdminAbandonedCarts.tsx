@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { ShoppingCart, RefreshCw, Mail, TrendingUp, DollarSign, AlertTriangle } from 'lucide-react';
 import AdminLayout from './AdminLayout';
-import { Button, Badge } from '../../components/ui';
+import { Button, Badge, ConfirmDialog, useConfirmDialog } from '../../components/ui';
 import {
   adminAbandonedCartService,
   type ShoppingCartDto,
@@ -20,6 +20,15 @@ const AdminAbandonedCarts: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
   const [actionLoading, setActionLoading] = useState<number | null>(null);
+
+  // Confirm dialog
+  const { confirm, dialogProps } = useConfirmDialog({
+    title: 'Confirm Action',
+    message: 'Are you sure?',
+    variant: 'info',
+    confirmText: 'Confirm',
+    cancelText: 'Cancel'
+  });
 
   // Date range for stats (default: last 30 days)
   const [startDate, setStartDate] = useState<string>(() => {
@@ -60,8 +69,15 @@ const AdminAbandonedCarts: React.FC = () => {
   };
 
   // Detect abandoned carts manually
-  const handleDetectAbandoned = async () => {
-    if (!window.confirm('Run abandoned cart detection now?')) return;
+  const handleDetectAbandoned = useCallback(async () => {
+    const confirmed = await confirm({
+      title: 'Detect Abandoned Carts',
+      message: 'Run abandoned cart detection now?',
+      variant: 'info',
+      confirmText: 'Run Detection',
+      cancelText: 'Cancel'
+    });
+    if (!confirmed) return;
 
     setIsLoading(true);
     try {
@@ -73,7 +89,7 @@ const AdminAbandonedCarts: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [confirm]);
 
   // Send recovery email
   const handleSendRecoveryEmail = async (cartId: number) => {
@@ -92,8 +108,15 @@ const AdminAbandonedCarts: React.FC = () => {
   };
 
   // Mark as recovered
-  const handleMarkAsRecovered = async (cartId: number) => {
-    if (!window.confirm('Mark this cart as recovered?')) return;
+  const handleMarkAsRecovered = useCallback(async (cartId: number) => {
+    const confirmed = await confirm({
+      title: 'Mark as Recovered',
+      message: 'Mark this cart as recovered?',
+      variant: 'info',
+      confirmText: 'Mark Recovered',
+      cancelText: 'Cancel'
+    });
+    if (!confirmed) return;
 
     setActionLoading(cartId);
     try {
@@ -105,7 +128,7 @@ const AdminAbandonedCarts: React.FC = () => {
     } finally {
       setActionLoading(null);
     }
-  };
+  }, [confirm]);
 
   // Load data on mount or tab change
   useEffect(() => {
@@ -415,6 +438,8 @@ const AdminAbandonedCarts: React.FC = () => {
             )}
           </div>
         )}
+
+        <ConfirmDialog {...dialogProps} />
       </div>
     </AdminLayout>
   );

@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { ConfirmDialog, useConfirmDialog } from '../../components/ui';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import AdminLayout from './AdminLayout';
@@ -48,6 +49,15 @@ const AdminUserDetail: React.FC = () => {
   const [cartLoading, setCartLoading] = useState<boolean>(false);
   const [cartError, setCartError] = useState<string | null>(null);
   const [sendingRecoveryEmail, setSendingRecoveryEmail] = useState<boolean>(false);
+
+  // Confirm dialog
+  const { confirm, dialogProps } = useConfirmDialog({
+    title: t('admin.confirm_delete_user'),
+    message: t('admin.confirm_delete_user'),
+    variant: 'danger',
+    confirmText: t('common.delete'),
+    cancelText: t('common.cancel')
+  });
 
   const loadUser = async () => {
     if (!id) return;
@@ -293,9 +303,16 @@ const AdminUserDetail: React.FC = () => {
     }
   };
 
-  const handleDelete = async () => {
+  const handleDelete = useCallback(async () => {
     if (!id) return;
-    if (!window.confirm(t('admin.confirm_delete_user'))) return;
+    const confirmed = await confirm({
+      title: t('admin.confirm_delete_user'),
+      message: t('admin.confirm_delete_user'),
+      variant: 'danger',
+      confirmText: t('common.delete'),
+      cancelText: t('common.cancel')
+    });
+    if (!confirmed) return;
     setError(null);
     try {
       await adminUsersService.deleteUser(id);
@@ -304,7 +321,7 @@ const AdminUserDetail: React.FC = () => {
       const msg = e instanceof Error ? e.message : t('admin.failed_delete_user');
       setError(msg);
     }
-  };
+  }, [id, confirm, t, navigate]);
 
   const handleSendRecoveryEmail = async (cartId: number) => {
     const discountCode = window.prompt('Enter discount code (optional):');
@@ -994,6 +1011,8 @@ const AdminUserDetail: React.FC = () => {
             {id && <CustomerTimeline userId={parseInt(id)} />}
           </div>
         ) : null}
+
+        <ConfirmDialog {...dialogProps} />
       </div>
     </AdminLayout>
   );

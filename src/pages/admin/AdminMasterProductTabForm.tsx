@@ -5,7 +5,8 @@
  * Users can switch between language tabs and fill content for each language.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { ConfirmDialog, useConfirmDialog } from '../../components/ui';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Save, Download, Plus, X, FileText } from 'lucide-react';
 import AdminLayout from './AdminLayout';
@@ -115,6 +116,15 @@ const AdminMasterProductTabForm: React.FC = () => {
   });
   const [difficultyLevel, setDifficultyLevel] = useState<string>('BEGINNER');
   const [buildInfoLoading, setBuildInfoLoading] = useState(false);
+
+  // Confirm dialog
+  const { confirm, dialogProps } = useConfirmDialog({
+    title: 'Remove Attachment',
+    message: 'Are you sure you want to remove this attachment from the tab?',
+    variant: 'warning',
+    confirmText: 'Remove',
+    cancelText: 'Cancel'
+  });
 
   // Helper function to check if a language is complete
   const isLanguageComplete = (lang: SupportedLocale): boolean => {
@@ -459,12 +469,17 @@ const AdminMasterProductTabForm: React.FC = () => {
     }
   };
 
-  const handleRemoveAttachment = async (attachmentId: number) => {
+  const handleRemoveAttachment = useCallback(async (attachmentId: number) => {
     if (!tabId) return;
 
-    if (!window.confirm('Are you sure you want to remove this attachment from the tab?')) {
-      return;
-    }
+    const confirmed = await confirm({
+      title: 'Remove Attachment',
+      message: 'Are you sure you want to remove this attachment from the tab?',
+      variant: 'warning',
+      confirmText: 'Remove',
+      cancelText: 'Cancel'
+    });
+    if (!confirmed) return;
 
     try {
       await adminRemoveAttachmentFromTab(Number(tabId), attachmentId);
@@ -473,7 +488,7 @@ const AdminMasterProductTabForm: React.FC = () => {
       logError('Error removing attachment:', err);
       setError('Failed to remove attachment from tab');
     }
-  };
+  }, [tabId, confirm, loadAttachments]);
 
   const handleLanguageChange = (lang: SupportedLocale) => {
     setActiveLanguage(lang);
@@ -1173,6 +1188,8 @@ const AdminMasterProductTabForm: React.FC = () => {
               </div>
             </div>
           </form>
+
+          <ConfirmDialog {...dialogProps} />
         </div>
       </div>
     </AdminLayout>

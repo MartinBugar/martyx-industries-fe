@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Building2, Plus, X, Edit, Phone, Mail, MapPin } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import './AdminDiscounts.css';
 import './AdminButtonOverrides.css';
 import { adminSupplierService, type PageResponse } from '../../services/adminSupplierService';
 import type { SupplierDto } from '../../types/inventory';
-import { Badge, Button, SkeletonTable } from '../../components/ui';
+import { Badge, Button, SkeletonTable, ConfirmDialog, useConfirmDialog } from '../../components/ui';
 
 type CreateSupplierData = {
   supplier_name: string;
@@ -52,6 +52,15 @@ const AdminSuppliers: React.FC = () => {
   const [createData, setCreateData] = useState<CreateSupplierData>({ ...initialCreate });
   const [creating, setCreating] = useState<boolean>(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+
+  // Confirm dialog
+  const { confirm, dialogProps } = useConfirmDialog({
+    title: 'Delete Supplier',
+    message: 'Are you sure you want to delete this supplier?',
+    variant: 'danger',
+    confirmText: 'Delete',
+    cancelText: 'Cancel'
+  });
 
   const loadSuppliers = async (pageNum: number = page, search?: string) => {
     setLoading(true);
@@ -162,8 +171,15 @@ const AdminSuppliers: React.FC = () => {
     setActiveTab('create-supplier');
   };
 
-  const handleDelete = async (id: number) => {
-    if (!window.confirm('Are you sure you want to delete this supplier?')) return;
+  const handleDelete = useCallback(async (id: number) => {
+    const confirmed = await confirm({
+      title: 'Delete Supplier',
+      message: 'Are you sure you want to delete this supplier?',
+      variant: 'danger',
+      confirmText: 'Delete',
+      cancelText: 'Cancel'
+    });
+    if (!confirmed) return;
     setError(null);
     try {
       await adminSupplierService.deleteSupplier(id);
@@ -172,7 +188,7 @@ const AdminSuppliers: React.FC = () => {
       const msg = e instanceof Error ? e.message : 'Failed to delete supplier';
       setError(msg);
     }
-  };
+  }, [confirm]);
 
   const navTabs = (
     <nav className="dashboard-tabs">
@@ -583,6 +599,8 @@ const AdminSuppliers: React.FC = () => {
               )}
             </>
           )}
+
+          <ConfirmDialog {...dialogProps} />
         </div>
       </div>
     </AdminLayout>

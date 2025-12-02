@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Users, RefreshCw, Plus, Edit, Trash2 } from 'lucide-react';
 import AdminLayout from './AdminLayout';
-import { Button, Badge } from '../../components/ui';
+import { Button, Badge, ConfirmDialog, useConfirmDialog } from '../../components/ui';
 import {
   adminSegmentsService,
   type CustomerSegment,
@@ -20,6 +20,13 @@ const AdminSegments: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
   const [isRecalculating, setIsRecalculating] = useState<number | null>(null);
+
+  const { confirm, dialogProps } = useConfirmDialog({
+    title: 'Confirm Delete',
+    variant: 'danger',
+    confirmText: 'Delete',
+    cancelText: 'Cancel',
+  });
 
   // Form state for creating/editing segment
   const [formData, setFormData] = useState<CreateSegmentRequest>({
@@ -103,8 +110,12 @@ const AdminSegments: React.FC = () => {
   };
 
   // Delete segment
-  const handleDeleteSegment = async (segmentId: number) => {
-    if (!window.confirm('Are you sure you want to delete this segment?')) return;
+  const handleDeleteSegment = useCallback(async (segmentId: number) => {
+    const confirmed = await confirm({
+      message: 'Are you sure you want to delete this segment?',
+    });
+
+    if (!confirmed) return;
 
     try {
       await adminSegmentsService.deleteSegment(segmentId);
@@ -113,7 +124,7 @@ const AdminSegments: React.FC = () => {
     } catch (e: unknown) {
       toast.error(e instanceof Error ? e.message : 'Failed to delete segment');
     }
-  };
+  }, [confirm]);
 
   // Recalculate segment
   const handleRecalculateSegment = async (segmentId: number) => {
@@ -130,8 +141,13 @@ const AdminSegments: React.FC = () => {
   };
 
   // Recalculate all segments
-  const handleRecalculateAll = async () => {
-    if (!window.confirm('Recalculate all segments? This may take a while.')) return;
+  const handleRecalculateAll = useCallback(async () => {
+    const confirmed = await confirm({
+      title: 'Confirm Recalculate',
+      message: 'Recalculate all segments? This may take a while.',
+    });
+
+    if (!confirmed) return;
 
     setIsLoading(true);
     try {
@@ -143,7 +159,7 @@ const AdminSegments: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [confirm]);
 
   // Edit segment handler
   const handleEditSegment = (segment: CustomerSegment) => {
@@ -513,6 +529,7 @@ const AdminSegments: React.FC = () => {
           </div>
         )}
       </div>
+      <ConfirmDialog {...dialogProps} />
     </AdminLayout>
   );
 };

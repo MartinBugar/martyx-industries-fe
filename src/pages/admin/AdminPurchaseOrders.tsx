@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Package, Plus, X, Eye, CheckCircle, Truck, FileText, Calendar } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import './AdminDiscounts.css';
 import './AdminButtonOverrides.css';
 import { adminSupplierService, type PageResponse } from '../../services/adminSupplierService';
+import { ConfirmDialog, useConfirmDialog } from '../../components/ui';
 import { adminProductsService, type ProductVariantDto } from '../../services/adminProductsService';
 import type { PurchaseOrderDto, PurchaseOrderCreateDto, SupplierDto } from '../../types/inventory';
 import { Badge, Button, SkeletonTable } from '../../components/ui';
@@ -75,6 +76,15 @@ const AdminPurchaseOrders: React.FC = () => {
 
   // View details state
   const [viewingPO, setViewingPO] = useState<PurchaseOrderDto | null>(null);
+
+  // Confirm dialog
+  const { confirm, dialogProps } = useConfirmDialog({
+    title: 'Receive Purchase Order',
+    message: 'Are you sure you want to receive this purchase order? This will update inventory.',
+    variant: 'warning',
+    confirmText: 'Receive',
+    cancelText: 'Cancel'
+  });
 
   const loadPurchaseOrders = async (pageNum: number = page, supplierId?: number | null, status?: string) => {
     setLoading(true);
@@ -277,8 +287,15 @@ const AdminPurchaseOrders: React.FC = () => {
     }
   };
 
-  const handleReceive = async (id: number) => {
-    if (!window.confirm('Are you sure you want to receive this purchase order? This will update inventory.')) return;
+  const handleReceive = useCallback(async (id: number) => {
+    const confirmed = await confirm({
+      title: 'Receive Purchase Order',
+      message: 'Are you sure you want to receive this purchase order? This will update inventory.',
+      variant: 'warning',
+      confirmText: 'Receive',
+      cancelText: 'Cancel'
+    });
+    if (!confirmed) return;
     setError(null);
     try {
       await adminSupplierService.receivePurchaseOrder(id);
@@ -291,7 +308,7 @@ const AdminPurchaseOrders: React.FC = () => {
       const msg = e instanceof Error ? e.message : 'Failed to receive purchase order';
       setError(msg);
     }
-  };
+  }, [confirm, page, filterSupplier, filterStatus, viewingPO]);
 
   const formatDate = (dateStr?: string): string => {
     if (!dateStr) return '—';
@@ -909,6 +926,8 @@ const AdminPurchaseOrders: React.FC = () => {
               )}
             </div>
           )}
+
+          <ConfirmDialog {...dialogProps} />
         </div>
       </div>
     </AdminLayout>

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import AdminLayout from './AdminLayout';
-import { Button } from '../../components/ui';
+import { Button, ConfirmDialog, useConfirmDialog } from '../../components/ui';
 import { accountLockoutConfigService, type AccountLockoutConfigDto, type LockedUserDto } from '../../services/accountLockoutConfigService';
 import { useErrors } from '../../context/ErrorContext';
 import './AdminCreditUsageConfig.css'; // Reuse existing CSS
@@ -18,6 +18,15 @@ const AdminAccountLockoutConfig: React.FC = () => {
     const [lockedUsers, setLockedUsers] = useState<LockedUserDto[]>([]);
     const [loadingUsers, setLoadingUsers] = useState(false);
     const [showOnlyLocked, setShowOnlyLocked] = useState(false);
+
+    // Confirm dialog
+    const { confirm, dialogProps } = useConfirmDialog({
+        title: 'Unlock Account',
+        message: 'Are you sure you want to unlock this account?',
+        variant: 'info',
+        confirmText: 'Unlock',
+        cancelText: 'Cancel'
+    });
 
     useEffect(() => {
         loadConfig();
@@ -131,10 +140,15 @@ const AdminAccountLockoutConfig: React.FC = () => {
         return editedValues[field] ?? originalValue;
     };
 
-    const handleUnlockUser = async (userId: number, email: string) => {
-        if (!window.confirm(`Are you sure you want to unlock account ${email}?`)) {
-            return;
-        }
+    const handleUnlockUser = useCallback(async (userId: number, email: string) => {
+        const confirmed = await confirm({
+            title: 'Unlock Account',
+            message: `Are you sure you want to unlock account ${email}?`,
+            variant: 'info',
+            confirmText: 'Unlock',
+            cancelText: 'Cancel'
+        });
+        if (!confirmed) return;
 
         try {
             logInfo(`🔓 Unlocking user ${email}...`);
@@ -157,7 +171,7 @@ const AdminAccountLockoutConfig: React.FC = () => {
                 recoverable: true
             });
         }
-    };
+    }, [confirm, addError]);
 
     const handleLockUser = async (userId: number, email: string) => {
         const durationInput = window.prompt(
@@ -560,6 +574,8 @@ const AdminAccountLockoutConfig: React.FC = () => {
                         <li><strong>Scenario 3:</strong> Admin can manually unlock accounts via user management</li>
                     </ul>
                 </div>
+
+                <ConfirmDialog {...dialogProps} />
             </div>
         </AdminLayout>
     );

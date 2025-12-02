@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Package, Plus, Save, Trash2, Edit } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
 import './AdminButtonOverrides.css';
 import { adminProductsService, type MasterProductDto, type ProductVariantDto, type VariantComponentDto } from '../../services/adminProductsService';
-import { Button, Badge } from '../../components/ui';
+import { Button, Badge, ConfirmDialog, useConfirmDialog } from '../../components/ui';
 import VariantEditor from '../../components/admin/VariantEditor';
 import ComponentEditor from '../../components/admin/ComponentEditor';
 import CategorySelector from '../../components/admin/CategorySelector';
@@ -31,6 +31,15 @@ const AdminProductDetail: React.FC = () => {
   const [showComponentEditor, setShowComponentEditor] = useState(false);
   const [editingComponent, setEditingComponent] = useState<VariantComponentDto | null>(null);
   const [componentVariantId, setComponentVariantId] = useState<number | null>(null);
+
+  // Confirm dialog
+  const { confirm, dialogProps } = useConfirmDialog({
+    title: 'Confirm Delete',
+    message: 'Are you sure you want to delete?',
+    variant: 'danger',
+    confirmText: 'Delete',
+    cancelText: 'Cancel'
+  });
 
   const load = async () => {
     if (!id) return;
@@ -112,8 +121,15 @@ const AdminProductDetail: React.FC = () => {
     }
   };
 
-  const handleDeleteVariant = async (variantId: number) => {
-    if (!window.confirm('Are you sure you want to delete this variant?')) return;
+  const handleDeleteVariant = useCallback(async (variantId: number) => {
+    const confirmed = await confirm({
+      title: 'Delete Variant',
+      message: 'Are you sure you want to delete this variant?',
+      variant: 'danger',
+      confirmText: 'Delete',
+      cancelText: 'Cancel'
+    });
+    if (!confirmed) return;
     try {
       await adminProductsService.deleteVariant(variantId);
       await load();
@@ -122,16 +138,18 @@ const AdminProductDetail: React.FC = () => {
       const message = e instanceof Error ? e.message : 'Failed to delete variant';
       setError(message);
     }
-  };
+  }, [confirm]);
 
-  const handleToggleVariantActive = async (variantId: number, currentActive: boolean) => {
+  const handleToggleVariantActive = useCallback(async (variantId: number, currentActive: boolean) => {
     // Show confirmation dialog when disabling a variant
     if (currentActive) {
-      const confirmed = window.confirm(
-        'Are you sure you want to disable this variant?\n\n' +
-        'Disabled variants will not be visible in the public store, but all data will be preserved. ' +
-        'You can re-enable it at any time.'
-      );
+      const confirmed = await confirm({
+        title: 'Disable Variant',
+        message: 'Are you sure you want to disable this variant?\n\nDisabled variants will not be visible in the public store, but all data will be preserved. You can re-enable it at any time.',
+        variant: 'warning',
+        confirmText: 'Disable',
+        cancelText: 'Cancel'
+      });
       if (!confirmed) return;
     }
 
@@ -143,7 +161,7 @@ const AdminProductDetail: React.FC = () => {
       const message = e instanceof Error ? e.message : 'Failed to toggle variant status';
       setError(message);
     }
-  };
+  }, [confirm]);
 
   // Component CRUD handlers
   const handleAddComponent = (variantId: number) => {
@@ -177,8 +195,15 @@ const AdminProductDetail: React.FC = () => {
     }
   };
 
-  const handleDeleteComponent = async (componentId: number) => {
-    if (!window.confirm('Are you sure you want to delete this component?')) return;
+  const handleDeleteComponent = useCallback(async (componentId: number) => {
+    const confirmed = await confirm({
+      title: 'Delete Component',
+      message: 'Are you sure you want to delete this component?',
+      variant: 'danger',
+      confirmText: 'Delete',
+      cancelText: 'Cancel'
+    });
+    if (!confirmed) return;
     try {
       await adminProductsService.deleteComponent(componentId);
       await load();
@@ -187,11 +212,18 @@ const AdminProductDetail: React.FC = () => {
       const message = e instanceof Error ? e.message : 'Failed to delete component';
       setError(message);
     }
-  };
+  }, [confirm]);
 
-  const handleDelete = async () => {
+  const handleDelete = useCallback(async () => {
     if (!id) return;
-    if (!window.confirm('Are you sure you want to delete this master product and all its variants?')) return;
+    const confirmed = await confirm({
+      title: 'Delete Master Product',
+      message: 'Are you sure you want to delete this master product and all its variants?',
+      variant: 'danger',
+      confirmText: 'Delete',
+      cancelText: 'Cancel'
+    });
+    if (!confirmed) return;
     setError(null);
     try {
       await adminProductsService.deleteMasterProduct(id);
@@ -200,7 +232,7 @@ const AdminProductDetail: React.FC = () => {
       const msg = e instanceof Error ? e.message : 'Failed to delete product';
       setError(msg);
     }
-  };
+  }, [id, confirm, navigate]);
 
   // Navigation tabs
   const navTabs = (
@@ -554,6 +586,8 @@ const AdminProductDetail: React.FC = () => {
           }}
         />
       )}
+
+      <ConfirmDialog {...dialogProps} />
     </AdminLayout>
   );
 };

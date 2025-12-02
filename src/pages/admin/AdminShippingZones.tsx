@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Globe, Plus, X, Edit, Package, Truck } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import './AdminDiscounts.css';
 import './AdminButtonOverrides.css';
 import { adminShippingService } from '../../services/adminShippingService';
 import type { ShippingZoneDto, ShippingRateDto } from '../../types/shipping';
-import { Badge, Button, SkeletonTable } from '../../components/ui';
+import { Badge, Button, SkeletonTable, ConfirmDialog, useConfirmDialog } from '../../components/ui';
 
 type TabType = 'zones' | 'rates' | 'create-zone' | 'create-rate';
 
@@ -71,6 +71,15 @@ const AdminShippingZones: React.FC = () => {
   const [creating, setCreating] = useState<boolean>(false);
   const [editingZoneId, setEditingZoneId] = useState<number | null>(null);
   const [editingRateId, setEditingRateId] = useState<number | null>(null);
+
+  // Confirm dialog
+  const { confirm, dialogProps } = useConfirmDialog({
+    title: 'Confirm Delete',
+    message: 'Are you sure?',
+    variant: 'danger',
+    confirmText: 'Delete',
+    cancelText: 'Cancel'
+  });
 
   const loadZones = async () => {
     setLoading(true);
@@ -263,8 +272,15 @@ const AdminShippingZones: React.FC = () => {
     setActiveTab('create-rate');
   };
 
-  const handleDeleteZone = async (id: number) => {
-    if (!window.confirm('Are you sure you want to delete this shipping zone?')) return;
+  const handleDeleteZone = useCallback(async (id: number) => {
+    const confirmed = await confirm({
+      title: 'Delete Shipping Zone',
+      message: 'Are you sure you want to delete this shipping zone?',
+      variant: 'danger',
+      confirmText: 'Delete',
+      cancelText: 'Cancel'
+    });
+    if (!confirmed) return;
     setError(null);
     try {
       await adminShippingService.deleteZone(id);
@@ -273,10 +289,17 @@ const AdminShippingZones: React.FC = () => {
       const msg = e instanceof Error ? e.message : 'Failed to delete zone';
       setError(msg);
     }
-  };
+  }, [confirm]);
 
-  const handleDeleteRate = async (id: number) => {
-    if (!window.confirm('Are you sure you want to delete this shipping rate?')) return;
+  const handleDeleteRate = useCallback(async (id: number) => {
+    const confirmed = await confirm({
+      title: 'Delete Shipping Rate',
+      message: 'Are you sure you want to delete this shipping rate?',
+      variant: 'danger',
+      confirmText: 'Delete',
+      cancelText: 'Cancel'
+    });
+    if (!confirmed) return;
     setError(null);
     try {
       await adminShippingService.deleteRate(id);
@@ -285,7 +308,7 @@ const AdminShippingZones: React.FC = () => {
       const msg = e instanceof Error ? e.message : 'Failed to delete rate';
       setError(msg);
     }
-  };
+  }, [confirm]);
 
   const parseCountryCodes = (input: string) => {
     const codes = input
@@ -908,6 +931,8 @@ const AdminShippingZones: React.FC = () => {
               </form>
             </div>
           )}
+
+          <ConfirmDialog {...dialogProps} />
         </div>
       </div>
     </AdminLayout>

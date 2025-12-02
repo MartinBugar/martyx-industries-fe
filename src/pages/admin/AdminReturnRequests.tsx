@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Package, Eye, CheckCircle, XCircle, Truck, DollarSign, Search, Filter } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import './AdminDiscounts.css';
 import './AdminButtonOverrides.css';
 import { adminReturnRequestsService, type ReturnRequestDto, type ReturnRequestStats } from '../../services/adminReturnRequestsService';
-import { Badge, Button, SkeletonTable } from '../../components/ui';
+import { Badge, Button, SkeletonTable, ConfirmDialog, useConfirmDialog } from '../../components/ui';
 import { logError } from '../../services/logger';
 
 type TabType = 'all-returns' | 'pending-approval' | 'view-details' | 'statistics';
@@ -27,6 +27,15 @@ const AdminReturnRequests: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(0);
   const pageSize = 20;
+
+  // Confirm dialog
+  const { confirm, dialogProps } = useConfirmDialog({
+    title: 'Confirm Action',
+    message: 'Are you sure?',
+    variant: 'warning',
+    confirmText: 'Confirm',
+    cancelText: 'Cancel'
+  });
 
   const loadReturns = async (page: number = 0, status?: string) => {
     setLoading(true);
@@ -100,8 +109,15 @@ const AdminReturnRequests: React.FC = () => {
     setActiveTab('view-details');
   };
 
-  const handleApprove = async (id: number) => {
-    if (!window.confirm('Are you sure you want to approve this return request?')) return;
+  const handleApprove = useCallback(async (id: number) => {
+    const confirmed = await confirm({
+      title: 'Approve Return Request',
+      message: 'Are you sure you want to approve this return request?',
+      variant: 'info',
+      confirmText: 'Approve',
+      cancelText: 'Cancel'
+    });
+    if (!confirmed) return;
     try {
       await adminReturnRequestsService.approveReturn(id, {
         approved_by: 1, // TODO: Get from auth context
@@ -120,7 +136,7 @@ const AdminReturnRequests: React.FC = () => {
       const msg = e instanceof Error ? e.message : 'Failed to approve return';
       setError(msg);
     }
-  };
+  }, [confirm, activeTab, currentPage, filterStatus, viewingReturn]);
 
   const handleReject = async (id: number) => {
     const reason = window.prompt('Please enter rejection reason:');
@@ -142,8 +158,15 @@ const AdminReturnRequests: React.FC = () => {
     }
   };
 
-  const handleMarkReceived = async (id: number) => {
-    if (!window.confirm('Mark this return as received?')) return;
+  const handleMarkReceived = useCallback(async (id: number) => {
+    const confirmed = await confirm({
+      title: 'Mark as Received',
+      message: 'Mark this return as received?',
+      variant: 'info',
+      confirmText: 'Confirm',
+      cancelText: 'Cancel'
+    });
+    if (!confirmed) return;
     try {
       await adminReturnRequestsService.markAsReceived(id);
       await loadReturns(currentPage, filterStatus);
@@ -155,7 +178,7 @@ const AdminReturnRequests: React.FC = () => {
       const msg = e instanceof Error ? e.message : 'Failed to mark as received';
       setError(msg);
     }
-  };
+  }, [confirm, currentPage, filterStatus, viewingReturn]);
 
   const handleProcessRefund = async (id: number) => {
     const amount = window.prompt('Enter refund amount:');
@@ -176,8 +199,15 @@ const AdminReturnRequests: React.FC = () => {
     }
   };
 
-  const handleComplete = async (id: number) => {
-    if (!window.confirm('Mark this return as completed?')) return;
+  const handleComplete = useCallback(async (id: number) => {
+    const confirmed = await confirm({
+      title: 'Complete Return',
+      message: 'Mark this return as completed?',
+      variant: 'info',
+      confirmText: 'Complete',
+      cancelText: 'Cancel'
+    });
+    if (!confirmed) return;
     try {
       await adminReturnRequestsService.completeReturn(id);
       await loadReturns(currentPage, filterStatus);
@@ -189,7 +219,7 @@ const AdminReturnRequests: React.FC = () => {
       const msg = e instanceof Error ? e.message : 'Failed to complete return';
       setError(msg);
     }
-  };
+  }, [confirm, currentPage, filterStatus, viewingReturn]);
 
   const getStatusBadge = (status: string): React.ReactNode => {
     const variants: Record<string, 'default' | 'success' | 'warning' | 'info'> = {
@@ -602,6 +632,8 @@ const AdminReturnRequests: React.FC = () => {
               </div>
             </div>
           )}
+
+          <ConfirmDialog {...dialogProps} />
         </div>
       </div>
     </AdminLayout>

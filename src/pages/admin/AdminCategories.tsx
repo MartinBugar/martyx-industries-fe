@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { adminCategoryService } from '../../services/adminCategoryService';
 import type { ProductCategory } from '../../types/category';
 import AdminLayout from './AdminLayout';
-import { Button, Badge } from '../../components/ui';
+import { Button, Badge, ConfirmDialog, useConfirmDialog } from '../../components/ui';
 import { Eye, Trash2, ToggleLeft, ToggleRight } from 'lucide-react';
 import './AdminUsers.css';
 import './AdminButtonOverrides.css';
@@ -20,6 +20,13 @@ const AdminCategories: React.FC = () => {
   const [editingCategory, setEditingCategory] = useState<ProductCategory | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+
+  const { confirm, dialogProps } = useConfirmDialog({
+    title: 'Confirm Delete',
+    variant: 'danger',
+    confirmText: 'Delete',
+    cancelText: 'Cancel',
+  });
 
   // Form state
   const [formData, setFormData] = useState<Partial<ProductCategory>>({
@@ -118,8 +125,12 @@ const AdminCategories: React.FC = () => {
     });
   };
 
-  const handleDelete = async (id: number, name: string) => {
-    if (!window.confirm(`Are you sure you want to delete category "${name}"?\n\nNote: Products in this category will need to be reassigned.`)) {
+  const handleDelete = useCallback(async (id: number, name: string) => {
+    const confirmed = await confirm({
+      message: `Are you sure you want to delete category "${name}"?\n\nNote: Products in this category will need to be reassigned.`,
+    });
+
+    if (!confirmed) {
       return;
     }
 
@@ -130,7 +141,7 @@ const AdminCategories: React.FC = () => {
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to delete category');
     }
-  };
+  }, [confirm]);
 
   const handleToggleActive = async (id: number) => {
     try {
@@ -403,6 +414,7 @@ const AdminCategories: React.FC = () => {
           )}
         </div>
       </div>
+      <ConfirmDialog {...dialogProps} />
     </AdminLayout>
   );
 };

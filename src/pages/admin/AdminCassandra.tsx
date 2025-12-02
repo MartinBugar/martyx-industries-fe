@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { ConfirmDialog, useConfirmDialog } from '../../components/ui';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import './AdminCassandra.css';
@@ -18,6 +19,15 @@ const AdminCassandra: React.FC = () => {
     const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0, uploading: false });
     const [uploadSummary, setUploadSummary] = useState<{ show: boolean; successful: number; failed: number; total: number } | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // Confirm dialog
+    const { confirm, dialogProps } = useConfirmDialog({
+        title: 'Delete Image',
+        message: 'Are you sure you want to delete this image?',
+        variant: 'danger',
+        confirmText: 'Delete',
+        cancelText: 'Cancel'
+    });
 
     // Load images on mount
     useEffect(() => {
@@ -159,8 +169,15 @@ const AdminCassandra: React.FC = () => {
         await loadImages();
     };
 
-    const handleDelete = async (id: number) => {
-        if (!window.confirm('Are you sure you want to delete this image?')) return;
+    const handleDelete = useCallback(async (id: number) => {
+        const confirmed = await confirm({
+            title: 'Delete Image',
+            message: 'Are you sure you want to delete this image?',
+            variant: 'danger',
+            confirmText: 'Delete',
+            cancelText: 'Cancel'
+        });
+        if (!confirmed) return;
 
         try {
             await cassandraImageService.deleteImage(id);
@@ -171,7 +188,7 @@ const AdminCassandra: React.FC = () => {
             logError('❌ Failed to delete image:', error);
             toast.error('Failed to delete image. Please try again.');
         }
-    };
+    }, [confirm]);
 
     return (
         <AdminLayout title="CASSANDRA Mascot">
@@ -382,6 +399,8 @@ const AdminCassandra: React.FC = () => {
                     </div>
                 </div>
             )}
+
+            <ConfirmDialog {...dialogProps} />
         </AdminLayout>
     );
 };
