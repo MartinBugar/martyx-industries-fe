@@ -11,41 +11,52 @@ export type ReportType = 'SALES' | 'PRODUCT_PERFORMANCE' | 'CUSTOMER' | 'INVENTO
 export type PeriodType = 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'QUARTERLY' | 'YEARLY';
 export type ExportFormat = 'CSV' | 'XLSX' | 'PDF';
 
-// Sales Report
+// Sales Report (matches BE SalesReportDto)
 export interface SalesReportDto {
-  totalRevenue: number;
-  totalOrders: number;
-  averageOrderValue: number;
-  totalShipping: number;
-  totalTax: number;
-  previousPeriodRevenue: number;
-  previousPeriodOrders: number;
-  revenueGrowthPercent: number;
-  orderGrowthPercent: number;
-  periodBreakdown: PeriodSales[];
-  categorySales: CategorySales[];
-  paymentMethodSales: PaymentMethodSales[];
-  countrySales: CountrySales[];
-  topProducts: TopProduct[];
   startDate: string;
   endDate: string;
-  periodType: PeriodType;
+  periodType: string;
+  // Summary
+  totalRevenue: number;
+  totalCost: number | null;
+  grossProfit: number | null;
+  netRevenue: number | null;
+  totalOrders: number;
+  totalItems: number;
+  averageOrderValue: number;
+  // Refunds
+  refundCount: number;
+  refundTotal: number | null;
+  refundRate: number;
+  // Taxes & Shipping
+  taxCollected: number | null;
+  shippingRevenue: number | null;
+  shippingCost: number | null;
+  // Breakdowns
+  periodBreakdown: PeriodSales[];
+  categoryBreakdown: CategorySales[];
+  paymentBreakdown: PaymentMethodSales[];
+  countryBreakdown: CountrySales[];
+  topProducts: TopProduct[];
+  // Comparison with previous period (percentages)
+  revenueChange: number | null;
+  ordersChange: number | null;
+  aovChange: number | null;
 }
 
 export interface PeriodSales {
+  date: string;
   label: string;
-  startDate: string;
-  endDate: string;
   revenue: number;
   orders: number;
-  avgOrderValue: number;
+  averageOrderValue: number;
 }
 
 export interface CategorySales {
-  categoryId: number;
+  categoryId: number | null;
   categoryName: string;
   revenue: number;
-  orders: number;
+  itemsSold: number;
   percentage: number;
 }
 
@@ -66,150 +77,229 @@ export interface CountrySales {
 
 export interface TopProduct {
   productId: number;
+  variantId: number | null;
   productName: string;
-  variantsSold: number;
+  variantName: string | null;
+  sku: string;
+  quantitySold: number;
   revenue: number;
-  avgPrice: number;
 }
 
-// Product Performance Report
+// Product Performance Report (matches BE ProductPerformanceReportDto)
 export interface ProductPerformanceReportDto {
-  totalProducts: number;
-  totalVariants: number;
-  productsWithSales: number;
-  productsWithNoSales: number;
-  topPerformers: ProductPerformance[];
-  lowPerformers: ProductPerformance[];
-  stockStatus: ProductStock[];
   startDate: string;
   endDate: string;
+  // Summary
+  totalProducts: number;
+  activeProducts: number;
+  productsWithSales: number;
+  totalRevenue: number;
+  totalUnitsSold: number;
+  // Lists
+  products: ProductPerformance[];
+  bestSellers: ProductPerformance[];
+  slowMoving: ProductPerformance[];
+  outOfStock: ProductStock[];
+  lowStock: ProductStock[];
 }
 
 export interface ProductPerformance {
   productId: number;
-  productName: string;
   variantId: number | null;
+  productName: string;
   variantName: string | null;
+  sku: string;
+  categoryName: string | null;
+  // Sales metrics
   quantitySold: number;
   revenue: number;
-  avgPrice: number;
-  conversionRate: number;
-  returnsCount: number;
+  costOfGoods: number | null;
+  grossProfit: number | null;
+  profitMargin: number;
+  // Velocity
+  salesVelocity: number;
+  daysToSellOut: number;
+  // Rank
+  revenueRank: number;
+  quantityRank: number;
 }
 
 export interface ProductStock {
   productId: number;
-  productName: string;
   variantId: number | null;
+  productName: string;
   variantName: string | null;
+  sku: string;
   currentStock: number;
-  reservedStock: number;
-  availableStock: number;
-  reorderLevel: number;
-  status: 'IN_STOCK' | 'LOW_STOCK' | 'OUT_OF_STOCK';
+  lowStockThreshold: number;
+  reorderPoint: number;
+  salesVelocity: number;
+  daysOfStock: number;
 }
 
-// Customer Report
+// Customer Report (matches BE CustomerReportDto)
 export interface CustomerReportDto {
+  startDate: string;
+  endDate: string;
+  // Summary
   totalCustomers: number;
   newCustomers: number;
   returningCustomers: number;
+  retentionRate: number;
   averageCustomerValue: number;
+  // CLV
+  averageCLV: number | null;
+  totalCLV: number | null;
+  // Orders
   averageOrdersPerCustomer: number;
+  repeatPurchaseRate: number;
+  // Breakdowns
+  acquisitionSources: AcquisitionSource[];
+  segments: SegmentStats[];
   topCustomers: TopCustomer[];
   rfmSegments: RfmSegment[];
   registrationTrend: RegistrationTrend[];
-  startDate: string;
-  endDate: string;
+}
+
+export interface AcquisitionSource {
+  source: string;
+  customers: number;
+  percentage: number;
+  revenue: number;
+}
+
+export interface SegmentStats {
+  segmentId: number | null;
+  segmentName: string;
+  customerCount: number;
+  totalRevenue: number;
+  averageOrderValue: number;
 }
 
 export interface TopCustomer {
   userId: number;
   email: string;
   name: string;
-  totalOrders: number;
+  orderCount: number;
   totalSpent: number;
-  avgOrderValue: number;
-  lastOrderDate: string;
+  lastOrderDate: string | null;
+  cassandraRank: string | null;
   xpPoints: number;
 }
 
 export interface RfmSegment {
   segment: string;
-  description: string;
   customerCount: number;
-  percentageOfTotal: number;
-  avgRecency: number;
-  avgFrequency: number;
-  avgMonetary: number;
+  percentage: number;
+  averageRevenue: number;
+  description: string;
 }
 
 export interface RegistrationTrend {
   date: string;
   label: string;
   registrations: number;
+  firstPurchases: number;
+  conversionRate: number;
 }
 
-// Inventory Report
+// Inventory Report (matches BE InventoryReportDto)
 export interface InventoryReportDto {
-  totalProducts: number;
-  totalVariants: number;
-  totalStockValue: number;
-  lowStockCount: number;
-  outOfStockCount: number;
-  overstockCount: number;
-  stockByStatus: StockStatusBreakdown[];
-  reorderRecommendations: ReorderRecommendation[];
+  reportDate: string;
+  // Summary
+  totalSkus: number;
+  inStockSkus: number;
+  outOfStockSkus: number;
+  lowStockSkus: number;
+  totalInventoryValue: number | null;
+  totalInventoryRetailValue: number | null;
+  // Breakdowns
+  stockStatusBreakdown: StockStatusBreakdown[];
+  categoryBreakdown: CategoryInventory[];
+  stockMovements: StockMovement[];
   deadStock: DeadStock[];
+  reorderRecommendations: ReorderRecommendation[];
+  // Turnover
+  averageTurnoverRate: number;
+  averageDaysToSell: number;
 }
 
 export interface StockStatusBreakdown {
-  status: 'IN_STOCK' | 'LOW_STOCK' | 'OUT_OF_STOCK' | 'OVERSTOCK';
-  count: number;
+  status: string;
+  skuCount: number;
+  totalUnits: number;
   percentage: number;
-  totalValue: number;
+}
+
+export interface CategoryInventory {
+  categoryId: number | null;
+  categoryName: string;
+  skuCount: number;
+  totalUnits: number;
+  inventoryValue: number;
+  turnoverRate: number;
+}
+
+export interface StockMovement {
+  date: string;
+  period: string;
+  unitsReceived: number;
+  unitsSold: number;
+  unitsAdjusted: number;
+  netChange: number;
 }
 
 export interface ReorderRecommendation {
   productId: number;
-  productName: string;
   variantId: number | null;
+  productName: string;
   variantName: string | null;
+  sku: string;
   currentStock: number;
-  reorderLevel: number;
+  reorderPoint: number;
   suggestedOrderQuantity: number;
-  lastSaleDate: string;
-  avgDailySales: number;
+  dailySalesVelocity: number;
   daysUntilStockout: number;
+  urgency: string;
 }
 
 export interface DeadStock {
   productId: number;
-  productName: string;
   variantId: number | null;
+  productName: string;
   variantName: string | null;
+  sku: string;
   currentStock: number;
-  stockValue: number;
+  inventoryValue: number;
   daysSinceLastSale: number;
   lastSaleDate: string | null;
 }
 
-// Tax Report
+// Tax Report (matches BE TaxReportDto)
 export interface TaxReportDto {
-  totalRevenue: number;
-  totalTaxCollected: number;
-  netRevenue: number;
-  effectiveTaxRate: number;
-  vatByRate: VatRateBreakdown[];
-  vatByCountry: CountryVatBreakdown[];
-  exemptSales: number;
   startDate: string;
   endDate: string;
+  // Summary
+  totalSalesGross: number;
+  totalSalesNet: number;
+  totalVatCollected: number;
+  totalRefundedVat: number | null;
+  netVatLiability: number | null;
+  // Breakdowns
+  vatRateBreakdown: VatRateBreakdown[];
+  countryBreakdown: CountryVatBreakdown[];
+  reverseChargeTransactions: ReverseChargeTransaction[];
+  reverseChargeTotal: number | null;
+  monthlyBreakdown: MonthlyTax[];
+  // Digital goods (EU VAT MOSS)
+  digitalGoodsSales: number | null;
+  digitalGoodsVat: number | null;
 }
 
 export interface VatRateBreakdown {
   vatRate: number;
-  salesAmount: number;
+  rateType: string;
+  salesNet: number;
   vatAmount: number;
   transactionCount: number;
 }
@@ -217,10 +307,32 @@ export interface VatRateBreakdown {
 export interface CountryVatBreakdown {
   countryCode: string;
   countryName: string;
-  salesAmount: number;
-  vatAmount: number;
-  transactionCount: number;
-  vatRates: VatRateBreakdown[];
+  salesGross: number;
+  salesNet: number;
+  vatCollected: number;
+  orderCount: number;
+  isEu: boolean;
+}
+
+export interface ReverseChargeTransaction {
+  orderNumber: string;
+  orderDate: string;
+  customerName: string;
+  vatNumber: string;
+  countryCode: string;
+  netAmount: number;
+  description: string;
+}
+
+export interface MonthlyTax {
+  year: number;
+  month: number;
+  monthLabel: string;
+  salesGross: number;
+  salesNet: number;
+  vatCollected: number;
+  refundedVat: number;
+  netVat: number;
 }
 
 // Date Range Presets

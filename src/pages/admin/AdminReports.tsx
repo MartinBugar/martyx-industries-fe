@@ -266,16 +266,20 @@ const SalesReportView: React.FC<{ report: SalesReportDto }> = ({ report }) => {
         <div className="kpi-card">
           <div className="kpi-label">Celkové tržby</div>
           <div className="kpi-value">{formatCurrency(report.totalRevenue)}</div>
-          <div className={`kpi-change ${report.revenueGrowthPercent >= 0 ? 'positive' : 'negative'}`}>
-            {formatPercent(report.revenueGrowthPercent)} vs. predch. obdobie
-          </div>
+          {report.revenueChange !== null && (
+            <div className={`kpi-change ${report.revenueChange >= 0 ? 'positive' : 'negative'}`}>
+              {formatPercent(report.revenueChange)} vs. predch. obdobie
+            </div>
+          )}
         </div>
         <div className="kpi-card">
           <div className="kpi-label">Celkom objednávok</div>
           <div className="kpi-value">{report.totalOrders}</div>
-          <div className={`kpi-change ${report.orderGrowthPercent >= 0 ? 'positive' : 'negative'}`}>
-            {formatPercent(report.orderGrowthPercent)} vs. predch. obdobie
-          </div>
+          {report.ordersChange !== null && (
+            <div className={`kpi-change ${report.ordersChange >= 0 ? 'positive' : 'negative'}`}>
+              {formatPercent(report.ordersChange)} vs. predch. obdobie
+            </div>
+          )}
         </div>
         <div className="kpi-card">
           <div className="kpi-label">Priemerná objednávka</div>
@@ -283,12 +287,12 @@ const SalesReportView: React.FC<{ report: SalesReportDto }> = ({ report }) => {
         </div>
         <div className="kpi-card">
           <div className="kpi-label">Doprava</div>
-          <div className="kpi-value">{formatCurrency(report.totalShipping)}</div>
+          <div className="kpi-value">{formatCurrency(report.shippingRevenue || 0)}</div>
         </div>
       </div>
 
       {/* Period Breakdown */}
-      {report.periodBreakdown.length > 0 && (
+      {report.periodBreakdown && report.periodBreakdown.length > 0 && (
         <div className="report-section">
           <h3>Tržby podľa obdobia</h3>
           <table className="report-table">
@@ -306,7 +310,7 @@ const SalesReportView: React.FC<{ report: SalesReportDto }> = ({ report }) => {
                   <td>{period.label}</td>
                   <td>{formatCurrency(period.revenue)}</td>
                   <td>{period.orders}</td>
-                  <td>{formatCurrency(period.avgOrderValue)}</td>
+                  <td>{formatCurrency(period.averageOrderValue)}</td>
                 </tr>
               ))}
             </tbody>
@@ -315,7 +319,7 @@ const SalesReportView: React.FC<{ report: SalesReportDto }> = ({ report }) => {
       )}
 
       {/* Top Products */}
-      {report.topProducts.length > 0 && (
+      {report.topProducts && report.topProducts.length > 0 && (
         <div className="report-section">
           <h3>Top produkty</h3>
           <table className="report-table">
@@ -328,9 +332,9 @@ const SalesReportView: React.FC<{ report: SalesReportDto }> = ({ report }) => {
             </thead>
             <tbody>
               {report.topProducts.map((product) => (
-                <tr key={product.productId}>
-                  <td>{product.productName}</td>
-                  <td>{product.variantsSold}</td>
+                <tr key={`${product.productId}-${product.variantId}`}>
+                  <td>{product.productName}{product.variantName ? ` - ${product.variantName}` : ''}</td>
+                  <td>{product.quantitySold}</td>
                   <td>{formatCurrency(product.revenue)}</td>
                 </tr>
               ))}
@@ -340,12 +344,12 @@ const SalesReportView: React.FC<{ report: SalesReportDto }> = ({ report }) => {
       )}
 
       {/* Sales by Category */}
-      {report.categorySales.length > 0 && (
+      {report.categoryBreakdown && report.categoryBreakdown.length > 0 && (
         <div className="report-section">
           <h3>Predaj podľa kategórie</h3>
           <div className="category-bars">
-            {report.categorySales.map((cat) => (
-              <div key={cat.categoryId} className="category-bar-row">
+            {report.categoryBreakdown.map((cat, index) => (
+              <div key={cat.categoryId || index} className="category-bar-row">
                 <div className="category-name">{cat.categoryName}</div>
                 <div className="category-bar-container">
                   <div
@@ -363,7 +367,7 @@ const SalesReportView: React.FC<{ report: SalesReportDto }> = ({ report }) => {
       )}
 
       {/* Sales by Country */}
-      {report.countrySales.length > 0 && (
+      {report.countryBreakdown && report.countryBreakdown.length > 0 && (
         <div className="report-section">
           <h3>Predaj podľa krajiny</h3>
           <table className="report-table">
@@ -376,7 +380,7 @@ const SalesReportView: React.FC<{ report: SalesReportDto }> = ({ report }) => {
               </tr>
             </thead>
             <tbody>
-              {report.countrySales.map((country) => (
+              {report.countryBreakdown.map((country) => (
                 <tr key={country.countryCode}>
                   <td>{country.countryName || country.countryCode}</td>
                   <td>{formatCurrency(country.revenue)}</td>
@@ -390,7 +394,7 @@ const SalesReportView: React.FC<{ report: SalesReportDto }> = ({ report }) => {
       )}
 
       {/* Payment Methods */}
-      {report.paymentMethodSales.length > 0 && (
+      {report.paymentBreakdown && report.paymentBreakdown.length > 0 && (
         <div className="report-section">
           <h3>Platobné metódy</h3>
           <table className="report-table">
@@ -403,7 +407,7 @@ const SalesReportView: React.FC<{ report: SalesReportDto }> = ({ report }) => {
               </tr>
             </thead>
             <tbody>
-              {report.paymentMethodSales.map((method) => (
+              {report.paymentBreakdown.map((method) => (
                 <tr key={method.paymentMethod}>
                   <td>{method.paymentMethod}</td>
                   <td>{formatCurrency(method.revenue)}</td>
@@ -429,21 +433,21 @@ const ProductReportView: React.FC<{ report: ProductPerformanceReportDto }> = ({ 
           <div className="kpi-value">{report.totalProducts}</div>
         </div>
         <div className="kpi-card">
-          <div className="kpi-label">Celkom variantov</div>
-          <div className="kpi-value">{report.totalVariants}</div>
+          <div className="kpi-label">Aktívnych</div>
+          <div className="kpi-value">{report.activeProducts}</div>
         </div>
         <div className="kpi-card">
           <div className="kpi-label">S predajom</div>
           <div className="kpi-value">{report.productsWithSales}</div>
         </div>
         <div className="kpi-card">
-          <div className="kpi-label">Bez predaja</div>
-          <div className="kpi-value">{report.productsWithNoSales}</div>
+          <div className="kpi-label">Celkové tržby</div>
+          <div className="kpi-value">{formatCurrency(report.totalRevenue)}</div>
         </div>
       </div>
 
-      {/* Top Performers */}
-      {report.topPerformers.length > 0 && (
+      {/* Best Sellers */}
+      {report.bestSellers && report.bestSellers.length > 0 && (
         <div className="report-section">
           <h3>Najlepšie produkty</h3>
           <table className="report-table">
@@ -453,17 +457,17 @@ const ProductReportView: React.FC<{ report: ProductPerformanceReportDto }> = ({ 
                 <th>Variant</th>
                 <th>Predaných ks</th>
                 <th>Tržby</th>
-                <th>Priem. cena</th>
+                <th>Marža</th>
               </tr>
             </thead>
             <tbody>
-              {report.topPerformers.map((product, index) => (
+              {report.bestSellers.map((product, index) => (
                 <tr key={`${product.productId}-${product.variantId || index}`}>
                   <td>{product.productName}</td>
                   <td>{product.variantName || '-'}</td>
                   <td>{product.quantitySold}</td>
                   <td>{formatCurrency(product.revenue)}</td>
-                  <td>{formatCurrency(product.avgPrice)}</td>
+                  <td>{product.profitMargin.toFixed(1)}%</td>
                 </tr>
               ))}
             </tbody>
@@ -471,10 +475,10 @@ const ProductReportView: React.FC<{ report: ProductPerformanceReportDto }> = ({ 
         </div>
       )}
 
-      {/* Low Performers */}
-      {report.lowPerformers.length > 0 && (
+      {/* Slow Moving */}
+      {report.slowMoving && report.slowMoving.length > 0 && (
         <div className="report-section">
-          <h3>Najhoršie produkty</h3>
+          <h3>Pomaly predávané</h3>
           <table className="report-table">
             <thead>
               <tr>
@@ -485,7 +489,7 @@ const ProductReportView: React.FC<{ report: ProductPerformanceReportDto }> = ({ 
               </tr>
             </thead>
             <tbody>
-              {report.lowPerformers.map((product, index) => (
+              {report.slowMoving.map((product, index) => (
                 <tr key={`${product.productId}-${product.variantId || index}`}>
                   <td>{product.productName}</td>
                   <td>{product.variantName || '-'}</td>
@@ -498,37 +502,55 @@ const ProductReportView: React.FC<{ report: ProductPerformanceReportDto }> = ({ 
         </div>
       )}
 
-      {/* Stock Status */}
-      {report.stockStatus.length > 0 && (
+      {/* Out of Stock */}
+      {report.outOfStock && report.outOfStock.length > 0 && (
         <div className="report-section">
-          <h3>Stav skladu</h3>
+          <h3>Vypredané produkty</h3>
+          <table className="report-table">
+            <thead>
+              <tr>
+                <th>Produkt</th>
+                <th>Variant</th>
+                <th>SKU</th>
+                <th>Dní zásob</th>
+              </tr>
+            </thead>
+            <tbody>
+              {report.outOfStock.map((item, index) => (
+                <tr key={`${item.productId}-${item.variantId || index}`}>
+                  <td>{item.productName}</td>
+                  <td>{item.variantName || '-'}</td>
+                  <td>{item.sku}</td>
+                  <td>{item.daysOfStock}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Low Stock */}
+      {report.lowStock && report.lowStock.length > 0 && (
+        <div className="report-section">
+          <h3>Nízky stav skladu</h3>
           <table className="report-table">
             <thead>
               <tr>
                 <th>Produkt</th>
                 <th>Variant</th>
                 <th>Na sklade</th>
-                <th>Rezervované</th>
-                <th>Dostupné</th>
-                <th>Stav</th>
+                <th>Minimum</th>
+                <th>Dní zásob</th>
               </tr>
             </thead>
             <tbody>
-              {report.stockStatus.map((item, index) => (
+              {report.lowStock.map((item, index) => (
                 <tr key={`${item.productId}-${item.variantId || index}`}>
                   <td>{item.productName}</td>
                   <td>{item.variantName || '-'}</td>
                   <td>{item.currentStock}</td>
-                  <td>{item.reservedStock}</td>
-                  <td>{item.availableStock}</td>
-                  <td>
-                    <span
-                      className="status-badge"
-                      style={{ backgroundColor: getStockStatusColor(item.status) }}
-                    >
-                      {getStockStatusLabel(item.status)}
-                    </span>
-                  </td>
+                  <td>{item.lowStockThreshold}</td>
+                  <td className={item.daysOfStock <= 7 ? 'danger' : ''}>{item.daysOfStock}</td>
                 </tr>
               ))}
             </tbody>
@@ -563,7 +585,7 @@ const CustomerReportView: React.FC<{ report: CustomerReportDto }> = ({ report })
       </div>
 
       {/* Top Customers */}
-      {report.topCustomers.length > 0 && (
+      {report.topCustomers && report.topCustomers.length > 0 && (
         <div className="report-section">
           <h3>Top zákazníci</h3>
           <table className="report-table">
@@ -573,7 +595,7 @@ const CustomerReportView: React.FC<{ report: CustomerReportDto }> = ({ report })
                 <th>Email</th>
                 <th>Objednávky</th>
                 <th>Utratené</th>
-                <th>Priem. objednávka</th>
+                <th>Rank</th>
                 <th>Posledná obj.</th>
               </tr>
             </thead>
@@ -582,9 +604,9 @@ const CustomerReportView: React.FC<{ report: CustomerReportDto }> = ({ report })
                 <tr key={customer.userId}>
                   <td>{customer.name || '-'}</td>
                   <td>{customer.email}</td>
-                  <td>{customer.totalOrders}</td>
+                  <td>{customer.orderCount}</td>
                   <td>{formatCurrency(customer.totalSpent)}</td>
-                  <td>{formatCurrency(customer.avgOrderValue)}</td>
+                  <td>{customer.cassandraRank || '-'}</td>
                   <td>{customer.lastOrderDate ? new Date(customer.lastOrderDate).toLocaleDateString('sk-SK') : '-'}</td>
                 </tr>
               ))}
@@ -594,7 +616,7 @@ const CustomerReportView: React.FC<{ report: CustomerReportDto }> = ({ report })
       )}
 
       {/* RFM Segments */}
-      {report.rfmSegments.length > 0 && (
+      {report.rfmSegments && report.rfmSegments.length > 0 && (
         <div className="report-section">
           <h3>RFM Segmenty</h3>
           <table className="report-table">
@@ -612,7 +634,7 @@ const CustomerReportView: React.FC<{ report: CustomerReportDto }> = ({ report })
                   <td>{segment.segment}</td>
                   <td>{segment.description}</td>
                   <td>{segment.customerCount}</td>
-                  <td>{segment.percentageOfTotal.toFixed(1)}%</td>
+                  <td>{segment.percentage.toFixed(1)}%</td>
                 </tr>
               ))}
             </tbody>
@@ -621,7 +643,7 @@ const CustomerReportView: React.FC<{ report: CustomerReportDto }> = ({ report })
       )}
 
       {/* Registration Trend */}
-      {report.registrationTrend.length > 0 && (
+      {report.registrationTrend && report.registrationTrend.length > 0 && (
         <div className="report-section">
           <h3>Trend registrácií</h3>
           <div className="registration-chart">
@@ -630,7 +652,7 @@ const CustomerReportView: React.FC<{ report: CustomerReportDto }> = ({ report })
                 <div
                   className="registration-bar-fill"
                   style={{
-                    height: `${Math.min(100, (day.registrations / Math.max(...report.registrationTrend.map(d => d.registrations))) * 100)}%`
+                    height: `${Math.min(100, (day.registrations / Math.max(...report.registrationTrend.map(d => d.registrations), 1)) * 100)}%`
                   }}
                   title={`${day.label}: ${day.registrations} registrácií`}
                 />
@@ -649,37 +671,37 @@ const InventoryReportView: React.FC<{ report: InventoryReportDto }> = ({ report 
       {/* KPIs */}
       <div className="report-kpis">
         <div className="kpi-card">
-          <div className="kpi-label">Celkom produktov</div>
-          <div className="kpi-value">{report.totalProducts}</div>
+          <div className="kpi-label">Celkom SKU</div>
+          <div className="kpi-value">{report.totalSkus}</div>
         </div>
         <div className="kpi-card">
           <div className="kpi-label">Hodnota skladu</div>
-          <div className="kpi-value">{formatCurrency(report.totalStockValue)}</div>
+          <div className="kpi-value">{formatCurrency(report.totalInventoryRetailValue || 0)}</div>
         </div>
         <div className="kpi-card warning">
           <div className="kpi-label">Nízky stav</div>
-          <div className="kpi-value">{report.lowStockCount}</div>
+          <div className="kpi-value">{report.lowStockSkus}</div>
         </div>
         <div className="kpi-card danger">
           <div className="kpi-label">Vypredané</div>
-          <div className="kpi-value">{report.outOfStockCount}</div>
+          <div className="kpi-value">{report.outOfStockSkus}</div>
         </div>
       </div>
 
       {/* Stock Status Breakdown */}
-      {report.stockByStatus.length > 0 && (
+      {report.stockStatusBreakdown && report.stockStatusBreakdown.length > 0 && (
         <div className="report-section">
           <h3>Rozdelenie podľa stavu</h3>
           <div className="stock-status-grid">
-            {report.stockByStatus.map((status) => (
+            {report.stockStatusBreakdown.map((status) => (
               <div
                 key={status.status}
                 className="stock-status-card"
                 style={{ borderLeftColor: getStockStatusColor(status.status) }}
               >
                 <div className="stock-status-label">{getStockStatusLabel(status.status)}</div>
-                <div className="stock-status-count">{status.count} produktov</div>
-                <div className="stock-status-value">{formatCurrency(status.totalValue)}</div>
+                <div className="stock-status-count">{status.skuCount} SKU</div>
+                <div className="stock-status-value">{status.totalUnits} ks</div>
                 <div className="stock-status-percent">{status.percentage.toFixed(1)}%</div>
               </div>
             ))}
@@ -688,7 +710,7 @@ const InventoryReportView: React.FC<{ report: InventoryReportDto }> = ({ report 
       )}
 
       {/* Reorder Recommendations */}
-      {report.reorderRecommendations.length > 0 && (
+      {report.reorderRecommendations && report.reorderRecommendations.length > 0 && (
         <div className="report-section">
           <h3>Odporúčania na doobjednanie</h3>
           <table className="report-table">
@@ -699,6 +721,7 @@ const InventoryReportView: React.FC<{ report: InventoryReportDto }> = ({ report 
                 <th>Min. úroveň</th>
                 <th>Odporúčané množstvo</th>
                 <th>Dní do vypredania</th>
+                <th>Urgencia</th>
               </tr>
             </thead>
             <tbody>
@@ -706,10 +729,15 @@ const InventoryReportView: React.FC<{ report: InventoryReportDto }> = ({ report 
                 <tr key={`${item.productId}-${item.variantId || index}`}>
                   <td>{item.productName}{item.variantName ? ` - ${item.variantName}` : ''}</td>
                   <td>{item.currentStock}</td>
-                  <td>{item.reorderLevel}</td>
+                  <td>{item.reorderPoint}</td>
                   <td className="highlight">{item.suggestedOrderQuantity}</td>
                   <td className={item.daysUntilStockout <= 7 ? 'danger' : ''}>
                     {item.daysUntilStockout}
+                  </td>
+                  <td>
+                    <span className={`urgency-badge ${item.urgency.toLowerCase()}`}>
+                      {item.urgency}
+                    </span>
                   </td>
                 </tr>
               ))}
@@ -719,7 +747,7 @@ const InventoryReportView: React.FC<{ report: InventoryReportDto }> = ({ report 
       )}
 
       {/* Dead Stock */}
-      {report.deadStock.length > 0 && (
+      {report.deadStock && report.deadStock.length > 0 && (
         <div className="report-section">
           <h3>Mŕtvy tovar</h3>
           <table className="report-table">
@@ -736,7 +764,7 @@ const InventoryReportView: React.FC<{ report: InventoryReportDto }> = ({ report 
                 <tr key={`${item.productId}-${item.variantId || index}`}>
                   <td>{item.productName}{item.variantName ? ` - ${item.variantName}` : ''}</td>
                   <td>{item.currentStock}</td>
-                  <td>{formatCurrency(item.stockValue)}</td>
+                  <td>{formatCurrency(item.inventoryValue)}</td>
                   <td>{item.daysSinceLastSale}</td>
                 </tr>
               ))}
@@ -749,46 +777,53 @@ const InventoryReportView: React.FC<{ report: InventoryReportDto }> = ({ report 
 };
 
 const TaxReportView: React.FC<{ report: TaxReportDto }> = ({ report }) => {
+  // Calculate effective tax rate
+  const effectiveTaxRate = report.totalSalesNet > 0
+    ? (report.totalVatCollected / report.totalSalesNet) * 100
+    : 0;
+
   return (
     <div className="tax-report">
       {/* KPIs */}
       <div className="report-kpis">
         <div className="kpi-card">
-          <div className="kpi-label">Celkové tržby</div>
-          <div className="kpi-value">{formatCurrency(report.totalRevenue)}</div>
+          <div className="kpi-label">Celkové tržby (s DPH)</div>
+          <div className="kpi-value">{formatCurrency(report.totalSalesGross)}</div>
         </div>
         <div className="kpi-card">
           <div className="kpi-label">Vybraná DPH</div>
-          <div className="kpi-value">{formatCurrency(report.totalTaxCollected)}</div>
+          <div className="kpi-value">{formatCurrency(report.totalVatCollected)}</div>
         </div>
         <div className="kpi-card">
-          <div className="kpi-label">Čisté tržby</div>
-          <div className="kpi-value">{formatCurrency(report.netRevenue)}</div>
+          <div className="kpi-label">Čisté tržby (bez DPH)</div>
+          <div className="kpi-value">{formatCurrency(report.totalSalesNet)}</div>
         </div>
         <div className="kpi-card">
           <div className="kpi-label">Efektívna sadzba DPH</div>
-          <div className="kpi-value">{report.effectiveTaxRate.toFixed(1)}%</div>
+          <div className="kpi-value">{effectiveTaxRate.toFixed(1)}%</div>
         </div>
       </div>
 
       {/* VAT by Rate */}
-      {report.vatByRate.length > 0 && (
+      {report.vatRateBreakdown && report.vatRateBreakdown.length > 0 && (
         <div className="report-section">
           <h3>DPH podľa sadzby</h3>
           <table className="report-table">
             <thead>
               <tr>
                 <th>Sadzba</th>
+                <th>Typ</th>
                 <th>Základ</th>
                 <th>DPH</th>
                 <th>Transakcií</th>
               </tr>
             </thead>
             <tbody>
-              {report.vatByRate.map((rate) => (
-                <tr key={rate.vatRate}>
+              {report.vatRateBreakdown.map((rate) => (
+                <tr key={`${rate.vatRate}-${rate.rateType}`}>
                   <td>{rate.vatRate}%</td>
-                  <td>{formatCurrency(rate.salesAmount)}</td>
+                  <td>{rate.rateType}</td>
+                  <td>{formatCurrency(rate.salesNet)}</td>
                   <td>{formatCurrency(rate.vatAmount)}</td>
                   <td>{rate.transactionCount}</td>
                 </tr>
@@ -799,25 +834,27 @@ const TaxReportView: React.FC<{ report: TaxReportDto }> = ({ report }) => {
       )}
 
       {/* VAT by Country */}
-      {report.vatByCountry.length > 0 && (
+      {report.countryBreakdown && report.countryBreakdown.length > 0 && (
         <div className="report-section">
           <h3>DPH podľa krajiny</h3>
           <table className="report-table">
             <thead>
               <tr>
                 <th>Krajina</th>
+                <th>EU</th>
                 <th>Základ</th>
                 <th>DPH</th>
-                <th>Transakcií</th>
+                <th>Objednávky</th>
               </tr>
             </thead>
             <tbody>
-              {report.vatByCountry.map((country) => (
+              {report.countryBreakdown.map((country) => (
                 <tr key={country.countryCode}>
                   <td>{country.countryName || country.countryCode}</td>
-                  <td>{formatCurrency(country.salesAmount)}</td>
-                  <td>{formatCurrency(country.vatAmount)}</td>
-                  <td>{country.transactionCount}</td>
+                  <td>{country.isEu ? '✓' : '-'}</td>
+                  <td>{formatCurrency(country.salesNet)}</td>
+                  <td>{formatCurrency(country.vatCollected)}</td>
+                  <td>{country.orderCount}</td>
                 </tr>
               ))}
             </tbody>
@@ -825,14 +862,41 @@ const TaxReportView: React.FC<{ report: TaxReportDto }> = ({ report }) => {
         </div>
       )}
 
-      {/* Exempt Sales */}
-      {report.exemptSales > 0 && (
+      {/* Reverse Charge */}
+      {report.reverseChargeTotal && report.reverseChargeTotal > 0 && (
         <div className="report-section">
-          <h3>Oslobodené od DPH</h3>
+          <h3>Reverse Charge (B2B)</h3>
           <div className="exempt-sales-card">
-            <div className="exempt-sales-value">{formatCurrency(report.exemptSales)}</div>
-            <div className="exempt-sales-label">Celková hodnota predajov oslobodených od DPH</div>
+            <div className="exempt-sales-value">{formatCurrency(report.reverseChargeTotal)}</div>
+            <div className="exempt-sales-label">Celková hodnota B2B transakcií s reverse charge</div>
           </div>
+        </div>
+      )}
+
+      {/* Monthly Breakdown */}
+      {report.monthlyBreakdown && report.monthlyBreakdown.length > 0 && (
+        <div className="report-section">
+          <h3>Mesačný prehľad</h3>
+          <table className="report-table">
+            <thead>
+              <tr>
+                <th>Mesiac</th>
+                <th>Tržby (s DPH)</th>
+                <th>Základ</th>
+                <th>DPH</th>
+              </tr>
+            </thead>
+            <tbody>
+              {report.monthlyBreakdown.map((month) => (
+                <tr key={`${month.year}-${month.month}`}>
+                  <td>{month.monthLabel}</td>
+                  <td>{formatCurrency(month.salesGross)}</td>
+                  <td>{formatCurrency(month.salesNet)}</td>
+                  <td>{formatCurrency(month.vatCollected)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </div>
