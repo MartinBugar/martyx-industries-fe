@@ -1,0 +1,398 @@
+.admin-tickets {
+  padding: 0;
+}
+
+/* Nav Tabs */
+.tickets-nav-tabs {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.tickets-nav-tabs .nav-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-secondary, #6b7280);
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.tickets-nav-tabs .nav-tab:hover {
+  color: var(--text-primary, #1f2937);
+}
+
+.tickets-nav-tabs .nav-tab.active {
+  color: var(--primary, #3b82f6);
+  border-bottom-color: var(--primary, #3b82f6);
+}
+
+.tickets-nav-tabs .tab-count {
+  padding: 0.125rem 0.5rem;
+  background: var(--bg-secondary, #f3f4f6);
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.tickets-nav-tabs .tab-count.warning {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.tickets-nav-tabs .tab-count.danger {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+/* Stats */
+.tickets-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.tickets-stats .stat-card {
+  padding: 1rem;
+  background: white;
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 0.5rem;
+  text-align: center;
+}
+
+.tickets-stats .stat-card.warning {
+  border-left: 3px solid #f59e0b;
+}
+
+.tickets-stats .stat-card.danger {
+  border-left: 3px solid #ef4444;
+}
+
+.tickets-stats .stat-card.success {
+  border-left: 3px solid #10b981;
+}
+
+.tickets-stats .stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary, #1f2937);
+}
+
+.tickets-stats .stat-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #6b7280);
+  margin-top: 0.25rem;
+}
+
+/* Filters */
+.tickets-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: white;
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 0.5rem;
+}
+
+.tickets-filters .search-box {
+  flex: 1;
+  min-width: 200px;
+}
+
+.tickets-filters .search-box input {
+  width: 100%;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+}
+
+.tickets-filters .search-box input:focus {
+  outline: none;
+  border-color: var(--primary, #3b82f6);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.tickets-filters .filter-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.tickets-filters select {
+  padding: 0.5rem 2rem 0.5rem 0.75rem;
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  background: white url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e") right 0.5rem center/1.5em 1.5em no-repeat;
+  appearance: none;
+  cursor: pointer;
+}
+
+.tickets-filters .btn-primary {
+  padding: 0.5rem 1rem;
+  background: var(--primary, #3b82f6);
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.tickets-filters .btn-primary:hover {
+  background: var(--primary-dark, #2563eb);
+}
+
+/* Error & Loading */
+.tickets-error {
+  padding: 1rem;
+  background: #fee2e2;
+  color: #dc2626;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.tickets-loading {
+  padding: 3rem;
+  text-align: center;
+  color: var(--text-secondary, #6b7280);
+}
+
+/* Table */
+.tickets-table-wrapper {
+  overflow-x: auto;
+  background: white;
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 0.5rem;
+}
+
+.tickets-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tickets-table th,
+.tickets-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color, #e5e7eb);
+}
+
+.tickets-table th {
+  background: var(--bg-secondary, #f9fafb);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-secondary, #6b7280);
+}
+
+.tickets-table .checkbox-col {
+  width: 40px;
+  text-align: center;
+}
+
+.tickets-table .ticket-row {
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.tickets-table .ticket-row:hover {
+  background: var(--bg-secondary, #f9fafb);
+}
+
+.tickets-table .ticket-row.sla-breached {
+  background: #fef2f2;
+}
+
+.tickets-table .ticket-row.sla-breached:hover {
+  background: #fee2e2;
+}
+
+.tickets-table .empty-row {
+  text-align: center;
+  color: var(--text-secondary, #6b7280);
+  padding: 2rem;
+}
+
+/* Ticket Info */
+.ticket-info .ticket-number {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #6b7280);
+  font-family: monospace;
+}
+
+.ticket-info .ticket-subject {
+  font-weight: 500;
+  color: var(--text-primary, #1f2937);
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ticket-info .message-count {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #6b7280);
+  margin-left: 0.5rem;
+}
+
+/* Customer Info */
+.customer-info .customer-name {
+  font-weight: 500;
+  color: var(--text-primary, #1f2937);
+}
+
+.customer-info .customer-email {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #6b7280);
+}
+
+/* Category Badge */
+.category-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  background: var(--bg-secondary, #f3f4f6);
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Priority & Status Selects */
+.priority-select,
+.status-select {
+  padding: 0.25rem 1.5rem 0.25rem 0.5rem;
+  border: 2px solid;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: white url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e") right 0.25rem center/1em 1em no-repeat;
+  appearance: none;
+  cursor: pointer;
+}
+
+/* Assigned Name */
+.assigned-name {
+  font-size: 0.875rem;
+  color: var(--text-primary, #1f2937);
+}
+
+.btn-assign {
+  padding: 0.25rem 0.5rem;
+  background: var(--bg-secondary, #f3f4f6);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--primary, #3b82f6);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-assign:hover {
+  background: var(--primary, #3b82f6);
+  color: white;
+}
+
+/* Date Column */
+.date-col {
+  white-space: nowrap;
+}
+
+.date-col .time-ago {
+  font-size: 0.875rem;
+  color: var(--text-secondary, #6b7280);
+}
+
+.sla-badge {
+  display: inline-block;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  font-size: 0.625rem;
+  font-weight: 700;
+  margin-left: 0.5rem;
+}
+
+.sla-badge.danger {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+/* Actions */
+.actions-col {
+  white-space: nowrap;
+}
+
+.btn-icon {
+  padding: 0.25rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.btn-icon:hover {
+  opacity: 1;
+}
+
+/* Pagination */
+.tickets-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.tickets-pagination button {
+  padding: 0.5rem 1rem;
+  background: white;
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tickets-pagination button:hover:not(:disabled) {
+  background: var(--bg-secondary, #f3f4f6);
+}
+
+.tickets-pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.tickets-pagination span {
+  font-size: 0.875rem;
+  color: var(--text-secondary, #6b7280);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .tickets-filters {
+    flex-direction: column;
+  }
+
+  .tickets-filters .filter-group {
+    flex-wrap: wrap;
+  }
+
+  .tickets-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .tickets-table th,
+  .tickets-table td {
+    padding: 0.5rem;
+    font-size: 0.75rem;
+  }
+}
