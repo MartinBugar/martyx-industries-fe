@@ -387,6 +387,31 @@
   margin-bottom: 1rem;
 }
 
+.refunds-error.action-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.refunds-error.action-error button {
+  background: transparent;
+  border: none;
+  font-size: 1.25rem;
+  color: #dc2626;
+  cursor: pointer;
+  padding: 0 0.25rem;
+}
+
+.action-loading {
+  color: var(--text-secondary, #6b7280);
+  font-size: 0.875rem;
+}
+
+.btn-icon:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .refunds-loading {
   padding: 3rem;
   text-align: center;

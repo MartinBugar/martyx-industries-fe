@@ -53,6 +53,8 @@ const AdminRefunds: React.FC = () => {
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [rejectingRefundId, setRejectingRefundId] = useState<number | null>(null);
   const [rejectReason, setRejectReason] = useState('');
+  const [actionLoading, setActionLoading] = useState<number | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   // Load stats
   useEffect(() => {
@@ -118,12 +120,17 @@ const AdminRefunds: React.FC = () => {
 
   const handleApprove = async (e: React.MouseEvent, refundId: number) => {
     e.stopPropagation();
+    setActionLoading(refundId);
+    setActionError(null);
     try {
       await approveRefund(refundId);
       await loadRefunds();
       getRefundStats().then(setStats);
     } catch (err) {
       console.error('Failed to approve refund:', err);
+      setActionError('Nepodarilo sa schváliť refund');
+    } finally {
+      setActionLoading(null);
     }
   };
 
@@ -136,6 +143,8 @@ const AdminRefunds: React.FC = () => {
 
   const handleRejectConfirm = async () => {
     if (!rejectingRefundId || !rejectReason.trim()) return;
+    setActionLoading(rejectingRefundId);
+    setActionError(null);
     try {
       await rejectRefund(rejectingRefundId, rejectReason);
       setShowRejectModal(false);
@@ -144,29 +153,42 @@ const AdminRefunds: React.FC = () => {
       getRefundStats().then(setStats);
     } catch (err) {
       console.error('Failed to reject refund:', err);
+      setActionError('Nepodarilo sa zamietnuť refund');
+    } finally {
+      setActionLoading(null);
     }
   };
 
   const handleExecute = async (e: React.MouseEvent, refundId: number) => {
     e.stopPropagation();
+    setActionLoading(refundId);
+    setActionError(null);
     try {
       await executeRefund(refundId);
       await loadRefunds();
       getRefundStats().then(setStats);
     } catch (err) {
       console.error('Failed to execute refund:', err);
+      setActionError('Nepodarilo sa vykonať refund');
+    } finally {
+      setActionLoading(null);
     }
   };
 
   const handleCancel = async (e: React.MouseEvent, refundId: number) => {
     e.stopPropagation();
     if (!window.confirm('Naozaj chcete zrušiť tento refund?')) return;
+    setActionLoading(refundId);
+    setActionError(null);
     try {
       await cancelRefund(refundId);
       await loadRefunds();
       getRefundStats().then(setStats);
     } catch (err) {
       console.error('Failed to cancel refund:', err);
+      setActionError('Nepodarilo sa zrušiť refund');
+    } finally {
+      setActionLoading(null);
     }
   };
 
@@ -294,6 +316,12 @@ const AdminRefunds: React.FC = () => {
 
         {/* Error */}
         {error && <div className="refunds-error">{error}</div>}
+        {actionError && (
+          <div className="refunds-error action-error">
+            {actionError}
+            <button onClick={() => setActionError(null)}>×</button>
+          </div>
+        )}
 
         {/* Loading */}
         {loading && <div className="refunds-loading">Načítava sa...</div>}
@@ -363,41 +391,51 @@ const AdminRefunds: React.FC = () => {
                           <span className="time-ago">{formatTimeAgo(refund.createdAt)}</span>
                         </td>
                         <td className="actions-cell" onClick={(e) => e.stopPropagation()}>
-                          {canApprove(refund) && (
-                            <button
-                              className="btn-icon btn-success"
-                              onClick={(e) => handleApprove(e, refund.id)}
-                              title="Schváliť"
-                            >
-                              ✓
-                            </button>
-                          )}
-                          {canReject(refund) && (
-                            <button
-                              className="btn-icon btn-danger"
-                              onClick={(e) => handleRejectClick(e, refund.id)}
-                              title="Zamietnuť"
-                            >
-                              ✕
-                            </button>
-                          )}
-                          {canExecute(refund) && (
-                            <button
-                              className="btn-icon btn-primary"
-                              onClick={(e) => handleExecute(e, refund.id)}
-                              title="Vykonať"
-                            >
-                              ▶
-                            </button>
-                          )}
-                          {canCancel(refund) && (
-                            <button
-                              className="btn-icon btn-secondary"
-                              onClick={(e) => handleCancel(e, refund.id)}
-                              title="Zrušiť"
-                            >
-                              ⊘
-                            </button>
+                          {actionLoading === refund.id ? (
+                            <span className="action-loading">...</span>
+                          ) : (
+                            <>
+                              {canApprove(refund) && (
+                                <button
+                                  className="btn-icon btn-success"
+                                  onClick={(e) => handleApprove(e, refund.id)}
+                                  title="Schváliť"
+                                  disabled={actionLoading !== null}
+                                >
+                                  ✓
+                                </button>
+                              )}
+                              {canReject(refund) && (
+                                <button
+                                  className="btn-icon btn-danger"
+                                  onClick={(e) => handleRejectClick(e, refund.id)}
+                                  title="Zamietnuť"
+                                  disabled={actionLoading !== null}
+                                >
+                                  ✕
+                                </button>
+                              )}
+                              {canExecute(refund) && (
+                                <button
+                                  className="btn-icon btn-primary"
+                                  onClick={(e) => handleExecute(e, refund.id)}
+                                  title="Vykonať"
+                                  disabled={actionLoading !== null}
+                                >
+                                  ▶
+                                </button>
+                              )}
+                              {canCancel(refund) && (
+                                <button
+                                  className="btn-icon btn-secondary"
+                                  onClick={(e) => handleCancel(e, refund.id)}
+                                  title="Zrušiť"
+                                  disabled={actionLoading !== null}
+                                >
+                                  ⊘
+                                </button>
+                              )}
+                            </>
                           )}
                         </td>
                       </tr>
