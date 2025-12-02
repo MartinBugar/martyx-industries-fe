@@ -116,6 +116,7 @@ import {
   AdminTaxZoneForm,
   AdminRoles,
   AdminAuditLog,
+  AdminProductImport,
   ConstellationParticles
 } from './utils/lazyImports'
 
@@ -542,6 +543,12 @@ const MainContent = React.memo(() => {
             <Route path="/admin/audit" element={
               <RequireAdmin>
                 <AdminAuditLog />
+              </RequireAdmin>
+            } />
+            {/* Product Import/Export */}
+            <Route path="/admin/products/import" element={
+              <RequireAdmin>
+                <AdminProductImport />
               </RequireAdmin>
             } />
           </Routes>

@@ -95,6 +95,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ title, children, navTabs }) =
       icon: <ShoppingBag size={20} />,
       items: [
         { path: '/admin/products', label: 'Products' },
+        { path: '/admin/products/import', label: 'Import / Export' },
         { path: '/admin/categories', label: 'Categories' },
         { path: '/admin/inventory', label: 'Inventory / Sklad' },
         { path: '/admin/reviews', label: 'Reviews' }
