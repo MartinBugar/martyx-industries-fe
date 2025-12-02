@@ -108,7 +108,8 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ title, children, navTabs }) =
       items: [
         { path: '/admin/orders', label: 'Orders' },
         { path: '/admin/invoices', label: 'Invoices' },
-        { path: '/admin/shipping', label: 'Shipping' }
+        { path: '/admin/shipping', label: 'Shipping' },
+        { path: '/admin/reports', label: 'Reports' }
       ]
     },
     {

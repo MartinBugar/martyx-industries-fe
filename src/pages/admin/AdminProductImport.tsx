@@ -16,7 +16,6 @@ import {
   Clock,
   RefreshCw,
   History,
-  Trash2,
   Play,
   X,
   ChevronDown,
@@ -38,6 +37,8 @@ import {
   getStatusColor,
   getStatusLabel,
   formatTimestamp,
+} from '../../services/adminProductImportService';
+import type {
   ProductImportResult,
   ImportStatus,
   ImportStats,
@@ -45,7 +46,7 @@ import {
 import './AdminProductImport.css';
 
 const AdminProductImport: React.FC = () => {
-  const { t } = useTranslation();
+  useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Tab state
@@ -56,7 +57,7 @@ const AdminProductImport: React.FC = () => {
   const [isDryRun, setIsDryRun] = useState(true);
   const [importing, setImporting] = useState(false);
   const [currentJob, setCurrentJob] = useState<ProductImportResult | null>(null);
-  const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout | null>(null);
+  const [pollingInterval, setPollingInterval] = useState<ReturnType<typeof setTimeout> | null>(null);
 
   // Export state
   const [exporting, setExporting] = useState(false);

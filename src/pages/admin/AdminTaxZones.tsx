@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Edit, Trash2, Globe, MapPin, ChevronRight, Percent, Check, X } from 'lucide-react';
-import { adminTaxService, TaxZone } from '../../services/adminTaxService';
+import { adminTaxService } from '../../services/adminTaxService';
+import type { TaxZone } from '../../services/adminTaxService';
 import { logError } from '../../services/logger';
 import toast from 'react-hot-toast';
 import './AdminTaxZones.css';

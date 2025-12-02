@@ -3,7 +3,7 @@
  * Handles API communication for bulk product import and export operations
  */
 
-import api from './api';
+import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
 
 // === Types ===
 
@@ -65,7 +65,8 @@ export interface ImportStats {
 
 // === API Functions ===
 
-const BASE_URL = '/admin/products/import-export';
+const BASE_URL = `${API_BASE_URL}/api/admin/products/import-export`;
+const jsonHeaders = () => defaultHeaders as HeadersInit;
 
 /**
  * Export products to CSV.
@@ -82,10 +83,15 @@ export const exportToCsv = async (
   params.append('activeOnly', activeOnly.toString());
   params.append('includeVariants', includeVariants.toString());
 
-  const response = await api.get(`${BASE_URL}/export/csv?${params.toString()}`, {
-    responseType: 'blob',
-  });
-  return response.data;
+  const response = await fetch(`${BASE_URL}/export/csv?${params.toString()}`, withLangHeaders({
+    method: 'GET',
+    headers: jsonHeaders()
+  }));
+
+  if (!response.ok) {
+    throw new Error(`Export failed: ${response.statusText}`);
+  }
+  return response.blob();
 };
 
 /**
@@ -103,48 +109,72 @@ export const exportToExcel = async (
   params.append('activeOnly', activeOnly.toString());
   params.append('includeVariants', includeVariants.toString());
 
-  const response = await api.get(`${BASE_URL}/export/excel?${params.toString()}`, {
-    responseType: 'blob',
-  });
-  return response.data;
+  const response = await fetch(`${BASE_URL}/export/excel?${params.toString()}`, withLangHeaders({
+    method: 'GET',
+    headers: jsonHeaders()
+  }));
+
+  if (!response.ok) {
+    throw new Error(`Export failed: ${response.statusText}`);
+  }
+  return response.blob();
 };
 
 /**
  * Export with custom options.
  */
 export const exportWithOptions = async (request: ProductExportRequest): Promise<Blob> => {
-  const response = await api.post(`${BASE_URL}/export`, request, {
-    responseType: 'blob',
-  });
-  return response.data;
+  const response = await fetch(`${BASE_URL}/export`, withLangHeaders({
+    method: 'POST',
+    headers: jsonHeaders(),
+    body: JSON.stringify(request)
+  }));
+
+  if (!response.ok) {
+    throw new Error(`Export failed: ${response.statusText}`);
+  }
+  return response.blob();
 };
 
 /**
  * Download CSV import template.
  */
 export const downloadCsvTemplate = async (): Promise<Blob> => {
-  const response = await api.get(`${BASE_URL}/template/csv`, {
-    responseType: 'blob',
-  });
-  return response.data;
+  const response = await fetch(`${BASE_URL}/template/csv`, withLangHeaders({
+    method: 'GET',
+    headers: jsonHeaders()
+  }));
+
+  if (!response.ok) {
+    throw new Error(`Download failed: ${response.statusText}`);
+  }
+  return response.blob();
 };
 
 /**
  * Download Excel import template.
  */
 export const downloadExcelTemplate = async (): Promise<Blob> => {
-  const response = await api.get(`${BASE_URL}/template/excel`, {
-    responseType: 'blob',
-  });
-  return response.data;
+  const response = await fetch(`${BASE_URL}/template/excel`, withLangHeaders({
+    method: 'GET',
+    headers: jsonHeaders()
+  }));
+
+  if (!response.ok) {
+    throw new Error(`Download failed: ${response.statusText}`);
+  }
+  return response.blob();
 };
 
 /**
  * Get column headers for import/export.
  */
 export const getColumns = async (): Promise<string[]> => {
-  const response = await api.get(`${BASE_URL}/columns`);
-  return response.data;
+  const response = await fetch(`${BASE_URL}/columns`, withLangHeaders({
+    method: 'GET',
+    headers: jsonHeaders()
+  }));
+  return handleResponse(response);
 };
 
 /**
@@ -157,16 +187,11 @@ export const startImport = async (
   const formData = new FormData();
   formData.append('file', file);
 
-  const response = await api.post(
-    `${BASE_URL}/import?dryRun=${dryRun}`,
-    formData,
-    {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    }
-  );
-  return response.data;
+  const response = await fetch(`${BASE_URL}/import?dryRun=${dryRun}`, withLangHeaders({
+    method: 'POST',
+    body: formData
+  }));
+  return handleResponse(response);
 };
 
 /**
@@ -180,16 +205,22 @@ export const validateImport = async (file: File): Promise<ProductImportResult> =
  * Get import job status.
  */
 export const getImportStatus = async (jobId: string): Promise<ProductImportResult> => {
-  const response = await api.get(`${BASE_URL}/import/status/${jobId}`);
-  return response.data;
+  const response = await fetch(`${BASE_URL}/import/status/${jobId}`, withLangHeaders({
+    method: 'GET',
+    headers: jsonHeaders()
+  }));
+  return handleResponse(response);
 };
 
 /**
  * Cancel running import job.
  */
 export const cancelImport = async (jobId: string): Promise<{ jobId: string; cancelled: boolean }> => {
-  const response = await api.post(`${BASE_URL}/import/cancel/${jobId}`);
-  return response.data;
+  const response = await fetch(`${BASE_URL}/import/cancel/${jobId}`, withLangHeaders({
+    method: 'POST',
+    headers: jsonHeaders()
+  }));
+  return handleResponse(response);
 };
 
 /**
@@ -203,24 +234,33 @@ export const getImportHistory = async (
   if (userId) params.append('userId', userId.toString());
   params.append('limit', limit.toString());
 
-  const response = await api.get(`${BASE_URL}/import/history?${params.toString()}`);
-  return response.data;
+  const response = await fetch(`${BASE_URL}/import/history?${params.toString()}`, withLangHeaders({
+    method: 'GET',
+    headers: jsonHeaders()
+  }));
+  return handleResponse(response);
 };
 
 /**
  * Delete old import job records.
  */
 export const cleanupHistory = async (daysOld = 30): Promise<{ deleted: number; olderThanDays: number }> => {
-  const response = await api.delete(`${BASE_URL}/import/history/cleanup?daysOld=${daysOld}`);
-  return response.data;
+  const response = await fetch(`${BASE_URL}/import/history/cleanup?daysOld=${daysOld}`, withLangHeaders({
+    method: 'DELETE',
+    headers: jsonHeaders()
+  }));
+  return handleResponse(response);
 };
 
 /**
  * Get import/export statistics.
  */
 export const getStats = async (): Promise<ImportStats> => {
-  const response = await api.get(`${BASE_URL}/stats`);
-  return response.data;
+  const response = await fetch(`${BASE_URL}/stats`, withLangHeaders({
+    method: 'GET',
+    headers: jsonHeaders()
+  }));
+  return handleResponse(response);
 };
 
 // === Utility Functions ===

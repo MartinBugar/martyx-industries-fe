@@ -1,5 +1,7 @@
-import { API_BASE_URL, defaultHeaders, handleResponse, withAuthHeaders } from './apiUtils';
+import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
 import { logInfo, logError } from './logger';
+
+const jsonHeaders = () => defaultHeaders as HeadersInit;
 
 // ==================== TYPES ====================
 
@@ -77,34 +79,34 @@ class AdminTaxService {
   // ==================== TAX ZONES ====================
 
   async getAllTaxZones(): Promise<TaxZone[]> {
-    const response = await fetch(`${API_BASE_URL}/api/admin/tax/zones`, withAuthHeaders({
+    const response = await fetch(`${API_BASE_URL}/api/admin/tax/zones`, withLangHeaders({
       method: 'GET',
-      headers: defaultHeaders,
+      headers: jsonHeaders(),
     }));
     return handleResponse(response);
   }
 
   async getActiveTaxZones(): Promise<TaxZone[]> {
-    const response = await fetch(`${API_BASE_URL}/api/admin/tax/zones/active`, withAuthHeaders({
+    const response = await fetch(`${API_BASE_URL}/api/admin/tax/zones/active`, withLangHeaders({
       method: 'GET',
-      headers: defaultHeaders,
+      headers: jsonHeaders(),
     }));
     return handleResponse(response);
   }
 
   async getTaxZoneById(id: number): Promise<TaxZone> {
-    const response = await fetch(`${API_BASE_URL}/api/admin/tax/zones/${id}`, withAuthHeaders({
+    const response = await fetch(`${API_BASE_URL}/api/admin/tax/zones/${id}`, withLangHeaders({
       method: 'GET',
-      headers: defaultHeaders,
+      headers: jsonHeaders(),
     }));
     return handleResponse(response);
   }
 
   async createTaxZone(request: TaxZoneRequest): Promise<TaxZone> {
     logInfo('Creating tax zone:', request.name);
-    const response = await fetch(`${API_BASE_URL}/api/admin/tax/zones`, withAuthHeaders({
+    const response = await fetch(`${API_BASE_URL}/api/admin/tax/zones`, withLangHeaders({
       method: 'POST',
-      headers: defaultHeaders,
+      headers: jsonHeaders(),
       body: JSON.stringify(request),
     }));
     return handleResponse(response);
@@ -112,9 +114,9 @@ class AdminTaxService {
 
   async updateTaxZone(id: number, request: TaxZoneRequest): Promise<TaxZone> {
     logInfo('Updating tax zone:', id);
-    const response = await fetch(`${API_BASE_URL}/api/admin/tax/zones/${id}`, withAuthHeaders({
+    const response = await fetch(`${API_BASE_URL}/api/admin/tax/zones/${id}`, withLangHeaders({
       method: 'PUT',
-      headers: defaultHeaders,
+      headers: jsonHeaders(),
       body: JSON.stringify(request),
     }));
     return handleResponse(response);
@@ -122,9 +124,9 @@ class AdminTaxService {
 
   async deleteTaxZone(id: number): Promise<void> {
     logInfo('Deleting tax zone:', id);
-    const response = await fetch(`${API_BASE_URL}/api/admin/tax/zones/${id}`, withAuthHeaders({
+    const response = await fetch(`${API_BASE_URL}/api/admin/tax/zones/${id}`, withLangHeaders({
       method: 'DELETE',
-      headers: defaultHeaders,
+      headers: jsonHeaders(),
     }));
     if (!response.ok) {
       throw new Error(`Failed to delete tax zone: ${response.statusText}`);
@@ -135,9 +137,9 @@ class AdminTaxService {
     try {
       const response = await fetch(
         `${API_BASE_URL}/api/admin/tax/zones/country/${countryCode}`,
-        withAuthHeaders({
+        withLangHeaders({
           method: 'GET',
-          headers: defaultHeaders,
+          headers: jsonHeaders(),
         })
       );
       if (response.status === 404) {
@@ -153,34 +155,34 @@ class AdminTaxService {
   // ==================== TAX RATES ====================
 
   async getAllTaxRates(): Promise<TaxRate[]> {
-    const response = await fetch(`${API_BASE_URL}/api/admin/tax/rates`, withAuthHeaders({
+    const response = await fetch(`${API_BASE_URL}/api/admin/tax/rates`, withLangHeaders({
       method: 'GET',
-      headers: defaultHeaders,
+      headers: jsonHeaders(),
     }));
     return handleResponse(response);
   }
 
   async getTaxRatesForZone(zoneId: number): Promise<TaxRate[]> {
-    const response = await fetch(`${API_BASE_URL}/api/admin/tax/rates/zone/${zoneId}`, withAuthHeaders({
+    const response = await fetch(`${API_BASE_URL}/api/admin/tax/rates/zone/${zoneId}`, withLangHeaders({
       method: 'GET',
-      headers: defaultHeaders,
+      headers: jsonHeaders(),
     }));
     return handleResponse(response);
   }
 
   async getTaxRateById(id: number): Promise<TaxRate> {
-    const response = await fetch(`${API_BASE_URL}/api/admin/tax/rates/${id}`, withAuthHeaders({
+    const response = await fetch(`${API_BASE_URL}/api/admin/tax/rates/${id}`, withLangHeaders({
       method: 'GET',
-      headers: defaultHeaders,
+      headers: jsonHeaders(),
     }));
     return handleResponse(response);
   }
 
   async createTaxRate(request: TaxRateRequest): Promise<TaxRate> {
     logInfo('Creating tax rate:', request.name, `${request.rate}%`);
-    const response = await fetch(`${API_BASE_URL}/api/admin/tax/rates`, withAuthHeaders({
+    const response = await fetch(`${API_BASE_URL}/api/admin/tax/rates`, withLangHeaders({
       method: 'POST',
-      headers: defaultHeaders,
+      headers: jsonHeaders(),
       body: JSON.stringify(request),
     }));
     return handleResponse(response);
@@ -188,9 +190,9 @@ class AdminTaxService {
 
   async updateTaxRate(id: number, request: TaxRateRequest): Promise<TaxRate> {
     logInfo('Updating tax rate:', id);
-    const response = await fetch(`${API_BASE_URL}/api/admin/tax/rates/${id}`, withAuthHeaders({
+    const response = await fetch(`${API_BASE_URL}/api/admin/tax/rates/${id}`, withLangHeaders({
       method: 'PUT',
-      headers: defaultHeaders,
+      headers: jsonHeaders(),
       body: JSON.stringify(request),
     }));
     return handleResponse(response);
@@ -198,9 +200,9 @@ class AdminTaxService {
 
   async deleteTaxRate(id: number): Promise<void> {
     logInfo('Deleting tax rate:', id);
-    const response = await fetch(`${API_BASE_URL}/api/admin/tax/rates/${id}`, withAuthHeaders({
+    const response = await fetch(`${API_BASE_URL}/api/admin/tax/rates/${id}`, withLangHeaders({
       method: 'DELETE',
-      headers: defaultHeaders,
+      headers: jsonHeaders(),
     }));
     if (!response.ok) {
       throw new Error(`Failed to delete tax rate: ${response.statusText}`);
@@ -226,9 +228,9 @@ class AdminTaxService {
 
     const response = await fetch(
       `${API_BASE_URL}/api/admin/tax/calculate?${params}`,
-      withAuthHeaders({
+      withLangHeaders({
         method: 'GET',
-        headers: defaultHeaders,
+        headers: jsonHeaders(),
       })
     );
     return handleResponse(response);
@@ -249,9 +251,9 @@ class AdminTaxService {
 
     const response = await fetch(
       `${API_BASE_URL}/api/admin/tax/reverse-charge/check?${params}`,
-      withAuthHeaders({
+      withLangHeaders({
         method: 'GET',
-        headers: defaultHeaders,
+        headers: jsonHeaders(),
       })
     );
     return handleResponse(response);
@@ -260,17 +262,17 @@ class AdminTaxService {
   // ==================== UTILITIES ====================
 
   async getEuCountries(): Promise<string[]> {
-    const response = await fetch(`${API_BASE_URL}/api/admin/tax/eu-countries`, withAuthHeaders({
+    const response = await fetch(`${API_BASE_URL}/api/admin/tax/eu-countries`, withLangHeaders({
       method: 'GET',
-      headers: defaultHeaders,
+      headers: jsonHeaders(),
     }));
     return handleResponse(response);
   }
 
   async getRateTypes(): Promise<RateTypeOption[]> {
-    const response = await fetch(`${API_BASE_URL}/api/admin/tax/rate-types`, withAuthHeaders({
+    const response = await fetch(`${API_BASE_URL}/api/admin/tax/rate-types`, withLangHeaders({
       method: 'GET',
-      headers: defaultHeaders,
+      headers: jsonHeaders(),
     }));
     return handleResponse(response);
   }

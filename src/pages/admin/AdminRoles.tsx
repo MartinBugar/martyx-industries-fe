@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Edit, Trash2, Shield, Users, ChevronRight, Lock } from 'lucide-react';
-import { adminRbacService, AdminRole } from '../../services/adminRbacService';
+import { adminRbacService } from '../../services/adminRbacService';
+import type { AdminRole } from '../../services/adminRbacService';
 import { logError } from '../../services/logger';
 import toast from 'react-hot-toast';
 import './AdminRoles.css';

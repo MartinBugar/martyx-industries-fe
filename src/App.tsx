@@ -117,6 +117,7 @@ import {
   AdminRoles,
   AdminAuditLog,
   AdminProductImport,
+  AdminReports,
   ConstellationParticles
 } from './utils/lazyImports'
 
@@ -549,6 +550,12 @@ const MainContent = React.memo(() => {
             <Route path="/admin/products/import" element={
               <RequireAdmin>
                 <AdminProductImport />
+              </RequireAdmin>
+            } />
+            {/* Reports */}
+            <Route path="/admin/reports" element={
+              <RequireAdmin>
+                <AdminReports />
               </RequireAdmin>
             } />
           </Routes>

@@ -19,7 +19,6 @@ import {
   Eye,
   X,
   BarChart3,
-  Trash2,
   RefreshCw,
 } from 'lucide-react';
 import {
@@ -32,6 +31,8 @@ import {
   getActionColor,
   formatTimestamp,
   formatRelativeTime,
+} from '../../services/adminAuditService';
+import type {
   AuditLog,
   AuditAction,
   AuditStats,

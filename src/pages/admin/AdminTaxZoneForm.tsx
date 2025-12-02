@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Save, Globe, X } from 'lucide-react';
-import { adminTaxService, TaxZone, TaxZoneRequest } from '../../services/adminTaxService';
+import { adminTaxService } from '../../services/adminTaxService';
+import type { TaxZoneRequest } from '../../services/adminTaxService';
 import { logError } from '../../services/logger';
 import toast from 'react-hot-toast';
 import './AdminTaxZoneForm.css';

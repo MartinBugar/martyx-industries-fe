@@ -1,5 +1,7 @@
-import { API_BASE_URL, defaultHeaders, handleResponse, withAuthHeaders } from './apiUtils';
+import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
 import { logInfo, logError } from './logger';
+
+const jsonHeaders = () => defaultHeaders as HeadersInit;
 
 // ==================== TYPES ====================
 
@@ -83,25 +85,25 @@ class AdminRbacService {
   // ==================== PERMISSIONS ====================
 
   async getAllPermissions(): Promise<Permission[]> {
-    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/permissions`, withAuthHeaders({
+    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/permissions`, withLangHeaders({
       method: 'GET',
-      headers: defaultHeaders,
+      headers: jsonHeaders(),
     }));
     return handleResponse(response);
   }
 
   async getPermissionsByCategory(): Promise<Record<string, Permission[]>> {
-    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/permissions/by-category`, withAuthHeaders({
+    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/permissions/by-category`, withLangHeaders({
       method: 'GET',
-      headers: defaultHeaders,
+      headers: jsonHeaders(),
     }));
     return handleResponse(response);
   }
 
   async getPermissionCategories(): Promise<string[]> {
-    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/permissions/categories`, withAuthHeaders({
+    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/permissions/categories`, withLangHeaders({
       method: 'GET',
-      headers: defaultHeaders,
+      headers: jsonHeaders(),
     }));
     return handleResponse(response);
   }
@@ -109,34 +111,34 @@ class AdminRbacService {
   // ==================== ADMIN ROLES ====================
 
   async getAllRoles(): Promise<AdminRole[]> {
-    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/roles`, withAuthHeaders({
+    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/roles`, withLangHeaders({
       method: 'GET',
-      headers: defaultHeaders,
+      headers: jsonHeaders(),
     }));
     return handleResponse(response);
   }
 
   async getActiveRoles(): Promise<AdminRole[]> {
-    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/roles/active`, withAuthHeaders({
+    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/roles/active`, withLangHeaders({
       method: 'GET',
-      headers: defaultHeaders,
+      headers: jsonHeaders(),
     }));
     return handleResponse(response);
   }
 
   async getRoleById(id: number): Promise<AdminRole> {
-    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/roles/${id}`, withAuthHeaders({
+    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/roles/${id}`, withLangHeaders({
       method: 'GET',
-      headers: defaultHeaders,
+      headers: jsonHeaders(),
     }));
     return handleResponse(response);
   }
 
   async createRole(request: AdminRoleRequest): Promise<AdminRole> {
     logInfo('Creating admin role:', request.code);
-    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/roles`, withAuthHeaders({
+    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/roles`, withLangHeaders({
       method: 'POST',
-      headers: defaultHeaders,
+      headers: jsonHeaders(),
       body: JSON.stringify(request),
     }));
     return handleResponse(response);
@@ -144,9 +146,9 @@ class AdminRbacService {
 
   async updateRole(id: number, request: AdminRoleRequest): Promise<AdminRole> {
     logInfo('Updating admin role:', id);
-    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/roles/${id}`, withAuthHeaders({
+    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/roles/${id}`, withLangHeaders({
       method: 'PUT',
-      headers: defaultHeaders,
+      headers: jsonHeaders(),
       body: JSON.stringify(request),
     }));
     return handleResponse(response);
@@ -154,9 +156,9 @@ class AdminRbacService {
 
   async deleteRole(id: number): Promise<void> {
     logInfo('Deleting admin role:', id);
-    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/roles/${id}`, withAuthHeaders({
+    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/roles/${id}`, withLangHeaders({
       method: 'DELETE',
-      headers: defaultHeaders,
+      headers: jsonHeaders(),
     }));
     if (!response.ok) {
       const error = await response.json().catch(() => ({ message: response.statusText }));
@@ -166,9 +168,9 @@ class AdminRbacService {
 
   async updateRolePermissions(roleId: number, permissionCodes: string[]): Promise<AdminRole> {
     logInfo('Updating role permissions:', roleId, permissionCodes.length);
-    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/roles/${roleId}/permissions`, withAuthHeaders({
+    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/roles/${roleId}/permissions`, withLangHeaders({
       method: 'PUT',
-      headers: defaultHeaders,
+      headers: jsonHeaders(),
       body: JSON.stringify(permissionCodes),
     }));
     return handleResponse(response);
@@ -177,26 +179,26 @@ class AdminRbacService {
   // ==================== STAFF MEMBERS ====================
 
   async getAllStaffMembers(): Promise<StaffMember[]> {
-    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/staff`, withAuthHeaders({
+    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/staff`, withLangHeaders({
       method: 'GET',
-      headers: defaultHeaders,
+      headers: jsonHeaders(),
     }));
     return handleResponse(response);
   }
 
   async getStaffMemberById(id: number): Promise<StaffMember> {
-    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/staff/${id}`, withAuthHeaders({
+    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/staff/${id}`, withLangHeaders({
       method: 'GET',
-      headers: defaultHeaders,
+      headers: jsonHeaders(),
     }));
     return handleResponse(response);
   }
 
   async getStaffMemberByUserId(userId: number): Promise<StaffMember | null> {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/admin/rbac/staff/user/${userId}`, withAuthHeaders({
+      const response = await fetch(`${API_BASE_URL}/api/admin/rbac/staff/user/${userId}`, withLangHeaders({
         method: 'GET',
-        headers: defaultHeaders,
+        headers: jsonHeaders(),
       }));
       if (response.status === 404) return null;
       return handleResponse(response);
@@ -208,9 +210,9 @@ class AdminRbacService {
 
   async createStaffMember(request: StaffMemberRequest): Promise<StaffMember> {
     logInfo('Creating staff member for user:', request.userId);
-    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/staff`, withAuthHeaders({
+    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/staff`, withLangHeaders({
       method: 'POST',
-      headers: defaultHeaders,
+      headers: jsonHeaders(),
       body: JSON.stringify(request),
     }));
     return handleResponse(response);
@@ -218,9 +220,9 @@ class AdminRbacService {
 
   async updateStaffMember(id: number, request: StaffMemberRequest): Promise<StaffMember> {
     logInfo('Updating staff member:', id);
-    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/staff/${id}`, withAuthHeaders({
+    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/staff/${id}`, withLangHeaders({
       method: 'PUT',
-      headers: defaultHeaders,
+      headers: jsonHeaders(),
       body: JSON.stringify(request),
     }));
     return handleResponse(response);
@@ -228,9 +230,9 @@ class AdminRbacService {
 
   async deleteStaffMember(id: number): Promise<void> {
     logInfo('Deleting staff member:', id);
-    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/staff/${id}`, withAuthHeaders({
+    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/staff/${id}`, withLangHeaders({
       method: 'DELETE',
-      headers: defaultHeaders,
+      headers: jsonHeaders(),
     }));
     if (!response.ok) {
       const error = await response.json().catch(() => ({ message: response.statusText }));
@@ -240,26 +242,26 @@ class AdminRbacService {
 
   async updateStaffMemberRoles(staffMemberId: number, roleCodes: string[]): Promise<StaffMember> {
     logInfo('Updating staff member roles:', staffMemberId, roleCodes.length);
-    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/staff/${staffMemberId}/roles`, withAuthHeaders({
+    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/staff/${staffMemberId}/roles`, withLangHeaders({
       method: 'PUT',
-      headers: defaultHeaders,
+      headers: jsonHeaders(),
       body: JSON.stringify(roleCodes),
     }));
     return handleResponse(response);
   }
 
   async searchStaffMembers(query: string): Promise<StaffMember[]> {
-    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/staff/search?q=${encodeURIComponent(query)}`, withAuthHeaders({
+    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/staff/search?q=${encodeURIComponent(query)}`, withLangHeaders({
       method: 'GET',
-      headers: defaultHeaders,
+      headers: jsonHeaders(),
     }));
     return handleResponse(response);
   }
 
   async getAllDepartments(): Promise<string[]> {
-    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/departments`, withAuthHeaders({
+    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/departments`, withLangHeaders({
       method: 'GET',
-      headers: defaultHeaders,
+      headers: jsonHeaders(),
     }));
     return handleResponse(response);
   }
@@ -267,17 +269,17 @@ class AdminRbacService {
   // ==================== PERMISSION CHECKS ====================
 
   async checkPermission(permission: string): Promise<{ userId: number; permission: string; hasPermission: boolean }> {
-    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/check-permission?permission=${encodeURIComponent(permission)}`, withAuthHeaders({
+    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/check-permission?permission=${encodeURIComponent(permission)}`, withLangHeaders({
       method: 'GET',
-      headers: defaultHeaders,
+      headers: jsonHeaders(),
     }));
     return handleResponse(response);
   }
 
   async getMyPermissions(): Promise<string[]> {
-    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/my-permissions`, withAuthHeaders({
+    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/my-permissions`, withLangHeaders({
       method: 'GET',
-      headers: defaultHeaders,
+      headers: jsonHeaders(),
     }));
     return handleResponse(response);
   }
@@ -285,9 +287,9 @@ class AdminRbacService {
   // ==================== STATISTICS ====================
 
   async getStaffCountByRole(): Promise<Record<string, number>> {
-    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/stats/staff-by-role`, withAuthHeaders({
+    const response = await fetch(`${API_BASE_URL}/api/admin/rbac/stats/staff-by-role`, withLangHeaders({
       method: 'GET',
-      headers: defaultHeaders,
+      headers: jsonHeaders(),
     }));
     return handleResponse(response);
   }

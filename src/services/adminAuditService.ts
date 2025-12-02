@@ -3,7 +3,7 @@
  * Handles API communication for audit log management
  */
 
-import api from './api';
+import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
 
 // === Types ===
 
@@ -92,7 +92,8 @@ export interface AuditLogFilters {
 
 // === API Functions ===
 
-const BASE_URL = '/admin/audit';
+const BASE_URL = `${API_BASE_URL}/api/admin/audit`;
+const jsonHeaders = () => defaultHeaders as HeadersInit;
 
 /**
  * Get paginated audit logs with filters.
@@ -110,8 +111,11 @@ export const getAuditLogs = async (filters: AuditLogFilters = {}): Promise<Pagin
   if (filters.page !== undefined) params.append('page', filters.page.toString());
   if (filters.size) params.append('size', filters.size.toString());
 
-  const response = await api.get(`${BASE_URL}?${params.toString()}`);
-  return response.data;
+  const response = await fetch(`${BASE_URL}?${params.toString()}`, withLangHeaders({
+    method: 'GET',
+    headers: jsonHeaders()
+  }));
+  return handleResponse(response);
 };
 
 /**
@@ -122,18 +126,27 @@ export const searchAuditLogs = async (
   page = 0,
   size = 20
 ): Promise<PaginatedResponse<AuditLog>> => {
-  const response = await api.get(`${BASE_URL}/search`, {
-    params: { q: query, page, size },
+  const params = new URLSearchParams({
+    q: query,
+    page: page.toString(),
+    size: size.toString()
   });
-  return response.data;
+  const response = await fetch(`${BASE_URL}/search?${params.toString()}`, withLangHeaders({
+    method: 'GET',
+    headers: jsonHeaders()
+  }));
+  return handleResponse(response);
 };
 
 /**
  * Get audit log by ID.
  */
 export const getAuditLogById = async (id: number): Promise<AuditLog> => {
-  const response = await api.get(`${BASE_URL}/${id}`);
-  return response.data;
+  const response = await fetch(`${BASE_URL}/${id}`, withLangHeaders({
+    method: 'GET',
+    headers: jsonHeaders()
+  }));
+  return handleResponse(response);
 };
 
 /**
@@ -145,10 +158,15 @@ export const getEntityHistory = async (
   page = 0,
   size = 20
 ): Promise<PaginatedResponse<AuditLog>> => {
-  const response = await api.get(`${BASE_URL}/entity/${entityType}/${entityId}`, {
-    params: { page, size },
+  const params = new URLSearchParams({
+    page: page.toString(),
+    size: size.toString()
   });
-  return response.data;
+  const response = await fetch(`${BASE_URL}/entity/${entityType}/${entityId}?${params.toString()}`, withLangHeaders({
+    method: 'GET',
+    headers: jsonHeaders()
+  }));
+  return handleResponse(response);
 };
 
 /**
@@ -159,10 +177,15 @@ export const getUserHistory = async (
   page = 0,
   size = 20
 ): Promise<PaginatedResponse<AuditLog>> => {
-  const response = await api.get(`${BASE_URL}/user/${userId}`, {
-    params: { page, size },
+  const params = new URLSearchParams({
+    page: page.toString(),
+    size: size.toString()
   });
-  return response.data;
+  const response = await fetch(`${BASE_URL}/user/${userId}?${params.toString()}`, withLangHeaders({
+    method: 'GET',
+    headers: jsonHeaders()
+  }));
+  return handleResponse(response);
 };
 
 /**
@@ -172,10 +195,15 @@ export const getFailedOperations = async (
   page = 0,
   size = 20
 ): Promise<PaginatedResponse<AuditLog>> => {
-  const response = await api.get(`${BASE_URL}/failed`, {
-    params: { page, size },
+  const params = new URLSearchParams({
+    page: page.toString(),
+    size: size.toString()
   });
-  return response.data;
+  const response = await fetch(`${BASE_URL}/failed?${params.toString()}`, withLangHeaders({
+    method: 'GET',
+    headers: jsonHeaders()
+  }));
+  return handleResponse(response);
 };
 
 /**
@@ -189,44 +217,57 @@ export const getAuditStats = async (
   if (startDate) params.append('startDate', startDate);
   if (endDate) params.append('endDate', endDate);
 
-  const response = await api.get(`${BASE_URL}/stats?${params.toString()}`);
-  return response.data;
+  const response = await fetch(`${BASE_URL}/stats?${params.toString()}`, withLangHeaders({
+    method: 'GET',
+    headers: jsonHeaders()
+  }));
+  return handleResponse(response);
 };
 
 /**
  * Get available entity types.
  */
 export const getEntityTypes = async (): Promise<string[]> => {
-  const response = await api.get(`${BASE_URL}/entity-types`);
-  return response.data;
+  const response = await fetch(`${BASE_URL}/entity-types`, withLangHeaders({
+    method: 'GET',
+    headers: jsonHeaders()
+  }));
+  return handleResponse(response);
 };
 
 /**
  * Get available action types.
  */
 export const getActions = async (): Promise<ActionOption[]> => {
-  const response = await api.get(`${BASE_URL}/actions`);
-  return response.data;
+  const response = await fetch(`${BASE_URL}/actions`, withLangHeaders({
+    method: 'GET',
+    headers: jsonHeaders()
+  }));
+  return handleResponse(response);
 };
 
 /**
  * Delete old audit logs (retention policy).
  */
 export const deleteOldLogs = async (before: string): Promise<{ deleted: number; before: string }> => {
-  const response = await api.delete(`${BASE_URL}/retention`, {
-    params: { before },
-  });
-  return response.data;
+  const params = new URLSearchParams({ before });
+  const response = await fetch(`${BASE_URL}/retention?${params.toString()}`, withLangHeaders({
+    method: 'DELETE',
+    headers: jsonHeaders()
+  }));
+  return handleResponse(response);
 };
 
 /**
  * Count logs older than specified date.
  */
 export const countOldLogs = async (before: string): Promise<{ count: number; before: string }> => {
-  const response = await api.get(`${BASE_URL}/retention/count`, {
-    params: { before },
-  });
-  return response.data;
+  const params = new URLSearchParams({ before });
+  const response = await fetch(`${BASE_URL}/retention/count?${params.toString()}`, withLangHeaders({
+    method: 'GET',
+    headers: jsonHeaders()
+  }));
+  return handleResponse(response);
 };
 
 // === Utility Functions ===
