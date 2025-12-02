@@ -110,7 +110,8 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ title, children, navTabs }) =
         { path: '/admin/invoices', label: 'Invoices' },
         { path: '/admin/shipping', label: 'Shipping' },
         { path: '/admin/reports', label: 'Reports' },
-        { path: '/admin/funnel', label: 'Funnel Analytics' }
+        { path: '/admin/funnel', label: 'Funnel Analytics' },
+        { path: '/admin/cohorts', label: 'Cohort Analysis' }
       ]
     },
     {
