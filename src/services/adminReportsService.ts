@@ -3,7 +3,7 @@
  * Handles API communication for advanced reporting and analytics
  */
 
-import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
+import api from './api';
 
 // === Types ===
 
@@ -354,8 +354,7 @@ export interface DateRangePresets {
 
 // === API Functions ===
 
-const BASE_URL = `${API_BASE_URL}/api/admin/reports`;
-const jsonHeaders = () => defaultHeaders as HeadersInit;
+const BASE_PATH = '/api/admin/reports';
 
 /**
  * Get sales report for date range.
@@ -367,18 +366,10 @@ export const getSalesReport = async (
   includeComparison = true,
   topProductsLimit = 10
 ): Promise<SalesReportDto> => {
-  const params = new URLSearchParams({
-    startDate,
-    endDate,
-    periodType,
-    includeComparison: includeComparison.toString(),
-    topProductsLimit: topProductsLimit.toString()
+  const response = await api.get(`${BASE_PATH}/sales`, {
+    params: { startDate, endDate, periodType, includeComparison, topProductsLimit }
   });
-  const response = await fetch(`${BASE_URL}/sales?${params.toString()}`, withLangHeaders({
-    method: 'GET',
-    headers: jsonHeaders()
-  }));
-  return handleResponse(response);
+  return response.data;
 };
 
 /**
@@ -388,12 +379,10 @@ export const getSalesSummary = async (
   startDate: string,
   endDate: string
 ): Promise<SalesReportDto> => {
-  const params = new URLSearchParams({ startDate, endDate });
-  const response = await fetch(`${BASE_URL}/sales/summary?${params.toString()}`, withLangHeaders({
-    method: 'GET',
-    headers: jsonHeaders()
-  }));
-  return handleResponse(response);
+  const response = await api.get(`${BASE_PATH}/sales/summary`, {
+    params: { startDate, endDate }
+  });
+  return response.data;
 };
 
 /**
@@ -404,16 +393,10 @@ export const getProductPerformanceReport = async (
   endDate: string,
   limit = 20
 ): Promise<ProductPerformanceReportDto> => {
-  const params = new URLSearchParams({
-    startDate,
-    endDate,
-    limit: limit.toString()
+  const response = await api.get(`${BASE_PATH}/products`, {
+    params: { startDate, endDate, limit }
   });
-  const response = await fetch(`${BASE_URL}/products?${params.toString()}`, withLangHeaders({
-    method: 'GET',
-    headers: jsonHeaders()
-  }));
-  return handleResponse(response);
+  return response.data;
 };
 
 /**
@@ -424,16 +407,10 @@ export const getBestSellers = async (
   endDate: string,
   limit = 10
 ): Promise<ProductPerformance[]> => {
-  const params = new URLSearchParams({
-    startDate,
-    endDate,
-    limit: limit.toString()
+  const response = await api.get(`${BASE_PATH}/products/best-sellers`, {
+    params: { startDate, endDate, limit }
   });
-  const response = await fetch(`${BASE_URL}/products/best-sellers?${params.toString()}`, withLangHeaders({
-    method: 'GET',
-    headers: jsonHeaders()
-  }));
-  return handleResponse(response);
+  return response.data;
 };
 
 /**
@@ -444,16 +421,10 @@ export const getCustomerReport = async (
   endDate: string,
   topCustomersLimit = 10
 ): Promise<CustomerReportDto> => {
-  const params = new URLSearchParams({
-    startDate,
-    endDate,
-    topCustomersLimit: topCustomersLimit.toString()
+  const response = await api.get(`${BASE_PATH}/customers`, {
+    params: { startDate, endDate, topCustomersLimit }
   });
-  const response = await fetch(`${BASE_URL}/customers?${params.toString()}`, withLangHeaders({
-    method: 'GET',
-    headers: jsonHeaders()
-  }));
-  return handleResponse(response);
+  return response.data;
 };
 
 /**
@@ -464,38 +435,26 @@ export const getTopCustomers = async (
   endDate: string,
   limit = 10
 ): Promise<TopCustomer[]> => {
-  const params = new URLSearchParams({
-    startDate,
-    endDate,
-    limit: limit.toString()
+  const response = await api.get(`${BASE_PATH}/customers/top`, {
+    params: { startDate, endDate, limit }
   });
-  const response = await fetch(`${BASE_URL}/customers/top?${params.toString()}`, withLangHeaders({
-    method: 'GET',
-    headers: jsonHeaders()
-  }));
-  return handleResponse(response);
+  return response.data;
 };
 
 /**
  * Get inventory report.
  */
 export const getInventoryReport = async (): Promise<InventoryReportDto> => {
-  const response = await fetch(`${BASE_URL}/inventory`, withLangHeaders({
-    method: 'GET',
-    headers: jsonHeaders()
-  }));
-  return handleResponse(response);
+  const response = await api.get(`${BASE_PATH}/inventory`);
+  return response.data;
 };
 
 /**
  * Get products needing reorder.
  */
 export const getReorderRecommendations = async (): Promise<ReorderRecommendation[]> => {
-  const response = await fetch(`${BASE_URL}/inventory/reorder`, withLangHeaders({
-    method: 'GET',
-    headers: jsonHeaders()
-  }));
-  return handleResponse(response);
+  const response = await api.get(`${BASE_PATH}/inventory/reorder`);
+  return response.data;
 };
 
 /**
@@ -505,12 +464,10 @@ export const getTaxReport = async (
   startDate: string,
   endDate: string
 ): Promise<TaxReportDto> => {
-  const params = new URLSearchParams({ startDate, endDate });
-  const response = await fetch(`${BASE_URL}/tax?${params.toString()}`, withLangHeaders({
-    method: 'GET',
-    headers: jsonHeaders()
-  }));
-  return handleResponse(response);
+  const response = await api.get(`${BASE_PATH}/tax`, {
+    params: { startDate, endDate }
+  });
+  return response.data;
 };
 
 /**
@@ -522,22 +479,11 @@ export const exportToCsv = async (
   endDate: string,
   periodType?: PeriodType
 ): Promise<Blob> => {
-  const params = new URLSearchParams({
-    reportType,
-    startDate,
-    endDate
+  const response = await api.get(`${BASE_PATH}/export/csv`, {
+    params: { reportType, startDate, endDate, periodType },
+    responseType: 'blob'
   });
-  if (periodType) params.append('periodType', periodType);
-
-  const response = await fetch(`${BASE_URL}/export/csv?${params.toString()}`, withLangHeaders({
-    method: 'GET',
-    headers: jsonHeaders()
-  }));
-
-  if (!response.ok) {
-    throw new Error(`Export failed: ${response.statusText}`);
-  }
-  return response.blob();
+  return response.data;
 };
 
 /**
@@ -549,55 +495,35 @@ export const exportToExcel = async (
   endDate: string,
   periodType?: PeriodType
 ): Promise<Blob> => {
-  const params = new URLSearchParams({
-    reportType,
-    startDate,
-    endDate
+  const response = await api.get(`${BASE_PATH}/export/excel`, {
+    params: { reportType, startDate, endDate, periodType },
+    responseType: 'blob'
   });
-  if (periodType) params.append('periodType', periodType);
-
-  const response = await fetch(`${BASE_URL}/export/excel?${params.toString()}`, withLangHeaders({
-    method: 'GET',
-    headers: jsonHeaders()
-  }));
-
-  if (!response.ok) {
-    throw new Error(`Export failed: ${response.statusText}`);
-  }
-  return response.blob();
+  return response.data;
 };
 
 /**
  * Get available report types.
  */
 export const getReportTypes = async (): Promise<string[]> => {
-  const response = await fetch(`${BASE_URL}/types`, withLangHeaders({
-    method: 'GET',
-    headers: jsonHeaders()
-  }));
-  return handleResponse(response);
+  const response = await api.get(`${BASE_PATH}/types`);
+  return response.data;
 };
 
 /**
  * Get available period types.
  */
 export const getPeriodTypes = async (): Promise<string[]> => {
-  const response = await fetch(`${BASE_URL}/periods`, withLangHeaders({
-    method: 'GET',
-    headers: jsonHeaders()
-  }));
-  return handleResponse(response);
+  const response = await api.get(`${BASE_PATH}/periods`);
+  return response.data;
 };
 
 /**
  * Get date range presets.
  */
 export const getDatePresets = async (): Promise<DateRangePresets> => {
-  const response = await fetch(`${BASE_URL}/presets`, withLangHeaders({
-    method: 'GET',
-    headers: jsonHeaders()
-  }));
-  return handleResponse(response);
+  const response = await api.get(`${BASE_PATH}/presets`);
+  return response.data;
 };
 
 // === Utility Functions ===
