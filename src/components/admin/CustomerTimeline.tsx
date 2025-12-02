@@ -13,6 +13,7 @@ import {
   deleteNote,
   getTypeLabel,
   getTypeColor,
+  getTypeIcon,
   formatTimeAgo,
   formatDateTime,
   formatDuration,
@@ -163,26 +164,27 @@ const CustomerTimeline: React.FC<CustomerTimelineProps> = ({
     }
   };
 
-  const getIconForType = (type: CommunicationType) => {
-    switch (type) {
-      case 'ORDER_CONFIRMATION': return '🛒';
-      case 'SHIPPING_NOTIFICATION': return '🚚';
-      case 'DELIVERY_CONFIRMATION': return '📦';
-      case 'MARKETING_EMAIL': return '📣';
-      case 'PROMOTIONAL_EMAIL': return '🏷️';
-      case 'ABANDONED_CART_EMAIL': return '🛒';
-      case 'SUPPORT_TICKET': return '🎫';
-      case 'TICKET_REPLY': return '💬';
-      case 'ADMIN_NOTE': return '📝';
-      case 'PHONE_CALL': return '📞';
-      case 'REFUND_NOTIFICATION': return '💳';
-      case 'PASSWORD_RESET': return '🔑';
-      case 'ACCOUNT_VERIFICATION': return '✅';
-      case 'WELCOME_EMAIL': return '👋';
-      case 'REVIEW_REQUEST': return '⭐';
-      case 'INVOICE_EMAIL': return '📄';
-      default: return '✉️';
-    }
+  // Map icon names from service to emoji for display
+  const getIconEmoji = (type: CommunicationType): string => {
+    const iconMap: Record<string, string> = {
+      'shopping-cart': '🛒',
+      'truck': '🚚',
+      'package': '📦',
+      'megaphone': '📣',
+      'tag': '🏷️',
+      'help-circle': '🎫',
+      'message-circle': '💬',
+      'file-text': '📝',
+      'phone': '📞',
+      'credit-card': '💳',
+      'key': '🔑',
+      'check-circle': '✅',
+      'user-plus': '👋',
+      'star': '⭐',
+      'mail': '✉️'
+    };
+    const iconName = getTypeIcon(type);
+    return iconMap[iconName] || '✉️';
   };
 
   if (loading && communications.length === 0) {
@@ -285,7 +287,7 @@ const CustomerTimeline: React.FC<CustomerTimelineProps> = ({
                 className="timeline-icon"
                 style={{ backgroundColor: getTypeColor(comm.communicationType) }}
               >
-                {getIconForType(comm.communicationType)}
+                {getIconEmoji(comm.communicationType)}
               </div>
               <div className="timeline-content">
                 <div className="timeline-header">
@@ -337,7 +339,7 @@ const CustomerTimeline: React.FC<CustomerTimelineProps> = ({
                         <span>Vytvoril: {comm.createdByName}</span>
                       )}
                     </div>
-                    {comm.communicationType === 'ADMIN_NOTE' && (
+                    {(comm.communicationType === 'ADMIN_NOTE' || comm.communicationType === 'PHONE_CALL') && (
                       <div className="timeline-item-actions">
                         <button
                           className="btn-danger btn-sm"
