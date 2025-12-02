@@ -1,6 +1,6 @@
 /**
  * Admin Cohort Analysis Page
- * Customer cohort retention and LTV analysis dashboard
+ * Analýza zákazníckych kohort - retencia a LTV
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -61,7 +61,7 @@ const AdminCohortAnalysis: React.FC = () => {
       setReport(data);
     } catch (err) {
       console.error('Failed to load cohort report:', err);
-      setError('Failed to load cohort data. Please try again.');
+      setError('Nepodarilo sa načítať dáta kohort. Skúste to znova.');
     } finally {
       setLoading(false);
     }
@@ -80,44 +80,44 @@ const AdminCohortAnalysis: React.FC = () => {
   };
 
   return (
-    <AdminLayout title="Cohort Analysis">
+    <AdminLayout title="Analýza kohort">
       <div className="admin-cohort-analysis">
         {/* Page Header */}
         <div className="page-header">
-          <h1>Customer Cohort Analysis</h1>
+          <h1>Analýza zákazníckych kohort</h1>
           <button className="btn-refresh" onClick={handleRefresh} disabled={loading}>
             <RefreshCw size={16} className={loading ? 'spinning' : ''} />
-            Refresh
+            Obnoviť
           </button>
         </div>
 
         {/* Filters */}
         <div className="filters-bar">
           <div className="filter-group">
-            <label>Cohort Type</label>
+            <label>Typ kohorty</label>
             <select
               value={cohortType}
               onChange={(e) => setCohortType(e.target.value as CohortType)}
             >
-              <option value="ACQUISITION">Acquisition (by signup month)</option>
-              <option value="BEHAVIORAL">Behavioral (by first category)</option>
-              <option value="VALUE">Value (by first order amount)</option>
+              <option value="ACQUISITION">Akvizičná (podľa mesiaca registrácie)</option>
+              <option value="BEHAVIORAL">Behaviorálna (podľa prvej kategórie)</option>
+              <option value="VALUE">Hodnotová (podľa sumy prvej objednávky)</option>
             </select>
           </div>
 
           <div className="filter-group">
-            <label>Granularity</label>
+            <label>Granularita</label>
             <select
               value={granularity}
               onChange={(e) => setGranularity(e.target.value as Granularity)}
             >
-              <option value="MONTHLY">Monthly</option>
-              <option value="QUARTERLY">Quarterly</option>
+              <option value="MONTHLY">Mesačne</option>
+              <option value="QUARTERLY">Štvrťročne</option>
             </select>
           </div>
 
           <div className="filter-group">
-            <label>From</label>
+            <label>Od</label>
             <input
               type="date"
               value={startDate}
@@ -126,7 +126,7 @@ const AdminCohortAnalysis: React.FC = () => {
           </div>
 
           <div className="filter-group">
-            <label>To</label>
+            <label>Do</label>
             <input
               type="date"
               value={endDate}
@@ -135,15 +135,15 @@ const AdminCohortAnalysis: React.FC = () => {
           </div>
 
           <div className="filter-group">
-            <label>Periods</label>
+            <label>Obdobia</label>
             <select
               value={maxPeriods}
               onChange={(e) => setMaxPeriods(parseInt(e.target.value))}
             >
-              <option value="3">3 months</option>
-              <option value="6">6 months</option>
-              <option value="9">9 months</option>
-              <option value="12">12 months</option>
+              <option value="3">3 mesiace</option>
+              <option value="6">6 mesiacov</option>
+              <option value="9">9 mesiacov</option>
+              <option value="12">12 mesiacov</option>
             </select>
           </div>
         </div>
@@ -160,7 +160,7 @@ const AdminCohortAnalysis: React.FC = () => {
         {loading && (
           <div className="loading-state">
             <RefreshCw size={32} className="spinning" />
-            <span>Loading cohort data...</span>
+            <span>Načítavam dáta kohort...</span>
           </div>
         )}
 
@@ -175,8 +175,8 @@ const AdminCohortAnalysis: React.FC = () => {
                 </div>
                 <div className="kpi-content">
                   <div className="kpi-value">{formatNumber(report.totalUsers)}</div>
-                  <div className="kpi-label">Total Customers</div>
-                  <div className="kpi-sub">{report.totalCohorts} cohorts</div>
+                  <div className="kpi-label">Celkom zákazníkov</div>
+                  <div className="kpi-sub">{report.totalCohorts} kohort</div>
                 </div>
               </div>
 
@@ -186,8 +186,8 @@ const AdminCohortAnalysis: React.FC = () => {
                 </div>
                 <div className="kpi-content">
                   <div className="kpi-value">{formatCurrency(report.totalRevenue)}</div>
-                  <div className="kpi-label">Total Revenue</div>
-                  <div className="kpi-sub">Lifetime value</div>
+                  <div className="kpi-label">Celkové tržby</div>
+                  <div className="kpi-sub">Celoživotná hodnota</div>
                 </div>
               </div>
 
@@ -197,8 +197,8 @@ const AdminCohortAnalysis: React.FC = () => {
                 </div>
                 <div className="kpi-content">
                   <div className="kpi-value">{formatCurrency(report.overallAverageLtv)}</div>
-                  <div className="kpi-label">Average LTV</div>
-                  <div className="kpi-sub">Per customer</div>
+                  <div className="kpi-label">Priemerné LTV</div>
+                  <div className="kpi-sub">Na zákazníka</div>
                 </div>
               </div>
 
@@ -208,8 +208,8 @@ const AdminCohortAnalysis: React.FC = () => {
                 </div>
                 <div className="kpi-content">
                   <div className="kpi-value">{formatPercent(report.overallRetentionRate)}</div>
-                  <div className="kpi-label">Avg Retention</div>
-                  <div className="kpi-sub">Overall rate</div>
+                  <div className="kpi-label">Priem. retencia</div>
+                  <div className="kpi-sub">Celková miera</div>
                 </div>
               </div>
             </div>
@@ -221,7 +221,7 @@ const AdminCohortAnalysis: React.FC = () => {
                   <div className="highlight-card best-ltv">
                     <Award size={20} />
                     <div className="highlight-content">
-                      <span className="highlight-label">Highest LTV Cohort</span>
+                      <span className="highlight-label">Najvyššie LTV kohorta</span>
                       <span className="highlight-value">
                         {report.highestLtvCohort.cohortLabel} - {formatCurrency(report.highestLtvCohort.lifetimeValue)}
                       </span>
@@ -233,7 +233,7 @@ const AdminCohortAnalysis: React.FC = () => {
                   <div className="highlight-card best-retention">
                     <TrendingUp size={20} />
                     <div className="highlight-content">
-                      <span className="highlight-label">Best Retention Cohort</span>
+                      <span className="highlight-label">Najlepšia retencia</span>
                       <span className="highlight-value">
                         {report.bestRetentionCohort.cohortLabel}
                       </span>
@@ -245,9 +245,9 @@ const AdminCohortAnalysis: React.FC = () => {
                   <div className="highlight-card largest">
                     <Users size={20} />
                     <div className="highlight-content">
-                      <span className="highlight-label">Largest Cohort</span>
+                      <span className="highlight-label">Najväčšia kohorta</span>
                       <span className="highlight-value">
-                        {report.largestCohort.cohortLabel} - {formatNumber(report.largestCohort.cohortSize)} customers
+                        {report.largestCohort.cohortLabel} - {formatNumber(report.largestCohort.cohortSize)} zákazníkov
                       </span>
                     </div>
                   </div>
@@ -259,20 +259,20 @@ const AdminCohortAnalysis: React.FC = () => {
             <div className="retention-matrix-section">
               <h2>
                 <Calendar size={20} />
-                Retention Matrix
+                Matica retencie
               </h2>
 
               {report.cohorts.length === 0 ? (
                 <div className="empty-state">
-                  <p>No cohort data available for the selected period.</p>
+                  <p>Pre zvolené obdobie nie sú dostupné žiadne dáta kohort.</p>
                 </div>
               ) : (
                 <div className="retention-matrix-wrapper">
                   <table className="retention-matrix">
                     <thead>
                       <tr>
-                        <th className="cohort-header">Cohort</th>
-                        <th className="size-header">Size</th>
+                        <th className="cohort-header">Kohorta</th>
+                        <th className="size-header">Veľkosť</th>
                         {report.periodLabels.map((label, i) => (
                           <th key={i} className="period-header">{label}</th>
                         ))}
@@ -347,7 +347,7 @@ const AdminCohortAnalysis: React.FC = () => {
 
                       {/* Average Row */}
                       <tr className="average-row">
-                        <td className="cohort-label">Average</td>
+                        <td className="cohort-label">Priemer</td>
                         <td className="cohort-size">-</td>
                         {report.periodLabels.map((_, i) => (
                           <td key={i} className="retention-cell average">
@@ -369,7 +369,7 @@ const AdminCohortAnalysis: React.FC = () => {
             <div className="retention-trend-section">
               <h2>
                 <TrendingUp size={20} />
-                Retention Trend by Period
+                Trend retencie podľa obdobia
               </h2>
               <div className="retention-trend-chart">
                 {report.periodLabels.map((label, i) => {
@@ -404,34 +404,34 @@ const CohortDetails: React.FC<{ cohort: CohortDto }> = ({ cohort }) => {
     <div className="cohort-details">
       <div className="detail-cards">
         <div className="detail-card">
-          <span className="detail-label">Total Revenue</span>
+          <span className="detail-label">Celkové tržby</span>
           <span className="detail-value">{formatCurrency(cohort.totalRevenue)}</span>
         </div>
         <div className="detail-card">
-          <span className="detail-label">Avg Orders/User</span>
+          <span className="detail-label">Priem. obj./používateľ</span>
           <span className="detail-value">{cohort.averageOrdersPerUser.toFixed(2)}</span>
         </div>
         <div className="detail-card">
-          <span className="detail-label">Repeat Purchase Rate</span>
+          <span className="detail-label">Miera opak. nákupov</span>
           <span className="detail-value">{formatPercent(cohort.repeatPurchaseRate)}</span>
         </div>
         <div className="detail-card">
-          <span className="detail-label">Cohort Period</span>
+          <span className="detail-label">Obdobie kohorty</span>
           <span className="detail-value">{cohort.cohortPeriod}</span>
         </div>
       </div>
 
       {/* Period Details Table */}
       <div className="period-details">
-        <h4>Period Breakdown</h4>
+        <h4>Rozpad podľa období</h4>
         <table className="period-table">
           <thead>
             <tr>
-              <th>Period</th>
-              <th>Active Users</th>
-              <th>Retention</th>
-              <th>Orders</th>
-              <th>Revenue</th>
+              <th>Obdobie</th>
+              <th>Aktívni užív.</th>
+              <th>Retencia</th>
+              <th>Objednávky</th>
+              <th>Tržby</th>
               <th>AOV</th>
             </tr>
           </thead>
