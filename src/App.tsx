@@ -118,6 +118,7 @@ import {
   AdminAuditLog,
   AdminProductImport,
   AdminReports,
+  AdminFunnelAnalytics,
   AdminTickets,
   AdminTicketDetail,
   AdminRefunds,
@@ -560,6 +561,12 @@ const MainContent = React.memo(() => {
             <Route path="/admin/reports" element={
               <RequireAdmin>
                 <AdminReports />
+              </RequireAdmin>
+            } />
+            {/* Funnel Analytics */}
+            <Route path="/admin/funnel" element={
+              <RequireAdmin>
+                <AdminFunnelAnalytics />
               </RequireAdmin>
             } />
             {/* Tickets */}

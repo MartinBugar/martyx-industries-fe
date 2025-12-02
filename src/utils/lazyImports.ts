@@ -77,6 +77,7 @@ export const AdminRoles = lazy(() => import('../pages/admin/AdminRoles'));
 export const AdminAuditLog = lazy(() => import('../pages/admin/AdminAuditLog'));
 export const AdminProductImport = lazy(() => import('../pages/admin/AdminProductImport'));
 export const AdminReports = lazy(() => import('../pages/admin/AdminReports'));
+export const AdminFunnelAnalytics = lazy(() => import('../pages/admin/AdminFunnelAnalytics'));
 export const AdminTickets = lazy(() => import('../pages/admin/AdminTickets'));
 export const AdminTicketDetail = lazy(() => import('../pages/admin/AdminTicketDetail'));
 export const AdminRefunds = lazy(() => import('../pages/admin/AdminRefunds'));
