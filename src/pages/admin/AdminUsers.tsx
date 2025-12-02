@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Eye, Pencil, Save, X, Search } from 'lucide-react';
@@ -6,7 +6,7 @@ import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
 import './AdminButtonOverrides.css'; // Force button visibility
 import { adminUsersService, type AdminUser, type AdminSignupRequest, type PageResponse } from '../../services/adminUsersService';
-import { Button, Badge, SkeletonTable } from '../../components/ui';
+import { Button, Badge, SkeletonTable, ConfirmDialog, useConfirmDialog } from '../../components/ui';
 import { useDebounce } from '../../hooks/useDebounce';
 
 const initialCreate: AdminSignupRequest & { confirmPassword?: string } = {
@@ -44,7 +44,15 @@ const AdminUsers: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const debouncedSearch = useDebounce(searchQuery, 500);
 
-  const loadUsers = async (pageNum: number = page, search?: string) => {
+  // Accessible confirm dialog
+  const { confirm, dialogProps } = useConfirmDialog({
+    title: t('admin.confirm_delete_user'),
+    variant: 'danger',
+    confirmText: t('common.delete'),
+    cancelText: t('common.cancel'),
+  });
+
+  const loadUsers = useCallback(async (pageNum: number = page, search?: string) => {
     setLoading(true);
     setError(null);
     try {
@@ -187,8 +195,13 @@ const AdminUsers: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id: string | number) => {
-    if (!window.confirm(t('admin.confirm_delete_user'))) return;
+  const handleDelete = useCallback(async (id: string | number, userName: string) => {
+    const confirmed = await confirm({
+      title: t('admin.confirm_delete'),
+      message: t('admin.confirm_delete_user_message', { name: userName }),
+    });
+    if (!confirmed) return;
+
     setError(null);
     try {
       await adminUsersService.deleteUser(id);
@@ -197,7 +210,7 @@ const AdminUsers: React.FC = () => {
       const msg = e instanceof Error ? e.message : t('admin.failed_delete_user');
       setError(msg);
     }
-  };
+  }, [confirm, t]);
 
   const navTabs = (
     <nav className="dashboard-tabs">
@@ -305,7 +318,7 @@ const AdminUsers: React.FC = () => {
                               <Button variant="outline" size="sm" onClick={() => startEdit(user)} title="Edit user">
                                 <Pencil size={14} />
                               </Button>
-                              <Button variant="danger" size="sm" onClick={() => handleDelete(user.id)} title="Delete user">
+                              <Button variant="danger" size="sm" onClick={() => handleDelete(user.id, `${user.firstName} ${user.lastName}`)} title="Delete user">
                                 <X size={14} />
                               </Button>
                             </>
@@ -488,7 +501,7 @@ const AdminUsers: React.FC = () => {
                                   <Button variant="outline" size="sm" onClick={() => startEdit(user)} title="Edit user">
                                     <Pencil size={14} />
                                   </Button>
-                                  <Button variant="danger" size="sm" onClick={() => handleDelete(user.id)} title="Delete user">
+                                  <Button variant="danger" size="sm" onClick={() => handleDelete(user.id, `${user.firstName} ${user.lastName}`)} title="Delete user">
                                     <X size={14} />
                                   </Button>
                                 </>
@@ -603,6 +616,9 @@ const AdminUsers: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Accessible confirmation dialog */}
+      <ConfirmDialog {...dialogProps} />
     </AdminLayout>
   );
 };

@@ -16,3 +16,6 @@ export type { SkeletonProps, SkeletonTableProps, SkeletonCardProps } from './Ske
 
 export { ErrorBoundary, ErrorFallback } from './ErrorBoundary';
 export type { ErrorFallbackProps } from './ErrorBoundary';
+
+export { ConfirmDialog, useConfirmDialog } from './ConfirmDialog';
+export type { ConfirmDialogProps, UseConfirmDialogOptions, UseConfirmDialogReturn } from './ConfirmDialog';
