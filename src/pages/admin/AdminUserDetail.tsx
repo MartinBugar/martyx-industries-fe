@@ -11,8 +11,9 @@ import { adminAbandonedCartService, type ShoppingCartDto } from '../../services/
 import type { UserGalleryDetail } from '../../types/userGallery';
 import { logInfo, logError } from '../../services/logger';
 import toast from 'react-hot-toast';
+import CustomerTimeline from '../../components/admin/CustomerTimeline';
 
-type AdminUserTab = 'details' | 'gallery';
+type AdminUserTab = 'details' | 'gallery' | 'communications';
 
 const AdminUserDetail: React.FC = () => {
   const { t } = useTranslation('common');
@@ -474,6 +475,14 @@ const AdminUserDetail: React.FC = () => {
         aria-label="User gallery and photos"
       >
         User Gallery
+      </button>
+      <button
+        className={`dashboard-tab ${activeTab === 'communications' ? 'active' : ''}`}
+        data-tab="communications"
+        onClick={() => setActiveTab('communications')}
+        aria-label="Customer communication history"
+      >
+        Komunikácia
       </button>
     </nav>
   );
@@ -972,9 +981,19 @@ const AdminUserDetail: React.FC = () => {
               )}
             </div>
           </div>
-        ) : (
+        ) : activeTab === 'gallery' ? (
           renderAdminGalleryContent()
-        )}
+        ) : activeTab === 'communications' ? (
+          <div>
+            <div className="admin-header">
+              <div className="header-actions">
+                <Link to="/admin/users" className="btn btn-outline">← Back to Users</Link>
+              </div>
+            </div>
+            <div className="section-title">Komunikačná história</div>
+            {id && <CustomerTimeline userId={parseInt(id)} />}
+          </div>
+        ) : null}
       </div>
     </AdminLayout>
   );
