@@ -83,6 +83,8 @@ export const AdminTickets = lazy(() => import('../pages/admin/AdminTickets'));
 export const AdminTicketDetail = lazy(() => import('../pages/admin/AdminTicketDetail'));
 export const AdminRefunds = lazy(() => import('../pages/admin/AdminRefunds'));
 export const AdminRefundDetail = lazy(() => import('../pages/admin/AdminRefundDetail'));
+export const AdminBlogPosts = lazy(() => import('../pages/admin/AdminBlogPosts'));
+export const AdminBlogPostForm = lazy(() => import('../pages/admin/AdminBlogPostForm'));
 
 // Components - lazy loaded for non-critical features
 export const EmailConfirmation = lazy(() => import('../components/EmailConfirmation/EmailConfirmation'));

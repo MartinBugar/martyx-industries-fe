@@ -55,6 +55,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ title, children, navTabs }) =
         sales: true,
         marketing: true,
         gamification: true,
+        content: true,
         settings: true
       };
     }
@@ -147,7 +148,10 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ title, children, navTabs }) =
       id: 'content',
       label: 'Content',
       icon: <Image size={20} />,
-      path: '/admin/gallery'
+      items: [
+        { path: '/admin/gallery', label: 'Gallery' },
+        { path: '/admin/blog/posts', label: 'Blog' }
+      ]
     },
     {
       id: 'settings',
