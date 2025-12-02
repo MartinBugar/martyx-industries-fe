@@ -108,7 +108,9 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ title, children, navTabs }) =
       icon: <ShoppingCart size={20} />,
       items: [
         { path: '/admin/orders', label: 'Orders' },
+        { path: '/admin/manual-orders/create', label: 'Manual Order' },
         { path: '/admin/invoices', label: 'Invoices' },
+        { path: '/admin/refunds', label: 'Refunds' },
         { path: '/admin/shipping', label: 'Shipping' },
         { path: '/admin/reports', label: 'Reports' },
         { path: '/admin/funnel', label: 'Funnel Analytics' },
@@ -119,7 +121,10 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ title, children, navTabs }) =
       id: 'customers',
       label: 'Customers',
       icon: <Users size={20} />,
-      path: '/admin/users'
+      items: [
+        { path: '/admin/users', label: 'Users' },
+        { path: '/admin/tickets', label: 'Support Tickets' }
+      ]
     },
     {
       id: 'marketing',
@@ -160,8 +165,13 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ title, children, navTabs }) =
       icon: <Settings size={20} />,
       items: [
         { path: '/admin/settings', label: 'System Settings' },
+        { path: '/admin/home-settings', label: 'Home Page Settings' },
+        { path: '/admin/company-settings', label: 'Company Settings' },
+        { path: '/admin/tax/zones', label: 'Tax Zones' },
         { path: '/admin/email-templates', label: 'Email Templates' },
-        { path: '/admin/account-lockout-config', label: 'Account Lockout Config' },
+        { path: '/admin/rbac/roles', label: 'Roles & Permissions' },
+        { path: '/admin/audit', label: 'Audit Log' },
+        { path: '/admin/account-lockout-config', label: 'Account Lockout' },
         { path: '/admin/cassandra', label: 'Cassandra DB' }
       ]
     }

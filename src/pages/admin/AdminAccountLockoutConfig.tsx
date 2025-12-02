@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import AdminLayout from './AdminLayout';
-import { Button, ConfirmDialog, useConfirmDialog } from '../../components/ui';
+import { Button, Badge, SkeletonTable, ConfirmDialog, useConfirmDialog } from '../../components/ui';
 import { accountLockoutConfigService, type AccountLockoutConfigDto, type LockedUserDto } from '../../services/accountLockoutConfigService';
 import { useErrors } from '../../context/ErrorContext';
-import './AdminCreditUsageConfig.css'; // Reuse existing CSS
+import { Shield, Lock, Unlock, Save, Edit, X, RefreshCw, Clock, AlertTriangle, Info, User } from 'lucide-react';
 import { logInfo, logError } from '../../services/logger';
+import './AdminUsers.css';
+import './AdminButtonOverrides.css';
 
 const AdminAccountLockoutConfig: React.FC = () => {
     const { addError } = useErrors();
@@ -14,12 +16,10 @@ const AdminAccountLockoutConfig: React.FC = () => {
     const [editedValues, setEditedValues] = useState<Partial<AccountLockoutConfigDto>>({});
     const [saving, setSaving] = useState(false);
 
-    // Locked users state
     const [lockedUsers, setLockedUsers] = useState<LockedUserDto[]>([]);
     const [loadingUsers, setLoadingUsers] = useState(false);
     const [showOnlyLocked, setShowOnlyLocked] = useState(false);
 
-    // Confirm dialog
     const { confirm, dialogProps } = useConfirmDialog({
         title: 'Unlock Account',
         message: 'Are you sure you want to unlock this account?',
@@ -36,12 +36,12 @@ const AdminAccountLockoutConfig: React.FC = () => {
     const loadConfig = async () => {
         try {
             setLoading(true);
-            logInfo('🔄 Loading account lockout configuration...');
+            logInfo('Loading account lockout configuration...');
             const data = await accountLockoutConfigService.getAdminConfig();
             setConfig(data);
-            logInfo('✅ Loaded account lockout configuration');
+            logInfo('Loaded account lockout configuration');
         } catch (error) {
-            logError('❌ Failed to load account lockout configuration:', error);
+            logError('Failed to load account lockout configuration:', error);
             addError({
                 message: 'Failed to load account lockout configuration. Please try again.',
                 severity: 'error',
@@ -56,14 +56,12 @@ const AdminAccountLockoutConfig: React.FC = () => {
     const loadLockedUsers = async () => {
         try {
             setLoadingUsers(true);
-            logInfo('🔄 Loading locked users...');
             const data = showOnlyLocked
                 ? await accountLockoutConfigService.getLockedUsers()
                 : await accountLockoutConfigService.getUsersWithFailedAttempts();
             setLockedUsers(data);
-            logInfo(`✅ Loaded ${data.length} users`);
         } catch (error) {
-            logError('❌ Failed to load locked users:', error);
+            logError('Failed to load locked users:', error);
             addError({
                 message: 'Failed to load locked users. Please try again.',
                 severity: 'error',
@@ -93,47 +91,29 @@ const AdminAccountLockoutConfig: React.FC = () => {
 
     const handleSave = async () => {
         if (!config) return;
-
         try {
             setSaving(true);
-            logInfo('💾 Updating account lockout configuration...');
-
             const updateRequest = {
                 maxFailedAttempts: editedValues.maxFailedAttempts ?? config.maxFailedAttempts,
                 lockoutDurationMinutes: editedValues.lockoutDurationMinutes ?? config.lockoutDurationMinutes,
                 attemptResetHours: editedValues.attemptResetHours ?? config.attemptResetHours,
                 lockoutEnabled: editedValues.lockoutEnabled ?? config.lockoutEnabled
             };
-
             const updated = await accountLockoutConfigService.updateConfig(updateRequest);
             setConfig(updated);
             setIsEditing(false);
             setEditedValues({});
-
-            logInfo('✅ Account lockout configuration updated');
-            addError({
-                message: 'Successfully updated account lockout configuration',
-                severity: 'info',
-                recoverable: false
-            });
+            addError({ message: 'Successfully updated account lockout configuration', severity: 'info', recoverable: false });
         } catch (error) {
-            logError('❌ Failed to update account lockout configuration:', error);
-            addError({
-                message: 'Failed to update configuration. Please try again.',
-                severity: 'error',
-                recoverable: true,
-                action: handleSave
-            });
+            logError('Failed to update account lockout configuration:', error);
+            addError({ message: 'Failed to update configuration. Please try again.', severity: 'error', recoverable: true, action: handleSave });
         } finally {
             setSaving(false);
         }
     };
 
     const handleValueChange = (field: keyof AccountLockoutConfigDto, value: number | boolean) => {
-        setEditedValues(prev => ({
-            ...prev,
-            [field]: value
-        }));
+        setEditedValues(prev => ({ ...prev, [field]: value }));
     };
 
     const getEditedValue = (field: keyof AccountLockoutConfigDto, originalValue: number | boolean) => {
@@ -141,78 +121,33 @@ const AdminAccountLockoutConfig: React.FC = () => {
     };
 
     const handleUnlockUser = useCallback(async (userId: number, email: string) => {
-        const confirmed = await confirm({
-            title: 'Unlock Account',
-            message: `Are you sure you want to unlock account ${email}?`,
-            variant: 'info',
-            confirmText: 'Unlock',
-            cancelText: 'Cancel'
-        });
+        const confirmed = await confirm({ title: 'Unlock Account', message: `Are you sure you want to unlock account ${email}?` });
         if (!confirmed) return;
-
         try {
-            logInfo(`🔓 Unlocking user ${email}...`);
             await accountLockoutConfigService.unlockUser(userId);
-            logInfo(`✅ User ${email} unlocked`);
-
-            addError({
-                message: `Successfully unlocked account ${email}`,
-                severity: 'info',
-                recoverable: false
-            });
-
-            // Reload users list
+            addError({ message: `Successfully unlocked account ${email}`, severity: 'info', recoverable: false });
             await loadLockedUsers();
         } catch (error) {
-            logError(`❌ Failed to unlock user ${email}:`, error);
-            addError({
-                message: `Failed to unlock account ${email}. Please try again.`,
-                severity: 'error',
-                recoverable: true
-            });
+            logError(`Failed to unlock user ${email}:`, error);
+            addError({ message: `Failed to unlock account ${email}. Please try again.`, severity: 'error', recoverable: true });
         }
     }, [confirm, addError]);
 
     const handleLockUser = async (userId: number, email: string) => {
-        const durationInput = window.prompt(
-            `How many minutes should ${email} be locked for?`,
-            '30'
-        );
-
-        if (!durationInput) {
-            return; // User cancelled
-        }
-
+        const durationInput = window.prompt(`How many minutes should ${email} be locked for?`, '30');
+        if (!durationInput) return;
         const durationMinutes = parseInt(durationInput, 10);
         if (isNaN(durationMinutes) || durationMinutes <= 0) {
-            addError({
-                message: 'Invalid duration. Please enter a positive number.',
-                severity: 'error',
-                recoverable: false
-            });
+            addError({ message: 'Invalid duration. Please enter a positive number.', severity: 'error', recoverable: false });
             return;
         }
-
         try {
-            logInfo(`🔒 Locking user ${email} for ${durationMinutes} minutes...`);
             await accountLockoutConfigService.lockUser(userId, durationMinutes);
-            logInfo(`✅ User ${email} locked`);
-
-            addError({
-                message: `Successfully locked account ${email} for ${durationMinutes} minutes`,
-                severity: 'info',
-                recoverable: false
-            });
-
-            // Reload users list
+            addError({ message: `Successfully locked account ${email} for ${durationMinutes} minutes`, severity: 'info', recoverable: false });
             await loadLockedUsers();
         } catch (error) {
-            logError(`❌ Failed to lock user ${email}:`, error);
-            addError({
-                message: `Failed to lock account ${email}. Please try again.`,
-                severity: 'error',
-                recoverable: true
-            });
+            logError(`Failed to lock user ${email}:`, error);
+            addError({ message: `Failed to lock account ${email}. Please try again.`, severity: 'error', recoverable: true });
         }
     };
 
@@ -227,317 +162,226 @@ const AdminAccountLockoutConfig: React.FC = () => {
         const now = new Date();
         const diffMs = until.getTime() - now.getTime();
         if (diffMs <= 0) return 'Expired';
-
         const minutes = Math.floor(diffMs / 60000);
         if (minutes < 60) return `${minutes} min`;
-
         const hours = Math.floor(minutes / 60);
         const remainingMinutes = minutes % 60;
         return `${hours}h ${remainingMinutes}m`;
     };
 
-    if (loading) {
-        return (
-            <AdminLayout>
-                <div className="loading-spinner">Loading account lockout configuration...</div>
-            </AdminLayout>
-        );
-    }
-
-    if (!config) {
-        return (
-            <AdminLayout>
-                <div className="error-message">Failed to load configuration</div>
-            </AdminLayout>
-        );
-    }
-
     return (
-        <AdminLayout title="Account Lockout Configuration">
-            <div className="admin-credit-usage-config">
-                {/* Configuration Card */}
-                <div className="config-card">
-                    {isEditing ? (
-                        <>
-                            {/* Edit Mode */}
-                            <div className="config-section">
-                                <h3 className="section-title">🔒 Account Lockout Security Rules</h3>
-                                <div className="config-grid">
-                                    <div className="form-group">
-                                        <label>Maximum Failed Attempts</label>
-                                        <p className="help-text">Number of consecutive failed login attempts before lockout</p>
-                                        <input
-                                            type="number"
-                                            step="1"
-                                            min="1"
-                                            max="10"
-                                            value={getEditedValue('maxFailedAttempts', config.maxFailedAttempts) as number}
-                                            onChange={(e) => handleValueChange('maxFailedAttempts', parseInt(e.target.value) || 1)}
-                                            className="config-input"
-                                        />
-                                        <p className="hint-text">Recommended: 3-5 attempts</p>
-                                    </div>
+        <AdminLayout title="Account Lockout">
+            <div className="admin-page">
+                <div className="admin-container">
+                    {/* Header */}
+                    <div className="admin-card" style={{ marginBottom: '24px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
+                            <div>
+                                <h2 className="section-title" style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <Shield size={24} style={{ color: 'var(--admin-accent)' }} />
+                                    Account Lockout Configuration
+                                </h2>
+                                <p style={{ margin: 0, color: 'var(--admin-secondary)', fontSize: '14px' }}>
+                                    Configure security settings for login attempt limits and account lockouts.
+                                </p>
+                            </div>
+                            {!isEditing && config && (
+                                <Button variant="outline" onClick={handleEdit}>
+                                    <Edit size={16} />
+                                    Edit Settings
+                                </Button>
+                            )}
+                        </div>
+                    </div>
 
-                                    <div className="form-group">
-                                        <label>Lockout Duration (minutes)</label>
-                                        <p className="help-text">How long to lock account after max attempts reached</p>
+                    {/* Configuration Card */}
+                    {loading ? (
+                        <div className="admin-card">
+                            <SkeletonTable rows={4} columns={2} />
+                        </div>
+                    ) : !config ? (
+                        <div className="admin-card" style={{ textAlign: 'center', padding: '40px', color: 'var(--admin-error)' }}>
+                            Failed to load configuration. Please refresh the page.
+                        </div>
+                    ) : isEditing ? (
+                        <div className="admin-card" style={{ marginBottom: '24px' }}>
+                            <h3 className="section-title" style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <Lock size={20} style={{ color: 'var(--admin-accent)' }} />
+                                Security Rules
+                            </h3>
+                            <div className="form-grid">
+                                <div>
+                                    <label className="form-label">Maximum Failed Attempts</label>
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        max="10"
+                                        value={getEditedValue('maxFailedAttempts', config.maxFailedAttempts) as number}
+                                        onChange={(e) => handleValueChange('maxFailedAttempts', parseInt(e.target.value) || 1)}
+                                        className="form-input"
+                                    />
+                                    <p style={{ margin: '6px 0 0', fontSize: '12px', color: 'var(--admin-secondary)' }}>Recommended: 3-5 attempts</p>
+                                </div>
+                                <div>
+                                    <label className="form-label">Lockout Duration (minutes)</label>
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        max="1440"
+                                        value={getEditedValue('lockoutDurationMinutes', config.lockoutDurationMinutes) as number}
+                                        onChange={(e) => handleValueChange('lockoutDurationMinutes', parseInt(e.target.value) || 1)}
+                                        className="form-input"
+                                    />
+                                    <p style={{ margin: '6px 0 0', fontSize: '12px', color: 'var(--admin-secondary)' }}>Recommended: 15-30 minutes</p>
+                                </div>
+                                <div>
+                                    <label className="form-label">Attempt Reset Period (hours)</label>
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        max="24"
+                                        value={getEditedValue('attemptResetHours', config.attemptResetHours) as number}
+                                        onChange={(e) => handleValueChange('attemptResetHours', parseInt(e.target.value) || 1)}
+                                        className="form-input"
+                                    />
+                                    <p style={{ margin: '6px 0 0', fontSize: '12px', color: 'var(--admin-secondary)' }}>Counter resets after this period of inactivity</p>
+                                </div>
+                                <div>
+                                    <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}>
                                         <input
-                                            type="number"
-                                            step="1"
-                                            min="1"
-                                            max="1440"
-                                            value={getEditedValue('lockoutDurationMinutes', config.lockoutDurationMinutes) as number}
-                                            onChange={(e) => handleValueChange('lockoutDurationMinutes', parseInt(e.target.value) || 1)}
-                                            className="config-input"
+                                            type="checkbox"
+                                            checked={getEditedValue('lockoutEnabled', config.lockoutEnabled) as boolean}
+                                            onChange={(e) => handleValueChange('lockoutEnabled', e.target.checked)}
+                                            style={{ width: '20px', height: '20px' }}
                                         />
-                                        <p className="hint-text">
-                                            Current: {getEditedValue('lockoutDurationMinutes', config.lockoutDurationMinutes)} minutes
-                                            (Recommended: 15-30 minutes)
-                                        </p>
-                                    </div>
-
-                                    <div className="form-group">
-                                        <label>Attempt Reset Period (hours)</label>
-                                        <p className="help-text">Hours of inactivity before resetting attempt counter</p>
-                                        <input
-                                            type="number"
-                                            step="1"
-                                            min="1"
-                                            max="24"
-                                            value={getEditedValue('attemptResetHours', config.attemptResetHours) as number}
-                                            onChange={(e) => handleValueChange('attemptResetHours', parseInt(e.target.value) || 1)}
-                                            className="config-input"
-                                        />
-                                        <p className="hint-text">
-                                            After {getEditedValue('attemptResetHours', config.attemptResetHours)} hours of no activity, counter resets to 0
-                                        </p>
-                                    </div>
-
-                                    <div className="form-group checkbox-group">
-                                        <label className="checkbox-label">
-                                            <input
-                                                type="checkbox"
-                                                checked={getEditedValue('lockoutEnabled', config.lockoutEnabled) as boolean}
-                                                onChange={(e) => handleValueChange('lockoutEnabled', e.target.checked)}
-                                            />
-                                            <span>Account lockout system enabled globally</span>
-                                        </label>
-                                        <p className="help-text">Global on/off switch for account lockout security</p>
-                                    </div>
+                                        <span style={{ fontWeight: 600, color: 'var(--admin-primary)' }}>System Enabled</span>
+                                    </label>
+                                    <p style={{ margin: '6px 0 0 32px', fontSize: '12px', color: 'var(--admin-secondary)' }}>Global on/off switch for lockout system</p>
                                 </div>
                             </div>
-
-                            <div className="button-group">
-                                <Button onClick={handleSave} variant="primary" disabled={saving}>
-                                    {saving ? '💾 Saving...' : '💾 Save Changes'}
+                            <div style={{ display: 'flex', gap: '12px', marginTop: '24px', paddingTop: '20px', borderTop: '1px solid var(--admin-border)' }}>
+                                <Button variant="primary" onClick={handleSave} disabled={saving} loading={saving}>
+                                    <Save size={16} />
+                                    Save Changes
                                 </Button>
-                                <Button onClick={handleCancel} variant="secondary" disabled={saving}>
+                                <Button variant="outline" onClick={handleCancel} disabled={saving}>
+                                    <X size={16} />
                                     Cancel
                                 </Button>
                             </div>
-                        </>
+                        </div>
                     ) : (
-                        <>
-                            {/* Display Mode */}
-                            <div className="config-section">
-                                <h3 className="section-title">🔒 Account Lockout Security Rules</h3>
-                                <div className="config-grid">
-                                    <div className="config-item">
-                                        <label>Maximum Failed Attempts</label>
-                                        <div className="config-value">{config.maxFailedAttempts}</div>
-                                        <p className="config-desc">Consecutive failed login attempts before lockout</p>
-                                    </div>
-                                    <div className="config-item">
-                                        <label>Lockout Duration</label>
-                                        <div className="config-value">{config.lockoutDurationMinutes} minutes</div>
-                                        <p className="config-desc">
-                                            Account is locked for this duration after max attempts
-                                        </p>
-                                    </div>
-                                    <div className="config-item">
-                                        <label>Attempt Reset Period</label>
-                                        <div className="config-value">{config.attemptResetHours} hour{config.attemptResetHours > 1 ? 's' : ''}</div>
-                                        <p className="config-desc">
-                                            Counter resets after this period of inactivity
-                                        </p>
-                                    </div>
-                                    <div className="config-item">
-                                        <label>System Status</label>
-                                        <div className={`config-badge ${config.lockoutEnabled ? 'enabled' : 'disabled'}`}>
-                                            {config.lockoutEnabled ? '🟢 Enabled' : '🔴 Disabled'}
-                                        </div>
-                                        <p className="config-desc">Global on/off switch for lockout system</p>
-                                    </div>
+                        <div className="admin-card" style={{ marginBottom: '24px' }}>
+                            <h3 className="section-title" style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <Lock size={20} style={{ color: 'var(--admin-accent)' }} />
+                                Current Configuration
+                            </h3>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
+                                <div style={{ padding: '16px', background: 'var(--admin-bg-secondary)', borderRadius: '10px', border: '1px solid var(--admin-border)' }}>
+                                    <div style={{ fontSize: '12px', color: 'var(--admin-secondary)', marginBottom: '6px' }}>Max Failed Attempts</div>
+                                    <div style={{ fontSize: '28px', fontWeight: 700, color: 'var(--admin-accent)' }}>{config.maxFailedAttempts}</div>
+                                </div>
+                                <div style={{ padding: '16px', background: 'var(--admin-bg-secondary)', borderRadius: '10px', border: '1px solid var(--admin-border)' }}>
+                                    <div style={{ fontSize: '12px', color: 'var(--admin-secondary)', marginBottom: '6px' }}>Lockout Duration</div>
+                                    <div style={{ fontSize: '28px', fontWeight: 700, color: 'var(--admin-accent)' }}>{config.lockoutDurationMinutes}<span style={{ fontSize: '14px', fontWeight: 400 }}> min</span></div>
+                                </div>
+                                <div style={{ padding: '16px', background: 'var(--admin-bg-secondary)', borderRadius: '10px', border: '1px solid var(--admin-border)' }}>
+                                    <div style={{ fontSize: '12px', color: 'var(--admin-secondary)', marginBottom: '6px' }}>Reset Period</div>
+                                    <div style={{ fontSize: '28px', fontWeight: 700, color: 'var(--admin-accent)' }}>{config.attemptResetHours}<span style={{ fontSize: '14px', fontWeight: 400 }}> hr</span></div>
+                                </div>
+                                <div style={{ padding: '16px', background: 'var(--admin-bg-secondary)', borderRadius: '10px', border: '1px solid var(--admin-border)' }}>
+                                    <div style={{ fontSize: '12px', color: 'var(--admin-secondary)', marginBottom: '6px' }}>System Status</div>
+                                    <Badge variant={config.lockoutEnabled ? 'success' : 'warning'} size="sm" style={{ fontSize: '14px', padding: '8px 16px' }}>
+                                        {config.lockoutEnabled ? 'Enabled' : 'Disabled'}
+                                    </Badge>
                                 </div>
                             </div>
-
-                            <div className="button-group">
-                                <Button onClick={handleEdit} variant="secondary">
-                                    ✏️ Edit Configuration
-                                </Button>
-                            </div>
-                        </>
-                    )}
-
-                    {config.updatedBy && (
-                        <div className="config-footer">
-                            Last updated by {config.updatedBy} on{' '}
-                            {config.updatedAt ? new Date(config.updatedAt).toLocaleString() : 'Unknown'}
+                            {config.updatedBy && (
+                                <p style={{ margin: '20px 0 0', fontSize: '12px', color: 'var(--admin-secondary)' }}>
+                                    Last updated by {config.updatedBy} on {config.updatedAt ? new Date(config.updatedAt).toLocaleString() : 'Unknown'}
+                                </p>
+                            )}
                         </div>
                     )}
-                </div>
 
-                {/* Locked Users Section */}
-                <div className="config-card">
-                    <div className="config-section">
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                            <h3 className="section-title">🔒 Users with Failed Login Attempts</h3>
-                            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem' }}>
-                                    <input
-                                        type="checkbox"
-                                        checked={showOnlyLocked}
-                                        onChange={(e) => {
-                                            setShowOnlyLocked(e.target.checked);
-                                            setTimeout(loadLockedUsers, 0);
-                                        }}
-                                    />
+                    {/* Locked Users */}
+                    <div className="admin-card" style={{ marginBottom: '24px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
+                            <h3 className="section-title" style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <User size={20} style={{ color: 'var(--admin-accent)' }} />
+                                Users with Failed Attempts
+                            </h3>
+                            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', color: 'var(--admin-secondary)', cursor: 'pointer' }}>
+                                    <input type="checkbox" checked={showOnlyLocked} onChange={(e) => { setShowOnlyLocked(e.target.checked); setTimeout(loadLockedUsers, 0); }} />
                                     Show only locked
                                 </label>
-                                <Button onClick={loadLockedUsers} variant="secondary" disabled={loadingUsers}>
-                                    {loadingUsers ? '🔄 Loading...' : '🔄 Refresh'}
+                                <Button variant="outline" size="sm" onClick={loadLockedUsers} disabled={loadingUsers}>
+                                    <RefreshCw size={14} className={loadingUsers ? 'spinning' : ''} />
+                                    Refresh
                                 </Button>
                             </div>
                         </div>
 
                         {loadingUsers ? (
-                            <div className="loading-spinner">Loading users...</div>
+                            <SkeletonTable rows={3} columns={5} />
                         ) : lockedUsers.length === 0 ? (
-                            <div style={{ textAlign: 'center', padding: '2rem', color: '#666' }}>
-                                {showOnlyLocked
-                                    ? '✅ No locked users found'
-                                    : '✅ No users with failed login attempts'}
+                            <div style={{ textAlign: 'center', padding: '40px', color: 'var(--admin-secondary)' }}>
+                                <Shield size={40} style={{ marginBottom: '12px', opacity: 0.5 }} />
+                                <p style={{ margin: 0 }}>{showOnlyLocked ? 'No locked users found' : 'No users with failed login attempts'}</p>
                             </div>
                         ) : (
-                            <div style={{ overflowX: 'auto' }}>
-                                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+                            <div className="table-wrapper">
+                                <table className="admin-table">
                                     <thead>
-                                        <tr style={{ background: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>
-                                            <th style={{ padding: '0.75rem', textAlign: 'left' }}>Status</th>
-                                            <th style={{ padding: '0.75rem', textAlign: 'left' }}>Email</th>
-                                            <th style={{ padding: '0.75rem', textAlign: 'left' }}>Name</th>
-                                            <th style={{ padding: '0.75rem', textAlign: 'center' }}>Failed Attempts</th>
-                                            <th style={{ padding: '0.75rem', textAlign: 'left' }}>Last Failed Login</th>
-                                            <th style={{ padding: '0.75rem', textAlign: 'left' }}>Last IP</th>
-                                            <th style={{ padding: '0.75rem', textAlign: 'left' }}>Locked Until</th>
-                                            <th style={{ padding: '0.75rem', textAlign: 'center' }}>Actions</th>
+                                        <tr>
+                                            <th>Status</th>
+                                            <th>Email</th>
+                                            <th>Failed</th>
+                                            <th>Last Attempt</th>
+                                            <th>Locked Until</th>
+                                            <th style={{ width: 140 }}>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {lockedUsers.map((user) => (
-                                            <tr key={user.userId} style={{ borderBottom: '1px solid #dee2e6' }}>
-                                                <td style={{ padding: '0.75rem' }}>
-                                                    {user.currentlyLocked ? (
-                                                        <span style={{
-                                                            background: '#f8d7da',
-                                                            color: '#721c24',
-                                                            padding: '0.25rem 0.5rem',
-                                                            borderRadius: '4px',
-                                                            fontSize: '0.85rem',
-                                                            fontWeight: 600
-                                                        }}>
-                                                            🔒 LOCKED
-                                                        </span>
-                                                    ) : (
-                                                        <span style={{
-                                                            background: '#fff3cd',
-                                                            color: '#856404',
-                                                            padding: '0.25rem 0.5rem',
-                                                            borderRadius: '4px',
-                                                            fontSize: '0.85rem',
-                                                            fontWeight: 600
-                                                        }}>
-                                                            ⚠️ Warning
-                                                        </span>
-                                                    )}
+                                            <tr key={user.userId}>
+                                                <td>
+                                                    <Badge variant={user.currentlyLocked ? 'error' : 'warning'} size="sm">
+                                                        {user.currentlyLocked ? <><Lock size={12} style={{ marginRight: 4 }} /> Locked</> : 'Warning'}
+                                                    </Badge>
                                                 </td>
-                                                <td style={{ padding: '0.75rem', fontWeight: 500 }}>{user.email}</td>
-                                                <td style={{ padding: '0.75rem' }}>
-                                                    {user.firstName && user.lastName
-                                                        ? `${user.firstName} ${user.lastName}`
-                                                        : 'N/A'}
+                                                <td style={{ fontWeight: 500 }}>{user.email}</td>
+                                                <td style={{ fontWeight: 600, color: 'var(--admin-accent)' }}>{user.failedLoginAttempts || 0}</td>
+                                                <td style={{ fontSize: '13px' }}>
+                                                    <div>{formatDate(user.lastFailedLogin)}</div>
+                                                    {user.lastFailedLoginIp && <div style={{ fontSize: '11px', fontFamily: 'monospace', color: 'var(--admin-secondary)' }}>{user.lastFailedLoginIp}</div>}
                                                 </td>
-                                                <td style={{ padding: '0.75rem', textAlign: 'center', fontWeight: 600 }}>
-                                                    {user.failedLoginAttempts || 0}
-                                                </td>
-                                                <td style={{ padding: '0.75rem', fontSize: '0.85rem' }}>
-                                                    {formatDate(user.lastFailedLogin)}
-                                                </td>
-                                                <td style={{ padding: '0.75rem', fontSize: '0.85rem', fontFamily: 'monospace' }}>
-                                                    {user.lastFailedLoginIp || 'N/A'}
-                                                </td>
-                                                <td style={{ padding: '0.75rem' }}>
+                                                <td>
                                                     {user.currentlyLocked ? (
                                                         <div>
-                                                            <div style={{ fontSize: '0.85rem' }}>{formatDate(user.lockedUntil)}</div>
-                                                            <div style={{ fontSize: '0.75rem', color: '#dc3545', fontWeight: 600 }}>
-                                                                ({formatTimeRemaining(user.lockedUntil)} remaining)
-                                                            </div>
+                                                            <div style={{ fontSize: '13px' }}>{formatDate(user.lockedUntil)}</div>
+                                                            <div style={{ fontSize: '12px', color: 'var(--admin-error)', fontWeight: 600 }}>({formatTimeRemaining(user.lockedUntil)})</div>
                                                         </div>
                                                     ) : (
-                                                        <span style={{ color: '#666' }}>Not locked</span>
+                                                        <span style={{ color: 'var(--admin-secondary)' }}>-</span>
                                                     )}
                                                 </td>
-                                                <td style={{ padding: '0.75rem', textAlign: 'center' }}>
-                                                    <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
+                                                <td>
+                                                    <div className="action-buttons">
                                                         {user.currentlyLocked ? (
-                                                            <button
-                                                                onClick={() => handleUnlockUser(user.userId, user.email)}
-                                                                style={{
-                                                                    padding: '0.4rem 0.8rem',
-                                                                    background: '#28a745',
-                                                                    color: 'white',
-                                                                    border: 'none',
-                                                                    borderRadius: '4px',
-                                                                    cursor: 'pointer',
-                                                                    fontSize: '0.85rem',
-                                                                    fontWeight: 500
-                                                                }}
-                                                            >
-                                                                🔓 Unlock
-                                                            </button>
+                                                            <Button variant="primary" size="sm" onClick={() => handleUnlockUser(user.userId, user.email)}>
+                                                                <Unlock size={14} />
+                                                                Unlock
+                                                            </Button>
                                                         ) : (
                                                             <>
-                                                                <button
-                                                                    onClick={() => handleLockUser(user.userId, user.email)}
-                                                                    style={{
-                                                                        padding: '0.4rem 0.8rem',
-                                                                        background: '#dc3545',
-                                                                        color: 'white',
-                                                                        border: 'none',
-                                                                        borderRadius: '4px',
-                                                                        cursor: 'pointer',
-                                                                        fontSize: '0.85rem',
-                                                                        fontWeight: 500
-                                                                    }}
-                                                                >
-                                                                    🔒 Lock
-                                                                </button>
-                                                                <button
-                                                                    onClick={() => handleUnlockUser(user.userId, user.email)}
-                                                                    style={{
-                                                                        padding: '0.4rem 0.8rem',
-                                                                        background: '#6c757d',
-                                                                        color: 'white',
-                                                                        border: 'none',
-                                                                        borderRadius: '4px',
-                                                                        cursor: 'pointer',
-                                                                        fontSize: '0.85rem',
-                                                                        fontWeight: 500
-                                                                    }}
-                                                                >
+                                                                <Button variant="danger" size="sm" onClick={() => handleLockUser(user.userId, user.email)}>
+                                                                    <Lock size={14} />
+                                                                </Button>
+                                                                <Button variant="outline" size="sm" onClick={() => handleUnlockUser(user.userId, user.email)}>
                                                                     Reset
-                                                                </button>
+                                                                </Button>
                                                             </>
                                                         )}
                                                     </div>
@@ -549,34 +393,36 @@ const AdminAccountLockoutConfig: React.FC = () => {
                             </div>
                         )}
                     </div>
-                </div>
 
-                {/* Info Section */}
-                <div className="info-section">
-                    <h3>💡 How Account Lockout Works</h3>
-                    <ul>
-                        <li><strong>Failed Attempts:</strong> User fails login {config.maxFailedAttempts} times → account locked for {config.lockoutDurationMinutes} minutes</li>
-                        <li><strong>Auto-Unlock:</strong> After {config.lockoutDurationMinutes} minutes, lockout expires automatically</li>
-                        <li><strong>Counter Reset:</strong> If user fails {config.maxFailedAttempts - 1} times then waits {config.attemptResetHours} hour(s) → counter resets to 0</li>
-                        <li><strong>Security:</strong> Generic error messages prevent account enumeration attacks</li>
-                        <li><strong>IP Tracking:</strong> Failed attempts tracked by IP for audit trail</li>
-                    </ul>
-
-                    <div className="warning-box">
-                        <strong>⚠️ Important:</strong> Changes take effect immediately for all login attempts.
-                        Existing locked accounts will use the old lockout duration until their lock expires.
+                    {/* Info */}
+                    <div className="admin-card" style={{ background: 'var(--admin-info-bg)', borderColor: 'var(--admin-info)' }}>
+                        <h3 style={{ margin: '0 0 16px', fontSize: '16px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <Info size={18} style={{ color: 'var(--admin-info)' }} />
+                            How Account Lockout Works
+                        </h3>
+                        <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '14px', lineHeight: 1.8 }}>
+                            {config && (
+                                <>
+                                    <li><strong>Failed Attempts:</strong> User fails login {config.maxFailedAttempts} times → account locked for {config.lockoutDurationMinutes} minutes</li>
+                                    <li><strong>Auto-Unlock:</strong> After {config.lockoutDurationMinutes} minutes, lockout expires automatically</li>
+                                    <li><strong>Counter Reset:</strong> If user waits {config.attemptResetHours} hour(s) → counter resets to 0</li>
+                                </>
+                            )}
+                            <li><strong>Security:</strong> Generic error messages prevent account enumeration attacks</li>
+                        </ul>
                     </div>
 
-                    <h3 style={{marginTop: '2rem'}}>🎯 Example Scenarios</h3>
-                    <ul>
-                        <li><strong>Scenario 1:</strong> User fails login at 10:00, 10:01, 10:02 → Locked until 10:{15 + config.lockoutDurationMinutes}</li>
-                        <li><strong>Scenario 2:</strong> User fails login at 10:00, 10:01, then waits → Counter resets at {11 + config.attemptResetHours}:00</li>
-                        <li><strong>Scenario 3:</strong> Admin can manually unlock accounts via user management</li>
-                    </ul>
+                    {/* Warning */}
+                    <div className="admin-card" style={{ background: 'var(--admin-warning-bg)', borderColor: 'var(--admin-warning)', marginTop: '20px' }}>
+                        <p style={{ margin: 0, fontSize: '14px', color: '#92400E', display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                            <AlertTriangle size={18} style={{ flexShrink: 0, marginTop: '2px' }} />
+                            <span><strong>Important:</strong> Changes take effect immediately. Existing locked accounts will use the old lockout duration until their lock expires.</span>
+                        </p>
+                    </div>
                 </div>
-
-                <ConfirmDialog {...dialogProps} />
             </div>
+
+            <ConfirmDialog {...dialogProps} />
         </AdminLayout>
     );
 };

@@ -2,7 +2,10 @@ import React, { useEffect, useState } from 'react';
 import AdminLayout from './AdminLayout';
 import { adminCompanySettingsService } from '../../services/adminCompanySettingsService';
 import type { CompanySettingsDto } from '../../types/invoice';
-import './AdminCompanySettings.css';
+import { Button, SkeletonTable } from '../../components/ui';
+import { Save, Building2, MapPin, Phone, Landmark, FileText, Scale } from 'lucide-react';
+import './AdminUsers.css';
+import './AdminButtonOverrides.css';
 import { logError } from '../../services/logger';
 
 const AdminCompanySettings: React.FC = () => {
@@ -47,13 +50,11 @@ const AdminCompanySettings: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-
       const data = await adminCompanySettingsService.getActiveSettings();
       setSettings(data);
       setHasExistingSettings(true);
     } catch (err) {
       logError('Failed to load company settings:', err);
-      // If no settings exist yet, keep the defaults
       setHasExistingSettings(false);
     } finally {
       setLoading(false);
@@ -66,7 +67,6 @@ const AdminCompanySettings: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     try {
       setSaving(true);
       setError(null);
@@ -81,7 +81,7 @@ const AdminCompanySettings: React.FC = () => {
 
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
-      await loadSettings(); // Reload to get updated data
+      await loadSettings();
     } catch (err: unknown) {
       logError('Failed to save company settings:', err);
       const message = err instanceof Error ? err.message : 'Failed to save settings. Please try again.';
@@ -91,362 +91,338 @@ const AdminCompanySettings: React.FC = () => {
     }
   };
 
+  const FormSection: React.FC<{ title: string; icon: React.ReactNode; children: React.ReactNode }> = ({ title, icon, children }) => (
+    <div className="admin-card" style={{ marginBottom: '20px' }}>
+      <h3 className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
+        {icon}
+        {title}
+      </h3>
+      <div className="form-grid">
+        {children}
+      </div>
+    </div>
+  );
+
   return (
     <AdminLayout title="Company Settings">
-      <div className="admin-company-settings">
-        <div className="settings-header">
-          <div>
-            <h2>Company Settings</h2>
-            <p className="settings-description">
-              Configure your company information for invoices and legal compliance (Slovak law).
-            </p>
+      <div className="admin-page">
+        <div className="admin-container">
+          {/* Header */}
+          <div className="admin-card" style={{ marginBottom: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
+              <div>
+                <h2 className="section-title" style={{ marginBottom: '8px' }}>Company Settings</h2>
+                <p style={{ margin: 0, color: 'var(--admin-secondary)', fontSize: '14px' }}>
+                  Configure your company information for invoices and legal compliance (Slovak law).
+                </p>
+              </div>
+              <Button
+                variant="primary"
+                onClick={handleSubmit}
+                disabled={saving}
+                loading={saving}
+              >
+                <Save size={16} />
+                {hasExistingSettings ? 'Update Settings' : 'Create Settings'}
+              </Button>
+            </div>
           </div>
-        </div>
 
-        {error && (
-          <div className="alert alert-error">
-            <span className="alert-icon">⚠️</span>
-            <span>{error}</span>
-            <button onClick={() => setError(null)} className="alert-close">×</button>
-          </div>
-        )}
+          {/* Alerts */}
+          {error && (
+            <div className="alert alert-error" style={{ marginBottom: '20px' }}>
+              <span>⚠️ {error}</span>
+              <button onClick={() => setError(null)} style={{ marginLeft: 'auto', background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', fontSize: '18px' }}>×</button>
+            </div>
+          )}
 
-        {success && (
-          <div className="alert alert-success">
-            <span className="alert-icon">✓</span>
-            <span>Company settings saved successfully!</span>
-          </div>
-        )}
+          {success && (
+            <div className="alert" style={{ background: 'var(--admin-success-bg)', color: '#065F46', border: '1px solid var(--admin-success)', marginBottom: '20px' }}>
+              ✓ Company settings saved successfully!
+            </div>
+          )}
 
-        {loading ? (
-          <div className="settings-loading">
-            <div className="spinner"></div>
-            <p>Loading settings...</p>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="settings-form">
-            {/* Company Legal Information */}
-            <div className="form-section">
-              <h3 className="section-title">Company Legal Information</h3>
-              <div className="form-grid">
-                <div className="form-group">
-                  <label htmlFor="company_name" className="required">Company Name</label>
+          {/* Content */}
+          {loading ? (
+            <div className="admin-card">
+              <SkeletonTable rows={6} columns={2} />
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit}>
+              {/* Company Legal Information */}
+              <FormSection title="Company Legal Information" icon={<Building2 size={20} style={{ color: 'var(--admin-accent)' }} />}>
+                <div>
+                  <label className="form-label">Company Name *</label>
                   <input
-                    id="company_name"
                     type="text"
                     value={settings.company_name || ''}
                     onChange={(e) => handleInputChange('company_name', e.target.value)}
                     required
-                    className="form-control"
+                    className="form-input"
                   />
                 </div>
 
-                <div className="form-group">
-                  <label htmlFor="company_id" className="required">IČO (Company ID)</label>
+                <div>
+                  <label className="form-label">IČO (Company ID) *</label>
                   <input
-                    id="company_id"
                     type="text"
                     value={settings.company_id || ''}
                     onChange={(e) => handleInputChange('company_id', e.target.value)}
                     required
-                    className="form-control"
+                    className="form-input"
                     placeholder="12345678"
                   />
                 </div>
 
-                <div className="form-group">
-                  <label htmlFor="tax_id" className="required">DIČ (Tax ID)</label>
+                <div>
+                  <label className="form-label">DIČ (Tax ID) *</label>
                   <input
-                    id="tax_id"
                     type="text"
                     value={settings.tax_id || ''}
                     onChange={(e) => handleInputChange('tax_id', e.target.value)}
                     required
-                    className="form-control"
+                    className="form-input"
                     placeholder="2023456789"
                   />
                 </div>
 
-                <div className="form-group">
-                  <label htmlFor="vat_id">IČ DPH (VAT ID)</label>
+                <div>
+                  <label className="form-label">IČ DPH (VAT ID)</label>
                   <input
-                    id="vat_id"
                     type="text"
                     value={settings.vat_id || ''}
                     onChange={(e) => handleInputChange('vat_id', e.target.value)}
-                    className="form-control"
+                    className="form-input"
                     placeholder="SK2023456789"
                   />
                 </div>
 
-                <div className="form-group checkbox-group">
-                  <label>
+                <div>
+                  <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <input
                       type="checkbox"
                       checked={settings.is_vat_payer || false}
                       onChange={(e) => handleInputChange('is_vat_payer', e.target.checked)}
+                      style={{ width: '18px', height: '18px' }}
                     />
-                    <span>VAT Payer</span>
+                    VAT Payer
                   </label>
                 </div>
 
-                <div className="form-group">
-                  <label htmlFor="vat_registration_paragraph">VAT Registration Paragraph</label>
+                <div>
+                  <label className="form-label">VAT Registration Paragraph</label>
                   <input
-                    id="vat_registration_paragraph"
                     type="text"
                     value={settings.vat_registration_paragraph || ''}
                     onChange={(e) => handleInputChange('vat_registration_paragraph', e.target.value)}
-                    className="form-control"
+                    className="form-input"
                     placeholder="§4"
                   />
                 </div>
-              </div>
-            </div>
+              </FormSection>
 
-            {/* Address */}
-            <div className="form-section">
-              <h3 className="section-title">Address</h3>
-              <div className="form-grid">
-                <div className="form-group">
-                  <label htmlFor="street" className="required">Street</label>
+              {/* Address */}
+              <FormSection title="Address" icon={<MapPin size={20} style={{ color: 'var(--admin-accent)' }} />}>
+                <div>
+                  <label className="form-label">Street *</label>
                   <input
-                    id="street"
                     type="text"
                     value={settings.street || ''}
                     onChange={(e) => handleInputChange('street', e.target.value)}
                     required
-                    className="form-control"
+                    className="form-input"
                   />
                 </div>
 
-                <div className="form-group">
-                  <label htmlFor="city" className="required">City</label>
+                <div>
+                  <label className="form-label">City *</label>
                   <input
-                    id="city"
                     type="text"
                     value={settings.city || ''}
                     onChange={(e) => handleInputChange('city', e.target.value)}
                     required
-                    className="form-control"
+                    className="form-input"
                   />
                 </div>
 
-                <div className="form-group">
-                  <label htmlFor="postal_code" className="required">Postal Code</label>
+                <div>
+                  <label className="form-label">Postal Code *</label>
                   <input
-                    id="postal_code"
                     type="text"
                     value={settings.postal_code || ''}
                     onChange={(e) => handleInputChange('postal_code', e.target.value)}
                     required
-                    className="form-control"
+                    className="form-input"
                   />
                 </div>
 
-                <div className="form-group">
-                  <label htmlFor="country">Country</label>
+                <div>
+                  <label className="form-label">Country</label>
                   <input
-                    id="country"
                     type="text"
                     value={settings.country || ''}
                     onChange={(e) => handleInputChange('country', e.target.value)}
-                    className="form-control"
+                    className="form-input"
                   />
                 </div>
 
-                <div className="form-group">
-                  <label htmlFor="country_code">Country Code</label>
+                <div>
+                  <label className="form-label">Country Code</label>
                   <input
-                    id="country_code"
                     type="text"
                     value={settings.country_code || ''}
                     onChange={(e) => handleInputChange('country_code', e.target.value)}
-                    className="form-control"
+                    className="form-input"
                     maxLength={2}
                   />
                 </div>
-              </div>
-            </div>
+              </FormSection>
 
-            {/* Contact Information */}
-            <div className="form-section">
-              <h3 className="section-title">Contact Information</h3>
-              <div className="form-grid">
-                <div className="form-group">
-                  <label htmlFor="email" className="required">Email</label>
+              {/* Contact Information */}
+              <FormSection title="Contact Information" icon={<Phone size={20} style={{ color: 'var(--admin-accent)' }} />}>
+                <div>
+                  <label className="form-label">Email *</label>
                   <input
-                    id="email"
                     type="email"
                     value={settings.email || ''}
                     onChange={(e) => handleInputChange('email', e.target.value)}
                     required
-                    className="form-control"
+                    className="form-input"
                   />
                 </div>
 
-                <div className="form-group">
-                  <label htmlFor="phone">Phone</label>
+                <div>
+                  <label className="form-label">Phone</label>
                   <input
-                    id="phone"
                     type="tel"
                     value={settings.phone || ''}
                     onChange={(e) => handleInputChange('phone', e.target.value)}
-                    className="form-control"
+                    className="form-input"
                   />
                 </div>
 
-                <div className="form-group">
-                  <label htmlFor="website">Website</label>
+                <div>
+                  <label className="form-label">Website</label>
                   <input
-                    id="website"
                     type="url"
                     value={settings.website || ''}
                     onChange={(e) => handleInputChange('website', e.target.value)}
-                    className="form-control"
+                    className="form-input"
                   />
                 </div>
-              </div>
-            </div>
+              </FormSection>
 
-            {/* Bank Details */}
-            <div className="form-section">
-              <h3 className="section-title">Bank Details</h3>
-              <div className="form-grid">
-                <div className="form-group">
-                  <label htmlFor="bank_name">Bank Name</label>
+              {/* Bank Details */}
+              <FormSection title="Bank Details" icon={<Landmark size={20} style={{ color: 'var(--admin-accent)' }} />}>
+                <div>
+                  <label className="form-label">Bank Name</label>
                   <input
-                    id="bank_name"
                     type="text"
                     value={settings.bank_name || ''}
                     onChange={(e) => handleInputChange('bank_name', e.target.value)}
-                    className="form-control"
+                    className="form-input"
                   />
                 </div>
 
-                <div className="form-group">
-                  <label htmlFor="bank_account">Bank Account</label>
+                <div>
+                  <label className="form-label">Bank Account</label>
                   <input
-                    id="bank_account"
                     type="text"
                     value={settings.bank_account || ''}
                     onChange={(e) => handleInputChange('bank_account', e.target.value)}
-                    className="form-control"
+                    className="form-input"
                     placeholder="1234567890/1100"
                   />
                 </div>
 
-                <div className="form-group">
-                  <label htmlFor="iban">IBAN</label>
+                <div>
+                  <label className="form-label">IBAN</label>
                   <input
-                    id="iban"
                     type="text"
                     value={settings.iban || ''}
                     onChange={(e) => handleInputChange('iban', e.target.value)}
-                    className="form-control"
+                    className="form-input"
                     placeholder="SK12 1100 0000 0012 3456 7890"
                   />
                 </div>
 
-                <div className="form-group">
-                  <label htmlFor="swift_bic">SWIFT/BIC</label>
+                <div>
+                  <label className="form-label">SWIFT/BIC</label>
                   <input
-                    id="swift_bic"
                     type="text"
                     value={settings.swift_bic || ''}
                     onChange={(e) => handleInputChange('swift_bic', e.target.value)}
-                    className="form-control"
+                    className="form-input"
                     placeholder="TATRSKBX"
                   />
                 </div>
-              </div>
-            </div>
+              </FormSection>
 
-            {/* Registration Details */}
-            <div className="form-section">
-              <h3 className="section-title">Registration Details</h3>
-              <div className="form-grid">
-                <div className="form-group">
-                  <label htmlFor="registration_court">Registration Court</label>
+              {/* Registration Details */}
+              <FormSection title="Registration Details" icon={<Scale size={20} style={{ color: 'var(--admin-accent)' }} />}>
+                <div>
+                  <label className="form-label">Registration Court</label>
                   <input
-                    id="registration_court"
                     type="text"
                     value={settings.registration_court || ''}
                     onChange={(e) => handleInputChange('registration_court', e.target.value)}
-                    className="form-control"
+                    className="form-input"
                   />
                 </div>
 
-                <div className="form-group">
-                  <label htmlFor="registration_number">Registration Number</label>
+                <div>
+                  <label className="form-label">Registration Number</label>
                   <input
-                    id="registration_number"
                     type="text"
                     value={settings.registration_number || ''}
                     onChange={(e) => handleInputChange('registration_number', e.target.value)}
-                    className="form-control"
+                    className="form-input"
                   />
                 </div>
-              </div>
-            </div>
+              </FormSection>
 
-            {/* Invoice Settings */}
-            <div className="form-section">
-              <h3 className="section-title">Invoice Settings</h3>
-              <div className="form-grid">
-                <div className="form-group">
-                  <label htmlFor="invoice_prefix">Invoice Prefix</label>
+              {/* Invoice Settings */}
+              <FormSection title="Invoice Settings" icon={<FileText size={20} style={{ color: 'var(--admin-accent)' }} />}>
+                <div>
+                  <label className="form-label">Invoice Prefix</label>
                   <input
-                    id="invoice_prefix"
                     type="text"
                     value={settings.invoice_prefix || ''}
                     onChange={(e) => handleInputChange('invoice_prefix', e.target.value)}
-                    className="form-control"
+                    className="form-input"
                     placeholder="FAK-"
                   />
                 </div>
 
-                <div className="form-group full-width">
-                  <label htmlFor="invoice_footer_text">Invoice Footer Text</label>
+                <div style={{ gridColumn: '1 / -1' }}>
+                  <label className="form-label">Invoice Footer Text</label>
                   <textarea
-                    id="invoice_footer_text"
                     value={settings.invoice_footer_text || ''}
                     onChange={(e) => handleInputChange('invoice_footer_text', e.target.value)}
-                    className="form-control"
+                    className="form-input"
                     rows={2}
                   />
                 </div>
 
-                <div className="form-group full-width">
-                  <label htmlFor="invoice_notes">Invoice Notes</label>
+                <div style={{ gridColumn: '1 / -1' }}>
+                  <label className="form-label">Invoice Notes</label>
                   <textarea
-                    id="invoice_notes"
                     value={settings.invoice_notes || ''}
                     onChange={(e) => handleInputChange('invoice_notes', e.target.value)}
-                    className="form-control"
+                    className="form-input"
                     rows={3}
                   />
                 </div>
+              </FormSection>
+
+              {/* Footer Tip */}
+              <div className="admin-card" style={{ background: 'var(--admin-accent-light)', borderColor: 'var(--admin-accent)' }}>
+                <p style={{ margin: 0, fontSize: '14px', color: 'var(--admin-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  💡 <strong>Note:</strong> These settings are used for invoice generation and must comply with Slovak law requirements.
+                </p>
               </div>
-            </div>
-
-            {/* Submit Button */}
-            <div className="form-actions">
-              <button
-                type="submit"
-                className="btn-primary"
-                disabled={saving}
-              >
-                {saving ? 'Saving...' : hasExistingSettings ? 'Update Settings' : 'Create Settings'}
-              </button>
-            </div>
-          </form>
-        )}
-
-        <div className="settings-footer">
-          <p className="footer-note">
-            💡 <strong>Note:</strong> These settings are used for invoice generation and must comply with Slovak law requirements.
-          </p>
+            </form>
+          )}
         </div>
       </div>
     </AdminLayout>

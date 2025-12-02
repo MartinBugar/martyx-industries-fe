@@ -1,36 +1,33 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Edit, Trash2, Globe, MapPin, ChevronRight, Percent, Check, X } from 'lucide-react';
+import { Plus, Edit, Trash2, Globe, MapPin, ChevronRight, ChevronDown, Percent, Check, X } from 'lucide-react';
 import { adminTaxService } from '../../services/adminTaxService';
 import type { TaxZone } from '../../services/adminTaxService';
 import { logError } from '../../services/logger';
 import toast from 'react-hot-toast';
-import './AdminTaxZones.css';
+import AdminLayout from './AdminLayout';
+import { Button, Badge, SkeletonTable, ConfirmDialog, useConfirmDialog } from '../../components/ui';
+import './AdminUsers.css';
+import './AdminButtonOverrides.css';
 
-/**
- * Admin Tax Zones Management Page
- *
- * Displays all tax zones with their rates.
- * Allows CRUD operations on zones and rates.
- */
 const AdminTaxZones: React.FC = () => {
   const navigate = useNavigate();
   const [zones, setZones] = useState<TaxZone[]>([]);
   const [loading, setLoading] = useState(true);
-  const [deleting, setDeleting] = useState(false);
   const [expandedZone, setExpandedZone] = useState<number | null>(null);
-  const [deleteConfirm, setDeleteConfirm] = useState<{ type: 'zone' | 'rate'; id: number } | null>(null);
 
-  // Load tax zones with proper cleanup to prevent memory leaks
+  const { confirm, dialogProps } = useConfirmDialog({
+    title: 'Confirm Delete',
+    variant: 'danger',
+    confirmText: 'Delete',
+    cancelText: 'Cancel',
+  });
+
   const loadTaxZones = useCallback(async (signal?: AbortSignal) => {
     try {
       setLoading(true);
-      // Backend now returns zones with rates in single query (no N+1)
       const data = await adminTaxService.getAllTaxZones();
-
-      // Check if component was unmounted
       if (signal?.aborted) return;
-
       setZones(data);
     } catch (error) {
       if (signal?.aborted) return;
@@ -43,45 +40,45 @@ const AdminTaxZones: React.FC = () => {
     }
   }, []);
 
-  // Load tax zones on mount with cleanup
   useEffect(() => {
     const abortController = new AbortController();
     loadTaxZones(abortController.signal);
-
-    return () => {
-      abortController.abort();
-    };
+    return () => abortController.abort();
   }, [loadTaxZones]);
 
-  const handleDeleteZone = useCallback(async (id: number) => {
+  const handleDeleteZone = async (id: number, zoneName: string) => {
+    const confirmed = await confirm({
+      title: 'Delete Tax Zone',
+      message: `Are you sure you want to delete "${zoneName}"? This will also delete all associated tax rates.`,
+    });
+    if (!confirmed) return;
+
     try {
-      setDeleting(true);
-      setDeleteConfirm(null);
       await adminTaxService.deleteTaxZone(id);
       toast.success('Tax zone deleted');
       await loadTaxZones();
     } catch (error) {
       logError('Failed to delete tax zone:', error);
       toast.error('Failed to delete tax zone');
-    } finally {
-      setDeleting(false);
     }
-  }, [loadTaxZones]);
+  };
 
-  const handleDeleteRate = useCallback(async (id: number) => {
+  const handleDeleteRate = async (id: number, rateName: string) => {
+    const confirmed = await confirm({
+      title: 'Delete Tax Rate',
+      message: `Are you sure you want to delete "${rateName}"?`,
+    });
+    if (!confirmed) return;
+
     try {
-      setDeleting(true);
-      setDeleteConfirm(null);
       await adminTaxService.deleteTaxRate(id);
       toast.success('Tax rate deleted');
       await loadTaxZones();
     } catch (error) {
       logError('Failed to delete tax rate:', error);
       toast.error('Failed to delete tax rate');
-    } finally {
-      setDeleting(false);
     }
-  }, [loadTaxZones]);
+  };
 
   const toggleZone = (zoneId: number) => {
     setExpandedZone(expandedZone === zoneId ? null : zoneId);
@@ -93,217 +90,188 @@ const AdminTaxZones: React.FC = () => {
     return `${codes.slice(0, 5).join(', ')} +${codes.length - 5} more`;
   };
 
-  if (loading) {
-    return (
-      <div className="admin-tax-zones">
-        <div className="loading-container">
-          <div className="spinner"></div>
-          <p>Loading tax zones...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="admin-tax-zones">
-      <div className="page-header">
-        <div className="header-content">
-          <h1>Tax Management</h1>
-          <p>Manage tax zones and VAT rates for different regions</p>
-        </div>
-        <button
-          className="btn btn-primary"
-          onClick={() => navigate('/admin/tax/zones/new')}
-        >
-          <Plus size={18} />
-          Add Tax Zone
-        </button>
-      </div>
-
-      <div className="tax-zones-list">
-        {zones.length === 0 ? (
-          <div className="empty-state">
-            <Globe size={48} />
-            <h3>No Tax Zones</h3>
-            <p>Create your first tax zone to start managing VAT rates.</p>
-            <button
-              className="btn btn-primary"
-              onClick={() => navigate('/admin/tax/zones/new')}
-            >
-              Create Tax Zone
-            </button>
+    <AdminLayout title="Tax Zones">
+      <div className="admin-page">
+        <div className="admin-container">
+          {/* Header */}
+          <div className="admin-card" style={{ marginBottom: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
+              <div>
+                <h2 className="section-title" style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <Globe size={24} style={{ color: 'var(--admin-accent)' }} />
+                  Tax Management
+                </h2>
+                <p style={{ margin: 0, color: 'var(--admin-secondary)', fontSize: '14px' }}>
+                  Manage tax zones and VAT rates for different regions.
+                </p>
+              </div>
+              <Button variant="primary" onClick={() => navigate('/admin/tax/zones/new')}>
+                <Plus size={16} />
+                Add Tax Zone
+              </Button>
+            </div>
           </div>
-        ) : (
-          zones.map((zone) => (
-            <div key={zone.id} className={`tax-zone-card ${!zone.active ? 'inactive' : ''}`}>
-              <div
-                className="zone-header"
-                onClick={() => toggleZone(zone.id)}
-              >
-                <div className="zone-info">
-                  <ChevronRight
-                    size={20}
-                    className={`chevron ${expandedZone === zone.id ? 'expanded' : ''}`}
-                  />
-                  <div className="zone-title">
-                    <h3>{zone.name}</h3>
-                    {zone.code && <span className="zone-code">{zone.code}</span>}
-                  </div>
-                  <div className="zone-meta">
-                    <span className={`status-badge ${zone.active ? 'active' : 'inactive'}`}>
-                      {zone.active ? 'Active' : 'Inactive'}
-                    </span>
-                    {zone.reverseChargeEligible && (
-                      <span className="badge reverse-charge">Reverse Charge</span>
-                    )}
-                  </div>
-                </div>
-                <div className="zone-actions" onClick={(e) => e.stopPropagation()}>
-                  <button
-                    className="btn-icon"
-                    onClick={() => navigate(`/admin/tax/zones/${zone.id}/edit`)}
-                    title="Edit zone"
+
+          {/* Content */}
+          {loading ? (
+            <div className="admin-card">
+              <SkeletonTable rows={4} columns={3} />
+            </div>
+          ) : zones.length === 0 ? (
+            <div className="admin-card" style={{ textAlign: 'center', padding: '60px 20px' }}>
+              <Globe size={48} style={{ color: 'var(--admin-secondary)', marginBottom: '16px' }} />
+              <h3 style={{ margin: '0 0 8px', color: 'var(--admin-primary)' }}>No Tax Zones</h3>
+              <p style={{ margin: '0 0 20px', color: 'var(--admin-secondary)' }}>
+                Create your first tax zone to start managing VAT rates.
+              </p>
+              <Button variant="primary" onClick={() => navigate('/admin/tax/zones/new')}>
+                Create Tax Zone
+              </Button>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {zones.map((zone) => (
+                <div key={zone.id} className="admin-card" style={{ padding: 0, overflow: 'hidden' }}>
+                  {/* Zone Header */}
+                  <div
+                    onClick={() => toggleZone(zone.id)}
+                    style={{
+                      padding: '20px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: '16px',
+                      background: expandedZone === zone.id ? 'var(--admin-bg-secondary)' : 'transparent',
+                      transition: 'background 0.2s',
+                      flexWrap: 'wrap'
+                    }}
                   >
-                    <Edit size={16} />
-                  </button>
-                  <button
-                    className="btn-icon danger"
-                    onClick={() => setDeleteConfirm({ type: 'zone', id: zone.id })}
-                    title="Delete zone"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </div>
-              </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
+                      {expandedZone === zone.id ? (
+                        <ChevronDown size={20} style={{ color: 'var(--admin-accent)' }} />
+                      ) : (
+                        <ChevronRight size={20} style={{ color: 'var(--admin-secondary)' }} />
+                      )}
+                      <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                          <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 600, color: 'var(--admin-primary)' }}>
+                            {zone.name}
+                          </h3>
+                          {zone.code && (
+                            <span style={{ fontSize: '12px', color: 'var(--admin-secondary)', fontFamily: 'monospace', background: 'var(--admin-bg-tertiary)', padding: '2px 8px', borderRadius: '4px' }}>
+                              {zone.code}
+                            </span>
+                          )}
+                          <Badge variant={zone.active ? 'success' : 'warning'} size="sm">
+                            {zone.active ? 'Active' : 'Inactive'}
+                          </Badge>
+                          {zone.reverseChargeEligible && (
+                            <Badge variant="info" size="sm">Reverse Charge</Badge>
+                          )}
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px', fontSize: '13px', color: 'var(--admin-secondary)' }}>
+                          <MapPin size={14} />
+                          <span>{formatCountryCodes(zone.countryCodes)}</span>
+                        </div>
+                      </div>
+                    </div>
 
-              <div className="zone-countries">
-                <MapPin size={14} />
-                <span>{formatCountryCodes(zone.countryCodes)}</span>
-              </div>
-
-              {zone.description && (
-                <p className="zone-description">{zone.description}</p>
-              )}
-
-              {expandedZone === zone.id && (
-                <div className="zone-rates">
-                  <div className="rates-header">
-                    <h4>Tax Rates</h4>
-                    <button
-                      className="btn btn-sm"
-                      onClick={() => navigate(`/admin/tax/zones/${zone.id}/rates/new`)}
-                    >
-                      <Plus size={14} />
-                      Add Rate
-                    </button>
+                    <div className="action-buttons" onClick={(e) => e.stopPropagation()}>
+                      <Button variant="outline" size="sm" onClick={() => navigate(`/admin/tax/zones/${zone.id}/edit`)} title="Edit zone">
+                        <Edit size={14} />
+                      </Button>
+                      <Button variant="danger" size="sm" onClick={() => handleDeleteZone(zone.id, zone.name)} title="Delete zone">
+                        <Trash2 size={14} />
+                      </Button>
+                    </div>
                   </div>
 
-                  {zone.taxRates && zone.taxRates.length > 0 ? (
-                    <table className="rates-table">
-                      <thead>
-                        <tr>
-                          <th>Name</th>
-                          <th>Type</th>
-                          <th>Rate</th>
-                          <th>Default</th>
-                          <th>Status</th>
-                          <th>Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {zone.taxRates.map((rate) => (
-                          <tr key={rate.id} className={!rate.active ? 'inactive' : ''}>
-                            <td>{rate.name}</td>
-                            <td>
-                              <span className={`rate-type ${rate.rateType.toLowerCase()}`}>
-                                {rate.rateType}
-                              </span>
-                            </td>
-                            <td>
-                              <span className="rate-value">
-                                <Percent size={14} />
-                                {rate.rate}
-                              </span>
-                            </td>
-                            <td>
-                              {rate.isDefault ? (
-                                <Check size={16} className="check-icon" />
-                              ) : (
-                                <X size={16} className="x-icon" />
-                              )}
-                            </td>
-                            <td>
-                              <span className={`status-dot ${rate.active ? 'active' : 'inactive'}`} />
-                            </td>
-                            <td>
-                              <div className="rate-actions">
-                                <button
-                                  className="btn-icon sm"
-                                  onClick={() => navigate(`/admin/tax/rates/${rate.id}/edit`)}
-                                  title="Edit rate"
-                                >
-                                  <Edit size={14} />
-                                </button>
-                                <button
-                                  className="btn-icon sm danger"
-                                  onClick={() => setDeleteConfirm({ type: 'rate', id: rate.id })}
-                                  title="Delete rate"
-                                >
-                                  <Trash2 size={14} />
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  ) : (
-                    <div className="no-rates">
-                      <Percent size={24} />
-                      <p>No tax rates configured for this zone.</p>
+                  {/* Expanded Content - Tax Rates */}
+                  {expandedZone === zone.id && (
+                    <div style={{ padding: '20px', borderTop: '1px solid var(--admin-border)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                        <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: 'var(--admin-primary)' }}>
+                          Tax Rates
+                        </h4>
+                        <Button variant="outline" size="sm" onClick={() => navigate(`/admin/tax/zones/${zone.id}/rates/new`)}>
+                          <Plus size={14} />
+                          Add Rate
+                        </Button>
+                      </div>
+
+                      {zone.taxRates && zone.taxRates.length > 0 ? (
+                        <div className="table-wrapper">
+                          <table className="admin-table">
+                            <thead>
+                              <tr>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Rate</th>
+                                <th>Default</th>
+                                <th>Status</th>
+                                <th style={{ width: 100 }}>Actions</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {zone.taxRates.map((rate) => (
+                                <tr key={rate.id} style={{ opacity: rate.active ? 1 : 0.6 }}>
+                                  <td style={{ fontWeight: 500 }}>{rate.name}</td>
+                                  <td>
+                                    <Badge variant="neutral" size="sm">{rate.rateType}</Badge>
+                                  </td>
+                                  <td>
+                                    <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 600, color: 'var(--admin-accent)' }}>
+                                      {rate.rate}%
+                                    </span>
+                                  </td>
+                                  <td>
+                                    {rate.isDefault ? (
+                                      <Check size={16} style={{ color: 'var(--admin-success)' }} />
+                                    ) : (
+                                      <X size={16} style={{ color: 'var(--admin-secondary)' }} />
+                                    )}
+                                  </td>
+                                  <td>
+                                    <Badge variant={rate.active ? 'success' : 'warning'} size="sm">
+                                      {rate.active ? 'Active' : 'Inactive'}
+                                    </Badge>
+                                  </td>
+                                  <td>
+                                    <div className="action-buttons">
+                                      <Button variant="outline" size="sm" onClick={() => navigate(`/admin/tax/rates/${rate.id}/edit`)} title="Edit rate">
+                                        <Edit size={14} />
+                                      </Button>
+                                      <Button variant="danger" size="sm" onClick={() => handleDeleteRate(rate.id, rate.name)} title="Delete rate">
+                                        <Trash2 size={14} />
+                                      </Button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      ) : (
+                        <div style={{ textAlign: 'center', padding: '30px', background: 'var(--admin-bg-secondary)', borderRadius: '8px' }}>
+                          <Percent size={24} style={{ color: 'var(--admin-secondary)', marginBottom: '8px' }} />
+                          <p style={{ margin: 0, color: 'var(--admin-secondary)', fontSize: '14px' }}>
+                            No tax rates configured for this zone.
+                          </p>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
-              )}
+              ))}
             </div>
-          ))
-        )}
+          )}
+        </div>
       </div>
 
-      {/* Delete Confirmation Modal */}
-      {deleteConfirm && (
-        <div className="modal-overlay" onClick={() => setDeleteConfirm(null)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h3>Confirm Delete</h3>
-            <p>
-              Are you sure you want to delete this {deleteConfirm.type}?
-              {deleteConfirm.type === 'zone' && ' This will also delete all associated tax rates.'}
-            </p>
-            <div className="modal-actions">
-              <button
-                className="btn btn-secondary"
-                onClick={() => setDeleteConfirm(null)}
-              >
-                Cancel
-              </button>
-              <button
-                className="btn btn-danger"
-                disabled={deleting}
-                onClick={() => {
-                  if (deleteConfirm.type === 'zone') {
-                    handleDeleteZone(deleteConfirm.id);
-                  } else {
-                    handleDeleteRate(deleteConfirm.id);
-                  }
-                }}
-              >
-                {deleting ? 'Deleting...' : 'Delete'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+      <ConfirmDialog {...dialogProps} />
+    </AdminLayout>
   );
 };
 

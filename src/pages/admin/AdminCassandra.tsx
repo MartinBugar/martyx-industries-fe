@@ -1,14 +1,12 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { ConfirmDialog, useConfirmDialog } from '../../components/ui';
-import { X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ConfirmDialog, useConfirmDialog, Button, Badge, SkeletonTable } from '../../components/ui';
+import { X, ChevronLeft, ChevronRight, Upload, Trash2, Image, Database } from 'lucide-react';
 import AdminLayout from './AdminLayout';
-import './AdminCassandra.css';
-import './AdminUsers.css';
-import './AdminButtonOverrides.css';
-import { Button } from '../../components/ui';
 import cassandraImageService, { type CassandraImageDto, type UploadImageResponse } from '../../services/cassandraImageService';
 import { logInfo, logError } from '../../services/logger';
 import toast from 'react-hot-toast';
+import './AdminUsers.css';
+import './AdminButtonOverrides.css';
 
 const AdminCassandra: React.FC = () => {
     const [images, setImages] = useState<CassandraImageDto[]>([]);
@@ -20,7 +18,6 @@ const AdminCassandra: React.FC = () => {
     const [uploadSummary, setUploadSummary] = useState<{ show: boolean; successful: number; failed: number; total: number } | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    // Confirm dialog
     const { confirm, dialogProps } = useConfirmDialog({
         title: 'Delete Image',
         message: 'Are you sure you want to delete this image?',
@@ -29,7 +26,6 @@ const AdminCassandra: React.FC = () => {
         cancelText: 'Cancel'
     });
 
-    // Load images on mount
     useEffect(() => {
         loadImages();
     }, []);
@@ -37,12 +33,12 @@ const AdminCassandra: React.FC = () => {
     const loadImages = async () => {
         try {
             setLoading(true);
-            logInfo('🔄 Loading Cassandra images...');
+            logInfo('Loading Cassandra images...');
             const data = await cassandraImageService.getAllImages();
             setImages(data);
-            logInfo(`✅ Loaded ${data.length} Cassandra images`);
+            logInfo(`Loaded ${data.length} Cassandra images`);
         } catch (error) {
-            logError('❌ Failed to load Cassandra images:', error);
+            logError('Failed to load Cassandra images:', error);
         } finally {
             setLoading(false);
         }
@@ -53,17 +49,9 @@ const AdminCassandra: React.FC = () => {
         setLightboxOpen(true);
     };
 
-    const closeLightbox = () => {
-        setLightboxOpen(false);
-    };
-
-    const nextImage = () => {
-        setLightboxImageIndex((prev) => (prev + 1) % images.length);
-    };
-
-    const prevImage = () => {
-        setLightboxImageIndex((prev) => (prev - 1 + images.length) % images.length);
-    };
+    const closeLightbox = () => setLightboxOpen(false);
+    const nextImage = () => setLightboxImageIndex((prev) => (prev + 1) % images.length);
+    const prevImage = () => setLightboxImageIndex((prev) => (prev - 1 + images.length) % images.length);
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'ArrowRight') nextImage();
@@ -74,11 +62,8 @@ const AdminCassandra: React.FC = () => {
     const handleDrag = (e: React.DragEvent) => {
         e.preventDefault();
         e.stopPropagation();
-        if (e.type === "dragenter" || e.type === "dragover") {
-            setDragActive(true);
-        } else if (e.type === "dragleave") {
-            setDragActive(false);
-        }
+        if (e.type === "dragenter" || e.type === "dragover") setDragActive(true);
+        else if (e.type === "dragleave") setDragActive(false);
     };
 
     const handleDrop = (e: React.DragEvent) => {
@@ -91,310 +76,243 @@ const AdminCassandra: React.FC = () => {
     };
 
     const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files) {
-            handleFiles(Array.from(e.target.files));
-        }
+        if (e.target.files) handleFiles(Array.from(e.target.files));
     };
 
     const handleFiles = async (files: File[]) => {
         const imageFiles = files.filter(file => file.type.startsWith('image/'));
-
         if (imageFiles.length === 0) {
             toast.error('Please select image files only');
             return;
         }
 
-        // Set up progress tracking
         setUploadProgress({ current: 0, total: imageFiles.length, uploading: true });
-
-        // Sequential upload
         const results: { success: boolean; error?: string }[] = [];
 
         for (let i = 0; i < imageFiles.length; i++) {
             const file = imageFiles[i];
-
             try {
-                // Update progress
                 setUploadProgress({ current: i + 1, total: imageFiles.length, uploading: true });
-
-                logInfo(`🚀 Uploading ${i + 1}/${imageFiles.length}: ${file.name}`);
-
-                // Calculate order (next available order number)
                 const currentOrder = images.length + i;
-
-                // Upload via backend API
                 const uploadResponse: UploadImageResponse = await cassandraImageService.uploadImageJson(file, currentOrder);
-
-                if (!uploadResponse.success) {
-                    throw new Error(uploadResponse.message || 'Upload failed');
-                }
-
-                logInfo('✅ Upload successful:', uploadResponse.image);
+                if (!uploadResponse.success) throw new Error(uploadResponse.message || 'Upload failed');
                 results.push({ success: true });
-
-                // Add delay between uploads (except for the last one)
-                if (i < imageFiles.length - 1) {
-                    await new Promise(resolve => setTimeout(resolve, 200));
-                }
-
+                if (i < imageFiles.length - 1) await new Promise(resolve => setTimeout(resolve, 200));
             } catch (error) {
-                logError(`❌ Upload ${i + 1}/${imageFiles.length} failed:`, error);
-                results.push({
-                    success: false,
-                    error: error instanceof Error ? error.message : 'Upload failed'
-                });
+                logError(`Upload ${i + 1}/${imageFiles.length} failed:`, error);
+                results.push({ success: false, error: error instanceof Error ? error.message : 'Upload failed' });
             }
         }
 
-        // Reset progress
         setUploadProgress({ current: 0, total: 0, uploading: false });
-
-        // Show summary
         const successful = results.filter(r => r.success).length;
         const failed = results.filter(r => !r.success).length;
-
-        setUploadSummary({
-            show: true,
-            successful,
-            failed,
-            total: imageFiles.length
-        });
-
-        // Auto-hide summary after 5 seconds
-        setTimeout(() => {
-            setUploadSummary(null);
-        }, 5000);
-
-        // Reload images from database
+        setUploadSummary({ show: true, successful, failed, total: imageFiles.length });
+        setTimeout(() => setUploadSummary(null), 5000);
         await loadImages();
     };
 
     const handleDelete = useCallback(async (id: number) => {
-        const confirmed = await confirm({
-            title: 'Delete Image',
-            message: 'Are you sure you want to delete this image?',
-            variant: 'danger',
-            confirmText: 'Delete',
-            cancelText: 'Cancel'
-        });
+        const confirmed = await confirm({ title: 'Delete Image', message: 'Are you sure you want to delete this image?' });
         if (!confirmed) return;
-
         try {
             await cassandraImageService.deleteImage(id);
-            logInfo('✅ Image deleted successfully');
-            // Reload images
+            logInfo('Image deleted successfully');
             await loadImages();
         } catch (error) {
-            logError('❌ Failed to delete image:', error);
+            logError('Failed to delete image:', error);
             toast.error('Failed to delete image. Please try again.');
         }
     }, [confirm]);
 
     return (
-        <AdminLayout title="CASSANDRA Mascot">
-            <div className="admin-cassandra-container">
-                {/* Main Cassandra Display */}
-                {!loading && images.length > 0 && (
-                    <div className="cassandra-main-display">
-                        <img
-                            src={images[0].imageUrl}
-                            alt={images[0].name}
-                            className="cassandra-main-image"
-                            onClick={() => openLightbox(0)}
-                            style={{ cursor: 'pointer' }}
-                        />
-                    </div>
-                )}
-
-                {/* Gallery Management Section */}
-                <div className="admin-card" style={{ marginTop: '24px' }}>
-                    <div className="admin-header" style={{ marginBottom: '20px' }}>
-                        <h3 className="section-title">Cassandra Gallery</h3>
-                        <p style={{ margin: '4px 0 0 0', fontSize: '14px', color: '#6b7280' }}>
-                            Upload and manage Cassandra mascot images. Images are stored in DigitalOcean Spaces folder: <code>CASSANDRA/</code>
-                        </p>
+        <AdminLayout title="Cassandra DB">
+            <div className="admin-page">
+                <div className="admin-container">
+                    {/* Header */}
+                    <div className="admin-card" style={{ marginBottom: '24px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
+                            <div>
+                                <h2 className="section-title" style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <Database size={24} style={{ color: 'var(--admin-accent)' }} />
+                                    Cassandra Mascot Gallery
+                                </h2>
+                                <p style={{ margin: 0, color: 'var(--admin-secondary)', fontSize: '14px' }}>
+                                    Upload and manage Cassandra mascot images. Storage: <code style={{ background: 'var(--admin-bg-secondary)', padding: '2px 6px', borderRadius: '4px' }}>CASSANDRA/</code>
+                                </p>
+                            </div>
+                            <Button variant="primary" onClick={() => fileInputRef.current?.click()} disabled={uploadProgress.uploading}>
+                                <Upload size={16} />
+                                Upload Images
+                            </Button>
+                        </div>
                     </div>
 
-                    {loading && <p className="loading-text">📸 Loading gallery images...</p>}
-
+                    {/* Upload Progress */}
                     {uploadProgress.uploading && (
-                        <div className="upload-progress-section">
-                            <p className="upload-progress-text">
-                                📤 Uploading {uploadProgress.current}/{uploadProgress.total} images...
-                            </p>
-                            <div className="upload-progress-bar">
-                                <div
-                                    className="upload-progress-fill"
-                                    style={{ width: `${(uploadProgress.current / uploadProgress.total) * 100}%` }}
-                                />
-                            </div>
-                            <span className="upload-progress-percent">
-                                {Math.round((uploadProgress.current / uploadProgress.total) * 100)}%
-                            </span>
-                        </div>
-                    )}
-
-                    {uploadSummary?.show && (
-                        <div className={`upload-summary ${uploadSummary.failed > 0 ? 'has-errors' : 'success'}`}>
-                            <div className="upload-summary-content">
-                                {uploadSummary.failed === 0 ? (
-                                    <span className="upload-summary-icon">🎉</span>
-                                ) : (
-                                    <span className="upload-summary-icon">⚠️</span>
-                                )}
-                                <span className="upload-summary-text">
-                                    {uploadSummary.failed === 0
-                                        ? `All ${uploadSummary.successful} images uploaded successfully!`
-                                        : `${uploadSummary.successful}/${uploadSummary.total} images uploaded successfully. ${uploadSummary.failed} failed.`
-                                    }
-                                </span>
-                                <button
-                                    className="upload-summary-close"
-                                    onClick={() => setUploadSummary(null)}
-                                    aria-label="Close summary"
-                                >
-                                    ×
-                                </button>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Existing Images Gallery */}
-                    {!loading && images.length > 0 && (
-                        <div className="cassandra-gallery-grid" style={{ marginBottom: '24px' }}>
-                            {images.map((image, index) => (
-                                <div
-                                    key={image.id}
-                                    className="cassandra-gallery-item"
-                                >
-                                    <div
-                                        className="cassandra-thumbnail"
-                                        onClick={() => openLightbox(index)}
-                                        style={{ cursor: 'pointer' }}
-                                    >
-                                        <img src={image.thumbnailUrl || image.imageUrl} alt={image.name} />
-                                        <div className="cassandra-thumbnail-overlay">
-                                            <span>View Fullscreen</span>
-                                        </div>
-                                    </div>
-                                    <div className="cassandra-item-info">
-                                        <div className="cassandra-item-name">{image.name}</div>
-                                        {image.description && (
-                                            <div className="cassandra-item-desc">{image.description}</div>
-                                        )}
-                                    </div>
-                                    <div className="cassandra-item-actions action-buttons">
-                                        <Button
-                                            variant="danger"
-                                            size="sm"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleDelete(image.id!);
-                                            }}
-                                            title="Delete image"
-                                        >
-                                            🗑️
-                                        </Button>
+                        <div className="admin-card" style={{ marginBottom: '20px', background: 'var(--admin-info-bg)', borderColor: 'var(--admin-info)' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                                <div style={{ flex: 1 }}>
+                                    <p style={{ margin: '0 0 8px', fontWeight: 600 }}>Uploading {uploadProgress.current}/{uploadProgress.total} images...</p>
+                                    <div style={{ height: 8, background: 'var(--admin-bg-tertiary)', borderRadius: 4, overflow: 'hidden' }}>
+                                        <div style={{ height: '100%', width: `${(uploadProgress.current / uploadProgress.total) * 100}%`, background: 'var(--admin-accent)', borderRadius: 4, transition: 'width 0.3s' }} />
                                     </div>
                                 </div>
-                            ))}
+                                <span style={{ fontWeight: 700, fontSize: '18px', color: 'var(--admin-accent)' }}>
+                                    {Math.round((uploadProgress.current / uploadProgress.total) * 100)}%
+                                </span>
+                            </div>
                         </div>
                     )}
 
-                    {/* Upload New Images Section */}
-                    <div className="upload-section">
-                        <h4>📤 Upload New Images</h4>
-                        <p>Upload additional images for Cassandra gallery.</p>
+                    {/* Upload Summary */}
+                    {uploadSummary?.show && (
+                        <div className={`alert ${uploadSummary.failed > 0 ? 'alert-error' : ''}`} style={{ marginBottom: '20px', background: uploadSummary.failed > 0 ? 'var(--admin-error-bg)' : 'var(--admin-success-bg)', border: `1px solid ${uploadSummary.failed > 0 ? 'var(--admin-error)' : 'var(--admin-success)'}` }}>
+                            <span>
+                                {uploadSummary.failed === 0
+                                    ? `All ${uploadSummary.successful} images uploaded successfully!`
+                                    : `${uploadSummary.successful}/${uploadSummary.total} images uploaded. ${uploadSummary.failed} failed.`}
+                            </span>
+                            <button onClick={() => setUploadSummary(null)} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px' }}>×</button>
+                        </div>
+                    )}
+
+                    {/* Main Featured Image */}
+                    {!loading && images.length > 0 && (
+                        <div className="admin-card" style={{ marginBottom: '24px', padding: 0, overflow: 'hidden' }}>
+                            <img
+                                src={images[0].imageUrl}
+                                alt={images[0].name}
+                                style={{ width: '100%', maxHeight: 400, objectFit: 'cover', cursor: 'pointer' }}
+                                onClick={() => openLightbox(0)}
+                            />
+                        </div>
+                    )}
+
+                    {/* Gallery Grid */}
+                    {loading ? (
+                        <div className="admin-card">
+                            <SkeletonTable rows={3} columns={4} />
+                        </div>
+                    ) : images.length === 0 ? (
+                        <div className="admin-card" style={{ textAlign: 'center', padding: '60px 20px' }}>
+                            <Image size={48} style={{ color: 'var(--admin-secondary)', marginBottom: '16px' }} />
+                            <h3 style={{ margin: '0 0 8px', color: 'var(--admin-primary)' }}>No Images</h3>
+                            <p style={{ margin: '0 0 20px', color: 'var(--admin-secondary)' }}>Upload some images to create the Cassandra gallery.</p>
+                            <Button variant="primary" onClick={() => fileInputRef.current?.click()}>
+                                <Upload size={16} />
+                                Upload Images
+                            </Button>
+                        </div>
+                    ) : (
+                        <div className="admin-card">
+                            <h3 className="section-title" style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <Image size={20} style={{ color: 'var(--admin-accent)' }} />
+                                Gallery ({images.length} images)
+                            </h3>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
+                                {images.map((image, index) => (
+                                    <div key={image.id} style={{ position: 'relative', borderRadius: '10px', overflow: 'hidden', border: '1px solid var(--admin-border)', background: 'var(--admin-bg-secondary)' }}>
+                                        <div
+                                            style={{ aspectRatio: '1', cursor: 'pointer', overflow: 'hidden' }}
+                                            onClick={() => openLightbox(index)}
+                                        >
+                                            <img src={image.thumbnailUrl || image.imageUrl} alt={image.name} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.3s' }} />
+                                        </div>
+                                        <div style={{ padding: '12px' }}>
+                                            <div style={{ fontSize: '14px', fontWeight: 500, color: 'var(--admin-primary)', marginBottom: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                {image.name}
+                                            </div>
+                                            {image.description && (
+                                                <div style={{ fontSize: '12px', color: 'var(--admin-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                    {image.description}
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div style={{ position: 'absolute', top: 8, right: 8 }}>
+                                            <Button variant="danger" size="sm" onClick={(e) => { e.stopPropagation(); handleDelete(image.id!); }} title="Delete image">
+                                                <Trash2 size={14} />
+                                            </Button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Drop Zone */}
+                    <div className="admin-card" style={{ marginTop: '24px' }}>
+                        <h3 className="section-title" style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <Upload size={20} style={{ color: 'var(--admin-accent)' }} />
+                            Upload New Images
+                        </h3>
                         <div
-                            className={`upload-area ${dragActive ? 'drag-active' : ''} ${uploadProgress.uploading ? 'disabled' : ''}`}
                             onDragEnter={uploadProgress.uploading ? undefined : handleDrag}
                             onDragLeave={uploadProgress.uploading ? undefined : handleDrag}
                             onDragOver={uploadProgress.uploading ? undefined : handleDrag}
                             onDrop={uploadProgress.uploading ? undefined : handleDrop}
                             onClick={uploadProgress.uploading ? undefined : () => fileInputRef.current?.click()}
+                            style={{
+                                border: `2px dashed ${dragActive ? 'var(--admin-accent)' : 'var(--admin-border)'}`,
+                                borderRadius: '10px',
+                                padding: '40px 20px',
+                                textAlign: 'center',
+                                cursor: uploadProgress.uploading ? 'not-allowed' : 'pointer',
+                                background: dragActive ? 'var(--admin-accent-light)' : 'var(--admin-bg-secondary)',
+                                opacity: uploadProgress.uploading ? 0.6 : 1,
+                                transition: 'all 0.2s'
+                            }}
                         >
-                            <div className="upload-content">
-                                <div className="upload-icon">📷</div>
-                                <div className="upload-text">
-                                    {uploadProgress.uploading ? (
-                                        <>
-                                            <p><strong>Upload in progress...</strong></p>
-                                            <p>Please wait for current upload to complete</p>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <p><strong>Click to upload</strong> or drag and drop</p>
-                                            <p>PNG, JPG, WebP up to 10MB each</p>
-                                        </>
-                                    )}
-                                </div>
-                            </div>
-                            <input
-                                ref={fileInputRef}
-                                type="file"
-                                accept="image/*"
-                                multiple
-                                onChange={handleFileInput}
-                                style={{ display: 'none' }}
-                            />
+                            <Image size={40} style={{ color: 'var(--admin-secondary)', marginBottom: '12px' }} />
+                            {uploadProgress.uploading ? (
+                                <>
+                                    <p style={{ margin: 0, fontWeight: 600, color: 'var(--admin-primary)' }}>Upload in progress...</p>
+                                    <p style={{ margin: '6px 0 0', fontSize: '14px', color: 'var(--admin-secondary)' }}>Please wait for current upload to complete</p>
+                                </>
+                            ) : (
+                                <>
+                                    <p style={{ margin: 0, fontWeight: 600, color: 'var(--admin-primary)' }}>Click to upload or drag and drop</p>
+                                    <p style={{ margin: '6px 0 0', fontSize: '14px', color: 'var(--admin-secondary)' }}>PNG, JPG, WebP up to 10MB each</p>
+                                </>
+                            )}
                         </div>
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            onChange={handleFileInput}
+                            style={{ display: 'none' }}
+                        />
                     </div>
-
-                    {/* Empty State */}
-                    {!loading && images.length === 0 && (
-                        <div className="empty-state">
-                            <p>📁 No images found in Cassandra gallery</p>
-                            <p>Upload some images to create the gallery.</p>
-                        </div>
-                    )}
                 </div>
             </div>
 
-            {/* Lightbox Modal */}
+            {/* Lightbox */}
             {lightboxOpen && images.length > 0 && (
                 <div
-                    className="cassandra-lightbox"
                     onClick={closeLightbox}
                     onKeyDown={handleKeyDown}
                     tabIndex={0}
+                    style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.95)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1100 }}
                 >
-                    <button className="lightbox-close" onClick={closeLightbox} title="Close (Esc)">
+                    <button onClick={closeLightbox} style={{ position: 'absolute', top: 20, right: 20, background: 'none', border: 'none', color: 'white', cursor: 'pointer' }} title="Close (Esc)">
                         <X size={32} />
                     </button>
-                    <button
-                        className="lightbox-nav lightbox-prev"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            prevImage();
-                        }}
-                        title="Previous (←)"
-                    >
-                        <ChevronLeft size={40} />
+                    <button onClick={(e) => { e.stopPropagation(); prevImage(); }} style={{ position: 'absolute', left: 20, background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white', padding: '16px', borderRadius: '50%', cursor: 'pointer' }} title="Previous (←)">
+                        <ChevronLeft size={32} />
                     </button>
-                    <button
-                        className="lightbox-nav lightbox-next"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            nextImage();
-                        }}
-                        title="Next (→)"
-                    >
-                        <ChevronRight size={40} />
+                    <button onClick={(e) => { e.stopPropagation(); nextImage(); }} style={{ position: 'absolute', right: 20, background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white', padding: '16px', borderRadius: '50%', cursor: 'pointer' }} title="Next (→)">
+                        <ChevronRight size={32} />
                     </button>
-                    <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
-                        <img
-                            src={images[lightboxImageIndex].imageUrl}
-                            alt={images[lightboxImageIndex].name}
-                            className="lightbox-image"
-                        />
-                        <div className="lightbox-info">
-                            <div className="lightbox-title">{images[lightboxImageIndex].name}</div>
+                    <div onClick={(e) => e.stopPropagation()} style={{ maxWidth: '90vw', maxHeight: '90vh', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <img src={images[lightboxImageIndex].imageUrl} alt={images[lightboxImageIndex].name} style={{ maxWidth: '100%', maxHeight: '80vh', objectFit: 'contain', borderRadius: '8px' }} />
+                        <div style={{ marginTop: '16px', textAlign: 'center', color: 'white' }}>
+                            <div style={{ fontSize: '18px', fontWeight: 600 }}>{images[lightboxImageIndex].name}</div>
                             {images[lightboxImageIndex].description && (
-                                <div className="lightbox-description">{images[lightboxImageIndex].description}</div>
+                                <div style={{ fontSize: '14px', opacity: 0.7, marginTop: '4px' }}>{images[lightboxImageIndex].description}</div>
                             )}
-                        </div>
-                        <div className="lightbox-counter">
-                            {lightboxImageIndex + 1} / {images.length}
+                            <div style={{ fontSize: '14px', opacity: 0.5, marginTop: '8px' }}>{lightboxImageIndex + 1} / {images.length}</div>
                         </div>
                     </div>
                 </div>

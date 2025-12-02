@@ -1,4 +1,4 @@
-import { API_BASE_URL, handleResponse, withLangHeaders } from './apiUtils';
+import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
 
 export interface HomePageSetting {
   id: number;
@@ -26,7 +26,7 @@ class HomePageSettingsService {
       `${API_BASE_URL}/api/admin/home-page-settings`,
       withLangHeaders({
         method: 'GET',
-        credentials: 'include'
+        headers: defaultHeaders as HeadersInit
       })
     );
     return handleResponse(response);
@@ -66,10 +66,7 @@ class HomePageSettingsService {
       `${API_BASE_URL}/api/admin/home-page-settings/${id}/visibility`,
       withLangHeaders({
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include',
+        headers: defaultHeaders as HeadersInit,
         body: JSON.stringify({ isVisible })
       })
     );
@@ -84,10 +81,7 @@ class HomePageSettingsService {
       `${API_BASE_URL}/api/admin/home-page-settings/${id}/order`,
       withLangHeaders({
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include',
+        headers: defaultHeaders as HeadersInit,
         body: JSON.stringify({ displayOrder })
       })
     );
@@ -102,10 +96,7 @@ class HomePageSettingsService {
       `${API_BASE_URL}/api/admin/home-page-settings/${id}`,
       withLangHeaders({
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include',
+        headers: defaultHeaders as HeadersInit,
         body: JSON.stringify(setting)
       })
     );
@@ -120,10 +111,7 @@ class HomePageSettingsService {
       `${API_BASE_URL}/api/admin/home-page-settings/bulk`,
       withLangHeaders({
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include',
+        headers: defaultHeaders as HeadersInit,
         body: JSON.stringify(settings)
       })
     );

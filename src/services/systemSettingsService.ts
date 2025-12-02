@@ -12,6 +12,11 @@ export interface SystemSettingsDto {
   id?: number;
   devGateEnabled: boolean;
   devGatePassword: string;
+  // OSS/Tax Configuration (V111)
+  ossEnabled?: boolean;
+  defaultVatRate?: number;
+  sellerCountryCode?: string;
+  ossThresholdEur?: number;
 }
 
 const ADMIN_API_BASE = '/api/admin/system-settings';
