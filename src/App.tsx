@@ -126,6 +126,8 @@ import {
   AdminRefundDetail,
   AdminBlogPosts,
   AdminBlogPostForm,
+  AdminSeoManager,
+  AdminRedirects,
   ConstellationParticles
 } from './utils/lazyImports'
 
@@ -614,6 +616,17 @@ const MainContent = React.memo(() => {
             <Route path="/admin/blog/posts/:id" element={
               <RequireAdmin>
                 <AdminBlogPostForm />
+              </RequireAdmin>
+            } />
+            {/* SEO Management */}
+            <Route path="/admin/seo" element={
+              <RequireAdmin>
+                <AdminSeoManager />
+              </RequireAdmin>
+            } />
+            <Route path="/admin/seo/redirects" element={
+              <RequireAdmin>
+                <AdminRedirects />
               </RequireAdmin>
             } />
           </Routes>

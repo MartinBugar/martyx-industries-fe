@@ -150,7 +150,8 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ title, children, navTabs }) =
       icon: <Image size={20} />,
       items: [
         { path: '/admin/gallery', label: 'Gallery' },
-        { path: '/admin/blog/posts', label: 'Blog' }
+        { path: '/admin/blog/posts', label: 'Blog' },
+        { path: '/admin/seo', label: 'SEO Manager' }
       ]
     },
     {
