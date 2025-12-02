@@ -1,4 +1,4 @@
-import api from './api';
+import { apiClient } from './apiClient';
 
 // === Types ===
 
@@ -141,10 +141,8 @@ export interface StatusOption {
 // === Posts API ===
 
 export const getAllPosts = async (page = 0, size = 20, sort = 'createdAt,desc'): Promise<PageResponse<BlogPostDto>> => {
-  const response = await api.get('/admin/blog/posts', {
-    params: { page, size, sort }
-  });
-  return response.data;
+  const params = new URLSearchParams({ page: String(page), size: String(size), sort });
+  return apiClient.get<PageResponse<BlogPostDto>>(`/api/admin/blog/posts?${params}`);
 };
 
 export const filterPosts = async (
@@ -154,136 +152,113 @@ export const filterPosts = async (
   page = 0,
   size = 20
 ): Promise<PageResponse<BlogPostDto>> => {
-  const response = await api.get('/admin/blog/posts/filter', {
-    params: { status, categoryId, authorId, page, size }
-  });
-  return response.data;
+  const params = new URLSearchParams({ page: String(page), size: String(size) });
+  if (status) params.append('status', status);
+  if (categoryId) params.append('categoryId', String(categoryId));
+  if (authorId) params.append('authorId', String(authorId));
+  return apiClient.get<PageResponse<BlogPostDto>>(`/api/admin/blog/posts/filter?${params}`);
 };
 
 export const searchPosts = async (query: string, page = 0, size = 20): Promise<PageResponse<BlogPostDto>> => {
-  const response = await api.get('/admin/blog/posts/search', {
-    params: { query, page, size }
-  });
-  return response.data;
+  const params = new URLSearchParams({ query, page: String(page), size: String(size) });
+  return apiClient.get<PageResponse<BlogPostDto>>(`/api/admin/blog/posts/search?${params}`);
 };
 
 export const getPostById = async (id: number): Promise<BlogPostDto> => {
-  const response = await api.get(`/admin/blog/posts/${id}`);
-  return response.data;
+  return apiClient.get<BlogPostDto>(`/api/admin/blog/posts/${id}`);
 };
 
 export const createPost = async (request: CreateBlogPostRequest): Promise<BlogPostDto> => {
-  const response = await api.post('/admin/blog/posts', request);
-  return response.data;
+  return apiClient.post<BlogPostDto>('/api/admin/blog/posts', request);
 };
 
 export const updatePost = async (id: number, request: UpdateBlogPostRequest): Promise<BlogPostDto> => {
-  const response = await api.put(`/admin/blog/posts/${id}`, request);
-  return response.data;
+  return apiClient.put<BlogPostDto>(`/api/admin/blog/posts/${id}`, request);
 };
 
 export const deletePost = async (id: number): Promise<void> => {
-  await api.delete(`/admin/blog/posts/${id}`);
+  await apiClient.delete(`/api/admin/blog/posts/${id}`);
 };
 
 export const publishPost = async (id: number): Promise<BlogPostDto> => {
-  const response = await api.post(`/admin/blog/posts/${id}/publish`);
-  return response.data;
+  return apiClient.post<BlogPostDto>(`/api/admin/blog/posts/${id}/publish`);
 };
 
 export const unpublishPost = async (id: number): Promise<BlogPostDto> => {
-  const response = await api.post(`/admin/blog/posts/${id}/unpublish`);
-  return response.data;
+  return apiClient.post<BlogPostDto>(`/api/admin/blog/posts/${id}/unpublish`);
 };
 
 export const schedulePost = async (id: number, scheduledAt: string): Promise<BlogPostDto> => {
-  const response = await api.post(`/admin/blog/posts/${id}/schedule`, null, {
-    params: { scheduledAt }
-  });
-  return response.data;
+  const params = new URLSearchParams({ scheduledAt });
+  return apiClient.post<BlogPostDto>(`/api/admin/blog/posts/${id}/schedule?${params}`);
 };
 
 export const archivePost = async (id: number): Promise<BlogPostDto> => {
-  const response = await api.post(`/admin/blog/posts/${id}/archive`);
-  return response.data;
+  return apiClient.post<BlogPostDto>(`/api/admin/blog/posts/${id}/archive`);
 };
 
 // === Categories API ===
 
 export const getAllCategories = async (): Promise<BlogCategoryDto[]> => {
-  const response = await api.get('/admin/blog/categories');
-  return response.data;
+  return apiClient.get<BlogCategoryDto[]>('/api/admin/blog/categories');
 };
 
 export const getCategoryById = async (id: number): Promise<BlogCategoryDto> => {
-  const response = await api.get(`/admin/blog/categories/${id}`);
-  return response.data;
+  return apiClient.get<BlogCategoryDto>(`/api/admin/blog/categories/${id}`);
 };
 
 export const createCategory = async (request: BlogCategoryRequest): Promise<BlogCategoryDto> => {
-  const response = await api.post('/admin/blog/categories', request);
-  return response.data;
+  return apiClient.post<BlogCategoryDto>('/api/admin/blog/categories', request);
 };
 
 export const updateCategory = async (id: number, request: BlogCategoryRequest): Promise<BlogCategoryDto> => {
-  const response = await api.put(`/admin/blog/categories/${id}`, request);
-  return response.data;
+  return apiClient.put<BlogCategoryDto>(`/api/admin/blog/categories/${id}`, request);
 };
 
 export const deleteCategory = async (id: number): Promise<void> => {
-  await api.delete(`/admin/blog/categories/${id}`);
+  await apiClient.delete(`/api/admin/blog/categories/${id}`);
 };
 
 // === Tags API ===
 
 export const getAllTags = async (): Promise<BlogTagDto[]> => {
-  const response = await api.get('/admin/blog/tags');
-  return response.data;
+  return apiClient.get<BlogTagDto[]>('/api/admin/blog/tags');
 };
 
 export const searchTags = async (query: string): Promise<BlogTagDto[]> => {
-  const response = await api.get('/admin/blog/tags/search', {
-    params: { query }
-  });
-  return response.data;
+  const params = new URLSearchParams({ query });
+  return apiClient.get<BlogTagDto[]>(`/api/admin/blog/tags/search?${params}`);
 };
 
 export const getPopularTags = async (limit = 10): Promise<BlogTagDto[]> => {
-  const response = await api.get('/admin/blog/tags/popular', {
-    params: { limit }
-  });
-  return response.data;
+  const params = new URLSearchParams({ limit: String(limit) });
+  return apiClient.get<BlogTagDto[]>(`/api/admin/blog/tags/popular?${params}`);
 };
 
 export const getTagById = async (id: number): Promise<BlogTagDto> => {
-  const response = await api.get(`/admin/blog/tags/${id}`);
-  return response.data;
+  return apiClient.get<BlogTagDto>(`/api/admin/blog/tags/${id}`);
 };
 
 export const createTag = async (request: BlogTagRequest): Promise<BlogTagDto> => {
-  const response = await api.post('/admin/blog/tags', request);
-  return response.data;
+  return apiClient.post<BlogTagDto>('/api/admin/blog/tags', request);
 };
 
 export const updateTag = async (id: number, request: BlogTagRequest): Promise<BlogTagDto> => {
-  const response = await api.put(`/admin/blog/tags/${id}`, request);
-  return response.data;
+  return apiClient.put<BlogTagDto>(`/api/admin/blog/tags/${id}`, request);
 };
 
 export const deleteTag = async (id: number): Promise<void> => {
-  await api.delete(`/admin/blog/tags/${id}`);
+  await apiClient.delete(`/api/admin/blog/tags/${id}`);
 };
 
 // === Stats ===
 
 export const getStats = async (): Promise<BlogStatsDto> => {
-  const response = await api.get('/admin/blog/stats');
-  return response.data;
+  return apiClient.get<BlogStatsDto>('/api/admin/blog/stats');
 };
 
 export const getStatuses = async (): Promise<StatusOption[]> => {
-  const response = await api.get('/admin/blog/statuses');
-  return response.data;
+  return apiClient.get<StatusOption[]>('/api/admin/blog/statuses');
 };
 
 // === Helpers ===

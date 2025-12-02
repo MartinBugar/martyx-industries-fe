@@ -3,7 +3,7 @@
  * Handles API communication for advanced reporting and analytics
  */
 
-import api from './api';
+import { apiClient } from './apiClient';
 
 // === Types ===
 
@@ -366,10 +366,14 @@ export const getSalesReport = async (
   includeComparison = true,
   topProductsLimit = 10
 ): Promise<SalesReportDto> => {
-  const response = await api.get(`${BASE_PATH}/sales`, {
-    params: { startDate, endDate, periodType, includeComparison, topProductsLimit }
+  const params = new URLSearchParams({
+    startDate,
+    endDate,
+    periodType,
+    includeComparison: String(includeComparison),
+    topProductsLimit: String(topProductsLimit)
   });
-  return response.data;
+  return apiClient.get<SalesReportDto>(`${BASE_PATH}/sales?${params}`);
 };
 
 /**
@@ -379,10 +383,8 @@ export const getSalesSummary = async (
   startDate: string,
   endDate: string
 ): Promise<SalesReportDto> => {
-  const response = await api.get(`${BASE_PATH}/sales/summary`, {
-    params: { startDate, endDate }
-  });
-  return response.data;
+  const params = new URLSearchParams({ startDate, endDate });
+  return apiClient.get<SalesReportDto>(`${BASE_PATH}/sales/summary?${params}`);
 };
 
 /**
@@ -393,10 +395,8 @@ export const getProductPerformanceReport = async (
   endDate: string,
   limit = 20
 ): Promise<ProductPerformanceReportDto> => {
-  const response = await api.get(`${BASE_PATH}/products`, {
-    params: { startDate, endDate, limit }
-  });
-  return response.data;
+  const params = new URLSearchParams({ startDate, endDate, limit: String(limit) });
+  return apiClient.get<ProductPerformanceReportDto>(`${BASE_PATH}/products?${params}`);
 };
 
 /**
@@ -407,10 +407,8 @@ export const getBestSellers = async (
   endDate: string,
   limit = 10
 ): Promise<ProductPerformance[]> => {
-  const response = await api.get(`${BASE_PATH}/products/best-sellers`, {
-    params: { startDate, endDate, limit }
-  });
-  return response.data;
+  const params = new URLSearchParams({ startDate, endDate, limit: String(limit) });
+  return apiClient.get<ProductPerformance[]>(`${BASE_PATH}/products/best-sellers?${params}`);
 };
 
 /**
@@ -421,10 +419,8 @@ export const getCustomerReport = async (
   endDate: string,
   topCustomersLimit = 10
 ): Promise<CustomerReportDto> => {
-  const response = await api.get(`${BASE_PATH}/customers`, {
-    params: { startDate, endDate, topCustomersLimit }
-  });
-  return response.data;
+  const params = new URLSearchParams({ startDate, endDate, topCustomersLimit: String(topCustomersLimit) });
+  return apiClient.get<CustomerReportDto>(`${BASE_PATH}/customers?${params}`);
 };
 
 /**
@@ -435,26 +431,22 @@ export const getTopCustomers = async (
   endDate: string,
   limit = 10
 ): Promise<TopCustomer[]> => {
-  const response = await api.get(`${BASE_PATH}/customers/top`, {
-    params: { startDate, endDate, limit }
-  });
-  return response.data;
+  const params = new URLSearchParams({ startDate, endDate, limit: String(limit) });
+  return apiClient.get<TopCustomer[]>(`${BASE_PATH}/customers/top?${params}`);
 };
 
 /**
  * Get inventory report.
  */
 export const getInventoryReport = async (): Promise<InventoryReportDto> => {
-  const response = await api.get(`${BASE_PATH}/inventory`);
-  return response.data;
+  return apiClient.get<InventoryReportDto>(`${BASE_PATH}/inventory`);
 };
 
 /**
  * Get products needing reorder.
  */
 export const getReorderRecommendations = async (): Promise<ReorderRecommendation[]> => {
-  const response = await api.get(`${BASE_PATH}/inventory/reorder`);
-  return response.data;
+  return apiClient.get<ReorderRecommendation[]>(`${BASE_PATH}/inventory/reorder`);
 };
 
 /**
@@ -464,10 +456,8 @@ export const getTaxReport = async (
   startDate: string,
   endDate: string
 ): Promise<TaxReportDto> => {
-  const response = await api.get(`${BASE_PATH}/tax`, {
-    params: { startDate, endDate }
-  });
-  return response.data;
+  const params = new URLSearchParams({ startDate, endDate });
+  return apiClient.get<TaxReportDto>(`${BASE_PATH}/tax?${params}`);
 };
 
 /**
@@ -479,11 +469,14 @@ export const exportToCsv = async (
   endDate: string,
   periodType?: PeriodType
 ): Promise<Blob> => {
-  const response = await api.get(`${BASE_PATH}/export/csv`, {
-    params: { reportType, startDate, endDate, periodType },
-    responseType: 'blob'
+  const params = new URLSearchParams({ reportType, startDate, endDate });
+  if (periodType) params.append('periodType', periodType);
+  const response = await fetch(`${BASE_PATH}/export/csv?${params}`, {
+    method: 'GET',
+    credentials: 'include'
   });
-  return response.data;
+  if (!response.ok) throw new Error('Export failed');
+  return response.blob();
 };
 
 /**
@@ -495,35 +488,35 @@ export const exportToExcel = async (
   endDate: string,
   periodType?: PeriodType
 ): Promise<Blob> => {
-  const response = await api.get(`${BASE_PATH}/export/excel`, {
-    params: { reportType, startDate, endDate, periodType },
-    responseType: 'blob'
+  const params = new URLSearchParams({ reportType, startDate, endDate });
+  if (periodType) params.append('periodType', periodType);
+  const response = await fetch(`${BASE_PATH}/export/excel?${params}`, {
+    method: 'GET',
+    credentials: 'include'
   });
-  return response.data;
+  if (!response.ok) throw new Error('Export failed');
+  return response.blob();
 };
 
 /**
  * Get available report types.
  */
 export const getReportTypes = async (): Promise<string[]> => {
-  const response = await api.get(`${BASE_PATH}/types`);
-  return response.data;
+  return apiClient.get<string[]>(`${BASE_PATH}/types`);
 };
 
 /**
  * Get available period types.
  */
 export const getPeriodTypes = async (): Promise<string[]> => {
-  const response = await api.get(`${BASE_PATH}/periods`);
-  return response.data;
+  return apiClient.get<string[]>(`${BASE_PATH}/periods`);
 };
 
 /**
  * Get date range presets.
  */
 export const getDatePresets = async (): Promise<DateRangePresets> => {
-  const response = await api.get(`${BASE_PATH}/presets`);
-  return response.data;
+  return apiClient.get<DateRangePresets>(`${BASE_PATH}/presets`);
 };
 
 // === Utility Functions ===

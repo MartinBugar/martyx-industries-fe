@@ -1,4 +1,4 @@
-import api from './api';
+import { apiClient } from './apiClient';
 
 // Types
 export type CommunicationType =
@@ -87,10 +87,8 @@ export const getCustomerTimeline = async (
   page: number = 0,
   size: number = 20
 ): Promise<Page<CustomerCommunicationDto>> => {
-  const response = await api.get(`/api/admin/communications/user/${userId}`, {
-    params: { page, size }
-  });
-  return response.data;
+  const params = new URLSearchParams({ page: String(page), size: String(size) });
+  return apiClient.get<Page<CustomerCommunicationDto>>(`/api/admin/communications/user/${userId}?${params}`);
 };
 
 export const getFilteredTimeline = async (
@@ -104,10 +102,12 @@ export const getFilteredTimeline = async (
   page: number = 0,
   size: number = 20
 ): Promise<Page<CustomerCommunicationDto>> => {
-  const response = await api.get(`/api/admin/communications/user/${userId}/filter`, {
-    params: { ...filters, page, size }
-  });
-  return response.data;
+  const params = new URLSearchParams({ page: String(page), size: String(size) });
+  if (filters.type) params.append('type', filters.type);
+  if (filters.direction) params.append('direction', filters.direction);
+  if (filters.startDate) params.append('startDate', filters.startDate);
+  if (filters.endDate) params.append('endDate', filters.endDate);
+  return apiClient.get<Page<CustomerCommunicationDto>>(`/api/admin/communications/user/${userId}/filter?${params}`);
 };
 
 export const searchCommunications = async (
@@ -116,20 +116,16 @@ export const searchCommunications = async (
   page: number = 0,
   size: number = 20
 ): Promise<Page<CustomerCommunicationDto>> => {
-  const response = await api.get(`/api/admin/communications/user/${userId}/search`, {
-    params: { query, page, size }
-  });
-  return response.data;
+  const params = new URLSearchParams({ query, page: String(page), size: String(size) });
+  return apiClient.get<Page<CustomerCommunicationDto>>(`/api/admin/communications/user/${userId}/search?${params}`);
 };
 
 export const getByOrderId = async (orderId: number): Promise<CustomerCommunicationDto[]> => {
-  const response = await api.get(`/api/admin/communications/order/${orderId}`);
-  return response.data;
+  return apiClient.get<CustomerCommunicationDto[]>(`/api/admin/communications/order/${orderId}`);
 };
 
 export const getByTicketId = async (ticketId: number): Promise<CustomerCommunicationDto[]> => {
-  const response = await api.get(`/api/admin/communications/ticket/${ticketId}`);
-  return response.data;
+  return apiClient.get<CustomerCommunicationDto[]>(`/api/admin/communications/ticket/${ticketId}`);
 };
 
 export const getGuestTimeline = async (
@@ -137,23 +133,19 @@ export const getGuestTimeline = async (
   page: number = 0,
   size: number = 20
 ): Promise<Page<CustomerCommunicationDto>> => {
-  const response = await api.get(`/api/admin/communications/guest`, {
-    params: { email, page, size }
-  });
-  return response.data;
+  const params = new URLSearchParams({ email, page: String(page), size: String(size) });
+  return apiClient.get<Page<CustomerCommunicationDto>>(`/api/admin/communications/guest?${params}`);
 };
 
 export const getCommunicationById = async (id: number): Promise<CustomerCommunicationDto> => {
-  const response = await api.get(`/api/admin/communications/${id}`);
-  return response.data;
+  return apiClient.get<CustomerCommunicationDto>(`/api/admin/communications/${id}`);
 };
 
 export const addAdminNote = async (
   userId: number,
   data: { subject: string; content: string }
 ): Promise<CustomerCommunicationDto> => {
-  const response = await api.post(`/api/admin/communications/user/${userId}/note`, data);
-  return response.data;
+  return apiClient.post<CustomerCommunicationDto>(`/api/admin/communications/user/${userId}/note`, data);
 };
 
 export const logPhoneCall = async (
@@ -165,8 +157,7 @@ export const logPhoneCall = async (
     outcome?: string;
   }
 ): Promise<CustomerCommunicationDto> => {
-  const response = await api.post(`/api/admin/communications/user/${userId}/call`, data);
-  return response.data;
+  return apiClient.post<CustomerCommunicationDto>(`/api/admin/communications/user/${userId}/call`, data);
 };
 
 export const logCustomCommunication = async (
@@ -180,35 +171,30 @@ export const logCustomCommunication = async (
     relatedTicketId?: number;
   }
 ): Promise<CustomerCommunicationDto> => {
-  const response = await api.post(`/api/admin/communications/user/${userId}/custom`, data);
-  return response.data;
+  return apiClient.post<CustomerCommunicationDto>(`/api/admin/communications/user/${userId}/custom`, data);
 };
 
 export const getCustomerStats = async (userId: number): Promise<CommunicationStatsDto> => {
-  const response = await api.get(`/api/admin/communications/user/${userId}/stats`);
-  return response.data;
+  return apiClient.get<CommunicationStatsDto>(`/api/admin/communications/user/${userId}/stats`);
 };
 
 export const getRecentCommunications = async (
   userId: number,
   limit: number = 5
 ): Promise<CustomerCommunicationDto[]> => {
-  const response = await api.get(`/api/admin/communications/user/${userId}/recent`, {
-    params: { limit }
-  });
-  return response.data;
+  const params = new URLSearchParams({ limit: String(limit) });
+  return apiClient.get<CustomerCommunicationDto[]>(`/api/admin/communications/user/${userId}/recent?${params}`);
 };
 
 export const updateNote = async (
   id: number,
   data: { subject: string; content: string }
 ): Promise<CustomerCommunicationDto> => {
-  const response = await api.put(`/api/admin/communications/${id}`, data);
-  return response.data;
+  return apiClient.put<CustomerCommunicationDto>(`/api/admin/communications/${id}`, data);
 };
 
 export const deleteNote = async (id: number): Promise<void> => {
-  await api.delete(`/api/admin/communications/${id}`);
+  await apiClient.delete(`/api/admin/communications/${id}`);
 };
 
 // Helper functions

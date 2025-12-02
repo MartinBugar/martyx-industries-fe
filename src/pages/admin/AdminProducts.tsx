@@ -88,7 +88,7 @@ const AdminProducts: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page]);
 
   // Load products on mount
   useEffect(() => {

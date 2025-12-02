@@ -3,7 +3,7 @@
  * API communication for customer cohort analysis
  */
 
-import api from './api';
+import { apiClient } from './apiClient';
 
 // === Types ===
 
@@ -124,10 +124,8 @@ export const getCohortReport = async (
   endDate: string,
   maxPeriods = 6
 ): Promise<CohortReportDto> => {
-  const response = await api.get(`${BASE_PATH}/report`, {
-    params: { type, granularity, startDate, endDate, maxPeriods }
-  });
-  return response.data;
+  const params = new URLSearchParams({ type, granularity, startDate, endDate, maxPeriods: String(maxPeriods) });
+  return apiClient.get<CohortReportDto>(`${BASE_PATH}/report?${params}`);
 };
 
 /**
@@ -139,10 +137,8 @@ export const getAcquisitionCohorts = async (
   granularity = 'MONTHLY',
   maxPeriods = 6
 ): Promise<CohortDto[]> => {
-  const response = await api.get(`${BASE_PATH}/acquisition`, {
-    params: { startDate, endDate, granularity, maxPeriods }
-  });
-  return response.data;
+  const params = new URLSearchParams({ startDate, endDate, granularity, maxPeriods: String(maxPeriods) });
+  return apiClient.get<CohortDto[]>(`${BASE_PATH}/acquisition?${params}`);
 };
 
 /**
@@ -153,10 +149,8 @@ export const getBehavioralCohorts = async (
   endDate: string,
   maxPeriods = 6
 ): Promise<CohortDto[]> => {
-  const response = await api.get(`${BASE_PATH}/behavioral`, {
-    params: { startDate, endDate, maxPeriods }
-  });
-  return response.data;
+  const params = new URLSearchParams({ startDate, endDate, maxPeriods: String(maxPeriods) });
+  return apiClient.get<CohortDto[]>(`${BASE_PATH}/behavioral?${params}`);
 };
 
 /**
@@ -167,10 +161,8 @@ export const getValueCohorts = async (
   endDate: string,
   maxPeriods = 6
 ): Promise<CohortDto[]> => {
-  const response = await api.get(`${BASE_PATH}/value`, {
-    params: { startDate, endDate, maxPeriods }
-  });
-  return response.data;
+  const params = new URLSearchParams({ startDate, endDate, maxPeriods: String(maxPeriods) });
+  return apiClient.get<CohortDto[]>(`${BASE_PATH}/value?${params}`);
 };
 
 /**
@@ -181,10 +173,8 @@ export const getCohortSummary = async (
   startDate: string,
   endDate: string
 ): Promise<CohortSummaryDto> => {
-  const response = await api.get(`${BASE_PATH}/summary`, {
-    params: { type, startDate, endDate }
-  });
-  return response.data;
+  const params = new URLSearchParams({ type, startDate, endDate });
+  return apiClient.get<CohortSummaryDto>(`${BASE_PATH}/summary?${params}`);
 };
 
 /**
@@ -194,10 +184,8 @@ export const compareCohorts = async (
   cohort1Id: string,
   cohort2Id: string
 ): Promise<CohortComparisonDto> => {
-  const response = await api.get(`${BASE_PATH}/compare`, {
-    params: { cohort1Id, cohort2Id }
-  });
-  return response.data;
+  const params = new URLSearchParams({ cohort1Id, cohort2Id });
+  return apiClient.get<CohortComparisonDto>(`${BASE_PATH}/compare?${params}`);
 };
 
 /**
@@ -207,26 +195,22 @@ export const getRetentionCurve = async (
   cohortId: string,
   maxPeriods = 12
 ): Promise<RetentionPeriodDto[]> => {
-  const response = await api.get(`${BASE_PATH}/retention/${cohortId}`, {
-    params: { maxPeriods }
-  });
-  return response.data;
+  const params = new URLSearchParams({ maxPeriods: String(maxPeriods) });
+  return apiClient.get<RetentionPeriodDto[]>(`${BASE_PATH}/retention/${cohortId}?${params}`);
 };
 
 /**
  * Get cohort type options.
  */
 export const getCohortTypeOptions = async (): Promise<CohortTypeOption[]> => {
-  const response = await api.get(`${BASE_PATH}/types`);
-  return response.data;
+  return apiClient.get<CohortTypeOption[]>(`${BASE_PATH}/types`);
 };
 
 /**
  * Get granularity options.
  */
 export const getGranularityOptions = async (): Promise<GranularityOption[]> => {
-  const response = await api.get(`${BASE_PATH}/granularities`);
-  return response.data;
+  return apiClient.get<GranularityOption[]>(`${BASE_PATH}/granularities`);
 };
 
 // === Utility Functions ===

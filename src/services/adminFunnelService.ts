@@ -3,7 +3,7 @@
  * API communication for conversion funnel analysis
  */
 
-import api from './api';
+import { apiClient } from './apiClient';
 
 // === Types ===
 
@@ -148,10 +148,8 @@ export const getFunnelReport = async (
   endDate: string,
   includeComparison = true
 ): Promise<FunnelReportDto> => {
-  const response = await api.get(`${BASE_PATH}/report`, {
-    params: { startDate, endDate, includeComparison }
-  });
-  return response.data;
+  const params = new URLSearchParams({ startDate, endDate, includeComparison: String(includeComparison) });
+  return apiClient.get<FunnelReportDto>(`${BASE_PATH}/report?${params}`);
 };
 
 /**
@@ -161,10 +159,8 @@ export const getFunnelStages = async (
   startDate: string,
   endDate: string
 ): Promise<FunnelStageDto[]> => {
-  const response = await api.get(`${BASE_PATH}/stages`, {
-    params: { startDate, endDate }
-  });
-  return response.data;
+  const params = new URLSearchParams({ startDate, endDate });
+  return apiClient.get<FunnelStageDto[]>(`${BASE_PATH}/stages?${params}`);
 };
 
 /**
@@ -174,10 +170,8 @@ export const getDailyTrend = async (
   startDate: string,
   endDate: string
 ): Promise<DailyFunnelDto[]> => {
-  const response = await api.get(`${BASE_PATH}/daily-trend`, {
-    params: { startDate, endDate }
-  });
-  return response.data;
+  const params = new URLSearchParams({ startDate, endDate });
+  return apiClient.get<DailyFunnelDto[]>(`${BASE_PATH}/daily-trend?${params}`);
 };
 
 /**
@@ -187,10 +181,8 @@ export const getBreakdownByDevice = async (
   startDate: string,
   endDate: string
 ): Promise<FunnelBreakdownDto[]> => {
-  const response = await api.get(`${BASE_PATH}/breakdown/device`, {
-    params: { startDate, endDate }
-  });
-  return response.data;
+  const params = new URLSearchParams({ startDate, endDate });
+  return apiClient.get<FunnelBreakdownDto[]>(`${BASE_PATH}/breakdown/device?${params}`);
 };
 
 /**
@@ -200,10 +192,8 @@ export const getBreakdownBySource = async (
   startDate: string,
   endDate: string
 ): Promise<FunnelBreakdownDto[]> => {
-  const response = await api.get(`${BASE_PATH}/breakdown/source`, {
-    params: { startDate, endDate }
-  });
-  return response.data;
+  const params = new URLSearchParams({ startDate, endDate });
+  return apiClient.get<FunnelBreakdownDto[]>(`${BASE_PATH}/breakdown/source?${params}`);
 };
 
 /**
@@ -213,10 +203,8 @@ export const getDropOffInsights = async (
   startDate: string,
   endDate: string
 ): Promise<DropOffInsightDto[]> => {
-  const response = await api.get(`${BASE_PATH}/drop-off`, {
-    params: { startDate, endDate }
-  });
-  return response.data;
+  const params = new URLSearchParams({ startDate, endDate });
+  return apiClient.get<DropOffInsightDto[]>(`${BASE_PATH}/drop-off?${params}`);
 };
 
 /**
@@ -227,10 +215,8 @@ export const getConversionPaths = async (
   endDate: string,
   limit = 10
 ): Promise<ConversionPathDto[]> => {
-  const response = await api.get(`${BASE_PATH}/paths`, {
-    params: { startDate, endDate, limit }
-  });
-  return response.data;
+  const params = new URLSearchParams({ startDate, endDate, limit: String(limit) });
+  return apiClient.get<ConversionPathDto[]>(`${BASE_PATH}/paths?${params}`);
 };
 
 /**
@@ -242,18 +228,15 @@ export const comparePeriods = async (
   period2Start: string,
   period2End: string
 ): Promise<FunnelComparisonDto> => {
-  const response = await api.get(`${BASE_PATH}/compare`, {
-    params: { period1Start, period1End, period2Start, period2End }
-  });
-  return response.data;
+  const params = new URLSearchParams({ period1Start, period1End, period2Start, period2End });
+  return apiClient.get<FunnelComparisonDto>(`${BASE_PATH}/compare?${params}`);
 };
 
 /**
  * Get stage definitions.
  */
 export const getStageDefinitions = async (): Promise<FunnelStageDefinition[]> => {
-  const response = await api.get(`${BASE_PATH}/stages/definitions`);
-  return response.data;
+  return apiClient.get<FunnelStageDefinition[]>(`${BASE_PATH}/stages/definitions`);
 };
 
 // === Utility Functions ===
