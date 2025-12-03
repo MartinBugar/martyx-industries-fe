@@ -138,22 +138,6 @@ const OrderDetailsCard: React.FC<OrderDetailsCardProps> = ({
     return `${amount.toFixed(2)} ${code}`;
   };
 
-  // Get status badge class
-  const getStatusBadgeClass = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'completed':
-        return 'status-badge completed';
-      case 'processing':
-        return 'status-badge processing';
-      case 'shipped':
-        return 'status-badge shipped';
-      case 'cancelled':
-        return 'status-badge cancelled';
-      default:
-        return 'status-badge';
-    }
-  };
-
   // Handle invoice download
   const handleInvoiceDownload = async (order: Order) => {
     const apiOrderId = order.backendId || order.id;
