@@ -1,6 +1,6 @@
 /**
  * Inventory Management Type Definitions
- * Corresponds to backend DTOs for stock movements, alerts, suppliers, and purchase orders
+ * Corresponds to backend DTOs for stock movements and alerts
  */
 
 /**
@@ -41,27 +41,6 @@ export const AlertStatus = {
 } as const;
 export type AlertStatus = typeof AlertStatus[keyof typeof AlertStatus];
 
-/**
- * Purchase Order Status enum
- */
-export const PurchaseOrderStatus = {
-  DRAFT: 'DRAFT',
-  SENT: 'SENT',
-  CONFIRMED: 'CONFIRMED',
-  RECEIVED: 'RECEIVED',
-  CANCELLED: 'CANCELLED'
-} as const;
-export type PurchaseOrderStatus = typeof PurchaseOrderStatus[keyof typeof PurchaseOrderStatus];
-
-/**
- * Payment Status enum
- */
-export const PaymentStatus = {
-  UNPAID: 'UNPAID',
-  PARTIALLY_PAID: 'PARTIALLY_PAID',
-  PAID: 'PAID'
-} as const;
-export type PaymentStatus = typeof PaymentStatus[keyof typeof PaymentStatus];
 
 /**
  * Stock Movement record
@@ -82,7 +61,6 @@ export interface StockMovementDto {
   order_number?: string;
   order_item_id?: number;
   return_request_id?: number;
-  supplier_order_id?: number;
   unit_cost?: number;
   total_cost?: number;
   location?: string;
@@ -119,83 +97,6 @@ export interface StockAlertDto {
   resolution_notes?: string;
   created_at: string; // ISO date string
   updated_at: string; // ISO date string
-}
-
-/**
- * Supplier details
- * Supplier information for inventory purchases and restocking
- */
-export interface SupplierDto {
-  id: number;
-  supplier_name: string;
-  supplier_code: string;
-  contact_person?: string;
-  email?: string;
-  phone?: string;
-  street?: string;
-  city?: string;
-  postal_code?: string;
-  country?: string;
-  country_code?: string;
-  company_id?: string;
-  tax_id?: string;
-  vat_id?: string;
-  payment_terms?: string;
-  payment_method?: string;
-  supplier_rating?: number;
-  total_orders?: number;
-  is_active: boolean;
-  notes?: string;
-  created_at: string; // ISO date string
-  updated_at: string; // ISO date string
-}
-
-/**
- * Purchase Order details
- * Purchase order for restocking inventory from suppliers
- */
-export interface PurchaseOrderDto {
-  id: number;
-  po_number: string;
-  supplier_id: number;
-  supplier_name?: string;
-  supplier_code?: string;
-  order_status: string; // PurchaseOrderStatus enum value
-  order_date: string; // ISO date string (LocalDate)
-  expected_delivery_date?: string; // ISO date string (LocalDate)
-  actual_delivery_date?: string; // ISO date string (LocalDate)
-  subtotal: number;
-  tax_amount: number;
-  shipping_cost: number;
-  total_amount: number;
-  payment_status: string; // PaymentStatus enum value
-  payment_date?: string; // ISO date string (LocalDate)
-  notes?: string;
-  internal_notes?: string;
-  created_by?: number;
-  created_by_name?: string;
-  created_at: string; // ISO date string
-  updated_at: string; // ISO date string
-}
-
-/**
- * Purchase Order creation DTO
- * Request DTO for creating new purchase orders
- */
-export interface PurchaseOrderCreateDto {
-  po_number: string;
-  supplier_id: number;
-  order_status: string; // PurchaseOrderStatus enum value
-  order_date: string; // ISO date string (LocalDate)
-  expected_delivery_date?: string; // ISO date string (LocalDate)
-  subtotal: number;
-  tax_amount: number;
-  shipping_cost: number;
-  total_amount: number;
-  payment_status?: string; // PaymentStatus enum value
-  notes?: string;
-  internal_notes?: string;
-  items?: string; // JSON array: [{product_id, variant_id, quantity, unit_cost}]
 }
 
 /**
