@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Eye } from 'lucide-react';
+import { Eye, Mail, MessageSquare, Check, X, Trash2, Search, Plus } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import {
   type TicketDto,
@@ -23,22 +23,41 @@ import {
   getPriorityColor,
   formatTimeAgo,
 } from '../../services/adminTicketsService';
+import adminContactService, {
+  type ContactFormSubmissionDto,
+  type ContactFormStatsDto,
+} from '../../services/adminContactService';
+import { Button, Badge, SkeletonTable, ConfirmDialog, useConfirmDialog } from '../../components/ui';
+import './AdminUsers.css';
+import './AdminButtonOverrides.css';
 import './AdminTickets.css';
 
-type TabType = 'all' | 'my' | 'unassigned' | 'urgent';
+type MainTabType = 'tickets' | 'contact-forms';
+type TicketTabType = 'all' | 'my' | 'unassigned' | 'urgent';
 
 const AdminTickets: React.FC = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<TabType>('all');
+
+  // Main tabs: tickets vs contact forms
+  const [mainTab, setMainTab] = useState<MainTabType>('tickets');
+  const [ticketTab, setTicketTab] = useState<TicketTabType>('all');
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Data
+  // Ticket Data
   const [tickets, setTickets] = useState<TicketDto[]>([]);
   const [stats, setStats] = useState<TicketStatsDto | null>(null);
   const [categories, setCategories] = useState<TicketCategoryDto[]>([]);
   const [totalElements, setTotalElements] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+
+  // Contact Form Data
+  const [contactForms, setContactForms] = useState<ContactFormSubmissionDto[]>([]);
+  const [contactStats, setContactStats] = useState<ContactFormStatsDto | null>(null);
+  const [contactTotalElements, setContactTotalElements] = useState(0);
+  const [contactTotalPages, setContactTotalPages] = useState(0);
+  const [contactProcessedFilter, setContactProcessedFilter] = useState<boolean | undefined>(undefined);
 
   // Filters
   const [statusFilter, setStatusFilter] = useState<TicketStatus | ''>('');
@@ -51,15 +70,52 @@ const AdminTickets: React.FC = () => {
   // Selected tickets for bulk operations
   const [selectedTickets, setSelectedTickets] = useState<Set<number>>(new Set());
 
+  // Accessible confirm dialog
+  const { confirm, dialogProps } = useConfirmDialog({
+    title: 'Potvrdiť odstránenie',
+    variant: 'danger',
+    confirmText: 'Odstrániť',
+    cancelText: 'Zrušiť',
+  });
+
   // Load categories on mount
   useEffect(() => {
     getActiveCategories().then(setCategories).catch(console.error);
   }, []);
 
-  // Load stats
+  // Load ticket stats
   useEffect(() => {
     getTicketStats().then(setStats).catch(console.error);
   }, []);
+
+  // Load contact form stats
+  useEffect(() => {
+    adminContactService.getStats().then(setContactStats).catch(console.error);
+  }, []);
+
+  // Load contact forms
+  const loadContactForms = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await adminContactService.getSubmissions(page, pageSize, contactProcessedFilter);
+      setContactForms(result.content);
+      setContactTotalElements(result.totalElements);
+      setContactTotalPages(result.totalPages);
+    } catch (err) {
+      console.error('Failed to load contact forms:', err);
+      setError('Nepodarilo sa načítať kontaktné formuláre');
+    } finally {
+      setLoading(false);
+    }
+  }, [page, pageSize, contactProcessedFilter]);
+
+  // Load contact forms when on that tab
+  useEffect(() => {
+    if (mainTab === 'contact-forms') {
+      loadContactForms();
+    }
+  }, [mainTab, loadContactForms]);
 
   // Load tickets based on filters
   const loadTickets = useCallback(async () => {
@@ -82,13 +138,13 @@ const AdminTickets: React.FC = () => {
         if (categoryFilter) params.categoryId = categoryFilter;
 
         // Tab-specific filters
-        if (activeTab === 'my') {
+        if (ticketTab === 'my') {
           // Use my-tickets endpoint instead
           result = await getMyTickets(page, pageSize);
         } else {
-          if (activeTab === 'unassigned') {
+          if (ticketTab === 'unassigned') {
             params.unassigned = true;
-          } else if (activeTab === 'urgent') {
+          } else if (ticketTab === 'urgent') {
             params.priority = 'URGENT';
           }
 
@@ -105,16 +161,19 @@ const AdminTickets: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [activeTab, statusFilter, priorityFilter, categoryFilter, searchQuery, page, pageSize]);
+  }, [ticketTab, statusFilter, priorityFilter, categoryFilter, searchQuery, page, pageSize]);
 
+  // Load tickets when on tickets tab
   useEffect(() => {
-    loadTickets();
-  }, [loadTickets]);
+    if (mainTab === 'tickets') {
+      loadTickets();
+    }
+  }, [mainTab, loadTickets]);
 
   // Reset page when filters change
   useEffect(() => {
     setPage(0);
-  }, [activeTab, statusFilter, priorityFilter, categoryFilter, searchQuery]);
+  }, [mainTab, ticketTab, statusFilter, priorityFilter, categoryFilter, searchQuery, contactProcessedFilter]);
 
   // Handlers
   const handleTicketClick = (ticket: TicketDto) => {
@@ -181,143 +240,277 @@ const AdminTickets: React.FC = () => {
     setSelectedTickets(newSelected);
   };
 
-  // Navigation Tabs
-  const NavTabs = (
-    <nav className="tickets-nav-tabs">
+  // Contact form handlers
+  const handleMarkAsProcessed = async (id: number) => {
+    try {
+      await adminContactService.markAsProcessed(id);
+      await loadContactForms();
+      adminContactService.getStats().then(setContactStats);
+    } catch (err) {
+      console.error('Failed to mark as processed:', err);
+    }
+  };
+
+  const handleMarkAsUnprocessed = async (id: number) => {
+    try {
+      await adminContactService.markAsUnprocessed(id);
+      await loadContactForms();
+      adminContactService.getStats().then(setContactStats);
+    } catch (err) {
+      console.error('Failed to mark as unprocessed:', err);
+    }
+  };
+
+  const handleDeleteContactForm = async (id: number) => {
+    const confirmed = await confirm({
+      title: 'Potvrdiť odstránenie',
+      message: 'Naozaj chcete odstrániť tento kontaktný formulár?',
+    });
+    if (!confirmed) return;
+    try {
+      await adminContactService.deleteSubmission(id);
+      await loadContactForms();
+      adminContactService.getStats().then(setContactStats);
+    } catch (err) {
+      console.error('Failed to delete contact form:', err);
+    }
+  };
+
+  // Main Navigation Tabs (Tickets vs Contact Forms)
+  const navTabs = (
+    <nav className="dashboard-tabs">
       <button
-        className={`nav-tab ${activeTab === 'all' ? 'active' : ''}`}
-        onClick={() => setActiveTab('all')}
+        className={`dashboard-tab ${mainTab === 'tickets' ? 'active' : ''}`}
+        data-tab="tickets"
+        onClick={() => setMainTab('tickets')}
+        aria-label="View user tickets"
       >
-        Všetky
-        {stats && <span className="tab-count">{stats.totalTickets}</span>}
+        <MessageSquare size={16} style={{ marginRight: 6 }} />
+        Tikety od používateľov
+        {stats && <Badge variant="default" size="sm" style={{ marginLeft: 8 }}>{stats.totalTickets}</Badge>}
       </button>
       <button
-        className={`nav-tab ${activeTab === 'my' ? 'active' : ''}`}
-        onClick={() => setActiveTab('my')}
+        className={`dashboard-tab ${mainTab === 'contact-forms' ? 'active' : ''}`}
+        data-tab="contact-forms"
+        onClick={() => setMainTab('contact-forms')}
+        aria-label="View contact form submissions"
+      >
+        <Mail size={16} style={{ marginRight: 6 }} />
+        Kontaktné formuláre
+        {contactStats && contactStats.unprocessed > 0 && (
+          <Badge variant="warning" size="sm" style={{ marginLeft: 8 }}>{contactStats.unprocessed}</Badge>
+        )}
+      </button>
+    </nav>
+  );
+
+  // Ticket Sub-Navigation Tabs
+  const TicketSubTabs = (
+    <nav className="dashboard-tabs" style={{ marginBottom: '1rem' }}>
+      <button
+        className={`dashboard-tab ${ticketTab === 'all' ? 'active' : ''}`}
+        onClick={() => setTicketTab('all')}
+      >
+        Všetky
+        {stats && <Badge variant="default" size="sm" style={{ marginLeft: 8 }}>{stats.totalTickets}</Badge>}
+      </button>
+      <button
+        className={`dashboard-tab ${ticketTab === 'my' ? 'active' : ''}`}
+        onClick={() => setTicketTab('my')}
       >
         Moje tikety
       </button>
       <button
-        className={`nav-tab ${activeTab === 'unassigned' ? 'active' : ''}`}
-        onClick={() => setActiveTab('unassigned')}
+        className={`dashboard-tab ${ticketTab === 'unassigned' ? 'active' : ''}`}
+        onClick={() => setTicketTab('unassigned')}
       >
         Nepriradené
         {stats && stats.unassignedTickets > 0 && (
-          <span className="tab-count warning">{stats.unassignedTickets}</span>
+          <Badge variant="warning" size="sm" style={{ marginLeft: 8 }}>{stats.unassignedTickets}</Badge>
         )}
       </button>
       <button
-        className={`nav-tab ${activeTab === 'urgent' ? 'active' : ''}`}
-        onClick={() => setActiveTab('urgent')}
+        className={`dashboard-tab ${ticketTab === 'urgent' ? 'active' : ''}`}
+        onClick={() => setTicketTab('urgent')}
       >
         Urgentné
         {stats && stats.urgentCount > 0 && (
-          <span className="tab-count danger">{stats.urgentCount}</span>
+          <Badge variant="danger" size="sm" style={{ marginLeft: 8 }}>{stats.urgentCount}</Badge>
         )}
       </button>
     </nav>
   );
 
   return (
-    <AdminLayout title="Tikety" navTabs={NavTabs}>
-      <div className="admin-tickets">
-        {/* Stats Cards */}
-        {stats && (
-          <div className="tickets-stats">
-            <div className="stat-card">
-              <div className="stat-value">{stats.openTickets}</div>
-              <div className="stat-label">Otvorené</div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-value">{stats.inProgressTickets}</div>
-              <div className="stat-label">V riešení</div>
-            </div>
-            <div className="stat-card warning">
-              <div className="stat-value">{stats.slaAtRiskCount}</div>
-              <div className="stat-label">SLA v ohrození</div>
-            </div>
-            <div className="stat-card danger">
-              <div className="stat-value">{stats.slaBreachedCount}</div>
-              <div className="stat-label">SLA porušené</div>
-            </div>
-            <div className="stat-card success">
-              <div className="stat-value">{stats.ticketsResolvedToday}</div>
-              <div className="stat-label">Vyriešené dnes</div>
-            </div>
-            {stats.averageSatisfactionRating && (
-              <div className="stat-card">
-                <div className="stat-value">{stats.averageSatisfactionRating.toFixed(1)}</div>
-                <div className="stat-label">Spokojnosť</div>
+    <AdminLayout title="Podpora" navTabs={navTabs}>
+      <div className="admin-page">
+        <div className="admin-container">
+          {error && <div className="alert alert-error">{error}</div>}
+
+          {/* TICKETS TAB */}
+          {mainTab === 'tickets' && (
+          <>
+            {/* Sub-navigation for tickets */}
+            {TicketSubTabs}
+
+            {/* Stats Cards */}
+            {stats && (
+              <div className="stats-grid" style={{ marginBottom: '1.5rem' }}>
+                <div className="stat-card">
+                  <div className="stat-value">{stats.openTickets}</div>
+                  <div className="stat-label">Otvorené</div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-value">{stats.inProgressTickets}</div>
+                  <div className="stat-label">V riešení</div>
+                </div>
+                <div className="stat-card" style={{ borderColor: '#f59e0b' }}>
+                  <div className="stat-value" style={{ color: '#f59e0b' }}>{stats.slaAtRiskCount}</div>
+                  <div className="stat-label">SLA v ohrození</div>
+                </div>
+                <div className="stat-card" style={{ borderColor: '#ef4444' }}>
+                  <div className="stat-value" style={{ color: '#ef4444' }}>{stats.slaBreachedCount}</div>
+                  <div className="stat-label">SLA porušené</div>
+                </div>
+                <div className="stat-card" style={{ borderColor: '#10b981' }}>
+                  <div className="stat-value" style={{ color: '#10b981' }}>{stats.ticketsResolvedToday}</div>
+                  <div className="stat-label">Vyriešené dnes</div>
+                </div>
+                {stats.averageSatisfactionRating && (
+                  <div className="stat-card">
+                    <div className="stat-value">{stats.averageSatisfactionRating.toFixed(1)}</div>
+                    <div className="stat-label">Spokojnosť</div>
+                  </div>
+                )}
               </div>
             )}
-          </div>
-        )}
 
-        {/* Filters */}
-        <div className="tickets-filters">
-          <div className="search-box">
-            <input
-              type="text"
-              placeholder="Hľadať tikety..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-          <div className="filter-group">
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value as TicketStatus | '')}
-            >
-              <option value="">Všetky stavy</option>
-              <option value="OPEN">Otvorený</option>
-              <option value="IN_PROGRESS">V riešení</option>
-              <option value="WAITING_CUSTOMER">Čaká na zákazníka</option>
-              <option value="WAITING_INTERNAL">Čaká interne</option>
-              <option value="RESOLVED">Vyriešený</option>
-              <option value="CLOSED">Uzavretý</option>
-            </select>
-            <select
-              value={priorityFilter}
-              onChange={(e) => setPriorityFilter(e.target.value as TicketPriority | '')}
-            >
-              <option value="">Všetky priority</option>
-              <option value="URGENT">Urgentná</option>
-              <option value="HIGH">Vysoká</option>
-              <option value="NORMAL">Normálna</option>
-              <option value="LOW">Nízka</option>
-            </select>
-            <select
-              value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value ? Number(e.target.value) : '')}
-            >
-              <option value="">Všetky kategórie</option>
-              {categories.map(cat => (
-                <option key={cat.id} value={cat.id}>{cat.name}</option>
-              ))}
-            </select>
-          </div>
-          <button
-            className="btn-primary"
-            onClick={() => navigate('/admin/tickets/new')}
-          >
-            + Nový tiket
-          </button>
-        </div>
+            {/* Filters */}
+            <div className="admin-header-actions" style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap' }}>
+              <div style={{ position: 'relative', flex: 1, maxWidth: '300px' }}>
+                <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af', pointerEvents: 'none' }} />
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="Hľadať tikety..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  style={{ paddingLeft: '40px' }}
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center' }}
+                    title="Vymazať"
+                  >
+                    <X size={16} />
+                  </button>
+                )}
+              </div>
+              <select
+                className="form-input"
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value as TicketStatus | '')}
+                style={{ width: 'auto', minWidth: '150px' }}
+              >
+                <option value="">Všetky stavy</option>
+                <option value="OPEN">Otvorený</option>
+                <option value="IN_PROGRESS">V riešení</option>
+                <option value="WAITING_CUSTOMER">Čaká na zákazníka</option>
+                <option value="WAITING_INTERNAL">Čaká interne</option>
+                <option value="RESOLVED">Vyriešený</option>
+                <option value="CLOSED">Uzavretý</option>
+              </select>
+              <select
+                className="form-input"
+                value={priorityFilter}
+                onChange={(e) => setPriorityFilter(e.target.value as TicketPriority | '')}
+                style={{ width: 'auto', minWidth: '150px' }}
+              >
+                <option value="">Všetky priority</option>
+                <option value="URGENT">Urgentná</option>
+                <option value="HIGH">Vysoká</option>
+                <option value="NORMAL">Normálna</option>
+                <option value="LOW">Nízka</option>
+              </select>
+              <select
+                className="form-input"
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value ? Number(e.target.value) : '')}
+                style={{ width: 'auto', minWidth: '150px' }}
+              >
+                <option value="">Všetky kategórie</option>
+                {categories.map(cat => (
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                ))}
+              </select>
+              <Button variant="primary" onClick={() => navigate('/admin/tickets/new')}>
+                <Plus size={16} style={{ marginRight: 4 }} />
+                Nový tiket
+              </Button>
+            </div>
 
-        {/* Error */}
-        {error && <div className="tickets-error">{error}</div>}
+            {/* Mobile Card Layout */}
+            <div className="mobile-table-cards">
+              {loading ? (
+                <div className="mobile-table-card">
+                  <SkeletonTable rows={5} columns={4} />
+                </div>
+              ) : tickets.length === 0 ? (
+                <div className="mobile-table-card">
+                  <div className="table-empty">Žiadne tikety na zobrazenie</div>
+                </div>
+              ) : (
+                tickets.map(ticket => (
+                  <div key={`mobile-${ticket.id}`} className="mobile-table-card" onClick={() => handleTicketClick(ticket)}>
+                    <div className="mobile-card-header">
+                      <div>
+                        <h4 className="mobile-card-title">{ticket.ticketNumber}</h4>
+                        <p className="mobile-card-subtitle">{ticket.subject}</p>
+                      </div>
+                      <div className="mobile-card-actions" onClick={e => e.stopPropagation()}>
+                        <Button variant="outline" size="sm" onClick={() => handleTicketClick(ticket)} title="Detail">
+                          <Eye size={14} />
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="mobile-card-body">
+                      <div className="mobile-field">
+                        <span className="mobile-field-label">Zákazník:</span>
+                        <span className="mobile-field-value">{ticket.customerName || ticket.customerEmail}</span>
+                      </div>
+                      <div className="mobile-field">
+                        <span className="mobile-field-label">Priorita:</span>
+                        <span className="mobile-field-value">
+                          <Badge variant={ticket.priority === 'URGENT' ? 'danger' : ticket.priority === 'HIGH' ? 'warning' : 'default'} size="sm">
+                            {getPriorityLabel(ticket.priority)}
+                          </Badge>
+                        </span>
+                      </div>
+                      <div className="mobile-field">
+                        <span className="mobile-field-label">Stav:</span>
+                        <span className="mobile-field-value">
+                          <Badge variant={ticket.status === 'CLOSED' ? 'default' : ticket.status === 'RESOLVED' ? 'success' : 'info'} size="sm">
+                            {getStatusLabel(ticket.status)}
+                          </Badge>
+                        </span>
+                      </div>
+                      <div className="mobile-field">
+                        <span className="mobile-field-label">Vytvorené:</span>
+                        <span className="mobile-field-value">{formatTimeAgo(ticket.createdAt)}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
 
-        {/* Loading */}
-        {loading && <div className="tickets-loading">Načítava sa...</div>}
-
-        {/* Tickets Table */}
-        {!loading && (
-          <>
-            <div className="tickets-table-wrapper">
-              <table className="tickets-table">
+            {/* Desktop Table Layout */}
+            <div className="table-wrapper">
+              <table className="admin-table">
                 <thead>
                   <tr>
-                    <th className="checkbox-col">
+                    <th style={{ width: 40 }}>
                       <input
                         type="checkbox"
                         checked={selectedTickets.size === tickets.length && tickets.length > 0}
@@ -331,56 +524,56 @@ const AdminTickets: React.FC = () => {
                     <th>Stav</th>
                     <th>Priradené</th>
                     <th>Vytvorené</th>
-                    <th>Akcie</th>
+                    <th style={{ width: 80 }} className="text-right">Akcie</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {tickets.length === 0 ? (
-                    <tr>
-                      <td colSpan={9} className="empty-row">
-                        Žiadne tikety na zobrazenie
-                      </td>
-                    </tr>
+                  {loading ? (
+                    <tr><td colSpan={9} className="table-empty">
+                      <SkeletonTable rows={5} columns={9} />
+                    </td></tr>
+                  ) : tickets.length === 0 ? (
+                    <tr><td colSpan={9} className="table-empty">Žiadne tikety na zobrazenie</td></tr>
                   ) : (
                     tickets.map(ticket => (
                       <tr
                         key={ticket.id}
                         onClick={() => handleTicketClick(ticket)}
-                        className="ticket-row"
+                        style={{ cursor: 'pointer' }}
                       >
-                        <td className="checkbox-col" onClick={e => e.stopPropagation()}>
+                        <td onClick={e => e.stopPropagation()}>
                           <input
                             type="checkbox"
                             checked={selectedTickets.has(ticket.id)}
                             onChange={(e) => handleSelectTicket(e, ticket.id)}
                           />
                         </td>
-                        <td className="ticket-info">
-                          <div className="ticket-number">{ticket.ticketNumber}</div>
-                          <div className="ticket-subject">{ticket.subject}</div>
-                          {ticket.messageCount > 0 && (
-                            <span className="message-count">{ticket.messageCount} správ</span>
-                          )}
-                        </td>
-                        <td className="customer-info">
-                          <div className="customer-name">
-                            {ticket.customerName || 'Neznámy'}
+                        <td>
+                          <div>
+                            <div style={{ fontWeight: 500, color: '#6366f1' }}>{ticket.ticketNumber}</div>
+                            <div style={{ fontSize: '13px', color: '#374151' }}>{ticket.subject}</div>
+                            {ticket.messageCount > 0 && (
+                              <Badge variant="default" size="sm" style={{ marginTop: 4 }}>{ticket.messageCount} správ</Badge>
+                            )}
                           </div>
-                          <div className="customer-email">
-                            {ticket.customerEmail}
+                        </td>
+                        <td>
+                          <div>
+                            <div style={{ fontWeight: 500 }}>{ticket.customerName || 'Neznámy'}</div>
+                            <div style={{ fontSize: '12px', color: '#6b7280' }}>{ticket.customerEmail}</div>
                           </div>
                         </td>
                         <td>
                           {ticket.categoryName && (
-                            <span className="category-badge">{ticket.categoryName}</span>
+                            <Badge variant="default" size="sm">{ticket.categoryName}</Badge>
                           )}
                         </td>
                         <td onClick={e => e.stopPropagation()}>
                           <select
-                            className="priority-select"
+                            className="form-input"
                             value={ticket.priority}
                             onChange={(e) => handlePriorityChange(e, ticket.id)}
-                            style={{ borderColor: getPriorityColor(ticket.priority) }}
+                            style={{ width: 'auto', minWidth: '100px', padding: '4px 8px', fontSize: '13px', borderColor: getPriorityColor(ticket.priority) }}
                           >
                             <option value="LOW">{getPriorityLabel('LOW')}</option>
                             <option value="NORMAL">{getPriorityLabel('NORMAL')}</option>
@@ -390,10 +583,10 @@ const AdminTickets: React.FC = () => {
                         </td>
                         <td onClick={e => e.stopPropagation()}>
                           <select
-                            className="status-select"
+                            className="form-input"
                             value={ticket.status}
                             onChange={(e) => handleStatusChange(e, ticket.id)}
-                            style={{ borderColor: getStatusColor(ticket.status) }}
+                            style={{ width: 'auto', minWidth: '120px', padding: '4px 8px', fontSize: '13px', borderColor: getStatusColor(ticket.status) }}
                           >
                             <option value="OPEN">{getStatusLabel('OPEN')}</option>
                             <option value="IN_PROGRESS">{getStatusLabel('IN_PROGRESS')}</option>
@@ -405,27 +598,22 @@ const AdminTickets: React.FC = () => {
                         </td>
                         <td>
                           {ticket.assignedToName ? (
-                            <span className="assigned-name">{ticket.assignedToName}</span>
+                            <span style={{ fontSize: '13px' }}>{ticket.assignedToName}</span>
                           ) : (
-                            <button
-                              className="btn-assign"
-                              onClick={(e) => handleAssignToMe(e, ticket.id)}
-                            >
+                            <Button variant="outline" size="sm" onClick={(e) => handleAssignToMe(e, ticket.id)}>
                               Priradiť mne
-                            </button>
+                            </Button>
                           )}
                         </td>
-                        <td className="date-col">
-                          <div className="time-ago">{formatTimeAgo(ticket.createdAt)}</div>
+                        <td>
+                          <span style={{ fontSize: '13px', color: '#6b7280' }}>{formatTimeAgo(ticket.createdAt)}</span>
                         </td>
-                        <td className="actions-col" onClick={e => e.stopPropagation()}>
-                          <button
-                            className="btn-icon"
-                            title="Otvoriť detail"
-                            onClick={() => handleTicketClick(ticket)}
-                          >
-                            <Eye size={16} />
-                          </button>
+                        <td className="text-right" onClick={e => e.stopPropagation()}>
+                          <div className="action-buttons">
+                            <Button variant="outline" size="sm" onClick={() => handleTicketClick(ticket)} title="Detail">
+                              <Eye size={14} />
+                            </Button>
+                          </div>
                         </td>
                       </tr>
                     ))
@@ -434,29 +622,230 @@ const AdminTickets: React.FC = () => {
               </table>
             </div>
 
-            {/* Pagination */}
+            {/* Pagination Controls */}
             {totalPages > 1 && (
-              <div className="tickets-pagination">
-                <button
-                  disabled={page === 0}
-                  onClick={() => setPage(p => p - 1)}
-                >
-                  Predch.
-                </button>
-                <span>
-                  Strana {page + 1} z {totalPages} ({totalElements} tiketov)
-                </span>
-                <button
-                  disabled={page >= totalPages - 1}
-                  onClick={() => setPage(p => p + 1)}
-                >
-                  Ďalšia
-                </button>
+              <div className="pagination-controls" style={{ marginTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ fontSize: '14px', color: '#6b7280' }}>
+                  Zobrazené {tickets.length > 0 ? (page * pageSize + 1) : 0} - {Math.min((page + 1) * pageSize, totalElements)} z {totalElements} tiketov
+                </div>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage(p => p - 1)}
+                    disabled={page === 0 || loading}
+                  >
+                    Predch.
+                  </Button>
+                  <span style={{ padding: '8px 12px', fontSize: '14px', color: '#374151' }}>
+                    Strana {page + 1} z {totalPages}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage(p => p + 1)}
+                    disabled={page >= totalPages - 1 || loading}
+                  >
+                    Ďalšia
+                  </Button>
+                </div>
               </div>
             )}
           </>
-        )}
+          )}
+
+          {/* CONTACT FORMS TAB */}
+          {mainTab === 'contact-forms' && (
+          <>
+            {/* Stats Cards */}
+            {contactStats && (
+              <div className="stats-grid" style={{ marginBottom: '1.5rem' }}>
+                <div className="stat-card">
+                  <div className="stat-value">{contactStats.total}</div>
+                  <div className="stat-label">Celkom</div>
+                </div>
+                <div className="stat-card" style={{ borderColor: '#f59e0b' }}>
+                  <div className="stat-value" style={{ color: '#f59e0b' }}>{contactStats.unprocessed}</div>
+                  <div className="stat-label">Nespracované</div>
+                </div>
+                <div className="stat-card" style={{ borderColor: '#10b981' }}>
+                  <div className="stat-value" style={{ color: '#10b981' }}>{contactStats.processed}</div>
+                  <div className="stat-label">Spracované</div>
+                </div>
+              </div>
+            )}
+
+            {/* Filters */}
+            <div className="admin-header-actions" style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '20px' }}>
+              <select
+                className="form-input"
+                value={contactProcessedFilter === undefined ? '' : contactProcessedFilter.toString()}
+                onChange={(e) => setContactProcessedFilter(
+                  e.target.value === '' ? undefined : e.target.value === 'true'
+                )}
+                style={{ width: 'auto', minWidth: '180px' }}
+              >
+                <option value="">Všetky</option>
+                <option value="false">Nespracované</option>
+                <option value="true">Spracované</option>
+              </select>
+            </div>
+
+            {/* Mobile Card Layout */}
+            <div className="mobile-table-cards">
+              {loading ? (
+                <div className="mobile-table-card">
+                  <SkeletonTable rows={5} columns={4} />
+                </div>
+              ) : contactForms.length === 0 ? (
+                <div className="mobile-table-card">
+                  <div className="table-empty">Žiadne kontaktné formuláre na zobrazenie</div>
+                </div>
+              ) : (
+                contactForms.map(form => (
+                  <div key={`mobile-cf-${form.id}`} className="mobile-table-card">
+                    <div className="mobile-card-header">
+                      <div>
+                        <h4 className="mobile-card-title">{form.subject}</h4>
+                        <p className="mobile-card-subtitle">{form.email}</p>
+                      </div>
+                      <div className="mobile-card-actions">
+                        {form.processed ? (
+                          <Button variant="outline" size="sm" onClick={() => handleMarkAsUnprocessed(form.id)} title="Označiť ako nespracované">
+                            <X size={14} />
+                          </Button>
+                        ) : (
+                          <Button variant="primary" size="sm" onClick={() => handleMarkAsProcessed(form.id)} title="Označiť ako spracované">
+                            <Check size={14} />
+                          </Button>
+                        )}
+                        <Button variant="danger" size="sm" onClick={() => handleDeleteContactForm(form.id)} title="Odstrániť">
+                          <Trash2 size={14} />
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="mobile-card-body">
+                      <div className="mobile-field">
+                        <span className="mobile-field-label">Správa:</span>
+                        <span className="mobile-field-value">{form.text.length > 80 ? form.text.substring(0, 80) + '...' : form.text}</span>
+                      </div>
+                      <div className="mobile-field">
+                        <span className="mobile-field-label">Dátum:</span>
+                        <span className="mobile-field-value">{adminContactService.formatTimeAgo(form.createdAt)}</span>
+                      </div>
+                      <div className="mobile-field">
+                        <span className="mobile-field-label">Stav:</span>
+                        <span className="mobile-field-value">
+                          <Badge variant={form.processed ? 'success' : 'warning'} size="sm">
+                            {form.processed ? 'Spracované' : 'Nespracované'}
+                          </Badge>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Desktop Table Layout */}
+            <div className="table-wrapper">
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>Email</th>
+                    <th>Predmet</th>
+                    <th>Správa</th>
+                    <th>Dátum</th>
+                    <th>Stav</th>
+                    <th style={{ width: 120 }} className="text-right">Akcie</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {loading ? (
+                    <tr><td colSpan={6} className="table-empty">
+                      <SkeletonTable rows={5} columns={6} />
+                    </td></tr>
+                  ) : contactForms.length === 0 ? (
+                    <tr><td colSpan={6} className="table-empty">Žiadne kontaktné formuláre na zobrazenie</td></tr>
+                  ) : (
+                    contactForms.map(form => (
+                      <tr key={form.id}>
+                        <td>
+                          <a href={`mailto:${form.email}`} style={{ color: '#6366f1', textDecoration: 'none' }}>{form.email}</a>
+                        </td>
+                        <td style={{ fontWeight: 500 }}>{form.subject}</td>
+                        <td>
+                          <div style={{ maxWidth: '300px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={form.text}>
+                            {form.text.length > 100 ? form.text.substring(0, 100) + '...' : form.text}
+                          </div>
+                        </td>
+                        <td>
+                          <span style={{ fontSize: '13px', color: '#6b7280' }}>{adminContactService.formatTimeAgo(form.createdAt)}</span>
+                        </td>
+                        <td>
+                          <Badge variant={form.processed ? 'success' : 'warning'} size="sm">
+                            {form.processed ? 'Spracované' : 'Nespracované'}
+                          </Badge>
+                        </td>
+                        <td className="text-right">
+                          <div className="action-buttons">
+                            {form.processed ? (
+                              <Button variant="outline" size="sm" onClick={() => handleMarkAsUnprocessed(form.id)} title="Označiť ako nespracované">
+                                <X size={14} />
+                              </Button>
+                            ) : (
+                              <Button variant="primary" size="sm" onClick={() => handleMarkAsProcessed(form.id)} title="Označiť ako spracované">
+                                <Check size={14} />
+                              </Button>
+                            )}
+                            <Button variant="danger" size="sm" onClick={() => handleDeleteContactForm(form.id)} title="Odstrániť">
+                              <Trash2 size={14} />
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Pagination Controls */}
+            {contactTotalPages > 1 && (
+              <div className="pagination-controls" style={{ marginTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ fontSize: '14px', color: '#6b7280' }}>
+                  Zobrazené {contactForms.length > 0 ? (page * pageSize + 1) : 0} - {Math.min((page + 1) * pageSize, contactTotalElements)} z {contactTotalElements} formulárov
+                </div>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage(p => p - 1)}
+                    disabled={page === 0 || loading}
+                  >
+                    Predch.
+                  </Button>
+                  <span style={{ padding: '8px 12px', fontSize: '14px', color: '#374151' }}>
+                    Strana {page + 1} z {contactTotalPages}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage(p => p + 1)}
+                    disabled={page >= contactTotalPages - 1 || loading}
+                  >
+                    Ďalšia
+                  </Button>
+                </div>
+              </div>
+            )}
+          </>
+          )}
+        </div>
       </div>
+
+      {/* Accessible confirmation dialog */}
+      <ConfirmDialog {...dialogProps} />
     </AdminLayout>
   );
 };

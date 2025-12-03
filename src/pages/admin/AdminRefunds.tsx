@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { ConfirmDialog, useConfirmDialog } from '../../components/ui';
+import { Button, Badge, SkeletonTable, ConfirmDialog, useConfirmDialog } from '../../components/ui';
 import { useNavigate } from 'react-router-dom';
+import { Search, X, Plus, Check, XCircle, Play, Ban, Eye } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import {
   type RefundDto,
@@ -26,6 +27,8 @@ import {
   canExecute,
   canCancel,
 } from '../../services/adminRefundsService';
+import './AdminUsers.css';
+import './AdminButtonOverrides.css';
 import './AdminRefunds.css';
 
 type TabType = 'all' | 'pending' | 'approved' | 'completed' | 'failed';
@@ -209,92 +212,114 @@ const AdminRefunds: React.FC = () => {
   }, [confirm, loadRefunds]);
 
   // Navigation Tabs
-  const NavTabs = (
-    <nav className="refunds-nav-tabs">
+  const navTabs = (
+    <nav className="dashboard-tabs">
       <button
-        className={`nav-tab ${activeTab === 'all' ? 'active' : ''}`}
+        className={`dashboard-tab ${activeTab === 'all' ? 'active' : ''}`}
         onClick={() => setActiveTab('all')}
       >
         Všetky
-        {stats && <span className="tab-count">{stats.totalRefunds}</span>}
+        {stats && <Badge variant="default" size="sm" style={{ marginLeft: 8 }}>{stats.totalRefunds}</Badge>}
       </button>
       <button
-        className={`nav-tab ${activeTab === 'pending' ? 'active' : ''}`}
+        className={`dashboard-tab ${activeTab === 'pending' ? 'active' : ''}`}
         onClick={() => setActiveTab('pending')}
       >
         Čakajúce
         {stats && stats.pendingCount > 0 && (
-          <span className="tab-count warning">{stats.pendingCount}</span>
+          <Badge variant="warning" size="sm" style={{ marginLeft: 8 }}>{stats.pendingCount}</Badge>
         )}
       </button>
       <button
-        className={`nav-tab ${activeTab === 'approved' ? 'active' : ''}`}
+        className={`dashboard-tab ${activeTab === 'approved' ? 'active' : ''}`}
         onClick={() => setActiveTab('approved')}
       >
         Schválené
         {stats && stats.approvedCount > 0 && (
-          <span className="tab-count info">{stats.approvedCount}</span>
+          <Badge variant="info" size="sm" style={{ marginLeft: 8 }}>{stats.approvedCount}</Badge>
         )}
       </button>
       <button
-        className={`nav-tab ${activeTab === 'completed' ? 'active' : ''}`}
+        className={`dashboard-tab ${activeTab === 'completed' ? 'active' : ''}`}
         onClick={() => setActiveTab('completed')}
       >
         Dokončené
-        {stats && <span className="tab-count success">{stats.completedCount}</span>}
+        {stats && <Badge variant="success" size="sm" style={{ marginLeft: 8 }}>{stats.completedCount}</Badge>}
       </button>
       <button
-        className={`nav-tab ${activeTab === 'failed' ? 'active' : ''}`}
+        className={`dashboard-tab ${activeTab === 'failed' ? 'active' : ''}`}
         onClick={() => setActiveTab('failed')}
       >
         Zlyhané
         {stats && stats.failedCount > 0 && (
-          <span className="tab-count danger">{stats.failedCount}</span>
+          <Badge variant="danger" size="sm" style={{ marginLeft: 8 }}>{stats.failedCount}</Badge>
         )}
       </button>
     </nav>
   );
 
   return (
-    <AdminLayout title="Refundy" navTabs={NavTabs}>
-      <div className="admin-refunds">
-        {/* Stats Cards */}
-        {stats && (
-          <div className="refunds-stats">
-            <div className="stat-card">
-              <div className="stat-value">{stats.pendingCount}</div>
-              <div className="stat-label">Čakajúce</div>
+    <AdminLayout title="Refundy" navTabs={navTabs}>
+      <div className="admin-page">
+        <div className="admin-container">
+          {error && <div className="alert alert-error">{error}</div>}
+          {actionError && (
+            <div className="alert alert-error" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              {actionError}
+              <button onClick={() => setActionError(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px' }}>×</button>
             </div>
-            <div className="stat-card info">
-              <div className="stat-value">{formatAmount(stats.pendingAmount)}</div>
-              <div className="stat-label">Čakajúca suma</div>
-            </div>
-            <div className="stat-card success">
-              <div className="stat-value">{formatAmount(stats.refundedThisMonth)}</div>
-              <div className="stat-label">Tento mesiac</div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-value">{formatAmount(stats.totalRefundedAmount)}</div>
-              <div className="stat-label">Celkom vrátené</div>
-            </div>
-          </div>
-        )}
+          )}
 
-        {/* Filters */}
-        <div className="refunds-filters">
-          <div className="search-box">
-            <input
-              type="text"
-              placeholder="Hľadať (číslo, email, objednávka)..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-          <div className="filter-group">
+          {/* Stats Cards */}
+          {stats && (
+            <div className="stats-grid" style={{ marginBottom: '1.5rem' }}>
+              <div className="stat-card">
+                <div className="stat-value">{stats.pendingCount}</div>
+                <div className="stat-label">Čakajúce</div>
+              </div>
+              <div className="stat-card" style={{ borderColor: '#3b82f6' }}>
+                <div className="stat-value" style={{ color: '#3b82f6' }}>{formatAmount(stats.pendingAmount)}</div>
+                <div className="stat-label">Čakajúca suma</div>
+              </div>
+              <div className="stat-card" style={{ borderColor: '#10b981' }}>
+                <div className="stat-value" style={{ color: '#10b981' }}>{formatAmount(stats.refundedThisMonth)}</div>
+                <div className="stat-label">Tento mesiac</div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-value">{formatAmount(stats.totalRefundedAmount)}</div>
+                <div className="stat-label">Celkom vrátené</div>
+              </div>
+            </div>
+          )}
+
+          {/* Filters */}
+          <div className="admin-header-actions" style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap' }}>
+            <div style={{ position: 'relative', flex: 1, maxWidth: '300px' }}>
+              <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af', pointerEvents: 'none' }} />
+              <input
+                type="text"
+                className="form-input"
+                placeholder="Hľadať (číslo, email, objednávka)..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                style={{ paddingLeft: '40px' }}
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center' }}
+                  title="Vymazať"
+                >
+                  <X size={16} />
+                </button>
+              )}
+            </div>
             <select
+              className="form-input"
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as RefundStatus | '')}
               disabled={activeTab !== 'all'}
+              style={{ width: 'auto', minWidth: '160px' }}
             >
               <option value="">Všetky stavy</option>
               <option value="PENDING">Čaká na schválenie</option>
@@ -306,8 +331,10 @@ const AdminRefunds: React.FC = () => {
               <option value="CANCELLED">Zrušený</option>
             </select>
             <select
+              className="form-input"
               value={reasonFilter}
               onChange={(e) => setReasonFilter(e.target.value as RefundReason | '')}
+              style={{ width: 'auto', minWidth: '180px' }}
             >
               <option value="">Všetky dôvody</option>
               <option value="CUSTOMER_REQUEST">Žiadosť zákazníka</option>
@@ -321,203 +348,231 @@ const AdminRefunds: React.FC = () => {
               <option value="GOODWILL">Gesto dobrej vôle</option>
               <option value="OTHER">Iný dôvod</option>
             </select>
+            <Button variant="primary" onClick={() => navigate('/admin/refunds/new')}>
+              <Plus size={16} style={{ marginRight: 4 }} />
+              Nový refund
+            </Button>
           </div>
-          <button
-            className="btn-primary"
-            onClick={() => navigate('/admin/refunds/new')}
-          >
-            + Nový refund
-          </button>
-        </div>
 
-        {/* Error */}
-        {error && <div className="refunds-error">{error}</div>}
-        {actionError && (
-          <div className="refunds-error action-error">
-            {actionError}
-            <button onClick={() => setActionError(null)}>×</button>
+          {/* Mobile Card Layout */}
+          <div className="mobile-table-cards">
+            {loading ? (
+              <div className="mobile-table-card">
+                <SkeletonTable rows={5} columns={4} />
+              </div>
+            ) : refunds.length === 0 ? (
+              <div className="mobile-table-card">
+                <div className="table-empty">Žiadne refundy na zobrazenie</div>
+              </div>
+            ) : (
+              refunds.map(refund => (
+                <div key={`mobile-${refund.id}`} className="mobile-table-card" onClick={() => handleRefundClick(refund)}>
+                  <div className="mobile-card-header">
+                    <div>
+                      <h4 className="mobile-card-title">{refund.refundNumber}</h4>
+                      <p className="mobile-card-subtitle">{refund.orderNumber}</p>
+                    </div>
+                    <div className="mobile-card-actions" onClick={e => e.stopPropagation()}>
+                      <Button variant="outline" size="sm" onClick={() => handleRefundClick(refund)} title="Detail">
+                        <Eye size={14} />
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="mobile-card-body">
+                    <div className="mobile-field">
+                      <span className="mobile-field-label">Zákazník:</span>
+                      <span className="mobile-field-value">{refund.orderUserName || refund.orderUserEmail}</span>
+                    </div>
+                    <div className="mobile-field">
+                      <span className="mobile-field-label">Suma:</span>
+                      <span className="mobile-field-value" style={{ fontWeight: 600 }}>{formatAmount(refund.amount, refund.currency)}</span>
+                    </div>
+                    <div className="mobile-field">
+                      <span className="mobile-field-label">Stav:</span>
+                      <span className="mobile-field-value">
+                        <Badge variant={refund.status === 'COMPLETED' ? 'success' : refund.status === 'PENDING' ? 'warning' : refund.status === 'FAILED' ? 'danger' : 'default'} size="sm">
+                          {getStatusLabel(refund.status)}
+                        </Badge>
+                      </span>
+                    </div>
+                    <div className="mobile-field">
+                      <span className="mobile-field-label">Vytvorené:</span>
+                      <span className="mobile-field-value">{formatTimeAgo(refund.createdAt)}</span>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
-        )}
 
-        {/* Loading */}
-        {loading && <div className="refunds-loading">Načítava sa...</div>}
-
-        {/* Refunds Table */}
-        {!loading && (
-          <>
-            <div className="refunds-table-wrapper">
-              <table className="refunds-table">
-                <thead>
-                  <tr>
-                    <th>Refund</th>
-                    <th>Objednávka</th>
-                    <th>Zákazník</th>
-                    <th>Suma</th>
-                    <th>Dôvod</th>
-                    <th>Stav</th>
-                    <th>Vytvorené</th>
-                    <th>Akcie</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {refunds.length === 0 ? (
-                    <tr>
-                      <td colSpan={8} className="empty-row">
-                        Žiadne refundy na zobrazenie
+          {/* Desktop Table Layout */}
+          <div className="table-wrapper">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Refund</th>
+                  <th>Objednávka</th>
+                  <th>Zákazník</th>
+                  <th>Suma</th>
+                  <th>Dôvod</th>
+                  <th>Stav</th>
+                  <th>Vytvorené</th>
+                  <th style={{ width: 160 }} className="text-right">Akcie</th>
+                </tr>
+              </thead>
+              <tbody>
+                {loading ? (
+                  <tr><td colSpan={8} className="table-empty">
+                    <SkeletonTable rows={5} columns={8} />
+                  </td></tr>
+                ) : refunds.length === 0 ? (
+                  <tr><td colSpan={8} className="table-empty">Žiadne refundy na zobrazenie</td></tr>
+                ) : (
+                  refunds.map(refund => (
+                    <tr key={refund.id} onClick={() => handleRefundClick(refund)} style={{ cursor: 'pointer' }}>
+                      <td>
+                        <div>
+                          <div style={{ fontWeight: 500, color: '#6366f1' }}>{refund.refundNumber}</div>
+                          <div style={{ fontSize: '12px', color: '#6b7280' }}>{refund.refundTypeLabel}</div>
+                        </div>
                       </td>
-                    </tr>
-                  ) : (
-                    refunds.map(refund => (
-                      <tr
-                        key={refund.id}
-                        onClick={() => handleRefundClick(refund)}
-                        className="refund-row"
-                      >
-                        <td className="refund-number">
-                          <span className="refund-id">{refund.refundNumber}</span>
-                          <span className="refund-type">{refund.refundTypeLabel}</span>
-                        </td>
-                        <td className="order-info">
-                          <span className="order-number">{refund.orderNumber}</span>
-                        </td>
-                        <td className="customer-info">
-                          <span className="customer-name">{refund.orderUserName || refund.orderUserEmail}</span>
+                      <td>
+                        <span style={{ fontWeight: 500 }}>{refund.orderNumber}</span>
+                      </td>
+                      <td>
+                        <div>
+                          <div style={{ fontWeight: 500 }}>{refund.orderUserName || refund.orderUserEmail}</div>
                           {refund.orderUserName && (
-                            <span className="customer-email">{refund.orderUserEmail}</span>
+                            <div style={{ fontSize: '12px', color: '#6b7280' }}>{refund.orderUserEmail}</div>
                           )}
-                        </td>
-                        <td className="amount-cell">
-                          <span className="amount">{formatAmount(refund.amount, refund.currency)}</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div>
+                          <div style={{ fontWeight: 600 }}>{formatAmount(refund.amount, refund.currency)}</div>
                           {refund.originalOrderAmount && (
-                            <span className="original-amount">z {formatAmount(refund.originalOrderAmount, refund.currency)}</span>
+                            <div style={{ fontSize: '12px', color: '#6b7280' }}>z {formatAmount(refund.originalOrderAmount, refund.currency)}</div>
                           )}
-                        </td>
-                        <td className="reason-cell">
-                          <span className="reason">{getReasonLabel(refund.reason)}</span>
-                        </td>
-                        <td>
-                          <span
-                            className="status-badge"
-                            style={{ backgroundColor: getStatusColor(refund.status) }}
-                          >
-                            {getStatusLabel(refund.status)}
-                          </span>
-                        </td>
-                        <td className="date-cell">
-                          <span className="time-ago">{formatTimeAgo(refund.createdAt)}</span>
-                        </td>
-                        <td className="actions-cell" onClick={(e) => e.stopPropagation()}>
+                        </div>
+                      </td>
+                      <td>
+                        <span style={{ fontSize: '13px' }}>{getReasonLabel(refund.reason)}</span>
+                      </td>
+                      <td>
+                        <Badge
+                          variant={refund.status === 'COMPLETED' ? 'success' : refund.status === 'PENDING' ? 'warning' : refund.status === 'FAILED' || refund.status === 'REJECTED' ? 'danger' : refund.status === 'APPROVED' ? 'info' : 'default'}
+                          size="sm"
+                        >
+                          {getStatusLabel(refund.status)}
+                        </Badge>
+                      </td>
+                      <td>
+                        <span style={{ fontSize: '13px', color: '#6b7280' }}>{formatTimeAgo(refund.createdAt)}</span>
+                      </td>
+                      <td className="text-right" onClick={(e) => e.stopPropagation()}>
+                        <div className="action-buttons">
                           {actionLoading === refund.id ? (
-                            <span className="action-loading">...</span>
+                            <span style={{ fontSize: '13px', color: '#6b7280' }}>...</span>
                           ) : (
                             <>
                               {canApprove(refund) && (
-                                <button
-                                  className="btn-icon btn-success"
-                                  onClick={(e) => handleApprove(e, refund.id)}
-                                  title="Schváliť"
-                                  disabled={actionLoading !== null}
-                                >
-                                  ✓
-                                </button>
+                                <Button variant="primary" size="sm" onClick={(e) => handleApprove(e, refund.id)} title="Schváliť" disabled={actionLoading !== null}>
+                                  <Check size={14} />
+                                </Button>
                               )}
                               {canReject(refund) && (
-                                <button
-                                  className="btn-icon btn-danger"
-                                  onClick={(e) => handleRejectClick(e, refund.id)}
-                                  title="Zamietnuť"
-                                  disabled={actionLoading !== null}
-                                >
-                                  ✕
-                                </button>
+                                <Button variant="danger" size="sm" onClick={(e) => handleRejectClick(e, refund.id)} title="Zamietnuť" disabled={actionLoading !== null}>
+                                  <XCircle size={14} />
+                                </Button>
                               )}
                               {canExecute(refund) && (
-                                <button
-                                  className="btn-icon btn-primary"
-                                  onClick={(e) => handleExecute(e, refund.id)}
-                                  title="Vykonať"
-                                  disabled={actionLoading !== null}
-                                >
-                                  ▶
-                                </button>
+                                <Button variant="primary" size="sm" onClick={(e) => handleExecute(e, refund.id)} title="Vykonať" disabled={actionLoading !== null}>
+                                  <Play size={14} />
+                                </Button>
                               )}
                               {canCancel(refund) && (
-                                <button
-                                  className="btn-icon btn-secondary"
-                                  onClick={(e) => handleCancel(e, refund.id)}
-                                  title="Zrušiť"
-                                  disabled={actionLoading !== null}
-                                >
-                                  ⊘
-                                </button>
+                                <Button variant="outline" size="sm" onClick={(e) => handleCancel(e, refund.id)} title="Zrušiť" disabled={actionLoading !== null}>
+                                  <Ban size={14} />
+                                </Button>
                               )}
                             </>
                           )}
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
 
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="refunds-pagination">
-                <button
-                  disabled={page === 0}
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="pagination-controls" style={{ marginTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ fontSize: '14px', color: '#6b7280' }}>
+                Zobrazené {refunds.length > 0 ? (page * pageSize + 1) : 0} - {Math.min((page + 1) * pageSize, totalElements)} z {totalElements} refundov
+              </div>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={() => setPage(p => p - 1)}
+                  disabled={page === 0 || loading}
                 >
                   Predch.
-                </button>
-                <span>
-                  Strana {page + 1} z {totalPages} ({totalElements} refundov)
+                </Button>
+                <span style={{ padding: '8px 12px', fontSize: '14px', color: '#374151' }}>
+                  Strana {page + 1} z {totalPages}
                 </span>
-                <button
-                  disabled={page >= totalPages - 1}
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={() => setPage(p => p + 1)}
+                  disabled={page >= totalPages - 1 || loading}
                 >
                   Ďalšia
-                </button>
-              </div>
-            )}
-          </>
-        )}
-
-        {/* Reject Modal */}
-        {showRejectModal && (
-          <div className="modal-overlay" onClick={() => setShowRejectModal(false)}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-              <h3>Zamietnuť refund</h3>
-              <p>Zadajte dôvod zamietnutia:</p>
-              <textarea
-                value={rejectReason}
-                onChange={(e) => setRejectReason(e.target.value)}
-                placeholder="Dôvod zamietnutia..."
-                rows={4}
-                autoFocus
-              />
-              <div className="modal-actions">
-                <button
-                  className="btn-secondary"
-                  onClick={() => setShowRejectModal(false)}
-                >
-                  Zrušiť
-                </button>
-                <button
-                  className="btn-danger"
-                  onClick={handleRejectConfirm}
-                  disabled={!rejectReason.trim()}
-                >
-                  Zamietnuť
-                </button>
+                </Button>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        <ConfirmDialog {...dialogProps} />
+          {/* Reject Modal */}
+          {showRejectModal && (
+            <div className="modal-overlay" onClick={() => setShowRejectModal(false)}>
+              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                <div className="modal-header">
+                  <h3 className="modal-title">Zamietnuť refund</h3>
+                  <button className="modal-close" onClick={() => setShowRejectModal(false)} aria-label="Zavrieť">
+                    <X size={20} />
+                  </button>
+                </div>
+                <div className="modal-body">
+                  <p style={{ marginBottom: '12px' }}>Zadajte dôvod zamietnutia:</p>
+                  <textarea
+                    className="form-input"
+                    value={rejectReason}
+                    onChange={(e) => setRejectReason(e.target.value)}
+                    placeholder="Dôvod zamietnutia..."
+                    rows={4}
+                    autoFocus
+                    style={{ width: '100%', resize: 'vertical' }}
+                  />
+                </div>
+                <div className="modal-footer" style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+                  <Button variant="outline" onClick={() => setShowRejectModal(false)}>
+                    Zrušiť
+                  </Button>
+                  <Button variant="danger" onClick={handleRejectConfirm} disabled={!rejectReason.trim()}>
+                    Zamietnuť
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
+
+      <ConfirmDialog {...dialogProps} />
     </AdminLayout>
   );
 };

@@ -8,6 +8,7 @@ import GdprSettings from '../../components/GdprSettings/GdprSettings';
 import PwaInstall from '../../components/PwaInstall/PwaInstall';
 import MyCassandra from '../../components/MyCassandra/MyCassandra';
 import ReferralDashboard from '../ReferralDashboard/ReferralDashboard';
+import UserTickets from '../../components/UserTickets/UserTickets';
 import AvatarSelector from '../../components/AvatarSelector/AvatarSelector';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 import cassandraRankService, { type UserCassandraDto } from '../../services/cassandraRankService';
@@ -19,8 +20,8 @@ import { logInfo, logError } from '../../services/logger';
 const UserAccount: React.FC = () => {
   const { user, isAuthenticated, isLoading, fetchProfile } = useAuth();
   const [searchParams] = useSearchParams();
-  const tabFromUrl = searchParams.get('tab') as 'profile' | 'orders' | 'collection' | 'cassandra' | 'referrals' | 'settings' | 'app' | null;
-  const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'collection' | 'cassandra' | 'referrals' | 'settings' | 'app'>(tabFromUrl || 'profile');
+  const tabFromUrl = searchParams.get('tab') as 'profile' | 'orders' | 'collection' | 'cassandra' | 'referrals' | 'tickets' | 'settings' | 'app' | null;
+  const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'collection' | 'cassandra' | 'referrals' | 'tickets' | 'settings' | 'app'>(tabFromUrl || 'profile');
   const [showAvatarSelector, setShowAvatarSelector] = useState(false);
   const [userAvatar, setUserAvatar] = useState<string | null>(user?.avatar?.imageUrl || null);
   const [isProfileEditing, setIsProfileEditing] = useState(false);
@@ -350,6 +351,18 @@ const UserAccount: React.FC = () => {
             </button>
 
             <button
+              className={`sidebar-tab ${activeTab === 'tickets' ? 'active' : ''}`}
+              onClick={() => setActiveTab('tickets')}
+            >
+              <div className="tab-icon">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              <span className="tab-label">My Tickets</span>
+            </button>
+
+            <button
               className={`sidebar-tab ${activeTab === 'settings' ? 'active' : ''}`}
               onClick={() => setActiveTab('settings')}
             >
@@ -446,6 +459,18 @@ const UserAccount: React.FC = () => {
             </button>
 
             <button
+              className={`mobile-tab ${activeTab === 'tickets' ? 'active' : ''}`}
+              onClick={() => setActiveTab('tickets')}
+            >
+              <span className="mobile-tab-icon">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </span>
+              <span className="mobile-tab-label">Tickets</span>
+            </button>
+
+            <button
               className={`mobile-tab ${activeTab === 'settings' ? 'active' : ''}`}
               onClick={() => setActiveTab('settings')}
             >
@@ -478,6 +503,7 @@ const UserAccount: React.FC = () => {
             {activeTab === 'collection' && <ModelCollection />}
             {activeTab === 'cassandra' && <MyCassandra />}
             {activeTab === 'referrals' && <ReferralDashboard />}
+            {activeTab === 'tickets' && <UserTickets />}
             {activeTab === 'settings' && <GdprSettings />}
             {activeTab === 'app' && <PwaInstall />}
           </main>
