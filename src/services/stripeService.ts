@@ -111,6 +111,22 @@ export class StripeService {
   }
 
   /**
+   * Retry payment for a failed or cancelled order
+   * Creates a new Stripe Checkout Session for an existing order
+   * @param orderId - The order ID to retry payment for
+   * @returns Promise<CreateCheckoutSessionResponse>
+   */
+  async retryPayment(orderId: number): Promise<CreateCheckoutSessionResponse> {
+    const response = await fetch(`${API_BASE_URL}/api/stripe/retry-payment/${orderId}`, withLangHeaders({
+      method: 'POST',
+      headers: defaultHeaders as HeadersInit,
+      credentials: 'include',
+    }));
+
+    return handleResponse(response);
+  }
+
+  /**
    * Helper to create checkout session request from cart data
    * @param cartItems - Items from shopping cart
    * @param totalAmount - Total amount to charge

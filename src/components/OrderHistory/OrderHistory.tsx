@@ -137,6 +137,20 @@ const OrderHistory: React.FC = () => {
                   const hasPhysical = order.hasPhysicalItems || order.items?.some(i => i.productType?.toUpperCase() !== 'DIGITAL' && i.productType);
                   const isDigitalOnly = hasDigital && !hasPhysical;
 
+                  // Payment required - PENDING or CANCELLED
+                  if (status === 'pending' || status === 'cancelled') {
+                    return (
+                      <div className="status-badge status-payment-required">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="12" height="12">
+                          <circle cx="12" cy="12" r="10"/>
+                          <line x1="12" y1="8" x2="12" y2="12"/>
+                          <line x1="12" y1="16" x2="12.01" y2="16"/>
+                        </svg>
+                        {status === 'cancelled' ? 'Payment Failed' : 'Awaiting Payment'}
+                      </div>
+                    );
+                  }
+
                   // Digital-only orders with PAID status are effectively COMPLETED
                   if (isDigitalOnly && status === 'paid') {
                     return <div className="status-badge status-completed">Completed</div>;

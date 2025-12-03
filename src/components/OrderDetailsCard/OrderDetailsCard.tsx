@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Order } from '../../context/authTypes';
 import { orderService } from '../../services/orderService';
+import { stripeService } from '../../services/stripeService';
 import './OrderDetailsCard.css';
 
 type OrderDetailsCardProps = {
@@ -20,6 +21,7 @@ const OrderDetailsCard: React.FC<OrderDetailsCardProps> = ({
   const [downloadingItemId, setDownloadingItemId] = useState<string | null>(null);
   const [cancelling, setCancelling] = useState<boolean>(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState<boolean>(false);
+  const [retryingPayment, setRetryingPayment] = useState<boolean>(false);
 
   // Check if order can be cancelled by user
   // - Only before SHIPPED status
@@ -58,6 +60,33 @@ const OrderDetailsCard: React.FC<OrderDetailsCardProps> = ({
     return order.items
       .filter(i => i.productType?.toUpperCase() !== 'DIGITAL')
       .reduce((sum, i) => sum + (i.price * i.quantity), 0);
+  };
+
+  // Check if order can retry payment (PENDING or CANCELLED status)
+  const canRetryPayment = (): boolean => {
+    const status = order.status.toUpperCase();
+    return status === 'PENDING' || status === 'CANCELLED';
+  };
+
+  // Handle retry payment
+  const handleRetryPayment = async () => {
+    const orderId = Number(order.backendId || order.id);
+    if (!orderId) return;
+
+    setRetryingPayment(true);
+    try {
+      const response = await stripeService.retryPayment(orderId);
+      // Redirect to Stripe Checkout
+      if (response.url) {
+        window.location.href = response.url;
+      }
+    } catch (err) {
+      if (onError) {
+        onError(err instanceof Error ? err.message : 'Failed to initiate payment');
+      }
+    } finally {
+      setRetryingPayment(false);
+    }
   };
 
   // Handle cancel order
@@ -176,8 +205,51 @@ const OrderDetailsCard: React.FC<OrderDetailsCardProps> = ({
         </div>
       </div>
 
-      {/* Order Progress - Compact Timeline */}
-      {order.status.toLowerCase() !== 'cancelled' && (
+      {/* Payment Required - Show Pay Now button for PENDING/CANCELLED orders */}
+      {canRetryPayment() && (
+        <div className="order-progress-card payment-required">
+          <div className="payment-required-content">
+            <div className="payment-required-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="24" height="24">
+                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                <line x1="1" y1="10" x2="23" y2="10"/>
+              </svg>
+            </div>
+            <div className="payment-required-text">
+              <span className="payment-required-title">
+                {order.status.toUpperCase() === 'CANCELLED' ? 'Payment Failed' : 'Payment Required'}
+              </span>
+              <span className="payment-required-desc">
+                {order.status.toUpperCase() === 'CANCELLED'
+                  ? 'Your payment was not completed. Click below to try again.'
+                  : 'Complete your payment to process this order.'}
+              </span>
+            </div>
+          </div>
+          <button
+            className="pay-now-btn"
+            onClick={handleRetryPayment}
+            disabled={retryingPayment}
+          >
+            {retryingPayment ? (
+              <>
+                <span className="spinner" />
+                Processing...
+              </>
+            ) : (
+              <>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
+                  <path d="M12 2v20M17 7l-5-5-5 5"/>
+                </svg>
+                Pay Now
+              </>
+            )}
+          </button>
+        </div>
+      )}
+
+      {/* Order Progress - Compact Timeline (for paid orders) */}
+      {!canRetryPayment() && order.status.toLowerCase() !== 'cancelled' && (
         <div className="order-progress-card">
           {(() => {
             const status = order.status.toUpperCase();
