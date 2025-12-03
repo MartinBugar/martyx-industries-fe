@@ -1,6 +1,8 @@
 /**
  * Admin Cohort Analysis Page
  * Analýza zákazníckych kohort - retencia a LTV
+ *
+ * Modern, minimalist design - 2025 UX best practices
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -11,17 +13,18 @@ import {
   TrendingUp,
   TrendingDown,
   RefreshCw,
-  Calendar,
   DollarSign,
   Repeat,
-  Award,
   AlertCircle,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Filter,
+  Trophy,
+  Target
 } from 'lucide-react';
 import './AdminCohortAnalysis.css';
 
-// Local type definitions (to avoid Vite module resolution issues)
+// Local type definitions
 interface RetentionPeriodDto {
   periodIndex: number;
   periodLabel: string;
@@ -76,7 +79,9 @@ const formatNumber = (value: number): string => {
 const formatCurrency = (value: number): string => {
   return new Intl.NumberFormat('sk-SK', {
     style: 'currency',
-    currency: 'EUR'
+    currency: 'EUR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
   }).format(value);
 };
 
@@ -85,7 +90,7 @@ const formatPercent = (value: number): string => {
 };
 
 const formatChange = (value: number | null | undefined): string => {
-  if (value == null) return '-';
+  if (value == null) return '';
   const sign = value >= 0 ? '+' : '';
   return `${sign}${value.toFixed(1)}%`;
 };
@@ -112,6 +117,7 @@ const AdminCohortAnalysis: React.FC = () => {
   const [maxPeriods, setMaxPeriods] = useState(6);
 
   // UI state
+  const [showFilters, setShowFilters] = useState(false);
   const [expandedCohort, setExpandedCohort] = useState<string | null>(null);
 
   const loadReport = useCallback(async () => {
@@ -140,228 +146,234 @@ const AdminCohortAnalysis: React.FC = () => {
     setExpandedCohort(prev => prev === cohortId ? null : cohortId);
   };
 
+  const getCohortTypeLabel = (type: CohortType): string => {
+    const labels: Record<CohortType, string> = {
+      'ACQUISITION': 'Akvizičná',
+      'BEHAVIORAL': 'Behaviorálna',
+      'VALUE': 'Hodnotová'
+    };
+    return labels[type];
+  };
+
   return (
     <AdminLayout title="Analýza kohort">
-      <div className="admin-cohort-analysis">
-        {/* Page Header */}
-        <div className="page-header">
-          <h1>Analýza zákazníckych kohort</h1>
-          <button className="btn-refresh" onClick={handleRefresh} disabled={loading}>
-            <RefreshCw size={16} className={loading ? 'spinning' : ''} />
-            Obnoviť
-          </button>
-        </div>
-
-        {/* Filters */}
-        <div className="filters-bar">
-          <div className="filter-group">
-            <label>Typ kohorty</label>
-            <select
-              value={cohortType}
-              onChange={(e) => setCohortType(e.target.value as CohortType)}
+      <div className="cohort-page">
+        {/* Compact Header */}
+        <header className="cohort-header">
+          <div className="cohort-header__left">
+            <h1>Kohorty</h1>
+            <span className="cohort-header__badge">{getCohortTypeLabel(cohortType)}</span>
+          </div>
+          <div className="cohort-header__actions">
+            <button
+              className={`cohort-btn cohort-btn--ghost ${showFilters ? 'active' : ''}`}
+              onClick={() => setShowFilters(!showFilters)}
             >
-              <option value="ACQUISITION">Akvizičná (podľa mesiaca registrácie)</option>
-              <option value="BEHAVIORAL">Behaviorálna (podľa prvej kategórie)</option>
-              <option value="VALUE">Hodnotová (podľa sumy prvej objednávky)</option>
-            </select>
-          </div>
-
-          <div className="filter-group">
-            <label>Granularita</label>
-            <select
-              value={granularity}
-              onChange={(e) => setGranularity(e.target.value as Granularity)}
+              <Filter size={16} />
+              Filtre
+              {showFilters ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+            </button>
+            <button
+              className="cohort-btn cohort-btn--primary"
+              onClick={handleRefresh}
+              disabled={loading}
             >
-              <option value="MONTHLY">Mesačne</option>
-              <option value="QUARTERLY">Štvrťročne</option>
-            </select>
+              <RefreshCw size={16} className={loading ? 'spinning' : ''} />
+              Obnoviť
+            </button>
           </div>
+        </header>
 
-          <div className="filter-group">
-            <label>Od</label>
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-            />
-          </div>
+        {/* Collapsible Filters */}
+        {showFilters && (
+          <div className="cohort-filters">
+            <div className="cohort-filters__row">
+              <div className="cohort-filter">
+                <label>Typ kohorty</label>
+                <select
+                  value={cohortType}
+                  onChange={(e) => setCohortType(e.target.value as CohortType)}
+                >
+                  <option value="ACQUISITION">Akvizičná (mesiac registrácie)</option>
+                  <option value="BEHAVIORAL">Behaviorálna (prvá kategória)</option>
+                  <option value="VALUE">Hodnotová (suma prvej obj.)</option>
+                </select>
+              </div>
 
-          <div className="filter-group">
-            <label>Do</label>
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-            />
-          </div>
+              <div className="cohort-filter">
+                <label>Granularita</label>
+                <select
+                  value={granularity}
+                  onChange={(e) => setGranularity(e.target.value as Granularity)}
+                >
+                  <option value="MONTHLY">Mesačne</option>
+                  <option value="QUARTERLY">Štvrťročne</option>
+                </select>
+              </div>
 
-          <div className="filter-group">
-            <label>Obdobia</label>
-            <select
-              value={maxPeriods}
-              onChange={(e) => setMaxPeriods(parseInt(e.target.value))}
-            >
-              <option value="3">3 mesiace</option>
-              <option value="6">6 mesiacov</option>
-              <option value="9">9 mesiacov</option>
-              <option value="12">12 mesiacov</option>
-            </select>
+              <div className="cohort-filter">
+                <label>Od</label>
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                />
+              </div>
+
+              <div className="cohort-filter">
+                <label>Do</label>
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                />
+              </div>
+
+              <div className="cohort-filter">
+                <label>Obdobia</label>
+                <select
+                  value={maxPeriods}
+                  onChange={(e) => setMaxPeriods(parseInt(e.target.value))}
+                >
+                  <option value="3">3</option>
+                  <option value="6">6</option>
+                  <option value="9">9</option>
+                  <option value="12">12</option>
+                </select>
+              </div>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Error Message */}
         {error && (
-          <div className="error-message">
+          <div className="cohort-error">
             <AlertCircle size={16} />
-            {error}
+            <span>{error}</span>
+            <button onClick={() => setError(null)}>&times;</button>
           </div>
         )}
 
         {/* Loading State */}
         {loading && (
-          <div className="loading-state">
-            <RefreshCw size={32} className="spinning" />
-            <span>Načítavam dáta kohort...</span>
+          <div className="cohort-loading">
+            <RefreshCw size={24} className="spinning" />
+            <span>Načítavam dáta...</span>
           </div>
         )}
 
         {/* Main Content */}
         {!loading && report && (
           <>
-            {/* KPI Cards */}
-            <div className="kpi-cards">
-              <div className="kpi-card">
-                <div className="kpi-icon customers">
-                  <Users size={24} />
+            {/* Metrics Grid - Clean 4-column layout */}
+            <div className="cohort-metrics">
+              <div className="metric-card">
+                <div className="metric-card__icon metric-card__icon--blue">
+                  <Users size={20} />
                 </div>
-                <div className="kpi-content">
-                  <div className="kpi-value">{formatNumber(report.totalUsers)}</div>
-                  <div className="kpi-label">Celkom zákazníkov</div>
-                  <div className="kpi-sub">{report.totalCohorts} kohort</div>
+                <div className="metric-card__content">
+                  <span className="metric-card__value">{formatNumber(report.totalUsers)}</span>
+                  <span className="metric-card__label">Zákazníkov</span>
                 </div>
-              </div>
-
-              <div className="kpi-card">
-                <div className="kpi-icon revenue">
-                  <DollarSign size={24} />
-                </div>
-                <div className="kpi-content">
-                  <div className="kpi-value">{formatCurrency(report.totalRevenue)}</div>
-                  <div className="kpi-label">Celkové tržby</div>
-                  <div className="kpi-sub">Celoživotná hodnota</div>
+                <div className="metric-card__footer">
+                  {report.totalCohorts} kohort
                 </div>
               </div>
 
-              <div className="kpi-card">
-                <div className="kpi-icon ltv">
-                  <TrendingUp size={24} />
+              <div className="metric-card">
+                <div className="metric-card__icon metric-card__icon--green">
+                  <DollarSign size={20} />
                 </div>
-                <div className="kpi-content">
-                  <div className="kpi-value">{formatCurrency(report.overallAverageLtv)}</div>
-                  <div className="kpi-label">Priemerné LTV</div>
-                  <div className="kpi-sub">Na zákazníka</div>
+                <div className="metric-card__content">
+                  <span className="metric-card__value">{formatCurrency(report.totalRevenue)}</span>
+                  <span className="metric-card__label">Celkové tržby</span>
+                </div>
+                {report.highestLtvCohort && (
+                  <div className="metric-card__footer metric-card__footer--highlight">
+                    <Trophy size={12} />
+                    {report.highestLtvCohort.cohortLabel}
+                  </div>
+                )}
+              </div>
+
+              <div className="metric-card">
+                <div className="metric-card__icon metric-card__icon--purple">
+                  <TrendingUp size={20} />
+                </div>
+                <div className="metric-card__content">
+                  <span className="metric-card__value">{formatCurrency(report.overallAverageLtv)}</span>
+                  <span className="metric-card__label">Priemerné LTV</span>
+                </div>
+                <div className="metric-card__footer">
+                  na zákazníka
                 </div>
               </div>
 
-              <div className="kpi-card">
-                <div className="kpi-icon retention">
-                  <Repeat size={24} />
+              <div className="metric-card">
+                <div className="metric-card__icon metric-card__icon--amber">
+                  <Repeat size={20} />
                 </div>
-                <div className="kpi-content">
-                  <div className="kpi-value">{formatPercent(report.overallRetentionRate)}</div>
-                  <div className="kpi-label">Priem. retencia</div>
-                  <div className="kpi-sub">Celková miera</div>
+                <div className="metric-card__content">
+                  <span className="metric-card__value">{formatPercent(report.overallRetentionRate)}</span>
+                  <span className="metric-card__label">Retencia</span>
                 </div>
+                {report.bestRetentionCohort && (
+                  <div className="metric-card__footer metric-card__footer--highlight">
+                    <Target size={12} />
+                    {report.bestRetentionCohort.cohortLabel}
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* Highlights */}
-            {(report.highestLtvCohort || report.bestRetentionCohort) && (
-              <div className="highlights">
-                {report.highestLtvCohort && (
-                  <div className="highlight-card best-ltv">
-                    <Award size={20} />
-                    <div className="highlight-content">
-                      <span className="highlight-label">Najvyššie LTV kohorta</span>
-                      <span className="highlight-value">
-                        {report.highestLtvCohort.cohortLabel} - {formatCurrency(report.highestLtvCohort.lifetimeValue)}
-                      </span>
-                    </div>
-                  </div>
-                )}
-
-                {report.bestRetentionCohort && (
-                  <div className="highlight-card best-retention">
-                    <TrendingUp size={20} />
-                    <div className="highlight-content">
-                      <span className="highlight-label">Najlepšia retencia</span>
-                      <span className="highlight-value">
-                        {report.bestRetentionCohort.cohortLabel}
-                      </span>
-                    </div>
-                  </div>
-                )}
-
-                {report.largestCohort && (
-                  <div className="highlight-card largest">
-                    <Users size={20} />
-                    <div className="highlight-content">
-                      <span className="highlight-label">Najväčšia kohorta</span>
-                      <span className="highlight-value">
-                        {report.largestCohort.cohortLabel} - {formatNumber(report.largestCohort.cohortSize)} zákazníkov
-                      </span>
-                    </div>
-                  </div>
-                )}
+            {/* Retention Matrix - Clean Table */}
+            <section className="cohort-section">
+              <div className="cohort-section__header">
+                <h2>Matica retencie</h2>
+                <span className="cohort-section__subtitle">
+                  Kliknutím na riadok zobrazíte detail
+                </span>
               </div>
-            )}
-
-            {/* Retention Matrix */}
-            <div className="retention-matrix-section">
-              <h2>
-                <Calendar size={20} />
-                Matica retencie
-              </h2>
 
               {report.cohorts.length === 0 ? (
-                <div className="empty-state">
-                  <p>Pre zvolené obdobie nie sú dostupné žiadne dáta kohort.</p>
+                <div className="cohort-empty">
+                  <p>Pre zvolené obdobie nie sú dostupné žiadne dáta.</p>
                 </div>
               ) : (
-                <div className="retention-matrix-wrapper">
-                  <table className="retention-matrix">
+                <div className="cohort-matrix-wrapper">
+                  <table className="cohort-matrix">
                     <thead>
                       <tr>
-                        <th className="cohort-header">Kohorta</th>
-                        <th className="size-header">Veľkosť</th>
+                        <th className="cohort-matrix__sticky">Kohorta</th>
+                        <th>Veľkosť</th>
                         {report.periodLabels.map((label, i) => (
-                          <th key={i} className="period-header">{label}</th>
+                          <th key={i} className="cohort-matrix__period">{label}</th>
                         ))}
-                        <th className="ltv-header">LTV</th>
-                        <th className="aov-header">AOV</th>
+                        <th>LTV</th>
+                        <th>AOV</th>
                       </tr>
                     </thead>
                     <tbody>
                       {report.cohorts.map((cohort) => (
                         <React.Fragment key={cohort.cohortId}>
                           <tr
-                            className="cohort-row"
+                            className={`cohort-matrix__row ${expandedCohort === cohort.cohortId ? 'expanded' : ''}`}
                             onClick={() => toggleCohortExpand(cohort.cohortId)}
                           >
-                            <td className="cohort-label">
-                              <span className="expand-icon">
+                            <td className="cohort-matrix__sticky">
+                              <span className="cohort-matrix__expand">
                                 {expandedCohort === cohort.cohortId ? (
                                   <ChevronUp size={14} />
                                 ) : (
                                   <ChevronDown size={14} />
                                 )}
                               </span>
-                              {cohort.cohortLabel}
+                              <span className="cohort-matrix__name">{cohort.cohortLabel}</span>
                             </td>
-                            <td className="cohort-size">
-                              {formatNumber(cohort.cohortSize)}
-                              {cohort.sizeChangePercent !== null && (
-                                <span className={`change ${cohort.sizeChangePercent >= 0 ? 'positive' : 'negative'}`}>
+                            <td className="cohort-matrix__size">
+                              <span>{formatNumber(cohort.cohortSize)}</span>
+                              {cohort.sizeChangePercent !== null && cohort.sizeChangePercent !== 0 && (
+                                <span className={`cohort-matrix__change ${cohort.sizeChangePercent >= 0 ? 'positive' : 'negative'}`}>
                                   {formatChange(cohort.sizeChangePercent)}
                                 </span>
                               )}
@@ -369,35 +381,31 @@ const AdminCohortAnalysis: React.FC = () => {
                             {cohort.retentionPeriods.map((period, i) => (
                               <td
                                 key={i}
-                                className="retention-cell"
-                                style={{ backgroundColor: period.retentionColor + '30' }}
+                                className="cohort-matrix__cell"
+                                style={{
+                                  '--cell-color': period.retentionColor
+                                } as React.CSSProperties}
                               >
-                                <span
-                                  className="retention-value"
-                                  style={{ color: period.retentionColor }}
-                                >
-                                  {formatPercent(period.retentionRate)}
-                                </span>
+                                {formatPercent(period.retentionRate)}
                               </td>
                             ))}
-                            {/* Fill empty cells if needed */}
                             {Array.from({ length: report.periodLabels.length - cohort.retentionPeriods.length }).map((_, i) => (
-                              <td key={`empty-${i}`} className="retention-cell empty">-</td>
+                              <td key={`empty-${i}`} className="cohort-matrix__cell cohort-matrix__cell--empty">—</td>
                             ))}
-                            <td className="ltv-cell">
-                              {formatCurrency(cohort.lifetimeValue)}
-                              {cohort.ltvChangePercent !== null && (
-                                <span className={`change ${cohort.ltvChangePercent >= 0 ? 'positive' : 'negative'}`}>
+                            <td className="cohort-matrix__ltv">
+                              <span>{formatCurrency(cohort.lifetimeValue)}</span>
+                              {cohort.ltvChangePercent !== null && cohort.ltvChangePercent !== 0 && (
+                                <span className={`cohort-matrix__trend ${cohort.ltvChangePercent >= 0 ? 'positive' : 'negative'}`}>
                                   {cohort.ltvChangePercent >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
                                 </span>
                               )}
                             </td>
-                            <td className="aov-cell">{formatCurrency(cohort.averageOrderValue)}</td>
+                            <td className="cohort-matrix__aov">{formatCurrency(cohort.averageOrderValue)}</td>
                           </tr>
 
                           {/* Expanded Details */}
                           {expandedCohort === cohort.cohortId && (
-                            <tr className="cohort-details-row">
+                            <tr className="cohort-matrix__details">
                               <td colSpan={report.periodLabels.length + 4}>
                                 <CohortDetails cohort={cohort} />
                               </td>
@@ -407,51 +415,54 @@ const AdminCohortAnalysis: React.FC = () => {
                       ))}
 
                       {/* Average Row */}
-                      <tr className="average-row">
-                        <td className="cohort-label">Priemer</td>
-                        <td className="cohort-size">-</td>
+                      <tr className="cohort-matrix__average">
+                        <td className="cohort-matrix__sticky">Priemer</td>
+                        <td>—</td>
                         {report.periodLabels.map((_, i) => (
-                          <td key={i} className="retention-cell average">
+                          <td key={i} className="cohort-matrix__cell">
                             {report.averageRetentionByPeriod[i] !== undefined
                               ? formatPercent(report.averageRetentionByPeriod[i])
-                              : '-'}
+                              : '—'}
                           </td>
                         ))}
-                        <td className="ltv-cell">{formatCurrency(report.overallAverageLtv)}</td>
-                        <td className="aov-cell">-</td>
+                        <td className="cohort-matrix__ltv">{formatCurrency(report.overallAverageLtv)}</td>
+                        <td>—</td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
               )}
-            </div>
+            </section>
 
-            {/* Retention Trend Chart */}
-            <div className="retention-trend-section">
-              <h2>
-                <TrendingUp size={20} />
-                Trend retencie podľa obdobia
-              </h2>
-              <div className="retention-trend-chart">
+            {/* Retention Trend - Minimalist Bar Chart */}
+            <section className="cohort-section">
+              <div className="cohort-section__header">
+                <h2>Trend retencie</h2>
+                <span className="cohort-section__subtitle">
+                  Priemerná retencia podľa obdobia
+                </span>
+              </div>
+              <div className="cohort-trend">
                 {report.periodLabels.map((label, i) => {
                   const rate = report.averageRetentionByPeriod[i] || 0;
                   return (
-                    <div key={i} className="trend-bar-container">
-                      <div
-                        className="trend-bar"
-                        style={{
-                          height: `${Math.min(rate, 100)}%`,
-                          backgroundColor: getRetentionColor(rate)
-                        }}
-                      >
-                        <span className="trend-value">{formatPercent(rate)}</span>
+                    <div key={i} className="cohort-trend__item">
+                      <div className="cohort-trend__bar-wrapper">
+                        <div
+                          className="cohort-trend__bar"
+                          style={{
+                            height: `${Math.max(rate, 2)}%`,
+                            backgroundColor: getRetentionColor(rate)
+                          }}
+                        />
                       </div>
-                      <span className="trend-label">{label}</span>
+                      <span className="cohort-trend__value">{formatPercent(rate)}</span>
+                      <span className="cohort-trend__label">{label}</span>
                     </div>
                   );
                 })}
               </div>
-            </div>
+            </section>
           </>
         )}
       </div>
@@ -459,57 +470,59 @@ const AdminCohortAnalysis: React.FC = () => {
   );
 };
 
-// Cohort Details Component
+// Cohort Details Component - Cleaner Layout
 const CohortDetails: React.FC<{ cohort: CohortDto }> = ({ cohort }) => {
   return (
-    <div className="cohort-details">
-      <div className="detail-cards">
-        <div className="detail-card">
-          <span className="detail-label">Celkové tržby</span>
-          <span className="detail-value">{formatCurrency(cohort.totalRevenue)}</span>
+    <div className="cohort-detail">
+      <div className="cohort-detail__summary">
+        <div className="cohort-detail__stat">
+          <span className="cohort-detail__stat-value">{formatCurrency(cohort.totalRevenue)}</span>
+          <span className="cohort-detail__stat-label">Celkové tržby</span>
         </div>
-        <div className="detail-card">
-          <span className="detail-label">Priem. obj./používateľ</span>
-          <span className="detail-value">{cohort.averageOrdersPerUser.toFixed(2)}</span>
+        <div className="cohort-detail__stat">
+          <span className="cohort-detail__stat-value">{cohort.averageOrdersPerUser.toFixed(1)}</span>
+          <span className="cohort-detail__stat-label">Obj./zákazník</span>
         </div>
-        <div className="detail-card">
-          <span className="detail-label">Miera opak. nákupov</span>
-          <span className="detail-value">{formatPercent(cohort.repeatPurchaseRate)}</span>
+        <div className="cohort-detail__stat">
+          <span className="cohort-detail__stat-value">{formatPercent(cohort.repeatPurchaseRate)}</span>
+          <span className="cohort-detail__stat-label">Opakované nákupy</span>
         </div>
-        <div className="detail-card">
-          <span className="detail-label">Obdobie kohorty</span>
-          <span className="detail-value">{cohort.cohortPeriod}</span>
+        <div className="cohort-detail__stat">
+          <span className="cohort-detail__stat-value">{cohort.cohortPeriod}</span>
+          <span className="cohort-detail__stat-label">Obdobie</span>
         </div>
       </div>
 
-      {/* Period Details Table */}
-      <div className="period-details">
-        <h4>Rozpad podľa období</h4>
-        <table className="period-table">
-          <thead>
-            <tr>
-              <th>Obdobie</th>
-              <th>Aktívni užív.</th>
-              <th>Retencia</th>
-              <th>Objednávky</th>
-              <th>Tržby</th>
-              <th>AOV</th>
-            </tr>
-          </thead>
-          <tbody>
-            {cohort.retentionPeriods.map((period) => (
-              <tr key={period.periodIndex}>
-                <td>{period.periodLabel}</td>
-                <td>{formatNumber(period.activeUsers)}</td>
-                <td style={{ color: period.retentionColor }}>{formatPercent(period.retentionRate)}</td>
-                <td>{formatNumber(period.totalOrders)}</td>
-                <td>{formatCurrency(period.periodRevenue)}</td>
-                <td>{formatCurrency(period.averageOrderValue)}</td>
+      {cohort.retentionPeriods.length > 0 && (
+        <div className="cohort-detail__table">
+          <table>
+            <thead>
+              <tr>
+                <th>Obdobie</th>
+                <th>Aktívni</th>
+                <th>Retencia</th>
+                <th>Objednávky</th>
+                <th>Tržby</th>
+                <th>AOV</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {cohort.retentionPeriods.map((period) => (
+                <tr key={period.periodIndex}>
+                  <td>{period.periodLabel}</td>
+                  <td>{formatNumber(period.activeUsers)}</td>
+                  <td style={{ color: period.retentionColor, fontWeight: 600 }}>
+                    {formatPercent(period.retentionRate)}
+                  </td>
+                  <td>{formatNumber(period.totalOrders)}</td>
+                  <td>{formatCurrency(period.periodRevenue)}</td>
+                  <td>{formatCurrency(period.averageOrderValue)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };

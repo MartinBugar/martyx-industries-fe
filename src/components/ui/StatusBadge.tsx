@@ -1,4 +1,5 @@
 import React from 'react';
+import type { LucideIcon } from 'lucide-react';
 import {
   Check,
   X,
@@ -21,7 +22,6 @@ import {
   Eye,
   EyeOff,
   Star,
-  LucideIcon
 } from 'lucide-react';
 
 /**

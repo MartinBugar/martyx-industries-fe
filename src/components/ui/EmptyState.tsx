@@ -1,4 +1,5 @@
 import React from 'react';
+import type { LucideIcon } from 'lucide-react';
 import {
   Inbox,
   Search,
@@ -18,7 +19,6 @@ import {
   BarChart3,
   MessageSquare,
   Settings,
-  LucideIcon
 } from 'lucide-react';
 import '@/styles/admin-forms.css';
 
@@ -55,7 +55,7 @@ export type EmptyStateVariant =
   | 'no-tickets'
   | 'no-settings';
 
-interface EmptyStateProps {
+export interface EmptyStateProps {
   /** Predefined variant with icon */
   variant?: EmptyStateVariant;
   /** Custom icon (overrides variant icon) */

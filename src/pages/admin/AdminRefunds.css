@@ -2,6 +2,121 @@
   padding: 0;
 }
 
+/* =========================================================================
+   REFUND STATS CARDS - Modern Design
+   ========================================================================= */
+
+.refund-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 1200px) {
+  .refund-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .refund-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.refund-stat-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.refund-stat-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.refund-stat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.refund-stat-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.refund-stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #1f2937;
+}
+
+.refund-stat-label {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  margin-top: 0.25rem;
+  line-height: 1.3;
+}
+
+/* Stat Card Variants */
+.refund-stat-warning .refund-stat-icon {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.refund-stat-warning {
+  border-left: 4px solid #f59e0b;
+}
+
+.refund-stat-info .refund-stat-icon {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.refund-stat-info {
+  border-left: 4px solid #3b82f6;
+}
+
+.refund-stat-success .refund-stat-icon {
+  background: #d1fae5;
+  color: #059669;
+}
+
+.refund-stat-success {
+  border-left: 4px solid #10b981;
+}
+
+.refund-stat-neutral .refund-stat-icon {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.refund-stat-neutral {
+  border-left: 4px solid #9ca3af;
+}
+
+.refund-stat-danger .refund-stat-icon {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.refund-stat-danger {
+  border-left: 4px solid #ef4444;
+}
+
 /* Nav Tabs */
 .refunds-nav-tabs {
   display: flex;

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button, Badge, SkeletonTable, ConfirmDialog, useConfirmDialog } from '../../components/ui';
 import { useNavigate } from 'react-router-dom';
-import { Search, X, Plus, Check, XCircle, Play, Ban, Eye } from 'lucide-react';
+import { Search, X, Plus, Check, XCircle, Play, Ban, Eye, Clock, CheckCircle, AlertTriangle, DollarSign, TrendingUp, Calendar } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import {
   type RefundDto,
@@ -10,7 +10,6 @@ import {
   type RefundReason,
   type Page,
   getRefundsWithFilters,
-  getPendingRefunds,
   searchRefunds,
   getRefundStats,
   approveRefund,
@@ -81,18 +80,11 @@ const AdminRefunds: React.FC = () => {
 
       if (searchQuery.trim()) {
         result = await searchRefunds(searchQuery, page, pageSize);
-      } else if (activeTab === 'pending') {
-        const pending = await getPendingRefunds();
-        result = {
-          content: pending,
-          totalElements: pending.length,
-          totalPages: 1,
-          number: 0,
-          size: pending.length
-        };
       } else {
+        // Map tab to status filter
         let status: RefundStatus | undefined;
-        if (activeTab === 'approved') status = 'APPROVED';
+        if (activeTab === 'pending') status = 'PENDING';
+        else if (activeTab === 'approved') status = 'APPROVED';
         else if (activeTab === 'completed') status = 'COMPLETED';
         else if (activeTab === 'failed') status = 'FAILED';
         else if (statusFilter) status = statusFilter;
@@ -271,22 +263,42 @@ const AdminRefunds: React.FC = () => {
 
           {/* Stats Cards */}
           {stats && (
-            <div className="stats-grid" style={{ marginBottom: '1.5rem' }}>
-              <div className="stat-card">
-                <div className="stat-value">{stats.pendingCount}</div>
-                <div className="stat-label">Čakajúce</div>
+            <div className="refund-stats-grid">
+              <div className="refund-stat-card refund-stat-warning">
+                <div className="refund-stat-icon">
+                  <Clock size={24} />
+                </div>
+                <div className="refund-stat-content">
+                  <div className="refund-stat-value">{stats.pendingCount}</div>
+                  <div className="refund-stat-label">Čakajúce na schválenie</div>
+                </div>
               </div>
-              <div className="stat-card" style={{ borderColor: '#3b82f6' }}>
-                <div className="stat-value" style={{ color: '#3b82f6' }}>{formatAmount(stats.pendingAmount)}</div>
-                <div className="stat-label">Čakajúca suma</div>
+              <div className="refund-stat-card refund-stat-info">
+                <div className="refund-stat-icon">
+                  <DollarSign size={24} />
+                </div>
+                <div className="refund-stat-content">
+                  <div className="refund-stat-value">{formatAmount(stats.pendingAmount)}</div>
+                  <div className="refund-stat-label">Čakajúca suma na vrátenie</div>
+                </div>
               </div>
-              <div className="stat-card" style={{ borderColor: '#10b981' }}>
-                <div className="stat-value" style={{ color: '#10b981' }}>{formatAmount(stats.refundedThisMonth)}</div>
-                <div className="stat-label">Tento mesiac</div>
+              <div className="refund-stat-card refund-stat-success">
+                <div className="refund-stat-icon">
+                  <Calendar size={24} />
+                </div>
+                <div className="refund-stat-content">
+                  <div className="refund-stat-value">{formatAmount(stats.refundedThisMonth)}</div>
+                  <div className="refund-stat-label">Vrátené tento mesiac</div>
+                </div>
               </div>
-              <div className="stat-card">
-                <div className="stat-value">{formatAmount(stats.totalRefundedAmount)}</div>
-                <div className="stat-label">Celkom vrátené</div>
+              <div className="refund-stat-card refund-stat-neutral">
+                <div className="refund-stat-icon">
+                  <TrendingUp size={24} />
+                </div>
+                <div className="refund-stat-content">
+                  <div className="refund-stat-value">{formatAmount(stats.totalRefundedAmount)}</div>
+                  <div className="refund-stat-label">Celkom vrátené (všetky obdobia)</div>
+                </div>
               </div>
             </div>
           )}
