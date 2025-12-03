@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import AdminLayout from './AdminLayout';
+import GeneralSettingsTabs from './GeneralSettingsTabs';
 import { Button, Badge, SkeletonTable } from '../../components/ui';
 import { systemSettingsService, type SystemSettingsDto } from '../../services/systemSettingsService';
 import { useErrors } from '../../context/ErrorContext';
@@ -111,9 +112,12 @@ const AdminSystemSettings: React.FC = () => {
     };
 
     return (
-        <AdminLayout title="System Settings">
+        <AdminLayout title="General Settings">
             <div className="admin-page">
                 <div className="admin-container">
+                    {/* Sub-navigation tabs */}
+                    <GeneralSettingsTabs />
+
                     {/* Header */}
                     <div className="admin-card" style={{ marginBottom: '24px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>

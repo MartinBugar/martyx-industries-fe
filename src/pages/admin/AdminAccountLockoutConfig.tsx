@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import AdminLayout from './AdminLayout';
+import GeneralSettingsTabs from './GeneralSettingsTabs';
 import { Button, Badge, SkeletonTable, ConfirmDialog, useConfirmDialog } from '../../components/ui';
 import { accountLockoutConfigService, type AccountLockoutConfigDto, type LockedUserDto } from '../../services/accountLockoutConfigService';
 import { useErrors } from '../../context/ErrorContext';
@@ -170,9 +171,12 @@ const AdminAccountLockoutConfig: React.FC = () => {
     };
 
     return (
-        <AdminLayout title="Account Lockout">
+        <AdminLayout title="General Settings">
             <div className="admin-page">
                 <div className="admin-container">
+                    {/* Sub-navigation tabs */}
+                    <GeneralSettingsTabs />
+
                     {/* Header */}
                     <div className="admin-card" style={{ marginBottom: '24px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>

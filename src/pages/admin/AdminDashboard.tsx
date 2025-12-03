@@ -28,23 +28,24 @@ interface KPICardProps {
     value: string | number;
     loading?: boolean;
     error?: string;
-    accent?: 'blue' | 'green';
+    accent?: 'gold' | 'blue' | 'green';
 }
 
-const KPICard: React.FC<KPICardProps> = ({label, value, loading, error, accent = 'blue'}) => {
-    const accentColor = accent === 'blue' ? '#3B82F6' : '#10B981';
+const KPICard: React.FC<KPICardProps> = ({label, value, loading, error, accent = 'gold'}) => {
+    // Martyx Gold as default, with blue/green options
+    const accentColor = accent === 'gold' ? '#F6C845' : accent === 'blue' ? '#3B82F6' : '#10B981';
 
     return (
         <div className="kpi-card">
             <div className="kpi-label">{label}</div>
             {loading ? (
-                <div className="kpi-loading">Loading…</div>
+                <div className="kpi-loading" aria-live="polite">Loading…</div>
             ) : error ? (
-                <div className="kpi-error">{error}</div>
+                <div className="kpi-error" role="alert">{error}</div>
             ) : (
                 <div className="kpi-value">{typeof value === 'number' ? value.toLocaleString() : value}</div>
             )}
-            <div className="kpi-accent" style={{backgroundColor: accentColor}}></div>
+            <div className="kpi-accent" style={{backgroundColor: accentColor}} aria-hidden="true"></div>
         </div>
     );
 };

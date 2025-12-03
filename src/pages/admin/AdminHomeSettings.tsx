@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import AdminLayout from './AdminLayout';
+import GeneralSettingsTabs from './GeneralSettingsTabs';
 import { homePageSettingsService, type HomePageSetting } from '../../services/homePageSettingsService';
 import { Button, Badge, SkeletonTable } from '../../components/ui';
 import { Save, Eye, EyeOff } from 'lucide-react';
@@ -74,9 +75,12 @@ const AdminHomeSettings: React.FC = () => {
   };
 
   return (
-    <AdminLayout title="Home Page Settings">
+    <AdminLayout title="General Settings">
       <div className="admin-page">
         <div className="admin-container">
+          {/* Sub-navigation tabs */}
+          <GeneralSettingsTabs />
+
           {/* Header */}
           <div className="admin-card" style={{ marginBottom: '24px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>

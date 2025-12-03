@@ -689,12 +689,583 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-  
+
   .order-summary-card:hover,
   .downloads-card:hover,
   .info-card:hover,
   .items-card:hover,
   .modern-download-btn:hover {
     transform: none;
+  }
+}
+
+/* =========================================
+   SHIPPING TRACKING STYLES
+   ========================================= */
+
+.shipping-tracking-card {
+  grid-column: 1 / -1;
+}
+
+.card-title .card-icon {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+.shipping-status-badge-row {
+  margin-bottom: 1rem;
+}
+
+.shipping-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 1px solid;
+  backdrop-filter: blur(10px);
+}
+
+.shipping-status-badge.pending {
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.shipping-status-badge.processing {
+  color: #8b5cf6;
+  background: rgba(139, 92, 246, 0.1);
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
+.shipping-status-badge.packed {
+  color: #06b6d4;
+  background: rgba(6, 182, 212, 0.1);
+  border-color: rgba(6, 182, 212, 0.3);
+}
+
+.shipping-status-badge.shipped,
+.shipping-status-badge.in_transit {
+  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.shipping-status-badge.delivered {
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.shipping-status-badge.returned,
+.shipping-status-badge.failed {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.tracking-number {
+  font-family: monospace;
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+}
+
+.track-package-row {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.track-package-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.08) 100%);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 8px;
+  color: #60a5fa;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.track-package-link:hover {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.25) 0%, rgba(59, 130, 246, 0.15) 100%);
+  border-color: rgba(59, 130, 246, 0.5);
+  transform: translateY(-1px);
+}
+
+.track-package-link .external-link-icon {
+  flex-shrink: 0;
+}
+
+/* Shipping Timeline */
+.shipping-timeline {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+}
+
+.shipping-timeline::before {
+  content: '';
+  position: absolute;
+  top: calc(1.5rem + 12px);
+  left: 12px;
+  right: 12px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.timeline-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+  z-index: 1;
+  flex: 1;
+}
+
+.timeline-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.timeline-step.completed .timeline-dot {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  border-color: #22c55e;
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.4);
+}
+
+.timeline-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.timeline-step.completed .timeline-label {
+  color: #22c55e;
+}
+
+/* Cancelled Order Card */
+.cancelled-card {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%) !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+}
+
+.cancelled-title {
+  color: #ef4444 !important;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cancelled-title .card-icon {
+  color: #ef4444;
+}
+
+/* Responsive timeline */
+@media (max-width: 640px) {
+  .shipping-timeline {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: flex-start;
+    padding-left: 2rem;
+  }
+
+  .shipping-timeline::before {
+    top: 12px;
+    left: 12px;
+    right: auto;
+    bottom: 12px;
+    width: 2px;
+    height: auto;
+  }
+
+  .timeline-step {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+  }
+
+  .timeline-dot {
+    flex-shrink: 0;
+  }
+
+  .timeline-label {
+    text-align: left;
+  }
+}
+
+/* =========================================
+   NEW ORDER PROGRESS TIMELINE
+   ========================================= */
+
+.order-progress-timeline {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.progress-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 2;
+}
+
+.progress-step.completed .progress-dot {
+  background: #22c55e;
+  border-color: #22c55e;
+}
+
+.progress-step.completed .progress-dot svg {
+  color: #fff;
+}
+
+.progress-step.current .progress-dot {
+  background: #16a34a;
+  border-color: #bbf7d0;
+  border-width: 3px;
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.3), 0 0 20px rgba(34, 197, 94, 0.4);
+  transform: scale(1.15);
+}
+
+.progress-label {
+  margin-top: 8px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.progress-step.completed .progress-label {
+  color: #22c55e;
+}
+
+.progress-step.current .progress-label {
+  color: #22c55e;
+  font-weight: 700;
+}
+
+.progress-line {
+  position: absolute;
+  top: 15px;
+  left: calc(50% + 16px);
+  width: calc(100% - 32px);
+  height: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  z-index: 0;
+}
+
+.progress-line.completed {
+  background: #22c55e;
+}
+
+/* Tracking Info Section */
+.tracking-info-section {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tracking-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.tracking-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tracking-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tracking-value {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.tracking-value.tracking-number {
+  font-family: monospace;
+  letter-spacing: 0.05em;
+}
+
+.track-package-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0.1) 100%);
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  border-radius: 8px;
+  color: #60a5fa;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.track-package-btn:hover {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(59, 130, 246, 0.2) 100%);
+  border-color: rgba(59, 130, 246, 0.6);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+.estimated-delivery {
+  margin-top: 1rem;
+  padding: 12px 16px;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.est-label {
+  font-size: 0.8rem;
+  color: #fbbf24;
+  font-weight: 500;
+}
+
+.est-date {
+  font-size: 0.875rem;
+  color: #fbbf24;
+  font-weight: 700;
+}
+
+/* Cancel Order Section */
+.cancel-order-section {
+  grid-column: 1 / -1;
+  margin-top: 0.5rem;
+}
+
+.cancel-order-card {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(239, 68, 68, 0.02) 100%);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+.cancel-order-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.cancel-order-info {
+  flex: 1;
+}
+
+.cancel-order-info h5 {
+  margin: 0 0 4px 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.cancel-order-info p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.cancel-order-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: transparent;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  border-radius: 8px;
+  color: #ef4444;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancel-order-btn:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.6);
+}
+
+.cancel-order-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Cancel Confirmation Modal */
+.cancel-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.cancel-modal {
+  background: var(--card-bg, #1a1f2e);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 480px;
+  width: 100%;
+}
+
+.cancel-modal h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.25rem;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cancel-modal-warning {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.cancel-modal-warning p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #fbbf24;
+  line-height: 1.5;
+}
+
+.cancel-modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.cancel-modal-btn {
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancel-modal-btn.secondary {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--text-primary);
+}
+
+.cancel-modal-btn.secondary:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.cancel-modal-btn.danger {
+  background: #ef4444;
+  border: none;
+  color: #fff;
+}
+
+.cancel-modal-btn.danger:hover:not(:disabled) {
+  background: #dc2626;
+}
+
+.cancel-modal-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+  .order-progress-timeline {
+    flex-direction: column;
+    gap: 0;
+    padding-left: 1rem;
+  }
+
+  .progress-step {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+  }
+
+  .progress-line {
+    position: absolute;
+    top: calc(50% + 16px);
+    left: 15px;
+    width: 2px;
+    height: calc(100% - 8px);
+  }
+
+  .progress-label {
+    margin-top: 0;
+    text-align: left;
+  }
+
+  .cancel-order-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .cancel-order-btn {
+    width: 100%;
+    justify-content: center;
   }
 }

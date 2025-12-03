@@ -164,15 +164,11 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ title, children, navTabs }) =
       label: 'Settings',
       icon: <Settings size={20} />,
       items: [
-        { path: '/admin/settings', label: 'System Settings' },
-        { path: '/admin/home-settings', label: 'Home Page Settings' },
-        { path: '/admin/company-settings', label: 'Company Settings' },
-        { path: '/admin/tax/zones', label: 'Tax Zones' },
+        { path: '/admin/settings', label: 'General' },
         { path: '/admin/email-templates', label: 'Email Templates' },
-        { path: '/admin/rbac/roles', label: 'Roles & Permissions' },
-        { path: '/admin/audit', label: 'Audit Log' },
-        { path: '/admin/account-lockout-config', label: 'Account Lockout' },
-        { path: '/admin/cassandra', label: 'Cassandra DB' }
+        { path: '/admin/tax/zones', label: 'Tax & Shipping' },
+        { path: '/admin/rbac/roles', label: 'Security & Access' },
+        { path: '/admin/audit', label: 'Audit Log' }
       ]
     }
   ];
@@ -203,12 +199,17 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ title, children, navTabs }) =
   // Private admin layout with responsive sidebar
   return (
     <div className="admin-shell">
+      {/* Skip link for keyboard navigation - WCAG 2.1 AA */}
+      <a href="#admin-main-content" className="admin-skip-link">
+        Skip to main content
+      </a>
+
       {/* Sidebar */}
       <aside className={`admin-sidebar${sidebarOpen ? ' is-open' : ''}`} id="admin-sidebar" aria-label="Admin navigation">
         <div className="admin-sidebar-header">
-          <div className="admin-sidebar-logo">
-            <img src="/logo/logo.png" alt="Martyx Industries" className="admin-logo-img" />
-            <div className="admin-logo-text">
+          <div className="admin-sidebar-logo" role="img" aria-label="Martyx Industries Admin Panel">
+            <img src="/logo/logo.png" alt="" className="admin-logo-img" aria-hidden="true" />
+            <div className="admin-logo-text" aria-hidden="true">
               <div className="admin-logo-line">MARTYX</div>
               <div className="admin-logo-line">INDUSTRIES</div>
             </div>
@@ -268,8 +269,8 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ title, children, navTabs }) =
         </nav>
 
         <div className="admin-sidebar-footer">
-          <button className="admin-logout-btn" onClick={handleLogout}>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <button className="admin-logout-btn" onClick={handleLogout} aria-label="Log out of admin panel">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <path d="M6 14H3.33333C2.97971 14 2.64057 13.8595 2.39052 13.6095C2.14048 13.3594 2 13.0203 2 12.6667V3.33333C2 2.97971 2.14048 2.64057 2.39052 2.39052C2.64057 2.14048 2.97971 2 3.33333 2H6M10.6667 11.3333L14 8M14 8L10.6667 4.66667M14 8H6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
             Logout
@@ -296,11 +297,11 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ title, children, navTabs }) =
           <h1 className="admin-topbar-title">{title || 'Admin Panel'}</h1>
           {navTabs && navTabs}
         </header>
-        <section className="admin-main">
+        <main className="admin-main" id="admin-main-content">
           <ErrorBoundary>
             {children}
           </ErrorBoundary>
-        </section>
+        </main>
       </div>
     </div>
   );

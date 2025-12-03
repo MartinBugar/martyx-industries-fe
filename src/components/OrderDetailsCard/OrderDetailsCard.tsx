@@ -7,15 +7,80 @@ import './OrderDetailsCard.css';
 type OrderDetailsCardProps = {
   order: Order;
   onError?: (error: string) => void;
+  onOrderUpdated?: (updatedOrder: Order) => void;
 }
 
 const OrderDetailsCard: React.FC<OrderDetailsCardProps> = ({
   order,
-  onError
+  onError,
+  onOrderUpdated
 }) => {
   const { t } = useTranslation('common');
   const [invoiceDownloadingId, setInvoiceDownloadingId] = useState<string | null>(null);
   const [downloadingItemId, setDownloadingItemId] = useState<string | null>(null);
+  const [cancelling, setCancelling] = useState<boolean>(false);
+  const [showCancelConfirm, setShowCancelConfirm] = useState<boolean>(false);
+
+  // Check if order can be cancelled by user
+  // - Only before SHIPPED status
+  // - Has at least some physical items (digital-only orders can't be cancelled after payment)
+  const canUserCancel = (): boolean => {
+    const status = order.status.toUpperCase();
+    const nonCancellableStatuses = ['SHIPPED', 'DELIVERED', 'CANCELLED', 'REFUNDED'];
+    if (nonCancellableStatuses.includes(status)) return false;
+
+    // If only digital items and already paid, can't cancel
+    const hasPhysical = order.hasPhysicalItems || order.items.some(i => i.productType?.toUpperCase() !== 'DIGITAL');
+    const hasDigital = order.hasDigitalItems || order.items.some(i => i.productType?.toUpperCase() === 'DIGITAL');
+
+    // If PAID and only digital items - can't cancel (already delivered digitally)
+    if (status === 'PAID' && hasDigital && !hasPhysical) return false;
+
+    return true;
+  };
+
+  // Check if partial refund applies (has both physical and digital)
+  const isPartialRefund = (): boolean => {
+    const hasPhysical = order.hasPhysicalItems || order.items.some(i => i.productType?.toUpperCase() !== 'DIGITAL');
+    const hasDigital = order.hasDigitalItems || order.items.some(i => i.productType?.toUpperCase() === 'DIGITAL');
+    return hasPhysical && hasDigital;
+  };
+
+  // Calculate physical items total for partial refund info
+  const getPhysicalItemsTotal = (): number => {
+    return order.items
+      .filter(i => i.productType?.toUpperCase() !== 'DIGITAL')
+      .reduce((sum, i) => sum + (i.price * i.quantity), 0);
+  };
+
+  // Handle cancel order
+  const handleCancelOrder = async () => {
+    if (!order.backendId && !order.id) return;
+
+    setCancelling(true);
+    try {
+      const orderId = Number(order.backendId || order.id);
+      await orderService.cancelOrder(orderId, 'User requested cancellation');
+
+      // Update local order state
+      if (onOrderUpdated) {
+        onOrderUpdated({
+          ...order,
+          status: 'CANCELLED',
+          cancelledAt: new Date().toISOString(),
+          cancellationReason: 'User requested cancellation'
+        });
+      }
+
+      setShowCancelConfirm(false);
+    } catch (err) {
+      if (onError) {
+        onError(err instanceof Error ? err.message : 'Failed to cancel order');
+      }
+    } finally {
+      setCancelling(false);
+    }
+  };
 
   // Format date/time string
   const formatDateTime = (dateString: string) => {
@@ -200,7 +265,210 @@ const OrderDetailsCard: React.FC<OrderDetailsCardProps> = ({
             </div>
           </div>
         )}
+
+        {/* Order Progress Timeline - Always show for physical orders */}
+        {(order.hasPhysicalItems || order.trackingNumber || order.shippingTrackingNumber || order.shippingStatus ||
+          ['PROCESSING', 'SHIPPED', 'DELIVERED'].includes(order.status.toUpperCase())) &&
+          order.status.toLowerCase() !== 'cancelled' && (
+          <div className="info-card shipping-tracking-card">
+            <h4 className="card-title">
+              <svg className="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20">
+                <rect x="1" y="3" width="15" height="13" rx="2" ry="2"/>
+                <polygon points="16,8 20,8 23,11 23,16 16,16 16,8"/>
+                <circle cx="5.5" cy="18.5" r="2.5"/>
+                <circle cx="18.5" cy="18.5" r="2.5"/>
+              </svg>
+              Order Progress
+            </h4>
+
+            {/* Visual Timeline with highlighted current step */}
+            <div className="order-progress-timeline">
+              {(() => {
+                const status = order.status.toUpperCase();
+                const steps = [
+                  { key: 'ordered', label: 'Ordered', done: true },
+                  { key: 'paid', label: 'Paid', done: ['PAID','PROCESSING','SHIPPED','DELIVERED'].includes(status) },
+                  { key: 'processing', label: 'Processing', done: ['PROCESSING','SHIPPED','DELIVERED'].includes(status) },
+                  { key: 'shipped', label: 'Shipped', done: ['SHIPPED','DELIVERED'].includes(status) },
+                  { key: 'delivered', label: 'Delivered', done: status === 'DELIVERED' }
+                ];
+
+                // Find current step (last done step)
+                let currentIdx = 0;
+                steps.forEach((s, i) => { if (s.done) currentIdx = i; });
+
+                return steps.map((step, idx) => (
+                  <div key={step.key} className={`progress-step ${step.done ? 'completed' : ''} ${idx === currentIdx ? 'current' : ''}`}>
+                    <div className="progress-dot">
+                      {step.done && (
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" width="14" height="14">
+                          <polyline points="20,6 9,17 4,12" />
+                        </svg>
+                      )}
+                    </div>
+                    <div className="progress-label">{step.label}</div>
+                    {idx < steps.length - 1 && <div className={`progress-line ${steps[idx + 1].done ? 'completed' : ''}`} />}
+                  </div>
+                ));
+              })()}
+            </div>
+
+            {/* Tracking Info Section */}
+            {(order.trackingNumber || order.shippingTrackingNumber || order.shippingCarrier) && (
+              <div className="tracking-info-section">
+                <div className="tracking-info-grid">
+                  {order.shippingCarrier && (
+                    <div className="tracking-info-item">
+                      <span className="tracking-label">Carrier</span>
+                      <span className="tracking-value">{order.shippingCarrier}</span>
+                    </div>
+                  )}
+                  {(order.trackingNumber || order.shippingTrackingNumber) && (
+                    <div className="tracking-info-item">
+                      <span className="tracking-label">Tracking #</span>
+                      <span className="tracking-value tracking-number">{order.trackingNumber || order.shippingTrackingNumber}</span>
+                    </div>
+                  )}
+                  {order.shippedAt && (
+                    <div className="tracking-info-item">
+                      <span className="tracking-label">Shipped</span>
+                      <span className="tracking-value">{formatDateTime(order.shippedAt)}</span>
+                    </div>
+                  )}
+                  {order.deliveredAt && (
+                    <div className="tracking-info-item">
+                      <span className="tracking-label">Delivered</span>
+                      <span className="tracking-value">{formatDateTime(order.deliveredAt)}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Track Package Button */}
+                {order.trackingUrl && (
+                  <a href={order.trackingUrl} target="_blank" rel="noopener noreferrer" className="track-package-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                      <polyline points="15,3 21,3 21,9"/>
+                      <line x1="10" y1="14" x2="21" y2="3"/>
+                    </svg>
+                    Track Package
+                  </a>
+                )}
+              </div>
+            )}
+
+            {order.estimatedDeliveryDate && !order.deliveredAt && (
+              <div className="estimated-delivery">
+                <span className="est-label">Estimated Delivery:</span>
+                <span className="est-date">{formatDateTime(order.estimatedDeliveryDate)}</span>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Cancellation Info */}
+        {order.status.toLowerCase() === 'cancelled' && (
+          <div className="info-card cancelled-card">
+            <h4 className="card-title cancelled-title">
+              <svg className="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="15" y1="9" x2="9" y2="15"/>
+                <line x1="9" y1="9" x2="15" y2="15"/>
+              </svg>
+              Order Cancelled
+            </h4>
+            {order.cancelledAt && (
+              <div className="detail-row">
+                <span className="detail-label">Cancelled At</span>
+                <span className="detail-value">{formatDateTime(order.cancelledAt)}</span>
+              </div>
+            )}
+            {order.cancellationReason && (
+              <div className="detail-row">
+                <span className="detail-label">Reason</span>
+                <span className="detail-value">{order.cancellationReason}</span>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Cancel Order Section - only show if cancellable */}
+        {canUserCancel() && (
+          <div className="cancel-order-section">
+            <div className="cancel-order-card">
+              <div className="cancel-order-content">
+                <div className="cancel-order-info">
+                  <h5>Cancel this order?</h5>
+                  <p>
+                    {isPartialRefund()
+                      ? `Only physical items will be refunded (${formatCurrency(getPhysicalItemsTotal(), order.currency)}). Digital products are non-refundable.`
+                      : 'You can cancel this order before it is shipped. A full refund will be processed.'}
+                  </p>
+                </div>
+                <button
+                  className="cancel-order-btn"
+                  onClick={() => setShowCancelConfirm(true)}
+                  disabled={cancelling}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="15" y1="9" x2="9" y2="15"/>
+                    <line x1="9" y1="9" x2="15" y2="15"/>
+                  </svg>
+                  Cancel Order
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
+
+      {/* Cancel Confirmation Modal */}
+      {showCancelConfirm && (
+        <div className="cancel-modal-overlay" onClick={() => setShowCancelConfirm(false)}>
+          <div className="cancel-modal" onClick={e => e.stopPropagation()}>
+            <h3>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="24" height="24" style={{color: '#ef4444'}}>
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+              Confirm Cancellation
+            </h3>
+
+            {isPartialRefund() && (
+              <div className="cancel-modal-warning">
+                <p>
+                  <strong>Important:</strong> This order contains digital products which are non-refundable as per our terms.
+                  Only the physical items ({formatCurrency(getPhysicalItemsTotal(), order.currency)}) will be refunded.
+                </p>
+              </div>
+            )}
+
+            <p style={{marginBottom: '1.5rem', color: 'var(--text-muted)', fontSize: '0.9rem'}}>
+              Are you sure you want to cancel order <strong>#{order.orderNumber || order.id}</strong>?
+              This action cannot be undone.
+            </p>
+
+            <div className="cancel-modal-actions">
+              <button
+                className="cancel-modal-btn secondary"
+                onClick={() => setShowCancelConfirm(false)}
+                disabled={cancelling}
+              >
+                Keep Order
+              </button>
+              <button
+                className="cancel-modal-btn danger"
+                onClick={handleCancelOrder}
+                disabled={cancelling}
+              >
+                {cancelling ? 'Cancelling...' : 'Yes, Cancel Order'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="order-items">
         <div className="items-card">

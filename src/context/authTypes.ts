@@ -38,6 +38,20 @@ export interface Order {
   shippingTrackingNumber?: string;
   subtotal?: number;
   taxAmount?: number;
+  // Physical product shipping/fulfillment tracking
+  shippingStatus?: string;
+  trackingNumber?: string;
+  trackingUrl?: string;
+  packedAt?: string;
+  shippedAt?: string;
+  deliveredAt?: string;
+  estimatedDeliveryDate?: string;
+  fulfillmentStatus?: string;
+  hasPhysicalItems?: boolean;
+  hasDigitalItems?: boolean;
+  // Cancellation info
+  cancelledAt?: string;
+  cancellationReason?: string;
 }
 
 // Define the structure of an avatar
