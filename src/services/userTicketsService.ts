@@ -4,21 +4,23 @@ import { API_BASE_URL, authHeaders, handleResponse, withLangHeaders } from './ap
 // TYPES
 // =========================================================================
 
-export enum TicketStatus {
-  OPEN = 'OPEN',
-  IN_PROGRESS = 'IN_PROGRESS',
-  WAITING_CUSTOMER = 'WAITING_CUSTOMER',
-  WAITING_INTERNAL = 'WAITING_INTERNAL',
-  RESOLVED = 'RESOLVED',
-  CLOSED = 'CLOSED'
-}
+export const TicketStatus = {
+  OPEN: 'OPEN',
+  IN_PROGRESS: 'IN_PROGRESS',
+  WAITING_CUSTOMER: 'WAITING_CUSTOMER',
+  WAITING_INTERNAL: 'WAITING_INTERNAL',
+  RESOLVED: 'RESOLVED',
+  CLOSED: 'CLOSED'
+} as const;
+export type TicketStatus = typeof TicketStatus[keyof typeof TicketStatus];
 
-export enum TicketPriority {
-  LOW = 'LOW',
-  NORMAL = 'NORMAL',
-  HIGH = 'HIGH',
-  URGENT = 'URGENT'
-}
+export const TicketPriority = {
+  LOW: 'LOW',
+  NORMAL: 'NORMAL',
+  HIGH: 'HIGH',
+  URGENT: 'URGENT'
+} as const;
+export type TicketPriority = typeof TicketPriority[keyof typeof TicketPriority];
 
 export interface TicketDto {
   id: number;

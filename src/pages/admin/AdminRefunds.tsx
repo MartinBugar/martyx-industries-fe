@@ -18,7 +18,6 @@ import {
   executeRefund,
   cancelRefund,
   getStatusLabel,
-  getStatusColor,
   getReasonLabel,
   formatAmount,
   formatTimeAgo,

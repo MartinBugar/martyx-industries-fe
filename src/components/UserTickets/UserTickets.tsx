@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import userTicketsService, {
+  TicketStatus,
+  TicketPriority,
+} from '../../services/userTicketsService';
+import type {
   TicketDto,
   TicketDetailDto,
   TicketCategoryDto,
-  TicketStatus,
-  TicketPriority,
   CreateTicketRequest
 } from '../../services/userTicketsService';
 import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';

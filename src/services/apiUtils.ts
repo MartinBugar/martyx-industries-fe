@@ -324,6 +324,14 @@ export const defaultHeaders: ApiHeaders = {
   'Content-Type': 'application/json',
 };
 
+/**
+ * Get headers with authorization for authenticated API requests.
+ * Returns a copy of defaultHeaders (which includes the Authorization header if set).
+ */
+export const authHeaders = (): ApiHeaders => {
+  return { ...defaultHeaders };
+};
+
 // Accept-Language header is handled dynamically by withLangHeaders()
 
 // Helper function to update Authorization header
