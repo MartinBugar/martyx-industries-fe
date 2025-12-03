@@ -130,13 +130,24 @@ const OrderHistory: React.FC = () => {
               </div>
 
               <div className="order-header-center">
-                {order.status.toLowerCase() === 'paid' ? (
-                  <div className="status-badge status-completed">ORDER COMPLETED</div>
-                ) : (
-                  <div className={getStatusBadgeClass(order.status)}>
-                    {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                  </div>
-                )}
+                {(() => {
+                  const status = order.status.toLowerCase();
+                  // Check if digital-only order
+                  const hasDigital = order.hasDigitalItems || order.items?.some(i => i.productType?.toUpperCase() === 'DIGITAL');
+                  const hasPhysical = order.hasPhysicalItems || order.items?.some(i => i.productType?.toUpperCase() !== 'DIGITAL' && i.productType);
+                  const isDigitalOnly = hasDigital && !hasPhysical;
+
+                  // Digital-only orders with PAID status are effectively COMPLETED
+                  if (isDigitalOnly && status === 'paid') {
+                    return <div className="status-badge status-completed">Completed</div>;
+                  }
+
+                  return (
+                    <div className={getStatusBadgeClass(order.status)}>
+                      {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                    </div>
+                  );
+                })()}
               </div>
 
               <div className="order-header-right">

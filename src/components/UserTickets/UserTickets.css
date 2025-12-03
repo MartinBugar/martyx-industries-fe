@@ -1,8 +1,12 @@
+/* UserTickets - Dark Theme Matching Site Design */
+
 .user-tickets {
   padding: 0;
 }
 
-/* Header */
+/* ============================================================================
+   HEADER
+   ============================================================================ */
 .tickets-header {
   display: flex;
   justify-content: space-between;
@@ -14,80 +18,91 @@
 
 .tickets-header h2 {
   margin: 0;
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--text-primary, #1a1a2e);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text, #fff);
+  letter-spacing: -0.02em;
 }
 
 .back-button {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: transparent;
-  border: 1px solid var(--border-color, #e5e5e5);
+  padding: 0.5rem 0.875rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
-  color: var(--text-secondary, #666);
+  color: var(--text-muted, #999);
   cursor: pointer;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
   transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
 }
 
 .back-button:hover {
-  background: var(--bg-secondary, #f5f5f5);
-  color: var(--text-primary, #1a1a2e);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: var(--text, #fff);
 }
 
 .back-button svg {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
 }
 
 .create-ticket-button {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.25rem;
-  background: var(--primary-color, #6366f1);
-  color: white;
+  padding: 0.625rem 1rem;
+  background: linear-gradient(135deg, var(--accent, #ffcc00) 0%, #e6b800 100%);
+  color: #000;
   border: none;
   border-radius: 8px;
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: 0.8125rem;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(255, 204, 0, 0.25);
 }
 
 .create-ticket-button:hover {
-  background: var(--primary-hover, #5558e8);
   transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 204, 0, 0.35);
 }
 
 .create-ticket-button svg {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
 }
 
-/* Messages */
+/* ============================================================================
+   MESSAGES (Error/Success)
+   ============================================================================ */
 .error-message {
-  padding: 1rem;
-  background: #fef2f2;
-  border: 1px solid #fee2e2;
+  padding: 0.875rem 1rem;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.25);
   border-radius: 8px;
-  color: #dc2626;
+  color: #f87171;
+  font-size: 0.875rem;
   margin-bottom: 1rem;
 }
 
 .success-message {
-  padding: 1rem;
-  background: #f0fdf4;
-  border: 1px solid #dcfce7;
+  padding: 0.875rem 1rem;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.25);
   border-radius: 8px;
-  color: #16a34a;
+  color: #4ade80;
+  font-size: 0.875rem;
   margin-bottom: 1rem;
 }
 
-/* Loading */
+/* ============================================================================
+   LOADING
+   ============================================================================ */
 .loading-container {
   display: flex;
   justify-content: center;
@@ -95,303 +110,395 @@
   padding: 3rem;
 }
 
-/* Empty State */
+/* ============================================================================
+   EMPTY STATE
+   ============================================================================ */
 .empty-state {
   text-align: center;
   padding: 3rem 1.5rem;
-  background: var(--bg-secondary, #f9fafb);
+  background: var(--surface, rgba(255, 255, 255, 0.02));
   border-radius: 12px;
-  border: 2px dashed var(--border-color, #e5e5e5);
+  border: 1px dashed rgba(255, 255, 255, 0.1);
 }
 
 .empty-state svg {
-  width: 64px;
-  height: 64px;
-  color: var(--text-tertiary, #999);
+  width: 48px;
+  height: 48px;
+  color: var(--text-muted, #666);
   margin-bottom: 1rem;
+  opacity: 0.5;
 }
 
 .empty-state h3 {
   margin: 0 0 0.5rem;
-  font-size: 1.25rem;
-  color: var(--text-primary, #1a1a2e);
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text, #fff);
 }
 
 .empty-state p {
-  margin: 0 0 1.5rem;
-  color: var(--text-secondary, #666);
+  margin: 0 0 1.25rem;
+  color: var(--text-muted, #999);
+  font-size: 0.875rem;
+  line-height: 1.5;
 }
 
-/* Tickets List */
+/* ============================================================================
+   TICKETS LIST
+   ============================================================================ */
 .tickets-list {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .ticket-card {
-  background: white;
-  border: 1px solid var(--border-color, #e5e5e5);
-  border-radius: 12px;
-  padding: 1.25rem;
+  background: var(--surface, rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
   cursor: pointer;
   transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.ticket-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.02) 0%, transparent 100%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
 }
 
 .ticket-card:hover {
-  border-color: var(--primary-color, #6366f1);
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+  border-color: rgba(255, 204, 0, 0.2);
   transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.ticket-card:hover::before {
+  opacity: 1;
 }
 
 .ticket-card-header {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 0.75rem;
+  gap: 0.625rem;
+  margin-bottom: 0.5rem;
 }
 
 .ticket-number {
-  font-family: monospace;
-  font-size: 0.8rem;
-  color: var(--text-tertiary, #999);
-  background: var(--bg-secondary, #f5f5f5);
-  padding: 0.25rem 0.5rem;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.6875rem;
+  color: var(--text-muted, #666);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 0.1875rem 0.5rem;
   border-radius: 4px;
+  letter-spacing: 0.02em;
 }
 
 .ticket-status {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: white;
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
+  font-size: 0.625rem;
+  font-weight: 600;
+  color: #fff;
+  padding: 0.1875rem 0.625rem;
+  border-radius: 12px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.05em;
 }
 
 .ticket-priority {
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: 0.625rem;
+  font-weight: 700;
   text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
 .ticket-subject {
-  margin: 0 0 0.75rem;
-  font-size: 1rem;
+  margin: 0 0 0.625rem;
+  font-size: 0.9375rem;
   font-weight: 500;
-  color: var(--text-primary, #1a1a2e);
+  color: var(--text, #fff);
   line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .ticket-card-footer {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  font-size: 0.8rem;
-  color: var(--text-tertiary, #999);
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  color: var(--text-muted, #666);
 }
 
 .ticket-category {
-  background: var(--bg-secondary, #f5f5f5);
-  padding: 0.25rem 0.5rem;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 0.1875rem 0.5rem;
   border-radius: 4px;
+  font-size: 0.6875rem;
 }
 
-/* Pagination */
+/* ============================================================================
+   PAGINATION
+   ============================================================================ */
 .pagination {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 1rem;
-  margin-top: 1.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--border-color, #e5e5e5);
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .pagination button {
-  padding: 0.5rem 1rem;
-  background: white;
-  border: 1px solid var(--border-color, #e5e5e5);
+  padding: 0.5rem 0.875rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 6px;
-  color: var(--text-primary, #1a1a2e);
+  color: var(--text, #fff);
+  font-size: 0.8125rem;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .pagination button:hover:not(:disabled) {
-  background: var(--bg-secondary, #f5f5f5);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
 }
 
 .pagination button:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
 .pagination span {
-  font-size: 0.875rem;
-  color: var(--text-secondary, #666);
+  font-size: 0.8125rem;
+  color: var(--text-muted, #999);
 }
 
-/* Create Ticket Form */
+/* ============================================================================
+   CREATE TICKET FORM
+   ============================================================================ */
 .create-ticket-form {
-  background: white;
-  border: 1px solid var(--border-color, #e5e5e5);
+  background: var(--surface, rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 12px;
-  padding: 1.5rem;
+  padding: 1.25rem;
 }
 
 .form-group {
-  margin-bottom: 1.25rem;
+  margin-bottom: 1rem;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 0.5rem;
-  font-size: 0.875rem;
+  margin-bottom: 0.375rem;
+  font-size: 0.8125rem;
   font-weight: 500;
-  color: var(--text-primary, #1a1a2e);
+  color: var(--text-muted, #999);
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
   width: 100%;
-  padding: 0.75rem 1rem;
-  border: 1px solid var(--border-color, #e5e5e5);
+  padding: 0.625rem 0.875rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
-  font-size: 0.9375rem;
-  color: var(--text-primary, #1a1a2e);
-  background: white;
-  transition: border-color 0.2s ease;
+  font-size: 0.875rem;
+  color: var(--text, #fff);
+  background: rgba(255, 255, 255, 0.02);
+  transition: all 0.2s ease;
   box-sizing: border-box;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: var(--text-muted, #666);
 }
 
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: var(--primary-color, #6366f1);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  border-color: rgba(255, 204, 0, 0.4);
+  background: rgba(255, 255, 255, 0.03);
+  box-shadow: 0 0 0 3px rgba(255, 204, 0, 0.08);
+}
+
+.form-group select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2.5rem;
+}
+
+.form-group select option {
+  background: #1a1a1a;
+  color: #fff;
 }
 
 .form-group textarea {
   resize: vertical;
-  min-height: 120px;
+  min-height: 100px;
+  line-height: 1.5;
 }
 
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .form-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 1rem;
-  margin-top: 1.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--border-color, #e5e5e5);
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .cancel-button {
-  padding: 0.75rem 1.5rem;
-  background: white;
-  border: 1px solid var(--border-color, #e5e5e5);
+  padding: 0.625rem 1.25rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
-  color: var(--text-secondary, #666);
-  font-size: 0.875rem;
+  color: var(--text-muted, #999);
+  font-size: 0.8125rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .cancel-button:hover {
-  background: var(--bg-secondary, #f5f5f5);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text, #fff);
 }
 
 .submit-button {
-  padding: 0.75rem 1.5rem;
-  background: var(--primary-color, #6366f1);
+  padding: 0.625rem 1.25rem;
+  background: linear-gradient(135deg, var(--accent, #ffcc00) 0%, #e6b800 100%);
   border: none;
   border-radius: 8px;
-  color: white;
-  font-size: 0.875rem;
-  font-weight: 500;
+  color: #000;
+  font-size: 0.8125rem;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(255, 204, 0, 0.25);
 }
 
 .submit-button:hover:not(:disabled) {
-  background: var(--primary-hover, #5558e8);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 204, 0, 0.35);
 }
 
 .submit-button:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
 }
 
-/* Ticket Detail */
+/* ============================================================================
+   TICKET DETAIL
+   ============================================================================ */
 .ticket-detail {
-  background: white;
-  border: 1px solid var(--border-color, #e5e5e5);
+  background: var(--surface, rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 12px;
   overflow: hidden;
 }
 
 .ticket-detail-header {
-  padding: 1.5rem;
-  background: var(--bg-secondary, #f9fafb);
-  border-bottom: 1px solid var(--border-color, #e5e5e5);
+  padding: 1.25rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .ticket-meta {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 0.75rem;
+  gap: 0.625rem;
+  margin-bottom: 0.625rem;
   flex-wrap: wrap;
 }
 
 .ticket-detail-header .ticket-subject {
   margin: 0 0 0.5rem;
-  font-size: 1.25rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text, #fff);
 }
 
 .ticket-info {
   display: flex;
-  gap: 1.5rem;
-  font-size: 0.8rem;
-  color: var(--text-tertiary, #999);
+  gap: 1.25rem;
+  font-size: 0.75rem;
+  color: var(--text-muted, #666);
 }
 
-/* Messages */
+/* ============================================================================
+   MESSAGES (Chat Style)
+   ============================================================================ */
 .ticket-messages {
-  padding: 1.5rem;
+  padding: 1.25rem;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  max-height: 400px;
+  gap: 0.875rem;
+  max-height: 350px;
   overflow-y: auto;
 }
 
+/* Custom scrollbar */
+.ticket-messages::-webkit-scrollbar {
+  width: 4px;
+}
+
+.ticket-messages::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 2px;
+}
+
+.ticket-messages::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+
+.ticket-messages::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
 .message {
-  padding: 1rem;
-  border-radius: 12px;
-  max-width: 85%;
+  padding: 0.875rem 1rem;
+  border-radius: 10px;
+  max-width: 80%;
+  position: relative;
 }
 
 .user-message {
-  background: var(--primary-color, #6366f1);
-  color: white;
+  background: linear-gradient(135deg, rgba(255, 204, 0, 0.15) 0%, rgba(255, 204, 0, 0.08) 100%);
+  border: 1px solid rgba(255, 204, 0, 0.2);
   margin-left: auto;
   border-bottom-right-radius: 4px;
 }
 
 .staff-message {
-  background: var(--bg-secondary, #f5f5f5);
-  color: var(--text-primary, #1a1a2e);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   margin-right: auto;
   border-bottom-left-radius: 4px;
 }
@@ -400,9 +507,17 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.5rem;
-  font-size: 0.75rem;
-  opacity: 0.8;
+  margin-bottom: 0.375rem;
+  font-size: 0.6875rem;
+  gap: 0.75rem;
+}
+
+.user-message .message-header {
+  color: rgba(255, 204, 0, 0.7);
+}
+
+.staff-message .message-header {
+  color: var(--text-muted, #666);
 }
 
 .message-sender {
@@ -410,120 +525,158 @@
 }
 
 .message-content {
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   line-height: 1.5;
   white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
-/* Reply Section */
+.user-message .message-content {
+  color: var(--text, #fff);
+}
+
+.staff-message .message-content {
+  color: var(--text, #fff);
+}
+
+/* ============================================================================
+   REPLY SECTION
+   ============================================================================ */
 .reply-section {
-  padding: 1.5rem;
-  border-top: 1px solid var(--border-color, #e5e5e5);
-  background: var(--bg-secondary, #f9fafb);
+  padding: 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.01);
 }
 
 .reply-section textarea {
   width: 100%;
-  padding: 1rem;
-  border: 1px solid var(--border-color, #e5e5e5);
+  padding: 0.875rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
+  color: var(--text, #fff);
+  background: rgba(255, 255, 255, 0.02);
   resize: vertical;
-  min-height: 100px;
+  min-height: 80px;
   box-sizing: border-box;
+  line-height: 1.5;
+  transition: all 0.2s ease;
+}
+
+.reply-section textarea::placeholder {
+  color: var(--text-muted, #666);
 }
 
 .reply-section textarea:focus {
   outline: none;
-  border-color: var(--primary-color, #6366f1);
+  border-color: rgba(255, 204, 0, 0.4);
+  box-shadow: 0 0 0 3px rgba(255, 204, 0, 0.08);
 }
 
 .reply-char-count {
   text-align: right;
-  font-size: 0.75rem;
-  color: var(--text-tertiary, #999);
+  font-size: 0.6875rem;
+  color: var(--text-muted, #666);
   margin-top: 0.25rem;
 }
 
 .reply-actions {
   display: flex;
   justify-content: flex-end;
-  margin-top: 0.75rem;
+  margin-top: 0.625rem;
 }
 
 .reply-button {
-  padding: 0.75rem 1.5rem;
-  background: var(--primary-color, #6366f1);
-  color: white;
+  padding: 0.625rem 1.25rem;
+  background: linear-gradient(135deg, var(--accent, #ffcc00) 0%, #e6b800 100%);
+  color: #000;
   border: none;
   border-radius: 8px;
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: 0.8125rem;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(255, 204, 0, 0.25);
 }
 
 .reply-button:hover:not(:disabled) {
-  background: var(--primary-hover, #5558e8);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 204, 0, 0.35);
 }
 
 .reply-button:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
 }
 
-/* Ticket Actions */
+/* ============================================================================
+   TICKET ACTIONS
+   ============================================================================ */
 .ticket-actions {
-  padding: 1rem 1.5rem;
-  border-top: 1px solid var(--border-color, #e5e5e5);
+  padding: 1rem 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
   display: flex;
-  gap: 1rem;
+  gap: 0.75rem;
   justify-content: flex-end;
 }
 
 .close-ticket-button {
   padding: 0.5rem 1rem;
-  background: white;
-  border: 1px solid #dc2626;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
   border-radius: 6px;
-  color: #dc2626;
-  font-size: 0.8rem;
+  color: #f87171;
+  font-size: 0.75rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .close-ticket-button:hover:not(:disabled) {
-  background: #fef2f2;
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.35);
 }
 
 .close-ticket-button:disabled,
 .reopen-ticket-button:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
 .reopen-ticket-button {
   padding: 0.5rem 1rem;
-  background: white;
-  border: 1px solid #16a34a;
+  background: rgba(34, 197, 94, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.25);
   border-radius: 6px;
-  color: #16a34a;
-  font-size: 0.8rem;
+  color: #4ade80;
+  font-size: 0.75rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .reopen-ticket-button:hover:not(:disabled) {
-  background: #f0fdf4;
+  background: rgba(34, 197, 94, 0.12);
+  border-color: rgba(34, 197, 94, 0.35);
 }
 
-/* Responsive */
+/* ============================================================================
+   RESPONSIVE
+   ============================================================================ */
 @media (max-width: 640px) {
   .tickets-header {
     flex-direction: column;
     align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .tickets-header h2 {
+    text-align: center;
+  }
+
+  .create-ticket-button {
+    justify-content: center;
   }
 
   .form-row {
@@ -531,7 +684,7 @@
   }
 
   .message {
-    max-width: 95%;
+    max-width: 90%;
   }
 
   .ticket-info {
@@ -545,5 +698,15 @@
 
   .form-actions button {
     width: 100%;
+    justify-content: center;
+  }
+
+  .ticket-actions {
+    flex-direction: column;
+  }
+
+  .ticket-actions button {
+    width: 100%;
+    justify-content: center;
   }
 }

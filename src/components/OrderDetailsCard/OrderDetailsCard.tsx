@@ -169,15 +169,105 @@ const OrderDetailsCard: React.FC<OrderDetailsCardProps> = ({
             <span className="order-label">Order #{(order.orderNumber || order.id).toString()}</span>
             <span className="order-date-detail">{formatDateTime(order.date)}</span>
           </div>
-          <div className={`order-status-large ${getStatusBadgeClass(order.status)}`}>
-            {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-          </div>
         </div>
         <div className="order-total-section">
           <span className="total-label">Total</span>
           <span className="total-amount">{formatCurrency(order.totalAmount, order.currency)}</span>
         </div>
       </div>
+
+      {/* Order Progress - Compact Timeline */}
+      {order.status.toLowerCase() !== 'cancelled' && (
+        <div className="order-progress-card">
+          {(() => {
+            const status = order.status.toUpperCase();
+            const isDigitalOnly = isDigitalOnlyOrder();
+
+            const steps = isDigitalOnly
+              ? [
+                  { key: 'ordered', label: 'Ordered', done: true },
+                  { key: 'paid', label: 'Paid', done: ['PAID', 'COMPLETED'].includes(status) },
+                  { key: 'completed', label: 'Completed', done: status === 'COMPLETED' || (status === 'PAID' && isDigitalOnly) }
+                ]
+              : [
+                  { key: 'ordered', label: 'Ordered', done: true },
+                  { key: 'paid', label: 'Paid', done: ['PAID','PROCESSING','SHIPPED','DELIVERED','COMPLETED'].includes(status) },
+                  { key: 'processing', label: 'Processing', done: ['PROCESSING','SHIPPED','DELIVERED','COMPLETED'].includes(status) },
+                  { key: 'shipped', label: 'Shipped', done: ['SHIPPED','DELIVERED','COMPLETED'].includes(status) },
+                  { key: 'delivered', label: 'Delivered', done: ['DELIVERED','COMPLETED'].includes(status) }
+                ];
+
+            const completedCount = steps.filter(s => s.done).length;
+            const progressPercent = ((completedCount - 1) / (steps.length - 1)) * 100;
+
+            return (
+              <>
+                {/* Progress Bar with Checkmarks */}
+                <div className="progress-bar-container">
+                  <div className="progress-bar-track">
+                    <div className="progress-bar-fill" style={{ width: `${progressPercent}%` }} />
+                  </div>
+                  <div className="progress-bar-steps">
+                    {steps.map((step) => (
+                      <div key={step.key} className={`progress-bar-step ${step.done ? 'done' : ''}`}>
+                        <span className="step-icon">
+                          {step.done ? (
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" width="10" height="10">
+                              <polyline points="20,6 9,17 4,12" />
+                            </svg>
+                          ) : (
+                            <span className="step-dot" />
+                          )}
+                        </span>
+                        <span className="step-label">{step.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Digital delivery notice */}
+                {isDigitalOnly && ['PAID', 'COMPLETED'].includes(status) && (
+                  <div className="digital-notice">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14">
+                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                      <polyline points="22,4 12,14.01 9,11.01"/>
+                    </svg>
+                    Delivered to your email
+                  </div>
+                )}
+              </>
+            );
+          })()}
+
+          {/* Tracking Info - Compact inline */}
+          {!isDigitalOnlyOrder() && (order.trackingNumber || order.shippingTrackingNumber || order.shippingCarrier) && (
+            <div className="tracking-inline">
+              <div className="tracking-inline-info">
+                {order.shippingCarrier && <span className="tracking-carrier">{order.shippingCarrier}</span>}
+                {(order.trackingNumber || order.shippingTrackingNumber) && (
+                  <span className="tracking-code">{order.trackingNumber || order.shippingTrackingNumber}</span>
+                )}
+              </div>
+              {order.trackingUrl && (
+                <a href={order.trackingUrl} target="_blank" rel="noopener noreferrer" className="tracking-link">
+                  Track
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="12" height="12">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                    <polyline points="15,3 21,3 21,9"/>
+                    <line x1="10" y1="14" x2="21" y2="3"/>
+                  </svg>
+                </a>
+              )}
+            </div>
+          )}
+
+          {order.estimatedDeliveryDate && !order.deliveredAt && (
+            <div className="estimated-delivery-inline">
+              Est. delivery: {formatDateTime(order.estimatedDeliveryDate)}
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="order-content-grid">
         <div className="order-summary-card">
@@ -270,134 +360,6 @@ const OrderDetailsCard: React.FC<OrderDetailsCardProps> = ({
             <div className="notes-content">
               <span className="note-text">{order.notes}</span>
             </div>
-          </div>
-        )}
-
-        {/* Order Progress Timeline */}
-        {order.status.toLowerCase() !== 'cancelled' && (
-          <div className="info-card shipping-tracking-card">
-            <h4 className="card-title">
-              {/* Different icon for digital vs physical */}
-              {isDigitalOnlyOrder() ? (
-                <svg className="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                  <polyline points="14,2 14,8 20,8"/>
-                  <path d="M12 18v-6"/>
-                  <path d="M9 15l3 3 3-3"/>
-                </svg>
-              ) : (
-                <svg className="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20">
-                  <rect x="1" y="3" width="15" height="13" rx="2" ry="2"/>
-                  <polygon points="16,8 20,8 23,11 23,16 16,16 16,8"/>
-                  <circle cx="5.5" cy="18.5" r="2.5"/>
-                  <circle cx="18.5" cy="18.5" r="2.5"/>
-                </svg>
-              )}
-              Order Progress
-            </h4>
-
-            {/* Visual Timeline with highlighted current step */}
-            <div className="order-progress-timeline">
-              {(() => {
-                const status = order.status.toUpperCase();
-                const isDigitalOnly = isDigitalOnlyOrder();
-
-                // Different timeline steps for digital-only vs physical orders
-                const steps = isDigitalOnly
-                  ? [
-                      { key: 'ordered', label: 'Ordered', done: true },
-                      { key: 'paid', label: 'Paid', done: ['PAID', 'COMPLETED'].includes(status) },
-                      { key: 'completed', label: 'Completed', done: status === 'COMPLETED' || (status === 'PAID' && isDigitalOnly) }
-                    ]
-                  : [
-                      { key: 'ordered', label: 'Ordered', done: true },
-                      { key: 'paid', label: 'Paid', done: ['PAID','PROCESSING','SHIPPED','DELIVERED','COMPLETED'].includes(status) },
-                      { key: 'processing', label: 'Processing', done: ['PROCESSING','SHIPPED','DELIVERED','COMPLETED'].includes(status) },
-                      { key: 'shipped', label: 'Shipped', done: ['SHIPPED','DELIVERED','COMPLETED'].includes(status) },
-                      { key: 'delivered', label: 'Delivered', done: ['DELIVERED','COMPLETED'].includes(status) }
-                    ];
-
-                // Find current step (last done step)
-                let currentIdx = 0;
-                steps.forEach((s, i) => { if (s.done) currentIdx = i; });
-
-                return steps.map((step, idx) => (
-                  <div key={step.key} className={`progress-step ${step.done ? 'completed' : ''} ${idx === currentIdx ? 'current' : ''}`}>
-                    <div className="progress-dot">
-                      {step.done && (
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" width="14" height="14">
-                          <polyline points="20,6 9,17 4,12" />
-                        </svg>
-                      )}
-                    </div>
-                    <div className="progress-label">{step.label}</div>
-                    {idx < steps.length - 1 && <div className={`progress-line ${steps[idx + 1].done ? 'completed' : ''}`} />}
-                  </div>
-                ));
-              })()}
-            </div>
-
-            {/* Digital order completion message */}
-            {isDigitalOnlyOrder() && ['PAID', 'COMPLETED'].includes(order.status.toUpperCase()) && (
-              <div className="digital-delivery-message">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
-                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                  <polyline points="22,4 12,14.01 9,11.01"/>
-                </svg>
-                <span>Your digital products have been delivered to your email and are ready to download.</span>
-              </div>
-            )}
-
-            {/* Tracking Info Section - Only for physical orders */}
-            {!isDigitalOnlyOrder() && (order.trackingNumber || order.shippingTrackingNumber || order.shippingCarrier) && (
-              <div className="tracking-info-section">
-                <div className="tracking-info-grid">
-                  {order.shippingCarrier && (
-                    <div className="tracking-info-item">
-                      <span className="tracking-label">Carrier</span>
-                      <span className="tracking-value">{order.shippingCarrier}</span>
-                    </div>
-                  )}
-                  {(order.trackingNumber || order.shippingTrackingNumber) && (
-                    <div className="tracking-info-item">
-                      <span className="tracking-label">Tracking #</span>
-                      <span className="tracking-value tracking-number">{order.trackingNumber || order.shippingTrackingNumber}</span>
-                    </div>
-                  )}
-                  {order.shippedAt && (
-                    <div className="tracking-info-item">
-                      <span className="tracking-label">Shipped</span>
-                      <span className="tracking-value">{formatDateTime(order.shippedAt)}</span>
-                    </div>
-                  )}
-                  {order.deliveredAt && (
-                    <div className="tracking-info-item">
-                      <span className="tracking-label">Delivered</span>
-                      <span className="tracking-value">{formatDateTime(order.deliveredAt)}</span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Track Package Button */}
-                {order.trackingUrl && (
-                  <a href={order.trackingUrl} target="_blank" rel="noopener noreferrer" className="track-package-btn">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
-                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                      <polyline points="15,3 21,3 21,9"/>
-                      <line x1="10" y1="14" x2="21" y2="3"/>
-                    </svg>
-                    Track Package
-                  </a>
-                )}
-              </div>
-            )}
-
-            {order.estimatedDeliveryDate && !order.deliveredAt && (
-              <div className="estimated-delivery">
-                <span className="est-label">Estimated Delivery:</span>
-                <span className="est-date">{formatDateTime(order.estimatedDeliveryDate)}</span>
-              </div>
-            )}
           </div>
         )}
 
