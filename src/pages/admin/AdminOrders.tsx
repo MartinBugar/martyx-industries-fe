@@ -1,6 +1,6 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Eye, Pencil, X, Plus, Package, Truck, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { Eye, Pencil, X, Plus, Truck, CheckCircle, XCircle, Clock } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
 import './AdminButtonOverrides.css';
@@ -8,18 +8,15 @@ import {adminOrdersService, type AdminOrderDTO, type AdminOrderItem, type PageRe
 import { Button, Badge, SkeletonTable } from '../../components/ui';
 import OrderEmailHistory from '../../components/admin/OrderEmailHistory';
 
-// Order status constants
-const ORDER_STATUSES = ['PENDING', 'PAID', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'REFUNDED'] as const;
-
 // Helper to get status badge variant
-const getStatusBadgeVariant = (status?: string): 'success' | 'warning' | 'error' | 'info' | 'default' => {
+const getStatusBadgeVariant = (status?: string): 'success' | 'warning' | 'danger' | 'info' | 'default' => {
     switch (status) {
         case 'DELIVERED': return 'success';
         case 'SHIPPED': return 'info';
         case 'PROCESSING': return 'warning';
         case 'PAID': return 'info';
         case 'CANCELLED':
-        case 'REFUNDED': return 'error';
+        case 'REFUNDED': return 'danger';
         default: return 'default';
     }
 };
@@ -816,8 +813,14 @@ const AdminOrders: React.FC = () => {
                                                                     <div style={{gridColumn: 'span 3', marginTop: 12}}>
                                                                         {/* Status Timeline */}
                                                                         <div style={{padding: 20, background: '#fff', borderRadius: 12, border: '1px solid #e5e7eb', marginBottom: 16}}>
-                                                                            <h4 style={{margin: '0 0 20px 0', fontSize: 14, fontWeight: 600, color: '#374151'}}>
+                                                                            <h4 style={{margin: '0 0 20px 0', fontSize: 14, fontWeight: 600, color: '#374151', display: 'flex', alignItems: 'center', gap: 8}}>
                                                                                 Order Progress
+                                                                                {/* Show badge for digital-only orders */}
+                                                                                {o.hasDigitalItems && !o.hasPhysicalItems && (
+                                                                                    <span style={{fontSize: 11, padding: '2px 8px', background: '#dbeafe', color: '#1d4ed8', borderRadius: 4, fontWeight: 500}}>
+                                                                                        Digital Order
+                                                                                    </span>
+                                                                                )}
                                                                             </h4>
                                                                             {o.status === 'CANCELLED' ? (
                                                                                 <div style={{display: 'flex', alignItems: 'center', gap: 12, padding: 16, background: '#fef2f2', borderRadius: 8, border: '1px solid #fecaca'}}>
@@ -831,67 +834,136 @@ const AdminOrders: React.FC = () => {
                                                                                     </div>
                                                                                 </div>
                                                                             ) : (
-                                                                                <div style={{display: 'flex', justifyContent: 'space-between', position: 'relative'}}>
-                                                                                    {/* Progress line */}
-                                                                                    <div style={{position: 'absolute', top: 20, left: 40, right: 40, height: 3, background: '#e5e7eb', zIndex: 0}} />
-                                                                                    <div style={{
-                                                                                        position: 'absolute', top: 20, left: 40, height: 3, background: '#22c55e', zIndex: 1,
-                                                                                        width: o.status === 'DELIVERED' ? 'calc(100% - 80px)' :
-                                                                                               o.status === 'SHIPPED' ? 'calc(75% - 60px)' :
-                                                                                               (o.shippingStatus === 'PACKED' || o.packedAt) ? 'calc(50% - 40px)' :
-                                                                                               o.status === 'PROCESSING' ? 'calc(37.5% - 30px)' :
-                                                                                               o.status === 'PAID' ? 'calc(25% - 20px)' : '0'
-                                                                                    }} />
-                                                                                    {/* Steps */}
-                                                                                    {[
-                                                                                        { key: 'ordered', label: 'Ordered', done: true, date: o.orderDate },
-                                                                                        { key: 'paid', label: 'Paid', done: ['PAID','PROCESSING','SHIPPED','DELIVERED'].includes(o.status || ''), date: o.paymentDate },
-                                                                                        { key: 'processing', label: 'Processing', done: ['PROCESSING','SHIPPED','DELIVERED'].includes(o.status || '') || !!o.packedAt },
-                                                                                        { key: 'packed', label: 'Packed', done: !!o.packedAt || ['SHIPPED','DELIVERED'].includes(o.status || ''), date: o.packedAt },
-                                                                                        { key: 'shipped', label: 'Shipped', done: ['SHIPPED','DELIVERED'].includes(o.status || ''), date: o.shippedAt },
-                                                                                        { key: 'delivered', label: 'Delivered', done: o.status === 'DELIVERED', date: o.deliveredAt }
-                                                                                    ].map((step, idx) => {
-                                                                                        const isCurrent = (step.key === 'delivered' && o.status === 'DELIVERED') ||
-                                                                                                        (step.key === 'shipped' && o.status === 'SHIPPED') ||
-                                                                                                        (step.key === 'packed' && (o.shippingStatus === 'PACKED' || o.packedAt) && !['SHIPPED','DELIVERED'].includes(o.status || '')) ||
-                                                                                                        (step.key === 'processing' && o.status === 'PROCESSING' && !o.packedAt) ||
-                                                                                                        (step.key === 'paid' && o.status === 'PAID') ||
-                                                                                                        (step.key === 'ordered' && o.status === 'PENDING');
+                                                                                (() => {
+                                                                                    // Digital-only orders have simplified timeline
+                                                                                    const isDigitalOnly = o.hasDigitalItems && !o.hasPhysicalItems;
+                                                                                    const status = o.status || '';
+
+                                                                                    if (isDigitalOnly) {
+                                                                                        // Digital order: Ordered → Paid → Completed
+                                                                                        const digitalSteps = [
+                                                                                            { key: 'ordered', label: 'Ordered', done: true, date: o.orderDate },
+                                                                                            { key: 'paid', label: 'Paid', done: ['PAID', 'COMPLETED'].includes(status), date: o.paymentDate },
+                                                                                            { key: 'completed', label: 'Completed', done: status === 'COMPLETED' || status === 'PAID', date: status === 'PAID' ? o.paymentDate : undefined }
+                                                                                        ];
+                                                                                        const completedSteps = digitalSteps.filter(s => s.done).length;
+                                                                                        const progressWidth = completedSteps >= 3 ? 'calc(100% - 80px)' : completedSteps === 2 ? 'calc(50% - 40px)' : '0';
+
                                                                                         return (
-                                                                                            <div key={step.key} style={{display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 2, flex: 1}}>
-                                                                                                <div style={{
-                                                                                                    width: isCurrent ? 44 : 40,
-                                                                                                    height: isCurrent ? 44 : 40,
-                                                                                                    borderRadius: '50%',
-                                                                                                    background: step.done ? (isCurrent ? '#16a34a' : '#22c55e') : '#e5e7eb',
-                                                                                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                                                                    border: isCurrent ? '3px solid #bbf7d0' : 'none',
-                                                                                                    boxShadow: isCurrent ? '0 0 0 4px rgba(34,197,94,0.2)' : 'none',
-                                                                                                    transition: 'all 0.3s ease'
-                                                                                                }}>
-                                                                                                    {step.done ? (
-                                                                                                        <CheckCircle size={isCurrent ? 22 : 20} color="#fff" />
-                                                                                                    ) : (
-                                                                                                        <div style={{width: 12, height: 12, borderRadius: '50%', background: '#9ca3af'}} />
-                                                                                                    )}
+                                                                                            <>
+                                                                                                <div style={{display: 'flex', justifyContent: 'space-between', position: 'relative'}}>
+                                                                                                    <div style={{position: 'absolute', top: 20, left: 40, right: 40, height: 3, background: '#e5e7eb', zIndex: 0}} />
+                                                                                                    <div style={{position: 'absolute', top: 20, left: 40, height: 3, background: '#22c55e', zIndex: 1, width: progressWidth}} />
+                                                                                                    {digitalSteps.map((step, idx) => {
+                                                                                                        const isCurrent = idx === completedSteps - 1;
+                                                                                                        return (
+                                                                                                            <div key={step.key} style={{display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 2, flex: 1}}>
+                                                                                                                <div style={{
+                                                                                                                    width: isCurrent ? 44 : 40,
+                                                                                                                    height: isCurrent ? 44 : 40,
+                                                                                                                    borderRadius: '50%',
+                                                                                                                    background: step.done ? (isCurrent ? '#16a34a' : '#22c55e') : '#e5e7eb',
+                                                                                                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                                                                                    border: isCurrent ? '3px solid #bbf7d0' : 'none',
+                                                                                                                    boxShadow: isCurrent ? '0 0 0 4px rgba(34,197,94,0.2)' : 'none',
+                                                                                                                    transition: 'all 0.3s ease'
+                                                                                                                }}>
+                                                                                                                    {step.done ? (
+                                                                                                                        <CheckCircle size={isCurrent ? 22 : 20} color="#fff" />
+                                                                                                                    ) : (
+                                                                                                                        <div style={{width: 12, height: 12, borderRadius: '50%', background: '#9ca3af'}} />
+                                                                                                                    )}
+                                                                                                                </div>
+                                                                                                                <div style={{marginTop: 8, fontSize: 12, fontWeight: isCurrent ? 700 : 500, color: step.done ? '#16a34a' : '#6b7280', textAlign: 'center'}}>
+                                                                                                                    {step.label}
+                                                                                                                </div>
+                                                                                                                {step.date && (
+                                                                                                                    <div style={{fontSize: 10, color: '#9ca3af', marginTop: 2}}>
+                                                                                                                        {new Date(step.date).toLocaleDateString()}
+                                                                                                                    </div>
+                                                                                                                )}
+                                                                                                            </div>
+                                                                                                        );
+                                                                                                    })}
                                                                                                 </div>
-                                                                                                <div style={{marginTop: 8, fontSize: 12, fontWeight: isCurrent ? 700 : 500, color: step.done ? '#16a34a' : '#6b7280', textAlign: 'center'}}>
-                                                                                                    {step.label}
-                                                                                                </div>
-                                                                                                {step.date && (
-                                                                                                    <div style={{fontSize: 10, color: '#9ca3af', marginTop: 2}}>
-                                                                                                        {new Date(step.date).toLocaleDateString()}
+                                                                                                {/* Digital delivery info */}
+                                                                                                {['PAID', 'COMPLETED'].includes(status) && (
+                                                                                                    <div style={{marginTop: 16, padding: 12, background: '#f0fdf4', borderRadius: 8, border: '1px solid #bbf7d0', display: 'flex', alignItems: 'center', gap: 10}}>
+                                                                                                        <CheckCircle size={18} color="#16a34a" />
+                                                                                                        <span style={{fontSize: 13, color: '#166534'}}>
+                                                                                                            Digital products have been delivered to the customer's email.
+                                                                                                        </span>
                                                                                                     </div>
                                                                                                 )}
-                                                                                            </div>
+                                                                                            </>
                                                                                         );
-                                                                                    })}
-                                                                                </div>
+                                                                                    }
+
+                                                                                    // Physical order: full timeline
+                                                                                    return (
+                                                                                        <div style={{display: 'flex', justifyContent: 'space-between', position: 'relative'}}>
+                                                                                            {/* Progress line */}
+                                                                                            <div style={{position: 'absolute', top: 20, left: 40, right: 40, height: 3, background: '#e5e7eb', zIndex: 0}} />
+                                                                                            <div style={{
+                                                                                                position: 'absolute', top: 20, left: 40, height: 3, background: '#22c55e', zIndex: 1,
+                                                                                                width: status === 'DELIVERED' ? 'calc(100% - 80px)' :
+                                                                                                       status === 'SHIPPED' ? 'calc(75% - 60px)' :
+                                                                                                       (o.shippingStatus === 'PACKED' || o.packedAt) ? 'calc(50% - 40px)' :
+                                                                                                       status === 'PROCESSING' ? 'calc(37.5% - 30px)' :
+                                                                                                       status === 'PAID' ? 'calc(25% - 20px)' : '0'
+                                                                                            }} />
+                                                                                            {/* Steps */}
+                                                                                            {[
+                                                                                                { key: 'ordered', label: 'Ordered', done: true, date: o.orderDate },
+                                                                                                { key: 'paid', label: 'Paid', done: ['PAID','PROCESSING','SHIPPED','DELIVERED','COMPLETED'].includes(status), date: o.paymentDate },
+                                                                                                { key: 'processing', label: 'Processing', done: ['PROCESSING','SHIPPED','DELIVERED','COMPLETED'].includes(status) || !!o.packedAt },
+                                                                                                { key: 'packed', label: 'Packed', done: !!o.packedAt || ['SHIPPED','DELIVERED','COMPLETED'].includes(status), date: o.packedAt },
+                                                                                                { key: 'shipped', label: 'Shipped', done: ['SHIPPED','DELIVERED','COMPLETED'].includes(status), date: o.shippedAt },
+                                                                                                { key: 'delivered', label: 'Delivered', done: ['DELIVERED','COMPLETED'].includes(status), date: o.deliveredAt }
+                                                                                            ].map((step) => {
+                                                                                                const isCurrent = (step.key === 'delivered' && ['DELIVERED','COMPLETED'].includes(status)) ||
+                                                                                                                (step.key === 'shipped' && status === 'SHIPPED') ||
+                                                                                                                (step.key === 'packed' && (o.shippingStatus === 'PACKED' || o.packedAt) && !['SHIPPED','DELIVERED','COMPLETED'].includes(status)) ||
+                                                                                                                (step.key === 'processing' && status === 'PROCESSING' && !o.packedAt) ||
+                                                                                                                (step.key === 'paid' && status === 'PAID') ||
+                                                                                                                (step.key === 'ordered' && status === 'PENDING');
+                                                                                                return (
+                                                                                                    <div key={step.key} style={{display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 2, flex: 1}}>
+                                                                                                        <div style={{
+                                                                                                            width: isCurrent ? 44 : 40,
+                                                                                                            height: isCurrent ? 44 : 40,
+                                                                                                            borderRadius: '50%',
+                                                                                                            background: step.done ? (isCurrent ? '#16a34a' : '#22c55e') : '#e5e7eb',
+                                                                                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                                                                            border: isCurrent ? '3px solid #bbf7d0' : 'none',
+                                                                                                            boxShadow: isCurrent ? '0 0 0 4px rgba(34,197,94,0.2)' : 'none',
+                                                                                                            transition: 'all 0.3s ease'
+                                                                                                        }}>
+                                                                                                            {step.done ? (
+                                                                                                                <CheckCircle size={isCurrent ? 22 : 20} color="#fff" />
+                                                                                                            ) : (
+                                                                                                                <div style={{width: 12, height: 12, borderRadius: '50%', background: '#9ca3af'}} />
+                                                                                                            )}
+                                                                                                        </div>
+                                                                                                        <div style={{marginTop: 8, fontSize: 12, fontWeight: isCurrent ? 700 : 500, color: step.done ? '#16a34a' : '#6b7280', textAlign: 'center'}}>
+                                                                                                            {step.label}
+                                                                                                        </div>
+                                                                                                        {step.date && (
+                                                                                                            <div style={{fontSize: 10, color: '#9ca3af', marginTop: 2}}>
+                                                                                                                {new Date(step.date).toLocaleDateString()}
+                                                                                                            </div>
+                                                                                                        )}
+                                                                                                    </div>
+                                                                                                );
+                                                                                            })}
+                                                                                        </div>
+                                                                                    );
+                                                                                })()
                                                                             )}
                                                                         </div>
 
-                                                                        {/* Status Update Dropdown */}
-                                                                        {o.status !== 'CANCELLED' && o.status !== 'DELIVERED' && o.status !== 'REFUNDED' && (
+                                                                        {/* Status Update Dropdown - Only for physical orders that are not completed */}
+                                                                        {o.status !== 'CANCELLED' && o.status !== 'DELIVERED' && o.status !== 'REFUNDED' && o.status !== 'COMPLETED' && !(o.hasDigitalItems && !o.hasPhysicalItems) && (
                                                                             <div style={{padding: 20, background: '#fff', borderRadius: 12, border: '1px solid #e5e7eb', marginBottom: 16}}>
                                                                                 <h4 style={{margin: '0 0 16px 0', fontSize: 14, fontWeight: 600, color: '#374151', display: 'flex', alignItems: 'center', gap: 8}}>
                                                                                     <Clock size={16} />
@@ -964,8 +1036,8 @@ const AdminOrders: React.FC = () => {
                                                                             </div>
                                                                         )}
 
-                                                                        {/* Shipping Info Card */}
-                                                                        {(o.trackingNumber || o.shippingCarrier || o.status === 'SHIPPED' || o.status === 'DELIVERED') && (
+                                                                        {/* Shipping Info Card - Only for physical orders */}
+                                                                        {!(o.hasDigitalItems && !o.hasPhysicalItems) && (o.trackingNumber || o.shippingCarrier || o.status === 'SHIPPED' || o.status === 'DELIVERED') && (
                                                                             <div style={{padding: 20, background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)', borderRadius: 12, border: '1px solid #bfdbfe'}}>
                                                                                 <h4 style={{margin: '0 0 16px 0', fontSize: 14, fontWeight: 600, color: '#1e40af', display: 'flex', alignItems: 'center', gap: 8}}>
                                                                                     <Truck size={16} />

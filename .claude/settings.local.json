@@ -16,7 +16,8 @@
       "Bash(dir:*)",
       "Bash(cat:*)",
       "Bash(findstr:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(del \"C:\\Users\\Martin\\WebstormProjects\\martyx-industries-fe\\src\\components\\OrderDetailsCard\\OrderDetailsCard.test.tsx\")"
     ],
     "deny": [],
     "ask": []

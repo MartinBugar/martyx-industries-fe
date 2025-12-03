@@ -46,6 +46,13 @@ const OrderDetailsCard: React.FC<OrderDetailsCardProps> = ({
     return hasPhysical && hasDigital;
   };
 
+  // Check if order contains only digital products
+  const isDigitalOnlyOrder = (): boolean => {
+    const hasDigital = order.hasDigitalItems || order.items.some(i => i.productType?.toUpperCase() === 'DIGITAL');
+    const hasPhysical = order.hasPhysicalItems || order.items.some(i => i.productType?.toUpperCase() !== 'DIGITAL' && i.productType);
+    return hasDigital && !hasPhysical;
+  };
+
   // Calculate physical items total for partial refund info
   const getPhysicalItemsTotal = (): number => {
     return order.items
@@ -266,18 +273,26 @@ const OrderDetailsCard: React.FC<OrderDetailsCardProps> = ({
           </div>
         )}
 
-        {/* Order Progress Timeline - Always show for physical orders */}
-        {(order.hasPhysicalItems || order.trackingNumber || order.shippingTrackingNumber || order.shippingStatus ||
-          ['PROCESSING', 'SHIPPED', 'DELIVERED'].includes(order.status.toUpperCase())) &&
-          order.status.toLowerCase() !== 'cancelled' && (
+        {/* Order Progress Timeline */}
+        {order.status.toLowerCase() !== 'cancelled' && (
           <div className="info-card shipping-tracking-card">
             <h4 className="card-title">
-              <svg className="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20">
-                <rect x="1" y="3" width="15" height="13" rx="2" ry="2"/>
-                <polygon points="16,8 20,8 23,11 23,16 16,16 16,8"/>
-                <circle cx="5.5" cy="18.5" r="2.5"/>
-                <circle cx="18.5" cy="18.5" r="2.5"/>
-              </svg>
+              {/* Different icon for digital vs physical */}
+              {isDigitalOnlyOrder() ? (
+                <svg className="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14,2 14,8 20,8"/>
+                  <path d="M12 18v-6"/>
+                  <path d="M9 15l3 3 3-3"/>
+                </svg>
+              ) : (
+                <svg className="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20">
+                  <rect x="1" y="3" width="15" height="13" rx="2" ry="2"/>
+                  <polygon points="16,8 20,8 23,11 23,16 16,16 16,8"/>
+                  <circle cx="5.5" cy="18.5" r="2.5"/>
+                  <circle cx="18.5" cy="18.5" r="2.5"/>
+                </svg>
+              )}
               Order Progress
             </h4>
 
@@ -285,13 +300,22 @@ const OrderDetailsCard: React.FC<OrderDetailsCardProps> = ({
             <div className="order-progress-timeline">
               {(() => {
                 const status = order.status.toUpperCase();
-                const steps = [
-                  { key: 'ordered', label: 'Ordered', done: true },
-                  { key: 'paid', label: 'Paid', done: ['PAID','PROCESSING','SHIPPED','DELIVERED'].includes(status) },
-                  { key: 'processing', label: 'Processing', done: ['PROCESSING','SHIPPED','DELIVERED'].includes(status) },
-                  { key: 'shipped', label: 'Shipped', done: ['SHIPPED','DELIVERED'].includes(status) },
-                  { key: 'delivered', label: 'Delivered', done: status === 'DELIVERED' }
-                ];
+                const isDigitalOnly = isDigitalOnlyOrder();
+
+                // Different timeline steps for digital-only vs physical orders
+                const steps = isDigitalOnly
+                  ? [
+                      { key: 'ordered', label: 'Ordered', done: true },
+                      { key: 'paid', label: 'Paid', done: ['PAID', 'COMPLETED'].includes(status) },
+                      { key: 'completed', label: 'Completed', done: status === 'COMPLETED' || (status === 'PAID' && isDigitalOnly) }
+                    ]
+                  : [
+                      { key: 'ordered', label: 'Ordered', done: true },
+                      { key: 'paid', label: 'Paid', done: ['PAID','PROCESSING','SHIPPED','DELIVERED','COMPLETED'].includes(status) },
+                      { key: 'processing', label: 'Processing', done: ['PROCESSING','SHIPPED','DELIVERED','COMPLETED'].includes(status) },
+                      { key: 'shipped', label: 'Shipped', done: ['SHIPPED','DELIVERED','COMPLETED'].includes(status) },
+                      { key: 'delivered', label: 'Delivered', done: ['DELIVERED','COMPLETED'].includes(status) }
+                    ];
 
                 // Find current step (last done step)
                 let currentIdx = 0;
@@ -313,8 +337,19 @@ const OrderDetailsCard: React.FC<OrderDetailsCardProps> = ({
               })()}
             </div>
 
-            {/* Tracking Info Section */}
-            {(order.trackingNumber || order.shippingTrackingNumber || order.shippingCarrier) && (
+            {/* Digital order completion message */}
+            {isDigitalOnlyOrder() && ['PAID', 'COMPLETED'].includes(order.status.toUpperCase()) && (
+              <div className="digital-delivery-message">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                  <polyline points="22,4 12,14.01 9,11.01"/>
+                </svg>
+                <span>Your digital products have been delivered to your email and are ready to download.</span>
+              </div>
+            )}
+
+            {/* Tracking Info Section - Only for physical orders */}
+            {!isDigitalOnlyOrder() && (order.trackingNumber || order.shippingTrackingNumber || order.shippingCarrier) && (
               <div className="tracking-info-section">
                 <div className="tracking-info-grid">
                   {order.shippingCarrier && (

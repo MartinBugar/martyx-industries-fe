@@ -7,21 +7,18 @@ import {
   Clock,
   Loader2,
   Pause,
-  Play,
   Ban,
   CheckCircle,
   XCircle,
   AlertCircle,
   Info,
   Zap,
-  Send,
   Package,
   Truck,
   Archive,
   RefreshCw,
   Eye,
   EyeOff,
-  Star,
 } from 'lucide-react';
 
 /**

@@ -66,13 +66,13 @@ export const FormField = forwardRef<HTMLDivElement, FormFieldProps>(
     const hintId = hint ? `${inputId}-hint` : undefined;
 
     // Clone the child input element to add accessibility attributes
-    const inputElement = React.cloneElement(children, {
+    const inputElement = React.cloneElement(children as React.ReactElement<Record<string, unknown>>, {
       id: inputId,
       name,
       'aria-invalid': error ? 'true' : undefined,
       'aria-describedby': [errorId, hintId].filter(Boolean).join(' ') || undefined,
       'aria-required': required || undefined,
-      className: `${children.props.className || ''} ${error ? 'admin-form-input--error' : ''} ${success ? 'admin-form-input--success' : ''}`.trim(),
+      className: `${(children.props as Record<string, unknown>).className || ''} ${error ? 'admin-form-input--error' : ''} ${success ? 'admin-form-input--success' : ''}`.trim(),
     });
 
     // Determine character counter status
