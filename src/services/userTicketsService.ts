@@ -125,6 +125,7 @@ class UserTicketsService {
     const response = await fetch(this.baseUrl, withLangHeaders({
       method: 'POST',
       headers: authHeaders() as HeadersInit,
+      credentials: 'include',
       body: JSON.stringify(request),
     }));
     return handleResponse(response);
@@ -143,6 +144,7 @@ class UserTicketsService {
     const response = await fetch(`${this.baseUrl}?${params}`, withLangHeaders({
       method: 'GET',
       headers: authHeaders() as HeadersInit,
+      credentials: 'include',
     }));
     return handleResponse(response);
   }
@@ -154,6 +156,7 @@ class UserTicketsService {
     const response = await fetch(`${this.baseUrl}/${id}`, withLangHeaders({
       method: 'GET',
       headers: authHeaders() as HeadersInit,
+      credentials: 'include',
     }));
     return handleResponse(response);
   }
@@ -165,6 +168,7 @@ class UserTicketsService {
     const response = await fetch(`${this.baseUrl}/${id}/detail`, withLangHeaders({
       method: 'GET',
       headers: authHeaders() as HeadersInit,
+      credentials: 'include',
     }));
     return handleResponse(response);
   }
@@ -176,6 +180,7 @@ class UserTicketsService {
     const response = await fetch(`${this.baseUrl}/${ticketId}/messages`, withLangHeaders({
       method: 'GET',
       headers: authHeaders() as HeadersInit,
+      credentials: 'include',
     }));
     return handleResponse(response);
   }
@@ -187,6 +192,7 @@ class UserTicketsService {
     const response = await fetch(`${this.baseUrl}/${ticketId}/messages`, withLangHeaders({
       method: 'POST',
       headers: authHeaders() as HeadersInit,
+      credentials: 'include',
       body: JSON.stringify({ content }),
     }));
     return handleResponse(response);
@@ -199,6 +205,7 @@ class UserTicketsService {
     const response = await fetch(`${this.baseUrl}/${ticketId}/close`, withLangHeaders({
       method: 'POST',
       headers: authHeaders() as HeadersInit,
+      credentials: 'include',
     }));
     return handleResponse(response);
   }
@@ -210,6 +217,7 @@ class UserTicketsService {
     const response = await fetch(`${this.baseUrl}/${ticketId}/reopen`, withLangHeaders({
       method: 'POST',
       headers: authHeaders() as HeadersInit,
+      credentials: 'include',
     }));
     return handleResponse(response);
   }
@@ -221,6 +229,7 @@ class UserTicketsService {
     const response = await fetch(`${this.baseUrl}/categories`, withLangHeaders({
       method: 'GET',
       headers: authHeaders() as HeadersInit,
+      credentials: 'include',
     }));
     return handleResponse(response);
   }
