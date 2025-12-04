@@ -4,7 +4,7 @@ import GeneralSettingsTabs from './GeneralSettingsTabs';
 import { Button, Badge, SkeletonTable } from '../../components/ui';
 import { systemSettingsService, type SystemSettingsDto } from '../../services/systemSettingsService';
 import { useErrors } from '../../context/ErrorContext';
-import { Settings, Lock, Unlock, Save, Edit, X, AlertTriangle, Info, Globe, Percent, DollarSign } from 'lucide-react';
+import { Settings, Lock, Unlock, Save, Edit, X, AlertTriangle, Info, Globe, Percent, DollarSign, RotateCw, Box } from 'lucide-react';
 import './AdminUsers.css';
 import './AdminButtonOverrides.css';
 import { logInfo, logError } from '../../services/logger';
@@ -50,7 +50,8 @@ const AdminSystemSettings: React.FC = () => {
             ossEnabled: settings.ossEnabled,
             defaultVatRate: settings.defaultVatRate,
             sellerCountryCode: settings.sellerCountryCode,
-            ossThresholdEur: settings.ossThresholdEur
+            ossThresholdEur: settings.ossThresholdEur,
+            autoRotate3DModel: settings.autoRotate3DModel
         });
     };
 
@@ -73,7 +74,8 @@ const AdminSystemSettings: React.FC = () => {
                 ossEnabled: editedValues.ossEnabled ?? settings.ossEnabled,
                 defaultVatRate: editedValues.defaultVatRate ?? settings.defaultVatRate,
                 sellerCountryCode: editedValues.sellerCountryCode ?? settings.sellerCountryCode,
-                ossThresholdEur: editedValues.ossThresholdEur ?? settings.ossThresholdEur
+                ossThresholdEur: editedValues.ossThresholdEur ?? settings.ossThresholdEur,
+                autoRotate3DModel: editedValues.autoRotate3DModel ?? settings.autoRotate3DModel
             };
 
             const updated = await systemSettingsService.updateSettings(updateRequest);
@@ -270,6 +272,33 @@ const AdminSystemSettings: React.FC = () => {
                                 </div>
                             </div>
 
+                            {/* 3D Model Configuration - Edit Mode */}
+                            <div className="admin-card" style={{ marginBottom: '20px' }}>
+                                <h3 className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
+                                    <Box size={20} style={{ color: 'var(--admin-accent)' }} />
+                                    3D Model Display
+                                </h3>
+
+                                <div className="form-grid">
+                                    <div style={{ gridColumn: '1 / -1' }}>
+                                        <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}>
+                                            <input
+                                                type="checkbox"
+                                                checked={getEditedValue('autoRotate3DModel', settings.autoRotate3DModel ?? false)}
+                                                onChange={(e) => handleValueChange('autoRotate3DModel', e.target.checked)}
+                                                style={{ width: '20px', height: '20px' }}
+                                            />
+                                            <span style={{ fontWeight: 600, color: 'var(--admin-primary)' }}>
+                                                Enable Auto-Rotate for 3D Models
+                                            </span>
+                                        </label>
+                                        <p style={{ margin: '8px 0 0 32px', fontSize: '13px', color: 'var(--admin-secondary)' }}>
+                                            When enabled, 3D product models will automatically rotate on product detail pages
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
                             {/* Save/Cancel Buttons */}
                             <div className="admin-card">
                                 <div style={{ display: 'flex', gap: '12px' }}>
@@ -383,6 +412,36 @@ const AdminSystemSettings: React.FC = () => {
                                         </div>
                                         <p style={{ margin: '12px 0 0', fontSize: '13px', color: 'var(--admin-secondary)' }}>
                                             Annual B2C threshold
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* 3D Model Configuration - Display Mode */}
+                            <div className="admin-card" style={{ marginBottom: '20px' }}>
+                                <h3 className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
+                                    <Box size={20} style={{ color: 'var(--admin-accent)' }} />
+                                    3D Model Display
+                                </h3>
+
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px' }}>
+                                    <div style={{ padding: '20px', background: 'var(--admin-bg-secondary)', borderRadius: '10px', border: '1px solid var(--admin-border)' }}>
+                                        <div style={{ fontSize: '13px', color: 'var(--admin-secondary)', marginBottom: '8px' }}>Auto-Rotate Status</div>
+                                        <Badge
+                                            variant={settings.autoRotate3DModel ? 'success' : 'warning'}
+                                            size="sm"
+                                            style={{ fontSize: '14px', padding: '8px 16px' }}
+                                        >
+                                            {settings.autoRotate3DModel ? (
+                                                <><RotateCw size={14} style={{ marginRight: 6 }} /> Enabled</>
+                                            ) : (
+                                                <><RotateCw size={14} style={{ marginRight: 6 }} /> Disabled</>
+                                            )}
+                                        </Badge>
+                                        <p style={{ margin: '12px 0 0', fontSize: '13px', color: 'var(--admin-secondary)' }}>
+                                            {settings.autoRotate3DModel
+                                                ? '3D models will automatically rotate on product pages'
+                                                : '3D models remain static until user interaction'}
                                         </p>
                                     </div>
                                 </div>

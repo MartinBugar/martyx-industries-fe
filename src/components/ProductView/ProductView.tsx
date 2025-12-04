@@ -1,8 +1,9 @@
-import React, { useState, Suspense } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 // Lazy load ModelViewer to reduce initial bundle size (Three.js is heavy)
 const ModelViewer = React.lazy(() => import('../ModelViewer'));
 import Gallery from '../Gallery/Gallery';
 import { type Product, defaultModelViewerSettings } from '../../data/productData';
+import { systemSettingsService } from '../../services/systemSettingsService';
 import './ProductView.css';
 
 // Loading fallback for 3D model viewer
@@ -29,9 +30,26 @@ interface ProductViewProps {
 
 const ProductView: React.FC<ProductViewProps> = ({ product, galleryData }) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [globalAutoRotate, setGlobalAutoRotate] = useState<boolean | null>(null);
 
+  // Fetch global 3D model settings on mount
+  useEffect(() => {
+    const fetchDisplaySettings = async () => {
+      try {
+        const displaySettings = await systemSettingsService.get3DModelSettings();
+        setGlobalAutoRotate(displaySettings.autoRotate);
+      } catch {
+        // Default to false if API fails
+        setGlobalAutoRotate(false);
+      }
+    };
+    fetchDisplaySettings();
+  }, []);
 
   const settings = product.masterProductId === 1 ? defaultModelViewerSettings : (product.modelViewerSettings ?? {});
+
+  // Use global setting if available, otherwise fall back to product-specific setting
+  const effectiveAutoRotate = globalAutoRotate !== null ? globalAutoRotate : (settings?.autoRotate ?? false);
 
   return (
     <div className="product-view-container">
@@ -44,7 +62,7 @@ const ProductView: React.FC<ProductViewProps> = ({ product, galleryData }) => {
             camera-orbit={settings?.cameraOrbit}
             touch-action={settings?.touchAction}
             cameraControls={settings?.cameraControls}
-            autoRotate={settings?.autoRotate}
+            autoRotate={effectiveAutoRotate}
             interaction-prompt={settings?.interactionPrompt}
             shadowIntensity={settings?.shadowIntensity}
             exposure={settings?.exposure}
