@@ -130,7 +130,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({product, onVariantChange
                         <path d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                     <span style={{ fontSize: '0.95rem' }}>
-                        <strong>{t('stock.low_stock', 'Low Stock')}:</strong> {t('stock.only_left', `Only ${stockInfo.availableStock} left in stock!`)}
+                        <strong>{t('stock.low_stock', 'Low Stock')}:</strong> {`${t('stock.only_left_prefix', 'Only')} ${stockInfo.availableStock} ${t('stock.only_left_suffix', 'left in stock!')}`}
                     </span>
                 </div>
             )}

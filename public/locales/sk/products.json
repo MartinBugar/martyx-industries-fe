@@ -110,5 +110,11 @@
     "description": "Tento produkt je dočasne nedostupný",
     "back": "Späť",
     "all_products": "Všetky produkty"
+  },
+  "stock": {
+    "low_stock": "Nízky sklad",
+    "only_left_prefix": "Zostáva len",
+    "only_left_suffix": "kusov!",
+    "out_of_stock": "Vypredané"
   }
 }

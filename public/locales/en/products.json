@@ -110,5 +110,11 @@
     "description": "This product is temporarily unavailable",
     "back": "Back",
     "all_products": "All Products"
+  },
+  "stock": {
+    "low_stock": "Low Stock",
+    "only_left_prefix": "Only",
+    "only_left_suffix": "left in stock!",
+    "out_of_stock": "Out of Stock"
   }
 }

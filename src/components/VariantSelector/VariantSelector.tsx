@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { type ProductVariant, type DifficultyLevel } from '../../data/productData';
 import DifficultyBadge from '../DifficultyBadge/DifficultyBadge';
-import { getVariantTypeShort, getAvailabilityText, formatPrice, isOutOfStock, isLowStock } from '../../utils/variantUtils';
+import { getVariantTypeShort, getAvailabilityText, formatPrice, isOutOfStock } from '../../utils/variantUtils';
 import './VariantSelector.css';
 
 interface VariantSelectorProps {
@@ -79,11 +79,6 @@ const VariantSelector: React.FC<VariantSelectorProps> = ({
           <span className={`variant-availability ${currentVariant.availabilityStatus?.toLowerCase() || 'unknown'}`}>
             {getAvailabilityText(currentVariant.availabilityStatus)}
           </span>
-          {isLowStock(currentVariant.stockQuantity) && (
-            <span className="variant-stock-low">
-              {t('variant.only_left', 'Only {{count}} left', { count: currentVariant.stockQuantity })}
-            </span>
-          )}
         </div>
       )}
     </div>

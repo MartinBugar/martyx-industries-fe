@@ -110,5 +110,11 @@
     "description": "Dieses Produkt ist vorübergehend nicht verfügbar",
     "back": "Zurück",
     "all_products": "Alle Produkte"
+  },
+  "stock": {
+    "low_stock": "Niedriger Lagerbestand",
+    "only_left_prefix": "Nur noch",
+    "only_left_suffix": "auf Lager!",
+    "out_of_stock": "Nicht auf Lager"
   }
 }
