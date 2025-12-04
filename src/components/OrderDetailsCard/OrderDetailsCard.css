@@ -205,22 +205,26 @@
 
 .address {
   white-space: pre-wrap;
+  text-align: left;
+  line-height: 1.5;
 }
 
-/* Address Card - clean stacked layout */
-.address-card .address-content {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
-  padding: 1rem;
+/* Address lines - structured multi-line display */
+.address-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
-.address-card .address-text {
+.address-line {
   color: var(--text-primary);
   font-size: 0.875rem;
-  line-height: 1.6;
-  white-space: pre-wrap;
-  display: block;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.address-line:first-child {
+  font-weight: 600;
 }
 
 /* Notes card specific styles */

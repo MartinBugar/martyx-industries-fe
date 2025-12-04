@@ -138,6 +138,36 @@ const OrderDetailsCard: React.FC<OrderDetailsCardProps> = ({
     return `${amount.toFixed(2)} ${code}`;
   };
 
+  // Format address string into structured lines
+  // Backend format: "Street, City, State, PostalCode, Country"
+  const formatAddressLines = (address: string): string[] => {
+    if (!address) return [];
+    const parts = address.split(',').map(p => p.trim()).filter(Boolean);
+    if (parts.length <= 1) return parts;
+
+    // Group into logical lines:
+    // Line 1: Street
+    // Line 2: City, Postal Code
+    // Line 3: State/Country
+    const lines: string[] = [];
+
+    if (parts.length >= 1) lines.push(parts[0]); // Street
+    if (parts.length >= 3) {
+      // City + Postal Code on same line
+      lines.push(`${parts[1]}, ${parts[3] || ''}`);
+    } else if (parts.length >= 2) {
+      lines.push(parts[1]);
+    }
+    if (parts.length >= 5) {
+      // State + Country
+      lines.push(`${parts[2]}, ${parts[4]}`);
+    } else if (parts.length >= 4) {
+      lines.push(parts[parts.length - 1]);
+    }
+
+    return lines.filter(l => l && l.trim() !== ',');
+  };
+
   // Handle invoice download
   const handleInvoiceDownload = async (order: Order) => {
     const apiOrderId = order.backendId || order.id;
@@ -375,19 +405,23 @@ const OrderDetailsCard: React.FC<OrderDetailsCardProps> = ({
 
 
         {order.shippingAddress && (
-          <div className="info-card address-card">
+          <div className="order-summary-card">
             <h4 className="card-title">Shipping Address</h4>
-            <div className="address-content">
-              <span className="address-text">{order.shippingAddress}</span>
+            <div className="address-lines">
+              {formatAddressLines(order.shippingAddress).map((line, idx) => (
+                <div key={idx} className="address-line">{line}</div>
+              ))}
             </div>
           </div>
         )}
 
         {order.billingAddress && (
-          <div className="info-card address-card">
+          <div className="order-summary-card">
             <h4 className="card-title">Billing Address</h4>
-            <div className="address-content">
-              <span className="address-text">{order.billingAddress}</span>
+            <div className="address-lines">
+              {formatAddressLines(order.billingAddress).map((line, idx) => (
+                <div key={idx} className="address-line">{line}</div>
+              ))}
             </div>
           </div>
         )}
