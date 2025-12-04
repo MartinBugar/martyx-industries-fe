@@ -18,6 +18,13 @@ initializeLanguage();
 // Initialize CSRF token for security
 initializeCSRFToken();
 
+// Capture beforeinstallprompt event early (before React mounts)
+// This ensures we don't miss the event if it fires before our components are ready
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  (window as any).__pwaInstallPrompt = e;
+});
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Suspense fallback={null}>
