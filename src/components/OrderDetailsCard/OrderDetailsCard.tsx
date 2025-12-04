@@ -419,6 +419,14 @@ const OrderDetailsCard: React.FC<OrderDetailsCardProps> = ({
           <div className="order-summary-card">
             <h4 className="card-title">Billing Address</h4>
             <div className="address-lines">
+              {(order.firstName || order.lastName) && (
+                <div className="address-line billing-name">
+                  {[order.firstName, order.lastName].filter(Boolean).join(' ')}
+                </div>
+              )}
+              {order.userEmail && (
+                <div className="address-line billing-email">{order.userEmail}</div>
+              )}
               {formatAddressLines(order.billingAddress).map((line, idx) => (
                 <div key={idx} className="address-line">{line}</div>
               ))}

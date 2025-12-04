@@ -32,6 +32,8 @@ interface OrderDTO {
   id?: number | string;
   orderNumber?: string;
   userEmail?: string;
+  firstName?: string;
+  lastName?: string;
   totalAmount?: number;
   currency?: string;
   status?: string; // e.g., PENDING, PAID, PROCESSING, SHIPPED, DELIVERED, CANCELLED, REFUNDED
@@ -110,6 +112,8 @@ export const mapOrderDTOToOrder = (dto: OrderDTO): Order => {
     // Optional fields
     orderNumber: dto.orderNumber ? String(dto.orderNumber) : undefined,
     userEmail: dto.userEmail,
+    firstName: dto.firstName,
+    lastName: dto.lastName,
     currency: dto.currency,
     paymentDate: dto.paymentDate,
     shippingAddress: dto.shippingAddress,

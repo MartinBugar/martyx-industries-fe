@@ -21,6 +21,8 @@ export interface Order {
   // Optional fields coming from backend (if available)
   orderNumber?: string;
   userEmail?: string;
+  firstName?: string;
+  lastName?: string;
   currency?: string;
   paymentDate?: string;
   shippingAddress?: string;
