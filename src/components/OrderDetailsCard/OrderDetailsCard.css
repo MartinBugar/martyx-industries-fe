@@ -207,6 +207,22 @@
   white-space: pre-wrap;
 }
 
+/* Address Card - clean stacked layout */
+.address-card .address-content {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.address-card .address-text {
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  display: block;
+}
+
 /* Notes card specific styles */
 .notes-card {
   grid-column: 1 / -1;

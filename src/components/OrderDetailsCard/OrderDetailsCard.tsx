@@ -374,21 +374,21 @@ const OrderDetailsCard: React.FC<OrderDetailsCardProps> = ({
 
 
 
-        {(order.shippingAddress || order.billingAddress) && (
-          <div className="info-card">
-            <h4 className="card-title">Addresses</h4>
-            {order.shippingAddress && (
-              <div className="detail-row multi">
-                <span className="detail-label">Shipping</span>
-                <span className="detail-value address">{order.shippingAddress}</span>
-              </div>
-            )}
-            {order.billingAddress && (
-              <div className="detail-row multi">
-                <span className="detail-label">Billing</span>
-                <span className="detail-value address">{order.billingAddress}</span>
-              </div>
-            )}
+        {order.shippingAddress && (
+          <div className="info-card address-card">
+            <h4 className="card-title">Shipping Address</h4>
+            <div className="address-content">
+              <span className="address-text">{order.shippingAddress}</span>
+            </div>
+          </div>
+        )}
+
+        {order.billingAddress && (
+          <div className="info-card address-card">
+            <h4 className="card-title">Billing Address</h4>
+            <div className="address-content">
+              <span className="address-text">{order.billingAddress}</span>
+            </div>
           </div>
         )}
 
