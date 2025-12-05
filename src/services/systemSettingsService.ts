@@ -22,7 +22,7 @@ export interface SystemSettingsDto {
 }
 
 const ADMIN_API_BASE = '/api/admin/system-settings';
-const PUBLIC_DISPLAY_SETTINGS_BASE = '/api/public/display-settings';
+const PUBLIC_DISPLAY_SETTINGS_BASE = '/api/v1/public/display-settings';
 
 export interface DisplaySettings3DModel {
   autoRotate: boolean;
