@@ -9,10 +9,10 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     
     <!-- Security Headers -->
-    <!-- CSP: 'unsafe-eval' removed for security (no eval/new Function usage in codebase) -->
+    <!-- CSP: 'wasm-unsafe-eval' added for Three.js meshopt decoder (WebAssembly) -->
     <meta http-equiv="Content-Security-Policy" content="
       default-src 'self' blob:;
-      script-src 'self' 'unsafe-inline';
+      script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval';
       style-src 'self' 'unsafe-inline';
       img-src 'self' data: https: blob:;
       font-src 'self' data:;
