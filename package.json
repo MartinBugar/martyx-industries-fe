@@ -15,6 +15,9 @@
   "dependencies": {
     "@google/model-viewer": "^4.1.0",
     "@hookform/resolvers": "^5.2.2",
+    "@react-three/drei": "^10.0.5",
+    "@react-three/fiber": "^9.1.2",
+    "@types/three": "^0.172.0",
     "@tiptap/extension-link": "^3.11.0",
     "@tiptap/extension-placeholder": "^3.11.0",
     "@tiptap/react": "^3.11.0",
