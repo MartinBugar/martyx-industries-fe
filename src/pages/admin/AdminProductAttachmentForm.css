@@ -1,0 +1,155 @@
+/* AdminProductAttachmentForm.css - Styles extracted from inline styles */
+
+/* Loading State */
+.admin-attach-form-loading {
+  text-align: center;
+  padding: 40px;
+}
+
+/* Header */
+.admin-attach-form-title {
+  margin-bottom: 8px;
+}
+
+.admin-attach-form-subtitle {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.admin-attach-form-back-icon {
+  margin-right: 8px;
+}
+
+/* Error Alert */
+.admin-attach-form-error {
+  margin-bottom: 24px;
+}
+
+/* Section Title */
+.admin-attach-form-section-title {
+  margin-bottom: 24px;
+}
+
+/* Form Sections */
+.admin-attach-form-section {
+  margin-bottom: 32px;
+}
+
+.admin-attach-form-section-heading {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #374151;
+}
+
+/* Required Asterisk */
+.admin-attach-form-required {
+  color: #ef4444;
+}
+
+/* Field Error */
+.admin-attach-form-field-error {
+  color: #ef4444;
+  font-size: 13px;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+/* Success Message */
+.admin-attach-form-success {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #10B981;
+  font-weight: 500;
+}
+
+/* Hint Text */
+.admin-attach-form-hint {
+  color: #6b7280;
+  font-size: 13px;
+}
+
+/* Edit Mode Info Box */
+.admin-attach-form-info-box {
+  padding: 16px;
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 8px;
+}
+
+.admin-attach-form-info-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #0c4a6e;
+}
+
+.admin-attach-form-info-content {
+  font-size: 14px;
+  color: #0c4a6e;
+  display: grid;
+  gap: 6px;
+}
+
+.admin-attach-form-info-link-wrap {
+  margin-top: 8px;
+}
+
+.admin-attach-form-info-link {
+  color: #0284c7;
+  text-decoration: underline;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Form Grid */
+.admin-attach-form-fields {
+  display: grid;
+  gap: 20px;
+}
+
+.admin-attach-form-grid-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+/* Checkboxes Row */
+.admin-attach-form-checkboxes {
+  display: flex;
+  gap: 24px;
+}
+
+.admin-attach-form-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.admin-attach-form-checkbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.admin-attach-form-checkbox-text {
+  font-size: 14px;
+  color: #374151;
+}
+
+/* Form Actions */
+.admin-attach-form-actions {
+  display: flex;
+  gap: 12px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.admin-attach-form-submit-btn {
+  min-width: 120px;
+}
+
+.admin-attach-form-btn-icon {
+  margin-right: 8px;
+}

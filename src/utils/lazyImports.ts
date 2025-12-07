@@ -40,6 +40,7 @@ export const AdminInventory = lazy(() => import('../pages/admin/AdminInventory')
 export const AdminProductDetail = lazy(() => import('../pages/admin/AdminProductDetail'));
 export const AdminProductGallery = lazy(() => import('../pages/admin/AdminProductGallery'));
 export const AdminProduct3DModel = lazy(() => import('../pages/admin/AdminProduct3DModel'));
+export const AdminProductConfigurator = lazy(() => import('../pages/admin/AdminProductConfigurator'));
 export const AdminProductDigitalFile = lazy(() => import('../pages/admin/AdminProductDigitalFile'));
 export const AdminVariantTabs = lazy(() => import('../pages/admin/AdminVariantTabs'));
 export const AdminVariantTabForm = lazy(() => import('../pages/admin/AdminVariantTabForm'));

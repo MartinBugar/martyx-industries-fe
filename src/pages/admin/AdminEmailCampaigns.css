@@ -1,0 +1,273 @@
+/* AdminEmailCampaigns.css - Styles extracted from inline styles */
+
+/* Form grid full width */
+.admin-campaigns-full-width {
+  grid-column: 1 / -1;
+}
+
+/* Header actions */
+.admin-campaigns-header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.admin-campaigns-filter-select {
+  max-width: 200px;
+}
+
+/* Table action column */
+.admin-campaigns-col-actions {
+  width: 180px;
+}
+
+/* Campaign name cell */
+.admin-campaigns-name-main {
+  font-weight: 600;
+}
+
+.admin-campaigns-name-code {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.admin-campaigns-name-subject {
+  font-size: 11px;
+  color: #9ca3af;
+  margin-top: 2px;
+}
+
+/* Recipients cell */
+.admin-campaigns-sent-count {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+/* Rate cells */
+.admin-campaigns-rate-value {
+  font-weight: 600;
+}
+
+.admin-campaigns-rate-count {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+/* Revenue cell */
+.admin-campaigns-revenue {
+  color: #059669;
+}
+
+/* Summary footer */
+.admin-campaigns-summary {
+  margin-top: 16px;
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* Campaign Details */
+.admin-campaigns-detail-header {
+  margin-bottom: 32px;
+}
+
+.admin-campaigns-detail-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: 16px;
+}
+
+.admin-campaigns-detail-title {
+  margin: 0;
+}
+
+.admin-campaigns-detail-meta {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  align-items: center;
+}
+
+.admin-campaigns-detail-sent-date {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* Metrics Grid */
+.admin-campaigns-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.admin-campaigns-revenue-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+/* Metric Cards */
+.admin-campaigns-metric-card {
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.admin-campaigns-metric-card-sent {
+  background: #f9fafb;
+}
+
+.admin-campaigns-metric-card-opened {
+  background: #f0fdf4;
+  border-color: #86efac;
+}
+
+.admin-campaigns-metric-card-clicked {
+  background: #fef3c7;
+  border-color: #fcd34d;
+}
+
+.admin-campaigns-metric-card-conversions {
+  background: #faf5ff;
+  border-color: #c084fc;
+}
+
+.admin-campaigns-metric-card-revenue {
+  background: #ecfdf5;
+  border: 2px solid #059669;
+}
+
+.admin-campaigns-metric-card-issues {
+  background: #fef2f2;
+  border-color: #fca5a5;
+}
+
+/* Metric Card Header */
+.admin-campaigns-metric-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.admin-campaigns-metric-icon-sent {
+  color: #3b82f6;
+}
+
+.admin-campaigns-metric-icon-opened {
+  color: #059669;
+}
+
+.admin-campaigns-metric-icon-clicked {
+  color: #d97706;
+}
+
+.admin-campaigns-metric-icon-conversions {
+  color: #7c3aed;
+}
+
+/* Metric Label */
+.admin-campaigns-metric-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.admin-campaigns-metric-label-sent {
+  color: #6b7280;
+}
+
+.admin-campaigns-metric-label-opened {
+  color: #059669;
+}
+
+.admin-campaigns-metric-label-clicked {
+  color: #d97706;
+}
+
+.admin-campaigns-metric-label-conversions {
+  color: #7c3aed;
+}
+
+.admin-campaigns-metric-label-revenue {
+  color: #059669;
+  margin-bottom: 8px;
+}
+
+.admin-campaigns-metric-label-issues {
+  color: #dc2626;
+  margin-bottom: 8px;
+}
+
+/* Metric Value */
+.admin-campaigns-metric-value {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.admin-campaigns-metric-value-opened {
+  color: #059669;
+}
+
+.admin-campaigns-metric-value-clicked {
+  color: #d97706;
+}
+
+.admin-campaigns-metric-value-conversions {
+  color: #7c3aed;
+}
+
+.admin-campaigns-metric-value-revenue {
+  font-size: 28px;
+  color: #059669;
+}
+
+/* Metric Sub */
+.admin-campaigns-metric-sub {
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+.admin-campaigns-metric-sub-sent {
+  color: #6b7280;
+}
+
+.admin-campaigns-metric-sub-opened {
+  color: #059669;
+}
+
+.admin-campaigns-metric-sub-clicked {
+  color: #d97706;
+}
+
+.admin-campaigns-metric-sub-conversions {
+  color: #7c3aed;
+}
+
+.admin-campaigns-metric-sub-revenue {
+  font-size: 12px;
+  color: #059669;
+}
+
+/* Issues grid */
+.admin-campaigns-issues-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.admin-campaigns-issues-label {
+  color: #6b7280;
+}
+
+.admin-campaigns-issues-value {
+  font-weight: 600;
+}

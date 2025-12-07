@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Order } from '../../context/authTypes';
-import { orderService } from '../../services/orderService';
+import { orderService, type ModularDownloadLink } from '../../services/orderService';
 import { stripeService } from '../../services/stripeService';
 import './OrderDetailsCard.css';
 
@@ -19,9 +19,12 @@ const OrderDetailsCard: React.FC<OrderDetailsCardProps> = ({
   const { t } = useTranslation('common');
   const [invoiceDownloadingId, setInvoiceDownloadingId] = useState<string | null>(null);
   const [downloadingItemId, setDownloadingItemId] = useState<string | null>(null);
+  const [downloadingTokenId, setDownloadingTokenId] = useState<string | null>(null);
   const [cancelling, setCancelling] = useState<boolean>(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState<boolean>(false);
   const [retryingPayment, setRetryingPayment] = useState<boolean>(false);
+  const [modularDownloads, setModularDownloads] = useState<Record<string, ModularDownloadLink[]>>({});
+  const [loadingDownloads, setLoadingDownloads] = useState<Record<string, boolean>>({});
 
   // Check if order can be cancelled by user
   // - Only before SHIPPED status
@@ -196,13 +199,116 @@ const OrderDetailsCard: React.FC<OrderDetailsCardProps> = ({
     }
   };
 
+  // Check if order allows downloads (paid status)
+  const allowsDownloads = ['completed', 'paid'].includes(order.status.toLowerCase());
+
+  // Stable dependency: stringify item IDs to avoid re-fetching when items object reference changes
+  const digitalItemIds = order.items
+    .filter(item => item.productType?.toLowerCase() === 'digital')
+    .map(item => item.id)
+    .join(',');
+
+  // Fetch modular downloads for digital items (parallel API calls)
+  useEffect(() => {
+    if (!allowsDownloads || !digitalItemIds) return;
+
+    // AbortController for cleanup on unmount or dependency change
+    const abortController = new AbortController();
+    let isMounted = true;
+
+    const fetchModularDownloads = async () => {
+      const apiOrderId = order.backendId || order.id;
+
+      // Parse item IDs from stable dependency
+      const itemIdList = digitalItemIds.split(',');
+      const digitalItems = order.items.filter(item => itemIdList.includes(item.id));
+
+      if (digitalItems.length === 0) return;
+
+      // Set all items to loading state
+      const loadingState: Record<string, boolean> = {};
+      digitalItems.forEach(item => { loadingState[item.id] = true; });
+      if (isMounted) setLoadingDownloads(loadingState);
+
+      try {
+        // Fetch all downloads in parallel using Promise.allSettled
+        const results = await Promise.allSettled(
+          digitalItems.map(async item => {
+            // Check if aborted before each request
+            if (abortController.signal.aborted) {
+              throw new Error('Aborted');
+            }
+            const response = await orderService.getOrderItemDownloads(apiOrderId, item.id);
+            return { itemId: item.id, downloads: response.downloads };
+          })
+        );
+
+        // Don't update state if unmounted or aborted
+        if (!isMounted || abortController.signal.aborted) return;
+
+        // Process results
+        const newDownloads: Record<string, ModularDownloadLink[]> = {};
+        const newLoadingState: Record<string, boolean> = {};
+
+        results.forEach((result, index) => {
+          const itemId = digitalItems[index].id;
+          newLoadingState[itemId] = false;
+
+          if (result.status === 'fulfilled' && result.value.downloads?.length > 0) {
+            newDownloads[itemId] = result.value.downloads;
+          }
+          // If rejected, fallback to legacy download (no entry in newDownloads)
+        });
+
+        setModularDownloads(newDownloads);
+        setLoadingDownloads(newLoadingState);
+      } catch (err) {
+        // Only log if not aborted (aborted is expected on cleanup)
+        if (!abortController.signal.aborted) {
+          console.error('Failed to fetch modular downloads:', err);
+        }
+        if (isMounted) {
+          setLoadingDownloads({});
+        }
+      }
+    };
+
+    void fetchModularDownloads();
+
+    // Cleanup function
+    return () => {
+      isMounted = false;
+      abortController.abort();
+    };
+  }, [order.id, order.backendId, digitalItemIds, allowsDownloads]);
+
   // Check if product is digital and downloadable
   const isDigitalProduct = (item: Order['items'][number]) => {
     return item.productType?.toLowerCase() === 'digital';
   };
 
-  // Check if order allows downloads (paid status)
-  const allowsDownloads = ['completed', 'paid'].includes(order.status.toLowerCase());
+  // Handle modular download by token
+  const handleModularDownload = async (download: ModularDownloadLink) => {
+    const tokenKey = `${download.downloadToken}`;
+    try {
+      setDownloadingTokenId(tokenKey);
+      await orderService.downloadByToken(download.downloadToken, download.displayName);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : t('admin.failed_download_product');
+      onError?.(msg);
+    } finally {
+      setDownloadingTokenId(null);
+    }
+  };
+
+  // Format file size
+  const formatFileSize = (bytes?: number): string => {
+    if (!bytes || bytes <= 0) return '';
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+  };
 
   return (
     <div className="order-details-card" id={`order-details-${order.id}`} role="region" aria-label={t('aria.order_details')}>
@@ -603,20 +709,53 @@ const OrderDetailsCard: React.FC<OrderDetailsCardProps> = ({
                     {isDigitalProduct(item) && (
                       <div className="item-download">
                         {allowsDownloads ? (
-                          <button
-                            className="item-download-btn"
-                            onClick={() => handleProductDownload(item.id, item.productName)}
-                            disabled={downloadingItemId === item.id}
-                          >
-                            <svg className="download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                              <polyline points="7,10 12,15 17,10"/>
-                              <line x1="12" y1="15" x2="12" y2="3"/>
-                            </svg>
-                            <span>
-                              {downloadingItemId === item.id ? t('download.downloading') : t('actions.download')}
-                            </span>
-                          </button>
+                          <>
+                            {loadingDownloads[item.id] ? (
+                              <div className="download-loading">Loading downloads...</div>
+                            ) : modularDownloads[item.id] && modularDownloads[item.id].length > 0 ? (
+                              /* Modular downloads - show individual files */
+                              <div className="modular-downloads">
+                                {modularDownloads[item.id].map((download, idx) => (
+                                  <button
+                                    key={idx}
+                                    className={`modular-download-btn ${download.downloadType === 'BASE' ? 'base' : 'option'}`}
+                                    onClick={() => handleModularDownload(download)}
+                                    disabled={downloadingTokenId === download.downloadToken || !download.isValid}
+                                    title={download.isValid ? `Download ${download.displayName}` : 'Download expired or limit reached'}
+                                  >
+                                    <span className="modular-download-icon">
+                                      {download.downloadType === 'BASE' ? '📁' : '🔧'}
+                                    </span>
+                                    <span className="modular-download-info">
+                                      <span className="modular-download-name">{download.displayName}</span>
+                                      {download.fileSize && (
+                                        <span className="modular-download-size">{formatFileSize(download.fileSize)}</span>
+                                      )}
+                                    </span>
+                                    <span className="modular-download-action">
+                                      {downloadingTokenId === download.downloadToken ? '...' : '↓'}
+                                    </span>
+                                  </button>
+                                ))}
+                              </div>
+                            ) : (
+                              /* Legacy single download */
+                              <button
+                                className="item-download-btn"
+                                onClick={() => handleProductDownload(item.id, item.productName)}
+                                disabled={downloadingItemId === item.id}
+                              >
+                                <svg className="download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                  <polyline points="7,10 12,15 17,10"/>
+                                  <line x1="12" y1="15" x2="12" y2="3"/>
+                                </svg>
+                                <span>
+                                  {downloadingItemId === item.id ? t('download.downloading') : t('actions.download')}
+                                </span>
+                              </button>
+                            )}
+                          </>
                         ) : (
                           <div className="download-unavailable">
                             <svg className="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

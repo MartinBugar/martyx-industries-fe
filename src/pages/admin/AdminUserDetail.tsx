@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
 import './AdminButtonOverrides.css';
+import './AdminUserDetail.css';
 import { adminUsersService, type AdminUser } from '../../services/adminUsersService';
 import { userGalleryService } from '../../services/userGalleryService';
 import { adminGalleryService, type AdminUserPhotosResponse, type AdminModelInfo } from '../../services/adminGalleryService';
@@ -507,8 +508,8 @@ const AdminUserDetail: React.FC = () => {
   if (loading) {
     return (
       <AdminLayout title="Loading..." navTabs={NavTabs}>
-        <div style={{ textAlign: 'center', padding: '40px' }}>
-          <div style={{ fontSize: '18px', color: '#666' }}>Loading user...</div>
+        <div className="admin-user-detail-loading">
+          <div className="admin-user-detail-loading-text">Loading user...</div>
         </div>
       </AdminLayout>
     );
@@ -517,9 +518,9 @@ const AdminUserDetail: React.FC = () => {
   if (error) {
     return (
       <AdminLayout title="Error" navTabs={NavTabs}>
-        <div style={{ textAlign: 'center', padding: '40px' }}>
-          <div style={{ fontSize: '18px', color: '#e74c3c', marginBottom: '16px' }}>Error: {error}</div>
-          <button onClick={loadUser} style={{ padding: '8px 16px', background: '#3498db', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Retry</button>
+        <div className="admin-user-detail-loading">
+          <div className="admin-user-detail-error-text">Error: {error}</div>
+          <button onClick={loadUser} className="admin-user-detail-retry-btn">Retry</button>
         </div>
       </AdminLayout>
     );
@@ -528,9 +529,9 @@ const AdminUserDetail: React.FC = () => {
   if (!user) {
     return (
       <AdminLayout title="User Not Found" navTabs={NavTabs}>
-        <div style={{ textAlign: 'center', padding: '40px' }}>
-          <div style={{ fontSize: '18px', color: '#666' }}>User not found</div>
-          <Link to="/admin/users" style={{ display: 'inline-block', marginTop: '16px', padding: '8px 16px', background: '#3498db', color: 'white', textDecoration: 'none', borderRadius: '4px' }}>Back to Users</Link>
+        <div className="admin-user-detail-loading">
+          <div className="admin-user-detail-not-found-text">User not found</div>
+          <Link to="/admin/users" className="admin-user-detail-back-link">Back to Users</Link>
         </div>
       </AdminLayout>
     );
@@ -540,9 +541,9 @@ const AdminUserDetail: React.FC = () => {
   const renderCartSection = () => {
     if (cartLoading) {
       return (
-        <div className="cart-section" style={{ marginTop: '24px', padding: '20px', background: '#2a2a2a', borderRadius: '8px' }}>
-          <h3 style={{ marginTop: 0, color: '#d4af37' }}>🛒 Shopping Cart</h3>
-          <div style={{ textAlign: 'center', padding: '20px', color: '#999' }}>
+        <div className="cart-section admin-user-detail-cart-section admin-user-detail-cart-section-normal">
+          <h3 className="admin-user-detail-cart-title">🛒 Shopping Cart</h3>
+          <div className="admin-user-detail-cart-loading">
             Loading cart...
           </div>
         </div>
@@ -551,9 +552,9 @@ const AdminUserDetail: React.FC = () => {
 
     if (cartError) {
       return (
-        <div className="cart-section" style={{ marginTop: '24px', padding: '20px', background: '#2a2a2a', borderRadius: '8px' }}>
-          <h3 style={{ marginTop: 0, color: '#d4af37' }}>🛒 Shopping Cart</h3>
-          <div style={{ textAlign: 'center', padding: '20px', color: '#e74c3c' }}>
+        <div className="cart-section admin-user-detail-cart-section admin-user-detail-cart-section-normal">
+          <h3 className="admin-user-detail-cart-title">🛒 Shopping Cart</h3>
+          <div className="admin-user-detail-cart-error">
             Error: {cartError}
           </div>
         </div>
@@ -562,9 +563,9 @@ const AdminUserDetail: React.FC = () => {
 
     if (!cartData) {
       return (
-        <div className="cart-section" style={{ marginTop: '24px', padding: '20px', background: '#2a2a2a', borderRadius: '8px' }}>
-          <h3 style={{ marginTop: 0, color: '#d4af37' }}>🛒 Shopping Cart</h3>
-          <div style={{ textAlign: 'center', padding: '20px', color: '#999' }}>
+        <div className="cart-section admin-user-detail-cart-section admin-user-detail-cart-section-normal">
+          <h3 className="admin-user-detail-cart-title">🛒 Shopping Cart</h3>
+          <div className="admin-user-detail-cart-empty">
             No active cart found for this user
           </div>
         </div>
@@ -576,18 +577,18 @@ const AdminUserDetail: React.FC = () => {
     const minutesAgo = Math.floor((cartAge % (1000 * 60 * 60)) / (1000 * 60));
 
     return (
-      <div className="cart-section" style={{ marginTop: '24px', padding: '20px', background: '#2a2a2a', borderRadius: '8px', border: cartData.isAbandoned ? '2px solid #e74c3c' : '1px solid #444' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+      <div className={`cart-section admin-user-detail-cart-section ${cartData.isAbandoned ? 'admin-user-detail-cart-section-abandoned' : 'admin-user-detail-cart-section-normal'}`}>
+        <div className="admin-user-detail-cart-header">
           <div>
-            <h3 style={{ marginTop: 0, color: '#d4af37', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <h3 className="admin-user-detail-cart-title admin-user-detail-cart-title-flex">
               🛒 Shopping Cart
               {cartData.isAbandoned && (
-                <span style={{ fontSize: '14px', background: '#e74c3c', color: 'white', padding: '4px 12px', borderRadius: '12px' }}>
+                <span className="admin-user-detail-abandoned-badge">
                   ABANDONED
                 </span>
               )}
             </h3>
-            <div style={{ fontSize: '14px', color: '#999', marginTop: '8px' }}>
+            <div className="admin-user-detail-cart-meta">
               <div>Cart ID: {cartData.id}</div>
               <div>Total: €{(cartData.total ?? 0).toFixed(2)}</div>
               <div>Last activity: {hoursAgo > 0 ? `${hoursAgo}h ` : ''}{minutesAgo}m ago</div>
@@ -598,16 +599,7 @@ const AdminUserDetail: React.FC = () => {
             <button
               onClick={() => handleSendRecoveryEmail(cartData.id)}
               disabled={sendingRecoveryEmail}
-              style={{
-                background: '#3498db',
-                color: 'white',
-                border: 'none',
-                padding: '10px 20px',
-                borderRadius: '6px',
-                cursor: sendingRecoveryEmail ? 'not-allowed' : 'pointer',
-                opacity: sendingRecoveryEmail ? 0.6 : 1,
-                fontSize: '14px'
-              }}
+              className="admin-user-detail-recovery-btn"
             >
               {sendingRecoveryEmail ? 'Sending...' : '📧 Send Recovery Email'}
             </button>
@@ -615,39 +607,24 @@ const AdminUserDetail: React.FC = () => {
         </div>
 
         {cartData.items && cartData.items.length > 0 ? (
-          <div style={{ marginTop: '16px' }}>
-            <h4 style={{ color: '#d4af37', marginBottom: '12px' }}>Cart Items:</h4>
-            <div style={{ display: 'grid', gap: '12px' }}>
+          <div className="admin-user-detail-cart-items">
+            <h4 className="admin-user-detail-cart-items-title">Cart Items:</h4>
+            <div className="admin-user-detail-cart-items-grid">
               {cartData.items.map((item) => (
-                <div
-                  key={item.id}
-                  style={{
-                    background: '#1a1a1a',
-                    padding: '12px',
-                    borderRadius: '6px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '12px'
-                  }}
-                >
+                <div key={item.id} className="admin-user-detail-cart-item">
                   {item.imageUrl && (
                     <img
                       src={item.imageUrl}
                       alt={item.productName}
-                      style={{
-                        width: '60px',
-                        height: '60px',
-                        objectFit: 'cover',
-                        borderRadius: '4px'
-                      }}
+                      className="admin-user-detail-cart-item-image"
                     />
                   )}
-                  <div style={{ flex: 1 }}>
-                    <div style={{ color: '#f0f0f0', fontWeight: 'bold' }}>{item.productName}</div>
+                  <div className="admin-user-detail-cart-item-info">
+                    <div className="admin-user-detail-cart-item-name">{item.productName}</div>
                     {item.variantName && (
-                      <div style={{ color: '#999', fontSize: '13px' }}>Variant: {item.variantName}</div>
+                      <div className="admin-user-detail-cart-item-variant">Variant: {item.variantName}</div>
                     )}
-                    <div style={{ color: '#d4af37', marginTop: '4px' }}>
+                    <div className="admin-user-detail-cart-item-price">
                       {item.quantity} × €{(item.unitPrice ?? 0).toFixed(2)} = €{(item.totalPrice ?? 0).toFixed(2)}
                     </div>
                   </div>
@@ -656,7 +633,7 @@ const AdminUserDetail: React.FC = () => {
             </div>
           </div>
         ) : (
-          <div style={{ marginTop: '16px', padding: '12px', background: '#1a1a1a', borderRadius: '6px', textAlign: 'center', color: '#999' }}>
+          <div className="admin-user-detail-cart-no-items">
             No items in cart
           </div>
         )}
@@ -668,25 +645,25 @@ const AdminUserDetail: React.FC = () => {
   const renderAdminGalleryContent = () => {
     if (adminGalleryLoading) {
       return (
-        <div style={{ textAlign: 'center', padding: '40px' }}>
-          <div style={{ fontSize: '18px', color: '#666' }}>Loading admin gallery...</div>
+        <div className="admin-user-detail-gallery-loading">
+          <div className="admin-user-detail-gallery-loading-text">Loading admin gallery...</div>
         </div>
       );
     }
 
     if (adminGalleryError) {
       return (
-        <div style={{ textAlign: 'center', padding: '40px' }}>
-          <div style={{ fontSize: '18px', color: '#e74c3c', marginBottom: '16px' }}>Error: {adminGalleryError}</div>
-          <button onClick={loadAdminGallery} style={{ padding: '8px 16px', background: '#3498db', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Retry</button>
+        <div className="admin-user-detail-gallery-error">
+          <div className="admin-user-detail-gallery-error-text">Error: {adminGalleryError}</div>
+          <button onClick={loadAdminGallery} className="admin-user-detail-retry-btn">Retry</button>
         </div>
       );
     }
 
     if (!adminGalleryData) {
       return (
-        <div style={{ textAlign: 'center', padding: '40px' }}>
-          <div style={{ fontSize: '18px', color: '#666' }}>No admin gallery data available</div>
+        <div className="admin-user-detail-gallery-empty">
+          <div className="admin-user-detail-gallery-empty-text">No admin gallery data available</div>
         </div>
       );
     }
@@ -734,9 +711,9 @@ const AdminUserDetail: React.FC = () => {
         )}
 
         {models.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '40px' }}>
-            <div style={{ fontSize: '18px', color: '#666' }}>No photos found</div>
-            <p style={{ color: '#888', marginTop: '8px' }}>This user hasn't uploaded any photos yet.</p>
+          <div className="admin-user-detail-gallery-empty">
+            <div className="admin-user-detail-gallery-empty-text">No photos found</div>
+            <p className="admin-user-detail-gallery-empty-sub">This user hasn't uploaded any photos yet.</p>
           </div>
         ) : (
           <div className="gallery-models">
@@ -868,7 +845,7 @@ const AdminUserDetail: React.FC = () => {
             </div>
 
             {error && (
-              <div className="error-message" style={{ background: '#fee', color: '#c33', padding: '12px', borderRadius: '4px', marginBottom: '16px' }}>
+              <div className="error-message admin-user-detail-error-message">
                 {error}
               </div>
             )}
@@ -881,17 +858,17 @@ const AdminUserDetail: React.FC = () => {
                     <table className="admin-table">
                       <thead>
                         <tr>
-                          <th style={{ width: 240 }}>Field</th>
+                          <th className="admin-user-detail-col-field">Field</th>
                           <th>Value</th>
                         </tr>
                       </thead>
                       <tbody>
                         {getSortedEntries(user as unknown as Record<string, unknown>).map(([key, val]) => (
                           <tr key={key}>
-                            <td style={{ verticalAlign: 'top' }}><code>{key}</code></td>
+                            <td className="admin-user-detail-cell-top"><code>{key}</code></td>
                             <td>
                               {typeof val === 'object' && val !== null ? (
-                                <pre style={{ margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{formatValue(val)}</pre>
+                                <pre className="admin-user-detail-pre">{formatValue(val)}</pre>
                               ) : (
                                 <span>{formatValue(val)}</span>
                               )}
@@ -907,13 +884,13 @@ const AdminUserDetail: React.FC = () => {
                 </div>
               ) : (
                 <div>
-                  <div style={{ marginTop: 8 }}>
+                  <div className="admin-user-detail-edit-section">
                     <h3 className="section-title">Edit All Fields</h3>
-                    <div className="table-wrapper" style={{ marginTop: 8 }}>
+                    <div className="table-wrapper admin-user-detail-edit-section">
                       <table className="admin-table">
                         <thead>
                           <tr>
-                            <th style={{ width: 240 }}>Field</th>
+                            <th className="admin-user-detail-col-field">Field</th>
                             <th>Value</th>
                           </tr>
                         </thead>
@@ -924,7 +901,7 @@ const AdminUserDetail: React.FC = () => {
                             const val = (form as Record<string, unknown>)[key];
                             return (
                               <tr key={key}>
-                                <td style={{ verticalAlign: 'top' }}><code>{key}</code></td>
+                                <td className="admin-user-detail-cell-top"><code>{key}</code></td>
                                 <td>
                                   {t === 'boolean' ? (
                                     <input
@@ -971,7 +948,7 @@ const AdminUserDetail: React.FC = () => {
                             );
                           })}
                           <tr>
-                            <td><code>password</code> <span style={{ color: '#888' }}>(optional)</span></td>
+                            <td><code>password</code> <span className="admin-user-detail-password-hint">(optional)</span></td>
                             <td>
                               <input
                                 type="password"

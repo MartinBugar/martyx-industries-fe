@@ -30,12 +30,16 @@
   /* ===== STATUS COLORS ===== */
   --admin-success: #10B981;           /* Green */
   --admin-success-bg: #D1FAE5;        /* Light green background */
+  --admin-success-text: #065F46;      /* Dark green for text on success bg */
   --admin-warning: #F59E0B;           /* Amber */
   --admin-warning-bg: #FEF3C7;        /* Light amber background */
+  --admin-warning-text: #92400E;      /* Dark amber for text on warning bg */
   --admin-error: #EF4444;             /* Red */
   --admin-error-bg: #FEE2E2;          /* Light red background */
+  --admin-error-text: #991B1B;        /* Dark red for text on error bg */
   --admin-info: #3B82F6;              /* Blue */
   --admin-info-bg: #DBEAFE;           /* Light blue background */
+  --admin-info-text: #1E40AF;         /* Dark blue for text on info bg */
 
   /* ===== NEUTRAL PALETTE ===== */
   --admin-bg-primary: #FFFFFF;        /* Main background */
@@ -58,6 +62,7 @@
   --admin-font-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
 
   /* Font Sizes */
+  --admin-text-2xs: 0.6875rem;       /* 11px - extra small */
   --admin-text-xs: 0.75rem;          /* 12px */
   --admin-text-sm: 0.875rem;         /* 14px */
   --admin-text-base: 1rem;           /* 16px */
@@ -397,25 +402,25 @@
 .admin-alert-success {
   background: var(--admin-success-bg);
   border-color: var(--admin-success);
-  color: #065F46;
+  color: var(--admin-success-text);
 }
 
 .admin-alert-warning {
   background: var(--admin-warning-bg);
   border-color: var(--admin-warning);
-  color: #92400E;
+  color: var(--admin-warning-text);
 }
 
 .admin-alert-error {
   background: var(--admin-error-bg);
   border-color: var(--admin-error);
-  color: #991B1B;
+  color: var(--admin-error-text);
 }
 
 .admin-alert-info {
   background: var(--admin-info-bg);
   border-color: var(--admin-info);
-  color: #1E40AF;
+  color: var(--admin-info-text);
 }
 
 /* ===== MODERN TOOLTIPS ===== */

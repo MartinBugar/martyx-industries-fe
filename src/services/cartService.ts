@@ -32,20 +32,37 @@ export const cartService = {
    * @param variantId - Product variant ID
    * @param quantity - Quantity to add
    * @param sessionId - Session ID for guest users (optional)
+   * @param configurationJson - Optional configuration JSON from 3D configurator
+   * @param configurationPriceModifier - Optional price modifier from configuration
    * @returns Updated cart
    */
   async addItem(
     variantId: number,
     quantity: number,
-    sessionId?: string
+    sessionId?: string,
+    configurationJson?: string,
+    configurationPriceModifier?: number
   ): Promise<ShoppingCartDto> {
     const params = sessionId ? `?sessionId=${encodeURIComponent(sessionId)}` : '';
+
+    const body: {
+      variantId: number;
+      quantity: number;
+      configurationJson?: string;
+      configurationPriceModifier?: number;
+    } = { variantId, quantity };
+
+    // Add configuration if provided
+    if (configurationJson) {
+      body.configurationJson = configurationJson;
+      body.configurationPriceModifier = configurationPriceModifier || 0;
+    }
 
     const resp = await fetch(`${API_BASE_URL}/api/cart/items${params}`,
       withLangHeaders({
         method: 'POST',
         headers: jsonHeaders(),
-        body: JSON.stringify({ variantId, quantity }),
+        body: JSON.stringify(body),
       })
     );
 

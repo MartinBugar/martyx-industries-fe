@@ -3,6 +3,7 @@ import { TrendingUp, TrendingDown, Minus, Eye, ShoppingCart, DollarSign, Target,
 import AdminLayout from './AdminLayout';
 import './AdminDiscounts.css';
 import './AdminButtonOverrides.css';
+import './AdminProductAnalytics.css';
 import { adminAnalyticsService } from '../../services/adminAnalyticsService';
 import type { ProductAnalyticsDailyDto } from '../../types/analytics';
 import { Badge, Button, SkeletonTable } from '../../components/ui';
@@ -148,11 +149,11 @@ const AdminProductAnalytics: React.FC = () => {
   const getTrendIcon = (trend?: string, changePercentage?: number): React.ReactNode => {
     if (!trend || !changePercentage) return null;
 
-    const color = trend === 'UP' ? '#059669' : trend === 'DOWN' ? '#dc2626' : '#6b7280';
+    const trendClass = trend === 'UP' ? 'admin-analytics-trend-up' : trend === 'DOWN' ? 'admin-analytics-trend-down' : 'admin-analytics-trend-neutral';
     const Icon = trend === 'UP' ? TrendingUp : trend === 'DOWN' ? TrendingDown : Minus;
 
     return (
-      <span style={{ color, display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '12px' }}>
+      <span className={`admin-analytics-trend ${trendClass}`}>
         <Icon size={14} />
         {Math.abs(changePercentage).toFixed(1)}%
       </span>
@@ -180,9 +181,9 @@ const AdminProductAnalytics: React.FC = () => {
           {error && <div className="alert alert-error">{error}</div>}
 
           {/* Date Range Picker */}
-          <div className="admin-card" style={{ marginBottom: '24px' }}>
+          <div className="admin-card admin-analytics-date-card">
             <h3 className="section-title">Date Range</h3>
-            <div style={{ display: 'flex', gap: '16px', alignItems: 'end', flexWrap: 'wrap' }}>
+            <div className="admin-analytics-date-row">
               <div>
                 <label className="form-label">Start Date</label>
                 <input
@@ -212,72 +213,67 @@ const AdminProductAnalytics: React.FC = () => {
 
           {/* Summary Cards */}
           {!loading && analytics.length > 0 && (
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-              gap: '16px',
-              marginBottom: '24px'
-            }}>
+            <div className="admin-analytics-summary-grid">
               {/* Total Page Views */}
-              <div className="admin-card" style={{ padding: '16px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                  <Eye size={20} style={{ color: '#3b82f6' }} />
-                  <div style={{ fontSize: '12px', color: '#6b7280', textTransform: 'uppercase', fontWeight: 600 }}>
+              <div className="admin-card admin-analytics-summary-card">
+                <div className="admin-analytics-summary-header">
+                  <Eye size={20} className="admin-analytics-summary-icon-views" />
+                  <div className="admin-analytics-summary-label">
                     Page Views
                   </div>
                 </div>
-                <div style={{ fontSize: '24px', fontWeight: 700, color: '#111827' }}>
+                <div className="admin-analytics-summary-value">
                   {formatNumber(summary.totalPageViews)}
                 </div>
-                <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px' }}>
+                <div className="admin-analytics-summary-subtext">
                   {formatNumber(summary.totalUniqueVisitors)} unique visitors
                 </div>
               </div>
 
               {/* Total Revenue */}
-              <div className="admin-card" style={{ padding: '16px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                  <DollarSign size={20} style={{ color: '#059669' }} />
-                  <div style={{ fontSize: '12px', color: '#6b7280', textTransform: 'uppercase', fontWeight: 600 }}>
+              <div className="admin-card admin-analytics-summary-card">
+                <div className="admin-analytics-summary-header">
+                  <DollarSign size={20} className="admin-analytics-summary-icon-revenue" />
+                  <div className="admin-analytics-summary-label">
                     Revenue
                   </div>
                 </div>
-                <div style={{ fontSize: '24px', fontWeight: 700, color: '#059669' }}>
+                <div className="admin-analytics-summary-value admin-analytics-summary-value-revenue">
                   {formatCurrency(summary.totalRevenue)}
                 </div>
-                <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px' }}>
+                <div className="admin-analytics-summary-subtext">
                   {formatNumber(summary.totalOrders)} orders
                 </div>
               </div>
 
               {/* Total Units Sold */}
-              <div className="admin-card" style={{ padding: '16px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                  <ShoppingCart size={20} style={{ color: '#f59e0b' }} />
-                  <div style={{ fontSize: '12px', color: '#6b7280', textTransform: 'uppercase', fontWeight: 600 }}>
+              <div className="admin-card admin-analytics-summary-card">
+                <div className="admin-analytics-summary-header">
+                  <ShoppingCart size={20} className="admin-analytics-summary-icon-units" />
+                  <div className="admin-analytics-summary-label">
                     Units Sold
                   </div>
                 </div>
-                <div style={{ fontSize: '24px', fontWeight: 700, color: '#111827' }}>
+                <div className="admin-analytics-summary-value">
                   {formatNumber(summary.totalUnitsSold)}
                 </div>
-                <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px' }}>
+                <div className="admin-analytics-summary-subtext">
                   {formatNumber(summary.totalAddToCart)} add to cart
                 </div>
               </div>
 
               {/* Avg Conversion Rate */}
-              <div className="admin-card" style={{ padding: '16px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                  <Target size={20} style={{ color: '#8b5cf6' }} />
-                  <div style={{ fontSize: '12px', color: '#6b7280', textTransform: 'uppercase', fontWeight: 600 }}>
+              <div className="admin-card admin-analytics-summary-card">
+                <div className="admin-analytics-summary-header">
+                  <Target size={20} className="admin-analytics-summary-icon-conversion" />
+                  <div className="admin-analytics-summary-label">
                     Conversion Rate
                   </div>
                 </div>
-                <div style={{ fontSize: '24px', fontWeight: 700, color: '#111827' }}>
+                <div className="admin-analytics-summary-value">
                   {formatPercent(avgConversionRate)}
                 </div>
-                <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px' }}>
+                <div className="admin-analytics-summary-subtext">
                   AOV: {formatCurrency(avgOrderValue)}
                 </div>
               </div>
@@ -317,7 +313,7 @@ const AdminProductAnalytics: React.FC = () => {
                       <div className="mobile-field">
                         <span className="mobile-field-label">Revenue:</span>
                         <span className="mobile-field-value">
-                          <strong style={{ color: '#059669' }}>{formatCurrency(item.revenue)}</strong>
+                          <strong className="admin-analytics-revenue-value">{formatCurrency(item.revenue)}</strong>
                         </span>
                       </div>
                       <div className="mobile-field">
@@ -345,27 +341,27 @@ const AdminProductAnalytics: React.FC = () => {
               <table className="admin-table">
                 <thead>
                   <tr>
-                    <th onClick={() => handleSort('date')} style={{ cursor: 'pointer' }}>
+                    <th onClick={() => handleSort('date')} className="admin-analytics-th-sortable">
                       Date {getSortIcon('date')}
                     </th>
-                    <th onClick={() => handleSort('product_name')} style={{ cursor: 'pointer' }}>
+                    <th onClick={() => handleSort('product_name')} className="admin-analytics-th-sortable">
                       Product {getSortIcon('product_name')}
                     </th>
-                    <th onClick={() => handleSort('page_views')} style={{ cursor: 'pointer', textAlign: 'right' }}>
+                    <th onClick={() => handleSort('page_views')} className="admin-analytics-th-sortable admin-analytics-th-right">
                       Page Views {getSortIcon('page_views')}
                     </th>
-                    <th style={{ textAlign: 'right' }}>Unique Visitors</th>
-                    <th style={{ textAlign: 'right' }}>Add to Cart</th>
-                    <th onClick={() => handleSort('units_sold')} style={{ cursor: 'pointer', textAlign: 'right' }}>
+                    <th className="admin-analytics-th-right">Unique Visitors</th>
+                    <th className="admin-analytics-th-right">Add to Cart</th>
+                    <th onClick={() => handleSort('units_sold')} className="admin-analytics-th-sortable admin-analytics-th-right">
                       Units Sold {getSortIcon('units_sold')}
                     </th>
-                    <th onClick={() => handleSort('revenue')} style={{ cursor: 'pointer', textAlign: 'right' }}>
+                    <th onClick={() => handleSort('revenue')} className="admin-analytics-th-sortable admin-analytics-th-right">
                       Revenue {getSortIcon('revenue')}
                     </th>
-                    <th onClick={() => handleSort('conversion_rate')} style={{ cursor: 'pointer', textAlign: 'right' }}>
+                    <th onClick={() => handleSort('conversion_rate')} className="admin-analytics-th-sortable admin-analytics-th-right">
                       Conv. Rate {getSortIcon('conversion_rate')}
                     </th>
-                    <th style={{ textAlign: 'center' }}>Trends</th>
+                    <th className="admin-analytics-th-center">Trends</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -379,13 +375,13 @@ const AdminProductAnalytics: React.FC = () => {
                     sortedAnalytics.map((item, idx) => (
                       <tr key={idx}>
                         <td>
-                          <Calendar size={14} style={{ marginRight: 4, verticalAlign: 'middle', color: '#6b7280' }} />
+                          <Calendar size={14} className="admin-analytics-date-icon" />
                           {formatDate(item.date)}
                         </td>
                         <td>
-                          <div style={{ fontWeight: 600 }}>{item.variant_name || item.product_name || 'Unknown Product'}</div>
+                          <div className="admin-analytics-product-name">{item.variant_name || item.product_name || 'Unknown Product'}</div>
                           {item.master_product_id && (
-                            <div style={{ fontSize: '12px', color: '#6b7280' }}>ID: {item.master_product_id}</div>
+                            <div className="admin-analytics-product-id">ID: {item.master_product_id}</div>
                           )}
                         </td>
                         <td className="text-right">
@@ -397,7 +393,7 @@ const AdminProductAnalytics: React.FC = () => {
                         <td className="text-right">
                           {formatNumber(item.add_to_cart_count)}
                           {item.cart_add_rate > 0 && (
-                            <div style={{ fontSize: '11px', color: '#6b7280' }}>
+                            <div className="admin-analytics-cell-subtext">
                               ({formatPercent(item.cart_add_rate)})
                             </div>
                           )}
@@ -406,9 +402,9 @@ const AdminProductAnalytics: React.FC = () => {
                           <strong>{formatNumber(item.units_sold)}</strong>
                         </td>
                         <td className="text-right">
-                          <strong style={{ color: '#059669' }}>{formatCurrency(item.revenue)}</strong>
+                          <strong className="admin-analytics-revenue-value">{formatCurrency(item.revenue)}</strong>
                           {item.orders_count > 0 && (
-                            <div style={{ fontSize: '11px', color: '#6b7280' }}>
+                            <div className="admin-analytics-cell-subtext">
                               {item.orders_count} {item.orders_count === 1 ? 'order' : 'orders'}
                             </div>
                           )}
@@ -418,15 +414,15 @@ const AdminProductAnalytics: React.FC = () => {
                             {formatPercent(item.conversion_rate)}
                           </Badge>
                         </td>
-                        <td style={{ textAlign: 'center' }}>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'center' }}>
+                        <td className="admin-analytics-trends-cell">
+                          <div className="admin-analytics-trends-wrap">
                             {item.views_trend && (
-                              <div style={{ fontSize: '11px' }}>
+                              <div className="admin-analytics-trend-item">
                                 Views: {getTrendIcon(item.views_trend, item.views_change_percentage)}
                               </div>
                             )}
                             {item.sales_trend && (
-                              <div style={{ fontSize: '11px' }}>
+                              <div className="admin-analytics-trend-item">
                                 Sales: {getTrendIcon(item.sales_trend, item.sales_change_percentage)}
                               </div>
                             )}
@@ -441,7 +437,7 @@ const AdminProductAnalytics: React.FC = () => {
 
             {/* Table Info */}
             {!loading && analytics.length > 0 && (
-              <div style={{ marginTop: '16px', padding: '12px', background: '#f9fafb', borderRadius: '6px', fontSize: '13px', color: '#6b7280' }}>
+              <div className="admin-analytics-table-info">
                 <strong>Total: {analytics.length}</strong> product analytics records
                 {' • '}
                 Showing data from {formatDate(startDate)} to {formatDate(endDate)}

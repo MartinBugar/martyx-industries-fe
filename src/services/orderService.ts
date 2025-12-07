@@ -106,7 +106,102 @@ export interface ReturnOrderResponse {
   message: string;
 }
 
+/**
+ * Modular download link for configured products.
+ * Supports BASE (base model) and OPTION (selected configuration options) download types.
+ */
+export interface ModularDownloadLink {
+  id: number;
+  downloadType: 'BASE' | 'OPTION' | 'LEGACY';
+  slotKey?: string;
+  optionKey?: string;
+  displayName: string;
+  fileName: string;
+  fileSize?: number;
+  downloadToken: string;
+  downloadCount: number;
+  maxDownloads: number;
+  expiresAt?: string;
+  isValid: boolean;
+}
+
+export interface OrderItemDownloadsResponse {
+  orderItemId: number;
+  productName: string;
+  downloads: ModularDownloadLink[];
+}
+
 export const orderService = {
+  /**
+   * Get modular downloads for an order item (configured products).
+   * Returns BASE download (if exists) and OPTION downloads for each selected configuration.
+   */
+  getOrderItemDownloads: async (orderId: number | string, orderItemId: number | string): Promise<OrderItemDownloadsResponse> => {
+    return await apiClient.get<OrderItemDownloadsResponse>(
+      `/api/orders/${orderId}/items/${orderItemId}/downloads`
+    );
+  },
+
+  /**
+   * Download a file using modular download token.
+   * This is used for configured products with multiple download files.
+   */
+  downloadByToken: async (token: string, displayName?: string): Promise<void> => {
+    const url = `${API_BASE_URL}/api/download/${encodeURIComponent(token)}`;
+
+    const headers: Record<string, string> = {};
+    const auth = defaultHeaders['Authorization'];
+    if (auth) headers['Authorization'] = auth;
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: headers as HeadersInit,
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+        delete defaultHeaders['Authorization'];
+        window.dispatchEvent(new CustomEvent('auth:logout', {
+          detail: { reason: 'api_error' }
+        }));
+      }
+      let errorMessage = `Failed to download file (${response.status})`;
+      try {
+        const text = await response.text();
+        if (text) errorMessage = text;
+      } catch {
+        // Ignore body parsing errors
+      }
+      throw new Error(errorMessage);
+    }
+
+    const blob = await response.blob();
+
+    // Determine filename from Content-Disposition header or displayName
+    const cd = response.headers.get('content-disposition') || response.headers.get('Content-Disposition');
+    let filename = displayName ? `${displayName}.zip` : 'download.zip';
+
+    if (cd) {
+      const match = cd.match(/filename\*?=(?:UTF-8''|")?([^";]+)/i);
+      if (match && match[1]) {
+        let fn = match[1].replace(/"/g, '');
+        try { fn = decodeURIComponent(fn); } catch { /* ignore */ }
+        filename = fn;
+      }
+    }
+
+    const blobUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(blobUrl);
+  },
+
   downloadProduct: async (orderId: number | string, productId: number | string, productName?: string): Promise<void> => {
     const url = `${API_BASE_URL}/api/orders/${orderId}/items/${productId}/download`;
 

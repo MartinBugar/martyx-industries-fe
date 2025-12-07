@@ -8,6 +8,8 @@ import ProductView from '../../components/ProductView/ProductView';
 import './ProductDetail.css';
 import {DetailsTab, DownloadTab, FeaturesTab, ReviewsTab, PrintInfoTab, IncludedTab, BuildInfoTab} from '../../components/ProductTabs';
 import ProductDownloads from '../../components/ProductTabs/ProductDownloads';
+import ConfiguratorTab from '../../components/ProductTabs/ConfiguratorTab';
+import ErrorBoundary from '../../components/ErrorBoundary/ErrorBoundary';
 import {useCart} from '../../context/useCart';
 import WishlistButton from '../../components/WishlistButton';
 import { getLCPPreloadAttributes, getBaseNameFromPath, isCDNEnabled } from '../../utils/cdnImages';
@@ -24,16 +26,26 @@ import { logInfo, logWarn, logError } from '../../services/logger';
 import { stockService } from '../../services/stockService';
 import { useSeo } from '../../hooks/useSeo';
 import { ProductDetailSkeleton } from '../../components/ui/Skeleton';
+import { ConfiguratorProvider } from '../../context/ConfiguratorContext';
+import { ConfiguratorOptions, ConfiguratorStickyBar } from '../../components/Configurator';
+import { configuratorService } from '../../services/configuratorService';
 
 // Local inlined ProductDetails component (previously in components/ProductDetails/ProductDetails.tsx)
 interface ProductDetailsProps {
     product: Product;
     onVariantChange?: (variantId: number) => void;
+    configuratorEnabled?: boolean;
 }
 
-const ProductDetails: React.FC<ProductDetailsProps> = ({product, onVariantChange}) => {
+// Tab type for ProductDetails
+type ProductInfoTab = 'info' | 'customize';
+
+const ProductDetails: React.FC<ProductDetailsProps> = ({product, onVariantChange, configuratorEnabled}) => {
     const {addToCart} = useCart();
     const {t} = useTranslation('products');
+
+    // Active tab state - default to 'info', show 'customize' tab only when configurator is enabled
+    const [activeInfoTab, setActiveInfoTab] = React.useState<ProductInfoTab>('info');
 
     const [popup, setPopup] = React.useState<{ visible: boolean; message: string; variant: 'success' | 'warning' }>({
         visible: false,
@@ -87,10 +99,9 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({product, onVariantChange
         }, 2000);
     };
 
-    return (
-        <div id="details" className="product-details">
-            <h2>{product.name}</h2>
-
+    // Info tab content
+    const renderInfoTab = () => (
+        <>
             {/* Variant Selector - Multiple Variants */}
             {product.availableVariants && product.availableVariants.length > 1 && onVariantChange && (
                 <VariantSelector
@@ -160,7 +171,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({product, onVariantChange
             )}
 
             <div className="whats-included-section">
-                <h3 id="features">What's Included</h3>
+                <h3 id="features">{t('product.whats_included', "What's Included")}</h3>
                 <div className="features-grid">
                     {product.components && product.components.length > 0 ? (
                         product.components
@@ -185,21 +196,82 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({product, onVariantChange
                 </div>
             </div>
 
+            {/* Standard Add to Cart - only when configurator is NOT enabled */}
+            {/* When configurator IS enabled, Add to Cart and Wishlist are in the sticky bar */}
+            {!configuratorEnabled && (
+                <div className="product-actions">
+                    <WishlistButton
+                        productId={product.masterProductId}
+                        variant="button"
+                        size="large"
+                    />
+                    <button
+                        className={`add-to-cart-btn${popup.visible ? ` is-popup ${popup.variant}` : ''}`}
+                        onClick={handleAddToCart}
+                        disabled={popup.visible}
+                        aria-live="polite"
+                    >
+                        {popup.visible ? popup.message : t('cart.add_to_cart')}
+                    </button>
+                </div>
+            )}
+        </>
+    );
 
-            <div className="product-actions">
-                <WishlistButton
-                    productId={product.masterProductId}
-                    variant="button"
-                    size="large"
-                />
-                <button
-                    className={`add-to-cart-btn${popup.visible ? ` is-popup ${popup.variant}` : ''}`}
-                    onClick={handleAddToCart}
-                    disabled={popup.visible}
-                    aria-live="polite"
-                >
-                    {popup.visible ? popup.message : t('cart.add_to_cart')}
-                </button>
+    // Customize tab content (only shown when configurator is enabled)
+    const renderCustomizeTab = () => (
+        <ConfiguratorOptions />
+    );
+
+    return (
+        <div id="details" className="product-details">
+            <h2>{product.name}</h2>
+
+            {/* Tab Navigation - only show when configurator is enabled */}
+            {configuratorEnabled && (
+                <nav className="product-info-tabs" role="tablist" aria-label={t('product.info_tabs', 'Product information tabs')}>
+                    <button
+                        type="button"
+                        role="tab"
+                        aria-selected={activeInfoTab === 'info'}
+                        aria-controls="panel-info"
+                        className={`product-info-tab ${activeInfoTab === 'info' ? 'active' : ''}`}
+                        onClick={() => setActiveInfoTab('info')}
+                    >
+                        {t('product.tab_info', 'Info')}
+                    </button>
+                    <button
+                        type="button"
+                        role="tab"
+                        aria-selected={activeInfoTab === 'customize'}
+                        aria-controls="panel-customize"
+                        className={`product-info-tab ${activeInfoTab === 'customize' ? 'active' : ''}`}
+                        onClick={() => setActiveInfoTab('customize')}
+                    >
+                        {t('product.tab_customize', 'Customize')}
+                    </button>
+                </nav>
+            )}
+
+            {/* Tab Content */}
+            <div className="product-info-content">
+                {configuratorEnabled ? (
+                    <>
+                        {activeInfoTab === 'info' && (
+                            <div id="panel-info" role="tabpanel" aria-labelledby="tab-info">
+                                {renderInfoTab()}
+                            </div>
+                        )}
+                        {activeInfoTab === 'customize' && (
+                            <div id="panel-customize" role="tabpanel" aria-labelledby="tab-customize">
+                                {renderCustomizeTab()}
+                            </div>
+                        )}
+                    </>
+                ) : (
+                    // When configurator is not enabled, show info content directly (no tabs)
+                    renderInfoTab()
+                )}
             </div>
         </div>
     );
@@ -235,6 +307,40 @@ const ProductDetail: React.FC = () => {
     const [isProductInactive, setIsProductInactive] = React.useState(false);
     const [galleryImages, setGalleryImages] = React.useState<Array<{ url: string; thumbnailUrl?: string }>>([]);
     const [hasLoadedGallery, setHasLoadedGallery] = React.useState(false);
+
+    // Configurator state - fetch full configurator data to avoid duplicate API calls
+    const [configuratorData, setConfiguratorData] = React.useState<import('../../types/configurator').Configurator | null>(null);
+    const [hasCheckedConfigurator, setHasCheckedConfigurator] = React.useState(false);
+    const configuratorEnabled = configuratorData?.enabled ?? false;
+
+    // Fetch configurator data (if exists and enabled)
+    React.useEffect(() => {
+        const fetchConfigurator = async () => {
+            if (!product?.masterProductId) {
+                setConfiguratorData(null);
+                setHasCheckedConfigurator(true);
+                return;
+            }
+
+            try {
+                const data = await configuratorService.getPublicConfigurator(product.masterProductId);
+                if (data && data.enabled) {
+                    setConfiguratorData(data);
+                    logInfo(`🔧 Configurator enabled for product ${product.masterProductId}`);
+                } else {
+                    setConfiguratorData(null);
+                    logInfo(`🔧 Configurator disabled for product ${product.masterProductId}`);
+                }
+            } catch (error) {
+                logError('Failed to fetch configurator:', error);
+                setConfiguratorData(null);
+            } finally {
+                setHasCheckedConfigurator(true);
+            }
+        };
+
+        fetchConfigurator();
+    }, [product?.masterProductId]);
 
     // SEO: Fetch and apply meta tags + JSON-LD schema for AI search optimization
     // Use product.slug (not URL id) because URL uses numeric ID, but SEO API expects slug
@@ -344,10 +450,13 @@ const ProductDetail: React.FC = () => {
         }
     }, [product]);
 
-    // Reset gallery loading flag when product ID changes (not language)
+    // Reset gallery and configurator state when product ID changes
     React.useEffect(() => {
         setHasLoadedGallery(false);
-        setGalleryImages([]); // Also clear gallery images for new product
+        setGalleryImages([]);
+        // Reset configurator state for new product
+        setConfiguratorData(null);
+        setHasCheckedConfigurator(false);
     }, [id]);
 
     // Load product from hybrid service
@@ -534,8 +643,16 @@ const ProductDetail: React.FC = () => {
         };
     }, [product, galleryImages, hasLoadedGallery]);
 
-    // Show loading state with skeleton
-    if (loading) {
+    // Filter out ConfiguratorTab from tabs when configurator is enabled
+    // (the configurator UI is now integrated into the main product view)
+    // NOTE: This useMemo MUST be before any early returns to satisfy React's Rules of Hooks
+    const filteredTabs = React.useMemo(() => {
+        if (!configuratorEnabled) return backendTabs;
+        return backendTabs.filter(tab => tab.componentName !== 'ConfiguratorTab');
+    }, [backendTabs, configuratorEnabled]);
+
+    // Show loading state with skeleton (including while checking configurator status)
+    if (loading || (product && !hasCheckedConfigurator)) {
         return (
             <div className="product-detail-page">
                 <div className="product-container">
@@ -600,66 +717,93 @@ const ProductDetail: React.FC = () => {
         );
     }
 
+    // Render content with or without ConfiguratorProvider based on configurator state
+    const renderContent = () => (
+        <>
+            {productWithGallery && (
+                <ProductView
+                    product={productWithGallery}
+                    galleryData={galleryImages}
+                    configuratorEnabled={configuratorEnabled}
+                />
+            )}
+            <ProductDetails
+                product={product}
+                onVariantChange={handleVariantChange}
+                configuratorEnabled={configuratorEnabled}
+            />
+
+            {/* Tab Navigation */}
+            <nav className="product-bookmarks" aria-label="Product sections" role="tablist">
+                {tabsLoading && (
+                    <div className="tabs-loading-container">
+                        <div className="tabs-loading-bar">
+                            <div className="tabs-loading-progress"></div>
+                        </div>
+                    </div>
+                )}
+                {!tabsLoading && filteredTabs.length === 0 && (
+                    <div className="dev-warning">
+                        ⚠️ No tabs configured for this variant. Please configure tabs in admin panel.
+                    </div>
+                )}
+                {filteredTabs.map((tab) => (
+                    <button
+                        key={tab.id}
+                        id={`tab-${tab.tabKey}`}
+                        type="button"
+                        role="tab"
+                        aria-selected={tab.tabKey === active}
+                        aria-controls={`panel-${tab.tabKey}`}
+                        onClick={() => setActive(tab.tabKey)}
+                        className={tab.tabKey === active ? 'active' : ''}
+                    >
+                        {tab.tabLabel}
+                    </button>
+                ))}
+            </nav>
+
+            {/* Tab Content */}
+            {activeTab && (
+                <div
+                    id={`panel-${activeTab.tabKey}`}
+                    role="tabpanel"
+                    aria-labelledby={`tab-${activeTab.tabKey}`}
+                    className="product-tab-panel"
+                >
+                    <DynamicTabRenderer tab={activeTab} product={product} />
+                </div>
+            )}
+
+            {product.videoUrl && (
+                <div className="product-video-section">
+                    <div className="video-wrapper">
+                        <iframe
+                            title="Product video"
+                            src={toYouTubeEmbedUrl(product.videoUrl)}
+                            className="video-iframe"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowFullScreen
+                        />
+                    </div>
+                </div>
+            )}
+        </>
+    );
+
     return (
         <div className="product-detail-page">
             <div className="product-container">
-                {productWithGallery && <ProductView product={productWithGallery} galleryData={galleryImages}/>}
-                <ProductDetails product={product} onVariantChange={handleVariantChange}/>
-
-                {/* Tab Navigation */}
-                <nav className="product-bookmarks" aria-label="Product sections" role="tablist">
-                    {tabsLoading && (
-                        <div className="tabs-loading-container">
-                            <div className="tabs-loading-bar">
-                                <div className="tabs-loading-progress"></div>
-                            </div>
-                        </div>
-                    )}
-                    {!tabsLoading && backendTabs.length === 0 && (
-                        <div className="dev-warning">
-                            ⚠️ No tabs configured for this variant. Please configure tabs in admin panel.
-                        </div>
-                    )}
-                    {backendTabs.map((tab) => (
-                        <button
-                            key={tab.id}
-                            id={`tab-${tab.tabKey}`}
-                            type="button"
-                            role="tab"
-                            aria-selected={tab.tabKey === active}
-                            aria-controls={`panel-${tab.tabKey}`}
-                            onClick={() => setActive(tab.tabKey)}
-                            className={tab.tabKey === active ? 'active' : ''}
-                        >
-                            {tab.tabLabel}
-                        </button>
-                    ))}
-                </nav>
-
-                {/* Tab Content */}
-                {activeTab && (
-                    <div
-                        id={`panel-${activeTab.tabKey}`}
-                        role="tabpanel"
-                        aria-labelledby={`tab-${activeTab.tabKey}`}
-                        className="product-tab-panel"
+                {configuratorEnabled && configuratorData ? (
+                    <ConfiguratorProvider
+                        masterProductId={product.masterProductId}
+                        initialConfigurator={configuratorData}
                     >
-                        <DynamicTabRenderer tab={activeTab} product={product} />
-                    </div>
-                )}
-
-                {product.videoUrl && (
-                    <div className="product-video-section">
-                        <div className="video-wrapper">
-                            <iframe
-                                title="Product video"
-                                src={toYouTubeEmbedUrl(product.videoUrl)}
-                                className="video-iframe"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                allowFullScreen
-                            />
-                        </div>
-                    </div>
+                        {renderContent()}
+                        <ConfiguratorStickyBar product={product} />
+                    </ConfiguratorProvider>
+                ) : (
+                    renderContent()
                 )}
             </div>
         </div>
@@ -705,13 +849,19 @@ const DynamicTabRenderer: React.FC<DynamicTabRendererProps> = ({ tab, product })
                 }
                 return <div>Build information not available.</div>;
             case 'DownloadTab':
-                return <DownloadTab content={{ kind: 'text', text: '' }} variantId={product.variantId} />;
+                return <DownloadTab content={{ kind: 'text', text: '' }} variantId={product.variantId} masterProductId={product.masterProductId} tabId={tab.id} />;
             case 'FeaturesTab':
                 return <FeaturesTab content={{ kind: 'list', items: product.features || [] }} />;
             case 'ReviewsTab':
                 return <ReviewsTab content={{ kind: 'text', text: '' }} productId={product.masterProductId} />;
             case 'ProductDownloads':
                 return <ProductDownloads masterProductId={product.masterProductId} variantId={product.variantId} tabId={tab.id} />;
+            case 'ConfiguratorTab':
+                return (
+                    <ErrorBoundary>
+                        <ConfiguratorTab masterProductId={product.masterProductId} product={product} />
+                    </ErrorBoundary>
+                );
             default:
                 logWarn(`Unknown component: ${componentName}, falling back to HTML render`);
                 return <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(tab.contentHtml || '') }} />;

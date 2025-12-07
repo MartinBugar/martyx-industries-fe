@@ -7,6 +7,7 @@ import { useErrors } from '../../context/ErrorContext';
 import { Settings, Lock, Unlock, Save, Edit, X, AlertTriangle, Info, Globe, Percent, DollarSign, RotateCw, Box } from 'lucide-react';
 import './AdminUsers.css';
 import './AdminButtonOverrides.css';
+import './AdminSystemSettings.css';
 import { logInfo, logError } from '../../services/logger';
 
 const AdminSystemSettings: React.FC = () => {
@@ -121,14 +122,14 @@ const AdminSystemSettings: React.FC = () => {
                     <GeneralSettingsTabs />
 
                     {/* Header */}
-                    <div className="admin-card" style={{ marginBottom: '24px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
+                    <div className="admin-card admin-system-card-header">
+                        <div className="admin-system-header-flex">
                             <div>
-                                <h2 className="section-title" style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                    <Settings size={24} style={{ color: 'var(--admin-accent)' }} />
+                                <h2 className="section-title admin-system-section-title">
+                                    <Settings size={24} className="admin-system-section-title-icon" />
                                     System Settings
                                 </h2>
-                                <p style={{ margin: 0, color: 'var(--admin-secondary)', fontSize: '14px' }}>
+                                <p className="admin-system-section-desc">
                                     Configure system-wide settings for your application.
                                 </p>
                             </div>
@@ -148,33 +149,33 @@ const AdminSystemSettings: React.FC = () => {
                         </div>
                     ) : !settings ? (
                         <div className="admin-card">
-                            <div style={{ textAlign: 'center', padding: '40px', color: 'var(--admin-error)' }}>
+                            <div className="admin-system-error-msg">
                                 Failed to load settings. Please refresh the page.
                             </div>
                         </div>
                     ) : isEditing ? (
                         /* Edit Mode */
                         <>
-                            <div className="admin-card" style={{ marginBottom: '20px' }}>
-                                <h3 className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
-                                    <Lock size={20} style={{ color: 'var(--admin-accent)' }} />
+                            <div className="admin-card admin-system-card-section">
+                                <h3 className="section-title admin-system-section-title">
+                                    <Lock size={20} className="admin-system-section-title-icon" />
                                     Development Access Gate
                                 </h3>
 
                                 <div className="form-grid">
-                                    <div style={{ gridColumn: '1 / -1' }}>
-                                        <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}>
+                                    <div className="admin-system-full-width">
+                                        <label className="form-label admin-system-checkbox-label">
                                             <input
                                                 type="checkbox"
                                                 checked={getEditedValue('devGateEnabled', settings.devGateEnabled) as boolean}
                                                 onChange={(e) => handleValueChange('devGateEnabled', e.target.checked)}
-                                                style={{ width: '20px', height: '20px' }}
+                                                className="admin-system-checkbox"
                                             />
-                                            <span style={{ fontWeight: 600, color: 'var(--admin-primary)' }}>
+                                            <span className="admin-system-checkbox-text">
                                                 Enable Development Access Gate
                                             </span>
                                         </label>
-                                        <p style={{ margin: '8px 0 0 32px', fontSize: '13px', color: 'var(--admin-secondary)' }}>
+                                        <p className="admin-system-help-text">
                                             If enabled, users must enter a password to access the site
                                         </p>
                                     </div>
@@ -188,7 +189,7 @@ const AdminSystemSettings: React.FC = () => {
                                             className="form-input"
                                             placeholder="Enter password"
                                         />
-                                        <p style={{ margin: '8px 0 0', fontSize: '13px', color: 'var(--admin-secondary)' }}>
+                                        <p className="admin-system-field-help">
                                             Password required to access the development site
                                         </p>
                                     </div>
@@ -197,26 +198,26 @@ const AdminSystemSettings: React.FC = () => {
                             </div>
 
                             {/* OSS / Tax Configuration - Edit Mode */}
-                            <div className="admin-card" style={{ marginBottom: '20px' }}>
-                                <h3 className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
-                                    <Globe size={20} style={{ color: 'var(--admin-accent)' }} />
+                            <div className="admin-card admin-system-card-section">
+                                <h3 className="section-title admin-system-section-title">
+                                    <Globe size={20} className="admin-system-section-title-icon" />
                                     OSS / Tax Configuration
                                 </h3>
 
                                 <div className="form-grid">
-                                    <div style={{ gridColumn: '1 / -1' }}>
-                                        <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}>
+                                    <div className="admin-system-full-width">
+                                        <label className="form-label admin-system-checkbox-label">
                                             <input
                                                 type="checkbox"
                                                 checked={getEditedValue('ossEnabled', settings.ossEnabled ?? false)}
                                                 onChange={(e) => handleValueChange('ossEnabled', e.target.checked)}
-                                                style={{ width: '20px', height: '20px' }}
+                                                className="admin-system-checkbox"
                                             />
-                                            <span style={{ fontWeight: 600, color: 'var(--admin-primary)' }}>
+                                            <span className="admin-system-checkbox-text">
                                                 Enable OSS (One Stop Shop)
                                             </span>
                                         </label>
-                                        <p style={{ margin: '8px 0 0 32px', fontSize: '13px', color: 'var(--admin-secondary)' }}>
+                                        <p className="admin-system-help-text">
                                             When disabled, always use domestic VAT rate (23% SK). When enabled, use customer's country VAT rate.
                                         </p>
                                     </div>
@@ -233,7 +234,7 @@ const AdminSystemSettings: React.FC = () => {
                                             className="form-input"
                                             placeholder="23.00"
                                         />
-                                        <p style={{ margin: '8px 0 0', fontSize: '13px', color: 'var(--admin-secondary)' }}>
+                                        <p className="admin-system-field-help">
                                             Domestic VAT rate (e.g., 23% for Slovakia)
                                         </p>
                                     </div>
@@ -245,11 +246,10 @@ const AdminSystemSettings: React.FC = () => {
                                             maxLength={2}
                                             value={getEditedValue('sellerCountryCode', settings.sellerCountryCode ?? 'SK')}
                                             onChange={(e) => handleValueChange('sellerCountryCode', e.target.value.toUpperCase())}
-                                            className="form-input"
+                                            className="form-input admin-system-input-uppercase"
                                             placeholder="SK"
-                                            style={{ textTransform: 'uppercase' }}
                                         />
-                                        <p style={{ margin: '8px 0 0', fontSize: '13px', color: 'var(--admin-secondary)' }}>
+                                        <p className="admin-system-field-help">
                                             ISO country code (e.g., SK, CZ, DE)
                                         </p>
                                     </div>
@@ -265,7 +265,7 @@ const AdminSystemSettings: React.FC = () => {
                                             className="form-input"
                                             placeholder="10000"
                                         />
-                                        <p style={{ margin: '8px 0 0', fontSize: '13px', color: 'var(--admin-secondary)' }}>
+                                        <p className="admin-system-field-help">
                                             EU OSS threshold (default 10,000 EUR annual B2C sales)
                                         </p>
                                     </div>
@@ -273,26 +273,26 @@ const AdminSystemSettings: React.FC = () => {
                             </div>
 
                             {/* 3D Model Configuration - Edit Mode */}
-                            <div className="admin-card" style={{ marginBottom: '20px' }}>
-                                <h3 className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
-                                    <Box size={20} style={{ color: 'var(--admin-accent)' }} />
+                            <div className="admin-card admin-system-card-section">
+                                <h3 className="section-title admin-system-section-title">
+                                    <Box size={20} className="admin-system-section-title-icon" />
                                     3D Model Display
                                 </h3>
 
                                 <div className="form-grid">
-                                    <div style={{ gridColumn: '1 / -1' }}>
-                                        <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}>
+                                    <div className="admin-system-full-width">
+                                        <label className="form-label admin-system-checkbox-label">
                                             <input
                                                 type="checkbox"
                                                 checked={getEditedValue('autoRotate3DModel', settings.autoRotate3DModel ?? false)}
                                                 onChange={(e) => handleValueChange('autoRotate3DModel', e.target.checked)}
-                                                style={{ width: '20px', height: '20px' }}
+                                                className="admin-system-checkbox"
                                             />
-                                            <span style={{ fontWeight: 600, color: 'var(--admin-primary)' }}>
+                                            <span className="admin-system-checkbox-text">
                                                 Enable Auto-Rotate for 3D Models
                                             </span>
                                         </label>
-                                        <p style={{ margin: '8px 0 0 32px', fontSize: '13px', color: 'var(--admin-secondary)' }}>
+                                        <p className="admin-system-help-text">
                                             When enabled, 3D product models will automatically rotate on product detail pages
                                         </p>
                                     </div>
@@ -301,7 +301,7 @@ const AdminSystemSettings: React.FC = () => {
 
                             {/* Save/Cancel Buttons */}
                             <div className="admin-card">
-                                <div style={{ display: 'flex', gap: '12px' }}>
+                                <div className="admin-system-actions">
                                     <Button variant="primary" onClick={handleSave} disabled={saving} loading={saving}>
                                         <Save size={16} />
                                         Save Changes
@@ -316,39 +316,39 @@ const AdminSystemSettings: React.FC = () => {
                     ) : (
                         /* Display Mode */
                         <>
-                            <div className="admin-card" style={{ marginBottom: '20px' }}>
-                                <h3 className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
-                                    <Lock size={20} style={{ color: 'var(--admin-accent)' }} />
+                            <div className="admin-card admin-system-card-section">
+                                <h3 className="section-title admin-system-section-title">
+                                    <Lock size={20} className="admin-system-section-title-icon" />
                                     Development Access Gate
                                 </h3>
 
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px' }}>
-                                    <div style={{ padding: '20px', background: 'var(--admin-bg-secondary)', borderRadius: '10px', border: '1px solid var(--admin-border)' }}>
-                                        <div style={{ fontSize: '13px', color: 'var(--admin-secondary)', marginBottom: '8px' }}>Gate Status</div>
+                                <div className="admin-system-display-grid">
+                                    <div className="admin-system-display-card">
+                                        <div className="admin-system-display-label">Gate Status</div>
                                         <Badge
                                             variant={settings.devGateEnabled ? 'success' : 'warning'}
                                             size="sm"
-                                            style={{ fontSize: '14px', padding: '8px 16px' }}
+                                            className="admin-system-badge"
                                         >
                                             {settings.devGateEnabled ? (
-                                                <><Lock size={14} style={{ marginRight: 6 }} /> Enabled</>
+                                                <><Lock size={14} className="admin-system-icon-mr" /> Enabled</>
                                             ) : (
-                                                <><Unlock size={14} style={{ marginRight: 6 }} /> Disabled</>
+                                                <><Unlock size={14} className="admin-system-icon-mr" /> Disabled</>
                                             )}
                                         </Badge>
-                                        <p style={{ margin: '12px 0 0', fontSize: '13px', color: 'var(--admin-secondary)' }}>
+                                        <p className="admin-system-display-desc">
                                             {settings.devGateEnabled
                                                 ? 'Users must enter password to access site'
                                                 : 'Site is publicly accessible'}
                                         </p>
                                     </div>
 
-                                    <div style={{ padding: '20px', background: 'var(--admin-bg-secondary)', borderRadius: '10px', border: '1px solid var(--admin-border)' }}>
-                                        <div style={{ fontSize: '13px', color: 'var(--admin-secondary)', marginBottom: '8px' }}>Current Password</div>
-                                        <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--admin-primary)', letterSpacing: '2px' }}>
+                                    <div className="admin-system-display-card">
+                                        <div className="admin-system-display-label">Current Password</div>
+                                        <div className="admin-system-display-value">
                                             {'•'.repeat(Math.min(settings.devGatePassword.length, 12))}
                                         </div>
-                                        <p style={{ margin: '12px 0 0', fontSize: '13px', color: 'var(--admin-secondary)' }}>
+                                        <p className="admin-system-display-desc">
                                             Password is hidden for security
                                         </p>
                                     </div>
@@ -356,61 +356,61 @@ const AdminSystemSettings: React.FC = () => {
                             </div>
 
                             {/* OSS / Tax Configuration - Display Mode */}
-                            <div className="admin-card" style={{ marginBottom: '20px' }}>
-                                <h3 className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
-                                    <Globe size={20} style={{ color: 'var(--admin-accent)' }} />
+                            <div className="admin-card admin-system-card-section">
+                                <h3 className="section-title admin-system-section-title">
+                                    <Globe size={20} className="admin-system-section-title-icon" />
                                     OSS / Tax Configuration
                                 </h3>
 
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
-                                    <div style={{ padding: '20px', background: 'var(--admin-bg-secondary)', borderRadius: '10px', border: '1px solid var(--admin-border)' }}>
-                                        <div style={{ fontSize: '13px', color: 'var(--admin-secondary)', marginBottom: '8px' }}>OSS Status</div>
+                                <div className="admin-system-display-grid-sm">
+                                    <div className="admin-system-display-card">
+                                        <div className="admin-system-display-label">OSS Status</div>
                                         <Badge
                                             variant={settings.ossEnabled ? 'success' : 'warning'}
                                             size="sm"
-                                            style={{ fontSize: '14px', padding: '8px 16px' }}
+                                            className="admin-system-badge"
                                         >
                                             {settings.ossEnabled ? (
-                                                <><Globe size={14} style={{ marginRight: 6 }} /> Enabled</>
+                                                <><Globe size={14} className="admin-system-icon-mr" /> Enabled</>
                                             ) : (
-                                                <><Globe size={14} style={{ marginRight: 6 }} /> Disabled</>
+                                                <><Globe size={14} className="admin-system-icon-mr" /> Disabled</>
                                             )}
                                         </Badge>
-                                        <p style={{ margin: '12px 0 0', fontSize: '13px', color: 'var(--admin-secondary)' }}>
+                                        <p className="admin-system-display-desc">
                                             {settings.ossEnabled
                                                 ? 'Using customer country VAT rates'
                                                 : 'Always using domestic VAT rate'}
                                         </p>
                                     </div>
 
-                                    <div style={{ padding: '20px', background: 'var(--admin-bg-secondary)', borderRadius: '10px', border: '1px solid var(--admin-border)' }}>
-                                        <div style={{ fontSize: '13px', color: 'var(--admin-secondary)', marginBottom: '8px' }}>Default VAT Rate</div>
-                                        <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--admin-primary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                    <div className="admin-system-display-card">
+                                        <div className="admin-system-display-label">Default VAT Rate</div>
+                                        <div className="admin-system-display-value-flex">
                                             <Percent size={20} />
                                             {settings.defaultVatRate ?? 23}
                                         </div>
-                                        <p style={{ margin: '12px 0 0', fontSize: '13px', color: 'var(--admin-secondary)' }}>
+                                        <p className="admin-system-display-desc">
                                             Domestic VAT rate
                                         </p>
                                     </div>
 
-                                    <div style={{ padding: '20px', background: 'var(--admin-bg-secondary)', borderRadius: '10px', border: '1px solid var(--admin-border)' }}>
-                                        <div style={{ fontSize: '13px', color: 'var(--admin-secondary)', marginBottom: '8px' }}>Seller Country</div>
-                                        <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--admin-primary)' }}>
+                                    <div className="admin-system-display-card">
+                                        <div className="admin-system-display-label">Seller Country</div>
+                                        <div className="admin-system-display-value-flex">
                                             {settings.sellerCountryCode ?? 'SK'}
                                         </div>
-                                        <p style={{ margin: '12px 0 0', fontSize: '13px', color: 'var(--admin-secondary)' }}>
+                                        <p className="admin-system-display-desc">
                                             ISO country code
                                         </p>
                                     </div>
 
-                                    <div style={{ padding: '20px', background: 'var(--admin-bg-secondary)', borderRadius: '10px', border: '1px solid var(--admin-border)' }}>
-                                        <div style={{ fontSize: '13px', color: 'var(--admin-secondary)', marginBottom: '8px' }}>OSS Threshold</div>
-                                        <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--admin-primary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                    <div className="admin-system-display-card">
+                                        <div className="admin-system-display-label">OSS Threshold</div>
+                                        <div className="admin-system-display-value-flex">
                                             <DollarSign size={20} />
                                             {(settings.ossThresholdEur ?? 10000).toLocaleString()} EUR
                                         </div>
-                                        <p style={{ margin: '12px 0 0', fontSize: '13px', color: 'var(--admin-secondary)' }}>
+                                        <p className="admin-system-display-desc">
                                             Annual B2C threshold
                                         </p>
                                     </div>
@@ -418,27 +418,27 @@ const AdminSystemSettings: React.FC = () => {
                             </div>
 
                             {/* 3D Model Configuration - Display Mode */}
-                            <div className="admin-card" style={{ marginBottom: '20px' }}>
-                                <h3 className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
-                                    <Box size={20} style={{ color: 'var(--admin-accent)' }} />
+                            <div className="admin-card admin-system-card-section">
+                                <h3 className="section-title admin-system-section-title">
+                                    <Box size={20} className="admin-system-section-title-icon" />
                                     3D Model Display
                                 </h3>
 
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px' }}>
-                                    <div style={{ padding: '20px', background: 'var(--admin-bg-secondary)', borderRadius: '10px', border: '1px solid var(--admin-border)' }}>
-                                        <div style={{ fontSize: '13px', color: 'var(--admin-secondary)', marginBottom: '8px' }}>Auto-Rotate Status</div>
+                                <div className="admin-system-display-grid">
+                                    <div className="admin-system-display-card">
+                                        <div className="admin-system-display-label">Auto-Rotate Status</div>
                                         <Badge
                                             variant={settings.autoRotate3DModel ? 'success' : 'warning'}
                                             size="sm"
-                                            style={{ fontSize: '14px', padding: '8px 16px' }}
+                                            className="admin-system-badge"
                                         >
                                             {settings.autoRotate3DModel ? (
-                                                <><RotateCw size={14} style={{ marginRight: 6 }} /> Enabled</>
+                                                <><RotateCw size={14} className="admin-system-icon-mr" /> Enabled</>
                                             ) : (
-                                                <><RotateCw size={14} style={{ marginRight: 6 }} /> Disabled</>
+                                                <><RotateCw size={14} className="admin-system-icon-mr" /> Disabled</>
                                             )}
                                         </Badge>
-                                        <p style={{ margin: '12px 0 0', fontSize: '13px', color: 'var(--admin-secondary)' }}>
+                                        <p className="admin-system-display-desc">
                                             {settings.autoRotate3DModel
                                                 ? '3D models will automatically rotate on product pages'
                                                 : '3D models remain static until user interaction'}
@@ -450,12 +450,12 @@ const AdminSystemSettings: React.FC = () => {
                     )}
 
                     {/* Info Section */}
-                    <div className="admin-card" style={{ background: 'var(--admin-info-bg)', borderColor: 'var(--admin-info)' }}>
-                        <h3 style={{ margin: '0 0 16px', fontSize: '16px', fontWeight: 600, color: 'var(--admin-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <Info size={18} style={{ color: 'var(--admin-info)' }} />
+                    <div className="admin-card admin-system-info-card">
+                        <h3 className="admin-system-info-title">
+                            <Info size={18} className="admin-system-info-icon" />
                             About Development Access Gate
                         </h3>
-                        <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '14px', color: 'var(--admin-primary)', lineHeight: 1.8 }}>
+                        <ul className="admin-system-info-list">
                             <li><strong>Purpose:</strong> Restrict access to your development/staging environment</li>
                             <li><strong>When Enabled:</strong> Visitors see a password prompt before accessing the site</li>
                             <li><strong>When Disabled:</strong> Site is publicly accessible (normal production mode)</li>
@@ -465,9 +465,9 @@ const AdminSystemSettings: React.FC = () => {
                     </div>
 
                     {/* Warning */}
-                    <div className="admin-card" style={{ background: 'var(--admin-warning-bg)', borderColor: 'var(--admin-warning)', marginTop: '20px' }}>
-                        <p style={{ margin: 0, fontSize: '14px', color: '#92400E', display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-                            <AlertTriangle size={18} style={{ flexShrink: 0, marginTop: '2px' }} />
+                    <div className="admin-card admin-system-warning-card">
+                        <p className="admin-system-warning-text">
+                            <AlertTriangle size={18} className="admin-system-warning-icon" />
                             <span>
                                 <strong>Important:</strong> Changes take effect immediately. If you enable the gate,
                                 all current users will be logged out and required to enter the password.

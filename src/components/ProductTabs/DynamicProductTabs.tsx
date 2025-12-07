@@ -21,21 +21,25 @@ import PrintInfoTab from './PrintInfoTab';
 import IncludedTab from './IncludedTab';
 import ProductDownloads from './ProductDownloads';
 import BuildInfoTab from './BuildInfoTab';
+import ConfiguratorTab from './ConfiguratorTab';
 
 // Import Error Boundary for error handling
 import ErrorBoundary from '../ErrorBoundary/ErrorBoundary';
 import { logInfo, logError } from '../../services/logger';
+import type { Product } from '../../data/productData';
 
 interface DynamicProductTabsProps {
   masterProductId?: number;
   variantId?: number;
   locale?: string;
+  product?: Product; // For configurator add-to-cart functionality
 }
 
 const DynamicProductTabs: React.FC<DynamicProductTabsProps> = ({
   masterProductId,
   variantId,
-  locale = 'en'
+  locale = 'en',
+  product
 }) => {
   const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
   const [tabs, setTabs] = useState<ProductTabDto[]>([]);
@@ -111,6 +115,15 @@ const DynamicProductTabs: React.FC<DynamicProductTabsProps> = ({
         );
       case 'IncludedTab':
         return <IncludedTab content={{ kind: 'text', text: '' }} />;
+      case 'ConfiguratorTab':
+        return (
+          <ErrorBoundary>
+            <ConfiguratorTab
+              masterProductId={masterProductId || 0}
+              product={product}
+            />
+          </ErrorBoundary>
+        );
       default:
         return <div>Component not found: {componentName}</div>;
     }

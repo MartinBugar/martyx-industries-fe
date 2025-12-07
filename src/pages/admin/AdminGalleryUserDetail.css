@@ -1,0 +1,185 @@
+/* AdminGalleryUserDetail.css - Styles extracted from inline styles */
+
+/* Header */
+.admin-gallery-user-header {
+  margin-bottom: 24px;
+}
+
+/* Icon margin right helper */
+.admin-gallery-user-icon-mr {
+  margin-right: 4px;
+}
+
+/* User Info Card */
+.admin-gallery-user-info-card {
+  margin-bottom: 24px;
+}
+
+.admin-gallery-user-info-grid {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.admin-gallery-user-info-value {
+  font-weight: 500;
+}
+
+/* Stats Grid */
+.admin-gallery-user-stats-grid {
+  margin-bottom: 24px;
+}
+
+.admin-gallery-user-stat-icon-total {
+  background-color: #3b82f6;
+}
+
+.admin-gallery-user-stat-icon-public {
+  background-color: #10b981;
+}
+
+.admin-gallery-user-stat-icon-private {
+  background-color: #6b7280;
+}
+
+.admin-gallery-user-stat-icon-pending {
+  background-color: #f59e0b;
+}
+
+/* Filters */
+.admin-gallery-user-filters {
+  margin-bottom: 24px;
+}
+
+.admin-gallery-user-checkbox-mr {
+  margin-right: 8px;
+}
+
+/* Loading State */
+.admin-gallery-user-loading {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+/* Empty State Icon */
+.admin-gallery-user-empty-icon {
+  opacity: 0.3;
+  margin-bottom: 12px;
+}
+
+/* Lightbox Overlay */
+.admin-gallery-user-lightbox-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+.admin-gallery-user-lightbox-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  font-size: 24px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-gallery-user-lightbox-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.admin-gallery-user-lightbox-content {
+  max-width: 90%;
+  max-height: 90%;
+}
+
+.admin-gallery-user-lightbox-img {
+  max-width: 100%;
+  max-height: 80vh;
+  object-fit: contain;
+}
+
+.admin-gallery-user-lightbox-info {
+  color: white;
+  margin-top: 12px;
+  text-align: center;
+}
+
+.admin-gallery-user-lightbox-filename {
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.admin-gallery-user-lightbox-meta {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* Dialog Overlay */
+.admin-gallery-user-dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.admin-gallery-user-dialog-box {
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 400px;
+  width: 90%;
+}
+
+.admin-gallery-user-dialog-title {
+  margin-bottom: 16px;
+  color: #ffffff;
+}
+
+.admin-gallery-user-dialog-text {
+  margin-bottom: 20px;
+  color: #999;
+}
+
+.admin-gallery-user-dialog-checkbox-label {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+
+.admin-gallery-user-dialog-checkbox {
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+.admin-gallery-user-dialog-checkbox-text {
+  color: #d4af37;
+  font-size: 14px;
+}
+
+.admin-gallery-user-dialog-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}

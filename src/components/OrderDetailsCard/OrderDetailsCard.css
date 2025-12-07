@@ -1482,3 +1482,94 @@
     width: 100%;
   }
 }
+
+/* =========================================================================
+   MODULAR DOWNLOADS (Configured Products)
+   ========================================================================= */
+
+.modular-downloads {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.modular-download-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  text-align: left;
+}
+
+.modular-download-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.modular-download-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.modular-download-btn.base {
+  border-left: 3px solid var(--oh-info);
+}
+
+.modular-download-btn.option {
+  border-left: 3px solid var(--oh-success);
+}
+
+.modular-download-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.modular-download-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.modular-download-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.modular-download-size {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.modular-download-action {
+  font-size: 1rem;
+  color: var(--oh-info);
+  flex-shrink: 0;
+}
+
+.download-loading {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  padding: 0.5rem 0;
+}
+
+@media (max-width: 480px) {
+  .modular-download-btn {
+    padding: 0.625rem 0.75rem;
+  }
+
+  .modular-download-name {
+    font-size: 0.8rem;
+  }
+}

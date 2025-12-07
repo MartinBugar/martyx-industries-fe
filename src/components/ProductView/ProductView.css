@@ -21,7 +21,7 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 0.5rem;
 }
 
 /* 3D Model Container with Premium Gradient Background */
@@ -65,13 +65,13 @@
 
 /* Gallery Section Styling */
 .product-gallery-section {
-  margin-top: 1rem;
+  margin-top: 0;
 }
 
 /* Responsive Design */
 @media (max-width: 767px) {
   .product-view-container {
-    gap: 1rem;
+    gap: 0.5rem;
   }
 
   .model-container {

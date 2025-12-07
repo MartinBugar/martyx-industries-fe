@@ -1,0 +1,597 @@
+/**
+ * ConfiguratorPreview Styles
+ * Styles for the 3D preview component in the product view area
+ */
+
+.configurator-preview-container {
+  background: radial-gradient(ellipse at center, #f8f8f8 0%, #d0d0d0 100%);
+  border-radius: 12px;
+  overflow: hidden;
+  min-height: 400px;
+  height: 100%;
+  position: relative;
+}
+
+.configurator-preview-container canvas {
+  width: 100% !important;
+  height: 100% !important;
+  background: transparent !important;
+}
+
+/* Loading state */
+.configurator-preview-loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse at center, #f8f8f8 0%, #d0d0d0 100%);
+  z-index: 10;
+}
+
+/* 3D Rotating Cube Spinner */
+.configurator-loading-spinner-3d {
+  perspective: 800px;
+  width: 80px;
+  height: 80px;
+  margin-bottom: 20px;
+}
+
+.configurator-spinner-cube {
+  width: 60px;
+  height: 60px;
+  position: relative;
+  transform-style: preserve-3d;
+  animation: configuratorRotateCube 2s infinite linear;
+  margin: 0 auto;
+}
+
+@keyframes configuratorRotateCube {
+  0% {
+    transform: rotateX(0deg) rotateY(0deg);
+  }
+  100% {
+    transform: rotateX(360deg) rotateY(360deg);
+  }
+}
+
+.configurator-cube-face {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  opacity: 0.85;
+}
+
+.configurator-cube-face.front {
+  transform: translateZ(30px);
+}
+
+.configurator-cube-face.back {
+  transform: rotateY(180deg) translateZ(30px);
+}
+
+.configurator-cube-face.left {
+  transform: rotateY(-90deg) translateZ(30px);
+}
+
+.configurator-cube-face.right {
+  transform: rotateY(90deg) translateZ(30px);
+}
+
+.configurator-cube-face.top {
+  transform: rotateX(90deg) translateZ(30px);
+}
+
+.configurator-cube-face.bottom {
+  transform: rotateX(-90deg) translateZ(30px);
+}
+
+.configurator-loading-text {
+  font-size: 16px;
+  font-weight: 500;
+  color: #4a5568;
+  letter-spacing: 0.5px;
+  animation: configuratorPulse 1.5s ease-in-out infinite;
+  margin: 0;
+}
+
+@keyframes configuratorPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Error state */
+.configurator-preview-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+  padding: 20px;
+}
+
+.configurator-preview-error p {
+  margin: 0 0 16px;
+  font-size: 14px;
+}
+
+.configurator-preview-error button {
+  padding: 10px 20px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.configurator-preview-error button:hover {
+  background: #2563eb;
+}
+
+/* Fullscreen mode */
+.configurator-preview-container.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  border-radius: 0;
+  min-height: unset;
+}
+
+/* Fullscreen button */
+.configurator-fullscreen-btn {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.7);
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: #fbbf24;
+  transition: all 0.2s ease;
+  z-index: 20;
+}
+
+.configurator-fullscreen-btn:hover {
+  background: rgba(0, 0, 0, 0.85);
+}
+
+/* Exit fullscreen button - top right */
+.configurator-exit-fullscreen-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.7);
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: #fbbf24;
+  transition: all 0.2s ease;
+  z-index: 20;
+}
+
+.configurator-exit-fullscreen-btn:hover {
+  background: rgba(0, 0, 0, 0.85);
+}
+
+/* =========================================================================
+   RESPONSIVE STYLES
+   ========================================================================= */
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .configurator-preview-container {
+    min-height: 350px;
+  }
+
+  .configurator-loading-spinner-3d {
+    width: 70px;
+    height: 70px;
+  }
+
+  .configurator-spinner-cube {
+    width: 50px;
+    height: 50px;
+  }
+
+  .configurator-cube-face {
+    width: 50px;
+    height: 50px;
+  }
+
+  .configurator-cube-face.front {
+    transform: translateZ(25px);
+  }
+
+  .configurator-cube-face.back {
+    transform: rotateY(180deg) translateZ(25px);
+  }
+
+  .configurator-cube-face.left {
+    transform: rotateY(-90deg) translateZ(25px);
+  }
+
+  .configurator-cube-face.right {
+    transform: rotateY(90deg) translateZ(25px);
+  }
+
+  .configurator-cube-face.top {
+    transform: rotateX(90deg) translateZ(25px);
+  }
+
+  .configurator-cube-face.bottom {
+    transform: rotateX(-90deg) translateZ(25px);
+  }
+
+  .configurator-loading-text {
+    font-size: 14px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .configurator-preview-container {
+    min-height: 300px;
+    border-radius: 8px;
+  }
+
+  .configurator-fullscreen-btn,
+  .configurator-exit-fullscreen-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+    border-radius: 4px;
+  }
+
+  .configurator-fullscreen-btn {
+    bottom: 12px;
+    right: 12px;
+  }
+
+  .configurator-exit-fullscreen-btn {
+    top: 12px;
+    right: 12px;
+  }
+
+  .configurator-loading-spinner-3d {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 16px;
+  }
+
+  .configurator-spinner-cube {
+    width: 40px;
+    height: 40px;
+  }
+
+  .configurator-cube-face {
+    width: 40px;
+    height: 40px;
+  }
+
+  .configurator-cube-face.front {
+    transform: translateZ(20px);
+  }
+
+  .configurator-cube-face.back {
+    transform: rotateY(180deg) translateZ(20px);
+  }
+
+  .configurator-cube-face.left {
+    transform: rotateY(-90deg) translateZ(20px);
+  }
+
+  .configurator-cube-face.right {
+    transform: rotateY(90deg) translateZ(20px);
+  }
+
+  .configurator-cube-face.top {
+    transform: rotateX(90deg) translateZ(20px);
+  }
+
+  .configurator-cube-face.bottom {
+    transform: rotateX(-90deg) translateZ(20px);
+  }
+
+  .configurator-loading-text {
+    font-size: 13px;
+  }
+
+  .configurator-preview-error {
+    min-height: 300px;
+    padding: 16px;
+  }
+
+  .configurator-preview-error p {
+    font-size: 13px;
+  }
+
+  .configurator-preview-error button {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+}
+
+/* Small mobile */
+@media (max-width: 480px) {
+  .configurator-preview-container {
+    min-height: 250px;
+  }
+
+  .configurator-fullscreen-btn,
+  .configurator-exit-fullscreen-btn {
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+
+  .configurator-fullscreen-btn {
+    bottom: 8px;
+    right: 8px;
+  }
+
+  .configurator-exit-fullscreen-btn {
+    top: 8px;
+    right: 8px;
+  }
+
+  .configurator-loading-spinner-3d {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 12px;
+  }
+
+  .configurator-spinner-cube {
+    width: 35px;
+    height: 35px;
+  }
+
+  .configurator-cube-face {
+    width: 35px;
+    height: 35px;
+  }
+
+  .configurator-cube-face.front {
+    transform: translateZ(17.5px);
+  }
+
+  .configurator-cube-face.back {
+    transform: rotateY(180deg) translateZ(17.5px);
+  }
+
+  .configurator-cube-face.left {
+    transform: rotateY(-90deg) translateZ(17.5px);
+  }
+
+  .configurator-cube-face.right {
+    transform: rotateY(90deg) translateZ(17.5px);
+  }
+
+  .configurator-cube-face.top {
+    transform: rotateX(90deg) translateZ(17.5px);
+  }
+
+  .configurator-cube-face.bottom {
+    transform: rotateX(-90deg) translateZ(17.5px);
+  }
+
+  .configurator-loading-text {
+    font-size: 12px;
+  }
+}
+
+/* =========================================================================
+   DEBUG PANEL STYLES
+   ========================================================================= */
+
+.debug-panel-toggle {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  padding: 6px 12px;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  color: #fbbf24;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  z-index: 100;
+  transition: all 0.2s ease;
+}
+
+.debug-panel-toggle:hover {
+  background: rgba(0, 0, 0, 0.85);
+  border-color: #fbbf24;
+}
+
+.debug-panel {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  width: 280px;
+  max-height: calc(100% - 32px);
+  background: rgba(15, 15, 20, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  z-index: 100;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.debug-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fbbf24;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.debug-panel-close {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.debug-panel-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.debug-panel-content {
+  padding: 12px 16px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.debug-section {
+  margin-bottom: 16px;
+}
+
+.debug-section:last-child {
+  margin-bottom: 0;
+}
+
+.debug-section h4 {
+  margin: 0 0 10px 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.debug-slider-row {
+  margin-bottom: 10px;
+}
+
+.debug-slider-label {
+  display: flex;
+  justify-content: space-between;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+.debug-slider-value {
+  color: #fbbf24;
+  font-family: monospace;
+  font-weight: 600;
+}
+
+.debug-slider-input {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.debug-slider-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  background: #fbbf24;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.debug-slider-input::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+.debug-slider-input::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: #fbbf24;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.debug-panel-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.debug-btn {
+  flex: 1;
+  padding: 8px 12px;
+  background: rgba(251, 191, 36, 0.15);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  border-radius: 4px;
+  color: #fbbf24;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.debug-btn:hover {
+  background: rgba(251, 191, 36, 0.25);
+  border-color: #fbbf24;
+}
+
+.debug-btn-reset {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+.debug-btn-reset:hover {
+  background: rgba(239, 68, 68, 0.25);
+  border-color: #ef4444;
+}
+
+/* Debug panel in fullscreen */
+.configurator-preview-container.fullscreen .debug-panel {
+  max-height: calc(100vh - 32px);
+}
+
+/* Hide debug panel on mobile */
+@media (max-width: 768px) {
+  .debug-panel-toggle,
+  .debug-panel {
+    display: none;
+  }
+}

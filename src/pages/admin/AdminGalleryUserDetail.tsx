@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Globe, Lock, CheckCircle, XCircle, Image as ImageIcon } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import './AdminGallery.css';
+import './AdminGalleryUserDetail.css';
 import {
   adminGalleryService,
   type AdminPhotoInfo,
@@ -235,7 +236,7 @@ const AdminGalleryUserDetail: React.FC = () => {
               {error instanceof Error ? error.message : 'Failed to load user gallery'}
             </div>
             <Button variant="outline" onClick={() => navigate('/admin/gallery')}>
-              <ArrowLeft size={14} style={{ marginRight: 4 }} />
+              <ArrowLeft size={14} className="admin-gallery-user-icon-mr" />
               Back to Gallery
             </Button>
           </div>
@@ -249,21 +250,21 @@ const AdminGalleryUserDetail: React.FC = () => {
       <div className="admin-page">
         <div className="admin-container">
           {/* Header with Back Button */}
-          <div className="admin-header" style={{ marginBottom: '24px' }}>
+          <div className="admin-header admin-gallery-user-header">
             <Button variant="outline" onClick={() => navigate('/admin/gallery')}>
-              <ArrowLeft size={14} style={{ marginRight: 4 }} />
+              <ArrowLeft size={14} className="admin-gallery-user-icon-mr" />
               Back to Users
             </Button>
           </div>
 
           {/* User Info Card */}
           {userInfo && (
-            <div className="admin-card" style={{ marginBottom: '24px' }}>
+            <div className="admin-card admin-gallery-user-info-card">
               <h3 className="section-title">User Information</h3>
-              <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+              <div className="form-grid admin-gallery-user-info-grid">
                 <div>
                   <div className="form-label">Name</div>
-                  <div style={{ fontWeight: 500 }}>
+                  <div className="admin-gallery-user-info-value">
                     {userInfo.firstName && userInfo.lastName
                       ? `${userInfo.firstName} ${userInfo.lastName}`
                       : 'N/A'}
@@ -271,11 +272,11 @@ const AdminGalleryUserDetail: React.FC = () => {
                 </div>
                 <div>
                   <div className="form-label">Email</div>
-                  <div style={{ fontWeight: 500 }}>{userInfo.email}</div>
+                  <div className="admin-gallery-user-info-value">{userInfo.email}</div>
                 </div>
                 <div>
                   <div className="form-label">User ID</div>
-                  <div style={{ fontWeight: 500 }}>{userInfo.userId}</div>
+                  <div className="admin-gallery-user-info-value">{userInfo.userId}</div>
                 </div>
               </div>
             </div>
@@ -283,9 +284,9 @@ const AdminGalleryUserDetail: React.FC = () => {
 
           {/* Stats Cards */}
           {stats && (
-            <div className="gallery-stats-grid" style={{ marginBottom: '24px' }}>
+            <div className="gallery-stats-grid admin-gallery-user-stats-grid">
               <div className="stat-card">
-                <div className="stat-icon" style={{ backgroundColor: '#3b82f6' }}>
+                <div className="stat-icon admin-gallery-user-stat-icon-total">
                   <ImageIcon size={24} />
                 </div>
                 <div className="stat-content">
@@ -294,7 +295,7 @@ const AdminGalleryUserDetail: React.FC = () => {
                 </div>
               </div>
               <div className="stat-card">
-                <div className="stat-icon" style={{ backgroundColor: '#10b981' }}>
+                <div className="stat-icon admin-gallery-user-stat-icon-public">
                   <Globe size={24} />
                 </div>
                 <div className="stat-content">
@@ -303,7 +304,7 @@ const AdminGalleryUserDetail: React.FC = () => {
                 </div>
               </div>
               <div className="stat-card">
-                <div className="stat-icon" style={{ backgroundColor: '#6b7280' }}>
+                <div className="stat-icon admin-gallery-user-stat-icon-private">
                   <Lock size={24} />
                 </div>
                 <div className="stat-content">
@@ -313,7 +314,7 @@ const AdminGalleryUserDetail: React.FC = () => {
               </div>
               {stats.pendingPhotos > 0 && (
                 <div className="stat-card">
-                  <div className="stat-icon" style={{ backgroundColor: '#f59e0b' }}>
+                  <div className="stat-icon admin-gallery-user-stat-icon-pending">
                     <ImageIcon size={24} />
                   </div>
                   <div className="stat-content">
@@ -326,14 +327,14 @@ const AdminGalleryUserDetail: React.FC = () => {
           )}
 
           {/* Filters */}
-          <div className="gallery-filters" style={{ marginBottom: '24px' }}>
+          <div className="gallery-filters admin-gallery-user-filters">
             <div className="filter-group">
               <label className="filter-label">
                 <input
                   type="checkbox"
                   checked={selectedPhotos.size === photos.length && photos.length > 0}
                   onChange={handleSelectAll}
-                  style={{ marginRight: '8px' }}
+                  className="admin-gallery-user-checkbox-mr"
                 />
                 Select All ({selectedPhotos.size} selected)
               </label>
@@ -360,12 +361,12 @@ const AdminGalleryUserDetail: React.FC = () => {
 
           {/* Photos Grouped by Model */}
           {isLoading ? (
-            <div style={{ textAlign: 'center', padding: '60px 20px' }}>
+            <div className="admin-gallery-user-loading">
               <div>Loading photos...</div>
             </div>
           ) : photosByModel.size === 0 ? (
             <div className="table-empty">
-              <ImageIcon size={48} style={{ opacity: 0.3, marginBottom: '12px' }} />
+              <ImageIcon size={48} className="admin-gallery-user-empty-icon" />
               <p>No photos found for this user.</p>
             </div>
           ) : (
@@ -396,7 +397,7 @@ const AdminGalleryUserDetail: React.FC = () => {
                         onClick={() => handleToggleModelVisibility(productId, isPublic)}
                         disabled={isUpdatingModelStatus}
                       >
-                        {isPublic ? <Lock size={14} style={{ marginRight: 4 }} /> : <Globe size={14} style={{ marginRight: 4 }} />}
+                        {isPublic ? <Lock size={14} className="admin-gallery-user-icon-mr" /> : <Globe size={14} className="admin-gallery-user-icon-mr" />}
                         {isPublic ? 'Make Private' : 'Make Public'}
                       </Button>
                       <Button
@@ -405,7 +406,7 @@ const AdminGalleryUserDetail: React.FC = () => {
                         onClick={() => handleToggleModelCompletion(productId, isCompleted)}
                         disabled={isUpdatingModelStatus}
                       >
-                        {isCompleted ? <XCircle size={14} style={{ marginRight: 4 }} /> : <CheckCircle size={14} style={{ marginRight: 4 }} />}
+                        {isCompleted ? <XCircle size={14} className="admin-gallery-user-icon-mr" /> : <CheckCircle size={14} className="admin-gallery-user-icon-mr" />}
                         {isCompleted ? 'Mark In Progress' : 'Mark Completed'}
                       </Button>
                     </div>
@@ -443,52 +444,24 @@ const AdminGalleryUserDetail: React.FC = () => {
           {/* Lightbox */}
           {lightboxPhoto && (
             <div
-              className="lightbox-overlay"
+              className="lightbox-overlay admin-gallery-user-lightbox-overlay"
               onClick={() => setLightboxPhoto(null)}
-              style={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                background: 'rgba(0, 0, 0, 0.9)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                zIndex: 9999,
-                padding: '20px',
-              }}
             >
               <button
                 onClick={() => setLightboxPhoto(null)}
-                style={{
-                  position: 'absolute',
-                  top: '20px',
-                  right: '20px',
-                  background: 'rgba(255, 255, 255, 0.2)',
-                  border: 'none',
-                  color: 'white',
-                  fontSize: '24px',
-                  width: '40px',
-                  height: '40px',
-                  borderRadius: '50%',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
+                className="admin-gallery-user-lightbox-close"
               >
                 ×
               </button>
-              <div onClick={(e) => e.stopPropagation()} style={{ maxWidth: '90%', maxHeight: '90%' }}>
+              <div onClick={(e) => e.stopPropagation()} className="admin-gallery-user-lightbox-content">
                 <img
                   src={lightboxPhoto.cdnUrl}
                   alt={lightboxPhoto.originalFilename}
-                  style={{ maxWidth: '100%', maxHeight: '80vh', objectFit: 'contain' }}
+                  className="admin-gallery-user-lightbox-img"
                 />
-                <div style={{ color: 'white', marginTop: '12px', textAlign: 'center' }}>
-                  <div style={{ fontSize: '14px', marginBottom: '4px' }}>{lightboxPhoto.originalFilename}</div>
-                  <div style={{ fontSize: '12px', opacity: 0.7 }}>
+                <div className="admin-gallery-user-lightbox-info">
+                  <div className="admin-gallery-user-lightbox-filename">{lightboxPhoto.originalFilename}</div>
+                  <div className="admin-gallery-user-lightbox-meta">
                     {formatFileSize(lightboxPhoto.fileSize)} • Uploaded {formatDate(lightboxPhoto.uploadDate)}
                   </div>
                 </div>
@@ -499,46 +472,27 @@ const AdminGalleryUserDetail: React.FC = () => {
           {/* Delete Photo Confirmation Dialog */}
           {deleteConfirmDialog?.show && (
             <div
-              className="lightbox-overlay"
+              className="lightbox-overlay admin-gallery-user-dialog-overlay"
               onClick={() => setDeleteConfirmDialog(null)}
-              style={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                background: 'rgba(0, 0, 0, 0.8)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                zIndex: 10000,
-              }}
             >
               <div
                 onClick={(e) => e.stopPropagation()}
-                style={{
-                  background: '#1a1a1a',
-                  border: '1px solid #2a2a2a',
-                  borderRadius: '12px',
-                  padding: '24px',
-                  maxWidth: '400px',
-                  width: '90%',
-                }}
+                className="admin-gallery-user-dialog-box"
               >
-                <h3 style={{ marginBottom: '16px', color: '#ffffff' }}>Delete Photo</h3>
-                <p style={{ marginBottom: '20px', color: '#999' }}>
+                <h3 className="admin-gallery-user-dialog-title">Delete Photo</h3>
+                <p className="admin-gallery-user-dialog-text">
                   Are you sure you want to delete this photo?
                 </p>
-                <label style={{ display: 'flex', alignItems: 'center', marginBottom: '20px', cursor: 'pointer' }}>
+                <label className="admin-gallery-user-dialog-checkbox-label">
                   <input
                     type="checkbox"
                     checked={notifyOnDelete}
                     onChange={(e) => setNotifyOnDelete(e.target.checked)}
-                    style={{ marginRight: '8px', cursor: 'pointer' }}
+                    className="admin-gallery-user-dialog-checkbox"
                   />
-                  <span style={{ color: '#d4af37', fontSize: '14px' }}>Notify user via email</span>
+                  <span className="admin-gallery-user-dialog-checkbox-text">Notify user via email</span>
                 </label>
-                <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                <div className="admin-gallery-user-dialog-actions">
                   <Button variant="outline" onClick={() => setDeleteConfirmDialog(null)}>
                     Cancel
                   </Button>
@@ -557,46 +511,27 @@ const AdminGalleryUserDetail: React.FC = () => {
           {/* Bulk Delete Confirmation Dialog */}
           {bulkDeleteConfirmDialog && (
             <div
-              className="lightbox-overlay"
+              className="lightbox-overlay admin-gallery-user-dialog-overlay"
               onClick={() => setBulkDeleteConfirmDialog(false)}
-              style={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                background: 'rgba(0, 0, 0, 0.8)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                zIndex: 10000,
-              }}
             >
               <div
                 onClick={(e) => e.stopPropagation()}
-                style={{
-                  background: '#1a1a1a',
-                  border: '1px solid #2a2a2a',
-                  borderRadius: '12px',
-                  padding: '24px',
-                  maxWidth: '400px',
-                  width: '90%',
-                }}
+                className="admin-gallery-user-dialog-box"
               >
-                <h3 style={{ marginBottom: '16px', color: '#ffffff' }}>Delete Multiple Photos</h3>
-                <p style={{ marginBottom: '20px', color: '#999' }}>
+                <h3 className="admin-gallery-user-dialog-title">Delete Multiple Photos</h3>
+                <p className="admin-gallery-user-dialog-text">
                   Are you sure you want to delete {selectedPhotos.size} selected photos?
                 </p>
-                <label style={{ display: 'flex', alignItems: 'center', marginBottom: '20px', cursor: 'pointer' }}>
+                <label className="admin-gallery-user-dialog-checkbox-label">
                   <input
                     type="checkbox"
                     checked={notifyOnBulkDelete}
                     onChange={(e) => setNotifyOnBulkDelete(e.target.checked)}
-                    style={{ marginRight: '8px', cursor: 'pointer' }}
+                    className="admin-gallery-user-dialog-checkbox"
                   />
-                  <span style={{ color: '#d4af37', fontSize: '14px' }}>Notify user via email</span>
+                  <span className="admin-gallery-user-dialog-checkbox-text">Notify user via email</span>
                 </label>
-                <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                <div className="admin-gallery-user-dialog-actions">
                   <Button variant="outline" onClick={() => setBulkDeleteConfirmDialog(false)}>
                     Cancel
                   </Button>
@@ -615,50 +550,31 @@ const AdminGalleryUserDetail: React.FC = () => {
           {/* Model Status Change Confirmation Dialog */}
           {statusChangeDialog?.show && (
             <div
-              className="lightbox-overlay"
+              className="lightbox-overlay admin-gallery-user-dialog-overlay"
               onClick={() => setStatusChangeDialog(null)}
-              style={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                background: 'rgba(0, 0, 0, 0.8)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                zIndex: 10000,
-              }}
             >
               <div
                 onClick={(e) => e.stopPropagation()}
-                style={{
-                  background: '#1a1a1a',
-                  border: '1px solid #2a2a2a',
-                  borderRadius: '12px',
-                  padding: '24px',
-                  maxWidth: '400px',
-                  width: '90%',
-                }}
+                className="admin-gallery-user-dialog-box"
               >
-                <h3 style={{ marginBottom: '16px', color: '#ffffff' }}>
+                <h3 className="admin-gallery-user-dialog-title">
                   {statusChangeDialog.action === 'visibility' ? 'Change Model Visibility' : 'Change Model Status'}
                 </h3>
-                <p style={{ marginBottom: '20px', color: '#999' }}>
+                <p className="admin-gallery-user-dialog-text">
                   {statusChangeDialog.action === 'visibility'
                     ? `Make this model ${statusChangeDialog.currentStatus ? 'private' : 'public'}?`
                     : `Mark this model as ${statusChangeDialog.currentStatus ? 'in progress' : 'completed'}?`}
                 </p>
-                <label style={{ display: 'flex', alignItems: 'center', marginBottom: '20px', cursor: 'pointer' }}>
+                <label className="admin-gallery-user-dialog-checkbox-label">
                   <input
                     type="checkbox"
                     checked={notifyOnStatusChange}
                     onChange={(e) => setNotifyOnStatusChange(e.target.checked)}
-                    style={{ marginRight: '8px', cursor: 'pointer' }}
+                    className="admin-gallery-user-dialog-checkbox"
                   />
-                  <span style={{ color: '#d4af37', fontSize: '14px' }}>Notify user via email</span>
+                  <span className="admin-gallery-user-dialog-checkbox-text">Notify user via email</span>
                 </label>
-                <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                <div className="admin-gallery-user-dialog-actions">
                   <Button variant="outline" onClick={() => setStatusChangeDialog(null)}>
                     Cancel
                   </Button>

@@ -7,6 +7,17 @@ import './StripeSuccess.css';
 import { logInfo, logError } from '../../services/logger';
 
 /**
+ * Formats file size in bytes to human-readable format (KB, MB, GB).
+ */
+const formatFileSize = (bytes: number): string => {
+  if (bytes <= 0) return '';
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+};
+
+/**
  * Validates and sanitizes download URLs to prevent injection attacks.
  * Only allows URLs starting with /api/download/
  *
@@ -20,15 +31,27 @@ const validateDownloadUrl = (url: string | undefined): string | null => {
 
   const trimmedUrl = url.trim();
 
-  // Only allow URLs starting with /api/download/ or /api/download/invoice/
+  // Only allow URLs starting with /api/download/
   if (!trimmedUrl.startsWith('/api/download/')) {
     logError('Invalid download URL format:', trimmedUrl);
     return null;
   }
 
-  // Prevent directory traversal attacks
-  if (trimmedUrl.includes('..') || trimmedUrl.includes('//')) {
+  // HIGH FIX #14: Prevent directory traversal attacks - check for encoded dots/slashes too
+  if (trimmedUrl.includes('..') || trimmedUrl.includes('//') ||
+      trimmedUrl.includes('%2E%2E') || trimmedUrl.includes('%2e%2e') ||
+      trimmedUrl.includes('%2F%2F') || trimmedUrl.includes('%2f%2f')) {
     logError('Potential directory traversal in URL:', trimmedUrl);
+    return null;
+  }
+
+  // Verify URL is from allowed download paths (remove query params for check)
+  const pathOnly = trimmedUrl.split('?')[0];
+  const allowedPrefixes = ['/api/download/', '/api/download/invoice/', '/api/download/modular/'];
+  const isAllowed = allowedPrefixes.some(prefix => pathOnly.startsWith(prefix));
+
+  if (!isAllowed) {
+    logError('URL does not match allowed download paths:', trimmedUrl);
     return null;
   }
 
@@ -54,8 +77,10 @@ const StripeSuccess: React.FC = () => {
       return;
     }
 
-    // Validate Stripe session ID format (cs_xxx)
-    if (!/^cs_[a-zA-Z0-9_]+$/.test(sessionId)) {
+    // HIGH FIX #9: Validate Stripe session ID format with realistic length limit
+    // Stripe session IDs are typically ~66 characters, max 100 for safety
+    if (sessionId.length > 100 || !/^cs_[a-zA-Z0-9_]{1,96}$/.test(sessionId)) {
+      logError('Invalid payment session ID length or format');
       setError('Invalid payment session ID');
       setLoading(false);
       return;
@@ -231,34 +256,91 @@ const StripeSuccess: React.FC = () => {
           </div>
 
           <div className="order-items-list">
-            {paymentData.downloadLinks
-              .filter(link => validateDownloadUrl(link.url) !== null)
-              .map((link, index) => {
-                const validatedUrl = validateDownloadUrl(link.url);
-                if (!validatedUrl) return null;
+            {(() => {
+              // Group downloads by productId for modular display
+              const groupedByProduct = new Map<string | number, typeof paymentData.downloadLinks>();
+              paymentData.downloadLinks
+                .filter(link => validateDownloadUrl(link.url) !== null)
+                .forEach(link => {
+                  const pid = link.productId || 'unknown';
+                  if (!groupedByProduct.has(pid)) {
+                    groupedByProduct.set(pid, []);
+                  }
+                  groupedByProduct.get(pid)!.push(link);
+                });
 
-                return (
-                  <a
-                    key={index}
-                    href={validatedUrl}
-                    download
-                    className="download-link"
-                  >
-                    <div className="download-link-icon">
-                      <span>📥</span>
-                    </div>
-                    <div className="download-link-info">
-                      <div className="download-link-name">
-                        {link.productName || 'Download'}
+              return Array.from(groupedByProduct.entries()).map(([productId, links]) => {
+                const productName = links[0]?.productName || 'Product';
+                const isModular = links.length > 1 ||
+                  (links.length === 1 && links[0].downloadType && links[0].downloadType !== 'LEGACY');
+
+                if (isModular) {
+                  // Modular product - show product header with individual file buttons
+                  return (
+                    <div key={productId} className="modular-download-group">
+                      <div className="modular-product-header">
+                        <span className="modular-product-icon">📦</span>
+                        <span className="modular-product-name">{productName}</span>
                       </div>
-                      <div className="download-link-hint">
-                        Click to download
+                      <div className="modular-download-files">
+                        {links.map((link, idx) => {
+                          const validatedUrl = validateDownloadUrl(link.url);
+                          if (!validatedUrl) return null;
+
+                          const isBase = link.downloadType === 'BASE';
+                          const displayName = link.displayName || link.productName || 'Download';
+                          const fileSize = link.fileSize ? formatFileSize(link.fileSize) : null;
+
+                          return (
+                            <a
+                              key={idx}
+                              href={validatedUrl}
+                              download
+                              className={`download-link modular-file ${isBase ? 'base-file' : 'option-file'}`}
+                            >
+                              <div className="download-link-icon">
+                                <span>{isBase ? '📁' : '🔧'}</span>
+                              </div>
+                              <div className="download-link-info">
+                                <div className="download-link-name">{displayName}</div>
+                                <div className="download-link-hint">
+                                  {isBase ? 'Base model files' : 'Configuration option'}
+                                  {fileSize && ` • ${fileSize}`}
+                                </div>
+                              </div>
+                              <span className="download-link-action">Download →</span>
+                            </a>
+                          );
+                        })}
                       </div>
                     </div>
-                    <span className="download-link-action">Download →</span>
-                  </a>
-                );
-              })}
+                  );
+                } else {
+                  // Legacy single file
+                  const link = links[0];
+                  const validatedUrl = validateDownloadUrl(link.url);
+                  if (!validatedUrl) return null;
+
+                  return (
+                    <a
+                      key={productId}
+                      href={validatedUrl}
+                      download
+                      className="download-link"
+                    >
+                      <div className="download-link-icon">
+                        <span>📥</span>
+                      </div>
+                      <div className="download-link-info">
+                        <div className="download-link-name">{link.productName || 'Download'}</div>
+                        <div className="download-link-hint">Click to download</div>
+                      </div>
+                      <span className="download-link-action">Download →</span>
+                    </a>
+                  );
+                }
+              });
+            })()}
           </div>
         </div>
       )}

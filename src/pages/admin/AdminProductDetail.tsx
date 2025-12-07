@@ -1,9 +1,11 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { Package, Plus, Save, Trash2, Edit } from 'lucide-react';
+import { Plus, Save, Trash2, Edit, Package } from 'lucide-react';
 import AdminLayout from './AdminLayout';
+import ProductNavTabs from '../../components/admin/ProductNavTabs';
 import './AdminUsers.css';
 import './AdminButtonOverrides.css';
+import './AdminProductDetail.css';
 import { adminProductsService, type MasterProductDto, type ProductVariantDto, type VariantComponentDto } from '../../services/adminProductsService';
 import { Button, Badge, ConfirmDialog, useConfirmDialog } from '../../components/ui';
 import VariantEditor from '../../components/admin/VariantEditor';
@@ -236,51 +238,12 @@ const AdminProductDetail: React.FC = () => {
 
   // Navigation tabs
   const navTabs = (
-    <div className="admin-nav-tabs">
-      <button
-        onClick={() => setActiveTab('product-info')}
-        className={`admin-nav-tab ${activeTab === 'product-info' ? 'active' : ''}`}
-      >
-        📝 Product Info
-      </button>
-      <button
-        onClick={() => setActiveTab('variants')}
-        className={`admin-nav-tab ${activeTab === 'variants' ? 'active' : ''}`}
-      >
-        <Package size={16} style={{ marginRight: 4 }} />
-        Variants ({product?.variants?.length || 0})
-      </button>
-      <Link
-        to={`/admin/products/${id}/tabs`}
-        className="admin-nav-tab"
-      >
-        📋 Manage Tabs
-      </Link>
-      <Link
-        to={`/admin/products/${id}/attachments`}
-        className="admin-nav-tab"
-      >
-        📎 Manage Attachments
-      </Link>
-      <Link
-        to={`/admin/products/${id}/gallery`}
-        className="admin-nav-tab"
-      >
-        📸 Gallery
-      </Link>
-      <Link
-        to={`/admin/products/${id}/3d-model`}
-        className="admin-nav-tab"
-      >
-        🎲 3D Model
-      </Link>
-      <Link
-        to={`/admin/products/${id}/digital-file`}
-        className="admin-nav-tab"
-      >
-        💾 Digital File
-      </Link>
-    </div>
+    <ProductNavTabs
+      productId={id!}
+      activeTab={activeTab}
+      variantCount={product?.variants?.length || 0}
+      onTabClick={setActiveTab}
+    />
   );
 
   return (
@@ -305,14 +268,14 @@ const AdminProductDetail: React.FC = () => {
           )}
 
           {loading ? (
-            <div className="admin-card" style={{ textAlign: 'center', padding: '40px' }}>
-              <div style={{ fontSize: '18px', color: '#666' }}>Loading product...</div>
+            <div className="admin-card admin-product-detail-loading">
+              <div className="admin-product-detail-loading-text">Loading product...</div>
             </div>
           ) : !product ? (
-            <div className="admin-card" style={{ textAlign: 'center', padding: '40px' }}>
-              <div style={{ fontSize: '48px', marginBottom: '16px' }}>📦</div>
-              <h3 style={{ margin: '0 0 8px 0' }}>Product not found</h3>
-              <p style={{ color: '#6b7280', marginBottom: '24px' }}>
+            <div className="admin-card admin-product-detail-loading">
+              <div className="admin-product-detail-empty-icon">📦</div>
+              <h3 className="admin-product-detail-empty-title">Product not found</h3>
+              <p className="admin-product-detail-empty-desc">
                 The product you're looking for doesn't exist or has been deleted.
               </p>
               <Link to="/admin/products" className="btn btn-primary">
@@ -367,7 +330,7 @@ const AdminProductDetail: React.FC = () => {
                         onChange={(e) => updateField('warrantyMonths', Number(e.target.value))}
                       />
                     </div>
-                    <div style={{ gridColumn: '1 / -1' }}>
+                    <div className="admin-product-detail-full-width">
                       <label className="form-label">Short Description</label>
                       <textarea
                         className="form-input"
@@ -376,7 +339,7 @@ const AdminProductDetail: React.FC = () => {
                         onChange={(e) => updateField('shortDescription', e.target.value)}
                       />
                     </div>
-                    <div style={{ gridColumn: '1 / -1' }}>
+                    <div className="admin-product-detail-full-width">
                       <label className="form-label">Long Description</label>
                       <textarea
                         className="form-input"
@@ -423,56 +386,56 @@ const AdminProductDetail: React.FC = () => {
                     </div>
 
                     {/* Category Assignment */}
-                    <div style={{ gridColumn: '1 / -1', marginTop: 16 }}>
+                    <div className="admin-product-detail-category-section">
                       {id && <CategorySelector productId={parseInt(id)} />}
                     </div>
 
                     {/* Status Flags */}
-                    <div style={{ gridColumn: '1 / -1', marginTop: 16 }}>
-                      <h4 className="form-label" style={{ marginBottom: 12 }}>Status & Marketing</h4>
-                      <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-                        <label className="form-label" style={{ display: 'flex', alignItems: 'center', marginBottom: 0 }}>
+                    <div className="admin-product-detail-status-section">
+                      <h4 className="form-label admin-product-detail-status-heading">Status & Marketing</h4>
+                      <div className="admin-product-detail-status-row">
+                        <label className="form-label admin-product-detail-checkbox-label">
                           <input
                             type="checkbox"
                             checked={product.active ?? true}
                             onChange={(e) => updateField('active', e.target.checked)}
-                            style={{ marginRight: 8 }}
+                            className="admin-product-detail-checkbox"
                           />
                           Active
                         </label>
-                        <label className="form-label" style={{ display: 'flex', alignItems: 'center', marginBottom: 0 }}>
+                        <label className="form-label admin-product-detail-checkbox-label">
                           <input
                             type="checkbox"
                             checked={product.featured ?? false}
                             onChange={(e) => updateField('featured', e.target.checked)}
-                            style={{ marginRight: 8 }}
+                            className="admin-product-detail-checkbox"
                           />
                           Featured
                         </label>
-                        <label className="form-label" style={{ display: 'flex', alignItems: 'center', marginBottom: 0 }}>
+                        <label className="form-label admin-product-detail-checkbox-label">
                           <input
                             type="checkbox"
                             checked={product.bestseller ?? false}
                             onChange={(e) => updateField('bestseller', e.target.checked)}
-                            style={{ marginRight: 8 }}
+                            className="admin-product-detail-checkbox"
                           />
                           Bestseller
                         </label>
-                        <label className="form-label" style={{ display: 'flex', alignItems: 'center', marginBottom: 0 }}>
+                        <label className="form-label admin-product-detail-checkbox-label">
                           <input
                             type="checkbox"
                             checked={product.newProduct ?? false}
                             onChange={(e) => updateField('newProduct', e.target.checked)}
-                            style={{ marginRight: 8 }}
+                            className="admin-product-detail-checkbox"
                           />
                           New Product
                         </label>
-                        <label className="form-label" style={{ display: 'flex', alignItems: 'center', marginBottom: 0 }}>
+                        <label className="form-label admin-product-detail-checkbox-label">
                           <input
                             type="checkbox"
                             checked={product.requiresCeMarking ?? false}
                             onChange={(e) => updateField('requiresCeMarking', e.target.checked)}
-                            style={{ marginRight: 8 }}
+                            className="admin-product-detail-checkbox"
                           />
                           Requires CE Marking
                         </label>
@@ -498,13 +461,13 @@ const AdminProductDetail: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="form-actions" style={{ marginTop: 24 }}>
+                  <div className="form-actions admin-product-detail-form-actions">
                     <Button variant="primary" onClick={handleSave} disabled={saving} loading={saving}>
-                      <Save size={14} style={{ marginRight: 4 }} />
+                      <Save size={14} className="admin-product-detail-icon-mr" />
                       Save Changes
                     </Button>
                     <Button variant="danger" onClick={handleDelete} disabled={saving}>
-                      <Trash2 size={14} style={{ marginRight: 4 }} />
+                      <Trash2 size={14} className="admin-product-detail-icon-mr" />
                       Delete Master Product
                     </Button>
                   </div>
@@ -514,30 +477,30 @@ const AdminProductDetail: React.FC = () => {
               {/* Variants Tab */}
               {activeTab === 'variants' && (
                 <div>
-                  <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <p style={{ color: '#6b7280' }}>
+                  <div className="admin-product-detail-variants-header">
+                    <p className="admin-product-detail-variants-desc">
                       Manage product variants - different configurations with unique SKUs, pricing, components, and tabs.
                     </p>
                     <Button variant="primary" onClick={handleCreateVariant}>
-                      <Plus size={14} style={{ marginRight: 4 }} />
+                      <Plus size={14} className="admin-product-detail-icon-mr" />
                       Add Variant
                     </Button>
                   </div>
 
                   {!product.variants || product.variants.length === 0 ? (
-                    <div className="admin-card" style={{ textAlign: 'center', padding: '48px 24px' }}>
-                      <Package size={48} style={{ margin: '0 auto 16px', color: '#9ca3af' }} />
-                      <h3 style={{ marginBottom: 8 }}>No Variants Yet</h3>
-                      <p style={{ color: '#6b7280', marginBottom: 24 }}>
+                    <div className="admin-card admin-product-detail-variants-empty">
+                      <Package size={48} className="admin-product-detail-variants-empty-icon" />
+                      <h3 className="admin-product-detail-variants-empty-title">No Variants Yet</h3>
+                      <p className="admin-product-detail-variants-empty-desc">
                         Create product variants to offer different configurations (e.g., Digital Edition, Full Kit).
                       </p>
                       <Button variant="primary" onClick={handleCreateVariant}>
-                        <Plus size={14} style={{ marginRight: 4 }} />
+                        <Plus size={14} className="admin-product-detail-icon-mr" />
                         Create First Variant
                       </Button>
                     </div>
                   ) : (
-                    <div style={{ display: 'grid', gap: 16 }}>
+                    <div className="admin-product-detail-variants-grid">
                       {product.variants.map((variant, idx) => (
                         <VariantCard
                           key={variant.id || idx}
@@ -638,31 +601,18 @@ const VariantCard: React.FC<VariantCardProps> = ({
 
   return (
     <div
-      className="admin-card"
-      style={{
-        marginBottom: '16px',
-        opacity: variant.active ? 1 : 0.6,
-        border: variant.active ? '1px solid #e2e8f0' : '1px solid #fbbf24',
-        background: variant.active ? 'white' : '#fffbeb'
-      }}
+      className={`admin-card ${variant.active ? 'admin-product-detail-variant-card' : 'admin-product-detail-variant-card-disabled'}`}
     >
       {/* Header - Clickable */}
       <div
-        style={{
-          padding: '20px 24px',
-          borderBottom: '1px solid #e2e8f0',
-          cursor: 'pointer',
-          transition: 'background 0.2s ease',
-        }}
+        className={`admin-product-detail-variant-header ${!variant.active ? 'admin-product-detail-variant-header-disabled' : ''}`}
         onClick={() => setExpanded(!expanded)}
-        onMouseEnter={(e) => e.currentTarget.style.background = variant.active ? '#f8fafc' : '#fef3c7'}
-        onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16 }}>
-          <div style={{ flex: 1, minWidth: 0 }}>
+        <div className="admin-product-detail-variant-header-row">
+          <div className="admin-product-detail-variant-info">
             {/* Title & Badges Row */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8, flexWrap: 'wrap' }}>
-              <h4 style={{ margin: 0, fontSize: '18px', fontWeight: 600, color: '#1f2937' }}>
+            <div className="admin-product-detail-variant-title-row">
+              <h4 className="admin-product-detail-variant-name">
                 {variant.variantName}
               </h4>
               <Badge variant="info" size="sm">{variant.sku}</Badge>
@@ -672,8 +622,8 @@ const VariantCard: React.FC<VariantCardProps> = ({
             </div>
 
             {/* Info Row */}
-            <div style={{ display: 'flex', gap: 16, fontSize: '14px', color: '#6b7280', flexWrap: 'wrap' }}>
-              <span style={{ fontWeight: 500, color: '#374151' }}>
+            <div className="admin-product-detail-variant-meta">
+              <span className="admin-product-detail-variant-price">
                 €{variant.priceWithVat?.toFixed(2) || '0.00'}
               </span>
               <span>•</span>
@@ -688,7 +638,7 @@ const VariantCard: React.FC<VariantCardProps> = ({
           </div>
 
           {/* Action Buttons - Prevent click propagation */}
-          <div style={{ display: 'flex', gap: 8 }} onClick={(e) => e.stopPropagation()}>
+          <div className="admin-product-detail-variant-actions" onClick={(e) => e.stopPropagation()}>
             <Button
               variant={variant.active ? 'danger' : 'info'}
               size="sm"
@@ -699,8 +649,7 @@ const VariantCard: React.FC<VariantCardProps> = ({
             </Button>
             <Link
               to={`/admin/products/${productId}/variants/${variant.id}/tabs`}
-              className="btn btn-info btn-sm"
-              style={{ textDecoration: 'none' }}
+              className="btn btn-info btn-sm admin-product-detail-manage-tabs-link"
             >
               📋 Manage Tabs
             </Link>
@@ -709,7 +658,7 @@ const VariantCard: React.FC<VariantCardProps> = ({
               size="sm"
               onClick={onEdit}
             >
-              <Edit size={14} style={{ marginRight: 4 }} />
+              <Edit size={14} className="admin-product-detail-icon-mr" />
               Edit
             </Button>
           </div>
@@ -718,54 +667,46 @@ const VariantCard: React.FC<VariantCardProps> = ({
 
       {/* Expanded Details */}
       {expanded && (
-        <div style={{ padding: '24px' }}>
+        <div className="admin-product-detail-variant-expanded">
           {/* Pricing & Details Grid */}
-          <div style={{ marginBottom: 32 }}>
-            <h5 className="section-title" style={{ fontSize: '14px' }}>
+          <div className="admin-product-detail-details-section">
+            <h5 className="section-title admin-product-detail-details-title">
               Details
             </h5>
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-              gap: '16px',
-              background: '#f9fafb',
-              padding: '16px',
-              borderRadius: '8px',
-              border: '1px solid #e5e7eb'
-            }}>
+            <div className="admin-product-detail-details-grid">
               <div>
-                <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: 4 }}>Type</div>
-                <div style={{ fontSize: '14px', color: '#1f2937', fontWeight: 500 }}>
+                <div className="admin-product-detail-detail-label">Type</div>
+                <div className="admin-product-detail-detail-value">
                   {getVariantTypeLabel(variant.variantType)}
                 </div>
               </div>
               <div>
-                <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: 4 }}>Fulfillment</div>
-                <div style={{ fontSize: '14px', color: '#1f2937', fontWeight: 500 }}>
+                <div className="admin-product-detail-detail-label">Fulfillment</div>
+                <div className="admin-product-detail-detail-value">
                   {getFulfillmentTypeLabel(variant.fulfillmentType)}
                 </div>
               </div>
               <div>
-                <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: 4 }}>Price (with VAT)</div>
-                <div style={{ fontSize: '14px', color: '#10B981', fontWeight: 600 }}>
+                <div className="admin-product-detail-detail-label">Price (with VAT)</div>
+                <div className="admin-product-detail-detail-value-price">
                   €{variant.priceWithVat?.toFixed(2) || '0.00'}
                 </div>
               </div>
               <div>
-                <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: 4 }}>Price (no VAT)</div>
-                <div style={{ fontSize: '14px', color: '#1f2937', fontWeight: 500 }}>
+                <div className="admin-product-detail-detail-label">Price (no VAT)</div>
+                <div className="admin-product-detail-detail-value">
                   €{variant.priceWithoutVat?.toFixed(2) || '0.00'}
                 </div>
               </div>
               <div>
-                <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: 4 }}>VAT Rate</div>
-                <div style={{ fontSize: '14px', color: '#1f2937', fontWeight: 500 }}>
+                <div className="admin-product-detail-detail-label">VAT Rate</div>
+                <div className="admin-product-detail-detail-value">
                   {variant.vatRate || 0}%
                 </div>
               </div>
               <div>
-                <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: 4 }}>Currency</div>
-                <div style={{ fontSize: '14px', color: '#1f2937', fontWeight: 500 }}>
+                <div className="admin-product-detail-detail-label">Currency</div>
+                <div className="admin-product-detail-detail-value">
                   {variant.currency || 'EUR'}
                 </div>
               </div>
@@ -774,13 +715,8 @@ const VariantCard: React.FC<VariantCardProps> = ({
 
           {/* Components Section */}
           <div>
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: 16
-            }}>
-              <h5 className="section-title" style={{ fontSize: '14px' }}>
+            <div className="admin-product-detail-components-header">
+              <h5 className="section-title admin-product-detail-components-title">
                 Components ({variant.components?.length || 0})
               </h5>
               <Button
@@ -788,54 +724,34 @@ const VariantCard: React.FC<VariantCardProps> = ({
                 size="sm"
                 onClick={onAddComponent}
               >
-                <Plus size={14} style={{ marginRight: 4 }} />
+                <Plus size={14} className="admin-product-detail-icon-mr" />
                 Add
               </Button>
             </div>
 
             {!variant.components || variant.components.length === 0 ? (
-              <div style={{
-                padding: '24px',
-                background: '#fef3c7',
-                border: '1px solid #fbbf24',
-                borderRadius: '8px',
-                fontSize: '14px',
-                color: '#92400e',
-                textAlign: 'center'
-              }}>
+              <div className="admin-product-detail-components-empty">
                 No components yet. Click "Add" to define what's included in this variant.
               </div>
             ) : (
-              <div style={{ display: 'grid', gap: 10 }}>
+              <div className="admin-product-detail-components-grid">
                 {variant.components.map((component, idx) => (
                   <div
                     key={component.id || idx}
-                    style={{
-                      padding: '14px 16px',
-                      background: '#f9fafb',
-                      border: '1px solid #e5e7eb',
-                      borderRadius: '8px',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      gap: 12,
-                      transition: 'border-color 0.2s ease',
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.borderColor = '#d1d5db'}
-                    onMouseLeave={(e) => e.currentTarget.style.borderColor = '#e5e7eb'}
+                    className="admin-product-detail-component-item"
                   >
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontWeight: 500, marginBottom: 2, color: '#1f2937', fontSize: '14px' }}>
+                    <div className="admin-product-detail-component-info">
+                      <div className="admin-product-detail-component-name">
                         {component.quantity && component.quantity > 1 ? `${component.quantity}× ` : ''}
                         {component.componentName}
                       </div>
                       {component.description && (
-                        <div style={{ fontSize: '13px', color: '#6b7280' }}>
+                        <div className="admin-product-detail-component-desc">
                           {component.description}
                         </div>
                       )}
                     </div>
-                    <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
+                    <div className="admin-product-detail-component-actions">
                       {component.componentType && (
                         <Badge
                           variant={component.componentType.includes('DIGITAL') || component.componentType.includes('STL') || component.componentType.includes('SOFTWARE') || component.componentType.includes('GUIDE') || component.componentType.includes('BOM') ? 'info' : 'success'}
@@ -866,15 +782,9 @@ const VariantCard: React.FC<VariantCardProps> = ({
           </div>
 
           {/* Delete Action */}
-          <div style={{
-            marginTop: 24,
-            paddingTop: 20,
-            borderTop: '1px solid #e5e7eb',
-            display: 'flex',
-            justifyContent: 'flex-end'
-          }}>
+          <div className="admin-product-detail-delete-action">
             <Button variant="danger" size="sm" onClick={onDelete}>
-              <Trash2 size={14} style={{ marginRight: 4 }} />
+              <Trash2 size={14} className="admin-product-detail-icon-mr" />
               Delete Variant
             </Button>
           </div>

@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback, use
 import { wishlistService } from '../services/wishlistService';
 import { hybridProductService } from '../services/hybridProductService';
 import { useAuth } from './useAuth';
-import type { WishlistContextType, WishlistItem, WishlistStats } from '../types/wishlist';
+import type { WishlistContextType, WishlistItem, WishlistStats, WishlistConfigurationOption } from '../types/wishlist';
 import { logError } from '../services/logger';
 import { triggerHaptic } from '../hooks/useHapticFeedback';
 
@@ -127,7 +127,11 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
     }
   }, [isAuthenticated]);
 
-  const addToWishlist = useCallback(async (productId: string | number): Promise<boolean> => {
+  const addToWishlist = useCallback(async (
+    productId: string | number,
+    configuration?: Record<string, WishlistConfigurationOption>,
+    configurationPriceModifier?: number
+  ): Promise<boolean> => {
     if (!isAuthenticated) {
       setError('Please login to add items to wishlist');
       return false;
@@ -135,10 +139,24 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
 
     const numericId = typeof productId === 'string' ? parseInt(productId) : productId;
 
-    // Check if already in wishlist (avoid duplicate optimistic add)
-    if (items.some(item => item.productId === numericId)) {
-      setError('Product is already in your wishlist');
-      return false;
+    // Check if already in wishlist
+    if (!configuration) {
+      // For non-configured products, check if any non-configured entry exists
+      if (items.some(item => item.productId === numericId && !item.configuration)) {
+        setError('Product is already in your wishlist');
+        return false;
+      }
+    } else {
+      // For configured products, check if identical configuration exists
+      const configJson = JSON.stringify(configuration);
+      if (items.some(item =>
+        item.productId === numericId &&
+        item.configuration &&
+        JSON.stringify(item.configuration) === configJson
+      )) {
+        setError('This configuration is already in your wishlist');
+        return false;
+      }
     }
 
     // Store previous state for rollback
@@ -158,7 +176,11 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
       productType: 'physical',
       isAvailable: true,
       hasMultipleVariants: false,
-      addedAt: new Date().toISOString()
+      addedAt: new Date().toISOString(),
+      // Include configuration if provided
+      configuration,
+      configurationPriceModifier: configurationPriceModifier ?? 0,
+      effectivePrice: configurationPriceModifier ?? 0
     };
 
     // OPTIMISTIC UPDATE: Update UI immediately
@@ -179,7 +201,7 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
 
     try {
       // Backend call (non-blocking for UI)
-      const newItem = await wishlistService.addToWishlist(productId);
+      const newItem = await wishlistService.addToWishlist(productId, configuration, configurationPriceModifier);
 
       // Fix availability status by checking actual product status
       let correctedItem = newItem;

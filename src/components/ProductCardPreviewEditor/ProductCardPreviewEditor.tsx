@@ -231,8 +231,8 @@ const ProductCardPreviewEditor: React.FC<ProductCardPreviewEditorProps> = ({
         <div className="product-card-preview-wrapper" style={previewStyle}>
           <ProductCard
             product={previewProduct}
-            showWishlistButton={true}
-            showAddToCart={true}
+            showWishlistButton={false}
+            showAddToCart={false}
             onAddToCart={() => {}}
             disableLink={true}
             priority={true}

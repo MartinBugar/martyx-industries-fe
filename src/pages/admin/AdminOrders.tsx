@@ -4,6 +4,7 @@ import { Eye, Pencil, X, Plus, Truck, CheckCircle, XCircle, Clock } from 'lucide
 import AdminLayout from './AdminLayout';
 import './AdminUsers.css';
 import './AdminButtonOverrides.css';
+import './AdminOrders.css';
 import {adminOrdersService, type AdminOrderDTO, type AdminOrderItem, type PageResponse} from '../../services/adminOrdersService';
 import { Button, Badge, SkeletonTable } from '../../components/ui';
 import OrderEmailHistory from '../../components/admin/OrderEmailHistory';
@@ -21,13 +22,6 @@ const getStatusBadgeVariant = (status?: string): 'success' | 'warning' | 'danger
     }
 };
 
-const fieldInputStyle: React.CSSProperties = {
-    width: '100%',
-    padding: '6px 8px',
-    border: '1px solid #e5e7eb',
-    borderRadius: 6
-};
-const smallBtn: React.CSSProperties = {padding: '6px 10px', borderRadius: 6, border: 'none', cursor: 'pointer'};
 
 // Helper functions
 const formatDatetime = (value: unknown): string => {
@@ -352,18 +346,17 @@ const AdminOrders: React.FC = () => {
                             <div className="admin-header-actions">
                                 <input
                                     type="text"
-                                    className="form-input"
+                                    className="form-input admin-orders-search-input"
                                     placeholder="Search by order number, email, or status..."
                                     value={query}
                                     onChange={(e) => setQuery(e.target.value)}
-                                    style={{ flex: 1 }}
                                 />
                                 <Button
                                     variant="primary"
                                     onClick={() => navigate('/admin/manual-orders/create')}
                                     title="Create manual order"
                                 >
-                                    <Plus size={16} style={{ marginRight: '8px' }} />
+                                    <Plus size={16} className="admin-orders-icon-mr" />
                                     Create Manual Order
                                 </Button>
                                 <Button variant="outline" onClick={() => loadOrders()}>
@@ -436,14 +429,14 @@ const AdminOrders: React.FC = () => {
                                 <table className="admin-table">
                                     <thead>
                                     <tr>
-                                        <th style={{width: 70}}>ID</th>
+                                        <th className="admin-orders-col-id">ID</th>
                                         <th>Order #</th>
                                         <th>Email</th>
                                         <th>Status</th>
                                         <th>Order Date</th>
                                         <th>Items</th>
                                         <th>Total</th>
-                                        <th style={{width: 170}} className="text-right">Actions</th>
+                                        <th className="admin-orders-col-actions text-right">Actions</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -465,100 +458,75 @@ const AdminOrders: React.FC = () => {
                                                 return (
                                                     <>
                                                         <tr key={`edit-${id}`}>
-                                                            <td style={{padding: 8}}>{String(o.id ?? '—')}</td>
-                                                            <td style={{padding: 8}}>
+                                                            <td className="admin-orders-cell">{String(o.id ?? '—')}</td>
+                                                            <td className="admin-orders-cell">
                                                                 <input value={editData.orderNumber as string ?? ''}
                                                                        onChange={(e) => setEditData({
                                                                            ...editData,
                                                                            orderNumber: e.target.value
-                                                                       })} style={fieldInputStyle}/>
+                                                                       })} className="admin-orders-field-input"/>
                                                             </td>
-                                                            <td style={{padding: 8}}>
+                                                            <td className="admin-orders-cell">
                                                                 <input value={editData.userEmail as string ?? ''}
                                                                        onChange={(e) => setEditData({
                                                                            ...editData,
                                                                            userEmail: e.target.value
-                                                                       })} style={fieldInputStyle}/>
+                                                                       })} className="admin-orders-field-input"/>
                                                             </td>
-                                                            <td style={{padding: 8}}>
+                                                            <td className="admin-orders-cell">
                                                                 <input value={editData.status as string ?? ''}
                                                                        onChange={(e) => setEditData({
                                                                            ...editData,
                                                                            status: e.target.value
-                                                                       })} style={fieldInputStyle}/>
+                                                                       })} className="admin-orders-field-input"/>
                                                             </td>
-                                                            <td style={{padding: 8}}>
+                                                            <td className="admin-orders-cell">
                                                                 <input type="datetime-local"
                                                                        value={toDateTimeLocalStr(editData.orderDate as string)}
                                                                        onChange={(e) => setEditData({
                                                                            ...editData,
                                                                            orderDate: e.target.value
-                                                                       })} style={fieldInputStyle}/>
+                                                                       })} className="admin-orders-field-input"/>
                                                             </td>
-                                                            <td style={{padding: 8}}>{getItemsCount(o)}</td>
-                                                            <td style={{padding: 8}}>{getTotalAmount(o).toFixed(2)} {o.currency ?? ''}</td>
-                                                            <td style={{padding: 8, display: 'flex', gap: 6}}>
+                                                            <td className="admin-orders-cell">{getItemsCount(o)}</td>
+                                                            <td className="admin-orders-cell">{getTotalAmount(o).toFixed(2)} {o.currency ?? ''}</td>
+                                                            <td className="admin-orders-cell-actions">
                                                                 <button disabled={saving}
                                                                         onClick={() => saveEdit(id as string | number)}
-                                                                        style={{
-                                                                            ...smallBtn,
-                                                                            background: '#16a34a',
-                                                                            color: '#fff'
-                                                                        }}>{saving ? 'Saving…' : 'Save'}</button>
-                                                                <button disabled={saving} onClick={cancelEdit} style={{
-                                                                    ...smallBtn,
-                                                                    background: '#6b7280',
-                                                                    color: '#fff'
-                                                                }}>Cancel
+                                                                        className="admin-orders-btn-save">{saving ? 'Saving…' : 'Save'}</button>
+                                                                <button disabled={saving} onClick={cancelEdit} className="admin-orders-btn-cancel">Cancel
                                                                 </button>
                                                             </td>
                                                         </tr>
                                                         <tr key={`edit-details-${id}`}>
-                                                            <td colSpan={8} style={{
-                                                                padding: 8,
-                                                                background: '#f9fafb',
-                                                                borderTop: '1px solid #e5e7eb'
-                                                            }}>
-                                                                <div style={{
-                                                                    display: 'grid',
-                                                                    gridTemplateColumns: 'repeat(3, 1fr)',
-                                                                    gap: 12
-                                                                }}>
-                                                                    <div style={{gridColumn: 'span 3'}}>
+                                                            <td colSpan={8} className="admin-orders-edit-details">
+                                                                <div className="admin-orders-edit-grid">
+                                                                    <div className="admin-orders-edit-full-width">
                                                                         <label>Notes</label>
                                                                         <textarea rows={2}
                                                                                   value={(editData.notes as string) ?? ''}
                                                                                   onChange={(e) => setEditData({
                                                                                       ...editData,
                                                                                       notes: e.target.value
-                                                                                  })} style={{
-                                                                            ...fieldInputStyle,
-                                                                            resize: 'vertical'
-                                                                        }}/>
+                                                                                  })} className="admin-orders-field-input-resize"/>
                                                                     </div>
-                                                                    <div style={{gridColumn: 'span 3'}}>
+                                                                    <div className="admin-orders-edit-full-width">
                                                                         <label>Shipping Address</label>
                                                                         <textarea rows={2}
                                                                                   value={(editData.shippingAddress as string) ?? ''}
                                                                                   onChange={(e) => setEditData({
                                                                                       ...editData,
                                                                                       shippingAddress: e.target.value
-                                                                                  })} style={{
-                                                                            ...fieldInputStyle,
-                                                                            resize: 'vertical'
-                                                                        }}/>
+                                                                                  })} className="admin-orders-field-input-resize"/>
                                                                     </div>
-                                                                    <div style={{gridColumn: 'span 3'}}>
+                                                                    <div className="admin-orders-edit-full-width">
                                                                         <label>Billing Address</label>
                                                                         <textarea rows={2}
                                                                                   value={(editData.billingAddress as string) ?? ''}
                                                                                   onChange={(e) => setEditData({
                                                                                       ...editData,
                                                                                       billingAddress: e.target.value
-                                                                                  })} style={{
-                                                                            ...fieldInputStyle,
-                                                                            resize: 'vertical'
-                                                                        }}/>
+                                                                                  })} className="admin-orders-field-input-resize"/>
                                                                     </div>
                                                                     <div>
                                                                         <label>Currency</label>
@@ -567,7 +535,7 @@ const AdminOrders: React.FC = () => {
                                                                             onChange={(e) => setEditData({
                                                                                 ...editData,
                                                                                 currency: e.target.value
-                                                                            })} style={fieldInputStyle}/>
+                                                                            })} className="admin-orders-field-input"/>
                                                                     </div>
                                                                     <div>
                                                                         <label>Payment Method</label>
@@ -576,7 +544,7 @@ const AdminOrders: React.FC = () => {
                                                                             onChange={(e) => setEditData({
                                                                                 ...editData,
                                                                                 paymentMethod: e.target.value
-                                                                            })} style={fieldInputStyle}/>
+                                                                            })} className="admin-orders-field-input"/>
                                                                     </div>
                                                                     <div>
                                                                         <label>Payment ID</label>
@@ -585,7 +553,7 @@ const AdminOrders: React.FC = () => {
                                                                             onChange={(e) => setEditData({
                                                                                 ...editData,
                                                                                 paymentId: e.target.value
-                                                                            })} style={fieldInputStyle}/>
+                                                                            })} className="admin-orders-field-input"/>
                                                                     </div>
                                                                     <div>
                                                                         <label>Payment Date</label>
@@ -594,48 +562,21 @@ const AdminOrders: React.FC = () => {
                                                                                onChange={(e) => setEditData({
                                                                                    ...editData,
                                                                                    paymentDate: e.target.value
-                                                                               })} style={fieldInputStyle}/>
+                                                                               })} className="admin-orders-field-input"/>
                                                                     </div>
                                                                 </div>
-                                                                <div style={{marginTop: 12}}>
-                                                                    <h4 style={{margin: '6px 0'}}>Order Items</h4>
-                                                                    <div style={{overflowX: 'auto'}}>
-                                                                        <table style={{
-                                                                            width: '100%',
-                                                                            borderCollapse: 'collapse'
-                                                                        }}>
+                                                                <div className="admin-orders-items-section">
+                                                                    <h4 className="admin-orders-items-heading">Order Items</h4>
+                                                                    <div className="admin-orders-items-wrapper">
+                                                                        <table className="admin-orders-items-table">
                                                                             <thead>
-                                                                            <tr style={{background: '#eef2f7'}}>
-                                                                                <th style={{
-                                                                                    textAlign: 'left',
-                                                                                    padding: 8
-                                                                                }}>Product ID
-                                                                                </th>
-                                                                                <th style={{
-                                                                                    textAlign: 'left',
-                                                                                    padding: 8
-                                                                                }}>Product Name
-                                                                                </th>
-                                                                                <th style={{
-                                                                                    textAlign: 'left',
-                                                                                    padding: 8
-                                                                                }}>Unit Price
-                                                                                </th>
-                                                                                <th style={{
-                                                                                    textAlign: 'left',
-                                                                                    padding: 8
-                                                                                }}>Quantity
-                                                                                </th>
-                                                                                <th style={{
-                                                                                    textAlign: 'left',
-                                                                                    padding: 8
-                                                                                }}>Subtotal
-                                                                                </th>
-                                                                                <th style={{
-                                                                                    textAlign: 'left',
-                                                                                    padding: 8
-                                                                                }}>Actions
-                                                                                </th>
+                                                                            <tr className="admin-orders-items-header">
+                                                                                <th className="admin-orders-items-th">Product ID</th>
+                                                                                <th className="admin-orders-items-th">Product Name</th>
+                                                                                <th className="admin-orders-items-th">Unit Price</th>
+                                                                                <th className="admin-orders-items-th">Quantity</th>
+                                                                                <th className="admin-orders-items-th">Subtotal</th>
+                                                                                <th className="admin-orders-items-th">Actions</th>
                                                                             </tr>
                                                                             </thead>
                                                                             <tbody>
@@ -645,40 +586,36 @@ const AdminOrders: React.FC = () => {
                                                                                 const sub = computeSubtotal(it);
                                                                                 return (
                                                                                     <tr key={idx}>
-                                                                                        <td style={{padding: 6}}>
+                                                                                        <td className="admin-orders-cell-sm">
                                                                                             <input
                                                                                                 value={(it.productId as string | number | undefined) ?? ''}
                                                                                                 onChange={(e) => updateItem(idx, {productId: e.target.value})}
-                                                                                                style={fieldInputStyle}/>
+                                                                                                className="admin-orders-field-input"/>
                                                                                         </td>
-                                                                                        <td style={{padding: 6}}>
+                                                                                        <td className="admin-orders-cell-sm">
                                                                                             <input
                                                                                                 value={(it.productName as string | undefined) ?? (it.name as string | undefined) ?? (it.title as string | undefined) ?? ''}
                                                                                                 onChange={(e) => updateItem(idx, {productName: e.target.value})}
-                                                                                                style={fieldInputStyle}/>
+                                                                                                className="admin-orders-field-input"/>
                                                                                         </td>
-                                                                                        <td style={{padding: 6}}>
+                                                                                        <td className="admin-orders-cell-sm">
                                                                                             <input type="number"
                                                                                                    step="0.01"
                                                                                                    value={unit}
                                                                                                    onChange={(e) => updateItem(idx, {unitPrice: parseFloat(e.target.value || '0')})}
-                                                                                                   style={fieldInputStyle}/>
+                                                                                                   className="admin-orders-field-input"/>
                                                                                         </td>
-                                                                                        <td style={{padding: 6}}>
+                                                                                        <td className="admin-orders-cell-sm">
                                                                                             <input type="number"
                                                                                                    step="1" value={qty}
                                                                                                    onChange={(e) => updateItem(idx, {quantity: parseInt(e.target.value || '0', 10)})}
-                                                                                                   style={fieldInputStyle}/>
+                                                                                                   className="admin-orders-field-input"/>
                                                                                         </td>
-                                                                                        <td style={{padding: 6}}>{formatMoney(sub, (editData.currency as string) ?? o.currency)}</td>
-                                                                                        <td style={{padding: 6}}>
+                                                                                        <td className="admin-orders-cell-sm">{formatMoney(sub, (editData.currency as string) ?? o.currency)}</td>
+                                                                                        <td className="admin-orders-cell-sm">
                                                                                             <button type="button"
                                                                                                     onClick={() => removeItem(idx)}
-                                                                                                    style={{
-                                                                                                        ...smallBtn,
-                                                                                                        background: '#ef4444',
-                                                                                                        color: '#fff'
-                                                                                                    }}>Remove
+                                                                                                    className="admin-orders-btn-remove">Remove
                                                                                             </button>
                                                                                         </td>
                                                                                     </tr>
@@ -687,11 +624,8 @@ const AdminOrders: React.FC = () => {
                                                                             </tbody>
                                                                             <tfoot>
                                                                             <tr>
-                                                                                <td colSpan={4} style={{
-                                                                                    padding: 8,
-                                                                                    textAlign: 'right'
-                                                                                }}><strong>Total</strong></td>
-                                                                                <td style={{padding: 8}}>
+                                                                                <td colSpan={4} className="admin-orders-items-footer-total"><strong>Total</strong></td>
+                                                                                <td className="admin-orders-cell">
                                                                                     <strong>{formatMoney(editItemsTotal(), (editData.currency as string) ?? o.currency)}</strong>
                                                                                 </td>
                                                                                 <td></td>
@@ -699,12 +633,8 @@ const AdminOrders: React.FC = () => {
                                                                             </tfoot>
                                                                         </table>
                                                                     </div>
-                                                                    <div style={{marginTop: 8}}>
-                                                                        <button type="button" onClick={addItem} style={{
-                                                                            ...smallBtn,
-                                                                            background: '#2563eb',
-                                                                            color: '#fff'
-                                                                        }}>Add Item
+                                                                    <div className="admin-orders-add-item-wrapper">
+                                                                        <button type="button" onClick={addItem} className="admin-orders-btn-add">Add Item
                                                                         </button>
                                                                     </div>
                                                                 </div>
@@ -759,18 +689,10 @@ const AdminOrders: React.FC = () => {
                                                     </tr>
                                                     {String(expandedId) === String(id) && (
                                                         <tr key={`details-${id}`}>
-                                                            <td colSpan={8} style={{
-                                                                padding: 12,
-                                                                background: '#f9fafb',
-                                                                borderTop: '1px solid #e5e7eb'
-                                                            }}>
-                                                                <div style={{
-                                                                    display: 'grid',
-                                                                    gridTemplateColumns: 'repeat(3, 1fr)',
-                                                                    gap: 12
-                                                                }}>
+                                                            <td colSpan={8} className="admin-orders-view-details">
+                                                                <div className="admin-orders-view-grid">
                                                                     <div>
-                                                                        <h4 style={{margin: '4px 0'}}>Order Summary</h4>
+                                                                        <h4 className="admin-orders-view-heading">Order Summary</h4>
                                                                         <div><strong>Order
                                                                             #:</strong> {o.orderNumber ?? '—'}</div>
                                                                         <div><strong>Placed
@@ -786,7 +708,7 @@ const AdminOrders: React.FC = () => {
                                                                         </div>
                                                                     </div>
                                                                     <div>
-                                                                        <h4 style={{margin: '4px 0'}}>Addresses</h4>
+                                                                        <h4 className="admin-orders-view-heading">Addresses</h4>
                                                                         {o.shippingAddress && <div>
                                                                             <strong>Shipping:</strong> {o.shippingAddress}
                                                                         </div>}
@@ -795,7 +717,7 @@ const AdminOrders: React.FC = () => {
                                                                         </div>}
                                                                     </div>
                                                                     <div>
-                                                                        <h4 style={{margin: '4px 0'}}>Payment</h4>
+                                                                        <h4 className="admin-orders-view-heading">Payment</h4>
                                                                         {o.paymentMethod && <div>
                                                                             <strong>Method:</strong> {o.paymentMethod}
                                                                         </div>}
@@ -810,27 +732,27 @@ const AdminOrders: React.FC = () => {
                                                                     </div>
 
                                                                     {/* Order Fulfillment Section */}
-                                                                    <div style={{gridColumn: 'span 3', marginTop: 12}}>
+                                                                    <div className="admin-orders-fulfillment-section">
                                                                         {/* Status Timeline */}
-                                                                        <div style={{padding: 20, background: '#fff', borderRadius: 12, border: '1px solid #e5e7eb', marginBottom: 16}}>
-                                                                            <h4 style={{margin: '0 0 20px 0', fontSize: 14, fontWeight: 600, color: '#374151', display: 'flex', alignItems: 'center', gap: 8}}>
+                                                                        <div className="admin-orders-timeline-card">
+                                                                            <h4 className="admin-orders-timeline-heading">
                                                                                 Order Progress
                                                                                 {/* Show badge for digital-only orders */}
                                                                                 {o.hasDigitalItems && !o.hasPhysicalItems && (
-                                                                                    <span style={{fontSize: 11, padding: '2px 8px', background: '#dbeafe', color: '#1d4ed8', borderRadius: 4, fontWeight: 500}}>
+                                                                                    <span className="admin-orders-digital-badge">
                                                                                         Digital Order
                                                                                     </span>
                                                                                 )}
                                                                             </h4>
                                                                             {o.status === 'CANCELLED' ? (
-                                                                                <div style={{display: 'flex', alignItems: 'center', gap: 12, padding: 16, background: '#fef2f2', borderRadius: 8, border: '1px solid #fecaca'}}>
-                                                                                    <div style={{width: 40, height: 40, borderRadius: '50%', background: '#fee2e2', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                                                                                <div className="admin-orders-cancelled-container">
+                                                                                    <div className="admin-orders-cancelled-icon">
                                                                                         <XCircle size={20} color="#dc2626" />
                                                                                     </div>
                                                                                     <div>
-                                                                                        <div style={{fontWeight: 600, color: '#dc2626'}}>Order Cancelled</div>
-                                                                                        {o.cancelledAt && <div style={{fontSize: 12, color: '#991b1b'}}>{formatDateTime(o.cancelledAt)}</div>}
-                                                                                        {o.cancellationReason && <div style={{fontSize: 13, color: '#7f1d1d', marginTop: 4}}>{o.cancellationReason}</div>}
+                                                                                        <div className="admin-orders-cancelled-title">Order Cancelled</div>
+                                                                                        {o.cancelledAt && <div className="admin-orders-cancelled-date">{formatDateTime(o.cancelledAt)}</div>}
+                                                                                        {o.cancellationReason && <div className="admin-orders-cancelled-reason">{o.cancellationReason}</div>}
                                                                                     </div>
                                                                                 </div>
                                                                             ) : (
@@ -851,34 +773,25 @@ const AdminOrders: React.FC = () => {
 
                                                                                         return (
                                                                                             <>
-                                                                                                <div style={{display: 'flex', justifyContent: 'space-between', position: 'relative'}}>
-                                                                                                    <div style={{position: 'absolute', top: 20, left: 40, right: 40, height: 3, background: '#e5e7eb', zIndex: 0}} />
-                                                                                                    <div style={{position: 'absolute', top: 20, left: 40, height: 3, background: '#22c55e', zIndex: 1, width: progressWidth}} />
+                                                                                                <div className="admin-orders-timeline">
+                                                                                                    <div className="admin-orders-timeline-line-bg" />
+                                                                                                    <div className="admin-orders-timeline-line-progress" style={{width: progressWidth}} />
                                                                                                     {digitalSteps.map((step, idx) => {
                                                                                                         const isCurrent = idx === completedSteps - 1;
                                                                                                         return (
-                                                                                                            <div key={step.key} style={{display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 2, flex: 1}}>
-                                                                                                                <div style={{
-                                                                                                                    width: isCurrent ? 44 : 40,
-                                                                                                                    height: isCurrent ? 44 : 40,
-                                                                                                                    borderRadius: '50%',
-                                                                                                                    background: step.done ? (isCurrent ? '#16a34a' : '#22c55e') : '#e5e7eb',
-                                                                                                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                                                                                    border: isCurrent ? '3px solid #bbf7d0' : 'none',
-                                                                                                                    boxShadow: isCurrent ? '0 0 0 4px rgba(34,197,94,0.2)' : 'none',
-                                                                                                                    transition: 'all 0.3s ease'
-                                                                                                                }}>
+                                                                                                            <div key={step.key} className="admin-orders-timeline-step">
+                                                                                                                <div className={`admin-orders-timeline-step-circle ${isCurrent ? 'admin-orders-timeline-step-circle-current' : ''} ${step.done ? (isCurrent ? 'admin-orders-timeline-step-circle-done-current' : 'admin-orders-timeline-step-circle-done') : 'admin-orders-timeline-step-circle-pending'}`}>
                                                                                                                     {step.done ? (
                                                                                                                         <CheckCircle size={isCurrent ? 22 : 20} color="#fff" />
                                                                                                                     ) : (
-                                                                                                                        <div style={{width: 12, height: 12, borderRadius: '50%', background: '#9ca3af'}} />
+                                                                                                                        <div className="admin-orders-timeline-step-dot" />
                                                                                                                     )}
                                                                                                                 </div>
-                                                                                                                <div style={{marginTop: 8, fontSize: 12, fontWeight: isCurrent ? 700 : 500, color: step.done ? '#16a34a' : '#6b7280', textAlign: 'center'}}>
+                                                                                                                <div className={`admin-orders-timeline-step-label ${step.done ? 'admin-orders-timeline-step-label-done' : ''} ${isCurrent ? 'admin-orders-timeline-step-label-current' : ''}`}>
                                                                                                                     {step.label}
                                                                                                                 </div>
                                                                                                                 {step.date && (
-                                                                                                                    <div style={{fontSize: 10, color: '#9ca3af', marginTop: 2}}>
+                                                                                                                    <div className="admin-orders-timeline-step-date">
                                                                                                                         {new Date(step.date).toLocaleDateString()}
                                                                                                                     </div>
                                                                                                                 )}
@@ -888,9 +801,9 @@ const AdminOrders: React.FC = () => {
                                                                                                 </div>
                                                                                                 {/* Digital delivery info */}
                                                                                                 {['PAID', 'COMPLETED'].includes(status) && (
-                                                                                                    <div style={{marginTop: 16, padding: 12, background: '#f0fdf4', borderRadius: 8, border: '1px solid #bbf7d0', display: 'flex', alignItems: 'center', gap: 10}}>
+                                                                                                    <div className="admin-orders-digital-delivery">
                                                                                                         <CheckCircle size={18} color="#16a34a" />
-                                                                                                        <span style={{fontSize: 13, color: '#166534'}}>
+                                                                                                        <span className="admin-orders-digital-delivery-text">
                                                                                                             Digital products have been delivered to the customer's email.
                                                                                                         </span>
                                                                                                     </div>
@@ -900,18 +813,16 @@ const AdminOrders: React.FC = () => {
                                                                                     }
 
                                                                                     // Physical order: full timeline
-                                                                                    return (
-                                                                                        <div style={{display: 'flex', justifyContent: 'space-between', position: 'relative'}}>
-                                                                                            {/* Progress line */}
-                                                                                            <div style={{position: 'absolute', top: 20, left: 40, right: 40, height: 3, background: '#e5e7eb', zIndex: 0}} />
-                                                                                            <div style={{
-                                                                                                position: 'absolute', top: 20, left: 40, height: 3, background: '#22c55e', zIndex: 1,
-                                                                                                width: status === 'DELIVERED' ? 'calc(100% - 80px)' :
+                                                                                    const physicalProgressWidth = status === 'DELIVERED' ? 'calc(100% - 80px)' :
                                                                                                        status === 'SHIPPED' ? 'calc(75% - 60px)' :
                                                                                                        (o.shippingStatus === 'PACKED' || o.packedAt) ? 'calc(50% - 40px)' :
                                                                                                        status === 'PROCESSING' ? 'calc(37.5% - 30px)' :
-                                                                                                       status === 'PAID' ? 'calc(25% - 20px)' : '0'
-                                                                                            }} />
+                                                                                                       status === 'PAID' ? 'calc(25% - 20px)' : '0';
+                                                                                    return (
+                                                                                        <div className="admin-orders-timeline">
+                                                                                            {/* Progress line */}
+                                                                                            <div className="admin-orders-timeline-line-bg" />
+                                                                                            <div className="admin-orders-timeline-line-progress" style={{width: physicalProgressWidth}} />
                                                                                             {/* Steps */}
                                                                                             {[
                                                                                                 { key: 'ordered', label: 'Ordered', done: true, date: o.orderDate },
@@ -928,28 +839,19 @@ const AdminOrders: React.FC = () => {
                                                                                                                 (step.key === 'paid' && status === 'PAID') ||
                                                                                                                 (step.key === 'ordered' && status === 'PENDING');
                                                                                                 return (
-                                                                                                    <div key={step.key} style={{display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 2, flex: 1}}>
-                                                                                                        <div style={{
-                                                                                                            width: isCurrent ? 44 : 40,
-                                                                                                            height: isCurrent ? 44 : 40,
-                                                                                                            borderRadius: '50%',
-                                                                                                            background: step.done ? (isCurrent ? '#16a34a' : '#22c55e') : '#e5e7eb',
-                                                                                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                                                                            border: isCurrent ? '3px solid #bbf7d0' : 'none',
-                                                                                                            boxShadow: isCurrent ? '0 0 0 4px rgba(34,197,94,0.2)' : 'none',
-                                                                                                            transition: 'all 0.3s ease'
-                                                                                                        }}>
+                                                                                                    <div key={step.key} className="admin-orders-timeline-step">
+                                                                                                        <div className={`admin-orders-timeline-step-circle ${isCurrent ? 'admin-orders-timeline-step-circle-current' : ''} ${step.done ? (isCurrent ? 'admin-orders-timeline-step-circle-done-current' : 'admin-orders-timeline-step-circle-done') : 'admin-orders-timeline-step-circle-pending'}`}>
                                                                                                             {step.done ? (
                                                                                                                 <CheckCircle size={isCurrent ? 22 : 20} color="#fff" />
                                                                                                             ) : (
-                                                                                                                <div style={{width: 12, height: 12, borderRadius: '50%', background: '#9ca3af'}} />
+                                                                                                                <div className="admin-orders-timeline-step-dot" />
                                                                                                             )}
                                                                                                         </div>
-                                                                                                        <div style={{marginTop: 8, fontSize: 12, fontWeight: isCurrent ? 700 : 500, color: step.done ? '#16a34a' : '#6b7280', textAlign: 'center'}}>
+                                                                                                        <div className={`admin-orders-timeline-step-label ${step.done ? 'admin-orders-timeline-step-label-done' : ''} ${isCurrent ? 'admin-orders-timeline-step-label-current' : ''}`}>
                                                                                                             {step.label}
                                                                                                         </div>
                                                                                                         {step.date && (
-                                                                                                            <div style={{fontSize: 10, color: '#9ca3af', marginTop: 2}}>
+                                                                                                            <div className="admin-orders-timeline-step-date">
                                                                                                                 {new Date(step.date).toLocaleDateString()}
                                                                                                             </div>
                                                                                                         )}
@@ -964,14 +866,14 @@ const AdminOrders: React.FC = () => {
 
                                                                         {/* Status Update Dropdown - Only for physical orders that are not completed */}
                                                                         {o.status !== 'CANCELLED' && o.status !== 'DELIVERED' && o.status !== 'REFUNDED' && o.status !== 'COMPLETED' && !(o.hasDigitalItems && !o.hasPhysicalItems) && (
-                                                                            <div style={{padding: 20, background: '#fff', borderRadius: 12, border: '1px solid #e5e7eb', marginBottom: 16}}>
-                                                                                <h4 style={{margin: '0 0 16px 0', fontSize: 14, fontWeight: 600, color: '#374151', display: 'flex', alignItems: 'center', gap: 8}}>
+                                                                            <div className="admin-orders-status-update-card">
+                                                                                <h4 className="admin-orders-status-update-heading">
                                                                                     <Clock size={16} />
                                                                                     Update Status
                                                                                 </h4>
-                                                                                <div style={{display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'flex-start'}}>
-                                                                                    <div style={{flex: '1 1 200px'}}>
-                                                                                        <label style={{display: 'block', fontSize: 12, fontWeight: 500, color: '#6b7280', marginBottom: 6}}>
+                                                                                <div className="admin-orders-status-update-content">
+                                                                                    <div className="admin-orders-status-select-wrapper">
+                                                                                        <label className="admin-orders-status-label">
                                                                                             Change Status To
                                                                                         </label>
                                                                                         <select
@@ -991,20 +893,7 @@ const AdminOrders: React.FC = () => {
                                                                                                 e.target.value = '';
                                                                                             }}
                                                                                             disabled={statusUpdating}
-                                                                                            style={{
-                                                                                                width: '100%',
-                                                                                                padding: '10px 12px',
-                                                                                                borderRadius: 8,
-                                                                                                border: '1px solid #d1d5db',
-                                                                                                background: '#fff',
-                                                                                                fontSize: 14,
-                                                                                                cursor: 'pointer',
-                                                                                                appearance: 'none',
-                                                                                                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
-                                                                                                backgroundRepeat: 'no-repeat',
-                                                                                                backgroundPosition: 'right 10px center',
-                                                                                                backgroundSize: '16px'
-                                                                                            }}
+                                                                                            className="admin-orders-status-select"
                                                                                         >
                                                                                             <option value="">Select next status...</option>
                                                                                             {(o.status === 'PENDING' || o.status === 'PAID') && (
@@ -1021,14 +910,14 @@ const AdminOrders: React.FC = () => {
                                                                                             )}
                                                                                         </select>
                                                                                     </div>
-                                                                                    <div style={{flex: '0 0 auto', paddingTop: 22}}>
+                                                                                    <div className="admin-orders-cancel-btn-wrapper">
                                                                                         <Button
                                                                                             variant="danger"
                                                                                             size="sm"
                                                                                             onClick={() => handleCancelOrder(o)}
                                                                                             disabled={statusUpdating}
                                                                                         >
-                                                                                            <XCircle size={14} style={{marginRight: 4}} />
+                                                                                            <XCircle size={14} className="admin-orders-icon-mr-sm" />
                                                                                             Cancel Order
                                                                                         </Button>
                                                                                     </div>
@@ -1038,40 +927,39 @@ const AdminOrders: React.FC = () => {
 
                                                                         {/* Shipping Info Card - Only for physical orders */}
                                                                         {!(o.hasDigitalItems && !o.hasPhysicalItems) && (o.trackingNumber || o.shippingCarrier || o.status === 'SHIPPED' || o.status === 'DELIVERED') && (
-                                                                            <div style={{padding: 20, background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)', borderRadius: 12, border: '1px solid #bfdbfe'}}>
-                                                                                <h4 style={{margin: '0 0 16px 0', fontSize: 14, fontWeight: 600, color: '#1e40af', display: 'flex', alignItems: 'center', gap: 8}}>
+                                                                            <div className="admin-orders-shipping-card">
+                                                                                <h4 className="admin-orders-shipping-heading">
                                                                                     <Truck size={16} />
                                                                                     Shipping Details
                                                                                 </h4>
-                                                                                <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 16}}>
+                                                                                <div className="admin-orders-shipping-grid">
                                                                                     {o.shippingCarrier && (
                                                                                         <div>
-                                                                                            <div style={{fontSize: 11, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4}}>Carrier</div>
-                                                                                            <div style={{fontSize: 14, fontWeight: 600, color: '#1f2937'}}>{o.shippingCarrier}</div>
+                                                                                            <div className="admin-orders-shipping-label">Carrier</div>
+                                                                                            <div className="admin-orders-shipping-value">{o.shippingCarrier}</div>
                                                                                         </div>
                                                                                     )}
                                                                                     {o.trackingNumber && (
                                                                                         <div>
-                                                                                            <div style={{fontSize: 11, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4}}>Tracking Number</div>
-                                                                                            <div style={{fontSize: 14, fontWeight: 600, color: '#1f2937', fontFamily: 'monospace'}}>{o.trackingNumber}</div>
+                                                                                            <div className="admin-orders-shipping-label">Tracking Number</div>
+                                                                                            <div className="admin-orders-shipping-value-mono">{o.trackingNumber}</div>
                                                                                         </div>
                                                                                     )}
                                                                                     {o.shippedAt && (
                                                                                         <div>
-                                                                                            <div style={{fontSize: 11, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4}}>Shipped At</div>
-                                                                                            <div style={{fontSize: 14, fontWeight: 600, color: '#1f2937'}}>{formatDateTime(o.shippedAt)}</div>
+                                                                                            <div className="admin-orders-shipping-label">Shipped At</div>
+                                                                                            <div className="admin-orders-shipping-value">{formatDateTime(o.shippedAt)}</div>
                                                                                         </div>
                                                                                     )}
                                                                                     {o.deliveredAt && (
                                                                                         <div>
-                                                                                            <div style={{fontSize: 11, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4}}>Delivered At</div>
-                                                                                            <div style={{fontSize: 14, fontWeight: 600, color: '#1f2937'}}>{formatDateTime(o.deliveredAt)}</div>
+                                                                                            <div className="admin-orders-shipping-label">Delivered At</div>
+                                                                                            <div className="admin-orders-shipping-value">{formatDateTime(o.deliveredAt)}</div>
                                                                                         </div>
                                                                                     )}
                                                                                 </div>
                                                                                 {o.trackingUrl && (
-                                                                                    <a href={o.trackingUrl} target="_blank" rel="noopener noreferrer"
-                                                                                       style={{display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 16, padding: '8px 16px', background: '#2563eb', color: '#fff', borderRadius: 6, fontSize: 13, fontWeight: 500, textDecoration: 'none'}}>
+                                                                                    <a href={o.trackingUrl} target="_blank" rel="noopener noreferrer" className="admin-orders-track-link">
                                                                                         Track Package
                                                                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                                                             <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
@@ -1084,35 +972,16 @@ const AdminOrders: React.FC = () => {
                                                                         )}
                                                                     </div>
 
-                                                                    <div style={{gridColumn: 'span 3'}}>
-                                                                        <h4 style={{margin: '8px 0'}}>Order Items</h4>
-                                                                        <div style={{overflowX: 'auto'}}>
-                                                                            <table style={{
-                                                                                width: '100%',
-                                                                                borderCollapse: 'collapse'
-                                                                            }}>
+                                                                    <div className="admin-orders-edit-full-width">
+                                                                        <h4 className="admin-orders-items-heading">Order Items</h4>
+                                                                        <div className="admin-orders-items-wrapper">
+                                                                            <table className="admin-orders-items-table">
                                                                                 <thead>
-                                                                                <tr style={{background: '#eef2f7'}}>
-                                                                                    <th style={{
-                                                                                        textAlign: 'left',
-                                                                                        padding: 8
-                                                                                    }}>Product
-                                                                                    </th>
-                                                                                    <th style={{
-                                                                                        textAlign: 'left',
-                                                                                        padding: 8
-                                                                                    }}>Unit Price
-                                                                                    </th>
-                                                                                    <th style={{
-                                                                                        textAlign: 'left',
-                                                                                        padding: 8
-                                                                                    }}>Quantity
-                                                                                    </th>
-                                                                                    <th style={{
-                                                                                        textAlign: 'left',
-                                                                                        padding: 8
-                                                                                    }}>Subtotal
-                                                                                    </th>
+                                                                                <tr className="admin-orders-items-header">
+                                                                                    <th className="admin-orders-items-th">Product</th>
+                                                                                    <th className="admin-orders-items-th">Unit Price</th>
+                                                                                    <th className="admin-orders-items-th">Quantity</th>
+                                                                                    <th className="admin-orders-items-th">Subtotal</th>
                                                                                 </tr>
                                                                                 </thead>
                                                                                 <tbody>
@@ -1124,27 +993,21 @@ const AdminOrders: React.FC = () => {
                                                                                     const sub = qty * unit;
                                                                                     return (
                                                                                         <tr key={idx}>
-                                                                                            <td style={{padding: 8}}>
+                                                                                            <td className="admin-orders-cell">
                                                                                                 <div>{name}</div>
-                                                                                                <div style={{
-                                                                                                    color: '#6b7280',
-                                                                                                    fontSize: 12
-                                                                                                }}>ID: {String(pid)}</div>
+                                                                                                <div className="admin-orders-product-subtitle">ID: {String(pid)}</div>
                                                                                             </td>
-                                                                                            <td style={{padding: 8}}>{formatMoney(unit, o.currency)}</td>
-                                                                                            <td style={{padding: 8}}>{qty}</td>
-                                                                                            <td style={{padding: 8}}>{formatMoney(sub, o.currency)}</td>
+                                                                                            <td className="admin-orders-cell">{formatMoney(unit, o.currency)}</td>
+                                                                                            <td className="admin-orders-cell">{qty}</td>
+                                                                                            <td className="admin-orders-cell">{formatMoney(sub, o.currency)}</td>
                                                                                         </tr>
                                                                                     );
                                                                                 })}
                                                                                 </tbody>
                                                                                 <tfoot>
                                                                                 <tr>
-                                                                                    <td colSpan={3} style={{
-                                                                                        padding: 8,
-                                                                                        textAlign: 'right'
-                                                                                    }}><strong>Total</strong></td>
-                                                                                    <td style={{padding: 8}}>
+                                                                                    <td colSpan={3} className="admin-orders-items-footer-total"><strong>Total</strong></td>
+                                                                                    <td className="admin-orders-cell">
                                                                                         <strong>{formatMoney(getTotalAmount(o), o.currency)}</strong>
                                                                                     </td>
                                                                                 </tr>
@@ -1154,7 +1017,7 @@ const AdminOrders: React.FC = () => {
                                                                     </div>
 
                                                                     {/* Email History Section */}
-                                                                    <div style={{gridColumn: 'span 3', marginTop: '20px'}}>
+                                                                    <div className="admin-orders-email-history">
                                                                         <OrderEmailHistory orderId={Number(o.id!)} />
                                                                     </div>
                                                                 </div>
@@ -1171,11 +1034,11 @@ const AdminOrders: React.FC = () => {
 
                             {/* Pagination Controls */}
                             {totalPages > 1 && (
-                                <div className="pagination-controls" style={{ marginTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <div style={{ fontSize: '14px', color: '#6b7280' }}>
+                                <div className="admin-orders-pagination">
+                                    <div className="admin-orders-pagination-info">
                                         Showing {orders.length > 0 ? (page * 20 + 1) : 0} - {Math.min((page + 1) * 20, totalElements)} of {totalElements} orders
                                     </div>
-                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                    <div className="admin-orders-pagination-controls">
                                         <Button
                                             variant="outline"
                                             size="sm"
@@ -1184,7 +1047,7 @@ const AdminOrders: React.FC = () => {
                                         >
                                             Previous
                                         </Button>
-                                        <span style={{ padding: '8px 12px', fontSize: '14px', color: '#374151' }}>
+                                        <span className="admin-orders-pagination-page">
                                             Page {page + 1} of {totalPages}
                                         </span>
                                         <Button
@@ -1204,40 +1067,25 @@ const AdminOrders: React.FC = () => {
 
             {/* Shipping Info Modal */}
             {statusModalOrder && (
-                <div style={{
-                    position: 'fixed',
-                    inset: 0,
-                    background: 'rgba(0,0,0,0.5)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    zIndex: 1000
-                }}>
-                    <div style={{
-                        background: '#fff',
-                        borderRadius: 12,
-                        padding: 24,
-                        width: '100%',
-                        maxWidth: 480,
-                        boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)'
-                    }}>
-                        <h3 style={{margin: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: 8}}>
+                <div className="admin-orders-modal-overlay">
+                    <div className="admin-orders-modal">
+                        <h3 className="admin-orders-modal-heading">
                             <Truck size={20} />
                             Mark Order as Shipped
                         </h3>
-                        <p style={{margin: '0 0 16px 0', color: '#6b7280', fontSize: 14}}>
+                        <p className="admin-orders-modal-subtext">
                             Order #{statusModalOrder.orderNumber}
                         </p>
 
-                        <div style={{display: 'flex', flexDirection: 'column', gap: 12}}>
+                        <div className="admin-orders-modal-form">
                             <div>
-                                <label style={{display: 'block', marginBottom: 4, fontWeight: 500, fontSize: 14}}>
+                                <label className="admin-orders-modal-label">
                                     Shipping Carrier
                                 </label>
                                 <select
                                     value={shippingCarrier}
                                     onChange={(e) => setShippingCarrier(e.target.value)}
-                                    style={{...fieldInputStyle, width: '100%'}}
+                                    className="admin-orders-field-input"
                                 >
                                     <option value="">Select carrier...</option>
                                     <option value="Slovak Post">Slovak Post</option>
@@ -1253,7 +1101,7 @@ const AdminOrders: React.FC = () => {
                             </div>
 
                             <div>
-                                <label style={{display: 'block', marginBottom: 4, fontWeight: 500, fontSize: 14}}>
+                                <label className="admin-orders-modal-label">
                                     Tracking Number
                                 </label>
                                 <input
@@ -1261,12 +1109,12 @@ const AdminOrders: React.FC = () => {
                                     value={trackingNumber}
                                     onChange={(e) => setTrackingNumber(e.target.value)}
                                     placeholder="Enter tracking number..."
-                                    style={fieldInputStyle}
+                                    className="admin-orders-field-input"
                                 />
                             </div>
 
                             <div>
-                                <label style={{display: 'block', marginBottom: 4, fontWeight: 500, fontSize: 14}}>
+                                <label className="admin-orders-modal-label">
                                     Tracking URL (optional)
                                 </label>
                                 <input
@@ -1274,12 +1122,12 @@ const AdminOrders: React.FC = () => {
                                     value={trackingUrl}
                                     onChange={(e) => setTrackingUrl(e.target.value)}
                                     placeholder="https://..."
-                                    style={fieldInputStyle}
+                                    className="admin-orders-field-input"
                                 />
                             </div>
                         </div>
 
-                        <div style={{display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 20}}>
+                        <div className="admin-orders-modal-actions">
                             <Button
                                 variant="outline"
                                 onClick={() => setStatusModalOrder(null)}

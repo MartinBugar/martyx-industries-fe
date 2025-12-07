@@ -37,7 +37,7 @@ const VariantSelector: React.FC<VariantSelectorProps> = ({
   return (
     <div className="variant-selector-compact">
       <label htmlFor="variant-select" className="variant-label">
-        {t('variant.configuration_label', 'Configuration')}:
+        {t('variant.product_type_label', 'Product Type')}:
       </label>
       <div className="variant-select-wrapper">
         <select

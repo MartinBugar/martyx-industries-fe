@@ -1,7 +1,7 @@
 /* Gallery Component Styles */
 
 .product-gallery {
-  margin-top: 20px;
+  margin-top: 0;
   width: 100%;
 }
 
@@ -271,7 +271,7 @@
   /* MacBook Air M2 14" specific optimizations */
 
   .product-gallery {
-    margin-top: 24px;
+    margin-top: 0;
   }
 
   .gallery-title {

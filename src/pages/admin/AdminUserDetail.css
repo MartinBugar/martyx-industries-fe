@@ -1,0 +1,252 @@
+/* AdminUserDetail.css - Styles extracted from inline styles */
+
+/* Loading/Error/Empty States */
+.admin-user-detail-loading {
+  text-align: center;
+  padding: 40px;
+}
+
+.admin-user-detail-loading-text {
+  font-size: 18px;
+  color: #666;
+}
+
+.admin-user-detail-error-text {
+  font-size: 18px;
+  color: #e74c3c;
+  margin-bottom: 16px;
+}
+
+.admin-user-detail-retry-btn {
+  padding: 8px 16px;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.admin-user-detail-not-found-text {
+  font-size: 18px;
+  color: #666;
+}
+
+.admin-user-detail-back-link {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 8px 16px;
+  background: #3498db;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+}
+
+/* Cart Section */
+.admin-user-detail-cart-section {
+  margin-top: 24px;
+  padding: 20px;
+  background: #2a2a2a;
+  border-radius: 8px;
+}
+
+.admin-user-detail-cart-section-abandoned {
+  border: 2px solid #e74c3c;
+}
+
+.admin-user-detail-cart-section-normal {
+  border: 1px solid #444;
+}
+
+.admin-user-detail-cart-title {
+  margin-top: 0;
+  color: #d4af37;
+}
+
+.admin-user-detail-cart-title-flex {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-user-detail-cart-loading {
+  text-align: center;
+  padding: 20px;
+  color: #999;
+}
+
+.admin-user-detail-cart-error {
+  text-align: center;
+  padding: 20px;
+  color: #e74c3c;
+}
+
+.admin-user-detail-cart-empty {
+  text-align: center;
+  padding: 20px;
+  color: #999;
+}
+
+.admin-user-detail-abandoned-badge {
+  font-size: 14px;
+  background: #e74c3c;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+}
+
+.admin-user-detail-cart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.admin-user-detail-cart-meta {
+  font-size: 14px;
+  color: #999;
+  margin-top: 8px;
+}
+
+.admin-user-detail-recovery-btn {
+  background: #3498db;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.admin-user-detail-recovery-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Cart Items */
+.admin-user-detail-cart-items {
+  margin-top: 16px;
+}
+
+.admin-user-detail-cart-items-title {
+  color: #d4af37;
+  margin-bottom: 12px;
+}
+
+.admin-user-detail-cart-items-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-user-detail-cart-item {
+  background: #1a1a1a;
+  padding: 12px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-user-detail-cart-item-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.admin-user-detail-cart-item-info {
+  flex: 1;
+}
+
+.admin-user-detail-cart-item-name {
+  color: #f0f0f0;
+  font-weight: bold;
+}
+
+.admin-user-detail-cart-item-variant {
+  color: #999;
+  font-size: 13px;
+}
+
+.admin-user-detail-cart-item-price {
+  color: #d4af37;
+  margin-top: 4px;
+}
+
+.admin-user-detail-cart-no-items {
+  margin-top: 16px;
+  padding: 12px;
+  background: #1a1a1a;
+  border-radius: 6px;
+  text-align: center;
+  color: #999;
+}
+
+/* Gallery Admin */
+.admin-user-detail-gallery-loading {
+  text-align: center;
+  padding: 40px;
+}
+
+.admin-user-detail-gallery-loading-text {
+  font-size: 18px;
+  color: #666;
+}
+
+.admin-user-detail-gallery-error {
+  text-align: center;
+  padding: 40px;
+}
+
+.admin-user-detail-gallery-error-text {
+  font-size: 18px;
+  color: #e74c3c;
+  margin-bottom: 16px;
+}
+
+.admin-user-detail-gallery-empty {
+  text-align: center;
+  padding: 40px;
+}
+
+.admin-user-detail-gallery-empty-text {
+  font-size: 18px;
+  color: #666;
+}
+
+.admin-user-detail-gallery-empty-sub {
+  color: #888;
+  margin-top: 8px;
+}
+
+/* Error message */
+.admin-user-detail-error-message {
+  background: #fee;
+  color: #c33;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+}
+
+/* Table cells */
+.admin-user-detail-col-field {
+  width: 240px;
+}
+
+.admin-user-detail-cell-top {
+  vertical-align: top;
+}
+
+.admin-user-detail-pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Edit section */
+.admin-user-detail-edit-section {
+  margin-top: 8px;
+}
+
+.admin-user-detail-password-hint {
+  color: #888;
+}

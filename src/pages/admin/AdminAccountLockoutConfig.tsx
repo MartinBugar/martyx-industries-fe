@@ -8,6 +8,7 @@ import { Shield, Lock, Unlock, Save, Edit, X, RefreshCw, AlertTriangle, Info, Us
 import { logInfo, logError } from '../../services/logger';
 import './AdminUsers.css';
 import './AdminButtonOverrides.css';
+import './AdminAccountLockoutConfig.css';
 
 const AdminAccountLockoutConfig: React.FC = () => {
     const { addError } = useErrors();
@@ -178,14 +179,14 @@ const AdminAccountLockoutConfig: React.FC = () => {
                     <GeneralSettingsTabs />
 
                     {/* Header */}
-                    <div className="admin-card" style={{ marginBottom: '24px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
+                    <div className="admin-card admin-lockout-card-header">
+                        <div className="admin-lockout-header-flex">
                             <div>
-                                <h2 className="section-title" style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                    <Shield size={24} style={{ color: 'var(--admin-accent)' }} />
+                                <h2 className="section-title admin-lockout-section-title">
+                                    <Shield size={24} className="admin-lockout-section-title-icon" />
                                     Account Lockout Configuration
                                 </h2>
-                                <p style={{ margin: 0, color: 'var(--admin-secondary)', fontSize: '14px' }}>
+                                <p className="admin-lockout-section-desc">
                                     Configure security settings for login attempt limits and account lockouts.
                                 </p>
                             </div>
@@ -204,13 +205,13 @@ const AdminAccountLockoutConfig: React.FC = () => {
                             <SkeletonTable rows={4} columns={2} />
                         </div>
                     ) : !config ? (
-                        <div className="admin-card" style={{ textAlign: 'center', padding: '40px', color: 'var(--admin-error)' }}>
+                        <div className="admin-card admin-lockout-error-state">
                             Failed to load configuration. Please refresh the page.
                         </div>
                     ) : isEditing ? (
-                        <div className="admin-card" style={{ marginBottom: '24px' }}>
-                            <h3 className="section-title" style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <Lock size={20} style={{ color: 'var(--admin-accent)' }} />
+                        <div className="admin-card admin-lockout-card-section">
+                            <h3 className="section-title admin-lockout-form-title">
+                                <Lock size={20} className="admin-lockout-section-title-icon" />
                                 Security Rules
                             </h3>
                             <div className="form-grid">
@@ -224,7 +225,7 @@ const AdminAccountLockoutConfig: React.FC = () => {
                                         onChange={(e) => handleValueChange('maxFailedAttempts', parseInt(e.target.value) || 1)}
                                         className="form-input"
                                     />
-                                    <p style={{ margin: '6px 0 0', fontSize: '12px', color: 'var(--admin-secondary)' }}>Recommended: 3-5 attempts</p>
+                                    <p className="admin-lockout-field-help">Recommended: 3-5 attempts</p>
                                 </div>
                                 <div>
                                     <label className="form-label">Lockout Duration (minutes)</label>
@@ -236,7 +237,7 @@ const AdminAccountLockoutConfig: React.FC = () => {
                                         onChange={(e) => handleValueChange('lockoutDurationMinutes', parseInt(e.target.value) || 1)}
                                         className="form-input"
                                     />
-                                    <p style={{ margin: '6px 0 0', fontSize: '12px', color: 'var(--admin-secondary)' }}>Recommended: 15-30 minutes</p>
+                                    <p className="admin-lockout-field-help">Recommended: 15-30 minutes</p>
                                 </div>
                                 <div>
                                     <label className="form-label">Attempt Reset Period (hours)</label>
@@ -248,22 +249,22 @@ const AdminAccountLockoutConfig: React.FC = () => {
                                         onChange={(e) => handleValueChange('attemptResetHours', parseInt(e.target.value) || 1)}
                                         className="form-input"
                                     />
-                                    <p style={{ margin: '6px 0 0', fontSize: '12px', color: 'var(--admin-secondary)' }}>Counter resets after this period of inactivity</p>
+                                    <p className="admin-lockout-field-help">Counter resets after this period of inactivity</p>
                                 </div>
                                 <div>
-                                    <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}>
+                                    <label className="form-label admin-lockout-checkbox-label">
                                         <input
                                             type="checkbox"
                                             checked={getEditedValue('lockoutEnabled', config.lockoutEnabled) as boolean}
                                             onChange={(e) => handleValueChange('lockoutEnabled', e.target.checked)}
-                                            style={{ width: '20px', height: '20px' }}
+                                            className="admin-lockout-checkbox"
                                         />
-                                        <span style={{ fontWeight: 600, color: 'var(--admin-primary)' }}>System Enabled</span>
+                                        <span className="admin-lockout-checkbox-text">System Enabled</span>
                                     </label>
-                                    <p style={{ margin: '6px 0 0 32px', fontSize: '12px', color: 'var(--admin-secondary)' }}>Global on/off switch for lockout system</p>
+                                    <p className="admin-lockout-field-help-indent">Global on/off switch for lockout system</p>
                                 </div>
                             </div>
-                            <div style={{ display: 'flex', gap: '12px', marginTop: '24px', paddingTop: '20px', borderTop: '1px solid var(--admin-border)' }}>
+                            <div className="admin-lockout-form-actions">
                                 <Button variant="primary" onClick={handleSave} disabled={saving} loading={saving}>
                                     <Save size={16} />
                                     Save Changes
@@ -275,33 +276,33 @@ const AdminAccountLockoutConfig: React.FC = () => {
                             </div>
                         </div>
                     ) : (
-                        <div className="admin-card" style={{ marginBottom: '24px' }}>
-                            <h3 className="section-title" style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <Lock size={20} style={{ color: 'var(--admin-accent)' }} />
+                        <div className="admin-card admin-lockout-card-section">
+                            <h3 className="section-title admin-lockout-form-title">
+                                <Lock size={20} className="admin-lockout-section-title-icon" />
                                 Current Configuration
                             </h3>
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
-                                <div style={{ padding: '16px', background: 'var(--admin-bg-secondary)', borderRadius: '10px', border: '1px solid var(--admin-border)' }}>
-                                    <div style={{ fontSize: '12px', color: 'var(--admin-secondary)', marginBottom: '6px' }}>Max Failed Attempts</div>
-                                    <div style={{ fontSize: '28px', fontWeight: 700, color: 'var(--admin-accent)' }}>{config.maxFailedAttempts}</div>
+                            <div className="admin-lockout-stats-grid">
+                                <div className="admin-lockout-stat-card">
+                                    <div className="admin-lockout-stat-label">Max Failed Attempts</div>
+                                    <div className="admin-lockout-stat-value">{config.maxFailedAttempts}</div>
                                 </div>
-                                <div style={{ padding: '16px', background: 'var(--admin-bg-secondary)', borderRadius: '10px', border: '1px solid var(--admin-border)' }}>
-                                    <div style={{ fontSize: '12px', color: 'var(--admin-secondary)', marginBottom: '6px' }}>Lockout Duration</div>
-                                    <div style={{ fontSize: '28px', fontWeight: 700, color: 'var(--admin-accent)' }}>{config.lockoutDurationMinutes}<span style={{ fontSize: '14px', fontWeight: 400 }}> min</span></div>
+                                <div className="admin-lockout-stat-card">
+                                    <div className="admin-lockout-stat-label">Lockout Duration</div>
+                                    <div className="admin-lockout-stat-value">{config.lockoutDurationMinutes}<span className="admin-lockout-stat-unit"> min</span></div>
                                 </div>
-                                <div style={{ padding: '16px', background: 'var(--admin-bg-secondary)', borderRadius: '10px', border: '1px solid var(--admin-border)' }}>
-                                    <div style={{ fontSize: '12px', color: 'var(--admin-secondary)', marginBottom: '6px' }}>Reset Period</div>
-                                    <div style={{ fontSize: '28px', fontWeight: 700, color: 'var(--admin-accent)' }}>{config.attemptResetHours}<span style={{ fontSize: '14px', fontWeight: 400 }}> hr</span></div>
+                                <div className="admin-lockout-stat-card">
+                                    <div className="admin-lockout-stat-label">Reset Period</div>
+                                    <div className="admin-lockout-stat-value">{config.attemptResetHours}<span className="admin-lockout-stat-unit"> hr</span></div>
                                 </div>
-                                <div style={{ padding: '16px', background: 'var(--admin-bg-secondary)', borderRadius: '10px', border: '1px solid var(--admin-border)' }}>
-                                    <div style={{ fontSize: '12px', color: 'var(--admin-secondary)', marginBottom: '6px' }}>System Status</div>
-                                    <Badge variant={config.lockoutEnabled ? 'success' : 'warning'} size="sm" style={{ fontSize: '14px', padding: '8px 16px' }}>
+                                <div className="admin-lockout-stat-card">
+                                    <div className="admin-lockout-stat-label">System Status</div>
+                                    <Badge variant={config.lockoutEnabled ? 'success' : 'warning'} size="sm" className="admin-lockout-badge">
                                         {config.lockoutEnabled ? 'Enabled' : 'Disabled'}
                                     </Badge>
                                 </div>
                             </div>
                             {config.updatedBy && (
-                                <p style={{ margin: '20px 0 0', fontSize: '12px', color: 'var(--admin-secondary)' }}>
+                                <p className="admin-lockout-updated-info">
                                     Last updated by {config.updatedBy} on {config.updatedAt ? new Date(config.updatedAt).toLocaleString() : 'Unknown'}
                                 </p>
                             )}
@@ -309,14 +310,14 @@ const AdminAccountLockoutConfig: React.FC = () => {
                     )}
 
                     {/* Locked Users */}
-                    <div className="admin-card" style={{ marginBottom: '24px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
-                            <h3 className="section-title" style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <User size={20} style={{ color: 'var(--admin-accent)' }} />
+                    <div className="admin-card admin-lockout-card-section">
+                        <div className="admin-lockout-users-header">
+                            <h3 className="section-title admin-lockout-users-title">
+                                <User size={20} className="admin-lockout-section-title-icon" />
                                 Users with Failed Attempts
                             </h3>
-                            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', color: 'var(--admin-secondary)', cursor: 'pointer' }}>
+                            <div className="admin-lockout-users-actions">
+                                <label className="admin-lockout-filter-label">
                                     <input type="checkbox" checked={showOnlyLocked} onChange={(e) => { setShowOnlyLocked(e.target.checked); setTimeout(loadLockedUsers, 0); }} />
                                     Show only locked
                                 </label>
@@ -330,9 +331,9 @@ const AdminAccountLockoutConfig: React.FC = () => {
                         {loadingUsers ? (
                             <SkeletonTable rows={3} columns={5} />
                         ) : lockedUsers.length === 0 ? (
-                            <div style={{ textAlign: 'center', padding: '40px', color: 'var(--admin-secondary)' }}>
-                                <Shield size={40} style={{ marginBottom: '12px', opacity: 0.5 }} />
-                                <p style={{ margin: 0 }}>{showOnlyLocked ? 'No locked users found' : 'No users with failed login attempts'}</p>
+                            <div className="admin-lockout-empty-state">
+                                <Shield size={40} className="admin-lockout-empty-icon" />
+                                <p className="admin-lockout-empty-text">{showOnlyLocked ? 'No locked users found' : 'No users with failed login attempts'}</p>
                             </div>
                         ) : (
                             <div className="table-wrapper">
@@ -344,7 +345,7 @@ const AdminAccountLockoutConfig: React.FC = () => {
                                             <th>Failed</th>
                                             <th>Last Attempt</th>
                                             <th>Locked Until</th>
-                                            <th style={{ width: 140 }}>Actions</th>
+                                            <th className="admin-lockout-col-actions">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -352,23 +353,23 @@ const AdminAccountLockoutConfig: React.FC = () => {
                                             <tr key={user.userId}>
                                                 <td>
                                                     <Badge variant={user.currentlyLocked ? 'danger' : 'warning'} size="sm">
-                                                        {user.currentlyLocked ? <><Lock size={12} style={{ marginRight: 4 }} /> Locked</> : 'Warning'}
+                                                        {user.currentlyLocked ? <><Lock size={12} className="admin-lockout-badge-icon" /> Locked</> : 'Warning'}
                                                     </Badge>
                                                 </td>
-                                                <td style={{ fontWeight: 500 }}>{user.email}</td>
-                                                <td style={{ fontWeight: 600, color: 'var(--admin-accent)' }}>{user.failedLoginAttempts || 0}</td>
-                                                <td style={{ fontSize: '13px' }}>
+                                                <td className="admin-lockout-cell-email">{user.email}</td>
+                                                <td className="admin-lockout-cell-attempts">{user.failedLoginAttempts || 0}</td>
+                                                <td className="admin-lockout-cell-date">
                                                     <div>{formatDate(user.lastFailedLogin)}</div>
-                                                    {user.lastFailedLoginIp && <div style={{ fontSize: '11px', fontFamily: 'monospace', color: 'var(--admin-secondary)' }}>{user.lastFailedLoginIp}</div>}
+                                                    {user.lastFailedLoginIp && <div className="admin-lockout-cell-ip">{user.lastFailedLoginIp}</div>}
                                                 </td>
                                                 <td>
                                                     {user.currentlyLocked ? (
                                                         <div>
-                                                            <div style={{ fontSize: '13px' }}>{formatDate(user.lockedUntil)}</div>
-                                                            <div style={{ fontSize: '12px', color: 'var(--admin-error)', fontWeight: 600 }}>({formatTimeRemaining(user.lockedUntil)})</div>
+                                                            <div className="admin-lockout-cell-date">{formatDate(user.lockedUntil)}</div>
+                                                            <div className="admin-lockout-cell-remaining">({formatTimeRemaining(user.lockedUntil)})</div>
                                                         </div>
                                                     ) : (
-                                                        <span style={{ color: 'var(--admin-secondary)' }}>-</span>
+                                                        <span className="admin-lockout-cell-dash">-</span>
                                                     )}
                                                 </td>
                                                 <td>
@@ -399,12 +400,12 @@ const AdminAccountLockoutConfig: React.FC = () => {
                     </div>
 
                     {/* Info */}
-                    <div className="admin-card" style={{ background: 'var(--admin-info-bg)', borderColor: 'var(--admin-info)' }}>
-                        <h3 style={{ margin: '0 0 16px', fontSize: '16px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <Info size={18} style={{ color: 'var(--admin-info)' }} />
+                    <div className="admin-card admin-lockout-info-card">
+                        <h3 className="admin-lockout-info-title">
+                            <Info size={18} className="admin-lockout-info-icon" />
                             How Account Lockout Works
                         </h3>
-                        <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '14px', lineHeight: 1.8 }}>
+                        <ul className="admin-lockout-info-list">
                             {config && (
                                 <>
                                     <li><strong>Failed Attempts:</strong> User fails login {config.maxFailedAttempts} times → account locked for {config.lockoutDurationMinutes} minutes</li>
@@ -417,9 +418,9 @@ const AdminAccountLockoutConfig: React.FC = () => {
                     </div>
 
                     {/* Warning */}
-                    <div className="admin-card" style={{ background: 'var(--admin-warning-bg)', borderColor: 'var(--admin-warning)', marginTop: '20px' }}>
-                        <p style={{ margin: 0, fontSize: '14px', color: '#92400E', display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-                            <AlertTriangle size={18} style={{ flexShrink: 0, marginTop: '2px' }} />
+                    <div className="admin-card admin-lockout-warning-card">
+                        <p className="admin-lockout-warning-text">
+                            <AlertTriangle size={18} className="admin-lockout-warning-icon" />
                             <span><strong>Important:</strong> Changes take effect immediately. Existing locked accounts will use the old lockout duration until their lock expires.</span>
                         </p>
                     </div>

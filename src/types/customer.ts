@@ -63,6 +63,9 @@ export interface CartItemDto {
   subtotal: number;
   imageUrl?: string;
   thumbnailUrl?: string; // Optimized thumbnail for cart display
+  // Configuration fields for 3D configurator
+  configurationJson?: string; // JSON with selected configuration options
+  configurationPriceModifier?: number; // Price modifier from configuration
 }
 
 /**

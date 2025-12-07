@@ -31,6 +31,7 @@ import { Button } from '../../components/ui';
 import { apiClient } from '../../services/apiClient';
 import LanguageTabs from '../../components/admin/LanguageTabs';
 import './AdminUsers.css';
+import './AdminMasterProductTabForm.css';
 import { logInfo, logError } from '../../services/logger';
 
 // Language-specific fields that can be translated
@@ -525,7 +526,7 @@ const AdminMasterProductTabForm: React.FC = () => {
       <AdminLayout title={isEditMode ? 'Edit Tab' : 'Create Tab'}>
         <div className="admin-page">
           <div className="admin-container">
-            <div className="admin-card" style={{ textAlign: 'center', padding: '40px' }}>
+            <div className="admin-card admin-tab-form-loading">
               Loading tab data...
             </div>
           </div>
@@ -541,10 +542,10 @@ const AdminMasterProductTabForm: React.FC = () => {
           {/* Header */}
           <div className="admin-header">
             <div>
-              <h2 style={{ marginBottom: 8 }}>
+              <h2 className="admin-tab-form-header-title">
                 {isEditMode ? 'Edit Master Product Tab' : 'Create New Master Product Tab'}
               </h2>
-              <p style={{ color: '#6b7280', fontSize: '14px' }}>
+              <p className="admin-tab-form-header-desc">
                 This tab will be shared by all variants unless overridden. Fill content for multiple languages.
               </p>
             </div>
@@ -553,17 +554,17 @@ const AdminMasterProductTabForm: React.FC = () => {
                 to={`/admin/products/${productId}/tabs`}
                 className="btn btn-outline"
               >
-                <ArrowLeft size={16} style={{ marginRight: 8 }} />
+                <ArrowLeft size={16} className="admin-tab-form-icon-mr" />
                 Back to Tabs
               </Link>
             </div>
           </div>
 
           {error && (
-            <div className="alert alert-error" style={{ marginBottom: 24 }}>
+            <div className="alert alert-error admin-tab-form-alert">
               <strong>{error}</strong>
               {Object.keys(fieldErrors).length > 0 && (
-                <ul style={{ marginTop: 8, marginBottom: 0, paddingLeft: 20 }}>
+                <ul className="admin-tab-form-error-list">
                   {Object.entries(fieldErrors).map(([field, message]) => (
                     <li key={field}>
                       <strong>{field}:</strong> {message}
@@ -576,13 +577,13 @@ const AdminMasterProductTabForm: React.FC = () => {
 
           {/* Template Selector */}
           {!isEditMode && templates.length > 0 && (
-            <div className="admin-card" style={{ marginBottom: 24, background: '#f0f9ff', borderColor: '#bae6fd' }}>
-              <h4 style={{ fontSize: '15px', fontWeight: 600, marginBottom: 16, color: '#0c4a6e' }}>
+            <div className="admin-card admin-tab-form-template-card">
+              <h4 className="admin-tab-form-template-title">
                 Start from Template
               </h4>
-              <div style={{ display: 'flex', gap: 12, alignItems: 'flex-end' }}>
-                <div style={{ flex: 1 }}>
-                  <label className="form-label" style={{ color: '#0c4a6e' }}>
+              <div className="admin-tab-form-template-row">
+                <div className="admin-tab-form-template-select-wrap">
+                  <label className="form-label admin-tab-form-template-label">
                     Choose a template to pre-fill the form
                   </label>
                   <select
@@ -603,9 +604,9 @@ const AdminMasterProductTabForm: React.FC = () => {
                   variant="info"
                   onClick={handleLoadTemplate}
                   disabled={!selectedTemplateId}
-                  style={{ minWidth: 140 }}
+                  className="admin-tab-form-template-btn"
                 >
-                  <Download size={16} style={{ marginRight: 8 }} />
+                  <Download size={16} className="admin-tab-form-icon-mr" />
                   Load Template
                 </Button>
               </div>
@@ -622,24 +623,24 @@ const AdminMasterProductTabForm: React.FC = () => {
           {/* Form */}
           <form onSubmit={handleSubmit}>
             <div className="admin-card">
-              <h3 className="section-title" style={{ marginBottom: 24 }}>
+              <h3 className="section-title admin-tab-form-section-title">
                 {isEditMode ? `Edit Tab - ${activeLanguage.toUpperCase()}` : `Create New Tab - ${activeLanguage.toUpperCase()}`}
               </h3>
 
               {/* Shared Fields Section */}
-              <div style={{ marginBottom: 32 }}>
-                <h4 style={{ fontSize: '16px', fontWeight: 600, marginBottom: 16, color: '#374151' }}>
+              <div className="admin-tab-form-section-block">
+                <h4 className="admin-tab-form-section-heading">
                   Shared Settings (applies to all languages)
                 </h4>
 
-                <div style={{ display: 'grid', gap: 20 }}>
+                <div className="admin-tab-form-grid">
                   <div className="form-group">
                     <label className="form-label">
-                      Tab Key (slug) <span style={{ color: '#ef4444' }}>*</span>
+                      Tab Key (slug) <span className="admin-tab-form-required">*</span>
                     </label>
                     <input
                       type="text"
-                      className="form-control"
+                      className={`form-control ${fieldErrors.tabKey ? 'admin-tab-form-field-error' : ''}`}
                       value={sharedFields.tabKey}
                       onChange={(e) => {
                         updateSharedField('tabKey', e.target.value);
@@ -654,19 +655,18 @@ const AdminMasterProductTabForm: React.FC = () => {
                       placeholder="e.g., details, features, reviews"
                       required
                       disabled={isEditMode}
-                      style={fieldErrors.tabKey ? { borderColor: '#ef4444' } : {}}
                     />
                     {isEditMode && (
-                      <p style={{ fontSize: 12, color: '#6b7280', marginTop: 4 }}>
+                      <p className="admin-tab-form-disabled-note">
                         ⚠️ Tab key cannot be changed after creation to maintain language version consistency
                       </p>
                     )}
                     {fieldErrors.tabKey && (
-                      <div style={{ color: '#ef4444', fontSize: '13px', marginTop: '4px', fontWeight: 500 }}>
+                      <div className="admin-tab-form-field-error-msg">
                         ⚠ {fieldErrors.tabKey}
                       </div>
                     )}
-                    <small style={{ color: '#6b7280', fontSize: '13px' }}>
+                    <small className="admin-tab-form-help-text">
                       Unique identifier for this tab. Same across all languages.
                     </small>
                   </div>
@@ -698,7 +698,7 @@ const AdminMasterProductTabForm: React.FC = () => {
                     </div>
                   )}
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+                  <div className="admin-tab-form-grid-2col">
                     <div className="form-group">
                       <label className="form-label">Display Order</label>
                       <input
@@ -708,7 +708,7 @@ const AdminMasterProductTabForm: React.FC = () => {
                         onChange={(e) => updateSharedField('displayOrder', parseInt(e.target.value) || 0)}
                         min="0"
                       />
-                      <small style={{ color: '#6b7280', fontSize: '13px' }}>
+                      <small className="admin-tab-form-help-text">
                         Lower numbers appear first.
                       </small>
                     </div>
@@ -728,18 +728,18 @@ const AdminMasterProductTabForm: React.FC = () => {
               </div>
 
               {/* Language-Specific Fields Section */}
-              <div style={{ marginBottom: 32 }}>
-                <h4 style={{ fontSize: '16px', fontWeight: 600, marginBottom: 16, color: '#374151' }}>
+              <div className="admin-tab-form-section-block">
+                <h4 className="admin-tab-form-section-heading">
                   Content for {activeLanguage.toUpperCase()}
                   {completedLanguages.includes(activeLanguage) && (
-                    <span style={{ color: '#10b981', marginLeft: 8, fontSize: '14px' }}>✓ Completed</span>
+                    <span className="admin-tab-form-completed">✓ Completed</span>
                   )}
                 </h4>
 
-                <div style={{ display: 'grid', gap: 20 }}>
+                <div className="admin-tab-form-grid">
                   <div className="form-group">
                     <label className="form-label">
-                      Tab Label (Display Name) <span style={{ color: '#ef4444' }}>*</span>
+                      Tab Label (Display Name) <span className="admin-tab-form-required">*</span>
                     </label>
                     <input
                       type="text"
@@ -749,7 +749,7 @@ const AdminMasterProductTabForm: React.FC = () => {
                       placeholder={`e.g., ${activeLanguage === 'en' ? 'Product Details' : activeLanguage === 'sk' ? 'Detaily produktu' : 'Produktdetails'}`}
                       required
                     />
-                    <small style={{ color: '#6b7280', fontSize: '13px' }}>
+                    <small className="admin-tab-form-help-text">
                       The label shown to users in this language.
                     </small>
                   </div>
@@ -769,12 +769,11 @@ const AdminMasterProductTabForm: React.FC = () => {
                     <div className="form-group">
                       <label className="form-label">HTML Content ({activeLanguage.toUpperCase()})</label>
                       <textarea
-                        className="form-control"
+                        className="form-control admin-tab-form-textarea-mono"
                         value={currentLangData.contentHtml}
                         onChange={(e) => updateLanguageField('contentHtml', e.target.value)}
                         rows={20}
                         placeholder="Enter HTML content in this language..."
-                        style={{ fontFamily: 'monospace', fontSize: '13px' }}
                       />
                     </div>
                   )}
@@ -783,12 +782,11 @@ const AdminMasterProductTabForm: React.FC = () => {
                     <div className="form-group">
                       <label className="form-label">Markdown Content ({activeLanguage.toUpperCase()})</label>
                       <textarea
-                        className="form-control"
+                        className="form-control admin-tab-form-textarea-mono"
                         value={currentLangData.contentMarkdown}
                         onChange={(e) => updateLanguageField('contentMarkdown', e.target.value)}
                         rows={20}
                         placeholder="Enter Markdown content in this language..."
-                        style={{ fontFamily: 'monospace', fontSize: '13px' }}
                       />
                     </div>
                   )}
@@ -797,14 +795,13 @@ const AdminMasterProductTabForm: React.FC = () => {
                     <div className="form-group">
                       <label className="form-label">JSON Content (Shared)</label>
                       <textarea
-                        className="form-control"
+                        className="form-control admin-tab-form-textarea-mono"
                         value={sharedFields.contentJson}
                         onChange={(e) => updateSharedField('contentJson', e.target.value)}
                         rows={20}
                         placeholder='{"key": "value"}'
-                        style={{ fontFamily: 'monospace', fontSize: '13px' }}
                       />
-                      <small style={{ color: '#6b7280', fontSize: '13px' }}>
+                      <small className="admin-tab-form-help-text">
                         JSON is shared across all languages.
                       </small>
                     </div>
@@ -815,17 +812,17 @@ const AdminMasterProductTabForm: React.FC = () => {
               {/* Build Info Management (only for BuildInfoTab component) */}
               {sharedFields.contentType === 'COMPONENT' &&
                sharedFields.componentName === 'BuildInfoTab' && (
-                <div style={{ marginBottom: 32 }}>
-                  <h4 style={{ fontSize: '16px', fontWeight: 600, marginBottom: 16, color: '#374151' }}>
+                <div className="admin-tab-form-section-block">
+                  <h4 className="admin-tab-form-section-heading">
                     Build Information & Difficulty
                   </h4>
 
                   {buildInfoLoading ? (
-                    <div style={{ textAlign: 'center', padding: '20px', color: '#6b7280' }}>
+                    <div className="admin-tab-form-centered-text">
                       Loading build information...
                     </div>
                   ) : (
-                    <div style={{ display: 'grid', gap: 20 }}>
+                    <div className="admin-tab-form-grid">
                       {/* Difficulty Level */}
                       <div className="form-group">
                         <label className="form-label">
@@ -844,7 +841,7 @@ const AdminMasterProductTabForm: React.FC = () => {
                       </div>
 
                       {/* Parts Count */}
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+                      <div className="admin-tab-form-grid-2col">
                         <div className="form-group">
                           <label className="form-label">Parts Count</label>
                           <input
@@ -869,7 +866,7 @@ const AdminMasterProductTabForm: React.FC = () => {
                       </div>
 
                       {/* Filament */}
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+                      <div className="admin-tab-form-grid-2col">
                         <div className="form-group">
                           <label className="form-label">Filament (grams)</label>
                           <input
@@ -894,7 +891,7 @@ const AdminMasterProductTabForm: React.FC = () => {
                       </div>
 
                       {/* Time */}
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 20 }}>
+                      <div className="admin-tab-form-grid-3col">
                         <div className="form-group">
                           <label className="form-label">Print Time (hours)</label>
                           <input
@@ -970,74 +967,52 @@ const AdminMasterProductTabForm: React.FC = () => {
               {isEditMode &&
                sharedFields.contentType === 'COMPONENT' &&
                sharedFields.componentName === 'ProductDownloads' && (
-                <div style={{ marginBottom: 32 }}>
-                  <h4 style={{ fontSize: '16px', fontWeight: 600, marginBottom: 16, color: '#374151' }}>
+                <div className="admin-tab-form-section-block">
+                  <h4 className="admin-tab-form-section-heading">
                     Attachments Management
                   </h4>
 
                   {loadingAttachments ? (
-                    <div style={{ textAlign: 'center', padding: '20px', color: '#6b7280' }}>
+                    <div className="admin-tab-form-centered-text">
                       Loading attachments...
                     </div>
                   ) : (
-                    <div style={{ display: 'grid', gap: 20 }}>
+                    <div className="admin-tab-form-grid">
                       {/* Currently assigned attachments */}
                       <div>
-                        <label className="form-label" style={{ marginBottom: 12, display: 'block' }}>
+                        <label className="form-label admin-tab-form-label-block">
                           Assigned Attachments ({tabAttachments.length})
                         </label>
                         {tabAttachments.length === 0 ? (
-                          <div style={{
-                            padding: '16px',
-                            border: '1px dashed #d1d5db',
-                            borderRadius: '8px',
-                            textAlign: 'center',
-                            color: '#6b7280',
-                            fontSize: '14px'
-                          }}>
-                            <FileText size={32} style={{ margin: '0 auto 8px', opacity: 0.3 }} />
+                          <div className="admin-tab-form-attachment-empty">
+                            <FileText size={32} className="admin-tab-form-attachment-icon" />
                             <div>No attachments assigned to this tab yet.</div>
                           </div>
                         ) : (
-                          <div style={{ display: 'grid', gap: 8 }}>
+                          <div className="admin-tab-form-attachment-list">
                             {tabAttachments.map(attachment => (
                               <div
                                 key={attachment.id}
-                                style={{
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  gap: 12,
-                                  padding: '12px',
-                                  border: '1px solid #e5e7eb',
-                                  borderRadius: '8px',
-                                  background: '#f9fafb'
-                                }}
+                                className="admin-tab-form-attachment-item"
                               >
-                                <FileText size={20} style={{ color: '#3b82f6', flexShrink: 0 }} />
-                                <div style={{ flex: 1, minWidth: 0 }}>
-                                  <div style={{ fontWeight: 500, fontSize: '14px', color: '#374151' }}>
+                                <FileText size={20} className="admin-tab-form-attachment-icon-blue" />
+                                <div className="admin-tab-form-attachment-content">
+                                  <div className="admin-tab-form-attachment-label">
                                     {attachment.displayLabel}
                                   </div>
                                   {attachment.description && (
-                                    <div style={{ fontSize: '13px', color: '#6b7280', marginTop: '2px' }}>
+                                    <div className="admin-tab-form-attachment-desc">
                                       {attachment.description}
                                     </div>
                                   )}
-                                  <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '4px' }}>
+                                  <div className="admin-tab-form-attachment-filename">
                                     {attachment.fileName}
                                   </div>
                                 </div>
                                 <button
                                   type="button"
                                   onClick={() => handleRemoveAttachment(attachment.id)}
-                                  style={{
-                                    padding: '6px',
-                                    border: '1px solid #ef4444',
-                                    borderRadius: '6px',
-                                    background: '#fff',
-                                    color: '#ef4444',
-                                    cursor: 'pointer'
-                                  }}
+                                  className="admin-tab-form-btn-remove"
                                 >
                                   <X size={16} />
                                 </button>
@@ -1049,62 +1024,39 @@ const AdminMasterProductTabForm: React.FC = () => {
 
                       {/* Available attachments to add */}
                       <div>
-                        <label className="form-label" style={{ marginBottom: 12, display: 'block' }}>
+                        <label className="form-label admin-tab-form-label-block">
                           Available Attachments
                         </label>
                         {availableAttachments.filter(
                           att => !tabAttachments.find(ta => ta.id === att.id)
                         ).length === 0 ? (
-                          <div style={{
-                            padding: '12px',
-                            border: '1px solid #e5e7eb',
-                            borderRadius: '8px',
-                            textAlign: 'center',
-                            color: '#6b7280',
-                            fontSize: '13px'
-                          }}>
+                          <div className="admin-tab-form-available-empty">
                             All available attachments are already assigned.
                           </div>
                         ) : (
-                          <div style={{ display: 'grid', gap: 8 }}>
+                          <div className="admin-tab-form-attachment-list">
                             {availableAttachments
                               .filter(att => !tabAttachments.find(ta => ta.id === att.id))
                               .map(attachment => (
                                 <div
                                   key={attachment.id}
-                                  style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: 12,
-                                    padding: '12px',
-                                    border: '1px solid #e5e7eb',
-                                    borderRadius: '8px',
-                                    background: '#fff'
-                                  }}
+                                  className="admin-tab-form-attachment-item-available"
                                 >
-                                  <FileText size={20} style={{ color: '#9ca3af', flexShrink: 0 }} />
-                                  <div style={{ flex: 1, minWidth: 0 }}>
-                                    <div style={{ fontWeight: 500, fontSize: '14px', color: '#374151' }}>
+                                  <FileText size={20} className="admin-tab-form-attachment-icon-gray" />
+                                  <div className="admin-tab-form-attachment-content">
+                                    <div className="admin-tab-form-attachment-label">
                                       {attachment.displayLabel}
                                     </div>
-                                    <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '4px' }}>
+                                    <div className="admin-tab-form-attachment-filename">
                                       {attachment.fileName}
                                     </div>
                                   </div>
                                   <button
                                     type="button"
                                     onClick={() => handleAddAttachment(attachment.id)}
-                                    style={{
-                                      padding: '6px 12px',
-                                      border: '1px solid #3b82f6',
-                                      borderRadius: '6px',
-                                      background: '#fff',
-                                      color: '#3b82f6',
-                                      cursor: 'pointer',
-                                      fontSize: '13px'
-                                    }}
+                                    className="admin-tab-form-btn-add"
                                   >
-                                    <Plus size={16} style={{ marginRight: 4 }} />
+                                    <Plus size={16} className="admin-tab-form-btn-add-icon" />
                                     Add
                                   </button>
                                 </div>
@@ -1118,54 +1070,49 @@ const AdminMasterProductTabForm: React.FC = () => {
               )}
 
               {/* Advanced Settings */}
-              <div style={{ marginBottom: 32 }}>
-                <h4 style={{ fontSize: '16px', fontWeight: 600, marginBottom: 16, color: '#374151' }}>
+              <div className="admin-tab-form-section-block">
+                <h4 className="admin-tab-form-section-heading">
                   Advanced Settings
                 </h4>
 
-                <div style={{ display: 'grid', gap: 16 }}>
-                  <div style={{ display: 'flex', gap: 24 }}>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                <div className="admin-tab-form-advanced-grid">
+                  <div className="admin-tab-form-checkbox-row">
+                    <label className="admin-tab-form-checkbox-label">
                       <input
                         type="checkbox"
                         checked={sharedFields.isActive}
                         onChange={(e) => updateSharedField('isActive', e.target.checked)}
-                        style={{ width: 18, height: 18, cursor: 'pointer' }}
+                        className="admin-tab-form-checkbox"
                       />
-                      <span style={{ fontSize: '14px', color: '#374151' }}>Active</span>
+                      <span className="admin-tab-form-checkbox-text">Active</span>
                     </label>
 
-                    <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                    <label className="admin-tab-form-checkbox-label">
                       <input
                         type="checkbox"
                         checked={sharedFields.requiresAuthentication}
                         onChange={(e) => updateSharedField('requiresAuthentication', e.target.checked)}
-                        style={{ width: 18, height: 18, cursor: 'pointer' }}
+                        className="admin-tab-form-checkbox"
                       />
-                      <span style={{ fontSize: '14px', color: '#374151' }}>Requires Authentication</span>
+                      <span className="admin-tab-form-checkbox-text">Requires Authentication</span>
                     </label>
                   </div>
                 </div>
               </div>
 
               {/* Form Actions */}
-              <div style={{
-                display: 'flex',
-                gap: 12,
-                paddingTop: 24,
-                borderTop: '1px solid #e5e7eb'
-              }}>
+              <div className="admin-tab-form-actions">
                 <Button
                   type="submit"
                   variant="primary"
                   disabled={saving}
-                  style={{ minWidth: 120 }}
+                  className="admin-tab-form-submit-btn"
                 >
                   {saving ? (
                     'Saving...'
                   ) : (
                     <>
-                      <Save size={16} style={{ marginRight: 8 }} />
+                      <Save size={16} className="admin-tab-form-icon-mr" />
                       {isEditMode ? 'Update All Languages' : 'Create Tab'}
                     </>
                   )}
@@ -1180,7 +1127,7 @@ const AdminMasterProductTabForm: React.FC = () => {
                 </Button>
 
                 {completedLanguages.length > 0 && (
-                  <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8, color: '#6b7280', fontSize: '14px' }}>
+                  <div className="admin-tab-form-languages-indicator">
                     <span>Languages filled: {completedLanguages.length}/3</span>
                     <span>({completedLanguages.join(', ').toUpperCase()})</span>
                   </div>

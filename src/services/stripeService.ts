@@ -44,6 +44,15 @@ export interface StripeSuccessResponse {
     productName?: string;
     url?: string;
     token?: string;
+    // Modular download fields
+    downloadType?: 'BASE' | 'OPTION' | 'LEGACY';
+    slotKey?: string;
+    optionKey?: string;
+    displayName?: string;
+    fileSize?: number;
+    downloadCount?: number;
+    maxDownloads?: number;
+    expiresAt?: string;
   }>;
   orderItems?: Array<{
     productId?: string | number;

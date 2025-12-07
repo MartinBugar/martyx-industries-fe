@@ -2,6 +2,7 @@ import React, { useState, useEffect, Suspense } from 'react';
 // Lazy load ModelViewer to reduce initial bundle size (Three.js is heavy)
 const ModelViewer = React.lazy(() => import('../ModelViewer'));
 import Gallery from '../Gallery/Gallery';
+import { ConfiguratorPreview } from '../Configurator';
 import { type Product, defaultModelViewerSettings } from '../../data/productData';
 import { systemSettingsService } from '../../services/systemSettingsService';
 import './ProductView.css';
@@ -26,14 +27,17 @@ const ModelViewerFallback: React.FC = () => (
 interface ProductViewProps {
   product: Product;
   galleryData?: Array<{ url: string; thumbnailUrl?: string }>;
+  configuratorEnabled?: boolean;
 }
 
-const ProductView: React.FC<ProductViewProps> = ({ product, galleryData }) => {
+const ProductView: React.FC<ProductViewProps> = ({ product, galleryData, configuratorEnabled }) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [globalAutoRotate, setGlobalAutoRotate] = useState<boolean | null>(null);
 
-  // Fetch global 3D model settings on mount
+  // Fetch global 3D model settings on mount (only needed when configurator is disabled)
   useEffect(() => {
+    if (configuratorEnabled) return; // Skip if using configurator
+
     const fetchDisplaySettings = async () => {
       try {
         const displaySettings = await systemSettingsService.get3DModelSettings();
@@ -44,7 +48,7 @@ const ProductView: React.FC<ProductViewProps> = ({ product, galleryData }) => {
       }
     };
     fetchDisplaySettings();
-  }, []);
+  }, [configuratorEnabled]);
 
   const settings = product.masterProductId === 1 ? defaultModelViewerSettings : (product.modelViewerSettings ?? {});
 
@@ -54,28 +58,33 @@ const ProductView: React.FC<ProductViewProps> = ({ product, galleryData }) => {
   return (
     <div className="product-view-container">
       <div className="model-container">
-        <Suspense fallback={<ModelViewerFallback />}>
-          <ModelViewer
-            modelPath={product.modelPath}
-            alt={`A 3D model of ${product.name}`}
-            poster={settings?.poster}
-            camera-orbit={settings?.cameraOrbit}
-            touch-action={settings?.touchAction}
-            cameraControls={settings?.cameraControls}
-            autoRotate={effectiveAutoRotate}
-            interaction-prompt={settings?.interactionPrompt}
-            shadowIntensity={settings?.shadowIntensity}
-            exposure={settings?.exposure}
-            environment-image={settings?.environmentImage}
-            shadow-softness={settings?.shadowSoftness}
-            toneMapping={settings?.toneMapping}
-            metallicFactor={settings?.metallicFactor}
-            roughnessFactor={settings?.roughnessFactor}
-            height={settings?.height}
-            fullscreen={isFullscreen}
-            onFullscreenChange={setIsFullscreen}
-          />
-        </Suspense>
+        {/* Show ConfiguratorPreview when configurator is enabled, otherwise show ModelViewer */}
+        {configuratorEnabled ? (
+          <ConfiguratorPreview />
+        ) : (
+          <Suspense fallback={<ModelViewerFallback />}>
+            <ModelViewer
+              modelPath={product.modelPath}
+              alt={`A 3D model of ${product.name}`}
+              poster={settings?.poster}
+              camera-orbit={settings?.cameraOrbit}
+              touch-action={settings?.touchAction}
+              cameraControls={settings?.cameraControls}
+              autoRotate={effectiveAutoRotate}
+              interaction-prompt={settings?.interactionPrompt}
+              shadowIntensity={settings?.shadowIntensity}
+              exposure={settings?.exposure}
+              environment-image={settings?.environmentImage}
+              shadow-softness={settings?.shadowSoftness}
+              toneMapping={settings?.toneMapping}
+              metallicFactor={settings?.metallicFactor}
+              roughnessFactor={settings?.roughnessFactor}
+              height={settings?.height}
+              fullscreen={isFullscreen}
+              onFullscreenChange={setIsFullscreen}
+            />
+          </Suspense>
+        )}
       </div>
 
       {/*/!* Toolbar below model *!/*/}

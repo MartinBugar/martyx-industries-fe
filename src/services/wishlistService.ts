@@ -4,7 +4,8 @@ import type {
   WishlistStats,
   AddToWishlistRequest,
   RemoveFromWishlistRequest,
-  WishlistItem
+  WishlistItem,
+  WishlistConfigurationOption
 } from '../types/wishlist';
 import type { ApiResponse } from '../types/api';
 import { logError } from '../services/logger';
@@ -46,10 +47,16 @@ export class WishlistService {
     }
   }
 
-  async addToWishlist(productId: string | number): Promise<WishlistItem> {
+  async addToWishlist(
+    productId: string | number,
+    configuration?: Record<string, WishlistConfigurationOption>,
+    configurationPriceModifier?: number
+  ): Promise<WishlistItem> {
     try {
       const request: AddToWishlistRequest = {
-        productId: typeof productId === 'string' ? parseInt(productId) : productId
+        productId: typeof productId === 'string' ? parseInt(productId) : productId,
+        configuration,
+        configurationPriceModifier
       };
 
       const response = await apiClient.post<ApiResponse<WishlistItem>>(`${this.baseUrl}/add`, request);

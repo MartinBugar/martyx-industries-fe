@@ -43,6 +43,7 @@ import AdminLayout from './AdminLayout';
 import { Button, Badge, SkeletonTable } from '../../components/ui';
 import './AdminUsers.css';
 import './AdminButtonOverrides.css';
+import './AdminAuditLog.css';
 
 const AdminAuditLog: React.FC = () => {
   const { t } = useTranslation();
@@ -173,18 +174,18 @@ const AdminAuditLog: React.FC = () => {
       <div className="admin-page">
         <div className="admin-container">
           {/* Header */}
-          <div className="admin-card" style={{ marginBottom: '24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
+          <div className="admin-card admin-audit-card-header">
+            <div className="admin-audit-header-flex">
               <div>
-                <h2 className="section-title" style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <Activity size={24} style={{ color: 'var(--admin-accent)' }} />
+                <h2 className="section-title admin-audit-section-title">
+                  <Activity size={24} className="admin-audit-section-title-icon" />
                   {t('admin.auditLog.title', 'Audit Log')}
                 </h2>
-                <p style={{ margin: 0, color: 'var(--admin-secondary)', fontSize: '14px' }}>
+                <p className="admin-audit-section-desc">
                   {t('admin.auditLog.description', 'Track all admin panel operations')}
                 </p>
               </div>
-              <div style={{ display: 'flex', gap: '10px' }}>
+              <div className="admin-audit-header-buttons">
                 <Button
                   variant={showFilters ? 'primary' : 'outline'}
                   size="sm"
@@ -192,7 +193,7 @@ const AdminAuditLog: React.FC = () => {
                 >
                   <Filter size={16} />
                   Filters
-                  {hasActiveFilters && <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--admin-error)', marginLeft: 6 }} />}
+                  {hasActiveFilters && <span className="admin-audit-filter-dot" />}
                 </Button>
                 <Button variant="outline" size="sm" onClick={loadStats} disabled={loadingStats} loading={loadingStats}>
                   <BarChart3 size={16} />
@@ -206,19 +207,18 @@ const AdminAuditLog: React.FC = () => {
           </div>
 
           {/* Search */}
-          <form onSubmit={handleSearch} style={{ marginBottom: '20px' }}>
-            <div style={{ position: 'relative' }}>
-              <Search size={18} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--admin-secondary)' }} />
+          <form onSubmit={handleSearch} className="admin-audit-search-form">
+            <div className="admin-audit-search-wrapper">
+              <Search size={18} className="admin-audit-search-icon" />
               <input
                 type="text"
                 placeholder={t('admin.auditLog.searchPlaceholder', 'Search by user, entity name...')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="form-input"
-                style={{ paddingLeft: 40, paddingRight: searchQuery ? 40 : 12 }}
+                className={`form-input ${searchQuery ? 'admin-audit-search-input-with-clear' : 'admin-audit-search-input'}`}
               />
               {searchQuery && (
-                <button type="button" onClick={() => { setSearchQuery(''); setCurrentPage(0); }} style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--admin-secondary)' }}>
+                <button type="button" onClick={() => { setSearchQuery(''); setCurrentPage(0); }} className="admin-audit-clear-btn">
                   <X size={16} />
                 </button>
               )}
@@ -227,8 +227,8 @@ const AdminAuditLog: React.FC = () => {
 
           {/* Filters */}
           {showFilters && (
-            <div className="admin-card" style={{ marginBottom: '20px' }}>
-              <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))' }}>
+            <div className="admin-card admin-audit-card-filters">
+              <div className="form-grid admin-audit-filters-grid">
                 <div>
                   <label className="form-label">Action</label>
                   <select value={selectedAction} onChange={(e) => { setSelectedAction(e.target.value as AuditAction | ''); setCurrentPage(0); }} className="form-input">
@@ -265,7 +265,7 @@ const AdminAuditLog: React.FC = () => {
                 </div>
               </div>
               {hasActiveFilters && (
-                <div style={{ marginTop: '16px' }}>
+                <div className="admin-audit-filters-actions">
                   <Button variant="outline" size="sm" onClick={resetFilters}>
                     <X size={14} />
                     Clear filters
@@ -276,7 +276,7 @@ const AdminAuditLog: React.FC = () => {
           )}
 
           {/* Results */}
-          <div style={{ marginBottom: '16px', fontSize: '14px', color: 'var(--admin-secondary)' }}>
+          <div className="admin-audit-results-count">
             Showing {logs.length} of {totalElements} entries
           </div>
 
@@ -286,29 +286,20 @@ const AdminAuditLog: React.FC = () => {
               <SkeletonTable rows={8} columns={4} />
             </div>
           ) : logs.length === 0 ? (
-            <div className="admin-card" style={{ textAlign: 'center', padding: '60px 20px' }}>
-              <Activity size={48} style={{ color: 'var(--admin-secondary)', marginBottom: '16px' }} />
-              <h3 style={{ margin: '0 0 8px', color: 'var(--admin-primary)' }}>No audit logs found</h3>
-              <p style={{ margin: 0, color: 'var(--admin-secondary)' }}>Try adjusting your filters</p>
+            <div className="admin-card admin-audit-empty-state">
+              <Activity size={48} className="admin-audit-empty-icon" />
+              <h3 className="admin-audit-empty-title">No audit logs found</h3>
+              <p className="admin-audit-empty-desc">Try adjusting your filters</p>
             </div>
           ) : (
-            <div className="admin-card" style={{ padding: 0 }}>
-              {logs.map((log, index) => (
+            <div className="admin-card admin-audit-logs-card">
+              {logs.map((log) => (
                 <div
                   key={log.id}
                   onClick={() => viewLogDetail(log)}
-                  style={{
-                    padding: '16px 20px',
-                    display: 'flex',
-                    alignItems: 'flex-start',
-                    gap: '16px',
-                    cursor: 'pointer',
-                    borderBottom: index < logs.length - 1 ? '1px solid var(--admin-border)' : 'none',
-                    background: !log.success ? 'var(--admin-error-bg)' : 'transparent',
-                    transition: 'background 0.15s'
-                  }}
+                  className={`admin-audit-log-item ${!log.success ? 'admin-audit-log-item-failed' : ''}`}
                 >
-                  <div style={{ flexShrink: 0 }}>
+                  <div className="admin-audit-log-icon">
                     {log.success ? (
                       <CheckCircle size={20} style={{ color: getActionColor(log.action) }} />
                     ) : (
@@ -316,30 +307,30 @@ const AdminAuditLog: React.FC = () => {
                     )}
                   </div>
 
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '6px' }}>
+                  <div className="admin-audit-log-content">
+                    <div className="admin-audit-log-header">
                       <Badge variant="secondary" size="sm" style={{ backgroundColor: `${getActionColor(log.action)}20`, color: getActionColor(log.action), border: 'none' }}>
                         {log.actionDisplayName}
                       </Badge>
-                      <span style={{ fontSize: '13px', color: 'var(--admin-primary)', fontWeight: 500 }}>{log.entityType}</span>
+                      <span className="admin-audit-log-entity-type">{log.entityType}</span>
                       {log.entityName && (
-                        <span style={{ fontSize: '13px', color: 'var(--admin-secondary)' }}>"{log.entityName}"</span>
+                        <span className="admin-audit-log-entity-name">"{log.entityName}"</span>
                       )}
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', fontSize: '12px', color: 'var(--admin-secondary)' }}>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <div className="admin-audit-log-meta">
+                      <span className="admin-audit-log-meta-item">
                         <Clock size={12} />
                         {formatRelativeTime(log.timestamp)}
                       </span>
                       {log.userName && (
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <span className="admin-audit-log-meta-item">
                           <User size={12} />
                           {log.userName}
                         </span>
                       )}
                     </div>
                     {!log.success && log.errorMessage && (
-                      <div style={{ marginTop: '8px', fontSize: '12px', color: 'var(--admin-error)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <div className="admin-audit-log-error">
                         <AlertCircle size={12} />
                         {log.errorMessage}
                       </div>
@@ -356,12 +347,12 @@ const AdminAuditLog: React.FC = () => {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '20px', padding: '16px', background: 'var(--admin-bg-secondary)', borderRadius: '8px' }}>
+            <div className="admin-audit-pagination">
               <Button variant="outline" size="sm" onClick={() => setCurrentPage((p) => Math.max(0, p - 1))} disabled={currentPage === 0}>
                 <ChevronLeft size={16} />
                 Previous
               </Button>
-              <span style={{ fontSize: '14px', color: 'var(--admin-secondary)' }}>
+              <span className="admin-audit-pagination-text">
                 Page {currentPage + 1} of {totalPages}
               </span>
               <Button variant="outline" size="sm" onClick={() => setCurrentPage((p) => Math.min(totalPages - 1, p + 1))} disabled={currentPage >= totalPages - 1}>
@@ -375,65 +366,65 @@ const AdminAuditLog: React.FC = () => {
 
       {/* Detail Modal */}
       {showDetail && selectedLog && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1050, padding: '20px' }} onClick={() => setShowDetail(false)}>
-          <div className="admin-card" style={{ width: '100%', maxWidth: '700px', maxHeight: '90vh', overflow: 'auto' }} onClick={(e) => e.stopPropagation()}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 600 }}>Log Detail</h3>
+        <div className="admin-audit-modal-overlay" onClick={() => setShowDetail(false)}>
+          <div className="admin-card admin-audit-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="admin-audit-modal-header">
+              <h3 className="admin-audit-modal-title">Log Detail</h3>
               <Button variant="outline" size="sm" onClick={() => setShowDetail(false)}>
                 <X size={14} />
               </Button>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
+            <div className="admin-audit-detail-grid">
               <div>
-                <div style={{ fontSize: '12px', color: 'var(--admin-secondary)', marginBottom: '4px' }}>Action</div>
+                <div className="admin-audit-detail-label">Action</div>
                 <Badge variant="secondary" size="sm" style={{ backgroundColor: `${getActionColor(selectedLog.action)}20`, color: getActionColor(selectedLog.action), border: 'none' }}>
                   {selectedLog.actionDisplayName}
                 </Badge>
               </div>
               <div>
-                <div style={{ fontSize: '12px', color: 'var(--admin-secondary)', marginBottom: '4px' }}>Status</div>
+                <div className="admin-audit-detail-label">Status</div>
                 <Badge variant={selectedLog.success ? 'success' : 'danger'} size="sm">
                   {selectedLog.success ? 'Success' : 'Failed'}
                 </Badge>
               </div>
               <div>
-                <div style={{ fontSize: '12px', color: 'var(--admin-secondary)', marginBottom: '4px' }}>Entity Type</div>
-                <div style={{ fontWeight: 500 }}>{selectedLog.entityType}</div>
+                <div className="admin-audit-detail-label">Entity Type</div>
+                <div className="admin-audit-detail-value">{selectedLog.entityType}</div>
               </div>
               <div>
-                <div style={{ fontSize: '12px', color: 'var(--admin-secondary)', marginBottom: '4px' }}>Entity ID</div>
-                <div style={{ fontWeight: 500 }}>{selectedLog.entityId || '-'}</div>
+                <div className="admin-audit-detail-label">Entity ID</div>
+                <div className="admin-audit-detail-value">{selectedLog.entityId || '-'}</div>
               </div>
               <div>
-                <div style={{ fontSize: '12px', color: 'var(--admin-secondary)', marginBottom: '4px' }}>Entity Name</div>
-                <div style={{ fontWeight: 500 }}>{selectedLog.entityName || '-'}</div>
+                <div className="admin-audit-detail-label">Entity Name</div>
+                <div className="admin-audit-detail-value">{selectedLog.entityName || '-'}</div>
               </div>
               <div>
-                <div style={{ fontSize: '12px', color: 'var(--admin-secondary)', marginBottom: '4px' }}>Timestamp</div>
-                <div style={{ fontWeight: 500 }}>{formatTimestamp(selectedLog.timestamp)}</div>
+                <div className="admin-audit-detail-label">Timestamp</div>
+                <div className="admin-audit-detail-value">{formatTimestamp(selectedLog.timestamp)}</div>
               </div>
               <div>
-                <div style={{ fontSize: '12px', color: 'var(--admin-secondary)', marginBottom: '4px' }}>User</div>
-                <div style={{ fontWeight: 500 }}>{selectedLog.userName || '-'}</div>
+                <div className="admin-audit-detail-label">User</div>
+                <div className="admin-audit-detail-value">{selectedLog.userName || '-'}</div>
               </div>
               <div>
-                <div style={{ fontSize: '12px', color: 'var(--admin-secondary)', marginBottom: '4px' }}>IP Address</div>
-                <div style={{ fontWeight: 500 }}>{selectedLog.ipAddress || '-'}</div>
+                <div className="admin-audit-detail-label">IP Address</div>
+                <div className="admin-audit-detail-value">{selectedLog.ipAddress || '-'}</div>
               </div>
             </div>
 
             {selectedLog.changesSummary && (
-              <div style={{ marginBottom: '16px', padding: '12px', background: 'var(--admin-bg-secondary)', borderRadius: '8px' }}>
-                <div style={{ fontSize: '12px', color: 'var(--admin-secondary)', marginBottom: '4px' }}>Changes Summary</div>
+              <div className="admin-audit-changes-summary">
+                <div className="admin-audit-detail-label">Changes Summary</div>
                 <div>{selectedLog.changesSummary}</div>
               </div>
             )}
 
             {!selectedLog.success && selectedLog.errorMessage && (
-              <div style={{ padding: '12px', background: 'var(--admin-error-bg)', borderRadius: '8px', border: '1px solid var(--admin-error)' }}>
-                <div style={{ fontSize: '12px', color: 'var(--admin-error)', marginBottom: '4px' }}>Error Message</div>
-                <div style={{ color: 'var(--admin-error)' }}>{selectedLog.errorMessage}</div>
+              <div className="admin-audit-error-box">
+                <div className="admin-audit-error-label">Error Message</div>
+                <div className="admin-audit-error-message">{selectedLog.errorMessage}</div>
               </div>
             )}
           </div>
@@ -442,39 +433,39 @@ const AdminAuditLog: React.FC = () => {
 
       {/* Stats Modal */}
       {showStats && stats && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1050, padding: '20px' }} onClick={() => setShowStats(false)}>
-          <div className="admin-card" style={{ width: '100%', maxWidth: '600px', maxHeight: '90vh', overflow: 'auto' }} onClick={(e) => e.stopPropagation()}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 600 }}>Statistics</h3>
+        <div className="admin-audit-modal-overlay" onClick={() => setShowStats(false)}>
+          <div className="admin-card admin-audit-modal admin-audit-modal-sm" onClick={(e) => e.stopPropagation()}>
+            <div className="admin-audit-modal-header">
+              <h3 className="admin-audit-modal-title">Statistics</h3>
               <Button variant="outline" size="sm" onClick={() => setShowStats(false)}>
                 <X size={14} />
               </Button>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '24px' }}>
-              <div style={{ padding: '16px', background: 'var(--admin-bg-secondary)', borderRadius: '8px', textAlign: 'center' }}>
-                <div style={{ fontSize: '28px', fontWeight: 700, color: 'var(--admin-primary)' }}>{stats.totalLogs}</div>
-                <div style={{ fontSize: '12px', color: 'var(--admin-secondary)' }}>Total Logs</div>
+            <div className="admin-audit-stats-grid">
+              <div className="admin-audit-stat-card admin-audit-stat-card-default">
+                <div className="admin-audit-stat-value">{stats.totalLogs}</div>
+                <div className="admin-audit-stat-label">Total Logs</div>
               </div>
-              <div style={{ padding: '16px', background: 'var(--admin-success-bg)', borderRadius: '8px', textAlign: 'center' }}>
-                <div style={{ fontSize: '28px', fontWeight: 700, color: 'var(--admin-success)' }}>{stats.successfulOperations}</div>
-                <div style={{ fontSize: '12px', color: 'var(--admin-success)' }}>Successful</div>
+              <div className="admin-audit-stat-card admin-audit-stat-card-success">
+                <div className="admin-audit-stat-value admin-audit-stat-value-success">{stats.successfulOperations}</div>
+                <div className="admin-audit-stat-label admin-audit-stat-label-success">Successful</div>
               </div>
-              <div style={{ padding: '16px', background: 'var(--admin-error-bg)', borderRadius: '8px', textAlign: 'center' }}>
-                <div style={{ fontSize: '28px', fontWeight: 700, color: 'var(--admin-error)' }}>{stats.failedOperations}</div>
-                <div style={{ fontSize: '12px', color: 'var(--admin-error)' }}>Failed</div>
+              <div className="admin-audit-stat-card admin-audit-stat-card-error">
+                <div className="admin-audit-stat-value admin-audit-stat-value-error">{stats.failedOperations}</div>
+                <div className="admin-audit-stat-label admin-audit-stat-label-error">Failed</div>
               </div>
             </div>
 
-            <div style={{ marginBottom: '20px' }}>
-              <h4 style={{ margin: '0 0 12px', fontSize: '14px', fontWeight: 600 }}>By Action</h4>
+            <div className="admin-audit-actions-section">
+              <h4 className="admin-audit-actions-title">By Action</h4>
               {Object.entries(stats.actionCounts).map(([action, count]) => (
-                <div key={action} style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                  <div style={{ width: 100, fontSize: '13px', color: 'var(--admin-secondary)' }}>{action}</div>
-                  <div style={{ flex: 1, height: 8, background: 'var(--admin-bg-tertiary)', borderRadius: 4, overflow: 'hidden' }}>
-                    <div style={{ height: '100%', width: `${(count / stats.totalLogs) * 100}%`, background: getActionColor(action as AuditAction), borderRadius: 4 }} />
+                <div key={action} className="admin-audit-action-row">
+                  <div className="admin-audit-action-label">{action}</div>
+                  <div className="admin-audit-action-bar-bg">
+                    <div className="admin-audit-action-bar-fill" style={{ width: `${(count / stats.totalLogs) * 100}%`, background: getActionColor(action as AuditAction) }} />
                   </div>
-                  <div style={{ width: 40, textAlign: 'right', fontSize: '13px', fontWeight: 600 }}>{count}</div>
+                  <div className="admin-audit-action-count">{count}</div>
                 </div>
               ))}
             </div>

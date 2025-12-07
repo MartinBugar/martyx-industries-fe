@@ -1,5 +1,9 @@
 import { createContext } from 'react';
 import type { Product } from '../data/productData';
+import type { SelectedConfiguration } from '../types/configurator';
+
+// Re-export for convenience
+export type { SelectedConfiguration };
 
 // Cart product contains only the fields we get from the backend
 // This is a subset of the full Product type
@@ -35,6 +39,12 @@ export interface CartItem {
 export interface CartContextType {
   items: CartItem[];
   addToCart: (product: Product) => 'added' | 'limit' | 'out_of_stock' | 'discontinued' | 'pre_order';
+  addToCartWithConfiguration: (
+    product: Product,
+    configuration: SelectedConfiguration,
+    totalPriceModifier: number,
+    quantity?: number
+  ) => Promise<'added' | 'limit' | 'out_of_stock' | 'discontinued' | 'error'>;
   removeFromCart: (variantId: string) => void;
   updateQuantity: (variantId: string, quantity: number) => void;
   clearCart: () => void;

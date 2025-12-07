@@ -81,6 +81,7 @@ import {
   AdminProductDetail,
   AdminProductGallery,
   AdminProduct3DModel,
+  AdminProductConfigurator,
   AdminProductDigitalFile,
   AdminVariantTabs,
   AdminVariantTabForm,
@@ -215,7 +216,7 @@ const MainContent = React.memo(() => {
   const navigate = useNavigate();
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
-  const isProductsRoute = location.pathname.startsWith('/products');
+  const isProductsListRoute = location.pathname === '/products';
 
   // Debug log whenever user changes
   React.useEffect(() => {
@@ -261,8 +262,8 @@ const MainContent = React.memo(() => {
         />
       )}
 
-      {/* Category Bar - only shown on /products and /products/:id pages */}
-      {isProductsRoute && <CategoryBar />}
+      {/* Category Bar - only shown on /products page (not on product detail) */}
+      {isProductsListRoute && <CategoryBar />}
 
       {!isAdminRoute && showCart && (
         <Suspense fallback={<div className="cart-loading">Loading cart...</div>}>
@@ -357,6 +358,11 @@ const MainContent = React.memo(() => {
             <Route path="/admin/products/:id/3d-model" element={
               <RequireAdmin>
                 <AdminProduct3DModel />
+              </RequireAdmin>
+            } />
+            <Route path="/admin/products/:id/configurator" element={
+              <RequireAdmin>
+                <AdminProductConfigurator />
               </RequireAdmin>
             } />
             <Route path="/admin/products/:id/digital-file" element={

@@ -1,3 +1,11 @@
+// Configuration option stored in wishlist
+export interface WishlistConfigurationOption {
+  optionId: number;
+  optionKey: string;
+  displayName: string;
+  priceModifier: number;
+}
+
 // Wishlist types matching backend API specification
 export interface WishlistItem {
   id: number;
@@ -11,6 +19,11 @@ export interface WishlistItem {
   addedAt: string; // ISO date string
   isAvailable: boolean;
   hasMultipleVariants: boolean;
+
+  // Configuration support
+  configuration?: Record<string, WishlistConfigurationOption>;
+  configurationPriceModifier?: number;
+  effectivePrice?: number;
 }
 
 export interface WishlistResponse {
@@ -29,6 +42,8 @@ export interface WishlistStats {
 
 export interface AddToWishlistRequest {
   productId: number; // Backend expects number
+  configuration?: Record<string, WishlistConfigurationOption>;
+  configurationPriceModifier?: number;
 }
 
 export interface RemoveFromWishlistRequest {
@@ -44,7 +59,11 @@ export interface WishlistContextType {
   lastUpdated: string | null;
 
   // Actions - support both string and number productIds for convenience
-  addToWishlist: (productId: string | number) => Promise<boolean>;
+  addToWishlist: (
+    productId: string | number,
+    configuration?: Record<string, WishlistConfigurationOption>,
+    configurationPriceModifier?: number
+  ) => Promise<boolean>;
   removeFromWishlist: (productId: string | number) => Promise<boolean>;
   isInWishlist: (productId: string | number) => boolean;
   loadWishlist: () => Promise<void>;

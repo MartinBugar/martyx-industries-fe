@@ -1,0 +1,1245 @@
+@import '../../styles/admin-theme.css';
+
+/* =========================================================================
+   ADMIN PRODUCT CONFIGURATOR STYLES - REDESIGNED
+   ========================================================================= */
+
+/* Container */
+.cfg-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* =========================================================================
+   TOGGLE SWITCH
+   ========================================================================= */
+
+.cfg-toggle {
+  position: relative;
+  border-radius: 999px;
+  background: var(--admin-divider);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.cfg-toggle-md {
+  width: 44px;
+  height: 24px;
+}
+
+.cfg-toggle-sm {
+  width: 36px;
+  height: 20px;
+}
+
+.cfg-toggle.active {
+  background: var(--admin-success);
+}
+
+.cfg-toggle.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cfg-toggle-thumb {
+  position: absolute;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: left 0.2s;
+}
+
+.cfg-toggle-md .cfg-toggle-thumb {
+  width: 20px;
+  height: 20px;
+  top: 2px;
+  left: 2px;
+}
+
+.cfg-toggle-sm .cfg-toggle-thumb {
+  width: 16px;
+  height: 16px;
+  top: 2px;
+  left: 2px;
+}
+
+.cfg-toggle.active .cfg-toggle-thumb {
+  left: calc(100% - 22px);
+}
+
+.cfg-toggle-sm.active .cfg-toggle-thumb {
+  left: calc(100% - 18px);
+}
+
+/* =========================================================================
+   PROGRESS STEPPER
+   ========================================================================= */
+
+.cfg-progress {
+  background: var(--admin-bg-primary);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-lg);
+  padding: 16px 20px;
+}
+
+.cfg-progress.ready {
+  border-color: var(--admin-success);
+  background: linear-gradient(to right, var(--admin-success-bg), var(--admin-bg-primary));
+}
+
+.cfg-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.cfg-progress-info {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cfg-progress-bar-container {
+  flex: 1;
+  height: 6px;
+  background: var(--admin-bg-tertiary);
+  border-radius: 3px;
+  overflow: hidden;
+  max-width: 200px;
+}
+
+.cfg-progress-bar {
+  height: 100%;
+  background: var(--admin-success);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.cfg-progress-text {
+  font-size: var(--admin-text-sm);
+  color: var(--admin-secondary);
+  white-space: nowrap;
+}
+
+.cfg-progress-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cfg-status-label {
+  font-size: var(--admin-text-xs);
+  font-weight: var(--admin-font-semibold);
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+.cfg-status-label.enabled {
+  background: var(--admin-success-bg);
+  color: var(--admin-success);
+}
+
+.cfg-status-label.disabled {
+  background: var(--admin-bg-tertiary);
+  color: var(--admin-secondary);
+}
+
+.cfg-progress-steps {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.cfg-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cfg-step-indicator {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--admin-text-xs);
+  font-weight: var(--admin-font-semibold);
+}
+
+.cfg-step.completed .cfg-step-indicator {
+  background: var(--admin-success);
+  color: white;
+}
+
+.cfg-step.pending .cfg-step-indicator {
+  background: var(--admin-bg-tertiary);
+  color: var(--admin-secondary);
+}
+
+.cfg-step-label {
+  font-size: var(--admin-text-sm);
+  color: var(--admin-primary);
+}
+
+.cfg-step.pending .cfg-step-label {
+  color: var(--admin-secondary);
+}
+
+.cfg-step-detail {
+  font-size: var(--admin-text-xs);
+  color: var(--admin-secondary);
+  margin-left: 4px;
+}
+
+.cfg-progress-warning {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--admin-border);
+  font-size: var(--admin-text-xs);
+  color: var(--admin-warning);
+}
+
+/* =========================================================================
+   COLLAPSIBLE SECTION
+   ========================================================================= */
+
+.cfg-section {
+  background: var(--admin-bg-primary);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-lg);
+  overflow: hidden;
+}
+
+.cfg-section-danger {
+  border-color: var(--admin-error);
+}
+
+.cfg-section-danger .cfg-section-header {
+  background: var(--admin-error-bg);
+}
+
+.cfg-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  cursor: pointer;
+  user-select: none;
+  background: var(--admin-bg-secondary);
+  transition: background 0.15s;
+}
+
+.cfg-section-header:hover {
+  background: var(--admin-bg-tertiary);
+}
+
+.cfg-section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: var(--admin-font-semibold);
+  font-size: var(--admin-text-base);
+  color: var(--admin-primary);
+}
+
+.cfg-section-badge {
+  background: var(--admin-accent);
+  color: white;
+  font-size: var(--admin-text-xs);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: var(--admin-font-medium);
+}
+
+.cfg-section-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.cfg-section-content {
+  padding: 16px;
+  border-top: 1px solid var(--admin-border);
+}
+
+/* =========================================================================
+   ASSETS GRID
+   ========================================================================= */
+
+.cfg-assets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.cfg-asset-card {
+  background: var(--admin-bg-secondary);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-md);
+  overflow: hidden;
+}
+
+.cfg-asset-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: var(--admin-bg-tertiary);
+  border-bottom: 1px solid var(--admin-border);
+  color: var(--admin-primary);
+}
+
+.cfg-asset-title {
+  font-weight: var(--admin-font-semibold);
+  font-size: var(--admin-text-sm);
+}
+
+.cfg-asset-info {
+  padding: 16px;
+}
+
+.cfg-asset-file {
+  margin-bottom: 12px;
+}
+
+.cfg-asset-filename {
+  font-weight: var(--admin-font-medium);
+  word-break: break-all;
+}
+
+.cfg-asset-size {
+  color: var(--admin-secondary);
+  font-size: var(--admin-text-xs);
+  margin-left: 6px;
+}
+
+.cfg-asset-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.cfg-asset-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+  color: var(--admin-secondary);
+  text-align: center;
+  min-height: 120px;
+}
+
+.cfg-asset-upload:hover,
+.cfg-asset-upload.dragover {
+  background: var(--admin-bg-tertiary);
+  color: var(--admin-accent);
+}
+
+.cfg-asset-upload span {
+  margin-top: 8px;
+  font-size: var(--admin-text-sm);
+}
+
+.cfg-asset-hint {
+  font-size: var(--admin-text-xs) !important;
+  color: var(--admin-secondary) !important;
+  margin-top: 4px !important;
+}
+
+.cfg-asset-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--admin-bg-tertiary);
+  border-top: 1px solid var(--admin-border);
+}
+
+.cfg-asset-progress-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--admin-divider);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.cfg-asset-progress-fill {
+  height: 100%;
+  background: var(--admin-accent);
+  border-radius: 3px;
+  transition: width 0.2s;
+}
+
+.cfg-asset-progress span {
+  font-size: var(--admin-text-xs);
+  color: var(--admin-secondary);
+  min-width: 36px;
+}
+
+.cfg-model-preview {
+  width: 100%;
+  height: 200px;
+  border-radius: var(--admin-radius-sm);
+  background: var(--admin-bg-tertiary);
+  margin-bottom: 12px;
+}
+
+/* =========================================================================
+   SLOTS LIST
+   ========================================================================= */
+
+.cfg-slots-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cfg-slots-empty {
+  text-align: center;
+  padding: 32px 16px;
+  color: var(--admin-secondary);
+}
+
+.cfg-slots-empty p {
+  margin-bottom: 16px;
+}
+
+.cfg-slots-or {
+  display: block;
+  margin: 12px 0;
+  color: var(--admin-secondary);
+  font-size: var(--admin-text-sm);
+}
+
+/* =========================================================================
+   SLOT CARD
+   ========================================================================= */
+
+.cfg-slot-card {
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-md);
+  overflow: hidden;
+}
+
+.cfg-slot-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--admin-bg-secondary);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.cfg-slot-header:hover {
+  background: var(--admin-bg-tertiary);
+}
+
+.cfg-slot-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cfg-slot-name {
+  font-weight: var(--admin-font-semibold);
+}
+
+.cfg-slot-key {
+  color: var(--admin-secondary);
+  font-size: var(--admin-text-xs);
+}
+
+.cfg-slot-stats {
+  font-size: var(--admin-text-xs);
+  color: var(--admin-secondary);
+  margin-left: 8px;
+}
+
+.cfg-slot-stats .text-success {
+  color: var(--admin-success);
+  margin-left: 4px;
+}
+
+.cfg-slot-stats .text-warning {
+  color: var(--admin-warning);
+  margin-left: 4px;
+}
+
+.cfg-slot-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.cfg-slot-body {
+  padding: 16px;
+  background: var(--admin-bg-primary);
+}
+
+.cfg-slot-empty {
+  text-align: center;
+  padding: 24px;
+  color: var(--admin-secondary);
+}
+
+.cfg-slot-empty p {
+  margin-bottom: 12px;
+}
+
+/* =========================================================================
+   OPTIONS GRID
+   ========================================================================= */
+
+.cfg-options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.cfg-add-option-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* =========================================================================
+   OPTION CARD
+   ========================================================================= */
+
+.cfg-option-card {
+  background: var(--admin-bg-secondary);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-md);
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+
+.cfg-option-card:hover {
+  border-color: var(--admin-accent);
+}
+
+.cfg-option-card.is-default {
+  border-color: var(--admin-success);
+  box-shadow: 0 0 0 1px var(--admin-success);
+}
+
+.cfg-option-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 12px;
+  background: var(--admin-bg-tertiary);
+  border-bottom: 1px solid var(--admin-border);
+}
+
+.cfg-option-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.cfg-option-name {
+  font-weight: var(--admin-font-semibold);
+  font-size: var(--admin-text-sm);
+  display: block;
+  margin-bottom: 2px;
+}
+
+.cfg-option-key {
+  font-size: var(--admin-text-xs);
+  color: var(--admin-secondary);
+  word-break: break-all;
+}
+
+.cfg-option-badges {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.cfg-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  font-weight: var(--admin-font-semibold);
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.cfg-badge-success {
+  background: var(--admin-success-bg);
+  color: var(--admin-success);
+}
+
+.cfg-badge-warning {
+  background: var(--admin-warning-bg);
+  color: var(--admin-warning);
+}
+
+.cfg-badge-muted {
+  background: var(--admin-bg-tertiary);
+  color: var(--admin-secondary);
+}
+
+.cfg-option-body {
+  padding: 12px;
+}
+
+.cfg-option-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  gap: 12px;
+  min-height: 36px;
+}
+
+.cfg-option-row:not(:last-child) {
+  border-bottom: 1px solid var(--admin-border-light);
+}
+
+.cfg-option-row > label {
+  font-size: var(--admin-text-xs);
+  color: var(--admin-secondary);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.cfg-option-file {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.cfg-file-link {
+  font-size: var(--admin-text-xs);
+  color: var(--admin-accent);
+  text-decoration: none;
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+}
+
+.cfg-file-link:hover {
+  text-decoration: underline;
+}
+
+.cfg-file-size {
+  font-size: 10px;
+  color: var(--admin-secondary);
+  display: none; /* Hide file size in compact view - too cluttered */
+}
+
+.cfg-file-action {
+  background: none;
+  border: none;
+  color: var(--admin-secondary);
+  font-size: var(--admin-text-xs);
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 3px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.cfg-file-action:hover {
+  background: var(--admin-bg-tertiary);
+  color: var(--admin-primary);
+}
+
+.cfg-file-action.cfg-file-delete:hover {
+  background: var(--admin-error-bg);
+  color: var(--admin-error);
+}
+
+.cfg-option-price {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.cfg-price-currency {
+  font-size: var(--admin-text-xs);
+  color: var(--admin-secondary);
+}
+
+.cfg-price-input {
+  width: 80px;
+  padding: 6px 8px;
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-sm);
+  font-size: var(--admin-text-sm);
+  text-align: right;
+  box-sizing: border-box;
+}
+
+.cfg-price-input:focus {
+  outline: none;
+  border-color: var(--admin-accent);
+}
+
+.cfg-option-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--admin-bg-tertiary);
+  border-top: 1px solid var(--admin-border);
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cfg-option-default {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--admin-text-xs);
+  color: var(--admin-secondary);
+  white-space: nowrap;
+}
+
+.cfg-option-default input[type="radio"] {
+  margin: 0;
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.cfg-option-default label {
+  cursor: pointer;
+}
+
+.cfg-option-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+/* =========================================================================
+   DANGER ZONE
+   ========================================================================= */
+
+.cfg-danger-zone {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cfg-danger-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 12px;
+  background: var(--admin-bg-secondary);
+  border-radius: var(--admin-radius-md);
+}
+
+.cfg-danger-item strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.cfg-danger-item p {
+  font-size: var(--admin-text-xs);
+  color: var(--admin-secondary);
+  margin: 0;
+}
+
+/* =========================================================================
+   EMPTY STATE
+   ========================================================================= */
+
+.cfg-empty {
+  text-align: center;
+  padding: 64px 24px;
+  background: var(--admin-bg-primary);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-lg);
+}
+
+.cfg-empty svg {
+  color: var(--admin-secondary);
+  margin-bottom: 16px;
+}
+
+.cfg-empty h3 {
+  margin: 0 0 8px;
+  font-size: var(--admin-text-lg);
+}
+
+.cfg-empty p {
+  color: var(--admin-secondary);
+  margin: 0 0 24px;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* =========================================================================
+   TOAST MESSAGES
+   ========================================================================= */
+
+.cfg-toast {
+  position: fixed;
+  top: 80px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: var(--admin-radius-md);
+  font-size: var(--admin-text-sm);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 10001; /* Above modal (10000) */
+  animation: cfg-toast-in 0.2s ease;
+}
+
+@keyframes cfg-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cfg-toast-success {
+  background: var(--admin-success);
+  color: white;
+}
+
+.cfg-toast-error {
+  background: var(--admin-error);
+  color: white;
+}
+
+.cfg-toast-close {
+  background: none;
+  border: none;
+  color: inherit;
+  opacity: 0.7;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 8px;
+}
+
+.cfg-toast-close:hover {
+  opacity: 1;
+}
+
+/* =========================================================================
+   MODAL
+   ========================================================================= */
+
+.cfg-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--admin-z-modal);
+  padding: 24px;
+}
+
+.cfg-modal {
+  background: var(--admin-bg-primary);
+  border-radius: var(--admin-radius-lg);
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.cfg-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--admin-border);
+}
+
+.cfg-modal-header h3 {
+  margin: 0;
+  font-size: var(--admin-text-lg);
+}
+
+.cfg-modal-close {
+  background: none;
+  border: none;
+  color: var(--admin-secondary);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: var(--admin-radius-sm);
+  transition: background 0.15s, color 0.15s;
+}
+
+.cfg-modal-close:hover {
+  background: var(--admin-bg-tertiary);
+  color: var(--admin-primary);
+}
+
+.cfg-modal-body {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.cfg-modal-hint {
+  font-size: var(--admin-text-sm);
+  color: var(--admin-secondary);
+  margin-bottom: 12px;
+}
+
+.cfg-modal-textarea {
+  width: 100%;
+  height: 200px;
+  padding: 12px;
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-sm);
+  font-family: var(--admin-font-mono);
+  font-size: var(--admin-text-xs);
+  resize: vertical;
+}
+
+.cfg-modal-textarea:focus {
+  outline: none;
+  border-color: var(--admin-accent);
+}
+
+.cfg-modal-size {
+  font-size: var(--admin-text-xs);
+  color: var(--admin-secondary);
+  margin-top: 8px;
+}
+
+.cfg-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 16px 20px;
+  border-top: 1px solid var(--admin-border);
+  background: var(--admin-bg-secondary);
+}
+
+/* =========================================================================
+   FORM ELEMENTS
+   ========================================================================= */
+
+.cfg-form-group {
+  margin-bottom: 16px;
+}
+
+.cfg-form-group:last-child {
+  margin-bottom: 0;
+}
+
+.cfg-form-group > label {
+  display: block;
+  font-size: var(--admin-text-sm);
+  font-weight: var(--admin-font-medium);
+  margin-bottom: 6px;
+  color: var(--admin-primary);
+}
+
+.cfg-form-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-sm);
+  font-size: var(--admin-text-sm);
+  transition: border-color 0.15s;
+  box-sizing: border-box;
+}
+
+.cfg-form-input:focus {
+  outline: none;
+  border-color: var(--admin-accent);
+}
+
+.cfg-form-input:disabled {
+  background: var(--admin-bg-tertiary);
+  color: var(--admin-secondary);
+}
+
+.cfg-form-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-sm);
+  font-size: var(--admin-text-sm);
+  min-height: 80px;
+  resize: vertical;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.cfg-form-textarea:focus {
+  outline: none;
+  border-color: var(--admin-accent);
+}
+
+.cfg-form-textarea.cfg-form-mono {
+  font-family: var(--admin-font-mono);
+  font-size: var(--admin-text-xs);
+}
+
+.cfg-form-hint {
+  display: block;
+  font-size: var(--admin-text-xs);
+  color: var(--admin-secondary);
+  margin-top: 4px;
+}
+
+.cfg-form-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: var(--admin-text-sm);
+  font-weight: normal !important;
+}
+
+.cfg-form-checkbox input[type="checkbox"] {
+  margin: 0;
+}
+
+.cfg-mount-helpers {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+/* =========================================================================
+   BUTTON VARIANTS
+   ========================================================================= */
+
+.btn-outline-danger {
+  background: transparent;
+  color: var(--admin-error);
+  border: 1px solid var(--admin-error);
+}
+
+.btn-outline-danger:hover {
+  background: var(--admin-error);
+  color: white;
+}
+
+.btn-warning {
+  background: var(--admin-warning);
+  color: white;
+  border: none;
+}
+
+.btn-warning:hover {
+  opacity: 0.9;
+}
+
+/* =========================================================================
+   RESPONSIVE
+   ========================================================================= */
+
+@media (max-width: 768px) {
+  .cfg-progress-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .cfg-progress-info {
+    width: 100%;
+  }
+
+  .cfg-progress-bar-container {
+    max-width: none;
+  }
+
+  .cfg-progress-steps {
+    gap: 12px;
+  }
+
+  .cfg-assets-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cfg-options-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cfg-slot-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .cfg-slot-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .cfg-danger-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .cfg-toast {
+    left: 16px;
+    right: 16px;
+  }
+
+  .cfg-modal {
+    margin: 16px;
+    max-height: calc(100vh - 32px);
+  }
+
+  /* Option card mobile adjustments */
+  .cfg-option-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .cfg-option-row > label {
+    margin-bottom: 2px;
+  }
+
+  .cfg-option-file {
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .cfg-option-price {
+    width: 100%;
+  }
+
+  .cfg-price-input {
+    flex: 1;
+    max-width: 120px;
+  }
+}
+
+/* =========================================================================
+   UTILITY CLASSES (backwards compatibility)
+   ========================================================================= */
+
+.text-success {
+  color: var(--admin-success);
+}
+
+.text-warning {
+  color: var(--admin-warning);
+}
+
+.text-danger {
+  color: var(--admin-error);
+}
+
+/* =========================================================================
+   LOADING SKELETON
+   ========================================================================= */
+
+@keyframes cfg-skeleton-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.cfg-loading-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 0;
+}
+
+.cfg-skeleton-progress {
+  background: var(--admin-bg-primary);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-lg);
+  padding: 16px 20px;
+}
+
+.cfg-skeleton-bar {
+  height: 6px;
+  width: 60%;
+  background: linear-gradient(90deg, var(--admin-bg-tertiary) 25%, var(--admin-divider) 50%, var(--admin-bg-tertiary) 75%);
+  background-size: 200% 100%;
+  animation: cfg-skeleton-shimmer 1.5s infinite;
+  border-radius: 3px;
+  margin-bottom: 16px;
+}
+
+.cfg-skeleton-steps {
+  display: flex;
+  gap: 24px;
+}
+
+.cfg-skeleton-step {
+  width: 80px;
+  height: 22px;
+  background: linear-gradient(90deg, var(--admin-bg-tertiary) 25%, var(--admin-divider) 50%, var(--admin-bg-tertiary) 75%);
+  background-size: 200% 100%;
+  animation: cfg-skeleton-shimmer 1.5s infinite;
+  border-radius: var(--admin-radius-sm);
+}
+
+.cfg-skeleton-section {
+  background: var(--admin-bg-primary);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-lg);
+  padding: 16px;
+}
+
+.cfg-skeleton-header {
+  height: 40px;
+  background: linear-gradient(90deg, var(--admin-bg-tertiary) 25%, var(--admin-divider) 50%, var(--admin-bg-tertiary) 75%);
+  background-size: 200% 100%;
+  animation: cfg-skeleton-shimmer 1.5s infinite;
+  border-radius: var(--admin-radius-md);
+  margin-bottom: 16px;
+}
+
+.cfg-skeleton-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.cfg-skeleton-card {
+  height: 120px;
+  background: linear-gradient(90deg, var(--admin-bg-tertiary) 25%, var(--admin-divider) 50%, var(--admin-bg-tertiary) 75%);
+  background-size: 200% 100%;
+  animation: cfg-skeleton-shimmer 1.5s infinite;
+  border-radius: var(--admin-radius-md);
+}
+
+.cfg-skeleton-slot {
+  height: 80px;
+  background: linear-gradient(90deg, var(--admin-bg-tertiary) 25%, var(--admin-divider) 50%, var(--admin-bg-tertiary) 75%);
+  background-size: 200% 100%;
+  animation: cfg-skeleton-shimmer 1.5s infinite;
+  border-radius: var(--admin-radius-md);
+}

@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import AdminLayout from './AdminLayout';
+import ProductNavTabs from '../../components/admin/ProductNavTabs';
 import './AdminUsers.css';
 import { adminProductsService, type BaseProduct } from '../../services/adminProductsService';
 import { digitalFileService, type DigitalFileInfo } from '../../services/digitalFileService';
@@ -178,31 +179,7 @@ const AdminProductDigitalFile: React.FC = () => {
   };
 
   // Navigation tabs
-  const navTabs = (
-    <div className="admin-nav-tabs">
-      <Link to={`/admin/products/${id}`} className="admin-nav-tab">
-        📝 Product Detail
-      </Link>
-      <Link to={`/admin/products/${id}`} className="admin-nav-tab">
-        📦 Variants ({Array.isArray(product?.variants) ? product.variants.length : 0})
-      </Link>
-      <Link to={`/admin/products/${id}/tabs`} className="admin-nav-tab">
-        📋 Manage Tabs
-      </Link>
-      <Link to={`/admin/products/${id}/attachments`} className="admin-nav-tab">
-        📎 Manage Attachments
-      </Link>
-      <Link to={`/admin/products/${id}/gallery`} className="admin-nav-tab">
-        📸 Gallery
-      </Link>
-      <Link to={`/admin/products/${id}/3d-model`} className="admin-nav-tab">
-        🎲 3D Model
-      </Link>
-      <Link to={`/admin/products/${id}/digital-file`} className="admin-nav-tab active">
-        💾 Digital File
-      </Link>
-    </div>
-  );
+  const navTabs = <ProductNavTabs productId={id!} activeTab="digital-file" />;
 
   return (
     <AdminLayout title="Digital File Management" navTabs={navTabs}>

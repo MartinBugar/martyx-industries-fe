@@ -7,6 +7,7 @@ import { logInfo, logError } from '../../services/logger';
 import toast from 'react-hot-toast';
 import './AdminUsers.css';
 import './AdminButtonOverrides.css';
+import './AdminCassandra.css';
 
 const AdminCassandra: React.FC = () => {
     const [images, setImages] = useState<CassandraImageDto[]>([]);
@@ -130,15 +131,15 @@ const AdminCassandra: React.FC = () => {
             <div className="admin-page">
                 <div className="admin-container">
                     {/* Header */}
-                    <div className="admin-card" style={{ marginBottom: '24px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
+                    <div className="admin-card admin-cassandra-header-card">
+                        <div className="admin-cassandra-header-flex">
                             <div>
-                                <h2 className="section-title" style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                    <Database size={24} style={{ color: 'var(--admin-accent)' }} />
+                                <h2 className="section-title admin-cassandra-title">
+                                    <Database size={24} className="admin-cassandra-title-icon" />
                                     Cassandra Mascot Gallery
                                 </h2>
-                                <p style={{ margin: 0, color: 'var(--admin-secondary)', fontSize: '14px' }}>
-                                    Upload and manage Cassandra mascot images. Storage: <code style={{ background: 'var(--admin-bg-secondary)', padding: '2px 6px', borderRadius: '4px' }}>CASSANDRA/</code>
+                                <p className="admin-cassandra-desc">
+                                    Upload and manage Cassandra mascot images. Storage: <code className="admin-cassandra-code">CASSANDRA/</code>
                                 </p>
                             </div>
                             <Button variant="primary" onClick={() => fileInputRef.current?.click()} disabled={uploadProgress.uploading}>
@@ -150,15 +151,15 @@ const AdminCassandra: React.FC = () => {
 
                     {/* Upload Progress */}
                     {uploadProgress.uploading && (
-                        <div className="admin-card" style={{ marginBottom: '20px', background: 'var(--admin-info-bg)', borderColor: 'var(--admin-info)' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                                <div style={{ flex: 1 }}>
-                                    <p style={{ margin: '0 0 8px', fontWeight: 600 }}>Uploading {uploadProgress.current}/{uploadProgress.total} images...</p>
-                                    <div style={{ height: 8, background: 'var(--admin-bg-tertiary)', borderRadius: 4, overflow: 'hidden' }}>
-                                        <div style={{ height: '100%', width: `${(uploadProgress.current / uploadProgress.total) * 100}%`, background: 'var(--admin-accent)', borderRadius: 4, transition: 'width 0.3s' }} />
+                        <div className="admin-card admin-cassandra-progress-card">
+                            <div className="admin-cassandra-progress-flex">
+                                <div className="admin-cassandra-progress-content">
+                                    <p className="admin-cassandra-progress-text">Uploading {uploadProgress.current}/{uploadProgress.total} images...</p>
+                                    <div className="admin-cassandra-progress-bar">
+                                        <div className="admin-cassandra-progress-fill" style={{ width: `${(uploadProgress.current / uploadProgress.total) * 100}%` }} />
                                     </div>
                                 </div>
-                                <span style={{ fontWeight: 700, fontSize: '18px', color: 'var(--admin-accent)' }}>
+                                <span className="admin-cassandra-progress-percent">
                                     {Math.round((uploadProgress.current / uploadProgress.total) * 100)}%
                                 </span>
                             </div>
@@ -167,23 +168,23 @@ const AdminCassandra: React.FC = () => {
 
                     {/* Upload Summary */}
                     {uploadSummary?.show && (
-                        <div className={`alert ${uploadSummary.failed > 0 ? 'alert-error' : ''}`} style={{ marginBottom: '20px', background: uploadSummary.failed > 0 ? 'var(--admin-error-bg)' : 'var(--admin-success-bg)', border: `1px solid ${uploadSummary.failed > 0 ? 'var(--admin-error)' : 'var(--admin-success)'}` }}>
+                        <div className={`alert admin-cassandra-summary ${uploadSummary.failed > 0 ? 'alert-error admin-cassandra-summary-error' : 'admin-cassandra-summary-success'}`}>
                             <span>
                                 {uploadSummary.failed === 0
                                     ? `All ${uploadSummary.successful} images uploaded successfully!`
                                     : `${uploadSummary.successful}/${uploadSummary.total} images uploaded. ${uploadSummary.failed} failed.`}
                             </span>
-                            <button onClick={() => setUploadSummary(null)} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px' }}>×</button>
+                            <button onClick={() => setUploadSummary(null)} className="admin-cassandra-summary-close">×</button>
                         </div>
                     )}
 
                     {/* Main Featured Image */}
                     {!loading && images.length > 0 && (
-                        <div className="admin-card" style={{ marginBottom: '24px', padding: 0, overflow: 'hidden' }}>
+                        <div className="admin-card admin-cassandra-featured-card">
                             <img
                                 src={images[0].imageUrl}
                                 alt={images[0].name}
-                                style={{ width: '100%', maxHeight: 400, objectFit: 'cover', cursor: 'pointer' }}
+                                className="admin-cassandra-featured-img"
                                 onClick={() => openLightbox(0)}
                             />
                         </div>
@@ -195,10 +196,10 @@ const AdminCassandra: React.FC = () => {
                             <SkeletonTable rows={3} columns={4} />
                         </div>
                     ) : images.length === 0 ? (
-                        <div className="admin-card" style={{ textAlign: 'center', padding: '60px 20px' }}>
-                            <Image size={48} style={{ color: 'var(--admin-secondary)', marginBottom: '16px' }} />
-                            <h3 style={{ margin: '0 0 8px', color: 'var(--admin-primary)' }}>No Images</h3>
-                            <p style={{ margin: '0 0 20px', color: 'var(--admin-secondary)' }}>Upload some images to create the Cassandra gallery.</p>
+                        <div className="admin-card admin-cassandra-empty">
+                            <Image size={48} className="admin-cassandra-empty-icon" />
+                            <h3 className="admin-cassandra-empty-title">No Images</h3>
+                            <p className="admin-cassandra-empty-text">Upload some images to create the Cassandra gallery.</p>
                             <Button variant="primary" onClick={() => fileInputRef.current?.click()}>
                                 <Upload size={16} />
                                 Upload Images
@@ -206,30 +207,30 @@ const AdminCassandra: React.FC = () => {
                         </div>
                     ) : (
                         <div className="admin-card">
-                            <h3 className="section-title" style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <Image size={20} style={{ color: 'var(--admin-accent)' }} />
+                            <h3 className="section-title admin-cassandra-gallery-title">
+                                <Image size={20} className="admin-cassandra-title-icon" />
                                 Gallery ({images.length} images)
                             </h3>
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
+                            <div className="admin-cassandra-gallery-grid">
                                 {images.map((image, index) => (
-                                    <div key={image.id} style={{ position: 'relative', borderRadius: '10px', overflow: 'hidden', border: '1px solid var(--admin-border)', background: 'var(--admin-bg-secondary)' }}>
+                                    <div key={image.id} className="admin-cassandra-image-card">
                                         <div
-                                            style={{ aspectRatio: '1', cursor: 'pointer', overflow: 'hidden' }}
+                                            className="admin-cassandra-image-wrapper"
                                             onClick={() => openLightbox(index)}
                                         >
-                                            <img src={image.thumbnailUrl || image.imageUrl} alt={image.name} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.3s' }} />
+                                            <img src={image.thumbnailUrl || image.imageUrl} alt={image.name} className="admin-cassandra-image-thumb" />
                                         </div>
-                                        <div style={{ padding: '12px' }}>
-                                            <div style={{ fontSize: '14px', fontWeight: 500, color: 'var(--admin-primary)', marginBottom: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                        <div className="admin-cassandra-image-info">
+                                            <div className="admin-cassandra-image-name">
                                                 {image.name}
                                             </div>
                                             {image.description && (
-                                                <div style={{ fontSize: '12px', color: 'var(--admin-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                <div className="admin-cassandra-image-desc">
                                                     {image.description}
                                                 </div>
                                             )}
                                         </div>
-                                        <div style={{ position: 'absolute', top: 8, right: 8 }}>
+                                        <div className="admin-cassandra-image-delete">
                                             <Button variant="danger" size="sm" onClick={(e) => { e.stopPropagation(); handleDelete(image.id!); }} title="Delete image">
                                                 <Trash2 size={14} />
                                             </Button>
@@ -241,9 +242,9 @@ const AdminCassandra: React.FC = () => {
                     )}
 
                     {/* Drop Zone */}
-                    <div className="admin-card" style={{ marginTop: '24px' }}>
-                        <h3 className="section-title" style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <Upload size={20} style={{ color: 'var(--admin-accent)' }} />
+                    <div className="admin-card admin-cassandra-upload-card">
+                        <h3 className="section-title admin-cassandra-upload-title">
+                            <Upload size={20} className="admin-cassandra-title-icon" />
                             Upload New Images
                         </h3>
                         <div
@@ -252,27 +253,18 @@ const AdminCassandra: React.FC = () => {
                             onDragOver={uploadProgress.uploading ? undefined : handleDrag}
                             onDrop={uploadProgress.uploading ? undefined : handleDrop}
                             onClick={uploadProgress.uploading ? undefined : () => fileInputRef.current?.click()}
-                            style={{
-                                border: `2px dashed ${dragActive ? 'var(--admin-accent)' : 'var(--admin-border)'}`,
-                                borderRadius: '10px',
-                                padding: '40px 20px',
-                                textAlign: 'center',
-                                cursor: uploadProgress.uploading ? 'not-allowed' : 'pointer',
-                                background: dragActive ? 'var(--admin-accent-light)' : 'var(--admin-bg-secondary)',
-                                opacity: uploadProgress.uploading ? 0.6 : 1,
-                                transition: 'all 0.2s'
-                            }}
+                            className={`admin-cassandra-dropzone ${dragActive ? 'admin-cassandra-dropzone-active' : ''} ${uploadProgress.uploading ? 'admin-cassandra-dropzone-disabled' : ''}`}
                         >
-                            <Image size={40} style={{ color: 'var(--admin-secondary)', marginBottom: '12px' }} />
+                            <Image size={40} className="admin-cassandra-dropzone-icon" />
                             {uploadProgress.uploading ? (
                                 <>
-                                    <p style={{ margin: 0, fontWeight: 600, color: 'var(--admin-primary)' }}>Upload in progress...</p>
-                                    <p style={{ margin: '6px 0 0', fontSize: '14px', color: 'var(--admin-secondary)' }}>Please wait for current upload to complete</p>
+                                    <p className="admin-cassandra-dropzone-text">Upload in progress...</p>
+                                    <p className="admin-cassandra-dropzone-hint">Please wait for current upload to complete</p>
                                 </>
                             ) : (
                                 <>
-                                    <p style={{ margin: 0, fontWeight: 600, color: 'var(--admin-primary)' }}>Click to upload or drag and drop</p>
-                                    <p style={{ margin: '6px 0 0', fontSize: '14px', color: 'var(--admin-secondary)' }}>PNG, JPG, WebP up to 10MB each</p>
+                                    <p className="admin-cassandra-dropzone-text">Click to upload or drag and drop</p>
+                                    <p className="admin-cassandra-dropzone-hint">PNG, JPG, WebP up to 10MB each</p>
                                 </>
                             )}
                         </div>
@@ -282,7 +274,7 @@ const AdminCassandra: React.FC = () => {
                             accept="image/*"
                             multiple
                             onChange={handleFileInput}
-                            style={{ display: 'none' }}
+                            className="admin-cassandra-file-input"
                         />
                     </div>
                 </div>
@@ -294,25 +286,25 @@ const AdminCassandra: React.FC = () => {
                     onClick={closeLightbox}
                     onKeyDown={handleKeyDown}
                     tabIndex={0}
-                    style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.95)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1100 }}
+                    className="admin-cassandra-lightbox"
                 >
-                    <button onClick={closeLightbox} style={{ position: 'absolute', top: 20, right: 20, background: 'none', border: 'none', color: 'white', cursor: 'pointer' }} title="Close (Esc)">
+                    <button onClick={closeLightbox} className="admin-cassandra-lightbox-close" title="Close (Esc)">
                         <X size={32} />
                     </button>
-                    <button onClick={(e) => { e.stopPropagation(); prevImage(); }} style={{ position: 'absolute', left: 20, background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white', padding: '16px', borderRadius: '50%', cursor: 'pointer' }} title="Previous (←)">
+                    <button onClick={(e) => { e.stopPropagation(); prevImage(); }} className="admin-cassandra-lightbox-nav admin-cassandra-lightbox-prev" title="Previous (←)">
                         <ChevronLeft size={32} />
                     </button>
-                    <button onClick={(e) => { e.stopPropagation(); nextImage(); }} style={{ position: 'absolute', right: 20, background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white', padding: '16px', borderRadius: '50%', cursor: 'pointer' }} title="Next (→)">
+                    <button onClick={(e) => { e.stopPropagation(); nextImage(); }} className="admin-cassandra-lightbox-nav admin-cassandra-lightbox-next" title="Next (→)">
                         <ChevronRight size={32} />
                     </button>
-                    <div onClick={(e) => e.stopPropagation()} style={{ maxWidth: '90vw', maxHeight: '90vh', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                        <img src={images[lightboxImageIndex].imageUrl} alt={images[lightboxImageIndex].name} style={{ maxWidth: '100%', maxHeight: '80vh', objectFit: 'contain', borderRadius: '8px' }} />
-                        <div style={{ marginTop: '16px', textAlign: 'center', color: 'white' }}>
-                            <div style={{ fontSize: '18px', fontWeight: 600 }}>{images[lightboxImageIndex].name}</div>
+                    <div onClick={(e) => e.stopPropagation()} className="admin-cassandra-lightbox-content">
+                        <img src={images[lightboxImageIndex].imageUrl} alt={images[lightboxImageIndex].name} className="admin-cassandra-lightbox-img" />
+                        <div className="admin-cassandra-lightbox-info">
+                            <div className="admin-cassandra-lightbox-name">{images[lightboxImageIndex].name}</div>
                             {images[lightboxImageIndex].description && (
-                                <div style={{ fontSize: '14px', opacity: 0.7, marginTop: '4px' }}>{images[lightboxImageIndex].description}</div>
+                                <div className="admin-cassandra-lightbox-desc">{images[lightboxImageIndex].description}</div>
                             )}
-                            <div style={{ fontSize: '14px', opacity: 0.5, marginTop: '8px' }}>{lightboxImageIndex + 1} / {images.length}</div>
+                            <div className="admin-cassandra-lightbox-counter">{lightboxImageIndex + 1} / {images.length}</div>
                         </div>
                     </div>
                 </div>

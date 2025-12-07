@@ -30,7 +30,7 @@ const SingleVariantDisplay: React.FC<SingleVariantDisplayProps> = ({
       aria-label={t('variant.configuration_region', 'Product configuration')}
     >
       <div className="variant-label" role="text">
-        {t('variant.configuration_label', 'Configuration')}:
+        {t('variant.product_type_label', 'Product Type')}:
       </div>
 
       <div

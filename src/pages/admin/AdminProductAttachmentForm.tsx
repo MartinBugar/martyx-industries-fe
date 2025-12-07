@@ -17,6 +17,7 @@ import {
 import { Button } from '../../components/ui';
 import { apiClient } from '../../services/apiClient';
 import './AdminUsers.css';
+import './AdminProductAttachmentForm.css';
 import { logError } from '../../services/logger';
 
 const ATTACHMENT_TYPES = [
@@ -166,7 +167,7 @@ const AdminProductAttachmentForm: React.FC = () => {
       <AdminLayout title={isEditMode ? 'Edit Attachment' : 'Upload Attachment'}>
         <div className="admin-page">
           <div className="admin-container">
-            <div className="admin-card" style={{ textAlign: 'center', padding: '40px' }}>
+            <div className="admin-card admin-attach-form-loading">
               Loading...
             </div>
           </div>
@@ -182,10 +183,10 @@ const AdminProductAttachmentForm: React.FC = () => {
           {/* Header */}
           <div className="admin-header">
             <div>
-              <h2 style={{ marginBottom: 8 }}>
+              <h2 className="admin-attach-form-title">
                 {isEditMode ? 'Edit Attachment' : 'Upload New Attachment'}
               </h2>
-              <p style={{ color: '#6b7280', fontSize: '14px' }}>
+              <p className="admin-attach-form-subtitle">
                 {isEditMode
                   ? 'Update attachment metadata (file cannot be changed)'
                   : 'Upload a new file for public download'}
@@ -193,14 +194,14 @@ const AdminProductAttachmentForm: React.FC = () => {
             </div>
             <div className="header-actions">
               <Link to={`/admin/products/${productId}/attachments`} className="btn btn-outline">
-                <ArrowLeft size={16} style={{ marginRight: 8 }} />
+                <ArrowLeft size={16} className="admin-attach-form-back-icon" />
                 Back to Attachments
               </Link>
             </div>
           </div>
 
           {error && (
-            <div className="alert alert-error" style={{ marginBottom: 24 }}>
+            <div className="alert alert-error admin-attach-form-error">
               {error}
             </div>
           )}
@@ -208,39 +209,38 @@ const AdminProductAttachmentForm: React.FC = () => {
           {/* Form */}
           <form onSubmit={handleSubmit}>
             <div className="admin-card">
-              <h3 className="section-title" style={{ marginBottom: 24 }}>
+              <h3 className="section-title admin-attach-form-section-title">
                 {isEditMode ? 'Edit Attachment' : 'Upload New Attachment'}
               </h3>
 
               {/* File Upload Section (only in create mode) */}
               {!isEditMode && (
-                <div style={{ marginBottom: 32 }}>
-                  <h4 style={{ fontSize: '16px', fontWeight: 600, marginBottom: 16, color: '#374151' }}>
+                <div className="admin-attach-form-section">
+                  <h4 className="admin-attach-form-section-heading">
                     File Upload
                   </h4>
 
                   <div className="form-group">
                     <label className="form-label">
-                      Select File <span style={{ color: '#ef4444' }}>*</span>
+                      Select File <span className="admin-attach-form-required">*</span>
                     </label>
                     <input
                       type="file"
                       onChange={handleFileChange}
-                      className="form-control"
+                      className={`form-control ${fieldErrors.file ? 'is-invalid' : ''}`}
                       accept=".pdf,.zip,.doc,.docx,.txt,.md,.png,.jpg,.jpeg,.svg"
-                      style={fieldErrors.file ? { borderColor: '#ef4444' } : {}}
                     />
                     {fieldErrors.file && (
-                      <div style={{ color: '#ef4444', fontSize: '13px', marginTop: '4px', fontWeight: 500 }}>
+                      <div className="admin-attach-form-field-error">
                         ⚠ {fieldErrors.file}
                       </div>
                     )}
                     {selectedFile && (
-                      <div style={{ marginTop: 8, fontSize: '13px', color: '#10B981', fontWeight: 500 }}>
+                      <div className="admin-attach-form-success">
                         ✓ Selected: {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
                       </div>
                     )}
-                    <small style={{ color: '#6b7280', fontSize: '13px' }}>
+                    <small className="admin-attach-form-hint">
                       Supported formats: PDF, ZIP, DOC, DOCX, TXT, MD, PNG, JPG, SVG
                     </small>
                   </div>
@@ -249,12 +249,12 @@ const AdminProductAttachmentForm: React.FC = () => {
 
               {/* Current File Info (edit mode) */}
               {isEditMode && existingAttachment && (
-                <div style={{ marginBottom: 32 }}>
-                  <div style={{ padding: '16px', background: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: '8px' }}>
-                    <h4 style={{ fontSize: '15px', fontWeight: 600, marginBottom: 12, color: '#0c4a6e' }}>
+                <div className="admin-attach-form-section">
+                  <div className="admin-attach-form-info-box">
+                    <h4 className="admin-attach-form-info-title">
                       Current File
                     </h4>
-                    <div style={{ fontSize: '14px', color: '#0c4a6e', display: 'grid', gap: 6 }}>
+                    <div className="admin-attach-form-info-content">
                       <div><strong>File:</strong> {existingAttachment.fileName}</div>
                       {existingAttachment.formattedFileSize && (
                         <div><strong>Size:</strong> {existingAttachment.formattedFileSize}</div>
@@ -262,12 +262,12 @@ const AdminProductAttachmentForm: React.FC = () => {
                       {existingAttachment.fileFormat && (
                         <div><strong>Format:</strong> {existingAttachment.fileFormat}</div>
                       )}
-                      <div style={{ marginTop: 8 }}>
+                      <div className="admin-attach-form-info-link-wrap">
                         <a
                           href={existingAttachment.cdnUrl || existingAttachment.fileUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          style={{ color: '#0284c7', textDecoration: 'underline', fontSize: '14px', fontWeight: 500 }}
+                          className="admin-attach-form-info-link"
                         >
                           View/Download File →
                         </a>
@@ -278,30 +278,29 @@ const AdminProductAttachmentForm: React.FC = () => {
               )}
 
               {/* Basic Information */}
-              <div style={{ marginBottom: 32 }}>
-                <h4 style={{ fontSize: '16px', fontWeight: 600, marginBottom: 16, color: '#374151' }}>
+              <div className="admin-attach-form-section">
+                <h4 className="admin-attach-form-section-heading">
                   Basic Information
                 </h4>
 
-                <div style={{ display: 'grid', gap: 20 }}>
+                <div className="admin-attach-form-fields">
                   <div className="form-group">
                     <label className="form-label">
-                      Display Label <span style={{ color: '#ef4444' }}>*</span>
+                      Display Label <span className="admin-attach-form-required">*</span>
                     </label>
                     <input
                       type="text"
-                      className="form-control"
+                      className={`form-control ${fieldErrors.displayLabel ? 'is-invalid' : ''}`}
                       value={formData.displayLabel}
                       onChange={(e) => setFormData({ ...formData, displayLabel: e.target.value })}
                       placeholder="e.g., Complete Assembly Guide"
-                      style={fieldErrors.displayLabel ? { borderColor: '#ef4444' } : {}}
                     />
                     {fieldErrors.displayLabel && (
-                      <div style={{ color: '#ef4444', fontSize: '13px', marginTop: '4px', fontWeight: 500 }}>
+                      <div className="admin-attach-form-field-error">
                         ⚠ {fieldErrors.displayLabel}
                       </div>
                     )}
-                    <small style={{ color: '#6b7280', fontSize: '13px' }}>
+                    <small className="admin-attach-form-hint">
                       The name shown to users when viewing attachments.
                     </small>
                   </div>
@@ -315,7 +314,7 @@ const AdminProductAttachmentForm: React.FC = () => {
                       placeholder="Optional description shown to users"
                       rows={3}
                     />
-                    <small style={{ color: '#6b7280', fontSize: '13px' }}>
+                    <small className="admin-attach-form-hint">
                       Brief description of what this file contains (optional).
                     </small>
                   </div>
@@ -323,12 +322,12 @@ const AdminProductAttachmentForm: React.FC = () => {
               </div>
 
               {/* Configuration */}
-              <div style={{ marginBottom: 32 }}>
-                <h4 style={{ fontSize: '16px', fontWeight: 600, marginBottom: 16, color: '#374151' }}>
+              <div className="admin-attach-form-section">
+                <h4 className="admin-attach-form-section-heading">
                   Configuration
                 </h4>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+                <div className="admin-attach-form-grid-2col">
                   <div className="form-group">
                     <label className="form-label">Attachment Type</label>
                     <select
@@ -342,7 +341,7 @@ const AdminProductAttachmentForm: React.FC = () => {
                         </option>
                       ))}
                     </select>
-                    <small style={{ color: '#6b7280', fontSize: '13px' }}>
+                    <small className="admin-attach-form-hint">
                       Category of this attachment.
                     </small>
                   </div>
@@ -356,7 +355,7 @@ const AdminProductAttachmentForm: React.FC = () => {
                       onChange={(e) => setFormData({ ...formData, displayOrder: Number(e.target.value) })}
                       min={0}
                     />
-                    <small style={{ color: '#6b7280', fontSize: '13px' }}>
+                    <small className="admin-attach-form-hint">
                       Lower numbers appear first.
                     </small>
                   </div>
@@ -376,52 +375,47 @@ const AdminProductAttachmentForm: React.FC = () => {
               </div>
 
               {/* Advanced Settings */}
-              <div style={{ marginBottom: 32 }}>
-                <h4 style={{ fontSize: '16px', fontWeight: 600, marginBottom: 16, color: '#374151' }}>
+              <div className="admin-attach-form-section">
+                <h4 className="admin-attach-form-section-heading">
                   Advanced Settings
                 </h4>
 
-                <div style={{ display: 'flex', gap: 24 }}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                <div className="admin-attach-form-checkboxes">
+                  <label className="admin-attach-form-checkbox-label">
                     <input
                       type="checkbox"
                       checked={formData.active}
                       onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
-                      style={{ width: 18, height: 18, cursor: 'pointer' }}
+                      className="admin-attach-form-checkbox"
                     />
-                    <span style={{ fontSize: '14px', color: '#374151' }}>Active (visible to users)</span>
+                    <span className="admin-attach-form-checkbox-text">Active (visible to users)</span>
                   </label>
 
-                  <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                  <label className="admin-attach-form-checkbox-label">
                     <input
                       type="checkbox"
                       checked={formData.featured}
                       onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
-                      style={{ width: 18, height: 18, cursor: 'pointer' }}
+                      className="admin-attach-form-checkbox"
                     />
-                    <span style={{ fontSize: '14px', color: '#374151' }}>Featured</span>
+                    <span className="admin-attach-form-checkbox-text">Featured</span>
                   </label>
                 </div>
               </div>
 
               {/* Form Actions */}
-              <div style={{
-                display: 'flex',
-                gap: 12,
-                paddingTop: 24,
-                borderTop: '1px solid #e5e7eb'
-              }}>
+              <div className="admin-attach-form-actions">
                 <Button
                   type="submit"
                   variant="primary"
                   disabled={saving}
-                  style={{ minWidth: 120 }}
+                  className="admin-attach-form-submit-btn"
                 >
                   {saving ? (
                     isEditMode ? 'Saving...' : 'Uploading...'
                   ) : (
                     <>
-                      {isEditMode ? <Save size={16} style={{ marginRight: 8 }} /> : <Upload size={16} style={{ marginRight: 8 }} />}
+                      {isEditMode ? <Save size={16} className="admin-attach-form-btn-icon" /> : <Upload size={16} className="admin-attach-form-btn-icon" />}
                       {isEditMode ? 'Save Changes' : 'Upload File'}
                     </>
                   )}

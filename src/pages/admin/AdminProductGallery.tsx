@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import AdminLayout from './AdminLayout';
+import ProductNavTabs from '../../components/admin/ProductNavTabs';
 import './AdminUsers.css';
 import { adminProductsService, type BaseProduct } from '../../services/adminProductsService';
 import ProductGalleryUpload from '../../components/ProductGalleryUpload/ProductGalleryUpload';
@@ -183,52 +184,7 @@ const AdminProductGallery: React.FC = () => {
   };
 
   // Navigation tabs
-  const navTabs = (
-    <div className="admin-nav-tabs">
-      <Link
-        to={`/admin/products/${id}`}
-        className="admin-nav-tab"
-      >
-        📝 Product Detail
-      </Link>
-      <Link
-        to={`/admin/products/${id}`}
-        className="admin-nav-tab"
-      >
-        📦 Variants ({Array.isArray(product?.variants) ? product.variants.length : 0})
-      </Link>
-      <Link
-        to={`/admin/products/${id}/tabs`}
-        className="admin-nav-tab"
-      >
-        📋 Manage Tabs
-      </Link>
-      <Link
-        to={`/admin/products/${id}/attachments`}
-        className="admin-nav-tab"
-      >
-        📎 Manage Attachments
-      </Link>
-      <Link
-        to={`/admin/products/${id}/gallery`}
-        className="admin-nav-tab active"
-      >
-        📸 Gallery
-      </Link>
-      <Link
-        to={`/admin/products/${id}/3d-model`}
-        className="admin-nav-tab"
-      >
-        🎲 3D Model
-      </Link>
-      <Link
-        to={`/admin/products/${id}/digital-file`}
-        className="admin-nav-tab"
-      >
-        💾 Digital File
-      </Link>
-    </div>
-  );
+  const navTabs = <ProductNavTabs productId={id!} activeTab="gallery" variantCount={Array.isArray(product?.variants) ? product.variants.length : 0} />;
 
   return (
     <AdminLayout title="Product Gallery Management" navTabs={navTabs}>

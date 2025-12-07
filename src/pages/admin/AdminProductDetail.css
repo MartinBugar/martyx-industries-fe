@@ -1,0 +1,309 @@
+/* AdminProductDetail.css - Styles extracted from inline styles */
+
+/* Icon margin */
+.admin-product-detail-icon-mr {
+  margin-right: 4px;
+}
+
+/* Loading/Empty states */
+.admin-product-detail-loading {
+  text-align: center;
+  padding: 40px;
+}
+
+.admin-product-detail-loading-text {
+  font-size: 18px;
+  color: #666;
+}
+
+.admin-product-detail-empty-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.admin-product-detail-empty-title {
+  margin: 0 0 8px 0;
+}
+
+.admin-product-detail-empty-desc {
+  color: #6b7280;
+  margin-bottom: 24px;
+}
+
+/* Full width grid column */
+.admin-product-detail-full-width {
+  grid-column: 1 / -1;
+}
+
+/* Category section */
+.admin-product-detail-category-section {
+  grid-column: 1 / -1;
+  margin-top: 16px;
+}
+
+/* Status flags section */
+.admin-product-detail-status-section {
+  grid-column: 1 / -1;
+  margin-top: 16px;
+}
+
+.admin-product-detail-status-heading {
+  margin-bottom: 12px;
+}
+
+.admin-product-detail-status-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.admin-product-detail-checkbox-label {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0;
+}
+
+.admin-product-detail-checkbox {
+  margin-right: 8px;
+}
+
+/* Form actions */
+.admin-product-detail-form-actions {
+  margin-top: 24px;
+}
+
+/* Variants tab header */
+.admin-product-detail-variants-header {
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admin-product-detail-variants-desc {
+  color: #6b7280;
+}
+
+/* Variants empty state */
+.admin-product-detail-variants-empty {
+  text-align: center;
+  padding: 48px 24px;
+}
+
+.admin-product-detail-variants-empty-icon {
+  margin: 0 auto 16px;
+  color: #9ca3af;
+}
+
+.admin-product-detail-variants-empty-title {
+  margin-bottom: 8px;
+}
+
+.admin-product-detail-variants-empty-desc {
+  color: #6b7280;
+  margin-bottom: 24px;
+}
+
+/* Variants grid */
+.admin-product-detail-variants-grid {
+  display: grid;
+  gap: 16px;
+}
+
+/* Variant Card */
+.admin-product-detail-variant-card {
+  margin-bottom: 16px;
+  border: 1px solid #e2e8f0;
+  background: white;
+}
+
+.admin-product-detail-variant-card-disabled {
+  margin-bottom: 16px;
+  opacity: 0.6;
+  border: 1px solid #fbbf24;
+  background: #fffbeb;
+}
+
+/* Variant header */
+.admin-product-detail-variant-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid #e2e8f0;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.admin-product-detail-variant-header:hover {
+  background: #f8fafc;
+}
+
+.admin-product-detail-variant-header-disabled:hover {
+  background: #fef3c7;
+}
+
+.admin-product-detail-variant-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.admin-product-detail-variant-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-product-detail-variant-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.admin-product-detail-variant-name {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.admin-product-detail-variant-meta {
+  display: flex;
+  gap: 16px;
+  font-size: 14px;
+  color: #6b7280;
+  flex-wrap: wrap;
+}
+
+.admin-product-detail-variant-price {
+  font-weight: 500;
+  color: #374151;
+}
+
+/* Variant actions */
+.admin-product-detail-variant-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.admin-product-detail-manage-tabs-link {
+  text-decoration: none;
+}
+
+/* Variant expanded */
+.admin-product-detail-variant-expanded {
+  padding: 24px;
+}
+
+/* Details section */
+.admin-product-detail-details-section {
+  margin-bottom: 32px;
+}
+
+.admin-product-detail-details-title {
+  font-size: 14px;
+}
+
+.admin-product-detail-details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  background: #f9fafb;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.admin-product-detail-detail-label {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.admin-product-detail-detail-value {
+  font-size: 14px;
+  color: #1f2937;
+  font-weight: 500;
+}
+
+.admin-product-detail-detail-value-price {
+  font-size: 14px;
+  color: #10B981;
+  font-weight: 600;
+}
+
+/* Components section */
+.admin-product-detail-components-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.admin-product-detail-components-title {
+  font-size: 14px;
+}
+
+.admin-product-detail-components-empty {
+  padding: 24px;
+  background: #fef3c7;
+  border: 1px solid #fbbf24;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #92400e;
+  text-align: center;
+}
+
+.admin-product-detail-components-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-product-detail-component-item {
+  padding: 14px 16px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  transition: border-color 0.2s ease;
+}
+
+.admin-product-detail-component-item:hover {
+  border-color: #d1d5db;
+}
+
+.admin-product-detail-component-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-product-detail-component-name {
+  font-weight: 500;
+  margin-bottom: 2px;
+  color: #1f2937;
+  font-size: 14px;
+}
+
+.admin-product-detail-component-desc {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.admin-product-detail-component-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* Delete action */
+.admin-product-detail-delete-action {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: flex-end;
+}

@@ -1,0 +1,66 @@
+/**
+ * ConfiguratorTab Styles
+ * 3D Product Configurator Tab (full page view in tabs)
+ *
+ * NOTE: ConfiguratorOptions component has its own styles in ConfiguratorOptions.css
+ * This file is only for the ConfiguratorTab wrapper layout
+ */
+
+.configurator-tab {
+  width: 100%;
+  min-height: 500px;
+}
+
+.configurator-tab .configurator-loading,
+.configurator-tab .configurator-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  color: #6b7280;
+}
+
+.configurator-tab .loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: configurator-tab-spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes configurator-tab-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.configurator-tab .configurator-container {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 24px;
+  min-height: 500px;
+}
+
+@media (max-width: 900px) {
+  .configurator-tab .configurator-container {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+/* 3D Preview Canvas */
+.configurator-tab .configurator-preview {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 12px;
+  overflow: hidden;
+  min-height: 450px;
+  position: relative;
+}
+
+.configurator-tab .configurator-preview canvas {
+  width: 100% !important;
+  height: 100% !important;
+}

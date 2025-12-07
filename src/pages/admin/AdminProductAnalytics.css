@@ -1,0 +1,155 @@
+/* AdminProductAnalytics.css - Styles extracted from inline styles */
+
+/* Date Range Card */
+.admin-analytics-date-card {
+  margin-bottom: 24px;
+}
+
+.admin-analytics-date-row {
+  display: flex;
+  gap: 16px;
+  align-items: end;
+  flex-wrap: wrap;
+}
+
+/* Summary Cards Grid */
+.admin-analytics-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.admin-analytics-summary-card {
+  padding: 16px;
+}
+
+.admin-analytics-summary-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.admin-analytics-summary-icon-views {
+  color: #3b82f6;
+}
+
+.admin-analytics-summary-icon-revenue {
+  color: #059669;
+}
+
+.admin-analytics-summary-icon-units {
+  color: #f59e0b;
+}
+
+.admin-analytics-summary-icon-conversion {
+  color: #8b5cf6;
+}
+
+.admin-analytics-summary-label {
+  font-size: 12px;
+  color: #6b7280;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.admin-analytics-summary-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.admin-analytics-summary-value-revenue {
+  color: #059669;
+}
+
+.admin-analytics-summary-subtext {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+/* Trend Icon */
+.admin-analytics-trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+}
+
+.admin-analytics-trend-up {
+  color: #059669;
+}
+
+.admin-analytics-trend-down {
+  color: #dc2626;
+}
+
+.admin-analytics-trend-neutral {
+  color: #6b7280;
+}
+
+/* Table Column Styles */
+.admin-analytics-th-sortable {
+  cursor: pointer;
+}
+
+.admin-analytics-th-right {
+  text-align: right;
+}
+
+.admin-analytics-th-center {
+  text-align: center;
+}
+
+/* Table Cell Content */
+.admin-analytics-date-icon {
+  margin-right: 4px;
+  vertical-align: middle;
+  color: #6b7280;
+}
+
+.admin-analytics-product-name {
+  font-weight: 600;
+}
+
+.admin-analytics-product-id {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.admin-analytics-revenue-value {
+  color: #059669;
+}
+
+.admin-analytics-cell-subtext {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+/* Trend Column */
+.admin-analytics-trends-cell {
+  text-align: center;
+}
+
+.admin-analytics-trends-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+}
+
+.admin-analytics-trend-item {
+  font-size: 11px;
+}
+
+/* Table Info Footer */
+.admin-analytics-table-info {
+  margin-top: 16px;
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #6b7280;
+}

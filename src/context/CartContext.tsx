@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState, type ReactNode, useCallback } from 'react';
 import type { Product } from '../data/productData';
-import { CartContext, type CartItem, type CartProduct } from './cartContextTypes';
+import { CartContext, type CartItem, type CartProduct, type SelectedConfiguration } from './cartContextTypes';
 import { cartService } from '../services/cartService';
 import { productService } from '../services/productService';
 import type { CartItemDto } from '../types/customer';
@@ -594,6 +594,86 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     return result;
   }, [isAuthenticated, sessionId]);
 
+  // Add a configured product to the cart (from 3D configurator)
+  // Always creates a new cart item because configurations are unique
+  const addToCartWithConfiguration = useCallback(async (
+    product: Product,
+    configuration: SelectedConfiguration,
+    totalPriceModifier: number,
+    quantity: number = 1
+  ): Promise<'added' | 'limit' | 'out_of_stock' | 'discontinued' | 'error'> => {
+    // Check availability status first
+    if (product.availabilityStatus === 'OUT_OF_STOCK') {
+      logWarn('[Cart] Product is out of stock:', product.name);
+      return 'out_of_stock';
+    }
+
+    if (product.availabilityStatus === 'DISCONTINUED') {
+      logWarn('[Cart] Product is discontinued:', product.name);
+      return 'discontinued';
+    }
+
+    // Digital products can be sold even when stock is 0
+    const isDigitalProduct = product.variantType === 'DIGITAL_ONLY';
+
+    // For physical products, check stock quantity
+    if (!isDigitalProduct && product.stockQuantity <= 0) {
+      logWarn('[Cart] Product stock is 0:', product.name);
+      return 'out_of_stock';
+    }
+
+    try {
+      // Serialize configuration to JSON
+      const configurationJson = JSON.stringify(configuration);
+
+      logInfo('[Cart] Adding configured item to cart:', product.name, 'Configuration:', configurationJson);
+
+      // Call backend with configuration - returns updated cart
+      const updatedCart = await cartService.addItem(
+        product.variantId,
+        quantity,
+        isAuthenticated ? undefined : sessionId,
+        configurationJson,
+        totalPriceModifier
+      );
+
+      // Sync local state with backend response (not optimistic update)
+      if (updatedCart.items && Array.isArray(updatedCart.items) && updatedCart.items.length > 0) {
+        logInfo('[Cart] Syncing cart with backend response, items:', updatedCart.items.length);
+        const itemPromises = updatedCart.items.map(item => convertCartItemDto(item));
+        const convertedItems = await Promise.all(itemPromises);
+        const validItems = convertedItems.filter((item): item is CartItem => item !== null);
+        setItems(validItems);
+      } else {
+        // Fallback to optimistic update if backend doesn't return items
+        setItems(prevItems => {
+          const newItem: CartItem = {
+            product: toCartProduct(product),
+            quantity: quantity,
+            addedAt: Date.now()
+          };
+          return [...prevItems, newItem];
+        });
+      }
+
+      // Track analytics
+      trackAddToCart(product, quantity);
+
+      // Haptic and sound feedback
+      triggerHaptic('success');
+      playSoundEffect('addToCart');
+
+      logInfo('[Cart] Successfully added configured item to cart');
+      return 'added';
+    } catch (err) {
+      logError('[Cart] Failed to add configured item to cart:', err);
+      triggerHaptic('warning');
+      playSoundEffect('error');
+      toast.error('Failed to add configured product to cart');
+      return 'error';
+    }
+  }, [isAuthenticated, sessionId]);
+
   // Remove a product from the cart by variant ID with optimistic update and rollback
   const removeFromCart = useCallback((variantId: string) => {
     let previousItemsSnapshot: CartItem[] | null = null;
@@ -938,6 +1018,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const contextValue = useMemo(() => ({
     items,
     addToCart,
+    addToCartWithConfiguration,
     removeFromCart,
     updateQuantity,
     clearCart,
@@ -945,7 +1026,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     getTotalPrice,
     mergeCart,
     hasPhysicalProducts
-  }), [items, addToCart, removeFromCart, updateQuantity, clearCart, getTotalItems, getTotalPrice, mergeCart, hasPhysicalProducts]);
+  }), [items, addToCart, addToCartWithConfiguration, removeFromCart, updateQuantity, clearCart, getTotalItems, getTotalPrice, mergeCart, hasPhysicalProducts]);
 
   // Provide the cart context to children components
   return (

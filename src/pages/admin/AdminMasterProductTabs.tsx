@@ -9,6 +9,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Plus, Edit, Trash2, Copy, GripVertical } from 'lucide-react';
 import AdminLayout from './AdminLayout';
+import ProductNavTabs from '../../components/admin/ProductNavTabs';
 import type { ProductTabDto } from '../../types/api';
 import {
   adminGetTabsForMasterProduct,
@@ -88,31 +89,7 @@ const AdminMasterProductTabs: React.FC = () => {
   };
 
   // Navigation tabs
-  const navTabs = (
-    <div className="admin-nav-tabs">
-      <Link to={`/admin/products/${productId}`} className="admin-nav-tab">
-        📝 Product Detail
-      </Link>
-      <Link to={`/admin/products/${productId}`} className="admin-nav-tab">
-        📦 Variants
-      </Link>
-      <Link to={`/admin/products/${productId}/tabs`} className="admin-nav-tab active">
-        📋 Manage Tabs
-      </Link>
-      <Link to={`/admin/products/${productId}/attachments`} className="admin-nav-tab">
-        📎 Manage Attachments
-      </Link>
-      <Link to={`/admin/products/${productId}/gallery`} className="admin-nav-tab">
-        📸 Gallery
-      </Link>
-      <Link to={`/admin/products/${productId}/3d-model`} className="admin-nav-tab">
-        🎲 3D Model
-      </Link>
-      <Link to={`/admin/products/${productId}/digital-file`} className="admin-nav-tab">
-        💾 Digital File
-      </Link>
-    </div>
-  );
+  const navTabs = <ProductNavTabs productId={productId!} activeTab="tabs" />;
 
   return (
     <AdminLayout title="Master Product Tabs Management" navTabs={navTabs}>

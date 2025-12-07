@@ -285,9 +285,9 @@ const AdminTickets: React.FC = () => {
         onClick={() => setMainTab('tickets')}
         aria-label="View user tickets"
       >
-        <MessageSquare size={16} style={{ marginRight: 6 }} />
+        <MessageSquare size={16} className="admin-tickets-icon-mr" />
         Tikety od používateľov
-        {stats && <Badge variant="default" size="sm" style={{ marginLeft: 8 }}>{stats.totalTickets}</Badge>}
+        {stats && <Badge variant="default" size="sm" className="admin-tickets-badge-ml">{stats.totalTickets}</Badge>}
       </button>
       <button
         className={`dashboard-tab ${mainTab === 'contact-forms' ? 'active' : ''}`}
@@ -295,10 +295,10 @@ const AdminTickets: React.FC = () => {
         onClick={() => setMainTab('contact-forms')}
         aria-label="View contact form submissions"
       >
-        <Mail size={16} style={{ marginRight: 6 }} />
+        <Mail size={16} className="admin-tickets-icon-mr" />
         Kontaktné formuláre
         {contactStats && contactStats.unprocessed > 0 && (
-          <Badge variant="warning" size="sm" style={{ marginLeft: 8 }}>{contactStats.unprocessed}</Badge>
+          <Badge variant="warning" size="sm" className="admin-tickets-badge-ml">{contactStats.unprocessed}</Badge>
         )}
       </button>
     </nav>
@@ -306,13 +306,13 @@ const AdminTickets: React.FC = () => {
 
   // Ticket Sub-Navigation Tabs
   const TicketSubTabs = (
-    <nav className="dashboard-tabs" style={{ marginBottom: '1rem' }}>
+    <nav className="dashboard-tabs admin-tickets-subtabs">
       <button
         className={`dashboard-tab ${ticketTab === 'all' ? 'active' : ''}`}
         onClick={() => setTicketTab('all')}
       >
         Všetky
-        {stats && <Badge variant="default" size="sm" style={{ marginLeft: 8 }}>{stats.totalTickets}</Badge>}
+        {stats && <Badge variant="default" size="sm" className="admin-tickets-badge-ml">{stats.totalTickets}</Badge>}
       </button>
       <button
         className={`dashboard-tab ${ticketTab === 'my' ? 'active' : ''}`}
@@ -326,7 +326,7 @@ const AdminTickets: React.FC = () => {
       >
         Nepriradené
         {stats && stats.unassignedTickets > 0 && (
-          <Badge variant="warning" size="sm" style={{ marginLeft: 8 }}>{stats.unassignedTickets}</Badge>
+          <Badge variant="warning" size="sm" className="admin-tickets-badge-ml">{stats.unassignedTickets}</Badge>
         )}
       </button>
       <button
@@ -335,7 +335,7 @@ const AdminTickets: React.FC = () => {
       >
         Urgentné
         {stats && stats.urgentCount > 0 && (
-          <Badge variant="danger" size="sm" style={{ marginLeft: 8 }}>{stats.urgentCount}</Badge>
+          <Badge variant="danger" size="sm" className="admin-tickets-badge-ml">{stats.urgentCount}</Badge>
         )}
       </button>
     </nav>
@@ -355,7 +355,7 @@ const AdminTickets: React.FC = () => {
 
             {/* Stats Cards */}
             {stats && (
-              <div className="stats-grid" style={{ marginBottom: '1.5rem' }}>
+              <div className="stats-grid admin-tickets-stats-grid">
                 <div className="stat-card">
                   <div className="stat-value">{stats.openTickets}</div>
                   <div className="stat-label">Otvorené</div>
@@ -364,16 +364,16 @@ const AdminTickets: React.FC = () => {
                   <div className="stat-value">{stats.inProgressTickets}</div>
                   <div className="stat-label">V riešení</div>
                 </div>
-                <div className="stat-card" style={{ borderColor: '#f59e0b' }}>
-                  <div className="stat-value" style={{ color: '#f59e0b' }}>{stats.slaAtRiskCount}</div>
+                <div className="stat-card admin-tickets-stat-card-warning">
+                  <div className="stat-value admin-tickets-stat-value-warning">{stats.slaAtRiskCount}</div>
                   <div className="stat-label">SLA v ohrození</div>
                 </div>
-                <div className="stat-card" style={{ borderColor: '#ef4444' }}>
-                  <div className="stat-value" style={{ color: '#ef4444' }}>{stats.slaBreachedCount}</div>
+                <div className="stat-card admin-tickets-stat-card-danger">
+                  <div className="stat-value admin-tickets-stat-value-danger">{stats.slaBreachedCount}</div>
                   <div className="stat-label">SLA porušené</div>
                 </div>
-                <div className="stat-card" style={{ borderColor: '#10b981' }}>
-                  <div className="stat-value" style={{ color: '#10b981' }}>{stats.ticketsResolvedToday}</div>
+                <div className="stat-card admin-tickets-stat-card-success">
+                  <div className="stat-value admin-tickets-stat-value-success">{stats.ticketsResolvedToday}</div>
                   <div className="stat-label">Vyriešené dnes</div>
                 </div>
                 {stats.averageSatisfactionRating && (
@@ -386,21 +386,20 @@ const AdminTickets: React.FC = () => {
             )}
 
             {/* Filters */}
-            <div className="admin-header-actions" style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap' }}>
-              <div style={{ position: 'relative', flex: 1, maxWidth: '300px' }}>
-                <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af', pointerEvents: 'none' }} />
+            <div className="admin-header-actions admin-tickets-header-actions">
+              <div className="admin-tickets-search-container">
+                <Search size={18} className="admin-tickets-search-icon" />
                 <input
                   type="text"
-                  className="form-input"
+                  className="form-input admin-tickets-search-input"
                   placeholder="Hľadať tikety..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  style={{ paddingLeft: '40px' }}
                 />
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery('')}
-                    style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center' }}
+                    className="admin-tickets-search-clear"
                     title="Vymazať"
                   >
                     <X size={16} />
@@ -408,10 +407,9 @@ const AdminTickets: React.FC = () => {
                 )}
               </div>
               <select
-                className="form-input"
+                className="form-input admin-tickets-filter-select"
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value as TicketStatus | '')}
-                style={{ width: 'auto', minWidth: '150px' }}
               >
                 <option value="">Všetky stavy</option>
                 <option value="OPEN">Otvorený</option>
@@ -422,10 +420,9 @@ const AdminTickets: React.FC = () => {
                 <option value="CLOSED">Uzavretý</option>
               </select>
               <select
-                className="form-input"
+                className="form-input admin-tickets-filter-select"
                 value={priorityFilter}
                 onChange={(e) => setPriorityFilter(e.target.value as TicketPriority | '')}
-                style={{ width: 'auto', minWidth: '150px' }}
               >
                 <option value="">Všetky priority</option>
                 <option value="URGENT">Urgentná</option>
@@ -434,10 +431,9 @@ const AdminTickets: React.FC = () => {
                 <option value="LOW">Nízka</option>
               </select>
               <select
-                className="form-input"
+                className="form-input admin-tickets-filter-select"
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value ? Number(e.target.value) : '')}
-                style={{ width: 'auto', minWidth: '150px' }}
               >
                 <option value="">Všetky kategórie</option>
                 {categories.map(cat => (
@@ -445,7 +441,7 @@ const AdminTickets: React.FC = () => {
                 ))}
               </select>
               <Button variant="primary" onClick={() => navigate('/admin/tickets/new')}>
-                <Plus size={16} style={{ marginRight: 4 }} />
+                <Plus size={16} className="admin-tickets-icon-mr" />
                 Nový tiket
               </Button>
             </div>
@@ -510,7 +506,7 @@ const AdminTickets: React.FC = () => {
               <table className="admin-table">
                 <thead>
                   <tr>
-                    <th style={{ width: 40 }}>
+                    <th className="admin-tickets-col-checkbox">
                       <input
                         type="checkbox"
                         checked={selectedTickets.size === tickets.length && tickets.length > 0}
@@ -524,7 +520,7 @@ const AdminTickets: React.FC = () => {
                     <th>Stav</th>
                     <th>Priradené</th>
                     <th>Vytvorené</th>
-                    <th style={{ width: 80 }} className="text-right">Akcie</th>
+                    <th className="admin-tickets-col-actions text-right">Akcie</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -539,7 +535,7 @@ const AdminTickets: React.FC = () => {
                       <tr
                         key={ticket.id}
                         onClick={() => handleTicketClick(ticket)}
-                        style={{ cursor: 'pointer' }}
+                        className="admin-tickets-row-clickable"
                       >
                         <td onClick={e => e.stopPropagation()}>
                           <input
@@ -550,17 +546,17 @@ const AdminTickets: React.FC = () => {
                         </td>
                         <td>
                           <div>
-                            <div style={{ fontWeight: 500, color: '#6366f1' }}>{ticket.ticketNumber}</div>
-                            <div style={{ fontSize: '13px', color: '#374151' }}>{ticket.subject}</div>
+                            <div className="admin-tickets-ticket-number">{ticket.ticketNumber}</div>
+                            <div className="admin-tickets-ticket-subject">{ticket.subject}</div>
                             {ticket.messageCount > 0 && (
-                              <Badge variant="default" size="sm" style={{ marginTop: 4 }}>{ticket.messageCount} správ</Badge>
+                              <Badge variant="default" size="sm" className="admin-tickets-message-badge">{ticket.messageCount} správ</Badge>
                             )}
                           </div>
                         </td>
                         <td>
                           <div>
-                            <div style={{ fontWeight: 500 }}>{ticket.customerName || 'Neznámy'}</div>
-                            <div style={{ fontSize: '12px', color: '#6b7280' }}>{ticket.customerEmail}</div>
+                            <div className="admin-tickets-customer-name">{ticket.customerName || 'Neznámy'}</div>
+                            <div className="admin-tickets-customer-email">{ticket.customerEmail}</div>
                           </div>
                         </td>
                         <td>
@@ -570,10 +566,10 @@ const AdminTickets: React.FC = () => {
                         </td>
                         <td onClick={e => e.stopPropagation()}>
                           <select
-                            className="form-input"
+                            className="form-input admin-tickets-inline-select"
                             value={ticket.priority}
                             onChange={(e) => handlePriorityChange(e, ticket.id)}
-                            style={{ width: 'auto', minWidth: '100px', padding: '4px 8px', fontSize: '13px', borderColor: getPriorityColor(ticket.priority) }}
+                            style={{ borderColor: getPriorityColor(ticket.priority) }}
                           >
                             <option value="LOW">{getPriorityLabel('LOW')}</option>
                             <option value="NORMAL">{getPriorityLabel('NORMAL')}</option>
@@ -583,10 +579,10 @@ const AdminTickets: React.FC = () => {
                         </td>
                         <td onClick={e => e.stopPropagation()}>
                           <select
-                            className="form-input"
+                            className="form-input admin-tickets-inline-select-wide"
                             value={ticket.status}
                             onChange={(e) => handleStatusChange(e, ticket.id)}
-                            style={{ width: 'auto', minWidth: '120px', padding: '4px 8px', fontSize: '13px', borderColor: getStatusColor(ticket.status) }}
+                            style={{ borderColor: getStatusColor(ticket.status) }}
                           >
                             <option value="OPEN">{getStatusLabel('OPEN')}</option>
                             <option value="IN_PROGRESS">{getStatusLabel('IN_PROGRESS')}</option>
@@ -598,7 +594,7 @@ const AdminTickets: React.FC = () => {
                         </td>
                         <td>
                           {ticket.assignedToName ? (
-                            <span style={{ fontSize: '13px' }}>{ticket.assignedToName}</span>
+                            <span className="admin-tickets-assigned-name">{ticket.assignedToName}</span>
                           ) : (
                             <Button variant="outline" size="sm" onClick={(e) => handleAssignToMe(e, ticket.id)}>
                               Priradiť mne
@@ -606,7 +602,7 @@ const AdminTickets: React.FC = () => {
                           )}
                         </td>
                         <td>
-                          <span style={{ fontSize: '13px', color: '#6b7280' }}>{formatTimeAgo(ticket.createdAt)}</span>
+                          <span className="admin-tickets-time-ago">{formatTimeAgo(ticket.createdAt)}</span>
                         </td>
                         <td className="text-right" onClick={e => e.stopPropagation()}>
                           <div className="action-buttons">
@@ -624,11 +620,11 @@ const AdminTickets: React.FC = () => {
 
             {/* Pagination Controls */}
             {totalPages > 1 && (
-              <div className="pagination-controls" style={{ marginTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ fontSize: '14px', color: '#6b7280' }}>
+              <div className="pagination-controls admin-tickets-pagination">
+                <div className="admin-tickets-pagination-info">
                   Zobrazené {tickets.length > 0 ? (page * pageSize + 1) : 0} - {Math.min((page + 1) * pageSize, totalElements)} z {totalElements} tiketov
                 </div>
-                <div style={{ display: 'flex', gap: '8px' }}>
+                <div className="admin-tickets-pagination-buttons">
                   <Button
                     variant="outline"
                     size="sm"
@@ -637,7 +633,7 @@ const AdminTickets: React.FC = () => {
                   >
                     Predch.
                   </Button>
-                  <span style={{ padding: '8px 12px', fontSize: '14px', color: '#374151' }}>
+                  <span className="admin-tickets-pagination-page">
                     Strana {page + 1} z {totalPages}
                   </span>
                   <Button
@@ -659,31 +655,30 @@ const AdminTickets: React.FC = () => {
           <>
             {/* Stats Cards */}
             {contactStats && (
-              <div className="stats-grid" style={{ marginBottom: '1.5rem' }}>
+              <div className="stats-grid admin-tickets-stats-grid">
                 <div className="stat-card">
                   <div className="stat-value">{contactStats.total}</div>
                   <div className="stat-label">Celkom</div>
                 </div>
-                <div className="stat-card" style={{ borderColor: '#f59e0b' }}>
-                  <div className="stat-value" style={{ color: '#f59e0b' }}>{contactStats.unprocessed}</div>
+                <div className="stat-card admin-tickets-stat-card-warning">
+                  <div className="stat-value admin-tickets-stat-value-warning">{contactStats.unprocessed}</div>
                   <div className="stat-label">Nespracované</div>
                 </div>
-                <div className="stat-card" style={{ borderColor: '#10b981' }}>
-                  <div className="stat-value" style={{ color: '#10b981' }}>{contactStats.processed}</div>
+                <div className="stat-card admin-tickets-stat-card-success">
+                  <div className="stat-value admin-tickets-stat-value-success">{contactStats.processed}</div>
                   <div className="stat-label">Spracované</div>
                 </div>
               </div>
             )}
 
             {/* Filters */}
-            <div className="admin-header-actions" style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '20px' }}>
+            <div className="admin-header-actions admin-tickets-header-actions">
               <select
-                className="form-input"
+                className="form-input admin-tickets-filter-select-wide"
                 value={contactProcessedFilter === undefined ? '' : contactProcessedFilter.toString()}
                 onChange={(e) => setContactProcessedFilter(
                   e.target.value === '' ? undefined : e.target.value === 'true'
                 )}
-                style={{ width: 'auto', minWidth: '180px' }}
               >
                 <option value="">Všetky</option>
                 <option value="false">Nespracované</option>
@@ -757,7 +752,7 @@ const AdminTickets: React.FC = () => {
                     <th>Správa</th>
                     <th>Dátum</th>
                     <th>Stav</th>
-                    <th style={{ width: 120 }} className="text-right">Akcie</th>
+                    <th className="admin-tickets-col-actions-wide text-right">Akcie</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -771,16 +766,16 @@ const AdminTickets: React.FC = () => {
                     contactForms.map(form => (
                       <tr key={form.id}>
                         <td>
-                          <a href={`mailto:${form.email}`} style={{ color: '#6366f1', textDecoration: 'none' }}>{form.email}</a>
+                          <a href={`mailto:${form.email}`} className="admin-tickets-email-link">{form.email}</a>
                         </td>
-                        <td style={{ fontWeight: 500 }}>{form.subject}</td>
+                        <td className="admin-tickets-subject-text">{form.subject}</td>
                         <td>
-                          <div style={{ maxWidth: '300px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={form.text}>
+                          <div className="admin-tickets-message-cell" title={form.text}>
                             {form.text.length > 100 ? form.text.substring(0, 100) + '...' : form.text}
                           </div>
                         </td>
                         <td>
-                          <span style={{ fontSize: '13px', color: '#6b7280' }}>{adminContactService.formatTimeAgo(form.createdAt)}</span>
+                          <span className="admin-tickets-time-ago">{adminContactService.formatTimeAgo(form.createdAt)}</span>
                         </td>
                         <td>
                           <Badge variant={form.processed ? 'success' : 'warning'} size="sm">
@@ -812,11 +807,11 @@ const AdminTickets: React.FC = () => {
 
             {/* Pagination Controls */}
             {contactTotalPages > 1 && (
-              <div className="pagination-controls" style={{ marginTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ fontSize: '14px', color: '#6b7280' }}>
+              <div className="pagination-controls admin-tickets-pagination">
+                <div className="admin-tickets-pagination-info">
                   Zobrazené {contactForms.length > 0 ? (page * pageSize + 1) : 0} - {Math.min((page + 1) * pageSize, contactTotalElements)} z {contactTotalElements} formulárov
                 </div>
-                <div style={{ display: 'flex', gap: '8px' }}>
+                <div className="admin-tickets-pagination-buttons">
                   <Button
                     variant="outline"
                     size="sm"
@@ -825,7 +820,7 @@ const AdminTickets: React.FC = () => {
                   >
                     Predch.
                   </Button>
-                  <span style={{ padding: '8px 12px', fontSize: '14px', color: '#374151' }}>
+                  <span className="admin-tickets-pagination-page">
                     Strana {page + 1} z {contactTotalPages}
                   </span>
                   <Button

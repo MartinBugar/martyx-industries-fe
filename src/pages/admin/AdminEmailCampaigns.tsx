@@ -3,6 +3,7 @@ import { Mail, Plus, Eye, Send, Archive, BarChart2, TrendingUp, MousePointer } f
 import AdminLayout from './AdminLayout';
 import './AdminDiscounts.css';
 import './AdminButtonOverrides.css';
+import './AdminEmailCampaigns.css';
 import { adminCampaignsService, type EmailCampaign, type CampaignPerformance, type CustomerSegment, type CreateCampaignRequest } from '../../services/adminCampaignsService';
 import { Badge, Button, SkeletonTable, ConfirmDialog, useConfirmDialog } from '../../components/ui';
 import { logError } from '../../services/logger';
@@ -302,7 +303,7 @@ const AdminEmailCampaigns: React.FC = () => {
                     maxLength={50}
                   />
                 </div>
-                <div style={{ gridColumn: '1 / -1' }}>
+                <div className="admin-campaigns-full-width">
                   <label className="form-label">Subject Line *</label>
                   <input
                     className="form-input"
@@ -365,7 +366,7 @@ const AdminEmailCampaigns: React.FC = () => {
                   />
                 </div>
 
-                <div className="form-actions" style={{ gridColumn: '1 / -1' }}>
+                <div className="form-actions admin-campaigns-full-width">
                   <Button variant="primary" type="submit" disabled={creating} loading={creating}>
                     {editingId ? 'Update Campaign' : 'Create Campaign (Draft)'}
                   </Button>
@@ -380,12 +381,11 @@ const AdminEmailCampaigns: React.FC = () => {
           {/* All Campaigns Tab */}
           {activeTab === 'all-campaigns' && (
             <>
-              <div className="admin-header-actions" style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap' }}>
+              <div className="admin-header-actions admin-campaigns-header-actions">
                 <select
-                  className="form-input"
+                  className="form-input admin-campaigns-filter-select"
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value)}
-                  style={{ maxWidth: '200px' }}
                 >
                   <option value="">All Statuses</option>
                   <option value="DRAFT">Draft</option>
@@ -395,10 +395,9 @@ const AdminEmailCampaigns: React.FC = () => {
                   <option value="CANCELLED">Cancelled</option>
                 </select>
                 <select
-                  className="form-input"
+                  className="form-input admin-campaigns-filter-select"
                   value={filterType}
                   onChange={(e) => setFilterType(e.target.value)}
-                  style={{ maxWidth: '200px' }}
                 >
                   <option value="">All Types</option>
                   <option value="NEWSLETTER">Newsletter</option>
@@ -476,7 +475,7 @@ const AdminEmailCampaigns: React.FC = () => {
                       <th>Click Rate</th>
                       <th>Conv. Rate</th>
                       <th>Revenue</th>
-                      <th style={{ width: 180 }} className="text-right">Actions</th>
+                      <th className="admin-campaigns-col-actions text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -490,16 +489,16 @@ const AdminEmailCampaigns: React.FC = () => {
                       campaigns.map(campaign => (
                         <tr key={campaign.id}>
                           <td>
-                            <div style={{ fontWeight: 600 }}>{campaign.campaignName}</div>
-                            <div style={{ fontSize: '12px', color: '#6b7280' }}>{campaign.campaignCode}</div>
-                            <div style={{ fontSize: '11px', color: '#9ca3af', marginTop: '2px' }}>{campaign.subjectLine}</div>
+                            <div className="admin-campaigns-name-main">{campaign.campaignName}</div>
+                            <div className="admin-campaigns-name-code">{campaign.campaignCode}</div>
+                            <div className="admin-campaigns-name-subject">{campaign.subjectLine}</div>
                           </td>
                           <td>{getTypeBadge(campaign.campaignType)}</td>
                           <td>{getStatusBadge(campaign.campaignStatus)}</td>
                           <td>
                             <div>{formatNumber(campaign.totalRecipients)}</div>
                             {campaign.totalSent > 0 && (
-                              <div style={{ fontSize: '11px', color: '#6b7280' }}>
+                              <div className="admin-campaigns-sent-count">
                                 Sent: {formatNumber(campaign.totalSent)}
                               </div>
                             )}
@@ -507,8 +506,8 @@ const AdminEmailCampaigns: React.FC = () => {
                           <td>
                             {campaign.openRate != null ? (
                               <>
-                                <div style={{ fontWeight: 600 }}>{formatPercent(campaign.openRate)}</div>
-                                <div style={{ fontSize: '11px', color: '#6b7280' }}>
+                                <div className="admin-campaigns-rate-value">{formatPercent(campaign.openRate)}</div>
+                                <div className="admin-campaigns-rate-count">
                                   {formatNumber(campaign.totalOpened)} opens
                                 </div>
                               </>
@@ -517,8 +516,8 @@ const AdminEmailCampaigns: React.FC = () => {
                           <td>
                             {campaign.clickRate != null ? (
                               <>
-                                <div style={{ fontWeight: 600 }}>{formatPercent(campaign.clickRate)}</div>
-                                <div style={{ fontSize: '11px', color: '#6b7280' }}>
+                                <div className="admin-campaigns-rate-value">{formatPercent(campaign.clickRate)}</div>
+                                <div className="admin-campaigns-rate-count">
                                   {formatNumber(campaign.totalClicked)} clicks
                                 </div>
                               </>
@@ -533,7 +532,7 @@ const AdminEmailCampaigns: React.FC = () => {
                           </td>
                           <td>
                             {campaign.revenueGenerated != null ? (
-                              <strong style={{ color: '#059669' }}>{formatCurrency(campaign.revenueGenerated)}</strong>
+                              <strong className="admin-campaigns-revenue">{formatCurrency(campaign.revenueGenerated)}</strong>
                             ) : '—'}
                           </td>
                           <td className="text-right">
@@ -561,7 +560,7 @@ const AdminEmailCampaigns: React.FC = () => {
               </div>
 
               {!loading && campaigns.length > 0 && (
-                <div style={{ marginTop: '16px', padding: '12px', background: '#f9fafb', borderRadius: '6px', fontSize: '13px', color: '#6b7280' }}>
+                <div className="admin-campaigns-summary">
                   <strong>Total: {campaigns.length}</strong> campaigns
                 </div>
               )}
@@ -571,14 +570,14 @@ const AdminEmailCampaigns: React.FC = () => {
           {/* Campaign Details Tab */}
           {activeTab === 'campaign-details' && viewingCampaign && (
             <div className="admin-card">
-              <div style={{ marginBottom: '32px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '16px' }}>
+              <div className="admin-campaigns-detail-header">
+                <div className="admin-campaigns-detail-title-row">
                   <div>
-                    <h3 className="section-title" style={{ margin: 0 }}>{viewingCampaign.campaignName}</h3>
-                    <div style={{ display: 'flex', gap: '8px', marginTop: '8px', alignItems: 'center' }}>
+                    <h3 className="section-title admin-campaigns-detail-title">{viewingCampaign.campaignName}</h3>
+                    <div className="admin-campaigns-detail-meta">
                       {getTypeBadge(viewingCampaign.campaignType)}
                       {viewingCampaign.sentAt && (
-                        <span style={{ fontSize: '13px', color: '#6b7280' }}>
+                        <span className="admin-campaigns-detail-sent-date">
                           Sent: {formatDate(viewingCampaign.sentAt)}
                         </span>
                       )}
@@ -587,96 +586,86 @@ const AdminEmailCampaigns: React.FC = () => {
                 </div>
 
                 {/* Summary Metrics */}
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-                  gap: '16px',
-                  marginTop: '24px'
-                }}>
+                <div className="admin-campaigns-metrics-grid">
                   {/* Sent */}
-                  <div style={{ padding: '16px', background: '#f9fafb', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                      <Mail size={18} style={{ color: '#3b82f6' }} />
-                      <div style={{ fontSize: '12px', color: '#6b7280', textTransform: 'uppercase', fontWeight: 600 }}>Sent</div>
+                  <div className="admin-campaigns-metric-card admin-campaigns-metric-card-sent">
+                    <div className="admin-campaigns-metric-header">
+                      <Mail size={18} className="admin-campaigns-metric-icon-sent" />
+                      <div className="admin-campaigns-metric-label admin-campaigns-metric-label-sent">Sent</div>
                     </div>
-                    <div style={{ fontSize: '24px', fontWeight: 700 }}>{formatNumber(viewingCampaign.sentCount)}</div>
-                    <div style={{ fontSize: '11px', color: '#6b7280', marginTop: '4px' }}>
+                    <div className="admin-campaigns-metric-value">{formatNumber(viewingCampaign.sentCount)}</div>
+                    <div className="admin-campaigns-metric-sub admin-campaigns-metric-sub-sent">
                       Delivered: {formatNumber(viewingCampaign.deliveredCount)}
                     </div>
                   </div>
 
                   {/* Opened */}
-                  <div style={{ padding: '16px', background: '#f0fdf4', borderRadius: '8px', border: '1px solid #86efac' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                      <Eye size={18} style={{ color: '#059669' }} />
-                      <div style={{ fontSize: '12px', color: '#059669', textTransform: 'uppercase', fontWeight: 600 }}>Opened</div>
+                  <div className="admin-campaigns-metric-card admin-campaigns-metric-card-opened">
+                    <div className="admin-campaigns-metric-header">
+                      <Eye size={18} className="admin-campaigns-metric-icon-opened" />
+                      <div className="admin-campaigns-metric-label admin-campaigns-metric-label-opened">Opened</div>
                     </div>
-                    <div style={{ fontSize: '24px', fontWeight: 700, color: '#059669' }}>{formatNumber(viewingCampaign.openedCount)}</div>
-                    <div style={{ fontSize: '11px', color: '#059669', marginTop: '4px' }}>
+                    <div className="admin-campaigns-metric-value admin-campaigns-metric-value-opened">{formatNumber(viewingCampaign.openedCount)}</div>
+                    <div className="admin-campaigns-metric-sub admin-campaigns-metric-sub-opened">
                       Rate: {formatPercent(viewingCampaign.openRate)}
                     </div>
                   </div>
 
                   {/* Clicked */}
-                  <div style={{ padding: '16px', background: '#fef3c7', borderRadius: '8px', border: '1px solid #fcd34d' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                      <MousePointer size={18} style={{ color: '#d97706' }} />
-                      <div style={{ fontSize: '12px', color: '#d97706', textTransform: 'uppercase', fontWeight: 600 }}>Clicked</div>
+                  <div className="admin-campaigns-metric-card admin-campaigns-metric-card-clicked">
+                    <div className="admin-campaigns-metric-header">
+                      <MousePointer size={18} className="admin-campaigns-metric-icon-clicked" />
+                      <div className="admin-campaigns-metric-label admin-campaigns-metric-label-clicked">Clicked</div>
                     </div>
-                    <div style={{ fontSize: '24px', fontWeight: 700, color: '#d97706' }}>{formatNumber(viewingCampaign.clickedCount)}</div>
-                    <div style={{ fontSize: '11px', color: '#d97706', marginTop: '4px' }}>
+                    <div className="admin-campaigns-metric-value admin-campaigns-metric-value-clicked">{formatNumber(viewingCampaign.clickedCount)}</div>
+                    <div className="admin-campaigns-metric-sub admin-campaigns-metric-sub-clicked">
                       Rate: {formatPercent(viewingCampaign.clickRate)}
                     </div>
                   </div>
 
                   {/* Conversions */}
-                  <div style={{ padding: '16px', background: '#faf5ff', borderRadius: '8px', border: '1px solid #c084fc' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                      <TrendingUp size={18} style={{ color: '#7c3aed' }} />
-                      <div style={{ fontSize: '12px', color: '#7c3aed', textTransform: 'uppercase', fontWeight: 600 }}>Conversions</div>
+                  <div className="admin-campaigns-metric-card admin-campaigns-metric-card-conversions">
+                    <div className="admin-campaigns-metric-header">
+                      <TrendingUp size={18} className="admin-campaigns-metric-icon-conversions" />
+                      <div className="admin-campaigns-metric-label admin-campaigns-metric-label-conversions">Conversions</div>
                     </div>
-                    <div style={{ fontSize: '24px', fontWeight: 700, color: '#7c3aed' }}>{formatNumber(viewingCampaign.conversionCount)}</div>
-                    <div style={{ fontSize: '11px', color: '#7c3aed', marginTop: '4px' }}>
+                    <div className="admin-campaigns-metric-value admin-campaigns-metric-value-conversions">{formatNumber(viewingCampaign.conversionCount)}</div>
+                    <div className="admin-campaigns-metric-sub admin-campaigns-metric-sub-conversions">
                       Rate: {formatPercent(viewingCampaign.conversionRate)}
                     </div>
                   </div>
                 </div>
 
                 {/* Revenue & Negative Metrics */}
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                  gap: '16px',
-                  marginTop: '16px'
-                }}>
+                <div className="admin-campaigns-revenue-grid">
                   {/* Revenue */}
-                  <div style={{ padding: '16px', background: '#ecfdf5', borderRadius: '8px', border: '2px solid #059669' }}>
-                    <div style={{ fontSize: '12px', color: '#059669', textTransform: 'uppercase', fontWeight: 600, marginBottom: '8px' }}>
+                  <div className="admin-campaigns-metric-card admin-campaigns-metric-card-revenue">
+                    <div className="admin-campaigns-metric-label admin-campaigns-metric-label-revenue">
                       Total Revenue
                     </div>
-                    <div style={{ fontSize: '28px', fontWeight: 700, color: '#059669' }}>
+                    <div className="admin-campaigns-metric-value admin-campaigns-metric-value-revenue">
                       {formatCurrency(viewingCampaign.totalRevenue)}
                     </div>
-                    <div style={{ fontSize: '12px', color: '#059669', marginTop: '4px' }}>
+                    <div className="admin-campaigns-metric-sub admin-campaigns-metric-sub-revenue">
                       Per Email: {formatCurrency(viewingCampaign.revenuePerEmail)}
                     </div>
                   </div>
 
                   {/* Negative Metrics */}
-                  <div style={{ padding: '16px', background: '#fef2f2', borderRadius: '8px', border: '1px solid #fca5a5' }}>
-                    <div style={{ fontSize: '12px', color: '#dc2626', textTransform: 'uppercase', fontWeight: 600, marginBottom: '8px' }}>
+                  <div className="admin-campaigns-metric-card admin-campaigns-metric-card-issues">
+                    <div className="admin-campaigns-metric-label admin-campaigns-metric-label-issues">
                       Issues
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '13px' }}>
+                    <div className="admin-campaigns-issues-grid">
                       <div>
-                        <div style={{ color: '#6b7280' }}>Bounced:</div>
-                        <div style={{ fontWeight: 600 }}>
+                        <div className="admin-campaigns-issues-label">Bounced:</div>
+                        <div className="admin-campaigns-issues-value">
                           {formatNumber(viewingCampaign.bouncedCount)} ({formatPercent(viewingCampaign.bounceRate)})
                         </div>
                       </div>
                       <div>
-                        <div style={{ color: '#6b7280' }}>Unsubscribed:</div>
-                        <div style={{ fontWeight: 600 }}>
+                        <div className="admin-campaigns-issues-label">Unsubscribed:</div>
+                        <div className="admin-campaigns-issues-value">
                           {formatNumber(viewingCampaign.unsubscribedCount)} ({formatPercent(viewingCampaign.unsubscribeRate)})
                         </div>
                       </div>

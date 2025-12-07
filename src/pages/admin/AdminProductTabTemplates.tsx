@@ -3,6 +3,7 @@ import { FileText, Eye, Code, Component, FileCode, Layout } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import './AdminDiscounts.css';
 import './AdminButtonOverrides.css';
+import './AdminProductTabTemplates.css';
 import { adminProductTabsService, type ProductTabTemplateDto } from '../../services/adminProductTabsService';
 import { Badge, Button, SkeletonTable } from '../../components/ui';
 
@@ -46,15 +47,15 @@ const AdminProductTabTemplates: React.FC = () => {
   const getContentTypeIcon = (type: string): React.ReactNode => {
     switch (type) {
       case 'HTML':
-        return <Code size={16} style={{ color: '#f59e0b' }} />;
+        return <Code size={16} className="admin-tab-tpl-icon-html" />;
       case 'MARKDOWN':
-        return <FileText size={16} style={{ color: '#3b82f6' }} />;
+        return <FileText size={16} className="admin-tab-tpl-icon-markdown" />;
       case 'JSON':
-        return <FileCode size={16} style={{ color: '#8b5cf6' }} />;
+        return <FileCode size={16} className="admin-tab-tpl-icon-json" />;
       case 'COMPONENT':
-        return <Component size={16} style={{ color: '#059669' }} />;
+        return <Component size={16} className="admin-tab-tpl-icon-component" />;
       default:
-        return <FileText size={16} style={{ color: '#6b7280' }} />;
+        return <FileText size={16} className="admin-tab-tpl-icon-default" />;
     }
   };
 
@@ -127,30 +128,24 @@ const AdminProductTabTemplates: React.FC = () => {
           {/* All Templates Tab */}
           {activeTab === 'all-templates' && (
             <>
-              <div className="admin-header-actions" style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap' }}>
+              <div className="admin-header-actions admin-tab-tpl-header-actions">
                 <select
-                  className="form-input"
+                  className="form-input admin-tab-tpl-filter-select"
                   value={filterCategory}
                   onChange={(e) => setFilterCategory(e.target.value)}
-                  style={{ maxWidth: '200px' }}
                 >
                   <option value="">All Categories</option>
                   {categories.map(cat => (
                     <option key={cat} value={cat}>{cat}</option>
                   ))}
                 </select>
-                <div style={{ fontSize: '14px', color: '#6b7280' }}>
+                <div className="admin-tab-tpl-count">
                   {filteredTemplates.length} {filteredTemplates.length === 1 ? 'template' : 'templates'}
                 </div>
               </div>
 
               {/* Template Cards (Grid View) */}
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-                gap: '20px',
-                marginBottom: '24px'
-              }}>
+              <div className="admin-tab-tpl-grid">
                 {loading ? (
                   <div className="admin-card">
                     <SkeletonTable rows={5} columns={2} />
@@ -161,55 +156,53 @@ const AdminProductTabTemplates: React.FC = () => {
                   </div>
                 ) : (
                   filteredTemplates.map(template => (
-                    <div key={template.id} className="admin-card" style={{ padding: '20px', cursor: 'pointer', transition: 'all 0.2s' }}
-                         onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)'}
-                         onMouseLeave={(e) => e.currentTarget.style.boxShadow = ''}
+                    <div key={template.id} className="admin-card admin-tab-tpl-card"
                          onClick={() => handleViewTemplate(template)}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '12px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div className="admin-tab-tpl-card-header">
+                        <div className="admin-tab-tpl-card-title-wrap">
                           {getContentTypeIcon(template.content_type)}
-                          <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 600 }}>{template.template_name}</h4>
+                          <h4 className="admin-tab-tpl-card-title">{template.template_name}</h4>
                         </div>
                         <Button variant="outline" size="sm" onClick={(e) => { e.stopPropagation(); handleViewTemplate(template); }}>
                           <Eye size={14} />
                         </Button>
                       </div>
 
-                      <div style={{ fontSize: '12px', color: '#6b7280', fontFamily: 'monospace', marginBottom: '12px' }}>
+                      <div className="admin-tab-tpl-card-key">
                         {template.template_key}
                       </div>
 
-                      <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', flexWrap: 'wrap' }}>
+                      <div className="admin-tab-tpl-card-badges">
                         {getContentTypeBadge(template.content_type)}
                         {template.category && getCategoryBadge(template.category)}
                         {template.is_active && <Badge variant="success" size="sm">Active</Badge>}
                       </div>
 
                       {template.description && (
-                        <div style={{ fontSize: '13px', color: '#6b7280', marginBottom: '12px', lineHeight: '1.5' }}>
+                        <div className="admin-tab-tpl-card-desc">
                           {template.description}
                         </div>
                       )}
 
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '12px', color: '#6b7280', paddingTop: '12px', borderTop: '1px solid #e5e7eb' }}>
+                      <div className="admin-tab-tpl-card-meta">
                         <div>
-                          <div style={{ fontWeight: 600 }}>Default Label:</div>
+                          <div className="admin-tab-tpl-card-meta-label">Default Label:</div>
                           <div>{template.default_tab_label}</div>
                         </div>
                         <div>
-                          <div style={{ fontWeight: 600 }}>Display Order:</div>
+                          <div className="admin-tab-tpl-card-meta-label">Display Order:</div>
                           <div>{template.default_display_order}</div>
                         </div>
                         {template.default_icon_name && (
-                          <div style={{ gridColumn: '1 / -1' }}>
-                            <div style={{ fontWeight: 600 }}>Icon:</div>
+                          <div className="admin-tab-tpl-card-meta-full">
+                            <div className="admin-tab-tpl-card-meta-label">Icon:</div>
                             <div>{template.default_icon_name}</div>
                           </div>
                         )}
                         {template.default_component_name && (
-                          <div style={{ gridColumn: '1 / -1' }}>
-                            <div style={{ fontWeight: 600 }}>Component:</div>
-                            <div style={{ fontFamily: 'monospace' }}>{template.default_component_name}</div>
+                          <div className="admin-tab-tpl-card-meta-full">
+                            <div className="admin-tab-tpl-card-meta-label">Component:</div>
+                            <div className="admin-tab-tpl-card-meta-mono">{template.default_component_name}</div>
                           </div>
                         )}
                       </div>
@@ -220,12 +213,12 @@ const AdminProductTabTemplates: React.FC = () => {
 
               {/* Info Box */}
               {!loading && templates.length > 0 && (
-                <div style={{ padding: '16px', background: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: '8px', fontSize: '13px', color: '#0369a1' }}>
+                <div className="admin-tab-tpl-info-box">
                   <strong>ℹ️ Template Library</strong><br />
                   Templates are reusable blueprints for product detail tabs. They provide default content and structure that can be customized for each product.
                   <br /><br />
                   <strong>Content Types:</strong>
-                  <ul style={{ margin: '8px 0', paddingLeft: '24px' }}>
+                  <ul className="admin-tab-tpl-info-list">
                     <li><strong>HTML:</strong> Rich HTML content with formatting</li>
                     <li><strong>MARKDOWN:</strong> Markdown text that renders to HTML</li>
                     <li><strong>JSON:</strong> Structured data (key-value pairs, lists)</li>
@@ -239,18 +232,18 @@ const AdminProductTabTemplates: React.FC = () => {
           {/* View Template Details Tab */}
           {activeTab === 'view-template' && viewingTemplate && (
             <div className="admin-card">
-              <div style={{ marginBottom: '24px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '16px' }}>
+              <div className="admin-tab-tpl-view-header">
+                <div className="admin-tab-tpl-view-header-row">
                   <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                    <div className="admin-tab-tpl-view-title-wrap">
                       {getContentTypeIcon(viewingTemplate.content_type)}
-                      <h3 className="section-title" style={{ margin: 0 }}>{viewingTemplate.template_name}</h3>
+                      <h3 className="section-title admin-tab-tpl-view-title">{viewingTemplate.template_name}</h3>
                     </div>
-                    <div style={{ fontSize: '13px', color: '#6b7280', fontFamily: 'monospace' }}>
+                    <div className="admin-tab-tpl-view-key">
                       {viewingTemplate.template_key}
                     </div>
                   </div>
-                  <div style={{ display: 'flex', gap: '8px' }}>
+                  <div className="admin-tab-tpl-view-badges">
                     {getContentTypeBadge(viewingTemplate.content_type)}
                     {viewingTemplate.category && getCategoryBadge(viewingTemplate.category)}
                     {viewingTemplate.is_active && <Badge variant="success" size="sm">Active</Badge>}
@@ -258,42 +251,42 @@ const AdminProductTabTemplates: React.FC = () => {
                 </div>
 
                 {viewingTemplate.description && (
-                  <div style={{ padding: '12px', background: '#f9fafb', borderRadius: '6px', marginBottom: '20px' }}>
-                    <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '4px', fontWeight: 600 }}>Description</div>
-                    <div style={{ fontSize: '14px', color: '#374151' }}>{viewingTemplate.description}</div>
+                  <div className="admin-tab-tpl-description-box">
+                    <div className="admin-tab-tpl-description-label">Description</div>
+                    <div className="admin-tab-tpl-description-text">{viewingTemplate.description}</div>
                   </div>
                 )}
 
                 {/* Template Settings */}
-                <div className="form-grid" style={{ marginBottom: '24px' }}>
+                <div className="form-grid admin-tab-tpl-settings-grid">
                   <div>
                     <label className="form-label">Default Tab Key</label>
-                    <div style={{ padding: '8px', background: '#f9fafb', borderRadius: '4px', fontFamily: 'monospace', fontSize: '13px' }}>
+                    <div className="admin-tab-tpl-setting-value admin-tab-tpl-setting-value-mono">
                       {viewingTemplate.default_tab_key}
                     </div>
                   </div>
                   <div>
                     <label className="form-label">Default Tab Label</label>
-                    <div style={{ padding: '8px', background: '#f9fafb', borderRadius: '4px', fontSize: '14px', fontWeight: 600 }}>
+                    <div className="admin-tab-tpl-setting-value admin-tab-tpl-setting-value-bold">
                       {viewingTemplate.default_tab_label}
                     </div>
                   </div>
                   <div>
                     <label className="form-label">Content Type</label>
-                    <div style={{ padding: '8px' }}>
+                    <div className="admin-tab-tpl-setting-value">
                       {getContentTypeBadge(viewingTemplate.content_type)}
                     </div>
                   </div>
                   <div>
                     <label className="form-label">Display Order</label>
-                    <div style={{ padding: '8px', background: '#f9fafb', borderRadius: '4px', fontSize: '14px' }}>
+                    <div className="admin-tab-tpl-setting-value">
                       {viewingTemplate.default_display_order}
                     </div>
                   </div>
                   {viewingTemplate.default_icon_name && (
                     <div>
                       <label className="form-label">Icon Name</label>
-                      <div style={{ padding: '8px', background: '#f9fafb', borderRadius: '4px', fontSize: '13px' }}>
+                      <div className="admin-tab-tpl-setting-value">
                         {viewingTemplate.default_icon_name}
                       </div>
                     </div>
@@ -301,7 +294,7 @@ const AdminProductTabTemplates: React.FC = () => {
                   {viewingTemplate.default_component_name && (
                     <div>
                       <label className="form-label">Component Name</label>
-                      <div style={{ padding: '8px', background: '#f9fafb', borderRadius: '4px', fontFamily: 'monospace', fontSize: '13px' }}>
+                      <div className="admin-tab-tpl-setting-value admin-tab-tpl-setting-value-mono">
                         {viewingTemplate.default_component_name}
                       </div>
                     </div>
@@ -309,14 +302,14 @@ const AdminProductTabTemplates: React.FC = () => {
                 </div>
 
                 {/* Content Preview */}
-                <div style={{ marginBottom: '24px' }}>
+                <div className="admin-tab-tpl-content-section">
                   <h4 className="section-title">Default Content</h4>
 
                   {viewingTemplate.default_content_html && (
-                    <div style={{ marginBottom: '16px' }}>
-                      <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '8px', fontWeight: 600 }}>HTML Content</div>
-                      <div style={{ padding: '16px', background: '#1f2937', color: '#e5e7eb', borderRadius: '6px', overflow: 'auto', maxHeight: '300px' }}>
-                        <pre style={{ margin: 0, fontSize: '12px', fontFamily: 'monospace', whiteSpace: 'pre-wrap' }}>
+                    <div className="admin-tab-tpl-content-block">
+                      <div className="admin-tab-tpl-content-label">HTML Content</div>
+                      <div className="admin-tab-tpl-code-block">
+                        <pre className="admin-tab-tpl-code-pre">
                           {viewingTemplate.default_content_html}
                         </pre>
                       </div>
@@ -324,10 +317,10 @@ const AdminProductTabTemplates: React.FC = () => {
                   )}
 
                   {viewingTemplate.default_content_markdown && (
-                    <div style={{ marginBottom: '16px' }}>
-                      <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '8px', fontWeight: 600 }}>Markdown Content</div>
-                      <div style={{ padding: '16px', background: '#1f2937', color: '#e5e7eb', borderRadius: '6px', overflow: 'auto', maxHeight: '300px' }}>
-                        <pre style={{ margin: 0, fontSize: '12px', fontFamily: 'monospace', whiteSpace: 'pre-wrap' }}>
+                    <div className="admin-tab-tpl-content-block">
+                      <div className="admin-tab-tpl-content-label">Markdown Content</div>
+                      <div className="admin-tab-tpl-code-block">
+                        <pre className="admin-tab-tpl-code-pre">
                           {viewingTemplate.default_content_markdown}
                         </pre>
                       </div>
@@ -335,10 +328,10 @@ const AdminProductTabTemplates: React.FC = () => {
                   )}
 
                   {viewingTemplate.default_content_json && (
-                    <div style={{ marginBottom: '16px' }}>
-                      <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '8px', fontWeight: 600 }}>JSON Content</div>
-                      <div style={{ padding: '16px', background: '#1f2937', color: '#e5e7eb', borderRadius: '6px', overflow: 'auto', maxHeight: '300px' }}>
-                        <pre style={{ margin: 0, fontSize: '12px', fontFamily: 'monospace', whiteSpace: 'pre-wrap' }}>
+                    <div className="admin-tab-tpl-content-block">
+                      <div className="admin-tab-tpl-content-label">JSON Content</div>
+                      <div className="admin-tab-tpl-code-block">
+                        <pre className="admin-tab-tpl-code-pre">
                           {JSON.stringify(JSON.parse(viewingTemplate.default_content_json), null, 2)}
                         </pre>
                       </div>
@@ -348,14 +341,14 @@ const AdminProductTabTemplates: React.FC = () => {
                   {!viewingTemplate.default_content_html &&
                    !viewingTemplate.default_content_markdown &&
                    !viewingTemplate.default_content_json && (
-                    <div style={{ padding: '12px', background: '#f9fafb', borderRadius: '6px', color: '#6b7280', textAlign: 'center' }}>
+                    <div className="admin-tab-tpl-no-content">
                       No default content defined for this template.
                     </div>
                   )}
                 </div>
 
                 {/* Metadata */}
-                <div style={{ padding: '12px', background: '#f3f4f6', borderRadius: '6px', fontSize: '12px', color: '#6b7280' }}>
+                <div className="admin-tab-tpl-metadata">
                   <div>Created: {formatDate(viewingTemplate.created_at)}</div>
                   <div>Last Updated: {formatDate(viewingTemplate.updated_at)}</div>
                   <div>Template ID: {viewingTemplate.id}</div>

@@ -6,6 +6,7 @@ import { Mail, Edit, Eye, Save, X, Send, Code, FileText, CheckCircle, AlertCircl
 import { logError } from '../../services/logger';
 import './AdminUsers.css';
 import './AdminButtonOverrides.css';
+import './AdminEmailTemplates.css';
 
 const AdminEmailTemplates: React.FC = () => {
   const [templates, setTemplates] = useState<EmailTemplate[]>([]);
@@ -148,16 +149,16 @@ const AdminEmailTemplates: React.FC = () => {
   return (
     <AdminLayout title="Email Templates">
       <div className="admin-page">
-        <div className="admin-container" style={{ maxWidth: '1600px' }}>
+        <div className="admin-container admin-email-tpl-container">
           {/* Header */}
-          <div className="admin-card" style={{ marginBottom: '24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
+          <div className="admin-card admin-email-tpl-header-card">
+            <div className="admin-email-tpl-header-flex">
               <div>
-                <h2 className="section-title" style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <Mail size={24} style={{ color: 'var(--admin-accent)' }} />
+                <h2 className="section-title admin-email-tpl-title">
+                  <Mail size={24} className="admin-email-tpl-title-icon" />
                   Email Templates
                 </h2>
-                <p style={{ margin: 0, color: 'var(--admin-secondary)', fontSize: '14px' }}>
+                <p className="admin-email-tpl-desc">
                   Manage and customize email templates for your application.
                 </p>
               </div>
@@ -166,32 +167,32 @@ const AdminEmailTemplates: React.FC = () => {
 
           {/* Alerts */}
           {error && (
-            <div className="alert alert-error" style={{ marginBottom: '20px' }}>
+            <div className="alert alert-error admin-email-tpl-alert">
               <AlertCircle size={16} />
               <span>{error}</span>
-              <button onClick={() => setError(null)} style={{ marginLeft: 'auto', background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', fontSize: '18px' }}>×</button>
+              <button onClick={() => setError(null)} className="admin-email-tpl-alert-close">×</button>
             </div>
           )}
 
           {successMessage && (
-            <div className="alert" style={{ background: 'var(--admin-success-bg)', color: '#065F46', border: '1px solid var(--admin-success)', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div className="alert admin-email-tpl-success-alert">
               <CheckCircle size={16} />
               {successMessage}
             </div>
           )}
 
           {/* Main Content - Two Column Layout */}
-          <div style={{ display: 'grid', gridTemplateColumns: '350px 1fr', gap: '24px' }}>
+          <div className="admin-email-tpl-grid">
             {/* Templates Sidebar */}
-            <div className="admin-card" style={{ padding: 0, height: 'fit-content', maxHeight: 'calc(100vh - 300px)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-              <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--admin-border)', background: 'var(--admin-bg-secondary)' }}>
-                <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: 'var(--admin-primary)' }}>
+            <div className="admin-card admin-email-tpl-sidebar">
+              <div className="admin-email-tpl-sidebar-header">
+                <h3 className="admin-email-tpl-sidebar-title">
                   Templates ({templates.length})
                 </h3>
               </div>
-              <div style={{ overflowY: 'auto', flex: 1 }}>
+              <div className="admin-email-tpl-sidebar-scroll">
                 {loading && templates.length === 0 ? (
-                  <div style={{ padding: '20px' }}>
+                  <div className="admin-email-tpl-sidebar-loading">
                     <SkeletonTable rows={5} columns={1} />
                   </div>
                 ) : (
@@ -199,32 +200,25 @@ const AdminEmailTemplates: React.FC = () => {
                     <div
                       key={template.id}
                       onClick={() => handleSelectTemplate(template)}
-                      style={{
-                        padding: '16px 20px',
-                        cursor: 'pointer',
-                        borderBottom: '1px solid var(--admin-border)',
-                        background: selectedTemplate?.id === template.id ? 'var(--admin-accent-light)' : 'transparent',
-                        borderLeft: selectedTemplate?.id === template.id ? '3px solid var(--admin-accent)' : '3px solid transparent',
-                        transition: 'all 0.15s'
-                      }}
+                      className={`admin-email-tpl-item ${selectedTemplate?.id === template.id ? 'admin-email-tpl-item-selected' : ''}`}
                     >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '10px', marginBottom: '6px' }}>
-                        <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: 'var(--admin-primary)' }}>
+                      <div className="admin-email-tpl-item-header">
+                        <h4 className="admin-email-tpl-item-name">
                           {template.templateName}
                         </h4>
                         <Badge
                           variant={template.isActive ? 'success' : 'warning'}
                           size="sm"
                           onClick={(e: React.MouseEvent) => { e.stopPropagation(); handleToggleActive(template); }}
-                          style={{ cursor: 'pointer' }}
+                          className="admin-email-tpl-item-badge"
                         >
                           {template.isActive ? 'Active' : 'Inactive'}
                         </Badge>
                       </div>
-                      <p style={{ margin: '0 0 4px', fontSize: '12px', fontFamily: 'monospace', color: 'var(--admin-accent)' }}>
+                      <p className="admin-email-tpl-item-code">
                         {template.templateCode}
                       </p>
-                      <p style={{ margin: 0, fontSize: '12px', color: 'var(--admin-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <p className="admin-email-tpl-item-desc">
                         {template.description}
                       </p>
                     </div>
@@ -234,15 +228,15 @@ const AdminEmailTemplates: React.FC = () => {
             </div>
 
             {/* Template Editor */}
-            <div className="admin-card" style={{ padding: 0 }}>
+            <div className="admin-card admin-email-tpl-editor">
               {selectedTemplate ? (
                 <>
                   {/* Editor Header */}
-                  <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--admin-border)', background: 'var(--admin-bg-secondary)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-                    <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 600, color: 'var(--admin-primary)' }}>
+                  <div className="admin-email-tpl-editor-header">
+                    <h3 className="admin-email-tpl-editor-title">
                       {selectedTemplate.templateName}
                     </h3>
-                    <div style={{ display: 'flex', gap: '10px' }}>
+                    <div className="admin-email-tpl-editor-actions">
                       {!isEditing ? (
                         <>
                           <Button variant="primary" size="sm" onClick={() => setIsEditing(true)}>
@@ -270,11 +264,11 @@ const AdminEmailTemplates: React.FC = () => {
                   </div>
 
                   {/* Editor Content */}
-                  <div style={{ padding: '20px' }}>
-                    <div className="form-grid" style={{ gridTemplateColumns: '1fr 1fr', marginBottom: '20px' }}>
+                  <div className="admin-email-tpl-editor-content">
+                    <div className="form-grid admin-email-tpl-form-grid">
                       <div>
                         <label className="form-label">Template Code</label>
-                        <input type="text" value={selectedTemplate.templateCode} disabled className="form-input" style={{ fontFamily: 'monospace', background: 'var(--admin-bg-secondary)' }} />
+                        <input type="text" value={selectedTemplate.templateCode} disabled className="form-input admin-email-tpl-input-code" />
                       </div>
                       <div>
                         <label className="form-label">Template Name</label>
@@ -288,7 +282,7 @@ const AdminEmailTemplates: React.FC = () => {
                       </div>
                     </div>
 
-                    <div style={{ marginBottom: '20px' }}>
+                    <div className="admin-email-tpl-field">
                       <label className="form-label">Subject Line</label>
                       <input
                         type="text"
@@ -299,7 +293,7 @@ const AdminEmailTemplates: React.FC = () => {
                       />
                     </div>
 
-                    <div style={{ marginBottom: '20px' }}>
+                    <div className="admin-email-tpl-field">
                       <label className="form-label">Description</label>
                       <textarea
                         value={formData.description}
@@ -310,8 +304,8 @@ const AdminEmailTemplates: React.FC = () => {
                       />
                     </div>
 
-                    <div style={{ marginBottom: '20px' }}>
-                      <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div className="admin-email-tpl-field">
+                      <label className="form-label admin-email-tpl-label-icon">
                         <Code size={16} />
                         HTML Content
                       </label>
@@ -319,29 +313,28 @@ const AdminEmailTemplates: React.FC = () => {
                         value={formData.htmlContent}
                         onChange={(e) => setFormData(prev => ({ ...prev, htmlContent: e.target.value }))}
                         disabled={!isEditing}
-                        className="form-input"
+                        className="form-input admin-email-tpl-textarea-code"
                         rows={15}
-                        style={{ fontFamily: 'monospace', fontSize: '13px' }}
                       />
-                      <p style={{ margin: '8px 0 0', fontSize: '12px', color: 'var(--admin-secondary)' }}>
+                      <p className="admin-email-tpl-help">
                         Use placeholders like {`{{userName}}`}, {`{{userEmail}}`}, etc.
                       </p>
                     </div>
 
                     {/* Placeholders */}
                     {selectedTemplate.placeholders && Object.keys(selectedTemplate.placeholders).length > 0 && (
-                      <div style={{ marginBottom: '20px', padding: '16px', background: 'var(--admin-bg-secondary)', borderRadius: '8px', border: '1px solid var(--admin-border)' }}>
-                        <h4 style={{ margin: '0 0 12px', fontSize: '14px', fontWeight: 600, color: 'var(--admin-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div className="admin-email-tpl-placeholders">
+                        <h4 className="admin-email-tpl-placeholders-title">
                           <FileText size={16} />
                           Available Placeholders
                         </h4>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '8px' }}>
+                        <div className="admin-email-tpl-placeholders-grid">
                           {Object.entries(selectedTemplate.placeholders).map(([key, description]) => (
-                            <div key={key} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}>
-                              <code style={{ padding: '2px 6px', background: 'var(--admin-bg-primary)', borderRadius: '4px', color: 'var(--admin-accent)', fontSize: '12px' }}>
+                            <div key={key} className="admin-email-tpl-placeholder-item">
+                              <code className="admin-email-tpl-placeholder-code">
                                 {`{{${key}}}`}
                               </code>
-                              <span style={{ color: 'var(--admin-secondary)' }}>{description}</span>
+                              <span className="admin-email-tpl-placeholder-desc">{description}</span>
                             </div>
                           ))}
                         </div>
@@ -349,35 +342,34 @@ const AdminEmailTemplates: React.FC = () => {
                     )}
 
                     {/* Test Email */}
-                    <div style={{ padding: '16px', background: 'var(--admin-info-bg)', borderRadius: '8px', border: '1px solid var(--admin-info)' }}>
-                      <h4 style={{ margin: '0 0 12px', fontSize: '14px', fontWeight: 600, color: 'var(--admin-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div className="admin-email-tpl-test">
+                      <h4 className="admin-email-tpl-test-title">
                         <Send size={16} />
                         Send Test Email
                       </h4>
-                      <div style={{ display: 'flex', gap: '12px' }}>
+                      <div className="admin-email-tpl-test-form">
                         <input
                           type="email"
                           placeholder="Enter email address"
                           value={testEmail}
                           onChange={(e) => setTestEmail(e.target.value)}
-                          className="form-input"
-                          style={{ flex: 1 }}
+                          className="form-input admin-email-tpl-test-input"
                         />
                         <Button variant="primary" onClick={handleSendTestEmail} disabled={loading || !testEmail}>
                           <Send size={14} />
                           Send
                         </Button>
                       </div>
-                      <p style={{ margin: '8px 0 0', fontSize: '12px', color: 'var(--admin-secondary)' }}>
+                      <p className="admin-email-tpl-help">
                         Test email will use sample data for placeholders.
                       </p>
                     </div>
                   </div>
                 </>
               ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 20px', color: 'var(--admin-secondary)' }}>
-                  <Mail size={48} style={{ marginBottom: '16px', opacity: 0.5 }} />
-                  <p style={{ margin: 0, fontSize: '16px' }}>Select a template from the list to edit</p>
+                <div className="admin-email-tpl-empty">
+                  <Mail size={48} className="admin-email-tpl-empty-icon" />
+                  <p className="admin-email-tpl-empty-text">Select a template from the list to edit</p>
                 </div>
               )}
             </div>
@@ -387,10 +379,10 @@ const AdminEmailTemplates: React.FC = () => {
 
       {/* Preview Modal */}
       {showPreview && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1050, padding: '20px' }} onClick={() => setShowPreview(false)}>
-          <div className="admin-card" style={{ width: '100%', maxWidth: '800px', maxHeight: '90vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }} onClick={(e) => e.stopPropagation()}>
-            <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--admin-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div className="admin-email-tpl-preview-overlay" onClick={() => setShowPreview(false)}>
+          <div className="admin-card admin-email-tpl-preview-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="admin-email-tpl-preview-header">
+              <h3 className="admin-email-tpl-preview-title">
                 <Eye size={18} />
                 Email Preview
               </h3>
@@ -399,11 +391,11 @@ const AdminEmailTemplates: React.FC = () => {
                 Close
               </Button>
             </div>
-            <div style={{ flex: 1, overflow: 'auto', background: '#f5f5f5' }}>
+            <div className="admin-email-tpl-preview-body">
               <iframe
                 srcDoc={previewHtml}
                 title="Email Preview"
-                style={{ width: '100%', height: '600px', border: 'none' }}
+                className="admin-email-tpl-preview-iframe"
                 sandbox="allow-same-origin"
               />
             </div>

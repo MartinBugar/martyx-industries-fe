@@ -256,6 +256,7 @@
   justify-content: flex-start;
   align-items: center;
   padding: 1rem 1.5rem;
+  margin-top: -1.5rem;
   background: var(--product-detail-card);
   border-top: 1px solid var(--product-detail-border);
   border-bottom: 1px solid var(--product-detail-border);
@@ -315,11 +316,12 @@
 .product-tab-panel {
   flex-basis: 100%;
   width: 100%;
-  background: #ffffff;
-  color: #000000;
+  background: var(--product-detail-surface);
+  color: var(--product-detail-text);
   border: none;
   border-radius: 0;
   padding: 2rem 1.5rem;
+  margin-top: -1.5rem;
   box-shadow: none;
 }
 
@@ -1198,4 +1200,89 @@ body:has(.product-unavailable-overlay) {
   gap: 1rem;
   margin-top: auto;
   flex-wrap: wrap;
+}
+
+/* ========== PRODUCT INFO TABS (Purchase/Customize) ========== */
+
+/* Tab Navigation Container - Full width */
+.product-info-tabs {
+  display: flex;
+  width: 100%;
+  gap: 0;
+  margin-bottom: 0.25rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  padding: 3px;
+}
+
+/* Tab Buttons - 50% width each */
+.product-info-tab {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem 1rem;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: var(--product-detail-text-muted);
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.product-info-tab:hover {
+  color: var(--product-detail-text-secondary);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.product-info-tab.active {
+  color: #0b0f12;
+  background: #F6C845;
+}
+
+.product-info-tab:focus-visible {
+  outline: 2px solid #F6C845;
+  outline-offset: 1px;
+}
+
+/* Tab Content Container */
+.product-info-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Reduce gap between tabs and content when tabs are present */
+.product-info-tabs + .product-info-content {
+  margin-top: -0.75rem;
+}
+
+/* Tab Panel - no animation for compact feel */
+.product-info-content > [role="tabpanel"] {
+  animation: none;
+}
+
+/* ========== RESPONSIVE STYLES FOR INFO TABS ========== */
+
+@media (max-width: 480px) {
+  .product-info-tabs {
+    padding: 3px;
+  }
+
+  .product-info-tab {
+    padding: 0.5rem 0.5rem;
+    font-size: 0.8125rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .product-info-tab {
+    padding: 0.4rem 0.25rem;
+    font-size: 0.75rem;
+  }
 }
