@@ -66,7 +66,7 @@ const AdminCompanySettings: React.FC = () => {
     }
   };
 
-  const handleInputChange = (field: keyof CompanySettingsDto, value: string | boolean) => {
+  const handleInputChange = (field: keyof CompanySettingsDto, value: string | boolean | number) => {
     setSettings(prev => ({ ...prev, [field]: value }));
   };
 

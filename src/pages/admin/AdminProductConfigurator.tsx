@@ -644,6 +644,7 @@ const AdminProductConfigurator: React.FC = () => {
     uploadOptionGlb: number | null;
     uploadOptionDigitalFile: number | null;
     deleteOptionDigitalFile: number | null;
+    saveJson: boolean;
   }>({
     createConfigurator: false,
     toggleEnabled: false,
