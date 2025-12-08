@@ -1243,3 +1243,249 @@
   animation: cfg-skeleton-shimmer 1.5s infinite;
   border-radius: var(--admin-radius-md);
 }
+
+/* =========================================================================
+   JSON SECTION
+   ========================================================================= */
+
+.cfg-json-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cfg-json-hint {
+  font-size: var(--admin-text-sm);
+  color: var(--admin-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.cfg-json-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cfg-json-status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cfg-json-size {
+  font-size: var(--admin-text-xs);
+  color: var(--admin-secondary);
+}
+
+.cfg-json-textarea {
+  width: 100%;
+  min-height: 200px;
+  max-height: 400px;
+  padding: 12px;
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-md);
+  background: var(--admin-bg-secondary);
+  font-family: var(--admin-font-mono);
+  font-size: var(--admin-text-xs);
+  line-height: 1.5;
+  resize: vertical;
+  color: var(--admin-primary);
+}
+
+.cfg-json-textarea:focus {
+  outline: none;
+  border-color: var(--admin-accent);
+}
+
+.cfg-json-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.cfg-json-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* JSON Preview Tree */
+.cfg-json-preview {
+  background: var(--admin-bg-secondary);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-md);
+  padding: 16px;
+  margin-top: 8px;
+}
+
+.cfg-json-preview h4 {
+  font-size: var(--admin-text-sm);
+  font-weight: var(--admin-font-semibold);
+  margin: 0 0 12px 0;
+  color: var(--admin-primary);
+}
+
+.cfg-json-tree {
+  font-size: var(--admin-text-sm);
+}
+
+.cfg-json-item {
+  margin-bottom: 8px;
+}
+
+.cfg-json-item strong {
+  color: var(--admin-primary);
+}
+
+.cfg-json-slots {
+  list-style: none;
+  padding-left: 16px;
+  margin: 8px 0 0 0;
+}
+
+.cfg-json-slots > li {
+  margin-bottom: 8px;
+  padding: 8px 12px;
+  background: var(--admin-bg-primary);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-sm);
+}
+
+.cfg-json-slot-info {
+  font-size: var(--admin-text-xs);
+  color: var(--admin-secondary);
+  margin-left: 8px;
+}
+
+.cfg-json-options {
+  list-style: disc;
+  padding-left: 20px;
+  margin: 6px 0 0 0;
+  font-size: var(--admin-text-xs);
+  color: var(--admin-secondary);
+}
+
+.cfg-json-options li {
+  margin-bottom: 2px;
+}
+
+/* Empty state */
+.cfg-json-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  background: var(--admin-bg-secondary);
+  border: 2px dashed var(--admin-border);
+  border-radius: var(--admin-radius-md);
+}
+
+.cfg-json-empty-icon {
+  color: var(--admin-secondary);
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.cfg-json-empty h4 {
+  font-size: var(--admin-text-base);
+  font-weight: var(--admin-font-semibold);
+  margin: 0 0 8px 0;
+  color: var(--admin-primary);
+}
+
+.cfg-json-empty p {
+  font-size: var(--admin-text-sm);
+  color: var(--admin-secondary);
+  margin: 0 0 16px 0;
+  max-width: 400px;
+}
+
+/* JSON Validation indicators */
+.cfg-json-valid {
+  color: var(--admin-success);
+  font-weight: var(--admin-font-medium);
+}
+
+.cfg-json-invalid {
+  color: var(--admin-danger);
+  font-weight: var(--admin-font-medium);
+}
+
+/* Large modal variant */
+.cfg-modal-lg {
+  max-width: 800px;
+  width: 90%;
+}
+
+.cfg-modal-textarea-lg {
+  min-height: 350px;
+  max-height: 500px;
+}
+
+/* =========================================================================
+   UNSAVED CHANGES BAR
+   ========================================================================= */
+
+.cfg-unsaved-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--admin-warning-bg, #fff8e6);
+  border: 1px solid var(--admin-warning, #f0ad4e);
+  border-radius: var(--admin-radius-md);
+  margin-bottom: 16px;
+}
+
+.cfg-unsaved-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--admin-text-sm);
+  color: var(--admin-warning-dark, #8a6d3b);
+  font-weight: var(--admin-font-medium);
+}
+
+.cfg-unsaved-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Unsaved dot indicator */
+.cfg-unsaved-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: var(--admin-warning, #f0ad4e);
+  border-radius: 50%;
+  animation: cfg-pulse 1.5s infinite;
+}
+
+@keyframes cfg-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.1);
+  }
+}
+
+/* Price input with unsaved state */
+.cfg-price-input.has-unsaved {
+  border-color: var(--admin-warning, #f0ad4e);
+  background: var(--admin-warning-bg, #fff8e6);
+  color: #5a4a1f;
+}
+
+/* Unsaved dot in labels */
+.cfg-option-row label .cfg-unsaved-dot {
+  width: 6px;
+  height: 6px;
+  margin-left: 4px;
+  vertical-align: middle;
+}

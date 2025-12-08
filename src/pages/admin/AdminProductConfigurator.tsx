@@ -1,7 +1,7 @@
 /// <reference path="../../global.d.ts" />
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import { ChevronDown, ChevronRight, Plus, Trash2, Edit2, Upload, Check, X, AlertTriangle, Settings, Package, Box, FileArchive } from 'lucide-react';
+import { ChevronDown, ChevronRight, Plus, Trash2, Edit2, Upload, Check, X, AlertTriangle, Settings, Package, Box, FileArchive, FileJson, Download } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import ProductNavTabs from '../../components/admin/ProductNavTabs';
 import ConfirmModal from '../../components/common/ConfirmModal';
@@ -10,7 +10,6 @@ import './AdminProductConfigurator.css';
 import { adminProductsService, type BaseProduct } from '../../services/adminProductsService';
 import { configuratorService } from '../../services/configuratorService';
 import type { Configurator, ConfiguratorSlot, ConfiguratorOption, UploadState, ReadinessInfo } from '../../types/configurator';
-import { useDebouncedCallback } from '../../hooks/useDebouncedCallback';
 
 // Types for confirm modal
 interface ConfirmModalState {
@@ -245,6 +244,7 @@ const OptionCard: React.FC<{
   option: ConfiguratorOption;
   isDefault: boolean;
   currencySymbol: string;
+  localPrice: number | undefined;
   onEdit: () => void;
   onDelete: () => void;
   onSetDefault: () => void;
@@ -263,6 +263,7 @@ const OptionCard: React.FC<{
   option,
   isDefault,
   currencySymbol,
+  localPrice,
   onEdit,
   onDelete,
   onSetDefault,
@@ -280,6 +281,10 @@ const OptionCard: React.FC<{
   const isUploadingGlb = actionLoading.uploadOptionGlb === option.id;
   const isUploadingZip = actionLoading.uploadOptionDigitalFile === option.id;
   const isDeletingZip = actionLoading.deleteOptionDigitalFile === option.id;
+
+  // Use local price if changed, otherwise use option price
+  const displayPrice = localPrice !== undefined ? localPrice : option.priceModifier;
+  const hasUnsavedPrice = localPrice !== undefined && localPrice !== option.priceModifier;
 
   return (
     <div className={`cfg-option-card ${isDefault ? 'is-default' : ''}`}>
@@ -379,15 +384,18 @@ const OptionCard: React.FC<{
         </div>
 
         <div className="cfg-option-row">
-          <label>Price Modifier</label>
+          <label>
+            Price Modifier
+            {hasUnsavedPrice && <span className="cfg-unsaved-dot" title="Unsaved change" />}
+          </label>
           <div className="cfg-option-price">
             <span className="cfg-price-currency">{currencySymbol}</span>
             <input
               type="number"
               step="0.01"
-              defaultValue={option.priceModifier}
+              value={displayPrice}
               onChange={(e) => onPriceChange(parseFloat(e.target.value) || 0)}
-              className="cfg-price-input"
+              className={`cfg-price-input ${hasUnsavedPrice ? 'has-unsaved' : ''}`}
             />
           </div>
         </div>
@@ -439,6 +447,7 @@ const SlotCard: React.FC<{
   onUploadOptionZip: (optionId: number, file: File) => void;
   onDeleteOptionZip: (optionId: number) => void;
   onOptionPriceChange: (optionId: number, price: number) => void;
+  pendingPriceChanges: Record<number, number>;
   actionLoading: {
     deleteSlot: number | null;
     deleteOption: number | null;
@@ -460,6 +469,7 @@ const SlotCard: React.FC<{
   onUploadOptionZip,
   onDeleteOptionZip,
   onOptionPriceChange,
+  pendingPriceChanges,
   actionLoading,
 }) => {
   const [expanded, setExpanded] = useState(true);
@@ -514,6 +524,7 @@ const SlotCard: React.FC<{
                     option={option}
                     isDefault={option.isDefault}
                     currencySymbol={currencySymbol}
+                    localPrice={pendingPriceChanges[option.id]}
                     onEdit={() => onEditOption(option)}
                     onDelete={() => onDeleteOption(option.id)}
                     onSetDefault={() => onSetDefaultOption(option.id)}
@@ -560,7 +571,39 @@ const AdminProductConfigurator: React.FC = () => {
 
   // Modal states
   const [showImportModal, setShowImportModal] = useState(false);
+  const [showJsonEditModal, setShowJsonEditModal] = useState(false);
   const [importJson, setImportJson] = useState('');
+
+  // Memoized parsed JSON for display
+  const parsedConfigJson = useMemo(() => {
+    if (!configurator?.configurationJson) return null;
+    try {
+      return JSON.parse(configurator.configurationJson);
+    } catch {
+      return null;
+    }
+  }, [configurator?.configurationJson]);
+
+  const formattedConfigJson = useMemo(() => {
+    if (!configurator?.configurationJson) return '';
+    try {
+      return JSON.stringify(JSON.parse(configurator.configurationJson), null, 2);
+    } catch {
+      return configurator.configurationJson;
+    }
+  }, [configurator?.configurationJson]);
+
+  // Pending changes state (for manual save)
+  const [pendingPriceChanges, setPendingPriceChanges] = useState<Record<number, number>>({});
+  const [isSaving, setIsSaving] = useState(false);
+
+  const hasUnsavedChanges = Object.keys(pendingPriceChanges).length > 0;
+
+  // Clear pending changes when configurator reloads
+  useEffect(() => {
+    setPendingPriceChanges({});
+  }, [configurator?.id]);
+
   const [editingSlot, setEditingSlot] = useState<ConfiguratorSlot | null>(null);
   const [editingOption, setEditingOption] = useState<{ slotId: number; option: ConfiguratorOption | null } | null>(null);
 
@@ -616,6 +659,7 @@ const AdminProductConfigurator: React.FC = () => {
     uploadOptionGlb: null,
     uploadOptionDigitalFile: null,
     deleteOptionDigitalFile: null,
+    saveJson: false,
   });
 
   // Confirm modal state
@@ -785,6 +829,39 @@ const AdminProductConfigurator: React.FC = () => {
       setError(msg);
     } finally {
       setActionLoading(prev => ({ ...prev, importJson: false }));
+    }
+  };
+
+  // Save edited JSON (update only the configurationJson field)
+  const handleSaveJson = async () => {
+    if (!configurator || !importJson.trim()) return;
+
+    if (importJson.length > MAX_JSON_SIZE) {
+      setError('JSON input is too large (max 1MB)');
+      return;
+    }
+
+    try {
+      JSON.parse(importJson);
+    } catch {
+      setError('Invalid JSON syntax');
+      return;
+    }
+
+    setActionLoading(prev => ({ ...prev, saveJson: true }));
+    try {
+      const updated = await configuratorService.updateConfigurator(configurator.id, {
+        configurationJson: importJson,
+      });
+      setConfigurator(updated);
+      setShowJsonEditModal(false);
+      setImportJson('');
+      setSuccessMessage('Configuration JSON updated successfully!');
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'Failed to update configuration';
+      setError(msg);
+    } finally {
+      setActionLoading(prev => ({ ...prev, saveJson: false }));
     }
   };
 
@@ -964,18 +1041,43 @@ const AdminProductConfigurator: React.FC = () => {
     }
   };
 
-  // Update option price
-  const handleUpdateOptionPrice = useCallback(async (optionId: number, priceModifier: number) => {
-    try {
-      await configuratorService.updateOption(optionId, { priceModifier });
-      await loadData();
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : 'Failed to update price';
-      setError(msg);
-    }
-  }, [loadData]);
+  // Update option price - store locally until save
+  const handlePriceChange = useCallback((optionId: number, priceModifier: number) => {
+    setPendingPriceChanges(prev => ({
+      ...prev,
+      [optionId]: priceModifier,
+    }));
+  }, []);
 
-  const debouncedUpdateOptionPrice = useDebouncedCallback(handleUpdateOptionPrice, 600);
+  // Save all pending changes
+  const handleSaveAllChanges = useCallback(async () => {
+    if (!hasUnsavedChanges) return;
+
+    setIsSaving(true);
+    setError(null);
+
+    try {
+      // Save all pending price changes
+      const updates = Object.entries(pendingPriceChanges).map(([optionId, priceModifier]) =>
+        configuratorService.updateOption(Number(optionId), { priceModifier })
+      );
+
+      await Promise.all(updates);
+      setPendingPriceChanges({});
+      await loadData();
+      setSuccessMessage(`Saved ${updates.length} change(s) successfully!`);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'Failed to save changes';
+      setError(msg);
+    } finally {
+      setIsSaving(false);
+    }
+  }, [hasUnsavedChanges, pendingPriceChanges, loadData]);
+
+  // Discard all pending changes
+  const handleDiscardChanges = useCallback(() => {
+    setPendingPriceChanges({});
+  }, []);
 
   // Delete option
   const handleDeleteOption = (optionId: number) => {
@@ -1238,6 +1340,32 @@ const AdminProductConfigurator: React.FC = () => {
                     />
                   )}
 
+                  {/* Unsaved Changes Bar */}
+                  {hasUnsavedChanges && (
+                    <div className="cfg-unsaved-bar">
+                      <div className="cfg-unsaved-info">
+                        <span className="cfg-unsaved-dot" />
+                        <span>You have unsaved changes ({Object.keys(pendingPriceChanges).length} price modification{Object.keys(pendingPriceChanges).length > 1 ? 's' : ''})</span>
+                      </div>
+                      <div className="cfg-unsaved-actions">
+                        <button
+                          className="btn btn-sm btn-secondary"
+                          onClick={handleDiscardChanges}
+                          disabled={isSaving}
+                        >
+                          Discard
+                        </button>
+                        <button
+                          className={`btn btn-sm btn-primary ${isSaving ? 'btn-loading' : ''}`}
+                          onClick={handleSaveAllChanges}
+                          disabled={isSaving}
+                        >
+                          {isSaving ? 'Saving...' : 'Save Changes'}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Base Assets Section */}
                   <CollapsibleSection
                     title="Base Assets"
@@ -1324,12 +1452,137 @@ const AdminProductConfigurator: React.FC = () => {
                             onUploadOptionGlb={handleUploadOptionGlb}
                             onUploadOptionZip={handleUploadOptionDigitalFile}
                             onDeleteOptionZip={handleDeleteOptionDigitalFile}
-                            onOptionPriceChange={debouncedUpdateOptionPrice}
+                            onOptionPriceChange={handlePriceChange}
+                            pendingPriceChanges={pendingPriceChanges}
                             actionLoading={actionLoading}
                           />
                         ))}
                       </div>
                     )}
+                  </CollapsibleSection>
+
+                  {/* Mount Point Tool JSON Section */}
+                  <CollapsibleSection
+                    title="Mount Point Tool JSON"
+                    icon={<FileJson size={18} />}
+                    badge={configurator.configurationJson ? 'Loaded' : 'Empty'}
+                    defaultExpanded={true}
+                  >
+                    <div className="cfg-json-section">
+                      <p className="cfg-json-hint">
+                        This JSON defines mount points and available options from the Mount Point Tool.
+                        You can view, edit, or import new configuration here.
+                      </p>
+
+                      {configurator.configurationJson ? (
+                        <div className="cfg-json-editor">
+                          <div className="cfg-json-status">
+                            <span className="cfg-badge cfg-badge-success">JSON Loaded</span>
+                            <span className="cfg-json-size">
+                              {(configurator.configurationJson.length / 1024).toFixed(1)} KB
+                            </span>
+                          </div>
+
+                          <textarea
+                            className="cfg-json-textarea"
+                            value={formattedConfigJson}
+                            readOnly
+                          />
+
+                          <div className="cfg-json-actions">
+                            <button
+                              className="btn btn-sm btn-secondary"
+                              onClick={() => {
+                                setImportJson(formattedConfigJson);
+                                setShowJsonEditModal(true);
+                              }}
+                            >
+                              <Edit2 size={14} /> Edit JSON
+                            </button>
+                            <button
+                              className="btn btn-sm btn-secondary"
+                              onClick={() => {
+                                const blob = new Blob([configurator.configurationJson || ''], { type: 'application/json' });
+                                const url = URL.createObjectURL(blob);
+                                const a = document.createElement('a');
+                                a.href = url;
+                                a.download = `config-${configurator.masterProductId}.json`;
+                                a.click();
+                                URL.revokeObjectURL(url);
+                              }}
+                            >
+                              <Download size={14} /> Export JSON
+                            </button>
+                            <button
+                              className="btn btn-sm btn-primary"
+                              onClick={() => {
+                                setImportJson('');
+                                setShowImportModal(true);
+                              }}
+                            >
+                              <Upload size={14} /> Import New JSON
+                            </button>
+                          </div>
+
+                          {/* JSON Preview - parsed structure */}
+                          <div className="cfg-json-preview">
+                            <h4>Structure Preview</h4>
+                            {parsedConfigJson ? (
+                              <div className="cfg-json-tree">
+                                <div className="cfg-json-item">
+                                  <strong>Base Model:</strong> {parsedConfigJson.baseModel || 'Not set'}
+                                </div>
+                                <div className="cfg-json-item">
+                                  <strong>Slots:</strong>
+                                  {parsedConfigJson.slots && Object.keys(parsedConfigJson.slots).length > 0 ? (
+                                    <ul className="cfg-json-slots">
+                                      {Object.entries(parsedConfigJson.slots).map(([slotKey, slotData]: [string, unknown]) => {
+                                        const slot = slotData as { mountPoints?: unknown[]; options?: string[] };
+                                        return (
+                                          <li key={slotKey}>
+                                            <strong>{slotKey}</strong>
+                                            <span className="cfg-json-slot-info">
+                                              {slot.mountPoints?.length || 0} mount point(s),
+                                              {' '}{slot.options?.length || 0} option(s)
+                                            </span>
+                                            {slot.options && slot.options.length > 0 && (
+                                              <ul className="cfg-json-options">
+                                                {slot.options.map((opt: string) => (
+                                                  <li key={opt}>{opt}</li>
+                                                ))}
+                                              </ul>
+                                            )}
+                                          </li>
+                                        );
+                                      })}
+                                    </ul>
+                                  ) : (
+                                    <span className="text-muted"> No slots defined</span>
+                                  )}
+                                </div>
+                              </div>
+                            ) : (
+                              <p className="text-danger">Invalid JSON format</p>
+                            )}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="cfg-json-empty">
+                          <FileJson size={48} className="cfg-json-empty-icon" />
+                          <h4>No Configuration JSON</h4>
+                          <p>Import JSON from Mount Point Tool to define mount points and available options.</p>
+                          <button
+                            className="btn btn-primary"
+                            onClick={() => {
+                              setImportJson('');
+                              setShowImportModal(true);
+                            }}
+                          >
+                            <Upload size={14} /> Import JSON
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </CollapsibleSection>
 
                   {/* Advanced / Danger Zone */}
@@ -1342,17 +1595,8 @@ const AdminProductConfigurator: React.FC = () => {
                     <div className="cfg-danger-zone">
                       <div className="cfg-danger-item">
                         <div>
-                          <strong>Import Configuration</strong>
-                          <p>Import slots and options from Mount Point Tool JSON</p>
-                        </div>
-                        <button className="btn btn-secondary" onClick={() => setShowImportModal(true)}>
-                          Import JSON
-                        </button>
-                      </div>
-                      <div className="cfg-danger-item">
-                        <div>
                           <strong>Delete Configurator</strong>
-                          <p>Permanently delete this configurator and all its data</p>
+                          <p>Permanently remove this configurator and all slots, options, and uploaded files</p>
                         </div>
                         <button
                           className={`btn btn-danger ${actionLoading.deleteConfigurator ? 'btn-loading' : ''}`}
@@ -1379,7 +1623,7 @@ const AdminProductConfigurator: React.FC = () => {
           role="dialog"
           aria-modal="true"
         >
-          <div className="cfg-modal" onClick={(e) => e.stopPropagation()}>
+          <div className="cfg-modal cfg-modal-lg" onClick={(e) => e.stopPropagation()}>
             <div className="cfg-modal-header">
               <h3>Import Configuration JSON</h3>
               <button className="cfg-modal-close" onClick={handleCloseImportModal}>
@@ -1387,13 +1631,15 @@ const AdminProductConfigurator: React.FC = () => {
               </button>
             </div>
             <div className="cfg-modal-body">
-              <p className="cfg-modal-hint">Paste the JSON exported from Mount Point Tool (max 1MB)</p>
+              <p className="cfg-modal-hint">
+                Paste the JSON exported from Mount Point Tool. This will create/update slots and options.
+              </p>
               <textarea
                 value={importJson}
                 onChange={handleJsonInputChange}
-                placeholder='{"baseModel": "tank_base.glb", "slots": {...}}'
+                placeholder='{"baseModel": "tank_base.glb", "slots": {"turret": {"mountPoints": [...], "options": ["turret_a.glb", "turret_b.glb"]}}}'
                 maxLength={MAX_JSON_SIZE}
-                className="cfg-modal-textarea"
+                className="cfg-modal-textarea cfg-modal-textarea-lg"
               />
               <div className="cfg-modal-size">
                 {(importJson.length / 1024).toFixed(1)} KB / {(MAX_JSON_SIZE / 1024).toFixed(0)} KB
@@ -1408,7 +1654,66 @@ const AdminProductConfigurator: React.FC = () => {
                 onClick={handleImportJson}
                 disabled={!importJson.trim() || actionLoading.importJson}
               >
-                {actionLoading.importJson ? 'Importing...' : 'Import'}
+                {actionLoading.importJson ? 'Importing...' : 'Import & Create Slots'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit JSON Modal */}
+      {showJsonEditModal && (
+        <div
+          className="cfg-modal-overlay"
+          onClick={() => { setShowJsonEditModal(false); setImportJson(''); }}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="cfg-modal cfg-modal-lg" onClick={(e) => e.stopPropagation()}>
+            <div className="cfg-modal-header">
+              <h3>Edit Configuration JSON</h3>
+              <button className="cfg-modal-close" onClick={() => { setShowJsonEditModal(false); setImportJson(''); }}>
+                <X size={20} />
+              </button>
+            </div>
+            <div className="cfg-modal-body">
+              <p className="cfg-modal-hint">
+                Edit the raw JSON configuration. Changes will update mount points and option references.
+                <strong> Note:</strong> This only updates the JSON data, not the actual slots/options in the database.
+              </p>
+              <textarea
+                value={importJson}
+                onChange={handleJsonInputChange}
+                maxLength={MAX_JSON_SIZE}
+                className="cfg-modal-textarea cfg-modal-textarea-lg"
+                spellCheck={false}
+              />
+              <div className="cfg-modal-size">
+                {(importJson.length / 1024).toFixed(1)} KB / {(MAX_JSON_SIZE / 1024).toFixed(0)} KB
+                {(() => {
+                  try {
+                    JSON.parse(importJson);
+                    return <span className="cfg-json-valid"> - Valid JSON</span>;
+                  } catch {
+                    return <span className="cfg-json-invalid"> - Invalid JSON</span>;
+                  }
+                })()}
+              </div>
+            </div>
+            <div className="cfg-modal-footer">
+              <button
+                className="btn btn-secondary"
+                onClick={() => { setShowJsonEditModal(false); setImportJson(''); }}
+                disabled={actionLoading.saveJson}
+              >
+                Cancel
+              </button>
+              <button
+                className={`btn btn-primary ${actionLoading.saveJson ? 'btn-loading' : ''}`}
+                onClick={handleSaveJson}
+                disabled={!importJson.trim() || actionLoading.saveJson}
+              >
+                {actionLoading.saveJson ? 'Saving...' : 'Save JSON'}
               </button>
             </div>
           </div>
