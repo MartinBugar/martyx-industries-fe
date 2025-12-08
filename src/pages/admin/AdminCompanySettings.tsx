@@ -34,6 +34,10 @@ const AdminCompanySettings: React.FC = () => {
     invoice_prefix: 'FAK-',
     invoice_footer_text: '',
     invoice_notes: '',
+    invoice_issued_by_name: '',
+    default_vat_rate_percent: 20,
+    payment_terms_days: 0,
+    default_payment_method: 'Online platba',
     is_active: true,
   });
 
@@ -398,6 +402,60 @@ const AdminCompanySettings: React.FC = () => {
                   />
                 </div>
 
+                <div>
+                  <label className="form-label">Issued By (Name)</label>
+                  <input
+                    type="text"
+                    value={settings.invoice_issued_by_name || ''}
+                    onChange={(e) => handleInputChange('invoice_issued_by_name', e.target.value)}
+                    className="form-input"
+                    placeholder="Ing. Martin Bugar"
+                  />
+                  <small style={{ color: 'var(--admin-secondary)', fontSize: '12px' }}>
+                    Name shown on invoice as "Issued by"
+                  </small>
+                </div>
+
+                <div>
+                  <label className="form-label">Default VAT Rate (%)</label>
+                  <input
+                    type="number"
+                    value={settings.default_vat_rate_percent || 20}
+                    onChange={(e) => handleInputChange('default_vat_rate_percent', parseInt(e.target.value) || 20)}
+                    className="form-input"
+                    min={0}
+                    max={100}
+                  />
+                  <small style={{ color: 'var(--admin-secondary)', fontSize: '12px' }}>
+                    Used as fallback when order has no VAT data
+                  </small>
+                </div>
+
+                <div>
+                  <label className="form-label">Payment Terms (Days)</label>
+                  <input
+                    type="number"
+                    value={settings.payment_terms_days || 0}
+                    onChange={(e) => handleInputChange('payment_terms_days', parseInt(e.target.value) || 0)}
+                    className="form-input"
+                    min={0}
+                  />
+                  <small style={{ color: 'var(--admin-secondary)', fontSize: '12px' }}>
+                    Number of days until payment is due (0 = immediate)
+                  </small>
+                </div>
+
+                <div>
+                  <label className="form-label">Default Payment Method</label>
+                  <input
+                    type="text"
+                    value={settings.default_payment_method || ''}
+                    onChange={(e) => handleInputChange('default_payment_method', e.target.value)}
+                    className="form-input"
+                    placeholder="Online platba"
+                  />
+                </div>
+
                 <div style={{ gridColumn: '1 / -1' }}>
                   <label className="form-label">Invoice Footer Text</label>
                   <textarea
@@ -409,13 +467,17 @@ const AdminCompanySettings: React.FC = () => {
                 </div>
 
                 <div style={{ gridColumn: '1 / -1' }}>
-                  <label className="form-label">Invoice Notes</label>
+                  <label className="form-label">Invoice Notes (VAT Note)</label>
                   <textarea
                     value={settings.invoice_notes || ''}
                     onChange={(e) => handleInputChange('invoice_notes', e.target.value)}
                     className="form-input"
                     rows={3}
+                    placeholder="* VAT reverse charge. Tax is paid by the customer."
                   />
+                  <small style={{ color: 'var(--admin-secondary)', fontSize: '12px' }}>
+                    Shown on invoice as VAT note
+                  </small>
                 </div>
               </FormSection>
 

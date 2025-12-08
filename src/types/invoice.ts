@@ -54,6 +54,10 @@ export interface CompanySettingsDto {
   invoice_prefix?: string;
   invoice_footer_text?: string;
   invoice_notes?: string;
+  invoice_issued_by_name?: string; // Name shown on invoice as "Issued by"
+  default_vat_rate_percent?: number; // Default VAT rate percentage (fallback)
+  payment_terms_days?: number; // Number of days until payment is due
+  default_payment_method?: string; // Default payment method text
   is_active: boolean;
   created_at: string; // ISO date string
   updated_at: string; // ISO date string
