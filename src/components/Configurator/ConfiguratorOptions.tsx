@@ -1,19 +1,143 @@
 /**
  * ConfiguratorOptions Component
  *
- * Configuration slot selection UI for the product configurator.
- * Shows slot options as selectable pills with price modifiers.
+ * Modern, minimalist configuration UI with accordion-style slots.
+ * Design: High-tech, glassmorphism, with subtle glow effects.
  *
- * This component is placed in the ProductDetails area when configurator is enabled.
- * The Add to Cart functionality is now in a separate sticky bar component.
+ * Features:
+ * - Accordion slots (one open at a time)
+ * - Radio-style option selection
+ * - Inline price modifiers
+ * - Thumbnail previews (when available)
+ * - Smooth transitions
  */
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useConfigurator } from '../../context/ConfiguratorContext';
+import type { ConfiguratorSlot, ConfiguratorOption } from '../../types/configurator';
 import './ConfiguratorOptions.css';
 
 // =========================================================================
-// COMPONENT
+// SUB-COMPONENTS
+// =========================================================================
+
+interface SlotAccordionProps {
+  slot: ConfiguratorSlot;
+  isOpen: boolean;
+  onToggle: () => void;
+  selectedOption: ConfiguratorOption | undefined;
+  onSelectOption: (option: ConfiguratorOption) => void;
+}
+
+const SlotAccordion: React.FC<SlotAccordionProps> = ({
+  slot,
+  isOpen,
+  onToggle,
+  selectedOption,
+  onSelectOption,
+}) => {
+  return (
+    <div className={`pco-slot ${isOpen ? 'pco-slot--open' : ''}`}>
+      {/* Slot Header */}
+      <button
+        type="button"
+        className="pco-slot__header"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          onToggle();
+        }}
+        aria-expanded={isOpen}
+        aria-controls={`pco-slot-content-${slot.id}`}
+      >
+        <div className="pco-slot__header-left">
+          <span className="pco-slot__name">{slot.displayName}</span>
+          {selectedOption && (
+            <span className="pco-slot__selected">
+              {selectedOption.displayName}
+              {selectedOption.priceModifier !== 0 && (
+                <span className="pco-slot__modifier">
+                  {selectedOption.formattedPriceModifier}
+                </span>
+              )}
+            </span>
+          )}
+        </div>
+        <svg
+          className="pco-slot__chevron"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+
+      {/* Slot Content - using CSS for animation */}
+      {isOpen && (
+        <div
+          id={`pco-slot-content-${slot.id}`}
+          className="pco-slot__content"
+          role="radiogroup"
+          aria-label={`Select ${slot.displayName}`}
+        >
+        <div className="pco-slot__options">
+          {slot.options.filter(opt => opt.isActive).map((option) => {
+            const isSelected = selectedOption?.id === option.id;
+
+            return (
+              <button
+                key={option.id}
+                type="button"
+                role="radio"
+                aria-checked={isSelected}
+                className={`pco-option ${isSelected ? 'pco-option--selected' : ''}`}
+                onClick={() => onSelectOption(option)}
+              >
+                {/* Thumbnail */}
+                {option.thumbnailUrl && (
+                  <div className="pco-option__thumb">
+                    <img
+                      src={option.thumbnailUrl}
+                      alt=""
+                      loading="lazy"
+                    />
+                  </div>
+                )}
+
+                {/* Option Info */}
+                <div className="pco-option__info">
+                  <span className="pco-option__name">{option.displayName}</span>
+                  <span className="pco-option__price">
+                    {option.priceModifier === 0 ? (
+                      'Included'
+                    ) : (
+                      option.formattedPriceModifier
+                    )}
+                  </span>
+                </div>
+
+                {/* Selection Indicator */}
+                <div className="pco-option__radio">
+                  <div className="pco-option__radio-inner" />
+                </div>
+              </button>
+            );
+          })}
+        </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// =========================================================================
+// MAIN COMPONENT
 // =========================================================================
 
 interface ConfiguratorOptionsProps {
@@ -29,12 +153,46 @@ const ConfiguratorOptions: React.FC<ConfiguratorOptionsProps> = ({ className }) 
     selectOption,
   } = useConfigurator();
 
+  // Track which slot is currently open (accordion behavior)
+  // Initialize with first slot ID if configurator exists
+  const [openSlotId, setOpenSlotId] = useState<number | null>(() => {
+    return configurator?.slots?.[0]?.id ?? null;
+  });
+
+  // Auto-open first slot only when configurator first loads (not on every state change)
+  useEffect(() => {
+    if (configurator && configurator.slots.length > 0 && openSlotId === null) {
+      setOpenSlotId(configurator.slots[0].id);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [configurator]); // Intentionally excluding openSlotId to prevent reset loop
+
+  const handleToggleSlot = (slotId: number) => {
+    setOpenSlotId(prev => prev === slotId ? null : slotId);
+  };
+
+  const handleSelectOption = (slotKey: string, option: ConfiguratorOption, slotId: number) => {
+    selectOption(slotKey, option);
+
+    // Auto-advance to next slot after selection
+    if (configurator) {
+      const currentIndex = configurator.slots.findIndex(s => s.id === slotId);
+      const nextSlot = configurator.slots[currentIndex + 1];
+      if (nextSlot) {
+        // Small delay for visual feedback
+        setTimeout(() => {
+          setOpenSlotId(nextSlot.id);
+        }, 150);
+      }
+    }
+  };
+
   if (loading) {
     return (
-      <div className={`configurator-options-container ${className || ''}`}>
-        <div className="configurator-options-loading">
-          <div className="loading-spinner" />
-          <p>Loading configuration options...</p>
+      <div className={`pco-container ${className || ''}`}>
+        <div className="pco-loading">
+          <div className="pco-loading__spinner" />
+          <span>Loading options...</span>
         </div>
       </div>
     );
@@ -45,53 +203,31 @@ const ConfiguratorOptions: React.FC<ConfiguratorOptionsProps> = ({ className }) 
   }
 
   return (
-    <div className={`configurator-options-container ${className || ''}`} role="form" aria-label="Configuration options">
-      {configurator.slots.map((slot) => (
-        <fieldset key={slot.id} className="configurator-slot">
-          <legend className="configurator-slot-title" id={`slot-${slot.id}-label`}>
-            {slot.icon && <span className="slot-icon" aria-hidden="true">{slot.icon}</span>}
-            {slot.displayName}
-          </legend>
+    <div className={`pco-container ${className || ''}`}>
+      {/* Slots */}
+      <div className="pco-slots">
+        {configurator.slots.map((slot) => (
+          <SlotAccordion
+            key={slot.id}
+            slot={slot}
+            isOpen={openSlotId === slot.id}
+            onToggle={() => handleToggleSlot(slot.id)}
+            selectedOption={selectedOptions[slot.slotKey]}
+            onSelectOption={(option) => handleSelectOption(slot.slotKey, option, slot.id)}
+          />
+        ))}
+      </div>
 
+      {/* Progress Indicator */}
+      <div className="pco-progress">
+        {configurator.slots.map((slot) => (
           <div
-            className="configurator-option-grid"
-            role="radiogroup"
-            aria-labelledby={`slot-${slot.id}-label`}
-          >
-            {slot.options.map((option) => {
-              const isSelected = selectedOptions[slot.slotKey]?.id === option.id;
-
-              return (
-                <button
-                  key={option.id}
-                  type="button"
-                  role="radio"
-                  aria-checked={isSelected}
-                  aria-label={`${option.displayName}, price modifier ${option.formattedPriceModifier}`}
-                  className={`configurator-option-card ${isSelected ? 'selected' : ''}`}
-                  onClick={() => selectOption(slot.slotKey, option)}
-                  tabIndex={isSelected ? 0 : -1}
-                >
-                  {option.thumbnailUrl && (
-                    <img
-                      src={option.thumbnailUrl}
-                      alt=""
-                      aria-hidden="true"
-                      className="option-thumbnail"
-                      loading="lazy"
-                    />
-                  )}
-                  <div className="option-info">
-                    <span className="option-name">{option.displayName}</span>
-                    <span className="option-price">{option.formattedPriceModifier}</span>
-                  </div>
-                  {isSelected && <span className="option-check" aria-hidden="true">&#10003;</span>}
-                </button>
-              );
-            })}
-          </div>
-        </fieldset>
-      ))}
+            key={slot.id}
+            className={`pco-progress__dot ${selectedOptions[slot.slotKey] ? 'pco-progress__dot--complete' : ''} ${openSlotId === slot.id ? 'pco-progress__dot--active' : ''}`}
+            title={slot.displayName}
+          />
+        ))}
+      </div>
     </div>
   );
 };

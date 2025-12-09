@@ -7,9 +7,13 @@
  *
  * This enables the configurator UI to be split across different parts of the ProductDetail layout
  * while maintaining synchronized state.
+ *
+ * PRELOADING: All GLB models are preloaded when configurator loads to ensure
+ * instant switching between configuration options without loading delays.
  */
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useGLTF } from '@react-three/drei';
 import { configuratorService } from '../services/configuratorService';
 import { logError, logInfo } from '../services/logger';
 import type { Configurator, ConfiguratorOption, SelectedConfiguration } from '../types/configurator';
@@ -53,6 +57,69 @@ const LOADING_TIMEOUT_MS = 15000;
 const AUTO_ROTATE_RESUME_DELAY_MS = 3000;
 const AUTO_ROTATE_DEBOUNCE_MS = 100;
 
+// CDN origins from environment or fallback defaults (must match ConfiguratorPreview)
+const ALLOWED_CDN_ORIGINS: string[] = (() => {
+  const envOrigins = import.meta.env.VITE_CDN_ORIGINS;
+  if (envOrigins && typeof envOrigins === 'string') {
+    return envOrigins.split(',').map(o => o.trim()).filter(Boolean);
+  }
+  return [
+    'https://martyx-industries.fra1.cdn.digitaloceanspaces.com',
+    'https://martyx-industries.fra1.digitaloceanspaces.com',
+    'https://mi-gallery.fra1.cdn.digitaloceanspaces.com',
+  ];
+})();
+
+// =========================================================================
+// HELPER: Validate GLB URL is from allowed CDN
+// =========================================================================
+
+const isValidGLBUrl = (url: string): boolean => {
+  if (!url) return false;
+  try {
+    const urlObj = new URL(url);
+    return ALLOWED_CDN_ORIGINS.some(origin => urlObj.origin === origin);
+  } catch {
+    return false;
+  }
+};
+
+// =========================================================================
+// HELPER: Preload all GLB models from configurator
+// =========================================================================
+
+const preloadAllModels = (configurator: Configurator): void => {
+  const urlsToPreload: string[] = [];
+
+  // Add base model
+  if (configurator.baseModelUrl && isValidGLBUrl(configurator.baseModelUrl)) {
+    urlsToPreload.push(configurator.baseModelUrl);
+  }
+
+  // Add all option GLB models from all slots
+  configurator.slots.forEach(slot => {
+    slot.options.forEach(option => {
+      if (option.glbUrl && isValidGLBUrl(option.glbUrl)) {
+        urlsToPreload.push(option.glbUrl);
+      }
+    });
+  });
+
+  // Preload all unique URLs
+  const uniqueUrls = [...new Set(urlsToPreload)];
+  logInfo(`[Configurator] Preloading ${uniqueUrls.length} GLB models...`);
+
+  uniqueUrls.forEach(url => {
+    try {
+      useGLTF.preload(url);
+    } catch (e) {
+      logError(`[Configurator] Failed to preload: ${url}`, e);
+    }
+  });
+
+  logInfo(`[Configurator] Preload initiated for all models`);
+};
+
 // =========================================================================
 // CONTEXT
 // =========================================================================
@@ -93,6 +160,15 @@ export const ConfiguratorProvider: React.FC<ConfiguratorProviderProps> = ({
     return {};
   });
   const [autoRotate, setAutoRotate] = useState(true);
+  const [modelsPreloaded, setModelsPreloaded] = useState(false);
+
+  // Preload all GLB models when configurator is available
+  useEffect(() => {
+    if (configurator && !modelsPreloaded) {
+      preloadAllModels(configurator);
+      setModelsPreloaded(true);
+    }
+  }, [configurator, modelsPreloaded]);
 
   // Refs for cleanup
   const autoRotateTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
