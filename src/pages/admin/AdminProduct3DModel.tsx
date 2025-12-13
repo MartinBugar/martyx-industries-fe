@@ -325,7 +325,7 @@ const AdminProduct3DModel: React.FC = () => {
                     or click to browse
                   </div>
                   <div style={{ fontSize: 12, color: '#9ca3af' }}>
-                    Max size: 50 MB • Supported: .glb files only
+                    Max size: 200 MB • Supported: .glb files only
                   </div>
                 </div>
 
@@ -377,7 +377,7 @@ const AdminProduct3DModel: React.FC = () => {
                     <ul style={{ marginTop: 8, paddingLeft: 20 }}>
                       <li>Upload GLB (binary glTF) files only</li>
                       <li>Optimize your model before uploading for better performance</li>
-                      <li>Recommended max file size: 50 MB</li>
+                      <li>Recommended max file size: 200 MB</li>
                       <li>If a model already exists, it will be replaced</li>
                     </ul>
                   </div>

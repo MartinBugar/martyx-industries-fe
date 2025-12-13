@@ -139,10 +139,10 @@ export class Product3DModelService {
    * Validate if a file is a valid GLB file
    *
    * @param file The file to validate
-   * @param maxSizeMB Maximum file size in MB (default: 50)
+   * @param maxSizeMB Maximum file size in MB (default: 200)
    * @returns Validation result with error message if invalid
    */
-  validateGLBFile(file: File, maxSizeMB: number = 50): { valid: boolean; error?: string } {
+  validateGLBFile(file: File, maxSizeMB: number = 200): { valid: boolean; error?: string } {
     // Check file exists
     if (!file) {
       return { valid: false, error: 'No file selected' };

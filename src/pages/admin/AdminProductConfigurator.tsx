@@ -893,7 +893,8 @@ const AdminProductConfigurator: React.FC = () => {
 
   // Delete base model
   const handleDeleteBaseModel = () => {
-    if (!configurator || !configurator.baseModelUrl) return;
+    // Allow delete if there's either a URL (uploaded file) or fileName (from JSON import)
+    if (!configurator || (!configurator.baseModelUrl && !configurator.baseModelFileName)) return;
     showConfirm({
       title: 'Delete Base Model',
       message: 'Are you sure you want to delete the base 3D model?',
@@ -902,8 +903,19 @@ const AdminProductConfigurator: React.FC = () => {
       onConfirm: async () => {
         setConfirmModal(prev => ({ ...prev, isLoading: true }));
         try {
-          const updated = await configuratorService.deleteBaseModel(configurator.id);
-          setConfigurator(updated);
+          // If there's an actual file on server, delete it via API
+          if (configurator.baseModelUrl) {
+            const updated = await configuratorService.deleteBaseModel(configurator.id);
+            setConfigurator(updated);
+          } else {
+            // If only fileName exists (from JSON import), just clear local state
+            setConfigurator(prev => prev ? {
+              ...prev,
+              baseModelFileName: undefined,
+              baseModelUrl: undefined,
+              baseModelSize: undefined,
+            } : null);
+          }
           setSuccessMessage('Base model deleted!');
           closeConfirm();
         } catch (e) {
@@ -942,7 +954,8 @@ const AdminProductConfigurator: React.FC = () => {
 
   // Delete base digital file
   const handleDeleteBaseDigitalFile = () => {
-    if (!configurator || !configurator.baseDigitalFileUrl) return;
+    // Allow delete if there's either a URL (uploaded file) or fileName (from JSON import)
+    if (!configurator || (!configurator.baseDigitalFileUrl && !configurator.baseDigitalFileName)) return;
     showConfirm({
       title: 'Delete Base Digital File',
       message: 'Are you sure you want to delete the base digital file (ZIP)?',
@@ -951,8 +964,19 @@ const AdminProductConfigurator: React.FC = () => {
       onConfirm: async () => {
         setConfirmModal(prev => ({ ...prev, isLoading: true }));
         try {
-          const updated = await configuratorService.deleteBaseDigitalFile(configurator.id);
-          setConfigurator(updated);
+          // If there's an actual file on server, delete it via API
+          if (configurator.baseDigitalFileUrl) {
+            const updated = await configuratorService.deleteBaseDigitalFile(configurator.id);
+            setConfigurator(updated);
+          } else {
+            // If only fileName exists (from JSON import), just clear local state
+            setConfigurator(prev => prev ? {
+              ...prev,
+              baseDigitalFileName: undefined,
+              baseDigitalFileUrl: undefined,
+              baseDigitalFileSize: undefined,
+            } : null);
+          }
           setSuccessMessage('Base digital file deleted!');
           closeConfirm();
         } catch (e) {
@@ -1386,7 +1410,7 @@ const AdminProductConfigurator: React.FC = () => {
                         uploadProgress={uploadState.progress}
                         deleting={actionLoading.deleteBaseModel}
                         accept=".glb"
-                        hint="GLB format, max 50MB"
+                        hint="GLB format, max 200MB"
                         previewElement={configurator.baseModelUrl ? (
                           React.createElement('model-viewer', {
                             src: configurator.baseModelUrl,

@@ -18,11 +18,11 @@ import './ConfiguratorPreview.css';
 // =========================================================================
 // CAMERA SETTINGS
 // =========================================================================
-// Using spherical coordinates for consistent camera positioning relative to center
 const CAMERA_SETTINGS = {
-  // Camera position (relative to center at 0,0,0)
-  position: [-0.495, 0.012, -0.518] as [number, number, number],
+  position: [-0.390, 0.086, -0.594] as [number, number, number],
   fov: 45,
+  minDistance: 0.4,
+  maxDistance: 10,
 };
 
 // =========================================================================
@@ -245,7 +245,8 @@ const BaseModel: React.FC<{ url: string; onLoad?: () => void; settings: typeof D
     };
   }, [clonedScene, settings]);
 
-  return <primitive object={clonedScene} />;
+  // Scale from mm to m (model is in millimeters, Three.js expects meters)
+  return <primitive object={clonedScene} scale={0.001} />;
 };
 
 const OptionModel: React.FC<{
@@ -291,8 +292,15 @@ const OptionModel: React.FC<{
       clone.applyMatrix4(rotY);
       clone.applyMatrix4(rotZ);
 
-      // Apply position
-      clone.position.set(mp.position[0], mp.position[1], mp.position[2]);
+      // Scale from mm to m (model is in millimeters, Three.js expects meters)
+      clone.scale.set(0.001, 0.001, 0.001);
+
+      // Apply position (also convert from mm to m)
+      clone.position.set(
+        mp.position[0] * 0.001,
+        mp.position[1] * 0.001,
+        mp.position[2] * 0.001
+      );
 
       return clone;
     });
@@ -402,17 +410,46 @@ const DebugSlider: React.FC<DebugSliderProps> = ({ label, value, min, max, step,
 interface DebugPanelProps {
   settings: typeof DEFAULT_VISUAL_SETTINGS;
   onSettingsChange: (settings: typeof DEFAULT_VISUAL_SETTINGS) => void;
+  cameraInfo: { distance: number; position: [number, number, number] };
+  minDistance: number;
+  maxDistance: number;
+  onMinDistanceChange: (value: number) => void;
+  onMaxDistanceChange: (value: number) => void;
+  autoRotate: boolean;
+  onAutoRotateToggle: () => void;
   isOpen: boolean;
   onToggle: () => void;
 }
 
-const DebugPanel: React.FC<DebugPanelProps> = ({ settings, onSettingsChange, isOpen, onToggle }) => {
+const DebugPanel: React.FC<DebugPanelProps> = ({
+  settings,
+  onSettingsChange,
+  cameraInfo,
+  minDistance,
+  maxDistance,
+  onMinDistanceChange,
+  onMaxDistanceChange,
+  autoRotate,
+  onAutoRotateToggle,
+  isOpen,
+  onToggle
+}) => {
   const updateSetting = (key: keyof typeof DEFAULT_VISUAL_SETTINGS, value: number) => {
     onSettingsChange({ ...settings, [key]: value });
   };
 
   const copyToClipboard = () => {
-    const code = `const VISUAL_SETTINGS = ${JSON.stringify(settings, null, 2)};`;
+    const code = `// Visual Settings
+const VISUAL_SETTINGS = ${JSON.stringify(settings, null, 2)};
+
+// Camera/Zoom Settings
+const CAMERA_SETTINGS = {
+  minDistance: ${minDistance},
+  maxDistance: ${maxDistance},
+};
+
+// Current camera position: [${cameraInfo.position.map(p => p.toFixed(3)).join(', ')}]
+// Current distance: ${cameraInfo.distance.toFixed(3)}`;
     navigator.clipboard.writeText(code);
     alert('Settings copied to clipboard!');
   };
@@ -520,6 +557,43 @@ const DebugPanel: React.FC<DebugPanelProps> = ({ settings, onSettingsChange, isO
           />
         </div>
 
+        <div className="debug-section">
+          <h4>Camera & Zoom</h4>
+          <div className="debug-info-row">
+            <span>Position:</span>
+            <span className="debug-info-value">
+              [{cameraInfo.position.map(p => p.toFixed(3)).join(', ')}]
+            </span>
+          </div>
+          <div className="debug-info-row">
+            <span>Distance:</span>
+            <span className="debug-info-value">{cameraInfo.distance.toFixed(3)}</span>
+          </div>
+          <DebugSlider
+            label="Min Zoom"
+            value={minDistance}
+            min={0.1}
+            max={2}
+            step={0.05}
+            onChange={onMinDistanceChange}
+          />
+          <DebugSlider
+            label="Max Zoom"
+            value={maxDistance}
+            min={1}
+            max={20}
+            step={0.5}
+            onChange={onMaxDistanceChange}
+          />
+          <button
+            className={`debug-btn debug-btn-toggle ${autoRotate ? 'active' : ''}`}
+            onClick={onAutoRotateToggle}
+            style={{ marginTop: '8px', width: '100%' }}
+          >
+            Auto Rotate: {autoRotate ? 'ON' : 'OFF'}
+          </button>
+        </div>
+
         <div className="debug-panel-actions">
           <button className="debug-btn" onClick={copyToClipboard}>Copy Settings</button>
           <button className="debug-btn debug-btn-reset" onClick={resetToDefaults}>Reset</button>
@@ -553,6 +627,13 @@ const ConfiguratorPreview: React.FC<ConfiguratorPreviewProps> = ({ className }) 
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [debugOpen, setDebugOpen] = useState(false);
   const [visualSettings, setVisualSettings] = useState({ ...DEFAULT_VISUAL_SETTINGS });
+  const [minDistance, setMinDistance] = useState(CAMERA_SETTINGS.minDistance);
+  const [maxDistance, setMaxDistance] = useState(CAMERA_SETTINGS.maxDistance);
+  const [debugAutoRotate, setDebugAutoRotate] = useState(false);
+  const [cameraInfo, setCameraInfo] = useState<{ distance: number; position: [number, number, number] }>({
+    distance: 0,
+    position: [0, 0, 0]
+  });
 
   const toggleFullscreen = () => {
     setIsFullscreen(!isFullscreen);
@@ -562,6 +643,27 @@ const ConfiguratorPreview: React.FC<ConfiguratorPreviewProps> = ({ className }) 
     () => () => setModelsLoading(false),
     []
   );
+
+  // Update camera info when debug panel is open
+  useEffect(() => {
+    if (!debugOpen) return;
+
+    const updateCameraInfo = () => {
+      if (controlsRef.current?.object) {
+        const camera = controlsRef.current.object;
+        const target = controlsRef.current.target;
+        const distance = camera.position.distanceTo(target);
+        setCameraInfo({
+          distance,
+          position: [camera.position.x, camera.position.y, camera.position.z]
+        });
+      }
+    };
+
+    updateCameraInfo();
+    const interval = setInterval(updateCameraInfo, 100);
+    return () => clearInterval(interval);
+  }, [debugOpen]);
 
   // Reset loading state when configurator changes
   useEffect(() => {
@@ -686,12 +788,20 @@ const ConfiguratorPreview: React.FC<ConfiguratorPreviewProps> = ({ className }) 
           </Suspense>
 
           <OrbitControls
-            ref={controlsRef}
+            ref={(ref) => {
+              controlsRef.current = ref;
+              if (ref) {
+                ref.minDistance = minDistance;
+                ref.maxDistance = maxDistance;
+              }
+            }}
             makeDefault
-            autoRotate={autoRotate}
+            autoRotate={debugAutoRotate || autoRotate}
             autoRotateSpeed={1}
             enablePan={true}
             enableZoom={true}
+            minDistance={minDistance}
+            maxDistance={maxDistance}
             target={[0, 0, 0]}
             onStart={pauseAutoRotate}
             onEnd={resumeAutoRotate}
@@ -704,6 +814,13 @@ const ConfiguratorPreview: React.FC<ConfiguratorPreviewProps> = ({ className }) 
         <DebugPanel
           settings={visualSettings}
           onSettingsChange={setVisualSettings}
+          cameraInfo={cameraInfo}
+          minDistance={minDistance}
+          maxDistance={maxDistance}
+          onMinDistanceChange={setMinDistance}
+          onMaxDistanceChange={setMaxDistance}
+          autoRotate={debugAutoRotate}
+          onAutoRotateToggle={() => setDebugAutoRotate(!debugAutoRotate)}
           isOpen={debugOpen}
           onToggle={() => setDebugOpen(!debugOpen)}
         />

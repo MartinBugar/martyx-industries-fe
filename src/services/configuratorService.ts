@@ -654,7 +654,7 @@ class ConfiguratorService {
   /**
    * Validate GLB file with magic bytes check
    */
-  async validateGLBFile(file: File, maxSizeMB: number = 50): Promise<FileValidationResult> {
+  async validateGLBFile(file: File, maxSizeMB: number = 200): Promise<FileValidationResult> {
     return validateFile(file, {
       extensions: ['glb'],
       maxSizeMB,
