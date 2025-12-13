@@ -102,6 +102,15 @@
   background: rgba(255, 255, 255, 0.03);
 }
 
+/* Static header - non-clickable, no hover effect */
+.pco-slot__header--static {
+  cursor: default;
+}
+
+.pco-slot__header--static:hover {
+  background: transparent;
+}
+
 .pco-slot__header-left {
   display: flex;
   flex-direction: column;
