@@ -652,7 +652,7 @@ MainContent.displayName = 'MainContent';
 function AppContent() {
   useIOSNoZoomOnFocus();
   // PERFORMANCE: Enable route prefetching for near-instant page transitions
-  useRoutePrefetch();
+  // useRoutePrefetch();
   const [rateLimitError, setRateLimitError] = useState<RateLimitError | null>(null);
 
   // Rate limit event listener

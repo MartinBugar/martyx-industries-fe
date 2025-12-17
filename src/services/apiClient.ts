@@ -35,7 +35,7 @@ class ApiClient {
   private cache = new Map<string, CacheEntry>();
   private pendingRequests = new Map<string, Promise<unknown>>();
   // Mutex for token refresh - prevents duplicate refresh calls
-  private tokenRefreshPromise: Promise<void> | null = null;
+  private tokenRefreshPromise: Promise<boolean> | null = null;
   // private readonly CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
   private readonly DEFAULT_RETRY_ATTEMPTS = 3;
   private readonly DEFAULT_RETRY_DELAY = 1000; // 1 second
