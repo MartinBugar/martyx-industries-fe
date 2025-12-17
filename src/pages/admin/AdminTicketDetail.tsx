@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { logError } from '../../services/logger';
 import AdminLayout from './AdminLayout';
 import {
   type TicketDetailDto,
@@ -59,7 +60,7 @@ const AdminTicketDetail: React.FC = () => {
       const data = await getTicketDetail(Number(id));
       setDetail(data);
     } catch (err) {
-      console.error('Failed to load ticket:', err);
+      logError('Failed to load ticket:', err);
       setError('Nepodarilo sa načítať tiket');
     } finally {
       setLoading(false);
@@ -68,8 +69,8 @@ const AdminTicketDetail: React.FC = () => {
 
   useEffect(() => {
     loadDetail();
-    getActiveCategories().then(setCategories).catch(console.error);
-    getAllCannedResponses().then(setCannedResponses).catch(console.error);
+    getActiveCategories().then(setCategories).catch(logError);
+    getAllCannedResponses().then(setCannedResponses).catch(logError);
   }, [loadDetail]);
 
   // Handlers
@@ -86,7 +87,7 @@ const AdminTicketDetail: React.FC = () => {
       setIsInternal(false);
       await loadDetail();
     } catch (err) {
-      console.error('Failed to send message:', err);
+      logError('Failed to send message:', err);
       setError('Nepodarilo sa odoslať správu');
     } finally {
       setSending(false);
@@ -101,7 +102,7 @@ const AdminTicketDetail: React.FC = () => {
       setReplyContent('');
       await loadDetail();
     } catch (err) {
-      console.error('Failed to add note:', err);
+      logError('Failed to add note:', err);
       setError('Nepodarilo sa pridať poznámku');
     } finally {
       setSending(false);
@@ -114,7 +115,7 @@ const AdminTicketDetail: React.FC = () => {
       await changeTicketStatus(Number(id), status);
       await loadDetail();
     } catch (err) {
-      console.error('Failed to change status:', err);
+      logError('Failed to change status:', err);
     }
   };
 
@@ -124,7 +125,7 @@ const AdminTicketDetail: React.FC = () => {
       await changeTicketPriority(Number(id), priority);
       await loadDetail();
     } catch (err) {
-      console.error('Failed to change priority:', err);
+      logError('Failed to change priority:', err);
     }
   };
 
@@ -134,7 +135,7 @@ const AdminTicketDetail: React.FC = () => {
       await updateTicket(Number(id), { categoryId });
       await loadDetail();
     } catch (err) {
-      console.error('Failed to change category:', err);
+      logError('Failed to change category:', err);
     }
   };
 
@@ -144,7 +145,7 @@ const AdminTicketDetail: React.FC = () => {
       await assignTicketToMe(Number(id));
       await loadDetail();
     } catch (err) {
-      console.error('Failed to assign:', err);
+      logError('Failed to assign:', err);
     }
   };
 
@@ -154,7 +155,7 @@ const AdminTicketDetail: React.FC = () => {
       await unassignTicket(Number(id));
       await loadDetail();
     } catch (err) {
-      console.error('Failed to unassign:', err);
+      logError('Failed to unassign:', err);
     }
   };
 
@@ -166,7 +167,7 @@ const AdminTicketDetail: React.FC = () => {
       setResolutionMessage('');
       await loadDetail();
     } catch (err) {
-      console.error('Failed to resolve:', err);
+      logError('Failed to resolve:', err);
     }
   };
 
@@ -176,7 +177,7 @@ const AdminTicketDetail: React.FC = () => {
       await closeTicket(Number(id));
       await loadDetail();
     } catch (err) {
-      console.error('Failed to close:', err);
+      logError('Failed to close:', err);
     }
   };
 
@@ -186,7 +187,7 @@ const AdminTicketDetail: React.FC = () => {
       await reopenTicket(Number(id));
       await loadDetail();
     } catch (err) {
-      console.error('Failed to reopen:', err);
+      logError('Failed to reopen:', err);
     }
   };
 

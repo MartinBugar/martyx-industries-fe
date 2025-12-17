@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Eye, Mail, MessageSquare, Check, X, Trash2, Search, Plus } from 'lucide-react';
+import { logError } from '../../services/logger';
 import AdminLayout from './AdminLayout';
 import {
   type TicketDto,
@@ -80,17 +81,17 @@ const AdminTickets: React.FC = () => {
 
   // Load categories on mount
   useEffect(() => {
-    getActiveCategories().then(setCategories).catch(console.error);
+    getActiveCategories().then(setCategories).catch(logError);
   }, []);
 
   // Load ticket stats
   useEffect(() => {
-    getTicketStats().then(setStats).catch(console.error);
+    getTicketStats().then(setStats).catch(logError);
   }, []);
 
   // Load contact form stats
   useEffect(() => {
-    adminContactService.getStats().then(setContactStats).catch(console.error);
+    adminContactService.getStats().then(setContactStats).catch(logError);
   }, []);
 
   // Load contact forms
@@ -103,7 +104,7 @@ const AdminTickets: React.FC = () => {
       setContactTotalElements(result.totalElements);
       setContactTotalPages(result.totalPages);
     } catch (err) {
-      console.error('Failed to load contact forms:', err);
+      logError('Failed to load contact forms:', err);
       setError('Nepodarilo sa načítať kontaktné formuláre');
     } finally {
       setLoading(false);
@@ -156,7 +157,7 @@ const AdminTickets: React.FC = () => {
       setTotalElements(result.totalElements);
       setTotalPages(result.totalPages);
     } catch (err) {
-      console.error('Failed to load tickets:', err);
+      logError('Failed to load tickets:', err);
       setError('Nepodarilo sa načítať tikety');
     } finally {
       setLoading(false);
@@ -189,7 +190,7 @@ const AdminTickets: React.FC = () => {
         getTicketStats().then(setStats);
       }
     } catch (err) {
-      console.error('Failed to assign ticket:', err);
+      logError('Failed to assign ticket:', err);
     }
   };
 
@@ -203,7 +204,7 @@ const AdminTickets: React.FC = () => {
         getTicketStats().then(setStats);
       }
     } catch (err) {
-      console.error('Failed to change status:', err);
+      logError('Failed to change status:', err);
     }
   };
 
@@ -217,7 +218,7 @@ const AdminTickets: React.FC = () => {
         getTicketStats().then(setStats);
       }
     } catch (err) {
-      console.error('Failed to change priority:', err);
+      logError('Failed to change priority:', err);
     }
   };
 
@@ -247,7 +248,7 @@ const AdminTickets: React.FC = () => {
       await loadContactForms();
       adminContactService.getStats().then(setContactStats);
     } catch (err) {
-      console.error('Failed to mark as processed:', err);
+      logError('Failed to mark as processed:', err);
     }
   };
 
@@ -257,7 +258,7 @@ const AdminTickets: React.FC = () => {
       await loadContactForms();
       adminContactService.getStats().then(setContactStats);
     } catch (err) {
-      console.error('Failed to mark as unprocessed:', err);
+      logError('Failed to mark as unprocessed:', err);
     }
   };
 
@@ -272,7 +273,7 @@ const AdminTickets: React.FC = () => {
       await loadContactForms();
       adminContactService.getStats().then(setContactStats);
     } catch (err) {
-      console.error('Failed to delete contact form:', err);
+      logError('Failed to delete contact form:', err);
     }
   };
 

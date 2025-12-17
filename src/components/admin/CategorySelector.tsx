@@ -3,6 +3,7 @@ import { adminCategoryService } from '../../services/adminCategoryService';
 import { adminProductCategoryService } from '../../services/adminProductCategoryService';
 import type { ProductCategory } from '../../types/category';
 import { X } from 'lucide-react';
+import { logError } from '../../services/logger';
 
 interface CategorySelectorProps {
     productId: number;
@@ -32,7 +33,7 @@ const CategorySelector: React.FC<CategorySelectorProps> = ({ productId }) => {
             setAllCategories(allCats);
             setSelectedCategories(selectedCats);
         } catch (err) {
-            console.error('Failed to load categories:', err);
+            logError('Failed to load categories:', err);
             setError('Failed to load categories');
         } finally {
             setLoading(false);
@@ -62,7 +63,7 @@ const CategorySelector: React.FC<CategorySelectorProps> = ({ productId }) => {
             // Clear success message after 3 seconds
             setTimeout(() => setSuccess(null), 3000);
         } catch (err) {
-            console.error('Failed to toggle category:', err);
+            logError('Failed to toggle category:', err);
             setError('Failed to update categories');
         } finally {
             setSaving(false);

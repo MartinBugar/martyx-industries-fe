@@ -21,6 +21,7 @@ import {
   getStockStatusLabel,
   getStockStatusColor
 } from '../../services/adminReportsService';
+import { logError } from '../../services/logger';
 import './AdminReports.css';
 
 type ReportTab = 'sales' | 'products' | 'customers' | 'inventory' | 'tax';
@@ -77,7 +78,7 @@ const AdminReports: React.FC = () => {
           break;
       }
     } catch (err) {
-      console.error('Failed to load report:', err);
+      logError('Failed to load report:', err);
       setError('Nepodarilo sa načítať report. Skúste to znova.');
     } finally {
       setLoading(false);
@@ -108,7 +109,7 @@ const AdminReports: React.FC = () => {
       const filename = `${activeTab}_report_${startDate}_${endDate}.${ext}`;
       downloadBlob(blob, filename);
     } catch (err) {
-      console.error('Export failed:', err);
+      logError('Export failed:', err);
       setError('Export sa nepodaril. Skúste to znova.');
     } finally {
       setLoading(false);

@@ -4,6 +4,7 @@ import type { ProductCategory } from '../../types/category';
 import AdminLayout from './AdminLayout';
 import { Button, Badge, ConfirmDialog, useConfirmDialog } from '../../components/ui';
 import { Eye, Trash2, ToggleLeft, ToggleRight } from 'lucide-react';
+import { logError } from '../../services/logger';
 import './AdminUsers.css';
 import './AdminButtonOverrides.css';
 
@@ -51,7 +52,7 @@ const AdminCategories: React.FC = () => {
       const data = await adminCategoryService.getAllCategories();
       setCategories(data);
     } catch (err) {
-      console.error('Failed to load categories:', err);
+      logError('Failed to load categories:', err);
       setError('Failed to load categories');
     } finally {
       setLoading(false);

@@ -1,7 +1,7 @@
 import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
 import { removeAuthToken } from './api';
 import type { Order } from '../context/authTypes';
-import { logError } from '../services/logger';
+import { logError, logDebug } from '../services/logger';
 
 // Types that approximate the backend OrderDTO shape
 // We keep them flexible to avoid tight coupling
@@ -261,7 +261,7 @@ export const ordersService = {
   downloadByUrl: async (downloadUrl: string, suggestedName?: string): Promise<boolean> => {
     try {
       if (!downloadUrl) {
-        console.debug('[ordersService.downloadByUrl] No downloadUrl provided');
+        logDebug('[ordersService.downloadByUrl] No downloadUrl provided');
         return false;
       }
       const { downloadProductByUrl } = await import('./download');
@@ -276,7 +276,7 @@ export const ordersService = {
   downloadInvoiceByUrl: async (downloadUrl: string, suggestedName?: string): Promise<boolean> => {
     try {
       if (!downloadUrl) {
-        console.debug('[ordersService.downloadInvoiceByUrl] No downloadUrl provided');
+        logDebug('[ordersService.downloadInvoiceByUrl] No downloadUrl provided');
         return false;
       }
       const { downloadInvoiceByUrl } = await import('./download');

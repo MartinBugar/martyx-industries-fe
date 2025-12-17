@@ -22,6 +22,7 @@ import {
   Trophy,
   Target
 } from 'lucide-react';
+import { logError } from '../../services/logger';
 import './AdminCohortAnalysis.css';
 
 // Local type definitions
@@ -127,7 +128,7 @@ const AdminCohortAnalysis: React.FC = () => {
       const data = await adminCohortService.getCohortReport(cohortType, granularity, startDate, endDate, maxPeriods);
       setReport(data);
     } catch (err) {
-      console.error('Failed to load cohort report:', err);
+      logError('Failed to load cohort report:', err);
       setError('Nepodarilo sa načítať dáta kohort. Skúste to znova.');
     } finally {
       setLoading(false);

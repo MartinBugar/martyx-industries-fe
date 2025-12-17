@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { logDebug } from '../services/logger';
 
 /**
  * Sound effect types for different interactions.
@@ -87,7 +88,7 @@ export function useSoundEffects(options: SoundEffectsOptions = {}): SoundEffects
       try {
         audioContextRef.current = new (window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext)();
       } catch {
-        console.debug('AudioContext not supported');
+        logDebug('AudioContext not supported');
         return null;
       }
     }
@@ -126,7 +127,7 @@ export function useSoundEffects(options: SoundEffectsOptions = {}): SoundEffects
       oscillator.start(audioContext.currentTime);
       oscillator.stop(audioContext.currentTime + duration);
     } catch (error) {
-      console.debug('Failed to play sound:', error);
+      logDebug('Failed to play sound:', error);
     }
   }, [isEnabled, volume, getAudioContext]);
 

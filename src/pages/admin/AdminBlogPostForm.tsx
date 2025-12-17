@@ -35,6 +35,7 @@ import {
   X,
   Check
 } from 'lucide-react';
+import { logError } from '../../services/logger';
 import './AdminBlogPostForm.css';
 
 const AdminBlogPostForm: React.FC = () => {
@@ -101,7 +102,7 @@ const AdminBlogPostForm: React.FC = () => {
       });
       setSlugManuallyEdited(true); // Don't auto-generate slug when editing
     } catch (err) {
-      console.error('Failed to load post:', err);
+      logError('Failed to load post:', err);
       setError('Nepodarilo sa načítať článok');
     } finally {
       setLoading(false);
@@ -120,7 +121,7 @@ const AdminBlogPostForm: React.FC = () => {
       setTags(tagsData);
       setStatuses(statusesData);
     } catch (err) {
-      console.error('Failed to load reference data:', err);
+      logError('Failed to load reference data:', err);
     }
   }, []);
 
@@ -205,7 +206,7 @@ const AdminBlogPostForm: React.FC = () => {
 
       navigate('/admin/blog/posts');
     } catch (err: any) {
-      console.error('Failed to save post:', err);
+      logError('Failed to save post:', err);
       setError(err.response?.data?.message || 'Nepodarilo sa uložiť článok');
     } finally {
       setSaving(false);
@@ -237,7 +238,7 @@ const AdminBlogPostForm: React.FC = () => {
 
       navigate('/admin/blog/posts');
     } catch (err: any) {
-      console.error('Failed to save post:', err);
+      logError('Failed to save post:', err);
       setError(err.response?.data?.message || 'Nepodarilo sa uložiť článok');
     } finally {
       setSaving(false);

@@ -400,7 +400,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
           if (failedCount > 0) {
             logWarn('[Cart]', failedCount, 'items failed to load complete details');
             // Show user-friendly notification (non-blocking)
-            console.warn(`[Cart] ${failedCount} item(s) couldn't be loaded. They may no longer be available.`);
+            logWarn(`[Cart] ${failedCount} item(s) couldn't be loaded. They may no longer be available.`);
           }
 
           // Validate and fix digital product quantities

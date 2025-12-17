@@ -23,6 +23,7 @@ import {
   canCancel,
   canDelete,
 } from '../../services/adminRefundsService';
+import { logError } from '../../services/logger';
 import './AdminRefundDetail.css';
 
 const AdminRefundDetail: React.FC = () => {
@@ -61,7 +62,7 @@ const AdminRefundDetail: React.FC = () => {
       const data = await getRefundById(refundId);
       setRefund(data);
     } catch (err) {
-      console.error('Failed to load refund:', err);
+      logError('Failed to load refund:', err);
       setError('Nepodarilo sa načítať refund');
     } finally {
       setLoading(false);
@@ -75,7 +76,7 @@ const AdminRefundDetail: React.FC = () => {
       const updated = await approveRefund(refund.id);
       setRefund(updated);
     } catch (err) {
-      console.error('Failed to approve:', err);
+      logError('Failed to approve:', err);
     } finally {
       setActionLoading(false);
     }
@@ -90,7 +91,7 @@ const AdminRefundDetail: React.FC = () => {
       setShowRejectModal(false);
       setRejectReason('');
     } catch (err) {
-      console.error('Failed to reject:', err);
+      logError('Failed to reject:', err);
     } finally {
       setActionLoading(false);
     }
@@ -103,7 +104,7 @@ const AdminRefundDetail: React.FC = () => {
       const updated = await executeRefund(refund.id);
       setRefund(updated);
     } catch (err) {
-      console.error('Failed to execute:', err);
+      logError('Failed to execute:', err);
     } finally {
       setActionLoading(false);
     }
@@ -124,7 +125,7 @@ const AdminRefundDetail: React.FC = () => {
       const updated = await cancelRefund(refund.id);
       setRefund(updated);
     } catch (err) {
-      console.error('Failed to cancel:', err);
+      logError('Failed to cancel:', err);
     } finally {
       setActionLoading(false);
     }
@@ -145,7 +146,7 @@ const AdminRefundDetail: React.FC = () => {
       await deleteRefund(refund.id);
       navigate('/admin/refunds');
     } catch (err) {
-      console.error('Failed to delete:', err);
+      logError('Failed to delete:', err);
     } finally {
       setActionLoading(false);
     }
@@ -160,7 +161,7 @@ const AdminRefundDetail: React.FC = () => {
       setShowNotesModal(false);
       setNewNote('');
     } catch (err) {
-      console.error('Failed to add note:', err);
+      logError('Failed to add note:', err);
     } finally {
       setActionLoading(false);
     }
@@ -173,7 +174,7 @@ const AdminRefundDetail: React.FC = () => {
       const updated = await markCustomerNotified(refund.id);
       setRefund(updated);
     } catch (err) {
-      console.error('Failed to mark notified:', err);
+      logError('Failed to mark notified:', err);
     } finally {
       setActionLoading(false);
     }

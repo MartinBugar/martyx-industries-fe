@@ -15,6 +15,7 @@ import type { Configurator, ConfiguratorOption, SelectedConfiguration } from '..
 import type { Product } from '../../data/productData';
 import { useCart } from '../../context/useCart';
 import toast from 'react-hot-toast';
+import { logError } from '../../services/logger';
 import './ConfiguratorTab.css';
 
 // =========================================================================
@@ -52,7 +53,7 @@ class CanvasErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySta
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('3D Canvas error:', error, errorInfo);
+    logError('3D Canvas error:', error, errorInfo);
   }
 
   render() {
@@ -430,7 +431,7 @@ const ConfiguratorTab: React.FC<ConfiguratorTabProps> = ({
   // Handle quantity change with stock validation
   const handleQuantityChange = useCallback((delta: number) => {
     if (!Number.isInteger(delta) || Math.abs(delta) > 10) {
-      console.error('Invalid quantity delta:', delta);
+      logError('Invalid quantity delta:', delta);
       return;
     }
 

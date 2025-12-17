@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Button, Badge, SkeletonTable, ConfirmDialog, useConfirmDialog } from '../../components/ui';
 import { useNavigate } from 'react-router-dom';
 import { Search, X, Plus, Check, XCircle, Play, Ban, Eye, Clock, DollarSign, TrendingUp, Calendar } from 'lucide-react';
+import { logError } from '../../services/logger';
 import AdminLayout from './AdminLayout';
 import {
   type RefundDto,
@@ -25,6 +26,7 @@ import {
   canExecute,
   canCancel,
 } from '../../services/adminRefundsService';
+import { logError } from '../../services/logger';
 import './AdminUsers.css';
 import './AdminButtonOverrides.css';
 import './AdminRefunds.css';
@@ -68,7 +70,7 @@ const AdminRefunds: React.FC = () => {
 
   // Load stats
   useEffect(() => {
-    getRefundStats().then(setStats).catch(console.error);
+    getRefundStats().then(setStats).catch(logError);
   }, []);
 
   // Load refunds based on filters
@@ -100,7 +102,7 @@ const AdminRefunds: React.FC = () => {
       setTotalElements(result.totalElements);
       setTotalPages(result.totalPages);
     } catch (err) {
-      console.error('Failed to load refunds:', err);
+      logError('Failed to load refunds:', err);
       setError('Nepodarilo sa načítať refundy');
     } finally {
       setLoading(false);
@@ -130,7 +132,7 @@ const AdminRefunds: React.FC = () => {
       await loadRefunds();
       getRefundStats().then(setStats);
     } catch (err) {
-      console.error('Failed to approve refund:', err);
+      logError('Failed to approve refund:', err);
       setActionError('Nepodarilo sa schváliť refund');
     } finally {
       setActionLoading(null);
@@ -155,7 +157,7 @@ const AdminRefunds: React.FC = () => {
       await loadRefunds();
       getRefundStats().then(setStats);
     } catch (err) {
-      console.error('Failed to reject refund:', err);
+      logError('Failed to reject refund:', err);
       setActionError('Nepodarilo sa zamietnuť refund');
     } finally {
       setActionLoading(null);
@@ -171,7 +173,7 @@ const AdminRefunds: React.FC = () => {
       await loadRefunds();
       getRefundStats().then(setStats);
     } catch (err) {
-      console.error('Failed to execute refund:', err);
+      logError('Failed to execute refund:', err);
       setActionError('Nepodarilo sa vykonať refund');
     } finally {
       setActionLoading(null);
@@ -195,7 +197,7 @@ const AdminRefunds: React.FC = () => {
       await loadRefunds();
       getRefundStats().then(setStats);
     } catch (err) {
-      console.error('Failed to cancel refund:', err);
+      logError('Failed to cancel refund:', err);
       setActionError('Nepodarilo sa zrušiť refund');
     } finally {
       setActionLoading(null);

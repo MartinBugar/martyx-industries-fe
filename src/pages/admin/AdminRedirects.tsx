@@ -41,6 +41,7 @@ import {
   Activity,
   Link2
 } from 'lucide-react';
+import { logError } from '../../services/logger';
 import './AdminRedirects.css';
 
 const AdminRedirects: React.FC = () => {
@@ -97,7 +98,7 @@ const AdminRedirects: React.FC = () => {
       setTotalPages(response.totalPages);
       setTotalElements(response.totalElements);
     } catch (err) {
-      console.error('Failed to load redirects:', err);
+      logError('Failed to load redirects:', err);
       setError('Nepodarilo sa načítať presmerovania');
     } finally {
       setLoading(false);
@@ -109,7 +110,7 @@ const AdminRedirects: React.FC = () => {
       const data = await getRedirectStats();
       setStats(data);
     } catch (err) {
-      console.error('Failed to load stats:', err);
+      logError('Failed to load stats:', err);
     }
   }, []);
 
@@ -199,7 +200,7 @@ const AdminRedirects: React.FC = () => {
       loadRedirects();
       loadStats();
     } catch (err) {
-      console.error('Failed to toggle redirect:', err);
+      logError('Failed to toggle redirect:', err);
     } finally {
       setActionLoading(null);
     }
@@ -213,7 +214,7 @@ const AdminRedirects: React.FC = () => {
       loadRedirects();
       loadStats();
     } catch (err) {
-      console.error('Failed to delete redirect:', err);
+      logError('Failed to delete redirect:', err);
     } finally {
       setActionLoading(null);
     }

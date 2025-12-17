@@ -42,6 +42,7 @@ import {
   X,
   Filter
 } from 'lucide-react';
+import { logError } from '../../services/logger';
 import './AdminBlogPosts.css';
 
 const AdminBlogPosts: React.FC = () => {
@@ -93,7 +94,7 @@ const AdminBlogPosts: React.FC = () => {
       setTotalPages(response.totalPages);
       setTotalElements(response.totalElements);
     } catch (err) {
-      console.error('Failed to load posts:', err);
+      logError('Failed to load posts:', err);
       setError('Nepodarilo sa načítať články');
     } finally {
       setLoading(false);
@@ -105,7 +106,7 @@ const AdminBlogPosts: React.FC = () => {
       const data = await getAllCategories();
       setCategories(data);
     } catch (err) {
-      console.error('Failed to load categories:', err);
+      logError('Failed to load categories:', err);
     }
   }, []);
 
@@ -114,7 +115,7 @@ const AdminBlogPosts: React.FC = () => {
       const data = await getStats();
       setStats(data);
     } catch (err) {
-      console.error('Failed to load stats:', err);
+      logError('Failed to load stats:', err);
     }
   }, []);
 
@@ -151,7 +152,7 @@ const AdminBlogPosts: React.FC = () => {
       loadPosts();
       loadStats();
     } catch (err) {
-      console.error('Failed to delete post:', err);
+      logError('Failed to delete post:', err);
       setError('Nepodarilo sa vymazať článok');
     } finally {
       setActionLoading(null);
@@ -165,7 +166,7 @@ const AdminBlogPosts: React.FC = () => {
       loadPosts();
       loadStats();
     } catch (err) {
-      console.error('Failed to publish post:', err);
+      logError('Failed to publish post:', err);
       setError('Nepodarilo sa publikovať článok');
     } finally {
       setActionLoading(null);
@@ -179,7 +180,7 @@ const AdminBlogPosts: React.FC = () => {
       loadPosts();
       loadStats();
     } catch (err) {
-      console.error('Failed to unpublish post:', err);
+      logError('Failed to unpublish post:', err);
       setError('Nepodarilo sa zrušiť publikovanie');
     } finally {
       setActionLoading(null);
@@ -193,7 +194,7 @@ const AdminBlogPosts: React.FC = () => {
       loadPosts();
       loadStats();
     } catch (err) {
-      console.error('Failed to archive post:', err);
+      logError('Failed to archive post:', err);
       setError('Nepodarilo sa archivovať článok');
     } finally {
       setActionLoading(null);

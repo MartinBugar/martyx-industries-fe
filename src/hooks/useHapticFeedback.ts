@@ -1,4 +1,5 @@
 import { useCallback, useMemo } from 'react';
+import { logDebug } from '../services/logger';
 
 /**
  * Haptic feedback patterns for different interactions.
@@ -66,7 +67,7 @@ export function useHapticFeedback(options: HapticFeedbackOptions = {}): HapticFe
       navigator.vibrate(vibrationPattern);
     } catch (error) {
       // Silently fail - haptic is enhancement, not critical
-      console.debug('Haptic feedback failed:', error);
+      logDebug('Haptic feedback failed:', error);
     }
   }, [enabled, isSupported]);
 

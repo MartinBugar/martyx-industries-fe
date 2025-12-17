@@ -42,6 +42,7 @@ import type {
   ImportStatus,
   ImportStats,
 } from '../../services/adminProductImportService';
+import { logError } from '../../services/logger';
 import './AdminProductImport.css';
 
 const AdminProductImport: React.FC = () => {
@@ -83,7 +84,7 @@ const AdminProductImport: React.FC = () => {
       setHistory(historyData);
       setStats(statsData);
     } catch (error) {
-      console.error('Failed to load history:', error);
+      logError('Failed to load history:', error);
     } finally {
       setLoadingHistory(false);
     }
@@ -109,7 +110,7 @@ const AdminProductImport: React.FC = () => {
         loadHistoryAndStats();
       }
     } catch (error) {
-      console.error('Failed to get job status:', error);
+      logError('Failed to get job status:', error);
     }
   }, [pollingInterval, loadHistoryAndStats]);
 
@@ -176,7 +177,7 @@ const AdminProductImport: React.FC = () => {
         loadHistoryAndStats();
       }
     } catch (error) {
-      console.error('Import failed:', error);
+      logError('Import failed:', error);
       setImporting(false);
       alert('Import zlyhal. Skontrolujte formát súboru.');
     }
@@ -191,7 +192,7 @@ const AdminProductImport: React.FC = () => {
       setCurrentJob(result);
       setImporting(false);
     } catch (error) {
-      console.error('Validation failed:', error);
+      logError('Validation failed:', error);
       setImporting(false);
       alert('Validácia zlyhala. Skontrolujte formát súboru.');
     }
@@ -205,7 +206,7 @@ const AdminProductImport: React.FC = () => {
       setImporting(false);
       loadHistoryAndStats();
     } catch (error) {
-      console.error('Cancel failed:', error);
+      logError('Cancel failed:', error);
     }
   };
 
@@ -221,7 +222,7 @@ const AdminProductImport: React.FC = () => {
       const filename = `products_${timestamp}.${exportFormat}`;
       downloadBlob(blob, filename);
     } catch (error) {
-      console.error('Export failed:', error);
+      logError('Export failed:', error);
       alert('Export zlyhal');
     } finally {
       setExporting(false);
@@ -236,7 +237,7 @@ const AdminProductImport: React.FC = () => {
 
       downloadBlob(blob, `product_import_template.${format}`);
     } catch (error) {
-      console.error('Template download failed:', error);
+      logError('Template download failed:', error);
       alert('Stiahnutie šablóny zlyhalo');
     }
   };

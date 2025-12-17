@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { categoryService } from '../../services/categoryService';
 import type { ProductCategory } from '../../types/category';
+import { logError } from '../../services/logger';
 import './CategoryBar.css';
 
 /**
@@ -49,7 +50,7 @@ const CategoryBar: React.FC = () => {
       const data = await categoryService.getAllCategories();
       setCategories(data);
     } catch (error) {
-      console.error('Failed to load categories:', error);
+      logError('Failed to load categories:', error);
     } finally {
       setLoading(false);
     }

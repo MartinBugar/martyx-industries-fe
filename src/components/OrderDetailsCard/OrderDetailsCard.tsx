@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import type { Order } from '../../context/authTypes';
 import { orderService, type ModularDownloadLink } from '../../services/orderService';
 import { stripeService } from '../../services/stripeService';
+import { logError } from '../../services/logger';
 import './OrderDetailsCard.css';
 
 type OrderDetailsCardProps = {
@@ -265,7 +266,7 @@ const OrderDetailsCard: React.FC<OrderDetailsCardProps> = ({
       } catch (err) {
         // Only log if not aborted (aborted is expected on cleanup)
         if (!abortController.signal.aborted) {
-          console.error('Failed to fetch modular downloads:', err);
+          logError('Failed to fetch modular downloads:', err);
         }
         if (isMounted) {
           setLoadingDownloads({});

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { loadNamespace, type Namespace } from '../i18n';
-import { logWarn } from '../services/logger';
+import { logWarn, logInfo } from '../services/logger';
 
 /**
  * Route-based namespace mapping
@@ -106,13 +106,13 @@ export const useRouteNamespaces = (options: {
         const allNamespaces: Namespace[] = ['common', 'nav', 'checkout'];
         
         if (enableDebug) {
-          console.info('🌐 Preloading all namespaces:', allNamespaces);
+          logInfo('🌐 Preloading all namespaces:', allNamespaces);
         }
         
         try {
           await loadNamespace(allNamespaces);
           if (enableDebug) {
-            console.info('✅ All namespaces loaded successfully');
+            logInfo('✅ All namespaces loaded successfully');
           }
         } catch (error) {
           logWarn('⚠️ Failed to preload some namespaces:', error);
@@ -124,13 +124,13 @@ export const useRouteNamespaces = (options: {
       const requiredNamespaces = getNamespacesForRoute(currentPath);
       
       if (enableDebug) {
-        console.info(`🌐 Loading namespaces for route "${currentPath}":`, requiredNamespaces);
+        logInfo(`🌐 Loading namespaces for route "${currentPath}":`, requiredNamespaces);
       }
       
       try {
         await loadNamespace(requiredNamespaces);
         if (enableDebug) {
-          console.info('✅ Route namespaces loaded successfully:', requiredNamespaces);
+          logInfo('✅ Route namespaces loaded successfully:', requiredNamespaces);
         }
       } catch (error) {
         logWarn('⚠️ Failed to load route namespaces:', error);
@@ -148,7 +148,7 @@ export const useRouteNamespaces = (options: {
     loadNamespace: async (namespaces: Namespace | Namespace[]) => {
       const nsArray = Array.isArray(namespaces) ? namespaces : [namespaces];
       if (enableDebug) {
-        console.info('🌐 Manually loading namespaces:', nsArray);
+        logInfo('🌐 Manually loading namespaces:', nsArray);
       }
       return loadNamespace(nsArray);
     },

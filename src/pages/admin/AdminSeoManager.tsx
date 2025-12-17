@@ -28,6 +28,7 @@ import {
   Target,
   Gauge
 } from 'lucide-react';
+import { logError } from '../../services/logger';
 import './AdminSeoManager.css';
 
 const AdminSeoManager: React.FC = () => {
@@ -44,7 +45,7 @@ const AdminSeoManager: React.FC = () => {
       const data = await performAudit();
       setAudit(data);
     } catch (err) {
-      console.error('Failed to load SEO audit:', err);
+      logError('Failed to load SEO audit:', err);
       setError('Nepodarilo sa načítať SEO audit');
     } finally {
       setLoading(false);

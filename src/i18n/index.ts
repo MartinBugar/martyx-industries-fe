@@ -3,7 +3,7 @@ import { initReactI18next } from 'react-i18next';
 import Backend from 'i18next-http-backend';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import ICU from 'i18next-icu';
-import { logWarn } from '../services/logger';
+import { logWarn, logInfo } from '../services/logger';
 
 // Export types for better TypeScript support
 export type SupportedLanguage = 'en' | 'sk' | 'de';
@@ -198,7 +198,7 @@ if (import.meta.env.MODE === 'development' && typeof window !== 'undefined') {
     loadedNamespaces: () => i18n.options.ns
   };
   
-  console.info('🌐 i18n Debug tools available via window.__i18nDebug');
+  logInfo('🌐 i18n Debug tools available via window.__i18nDebug');
 }
 
 export default i18n;

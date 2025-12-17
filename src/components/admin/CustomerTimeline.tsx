@@ -18,6 +18,7 @@ import {
   formatDateTime,
   formatDuration,
 } from '../../services/adminCommunicationsService';
+import { logError } from '../../services/logger';
 import './CustomerTimeline.css';
 
 interface CustomerTimelineProps {
@@ -82,7 +83,7 @@ const CustomerTimeline: React.FC<CustomerTimelineProps> = ({
       setCommunications(result.content);
       setTotalPages(result.totalPages);
     } catch (err) {
-      console.error('Failed to load communications:', err);
+      logError('Failed to load communications:', err);
       setError('Nepodarilo sa načítať komunikáciu');
     } finally {
       setLoading(false);
@@ -94,7 +95,7 @@ const CustomerTimeline: React.FC<CustomerTimelineProps> = ({
       const data = await getCustomerStats(userId);
       setStats(data);
     } catch (err) {
-      console.error('Failed to load stats:', err);
+      logError('Failed to load stats:', err);
     }
   }, [userId]);
 
@@ -123,7 +124,7 @@ const CustomerTimeline: React.FC<CustomerTimelineProps> = ({
       loadCommunications();
       loadStats();
     } catch (err) {
-      console.error('Failed to add note:', err);
+      logError('Failed to add note:', err);
     } finally {
       setSaving(false);
     }
@@ -147,7 +148,7 @@ const CustomerTimeline: React.FC<CustomerTimelineProps> = ({
       loadCommunications();
       loadStats();
     } catch (err) {
-      console.error('Failed to log call:', err);
+      logError('Failed to log call:', err);
     } finally {
       setSaving(false);
     }
@@ -160,7 +161,7 @@ const CustomerTimeline: React.FC<CustomerTimelineProps> = ({
       loadCommunications();
       loadStats();
     } catch (err) {
-      console.error('Failed to delete note:', err);
+      logError('Failed to delete note:', err);
     }
   };
 

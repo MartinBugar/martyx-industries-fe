@@ -1,4 +1,5 @@
 import { API_BASE_URL, defaultHeaders } from './apiUtils';
+import { logDebug } from './logger';
 
 // Normalize a potentially relative URL to an absolute URL targeting the backend API.
 // If the URL starts with /api, we prefix with API_BASE_URL unless the current origin already matches.
@@ -76,11 +77,11 @@ export type DownloadOptions = {
 export const downloadFile = async (inputUrl: string, opts: DownloadOptions = {}): Promise<boolean> => {
   const { suggestedName, withCredentials = true, friendlyError } = opts;
   if (!inputUrl) {
-    console.debug('[downloadFile] No URL provided');
+    logDebug('[downloadFile] No URL provided');
     return false;
   }
   const url = toAbsoluteApiUrl(inputUrl);
-  console.debug('[downloadFile] Fetching', { inputUrl, url, withCredentials });
+  logDebug('[downloadFile] Fetching', { inputUrl, url, withCredentials });
 
   // Build headers without forcibly setting Content-Type for binary downloads
   const headers: Record<string, string> = {};
@@ -99,7 +100,7 @@ export const downloadFile = async (inputUrl: string, opts: DownloadOptions = {})
     const status = response.status;
     let msg: string | undefined;
     try { msg = await response.text(); } catch { /* ignore */ }
-    console.debug('[downloadFile] Non-OK response', { status, msg });
+    logDebug('[downloadFile] Non-OK response', { status, msg });
     const error = friendlyError || (status === 401 || status === 403 || status === 410
       ? 'Your link may have expired or you are not authorized.'
       : 'Failed to download file.');
@@ -108,7 +109,7 @@ export const downloadFile = async (inputUrl: string, opts: DownloadOptions = {})
 
   const blob = await response.blob();
   if (!blob || blob.size === 0) {
-    console.debug('[downloadFile] Empty blob');
+    logDebug('[downloadFile] Empty blob');
     throw new Error('File is empty or unavailable.');
   }
 
@@ -154,7 +155,7 @@ export const downloadByUrl = async (url: string, suggestedName?: string): Promis
       friendlyError: 'Failed to download product. Your link may have expired; please check your email for a fresh link.',
     });
   } catch (e) {
-    console.debug('[downloadByUrl] Error', e);
+    logDebug('[downloadByUrl] Error', e);
     throw e;
   }
 };
@@ -179,7 +180,7 @@ export const downloadProductByUrl = async (url: string, suggestedName?: string):
       forceZip: true,
     });
   } catch (e) {
-    console.debug('[downloadProductByUrl] Error', e);
+    logDebug('[downloadProductByUrl] Error', e);
     throw e;
   }
 };
@@ -194,7 +195,7 @@ export const downloadInvoiceByUrl = async (url: string, suggestedName?: string):
       friendlyError: 'Failed to download invoice. Please try again later or check your email.',
     });
   } catch (e) {
-    console.debug('[downloadInvoiceByUrl] Error', e);
+    logDebug('[downloadInvoiceByUrl] Error', e);
     throw e;
   }
 };

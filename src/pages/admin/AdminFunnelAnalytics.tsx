@@ -34,6 +34,7 @@ import {
   getSeverityColor,
   getStageColor
 } from '../../services/adminFunnelService';
+import { logError } from '../../services/logger';
 import './AdminFunnelAnalytics.css';
 
 type DatePreset = 'today' | 'yesterday' | 'last7days' | 'last30days' | 'thisMonth' | 'lastMonth' | 'custom';
@@ -113,7 +114,7 @@ const AdminFunnelAnalytics: React.FC = () => {
       const data = await getFunnelReport(startDate, endDate, true);
       setReport(data);
     } catch (err) {
-      console.error('Error loading funnel report:', err);
+      logError('Error loading funnel report:', err);
       setError('Nepodarilo sa načítať dáta funnelu');
     } finally {
       setLoading(false);

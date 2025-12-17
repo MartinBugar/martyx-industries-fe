@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { logError } from '../services/logger';
 
 interface PullToRefreshOptions {
   onRefresh: () => Promise<void>;
@@ -95,7 +96,7 @@ export function usePullToRefresh({
       try {
         await onRefresh();
       } catch (error) {
-        console.error('Pull to refresh error:', error);
+        logError('Pull to refresh error:', error);
       } finally {
         setIsRefreshing(false);
       }

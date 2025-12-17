@@ -1,5 +1,6 @@
 import { API_BASE_URL, defaultHeaders, handleResponse, withLangHeaders } from './apiUtils';
 import type { CompanySettingsDto } from '../types/invoice';
+import { logError } from './logger';
 
 /**
  * Admin service for managing company settings.
@@ -101,7 +102,7 @@ export const adminCompanySettingsService = {
       return data && typeof data === 'object' && 'message' in data &&
              (data as {message: string}).message.includes('Active settings exist');
     } catch (error) {
-      console.error('Error checking active settings:', error);
+      logError('Error checking active settings:', error);
       return false;
     }
   }

@@ -41,6 +41,7 @@ import type {
 } from '../../services/adminAuditService';
 import AdminLayout from './AdminLayout';
 import { Button, Badge, SkeletonTable } from '../../components/ui';
+import { logError } from '../../services/logger';
 import './AdminUsers.css';
 import './AdminButtonOverrides.css';
 import './AdminAuditLog.css';
@@ -83,7 +84,7 @@ const AdminAuditLog: React.FC = () => {
         setEntityTypes(entityTypesData);
         setActions(actionsData);
       } catch (error) {
-        console.error('Failed to load filter options:', error);
+        logError('Failed to load filter options:', error);
       }
     };
     loadOptions();
@@ -113,7 +114,7 @@ const AdminAuditLog: React.FC = () => {
       setTotalElements(response.totalElements);
     } catch (error) {
       if (signal?.aborted) return;
-      console.error('Failed to load audit logs:', error);
+      logError('Failed to load audit logs:', error);
     } finally {
       if (!signal?.aborted) setLoading(false);
     }
@@ -135,7 +136,7 @@ const AdminAuditLog: React.FC = () => {
       setStats(statsData);
       setShowStats(true);
     } catch (error) {
-      console.error('Failed to load stats:', error);
+      logError('Failed to load stats:', error);
     } finally {
       setLoadingStats(false);
     }
@@ -147,7 +148,7 @@ const AdminAuditLog: React.FC = () => {
       setSelectedLog(fullLog);
       setShowDetail(true);
     } catch (error) {
-      console.error('Failed to load log detail:', error);
+      logError('Failed to load log detail:', error);
     }
   };
 
