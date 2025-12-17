@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Package, Eye, CheckCircle, XCircle, Truck, DollarSign, Search, Filter } from 'lucide-react';
+import { useAuth } from '../../context/useAuth';
 import AdminLayout from './AdminLayout';
 import './AdminDiscounts.css';
 import './AdminButtonOverrides.css';
@@ -10,6 +11,7 @@ import { logError } from '../../services/logger';
 type TabType = 'all-returns' | 'pending-approval' | 'view-details' | 'statistics';
 
 const AdminReturnRequests: React.FC = () => {
+  const { user } = useAuth();
   const [returns, setReturns] = useState<ReturnRequestDto[]>([]);
   const [stats, setStats] = useState<ReturnRequestStats | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -120,7 +122,7 @@ const AdminReturnRequests: React.FC = () => {
     if (!confirmed) return;
     try {
       await adminReturnRequestsService.approveReturn(id, {
-        approved_by: 1, // TODO: Get from auth context
+        approved_by: user ? parseInt(user.id, 10) : 0,
         admin_notes: 'Approved by admin',
       });
       if (activeTab === 'pending-approval') {
