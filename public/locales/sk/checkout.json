@@ -234,6 +234,9 @@
     "download_expires": "Váš odkaz na stiahnutie vyprší za 24 hodín.",
     "download_issues": "Ak narazíte na akékoľvek problémy, kontaktujte náš tím podpory.",
     "download_not_available": "Odkaz na stiahnutie ešte nie je k dispozícii. Skontrolujte prosím svoj email alebo to skúste neskôr.",
-    "download_failed": "Nepodarilo sa stiahnuť produkt"
+    "download_failed": "Nepodarilo sa stiahnuť produkt",
+    "digital_legal_title": "Informácie o digitálnom obsahu",
+    "digital_legal_notice": "V súlade so Smernicou EÚ o právach spotrebiteľov (2011/83/EÚ, článok 16m), ste pri objednávke súhlasili so začatím poskytovania digitálneho obsahu pred uplynutím lehoty na odstúpenie od zmluvy.",
+    "digital_legal_withdrawal": "Beriete na vedomie, že ste stratili právo na odstúpenie od zmluvy pre digitálne produkty, ktorých sťahovanie alebo prístup k nim bol umožnený."
   }
 }

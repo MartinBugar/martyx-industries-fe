@@ -345,6 +345,24 @@ const StripeSuccess: React.FC = () => {
         </div>
       )}
 
+      {/* Legal Notice for Digital Products - EU Consumer Rights Directive 2011/83/EU, Article 16m */}
+      {paymentData?.downloadLinks && paymentData.downloadLinks.length > 0 && (
+        <div className="info-box legal-notice">
+          <span className="info-box-icon">⚖️</span>
+          <div className="info-box-content">
+            <p>
+              <strong>Digital Content Information</strong><br />
+              In accordance with EU Consumer Rights Directive (2011/83/EU, Article 16m),
+              you agreed to the delivery of digital content beginning before the withdrawal period expires.
+            </p>
+            <p style={{ marginTop: '8px', fontSize: '0.9em' }}>
+              <strong>You acknowledge that you have lost your right of withdrawal</strong> for digital products
+              once the download or access has begun.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Invoice Download */}
       {paymentData?.invoiceDownloadUrl && validateDownloadUrl(paymentData.invoiceDownloadUrl) && (
         <a

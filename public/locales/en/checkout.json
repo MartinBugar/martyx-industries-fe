@@ -234,6 +234,9 @@
     "download_expires": "Your download link will expire in 24 hours.",
     "download_issues": "If you encounter any issues, please contact our support team.",
     "download_not_available": "Download link is not available yet. Please check your email or try again later.",
-    "download_failed": "Failed to download product"
+    "download_failed": "Failed to download product",
+    "digital_legal_title": "Digital Content Information",
+    "digital_legal_notice": "In accordance with EU Consumer Rights Directive (2011/83/EU, Article 16m), you agreed to the delivery of digital content beginning before the withdrawal period expires.",
+    "digital_legal_withdrawal": "You acknowledge that you have lost your right of withdrawal for digital products once the download or access has begun."
   }
 }

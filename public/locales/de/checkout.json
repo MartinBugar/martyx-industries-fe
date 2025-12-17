@@ -234,6 +234,9 @@
     "download_expires": "Ihr Download-Link läuft in 24 Stunden ab.",
     "download_issues": "Wenn Sie auf Probleme stoßen, kontaktieren Sie bitte unser Support-Team.",
     "download_not_available": "Der Download-Link ist noch nicht verfügbar. Bitte überprüfen Sie Ihre E-Mail oder versuchen Sie es später erneut.",
-    "download_failed": "Produkt konnte nicht heruntergeladen werden"
+    "download_failed": "Produkt konnte nicht heruntergeladen werden",
+    "digital_legal_title": "Informationen zu digitalen Inhalten",
+    "digital_legal_notice": "Gemäß der EU-Verbraucherrechtsrichtlinie (2011/83/EU, Artikel 16m) haben Sie bei der Bestellung zugestimmt, dass die Lieferung digitaler Inhalte vor Ablauf der Widerrufsfrist beginnt.",
+    "digital_legal_withdrawal": "Sie nehmen zur Kenntnis, dass Sie Ihr Widerrufsrecht für digitale Produkte verloren haben, sobald der Download oder der Zugriff begonnen hat."
   }
 }
