@@ -266,6 +266,54 @@ export const getDeviceType = (): 'DESKTOP' | 'MOBILE' | 'TABLET' => {
   return 'DESKTOP';
 };
 
+/**
+ * Track error event (JavaScript errors, API failures, etc.)
+ * Note: Error tracking doesn't require analytics consent as it's for
+ * system monitoring, not user behavior tracking.
+ */
+export const trackError = async (
+  errorName: string,
+  errorMessage: string,
+  componentStack?: string,
+  userId?: number
+): Promise<void> => {
+  // For errors, we send directly without consent check (system monitoring)
+  // Limit error message length to prevent huge payloads
+  const truncatedMessage = errorMessage.substring(0, 1000);
+  const truncatedStack = componentStack?.substring(0, 2000);
+
+  try {
+    const eventData: Partial<AnalyticsEventDto> = {
+      event_type: 'JAVASCRIPT_ERROR',
+      event_category: 'ERROR',
+      event_name: errorName,
+      event_properties: JSON.stringify({
+        message: truncatedMessage,
+        componentStack: truncatedStack,
+        url: window.location.href,
+        userAgent: navigator.userAgent,
+      }),
+      user_id: userId,
+      session_id: getSessionId(),
+      visitor_id: getVisitorId(),
+      event_timestamp: new Date().toISOString(),
+      landing_page: window.location.pathname,
+      referrer_url: document.referrer || undefined,
+    };
+
+    await fetch(`${API_BASE_URL}/api/analytics/events`, {
+      method: 'POST',
+      headers: defaultHeaders(),
+      body: JSON.stringify(eventData),
+    });
+
+    logInfo('[Backend Analytics] Error tracked:', errorName);
+  } catch (e) {
+    // Silently fail - don't create infinite error loops
+    logError('[Backend Analytics] Failed to track error:', e);
+  }
+};
+
 export default {
   startQueueProcessor,
   stopQueueProcessor,
@@ -275,6 +323,7 @@ export default {
   trackRemoveFromCart,
   trackCheckoutStart,
   trackPageView,
+  trackError,
   extractUTMParams,
   getDeviceType,
 };

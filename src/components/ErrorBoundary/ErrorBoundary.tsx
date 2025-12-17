@@ -1,6 +1,7 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import './ErrorBoundary.css';
 import { logError } from '../../services/logger';
+import { trackError } from '../../services/backendAnalyticsService';
 
 interface Props {
   children: ReactNode;
@@ -53,8 +54,14 @@ class ErrorBoundary extends Component<Props, State> {
       this.props.onError(error, errorInfo);
     }
 
-    // TODO: Log to error reporting service in production
-    // logErrorToService(error, errorInfo);
+    // Track error to backend analytics (production error monitoring)
+    trackError(
+      error.name || 'UnknownError',
+      error.message || 'No error message',
+      errorInfo.componentStack || undefined
+    ).catch(() => {
+      // Silently ignore tracking failures to prevent error loops
+    });
   }
 
   handleReset = (): void => {
