@@ -33,7 +33,7 @@ const LINKS: NavItem[] = [
     {labelKey: "nav:contact", href: "/contact"},
 ];
 
-export default function Navbar({cartCount = 0, onSearchSubmit, user, onLogout}: Props) {
+const Navbar = React.memo(function Navbar({cartCount = 0, onSearchSubmit, user, onLogout}: Props) {
     const { t } = useTranslation(['nav', 'common', 'search']);
     const { items: wishlistItems } = useWishlist();
     const [drawerOpen, setDrawerOpen] = useState(false);
@@ -430,7 +430,10 @@ export default function Navbar({cartCount = 0, onSearchSubmit, user, onLogout}: 
             {typeof document !== "undefined" ? createPortal(Drawer, document.body) : null}
         </>
     );
-}
+});
+
+Navbar.displayName = 'Navbar';
+export default Navbar;
 
 /* ===== Inline SVG icons ===== */
 

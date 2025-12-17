@@ -79,86 +79,58 @@ const Home: React.FC = () => {
   }, []);
 
   // Load products with database gallery from hybrid service
+  // PERFORMANCE: Uses batch gallery loading to prevent N+1 queries
   useEffect(() => {
     const loadProductsWithGallery = async () => {
       try {
         const productsList = await hybridProductService.getProducts();
-        
-        // Load gallery for each product from database
-        const productsWithGallery = await Promise.all(
-          productsList.map(async (product) => {
-            try {
-              const galleryData = await productGalleryService.getProductImages(product.masterProductId.toString());
 
-              // Sort: PRIMARY image first, HOVER image second, then by order
-              const sortedGallery = galleryData.sort((a, b) => {
-                // Primary image always goes first
-                if (a.isPrimary && !b.isPrimary) return -1;
-                if (!a.isPrimary && b.isPrimary) return 1;
-                // Hover image goes second (after primary)
-                if (a.isHover && !b.isHover) return -1;
-                if (!a.isHover && b.isHover) return 1;
-                // Otherwise sort by order
-                return (a.order || 0) - (b.order || 0);
-              });
+        // PERFORMANCE: Batch load all galleries in ONE request (prevents N+1)
+        const productIds = productsList.map(p => p.masterProductId);
+        const galleriesMap = await productGalleryService.getBatchProductGalleries(productIds);
 
-              // Fallback: if no hover image is set, ensure backwards compatibility
-              // by placing the second non-primary image (by order) in position [1]
-              const hasHoverImage = sortedGallery.some(img => img.isHover);
-              if (!hasHoverImage && sortedGallery.length >= 2) {
-                const nonPrimaryImages = galleryData
-                  .filter(img => !img.isPrimary)
-                  .sort((a, b) => (a.order || 0) - (b.order || 0));
+        // Combine products with their galleries
+        const productsWithGallery = productsList.map(product => {
+          const galleryData = galleriesMap.get(product.masterProductId) || [];
 
-                if (nonPrimaryImages.length >= 2) {
-                  // Find the second non-primary image by order
-                  const secondNonPrimary = nonPrimaryImages[1];
-                  const currentIndex = sortedGallery.findIndex(img => img.id === secondNonPrimary.id);
+          // Sort: PRIMARY image first, HOVER image second, then by order
+          const sortedGallery = [...galleryData].sort((a, b) => {
+            if (a.isPrimary && !b.isPrimary) return -1;
+            if (!a.isPrimary && b.isPrimary) return 1;
+            if (a.isHover && !b.isHover) return -1;
+            if (!a.isHover && b.isHover) return 1;
+            return (a.order || 0) - (b.order || 0);
+          });
 
-                  // Move it to position 1 if not already there
-                  if (currentIndex > 1) {
-                    sortedGallery.splice(currentIndex, 1);
-                    sortedGallery.splice(1, 0, secondNonPrimary);
-                  }
-                }
+          // Fallback: if no hover image is set, ensure backwards compatibility
+          const hasHoverImage = sortedGallery.some(img => img.isHover);
+          if (!hasHoverImage && sortedGallery.length >= 2) {
+            const nonPrimaryImages = galleryData
+              .filter(img => !img.isPrimary)
+              .sort((a, b) => (a.order || 0) - (b.order || 0));
+
+            if (nonPrimaryImages.length >= 2) {
+              const secondNonPrimary = nonPrimaryImages[1];
+              const currentIndex = sortedGallery.findIndex(img => img.id === secondNonPrimary.id);
+              if (currentIndex > 1) {
+                sortedGallery.splice(currentIndex, 1);
+                sortedGallery.splice(1, 0, secondNonPrimary);
               }
-
-              const galleryUrls = sortedGallery.map(img => img.cdnUrl || img.url).filter(Boolean);
-
-              if (import.meta.env.DEV) {
-                logInfo(`🏠 Product ${product.masterProductId} gallery loaded:`, {
-                  productName: product.name,
-                  galleryCount: galleryUrls.length,
-                  mainImage: galleryUrls[0] || 'none',
-                  hoverImage: galleryUrls[1] || '❌ NO HOVER IMAGE',
-                  first3Images: galleryUrls.slice(0, 3),
-                  orderInfo: sortedGallery.slice(0, 3).map(img => ({
-                    fileName: img.fileName,
-                    order: img.order,
-                    isPrimary: img.isPrimary,
-                    isHover: img.isHover
-                  }))
-                });
-              }
-
-              return {
-                ...product,
-                gallery: galleryUrls // Replace empty gallery with database gallery
-              };
-            } catch (galleryError) {
-              logWarn(`Failed to load gallery for product ${product.masterProductId}:`, galleryError);
-              return {
-                ...product,
-                gallery: [] // Keep empty gallery if loading fails
-              };
             }
-          })
-        );
-        
+          }
+
+          const galleryUrls = sortedGallery.map(img => img.cdnUrl || img.url).filter(Boolean);
+
+          return {
+            ...product,
+            gallery: galleryUrls
+          };
+        });
+
         setProducts(productsWithGallery);
+        logInfo(`🏠 [HOME] Loaded ${productsWithGallery.length} products with galleries (batch load)`);
       } catch (error) {
         logError('Failed to load products for home page:', error);
-        // Continue with empty array - don't show error on home page
       }
     };
 
