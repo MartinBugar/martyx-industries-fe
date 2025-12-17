@@ -651,7 +651,8 @@ MainContent.displayName = 'MainContent';
 // Optimized app content
 function AppContent() {
   useIOSNoZoomOnFocus();
-  // useRoutePrefetch(); // Enable route prefetching - temporarily disabled
+  // PERFORMANCE: Enable route prefetching for near-instant page transitions
+  useRoutePrefetch();
   const [rateLimitError, setRateLimitError] = useState<RateLimitError | null>(null);
 
   // Rate limit event listener

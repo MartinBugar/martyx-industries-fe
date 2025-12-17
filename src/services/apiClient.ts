@@ -34,6 +34,8 @@ interface CacheEntry<T = unknown> {
 class ApiClient {
   private cache = new Map<string, CacheEntry>();
   private pendingRequests = new Map<string, Promise<unknown>>();
+  // Mutex for token refresh - prevents duplicate refresh calls
+  private tokenRefreshPromise: Promise<void> | null = null;
   // private readonly CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
   private readonly DEFAULT_RETRY_ATTEMPTS = 3;
   private readonly DEFAULT_RETRY_DELAY = 1000; // 1 second
@@ -63,8 +65,14 @@ class ApiClient {
     if (!isAuthEndpoint) {
       const token = localStorage.getItem('token');
       if (token && shouldRefreshToken(token)) {
-        // Token expired or expiring soon - refresh it proactively
-        await refreshAccessToken();
+        // PERFORMANCE: Mutex pattern - prevents multiple simultaneous refresh calls
+        // If a refresh is already in progress, wait for it instead of starting a new one
+        if (!this.tokenRefreshPromise) {
+          this.tokenRefreshPromise = refreshAccessToken().finally(() => {
+            this.tokenRefreshPromise = null;
+          });
+        }
+        await this.tokenRefreshPromise;
         // Note: refreshAccessToken() updates defaultHeaders['Authorization']
       }
     }

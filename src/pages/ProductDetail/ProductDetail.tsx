@@ -8,7 +8,8 @@ import ProductView from '../../components/ProductView/ProductView';
 import './ProductDetail.css';
 import {DetailsTab, DownloadTab, FeaturesTab, ReviewsTab, PrintInfoTab, IncludedTab, BuildInfoTab} from '../../components/ProductTabs';
 import ProductDownloads from '../../components/ProductTabs/ProductDownloads';
-import ConfiguratorTab from '../../components/ProductTabs/ConfiguratorTab';
+// Lazy load ConfiguratorTab (~800KB @react-three/* dependencies)
+const ConfiguratorTab = React.lazy(() => import('../../components/ProductTabs/ConfiguratorTab'));
 import ErrorBoundary from '../../components/ErrorBoundary/ErrorBoundary';
 import {useCart} from '../../context/useCart';
 import WishlistButton from '../../components/WishlistButton';
@@ -859,7 +860,9 @@ const DynamicTabRenderer: React.FC<DynamicTabRendererProps> = ({ tab, product })
             case 'ConfiguratorTab':
                 return (
                     <ErrorBoundary>
-                        <ConfiguratorTab masterProductId={product.masterProductId} product={product} />
+                        <React.Suspense fallback={<div className="configurator-loading">Loading 3D Configurator...</div>}>
+                            <ConfiguratorTab masterProductId={product.masterProductId} product={product} />
+                        </React.Suspense>
                     </ErrorBoundary>
                 );
             default:

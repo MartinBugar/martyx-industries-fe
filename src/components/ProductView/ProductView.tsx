@@ -1,8 +1,11 @@
 import React, { useState, useEffect, Suspense } from 'react';
 // Lazy load ModelViewer to reduce initial bundle size (Three.js is heavy)
 const ModelViewer = React.lazy(() => import('../ModelViewer'));
+// Lazy load ConfiguratorPreview (~800KB @react-three/* dependencies)
+const ConfiguratorPreview = React.lazy(() =>
+  import('../Configurator/ConfiguratorPreview')
+);
 import Gallery from '../Gallery/Gallery';
-import { ConfiguratorPreview } from '../Configurator';
 import { type Product, defaultModelViewerSettings } from '../../data/productData';
 import { systemSettingsService } from '../../services/systemSettingsService';
 import './ProductView.css';
@@ -60,7 +63,9 @@ const ProductView: React.FC<ProductViewProps> = ({ product, galleryData, configu
       <div className="model-container">
         {/* Show ConfiguratorPreview when configurator is enabled, otherwise show ModelViewer */}
         {configuratorEnabled ? (
-          <ConfiguratorPreview />
+          <Suspense fallback={<ModelViewerFallback />}>
+            <ConfiguratorPreview />
+          </Suspense>
         ) : (
           <Suspense fallback={<ModelViewerFallback />}>
             <ModelViewer

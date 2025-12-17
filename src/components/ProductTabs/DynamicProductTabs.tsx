@@ -5,7 +5,7 @@
  * Supports HTML, Markdown, JSON, and custom React components.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import DOMPurify from 'dompurify';
 import type { ProductTabDto } from '../../types/api';
 import { getTabsForMasterProduct, getTabsForVariant, canViewTab, renderTabContent } from '../../services/productTabService';
@@ -21,7 +21,8 @@ import PrintInfoTab from './PrintInfoTab';
 import IncludedTab from './IncludedTab';
 import ProductDownloads from './ProductDownloads';
 import BuildInfoTab from './BuildInfoTab';
-import ConfiguratorTab from './ConfiguratorTab';
+// Lazy load ConfiguratorTab (~800KB @react-three/* dependencies)
+const ConfiguratorTab = React.lazy(() => import('./ConfiguratorTab'));
 
 // Import Error Boundary for error handling
 import ErrorBoundary from '../ErrorBoundary/ErrorBoundary';
@@ -118,10 +119,12 @@ const DynamicProductTabs: React.FC<DynamicProductTabsProps> = ({
       case 'ConfiguratorTab':
         return (
           <ErrorBoundary>
-            <ConfiguratorTab
-              masterProductId={masterProductId || 0}
-              product={product}
-            />
+            <Suspense fallback={<div className="configurator-loading">Loading 3D Configurator...</div>}>
+              <ConfiguratorTab
+                masterProductId={masterProductId || 0}
+                product={product}
+              />
+            </Suspense>
           </ErrorBoundary>
         );
       default:

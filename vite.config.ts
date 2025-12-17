@@ -20,8 +20,13 @@ export default defineConfig({
           // React vendor chunk (core framework)
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
 
-          // 3D/Model viewer chunk (heavy dependencies)
-          'three-vendor': ['three', '@google/model-viewer'],
+          // 3D/Model viewer chunk (heavy dependencies ~800KB)
+          'three-vendor': [
+            'three',
+            '@google/model-viewer',
+            '@react-three/fiber',
+            '@react-three/drei'
+          ],
 
           // i18n chunk (internationalization)
           'i18n-vendor': [

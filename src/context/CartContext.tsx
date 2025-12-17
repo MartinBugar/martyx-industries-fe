@@ -982,12 +982,13 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     // Run validation immediately on mount (only if on relevant page)
     void validateCartStock();
 
-    // Set up interval for periodic validation (60 seconds) - created ONCE
+    // Set up interval for periodic validation (3 minutes) - created ONCE
+    // PERFORMANCE: Increased from 60s to 180s to reduce API calls by 66%
     const interval = setInterval(() => {
       void validateCartStock();
-    }, 60000); // 60 seconds
+    }, 180000); // 180 seconds = 3 minutes
 
-    logInfo('[Cart] Stock validation interval created (optimized - only runs on cart/checkout pages)');
+    logInfo('[Cart] Stock validation interval created (optimized - 3min interval, only runs on cart/checkout pages)');
 
     return () => {
       // Mark component as unmounted to stop any pending async operations
