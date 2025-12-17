@@ -205,9 +205,9 @@ const AdminBlogPostForm: React.FC = () => {
       }
 
       navigate('/admin/blog/posts');
-    } catch (err: any) {
+    } catch (err: unknown) {
       logError('Failed to save post:', err);
-      setError(err.response?.data?.message || 'Nepodarilo sa uložiť článok');
+      setError(err instanceof Error ? err.message : 'Nepodarilo sa uložiť článok');
     } finally {
       setSaving(false);
     }
@@ -237,9 +237,9 @@ const AdminBlogPostForm: React.FC = () => {
       }
 
       navigate('/admin/blog/posts');
-    } catch (err: any) {
+    } catch (err: unknown) {
       logError('Failed to save post:', err);
-      setError(err.response?.data?.message || 'Nepodarilo sa uložiť článok');
+      setError(err instanceof Error ? err.message : 'Nepodarilo sa uložiť článok');
     } finally {
       setSaving(false);
     }

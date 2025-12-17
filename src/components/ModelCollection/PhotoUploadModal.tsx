@@ -172,8 +172,7 @@ const PhotoUploadModal: React.FC<PhotoUploadModalProps> = ({ model, onClose, onS
           });
 
           if (!response.ok) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            let errorData: any = {};
+            let errorData: { message?: string; error?: string } = {};
             const contentType = response.headers.get('content-type');
 
             try {
@@ -183,7 +182,7 @@ const PhotoUploadModal: React.FC<PhotoUploadModalProps> = ({ model, onClose, onS
                 const textError = await response.text();
                 errorData = { message: textError || `HTTP ${response.status}` };
               }
-            } catch (parseError) {
+            } catch {
               errorData = { message: `HTTP ${response.status}: ${response.statusText}` };
             }
 

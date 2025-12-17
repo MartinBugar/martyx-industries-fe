@@ -105,8 +105,8 @@ const AdminCategories: React.FC = () => {
       resetForm();
       setActiveTab('all-categories');
       loadCategories();
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to save category');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to save category');
     } finally {
       setSaving(false);
     }
@@ -139,8 +139,8 @@ const AdminCategories: React.FC = () => {
       await adminCategoryService.deleteCategory(id);
       showSuccess('Category deleted successfully!');
       loadCategories();
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to delete category');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to delete category');
     }
   }, [confirm]);
 
@@ -149,8 +149,8 @@ const AdminCategories: React.FC = () => {
       await adminCategoryService.toggleActive(id);
       showSuccess('Category status updated!');
       loadCategories();
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to toggle category status');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to toggle category status');
     }
   };
 
