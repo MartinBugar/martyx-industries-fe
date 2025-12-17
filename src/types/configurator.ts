@@ -35,10 +35,18 @@ export interface ConfiguratorOption {
   digitalFileUrl?: string;
   digitalFileName?: string;
   digitalFileSize?: number;
-  /** Price modifier applied when this option is selected (can be negative) */
+  /** Price modifier WITH VAT applied when this option is selected (can be negative) */
   priceModifier: number;
-  /** Formatted price modifier with currency symbol */
+  /** Price modifier WITHOUT VAT (calculated by backend) */
+  priceModifierWithoutVat?: number;
+  /** VAT amount for price modifier (calculated by backend) */
+  priceModifierVatAmount?: number;
+  /** VAT rate used for calculation (e.g., 23.00 for 23%) */
+  priceModifierVatRate?: number;
+  /** Formatted price modifier with currency symbol (WITH VAT) */
   formattedPriceModifier: string;
+  /** Formatted price modifier without VAT */
+  formattedPriceModifierWithoutVat?: string;
   /** Whether this is the default option for the slot */
   isDefault: boolean;
   /** Whether this option is active and available */

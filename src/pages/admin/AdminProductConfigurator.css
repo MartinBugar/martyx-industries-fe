@@ -1489,3 +1489,39 @@
   margin-left: 4px;
   vertical-align: middle;
 }
+
+/* =========================================================================
+   VAT BREAKDOWN DISPLAY
+   ========================================================================= */
+
+.cfg-vat-breakdown {
+  background: var(--admin-bg-tertiary);
+  border-radius: var(--admin-radius-sm);
+  padding: 8px 12px;
+  margin-top: 4px;
+}
+
+.cfg-vat-breakdown label {
+  font-size: var(--admin-text-xs);
+  color: var(--admin-secondary);
+  opacity: 0.8;
+}
+
+.cfg-vat-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: var(--admin-text-xs);
+  color: var(--admin-secondary);
+}
+
+.cfg-vat-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.cfg-vat-item strong {
+  color: var(--admin-primary);
+  font-weight: var(--admin-font-medium);
+}

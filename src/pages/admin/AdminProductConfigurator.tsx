@@ -385,7 +385,7 @@ const OptionCard: React.FC<{
 
         <div className="cfg-option-row">
           <label>
-            Price Modifier
+            Price Modifier (with VAT)
             {hasUnsavedPrice && <span className="cfg-unsaved-dot" title="Unsaved change" />}
           </label>
           <div className="cfg-option-price">
@@ -399,6 +399,21 @@ const OptionCard: React.FC<{
             />
           </div>
         </div>
+
+        {/* VAT Breakdown - read only, calculated by backend */}
+        {option.priceModifierVatRate && Math.abs(option.priceModifier) > 0.001 && (
+          <div className="cfg-option-row cfg-vat-breakdown">
+            <label>VAT Breakdown</label>
+            <div className="cfg-vat-info">
+              <span className="cfg-vat-item">
+                Without VAT: <strong>{option.formattedPriceModifierWithoutVat || `€${(option.priceModifierWithoutVat || 0).toFixed(2)}`}</strong>
+              </span>
+              <span className="cfg-vat-item">
+                VAT ({option.priceModifierVatRate}%): <strong>€{(option.priceModifierVatAmount || 0).toFixed(2)}</strong>
+              </span>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="cfg-option-footer">
