@@ -26,7 +26,6 @@ import {
   canExecute,
   canCancel,
 } from '../../services/adminRefundsService';
-import { logError } from '../../services/logger';
 import './AdminUsers.css';
 import './AdminButtonOverrides.css';
 import './AdminRefunds.css';

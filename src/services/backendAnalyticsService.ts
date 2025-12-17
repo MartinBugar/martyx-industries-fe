@@ -303,7 +303,7 @@ export const trackError = async (
 
     await fetch(`${API_BASE_URL}/api/analytics/events`, {
       method: 'POST',
-      headers: defaultHeaders(),
+      headers: defaultHeaders as HeadersInit,
       body: JSON.stringify(eventData),
     });
 
