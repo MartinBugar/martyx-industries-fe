@@ -116,5 +116,9 @@
     "only_left_prefix": "Zostáva len",
     "only_left_suffix": "kusov!",
     "out_of_stock": "Vypredané"
+  },
+  "empty": {
+    "title": "Žiadne produkty nenájdené",
+    "description": "Skúste upraviť vyhľadávanie alebo filtre"
   }
 }

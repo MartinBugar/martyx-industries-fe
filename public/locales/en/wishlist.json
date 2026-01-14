@@ -10,7 +10,8 @@
   "empty": {
     "title": "Your wishlist is empty",
     "description": "Discover amazing products and add them to your wishlist to keep track of your favorites",
-    "browse_products": "Browse Products"
+    "browseProducts": "Browse Products",
+    "mascotAlt": "Cassandra - your wishlist guide"
   },
   "actions": {
     "add_to_cart": "Add to Cart",

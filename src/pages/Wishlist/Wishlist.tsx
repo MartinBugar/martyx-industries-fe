@@ -330,23 +330,23 @@ const Wishlist: React.FC = () => {
         {items.length === 0 ? (
           <div className="wishlist-empty">
             <div className="wishlist-mascot">
-              <img 
-                src="/cassandra/Empty-Cass.png" 
-                alt="Cassandra - váš sprievodca prázdnym wishlistom"
+              <img
+                src="/cassandra/Empty-Cass.png"
+                alt={t('empty.mascotAlt', 'Cassandra - your wishlist guide')}
                 className="mascot-image-wishlist"
                 loading="eager"
                 decoding="sync"
               />
             </div>
             <div className="empty-content">
-              <h2>Váš wishlist je prázdny</h2>
-              <p>Objavte úžasné produkty a pridajte si ich do wishlistu, aby ste mali prehľad o svojich obľúbených</p>
+              <h2>{t('empty.title', 'Your wishlist is empty')}</h2>
+              <p>{t('empty.description', 'Discover amazing products and add them to your wishlist to keep track of your favorites')}</p>
               <Link to="/products" className="btn btn-primary">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <circle cx="11" cy="11" r="8"/>
                   <path d="M21 21l-4.35-4.35"/>
                 </svg>
-                Prehliadať produkty
+                {t('empty.browseProducts', 'Browse Products')}
               </Link>
             </div>
           </div>

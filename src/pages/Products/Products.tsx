@@ -327,8 +327,8 @@ const Products: React.FC = () => {
                                 <circle cx="11" cy="11" r="8"></circle>
                                 <path d="m21 21-4.35-4.35"></path>
                             </svg>
-                            <h3>No products found</h3>
-                            <p>Try adjusting your search or filter criteria</p>
+                            <h3>{t('empty.title', 'No products found')}</h3>
+                            <p>{t('empty.description', 'Try adjusting your search or filter criteria')}</p>
                         </div>
                     )}
                 </div>

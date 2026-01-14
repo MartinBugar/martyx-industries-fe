@@ -10,7 +10,8 @@
   "empty": {
     "title": "Ihre Wunschliste ist leer",
     "description": "Entdecken Sie großartige Produkte und fügen Sie sie zu Ihrer Wunschliste hinzu, um Ihre Favoriten im Auge zu behalten",
-    "browse_products": "Produkte durchsuchen"
+    "browseProducts": "Produkte durchsuchen",
+    "mascotAlt": "Cassandra - Ihr Wunschlisten-Begleiter"
   },
   "actions": {
     "add_to_cart": "In den Warenkorb",

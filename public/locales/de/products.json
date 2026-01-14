@@ -116,5 +116,9 @@
     "only_left_prefix": "Nur noch",
     "only_left_suffix": "auf Lager!",
     "out_of_stock": "Nicht auf Lager"
+  },
+  "empty": {
+    "title": "Keine Produkte gefunden",
+    "description": "Versuchen Sie, Ihre Suche oder Filterkriterien anzupassen"
   }
 }

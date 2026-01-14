@@ -10,7 +10,8 @@
   "empty": {
     "title": "Váš wishlist je prázdny",
     "description": "Objavte úžasné produkty a pridajte si ich do wishlistu, aby ste mali prehľad o svojich obľúbených",
-    "browse_products": "Prehliadať produkty"
+    "browseProducts": "Prehliadať produkty",
+    "mascotAlt": "Cassandra - váš sprievodca wishlistom"
   },
   "actions": {
     "add_to_cart": "Pridať do košíka",
