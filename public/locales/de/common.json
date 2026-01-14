@@ -146,6 +146,7 @@
     "refresh": "Aktualisieren"
   },
   "loading": "Wird geladen...",
+  "loading_cart": "Warenkorb wird geladen...",
   "success": "Erfolgreich!",
   "warning": "Warnung",
   "error": "Fehler",
@@ -238,6 +239,7 @@
     "review_placeholder": "Teilen Sie Ihre Gedanken zu diesem Produkt..."
   },
   "reviews": {
+    "title": "Bewertungen",
     "add_photos": "Fotos hinzufügen",
     "optional": "optional",
     "max_count": "max {{max}}",
@@ -248,7 +250,17 @@
     "photo_lightbox": "Fotoanzeige",
     "max_images": "Maximal {{max}} Bilder erlaubt",
     "invalid_file_type": "Nur Bilddateien erlaubt (JPG, PNG, WEBP)",
-    "file_too_large": "Datei ist zu groß (max {{max}})"
+    "file_too_large": "Datei ist zu groß (max {{max}})",
+    "submitting": "Wird gesendet...",
+    "submit_review": "Bewertung absenden",
+    "cancel": "Abbrechen",
+    "loading": "Bewertungen werden geladen...",
+    "no_reviews": "Noch keine Bewertungen.",
+    "write_review": "Bewertung schreiben",
+    "your_review": "Ihre Bewertung",
+    "rating": "Bewertung",
+    "rating_hint": "Klicken Sie auf einen Stern für Ihre Bewertung",
+    "login_to_review": "Melden Sie sich an, um eine Bewertung zu schreiben"
   },
   "configurator": {
     "share": {

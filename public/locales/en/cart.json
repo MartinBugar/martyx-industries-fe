@@ -1,5 +1,6 @@
 {
   "title": "Your Cart",
+  "loading": "Loading cart...",
   "empty": "Your cart is empty",
   "empty_description": "Discover amazing products and add them to your cart",
   "empty_message": "Your cart is empty",

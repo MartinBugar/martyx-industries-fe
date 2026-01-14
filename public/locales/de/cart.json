@@ -1,5 +1,6 @@
 {
   "title": "Ihr Warenkorb",
+  "loading": "Warenkorb wird geladen...",
   "empty": "Ihr Warenkorb ist leer",
   "empty_description": "Entdecken Sie großartige Produkte und fügen Sie sie zu Ihrem Warenkorb hinzu",
   "empty_message": "Ihr Warenkorb ist leer",

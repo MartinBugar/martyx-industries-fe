@@ -1,5 +1,6 @@
 {
   "title": "Váš košík",
+  "loading": "Načítavam košík...",
   "empty": "Váš košík je prázdny",
   "empty_description": "Objavte úžasné produkty a pridajte si ich do košíka",
   "empty_message": "Váš košík je prázdny",

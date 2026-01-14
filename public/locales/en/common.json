@@ -146,6 +146,7 @@
     "refresh": "Refresh"
   },
   "loading": "Loading...",
+  "loading_cart": "Loading cart...",
   "sending": "Sending...",
   "success": "Success!",
   "warning": "Warning",
@@ -242,6 +243,7 @@
     "review_placeholder": "Share your thoughts about this product..."
   },
   "reviews": {
+    "title": "Reviews",
     "add_photos": "Add Photos",
     "optional": "optional",
     "max_count": "max {{max}}",
@@ -252,7 +254,17 @@
     "photo_lightbox": "Photo viewer",
     "max_images": "Maximum {{max}} images allowed",
     "invalid_file_type": "Only image files are allowed (JPG, PNG, WEBP)",
-    "file_too_large": "File is too large (max {{max}})"
+    "file_too_large": "File is too large (max {{max}})",
+    "submitting": "Submitting...",
+    "submit_review": "Submit Review",
+    "cancel": "Cancel",
+    "loading": "Loading reviews...",
+    "no_reviews": "No reviews yet.",
+    "write_review": "Write a review",
+    "your_review": "Your review",
+    "rating": "Rating",
+    "rating_hint": "Tap a star to set your rating",
+    "login_to_review": "Log in to write a review"
   },
   "configurator": {
     "share": {

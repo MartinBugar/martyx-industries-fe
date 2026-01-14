@@ -146,6 +146,7 @@
     "refresh": "Obnoviť"
   },
   "loading": "Načítava sa...",
+  "loading_cart": "Načítavam košík...",
   "sending": "Odosiela sa...",
   "success": "Úspech!",
   "warning": "Upozornenie",
@@ -239,6 +240,7 @@
     "review_placeholder": "Podeľte sa o svoje myšlienky o tomto produkte..."
   },
   "reviews": {
+    "title": "Recenzie",
     "add_photos": "Pridať fotky",
     "optional": "voliteľné",
     "max_count": "max {{max}}",
@@ -249,7 +251,17 @@
     "photo_lightbox": "Prehliadač fotiek",
     "max_images": "Maximálne {{max}} obrázkov",
     "invalid_file_type": "Povolené sú len obrázky (JPG, PNG, WEBP)",
-    "file_too_large": "Súbor je príliš veľký (max {{max}})"
+    "file_too_large": "Súbor je príliš veľký (max {{max}})",
+    "submitting": "Odosielam...",
+    "submit_review": "Odoslať recenziu",
+    "cancel": "Zrušiť",
+    "loading": "Načítavam recenzie...",
+    "no_reviews": "Zatiaľ žiadne recenzie.",
+    "write_review": "Napísať recenziu",
+    "your_review": "Vaša recenzia",
+    "rating": "Hodnotenie",
+    "rating_hint": "Kliknite na hviezdu pre nastavenie hodnotenia",
+    "login_to_review": "Prihláste sa pre napísanie recenzie"
   },
   "configurator": {
     "share": {

@@ -268,7 +268,7 @@ const MainContent = React.memo(() => {
       {isProductsListRoute && <CategoryBar />}
 
       {!isAdminRoute && showCart && (
-        <Suspense fallback={<div className="cart-loading">Loading cart...</div>}>
+        <Suspense fallback={<div className="cart-loading">{t('loading_cart')}</div>}>
           <CartPage
             isOpen={showCart}
             onClose={toggleCart}

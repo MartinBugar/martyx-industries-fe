@@ -301,7 +301,7 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ content, productId }) => {
       <div className="reviews-section">
         <div className="reviews-header">
           <div className="reviews-title-row">
-            <h3 className="reviews-title">Reviews</h3>
+            <h3 className="reviews-title">{t('reviews.title')}</h3>
             {reviews.length > 0 && (
               <div
                 className="reviews-average"
@@ -319,8 +319,8 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ content, productId }) => {
               type="button"
               onClick={() => setFormOpen((v) => !v)}
               className="icon-btn"
-              aria-label={formOpen ? 'Close review form' : 'Write a review'}
-              title={formOpen ? 'Close review form' : 'Write a review'}
+              aria-label={formOpen ? t('common.close') : t('reviews.write_review')}
+              title={formOpen ? t('common.close') : t('reviews.write_review')}
               aria-expanded={formOpen}
               aria-controls="write-review-form"
             >
@@ -336,19 +336,19 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ content, productId }) => {
               )}
             </button>
           ) : (
-            <Link to="/login" className="secondary-btn chip-btn">Log in to write a review</Link>
+            <Link to="/login" className="secondary-btn chip-btn">{t('reviews.login_to_review')}</Link>
           )}
         </div>
 
         {formOpen && isAuthenticated && (
           <form id="write-review-form" onSubmit={handleSubmit} className="review-form" aria-label={t('aria.write_review_form')}>
             <div className="form-field">
-              <label id="rating-label" htmlFor="rating-stars">Rating</label>
+              <label id="rating-label" htmlFor="rating-stars">{t('reviews.rating')}</label>
               <StarRating id="rating-stars" value={rating} onChange={setRating} />
-              <small className="muted">Tap a star to set your rating</small>
+              <small className="muted">{t('reviews.rating_hint')}</small>
             </div>
             <div className="form-field">
-              <label htmlFor="review-text">Your review</label>
+              <label htmlFor="review-text">{t('reviews.your_review')}</label>
               <textarea id="review-text" value={text} onChange={(e) => setText(e.target.value)} rows={5} required placeholder={t('placeholders.review_placeholder')} />
             </div>
             <div className="form-field">
@@ -390,18 +390,18 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ content, productId }) => {
               )}
             </div>
             <div className="form-actions">
-              <button type="submit" className="primary-btn" disabled={submitting || !text.trim()}>{submitting ? 'Submitting...' : 'Submit Review'}</button>
-              <button type="button" className="secondary-btn" onClick={() => setFormOpen(false)} disabled={submitting}>Cancel</button>
+              <button type="submit" className="primary-btn" disabled={submitting || !text.trim()}>{submitting ? t('reviews.submitting') : t('reviews.submit_review')}</button>
+              <button type="button" className="secondary-btn" onClick={() => setFormOpen(false)} disabled={submitting}>{t('reviews.cancel')}</button>
             </div>
           </form>
         )}
 
-        {loading && <p className="muted">Loading reviews...</p>}
+        {loading && <p className="muted">{t('reviews.loading')}</p>}
         {error && <p role="alert" className="error-text">{error}</p>}
 
         {!loading && !error && (
           reviews.length === 0 ? (
-            <p className="muted">No reviews yet.</p>
+            <p className="muted">{t('reviews.no_reviews')}</p>
           ) : (
             <ul className="reviews-list">
               {reviews.map((r, idx) => (
