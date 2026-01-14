@@ -233,6 +233,37 @@
   "placeholders": {
     "review_placeholder": "Podeľte sa o svoje myšlienky o tomto produkte..."
   },
+  "configurator": {
+    "share": {
+      "title": "Zdieľať konfiguráciu",
+      "description": "Vytvorte zdieľateľný odkaz pre túto konfiguráciu",
+      "titleLabel": "Názov (voliteľný)",
+      "titlePlaceholder": "Moja vlastná zostava",
+      "expiresLabel": "Platnosť odkazu",
+      "never": "Nikdy nevyprší",
+      "days": "{{count}} dní",
+      "createLink": "Vytvoriť odkaz",
+      "success": "Váš odkaz je pripravený!",
+      "error": "Nepodarilo sa vytvoriť odkaz",
+      "expiresOn": "Platnosť do {{date}}"
+    }
+  },
+  "share": {
+    "sharedConfiguration": "Zdieľaná konfigurácia",
+    "invalidToken": "Neplatný odkaz",
+    "notFound": "Táto zdieľaná konfigurácia nebola nájdená alebo jej platnosť vypršala",
+    "loadError": "Nepodarilo sa načítať zdieľanú konfiguráciu",
+    "oops": "Ups!",
+    "backHome": "Späť na úvod",
+    "untitled": "Vlastná konfigurácia",
+    "views": "{{count}} zobrazení",
+    "created": "Vytvorené {{date}}",
+    "configurationDetails": "Detaily konfigurácie",
+    "priceModifier": "Cenový modifikátor",
+    "viewInConfigurator": "Zobraziť v konfigurátore",
+    "addToCart": "Pridať do košíka",
+    "expiresOn": "Tento odkaz vyprší {{date}}"
+  },
   "company_info": {
     "company_name": "Názov spoločnosti",
     "company_id": "IČO",

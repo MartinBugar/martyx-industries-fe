@@ -7,9 +7,11 @@
 
 import React, { useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
+import { Share2 } from 'lucide-react';
 import { useConfigurator } from '../../context/ConfiguratorContext';
 import { useCart } from '../../context/useCart';
 import WishlistButton from '../WishlistButton';
+import ShareConfigurationModal from '../ShareConfigurationModal';
 import type { Product } from '../../data/productData';
 import type { SelectedConfiguration } from '../../types/configurator';
 import './ConfiguratorStickyBar.css';
@@ -56,6 +58,7 @@ const ConfiguratorStickyBar: React.FC<ConfiguratorStickyBarProps> = ({ product }
 
   const { addToCartWithConfiguration } = useCart();
   const [addingToCart, setAddingToCart] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
 
   // Calculate total price (base + modifier)
   const basePrice = product.priceWithVat;
@@ -122,6 +125,15 @@ const ConfiguratorStickyBar: React.FC<ConfiguratorStickyBarProps> = ({ product }
 
         {/* Actions */}
         <div className="sticky-bar-actions">
+          <button
+            className="sticky-bar-share"
+            onClick={() => setShowShareModal(true)}
+            disabled={!hasSelections}
+            aria-label="Share configuration"
+            title="Share configuration"
+          >
+            <Share2 size={20} />
+          </button>
           <WishlistButton
             productId={product.masterProductId}
             variant="icon"
@@ -145,6 +157,15 @@ const ConfiguratorStickyBar: React.FC<ConfiguratorStickyBarProps> = ({ product }
           </button>
         </div>
       </div>
+
+      {/* Share Modal */}
+      <ShareConfigurationModal
+        isOpen={showShareModal}
+        masterProductId={product.masterProductId}
+        configuration={selectedConfiguration}
+        priceModifier={totalModifier}
+        onClose={() => setShowShareModal(false)}
+      />
     </div>
   );
 };

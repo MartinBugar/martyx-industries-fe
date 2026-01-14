@@ -24,6 +24,9 @@ const StripeCancel = React.lazy(() => import('../pages/Payments/StripeCancel'));
 // Error pages
 const NotFound = React.lazy(() => import('../pages/NotFound/NotFound'));
 
+// Shared configuration page
+const Share = React.lazy(() => import('../pages/Share/Share'));
+
 // Loading component s vašimi farbami
 const PageLoader: React.FC = () => (
   <div style={{
@@ -60,6 +63,9 @@ const AppRoutes: React.FC = () => {
           {/* Payment Success/Cancel Routes */}
           <Route path="/stripe/success" element={<StripeSuccess />} />
           <Route path="/payment/cancelled" element={<StripeCancel />} />
+
+          {/* Shared Configuration */}
+          <Route path="/share/:shareToken" element={<Share />} />
 
           {/* 404 - Catch all unmatched routes */}
           <Route path="*" element={<NotFound />} />

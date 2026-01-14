@@ -236,6 +236,37 @@
   "placeholders": {
     "review_placeholder": "Share your thoughts about this product..."
   },
+  "configurator": {
+    "share": {
+      "title": "Share Configuration",
+      "description": "Create a shareable link for this configuration",
+      "titleLabel": "Name (optional)",
+      "titlePlaceholder": "My custom build",
+      "expiresLabel": "Link expires in",
+      "never": "Never",
+      "days": "{{count}} days",
+      "createLink": "Create Link",
+      "success": "Your share link is ready!",
+      "error": "Failed to create share link",
+      "expiresOn": "Expires on {{date}}"
+    }
+  },
+  "share": {
+    "sharedConfiguration": "Shared Configuration",
+    "invalidToken": "Invalid share link",
+    "notFound": "This shared configuration was not found or has expired",
+    "loadError": "Failed to load shared configuration",
+    "oops": "Oops!",
+    "backHome": "Back to Home",
+    "untitled": "Custom Configuration",
+    "views": "{{count}} views",
+    "created": "Created {{date}}",
+    "configurationDetails": "Configuration Details",
+    "priceModifier": "Configuration modifier",
+    "viewInConfigurator": "View in Configurator",
+    "addToCart": "Add to Cart",
+    "expiresOn": "This link expires on {{date}}"
+  },
   "company_info": {
     "company_name": "Company Name",
     "company_id": "Company ID",

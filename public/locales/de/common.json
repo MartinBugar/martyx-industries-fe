@@ -232,6 +232,37 @@
   "placeholders": {
     "review_placeholder": "Teilen Sie Ihre Gedanken zu diesem Produkt..."
   },
+  "configurator": {
+    "share": {
+      "title": "Konfiguration teilen",
+      "description": "Erstellen Sie einen teilbaren Link für diese Konfiguration",
+      "titleLabel": "Name (optional)",
+      "titlePlaceholder": "Meine individuelle Zusammenstellung",
+      "expiresLabel": "Link läuft ab in",
+      "never": "Nie",
+      "days": "{{count}} Tage",
+      "createLink": "Link erstellen",
+      "success": "Ihr Link ist bereit!",
+      "error": "Link konnte nicht erstellt werden",
+      "expiresOn": "Gültig bis {{date}}"
+    }
+  },
+  "share": {
+    "sharedConfiguration": "Geteilte Konfiguration",
+    "invalidToken": "Ungültiger Link",
+    "notFound": "Diese geteilte Konfiguration wurde nicht gefunden oder ist abgelaufen",
+    "loadError": "Geteilte Konfiguration konnte nicht geladen werden",
+    "oops": "Hoppla!",
+    "backHome": "Zurück zur Startseite",
+    "untitled": "Benutzerdefinierte Konfiguration",
+    "views": "{{count}} Aufrufe",
+    "created": "Erstellt am {{date}}",
+    "configurationDetails": "Konfigurationsdetails",
+    "priceModifier": "Preismodifikator",
+    "viewInConfigurator": "Im Konfigurator anzeigen",
+    "addToCart": "In den Warenkorb",
+    "expiresOn": "Dieser Link läuft ab am {{date}}"
+  },
   "company_info": {
     "company_name": "Firmenname",
     "company_id": "Firmennummer",

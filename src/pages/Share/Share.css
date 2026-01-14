@@ -1,0 +1,266 @@
+.share-page {
+  min-height: 100vh;
+  padding: 2rem 0;
+  background: var(--background-color, #0f0f23);
+}
+
+.share-page .container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Loading state */
+.share-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+}
+
+/* Error state */
+.share-error {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--text-muted, #888);
+}
+
+.share-error svg {
+  color: var(--text-muted, #666);
+  margin-bottom: 1.5rem;
+}
+
+.share-error h1 {
+  font-size: 1.75rem;
+  color: var(--text-color, #fff);
+  margin: 0 0 1rem;
+}
+
+.share-error p {
+  font-size: 1rem;
+  margin: 0 0 2rem;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.share-error .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  text-decoration: none;
+  background: var(--primary-color, #0d6efd);
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.share-error .btn:hover {
+  background: #0b5ed7;
+}
+
+/* Share card */
+.share-card {
+  background: var(--surface-color, #1a1a2e);
+  border-radius: 16px;
+  padding: 2rem;
+  margin-top: 1.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.share-header {
+  border-bottom: 1px solid var(--border-color, #333);
+  padding-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.share-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-color, #fff);
+  margin: 0 0 0.75rem;
+}
+
+.share-meta {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.share-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-muted, #888);
+}
+
+.share-meta-item svg {
+  opacity: 0.7;
+}
+
+/* Content */
+.share-content {
+  margin-bottom: 2rem;
+}
+
+.share-section-title {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-muted, #aaa);
+  margin: 0 0 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.share-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.share-option {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  border: 1px solid var(--border-color, #333);
+}
+
+.share-option-slot {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-muted, #888);
+  text-transform: uppercase;
+  min-width: 100px;
+}
+
+.share-option-name {
+  flex: 1;
+  font-size: 0.95rem;
+  color: var(--text-color, #fff);
+}
+
+.share-option-price {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.share-option-price.positive {
+  color: var(--success-color, #28a745);
+}
+
+.share-option-price.negative {
+  color: var(--danger-color, #dc3545);
+}
+
+/* Total */
+.share-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color, #333);
+  font-size: 1rem;
+  color: var(--text-color, #fff);
+}
+
+.share-total .positive {
+  color: var(--success-color, #28a745);
+  font-weight: 600;
+}
+
+.share-total .negative {
+  color: var(--danger-color, #dc3545);
+  font-weight: 600;
+}
+
+/* Actions */
+.share-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.share-actions .btn {
+  padding: 0.875rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.share-actions .btn-secondary {
+  background: transparent;
+  border: 1px solid var(--border-color, #444);
+  color: var(--text-color, #fff);
+}
+
+.share-actions .btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--text-muted, #666);
+}
+
+.share-actions .btn-primary {
+  background: var(--primary-color, #0d6efd);
+  border: none;
+  color: white;
+}
+
+.share-actions .btn-primary:hover {
+  background: #0b5ed7;
+}
+
+/* Expires notice */
+.share-expires {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--text-muted, #888);
+  margin: 1.5rem 0 0;
+}
+
+/* Mobile responsive */
+@media (max-width: 600px) {
+  .share-card {
+    padding: 1.5rem;
+  }
+
+  .share-title {
+    font-size: 1.25rem;
+  }
+
+  .share-meta {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .share-option {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .share-option-slot {
+    min-width: auto;
+  }
+
+  .share-actions {
+    flex-direction: column;
+  }
+
+  .share-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
