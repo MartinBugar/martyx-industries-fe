@@ -24,6 +24,7 @@ import { useAuth } from '../../context/useAuth';
 import { trackProductView, extractUTMParams } from '../../services/backendAnalyticsService';
 import { debounce } from '../../utils/debounce';
 import { useRecentlyViewed } from '../../hooks/useRecentlyViewed';
+import RecentlyViewedWidget from '../../components/RecentlyViewedWidget';
 import { logInfo, logWarn, logError } from '../../services/logger';
 import { stockService } from '../../services/stockService';
 import { useSeo } from '../../hooks/useSeo';
@@ -809,6 +810,14 @@ const ProductDetail: React.FC = () => {
                 ) : (
                     renderContent()
                 )}
+            </div>
+
+            {/* Recently Viewed Products */}
+            <div className="product-container">
+                <RecentlyViewedWidget
+                    excludeProductId={product.masterProductId}
+                    maxItems={4}
+                />
             </div>
         </div>
     );
