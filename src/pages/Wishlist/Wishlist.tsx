@@ -9,6 +9,7 @@ import { type Product } from '../../data/productData';
 import { type WishlistItem } from '../../types/wishlist';
 import ProductCard from '../../components/ProductCard/ProductCard';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
+import Breadcrumbs from '../../components/Breadcrumbs';
 import { productGalleryService } from '../../services/productGalleryService';
 import { useFormatters } from '../../hooks/useFormatters';
 import './Wishlist.css';
@@ -213,6 +214,9 @@ const Wishlist: React.FC = () => {
 
   return (
     <div className="wishlist-page">
+      <div className="container">
+        <Breadcrumbs />
+      </div>
       {/* Floating Cassandra - visible when wishlist has items */}
       {items.length > 0 && (
         <div className="wishlist-floating-mascot">

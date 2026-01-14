@@ -3,6 +3,7 @@ import {useParams} from 'react-router-dom';
 import {useTranslation} from 'react-i18next';
 import DOMPurify from 'dompurify';
 import {type Product} from '../../data/productData';
+import Breadcrumbs from '../../components/Breadcrumbs';
 import {hybridProductService} from '../../services/hybridProductService';
 import ProductView from '../../components/ProductView/ProductView';
 import './ProductDetail.css';
@@ -312,7 +313,8 @@ const ProductDetail: React.FC = () => {
     // Configurator state - fetch full configurator data to avoid duplicate API calls
     const [configuratorData, setConfiguratorData] = React.useState<import('../../types/configurator').Configurator | null>(null);
     const [hasCheckedConfigurator, setHasCheckedConfigurator] = React.useState(false);
-    const configuratorEnabled = configuratorData?.enabled ?? false;
+    // Configurator UI is shown only when both enabled AND tabVisible are true
+    const configuratorEnabled = (configuratorData?.enabled && configuratorData?.tabVisible) ?? false;
 
     // Fetch configurator data (if exists and enabled)
     React.useEffect(() => {
@@ -327,7 +329,7 @@ const ProductDetail: React.FC = () => {
                 const data = await configuratorService.getPublicConfigurator(product.masterProductId);
                 if (data && data.enabled) {
                     setConfiguratorData(data);
-                    logInfo(`🔧 Configurator enabled for product ${product.masterProductId}`);
+                    logInfo(`🔧 Configurator for product ${product.masterProductId}: enabled=${data.enabled}, tabVisible=${data.tabVisible}`);
                 } else {
                     setConfiguratorData(null);
                     logInfo(`🔧 Configurator disabled for product ${product.masterProductId}`);
@@ -795,6 +797,7 @@ const ProductDetail: React.FC = () => {
     return (
         <div className="product-detail-page">
             <div className="product-container">
+                <Breadcrumbs productName={product.name} />
                 {configuratorEnabled && configuratorData ? (
                     <ConfiguratorProvider
                         masterProductId={product.masterProductId}

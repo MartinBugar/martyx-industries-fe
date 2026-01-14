@@ -26,6 +26,7 @@ import {
 import { checkoutFormSchema, type CheckoutFormData } from '../../schemas/formSchemas';
 import { stockReservationService } from '../../services/stockReservationService';
 import { ReservationTimer } from '../../components/ReservationTimer/ReservationTimer';
+import Breadcrumbs from '../../components/Breadcrumbs';
 
 // Country list for dropdown
 const COUNTRIES = [
@@ -964,6 +965,9 @@ const Checkout: React.FC = () => {
 
   return (
     <main className="checkout-container" role="main">
+      <div className="container">
+        <Breadcrumbs />
+      </div>
       {/* Stock Reservation Timer - Show countdown if reservation is active */}
       {reservationExpiresAt && (
         <ReservationTimer

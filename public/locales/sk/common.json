@@ -185,6 +185,24 @@
   "accessibility": {
     "skip_to_main": "Preskočiť na hlavný obsah"
   },
+  "breadcrumbs": {
+    "aria_label": "Navigácia drobčekov",
+    "home": "Domov",
+    "products": "Produkty",
+    "about": "O nás",
+    "contact": "Kontakt",
+    "cart": "Košík",
+    "checkout": "Pokladňa",
+    "wishlist": "Zoznam želaní",
+    "account": "Môj účet",
+    "gallery": "Galéria",
+    "login": "Prihlásenie",
+    "register": "Registrácia",
+    "privacy_policy": "Ochrana súkromia",
+    "terms_of_service": "Obchodné podmienky",
+    "cookies_policy": "Zásady cookies",
+    "build_difficulty_guide": "Príručka náročnosti"
+  },
   "notFound": {
     "title": "Stránka sa nenašla",
     "description": "Stránka, ktorú hľadáte, neexistuje alebo bola presunutá.",

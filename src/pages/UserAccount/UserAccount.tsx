@@ -11,8 +11,10 @@ import ReferralDashboard from '../ReferralDashboard/ReferralDashboard';
 import UserTickets from '../../components/UserTickets/UserTickets';
 import AvatarSelector from '../../components/AvatarSelector/AvatarSelector';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
+import Breadcrumbs from '../../components/Breadcrumbs';
 import cassandraRankService, { type UserCassandraDto } from '../../services/cassandraRankService';
 import { userCreditsService, referralService, type UserCreditDto, type ReferralStatsDto } from '../../services/referralService';
+import { systemSettingsService } from '../../services/systemSettingsService';
 import type { Avatar } from '../../services/avatarService';
 import './UserAccount.css';
 import { logInfo, logError } from '../../services/logger';
@@ -28,6 +30,26 @@ const UserAccount: React.FC = () => {
   const [cassandraData, setCassandraData] = useState<UserCassandraDto | null>(null);
   const [creditsData, setCreditsData] = useState<UserCreditDto | null>(null);
   const [referralStats, setReferralStats] = useState<ReferralStatsDto | null>(null);
+  const [cassandraTabEnabled, setCassandraTabEnabled] = useState<boolean>(true);
+
+  // Fetch UI visibility settings on mount
+  useEffect(() => {
+    const loadUiSettings = async () => {
+      try {
+        const enabled = await systemSettingsService.isCassandraTabEnabled();
+        setCassandraTabEnabled(enabled);
+        logInfo('🎮 Cassandra tab enabled:', enabled);
+        // Redirect away from cassandra tab if disabled but currently selected
+        if (!enabled && activeTab === 'cassandra') {
+          setActiveTab('profile');
+        }
+      } catch (error) {
+        logError('Failed to load UI settings, defaulting to enabled:', error);
+        setCassandraTabEnabled(true); // Default to enabled on error
+      }
+    };
+    loadUiSettings();
+  }, [activeTab]);
 
   // Listen for profile edit state changes
   useEffect(() => {
@@ -125,6 +147,9 @@ const UserAccount: React.FC = () => {
 
   return (
     <div className="account-page">
+      <div className="container">
+        <Breadcrumbs />
+      </div>
       {/* Main Centered Container */}
       <div className="account-container">
         {/* Account Header */}
@@ -240,8 +265,8 @@ const UserAccount: React.FC = () => {
               </div>
             )}
 
-            {/* Cassandra Rank Progress - shown only when cassandra tab is active */}
-            {activeTab === 'cassandra' && cassandraData && (
+            {/* Cassandra Rank Progress - shown only when cassandra tab is active and enabled */}
+            {cassandraTabEnabled && activeTab === 'cassandra' && cassandraData && (
               <div className="cassandra-rank-section">
                 <div className="cassandra-rank-header">
                   <div className="rank-badges-compact">
@@ -323,18 +348,20 @@ const UserAccount: React.FC = () => {
               <span className="tab-label">Moja zbierka</span>
             </button>
 
-            <button
-              className={`sidebar-tab ${activeTab === 'cassandra' ? 'active' : ''}`}
-              onClick={() => setActiveTab('cassandra')}
-            >
-              <div className="tab-icon">
-                <svg viewBox="0 0 24 24" fill="none">
-                  <path d="M12 2L2 7l10 5 10-5-10-5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
-              <span className="tab-label">My Cassandra</span>
-            </button>
+            {cassandraTabEnabled && (
+              <button
+                className={`sidebar-tab ${activeTab === 'cassandra' ? 'active' : ''}`}
+                onClick={() => setActiveTab('cassandra')}
+              >
+                <div className="tab-icon">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+                <span className="tab-label">My Cassandra</span>
+              </button>
+            )}
 
             <button
               className={`sidebar-tab ${activeTab === 'referrals' ? 'active' : ''}`}
@@ -431,18 +458,20 @@ const UserAccount: React.FC = () => {
               <span className="mobile-tab-label">Zbierka</span>
             </button>
 
-            <button
-              className={`mobile-tab ${activeTab === 'cassandra' ? 'active' : ''}`}
-              onClick={() => setActiveTab('cassandra')}
-            >
-              <span className="mobile-tab-icon">
-                <svg viewBox="0 0 24 24" fill="none">
-                  <path d="M12 2L2 7l10 5 10-5-10-5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </span>
-              <span className="mobile-tab-label">Cassandra</span>
-            </button>
+            {cassandraTabEnabled && (
+              <button
+                className={`mobile-tab ${activeTab === 'cassandra' ? 'active' : ''}`}
+                onClick={() => setActiveTab('cassandra')}
+              >
+                <span className="mobile-tab-icon">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </span>
+                <span className="mobile-tab-label">Cassandra</span>
+              </button>
+            )}
 
             <button
               className={`mobile-tab ${activeTab === 'referrals' ? 'active' : ''}`}
@@ -501,7 +530,7 @@ const UserAccount: React.FC = () => {
             {activeTab === 'profile' && <UserProfile />}
             {activeTab === 'orders' && <OrderHistory />}
             {activeTab === 'collection' && <ModelCollection />}
-            {activeTab === 'cassandra' && <MyCassandra />}
+            {cassandraTabEnabled && activeTab === 'cassandra' && <MyCassandra />}
             {activeTab === 'referrals' && <ReferralDashboard />}
             {activeTab === 'tickets' && <UserTickets />}
             {activeTab === 'settings' && <GdprSettings />}

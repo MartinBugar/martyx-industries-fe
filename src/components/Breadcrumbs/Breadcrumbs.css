@@ -1,0 +1,95 @@
+.breadcrumbs {
+  padding: 0.75rem 0;
+  margin-bottom: 1rem;
+}
+
+.breadcrumbs-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 0.875rem;
+}
+
+.breadcrumbs-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.breadcrumbs-separator {
+  color: var(--text-muted, #a7b3c1);
+  flex-shrink: 0;
+}
+
+.breadcrumbs-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  color: var(--text-muted, #a7b3c1);
+  text-decoration: none;
+  transition: color 0.15s ease;
+  white-space: nowrap;
+}
+
+.breadcrumbs-link:hover {
+  color: var(--accent, #F6C845);
+}
+
+.breadcrumbs-link:focus-visible {
+  outline: 2px solid var(--accent, #F6C845);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.breadcrumbs-home-icon {
+  flex-shrink: 0;
+}
+
+/* Show only icon on mobile, text on desktop */
+.breadcrumbs-home-text {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .breadcrumbs-home-text {
+    display: inline;
+  }
+}
+
+.breadcrumbs-current {
+  color: var(--text-primary, #e7eef5);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+@media (min-width: 768px) {
+  .breadcrumbs-current {
+    max-width: 400px;
+  }
+}
+
+/* Ensure proper spacing in product detail page */
+.breadcrumbs-item--current {
+  min-width: 0; /* Allow text truncation */
+}
+
+/* Dark theme adjustments (already using CSS variables but adding explicit dark mode) */
+@media (prefers-color-scheme: dark) {
+  .breadcrumbs-separator {
+    color: var(--text-muted, #6b7280);
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .breadcrumbs-link {
+    transition: none;
+  }
+}

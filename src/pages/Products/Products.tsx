@@ -9,6 +9,7 @@ import OptimizedImage from '../../components/OptimizedImage/OptimizedImage';
 import { productGalleryService } from '../../services/productGalleryService';
 import VariantSelectorModal from '../../components/VariantSelectorModal/VariantSelectorModal';
 import { ProductGridSkeleton } from '../../components/ui/Skeleton';
+import Breadcrumbs from '../../components/Breadcrumbs';
 import './Products.css';
 import { logInfo, logError } from '../../services/logger';
 import { useSeo } from '../../hooks/useSeo';
@@ -283,6 +284,9 @@ const Products: React.FC = () => {
 
     return (
         <div className="products-page">
+            <div className="container">
+                <Breadcrumbs />
+            </div>
             <div className="products-container">
                 {/* Toolbar */}
                 <div className="products-toolbar">

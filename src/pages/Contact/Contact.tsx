@@ -6,6 +6,7 @@ import { contactService } from '../../services/contactService';
 import { companySettingsService } from '../../services/companySettingsService';
 import { contactSchema, type ContactFormData } from '../../schemas/formSchemas';
 import type { CompanySettingsDto } from '../../types/invoice';
+import Breadcrumbs from '../../components/Breadcrumbs';
 import './Contact.css';
 import { logWarn, logError } from '../../services/logger';
 
@@ -116,6 +117,9 @@ const Contact: React.FC = () => {
 
   return (
     <div className="contact-page" role="main">
+      <div className="container">
+        <Breadcrumbs />
+      </div>
       <div className="contact-container">
         {/* Mascot and Contact Details - Left Side */}
         <div className="mascot-and-info-left">

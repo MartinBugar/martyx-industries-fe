@@ -184,6 +184,24 @@
   "accessibility": {
     "skip_to_main": "Zum Hauptinhalt springen"
   },
+  "breadcrumbs": {
+    "aria_label": "Brotkrümel-Navigation",
+    "home": "Startseite",
+    "products": "Produkte",
+    "about": "Über uns",
+    "contact": "Kontakt",
+    "cart": "Warenkorb",
+    "checkout": "Kasse",
+    "wishlist": "Wunschliste",
+    "account": "Mein Konto",
+    "gallery": "Galerie",
+    "login": "Anmelden",
+    "register": "Registrieren",
+    "privacy_policy": "Datenschutz",
+    "terms_of_service": "AGB",
+    "cookies_policy": "Cookie-Richtlinie",
+    "build_difficulty_guide": "Schwierigkeitsanleitung"
+  },
   "notFound": {
     "title": "Seite nicht gefunden",
     "description": "Die Seite, die Sie suchen, existiert nicht oder wurde verschoben.",

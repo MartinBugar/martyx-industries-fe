@@ -188,6 +188,24 @@
   "accessibility": {
     "skip_to_main": "Skip to main content"
   },
+  "breadcrumbs": {
+    "aria_label": "Breadcrumb navigation",
+    "home": "Home",
+    "products": "Products",
+    "about": "About",
+    "contact": "Contact",
+    "cart": "Cart",
+    "checkout": "Checkout",
+    "wishlist": "Wishlist",
+    "account": "My Account",
+    "gallery": "Gallery",
+    "login": "Login",
+    "register": "Register",
+    "privacy_policy": "Privacy Policy",
+    "terms_of_service": "Terms of Service",
+    "cookies_policy": "Cookies Policy",
+    "build_difficulty_guide": "Build Difficulty Guide"
+  },
   "notFound": {
     "title": "Page Not Found",
     "description": "The page you're looking for doesn't exist or has been moved.",

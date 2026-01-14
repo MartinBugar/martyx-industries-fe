@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import OptimizedImage from '../../components/OptimizedImage/OptimizedImage';
+import Breadcrumbs from '../../components/Breadcrumbs';
 import './About.css';
 
 const About: React.FC = () => {
@@ -9,6 +10,9 @@ const About: React.FC = () => {
 
   return (
     <div className="about-page" aria-label="About Page">
+      <div className="container">
+        <Breadcrumbs />
+      </div>
       {/* Hero Section */}
       <section className="about-hero">
         <div className="container">
