@@ -9,6 +9,7 @@ import userTicketsService, {
   TicketStatus,
   CreateTicketRequest
 } from '../../services/userTicketsService';
+import { logError } from '../../services/logger';
 import './LiveChat.css';
 
 /**
@@ -91,7 +92,7 @@ const LiveChat: React.FC = () => {
         setActiveTicket(openTicket);
       }
     } catch (err) {
-      console.error('Failed to load tickets:', err);
+      logError('Failed to load tickets:', err);
     } finally {
       if (mountedRef.current) {
         setIsLoading(false);
@@ -106,7 +107,7 @@ const LiveChat: React.FC = () => {
         setMessages(msgs);
       }
     } catch (err) {
-      console.error('Failed to load messages:', err);
+      logError('Failed to load messages:', err);
     }
   }, []);
 
@@ -161,7 +162,7 @@ const LiveChat: React.FC = () => {
       loadRecentTickets();
       toast.success(t('chat.ticketCreated', 'Your message has been sent!'));
     } catch (err) {
-      console.error('Failed to create ticket:', err);
+      logError('Failed to create ticket:', err);
       toast.error(t('chat.createError', 'Failed to send message. Please try again.'));
     } finally {
       if (mountedRef.current) {
@@ -183,7 +184,7 @@ const LiveChat: React.FC = () => {
       loadMessages(activeTicket.id);
       inputRef.current?.focus();
     } catch (err) {
-      console.error('Failed to send message:', err);
+      logError('Failed to send message:', err);
       toast.error(t('chat.sendError', 'Failed to send message. Please try again.'));
     } finally {
       if (mountedRef.current) {

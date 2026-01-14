@@ -27,6 +27,8 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     ref
   ) => {
     const inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`;
+    const errorId = `${inputId}-error`;
+    const helperId = `${inputId}-helper`;
     const hasError = Boolean(error);
 
     const wrapperClasses = [
@@ -62,15 +64,17 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             id={inputId}
             className={inputClasses}
+            aria-invalid={hasError}
+            aria-describedby={hasError ? errorId : helperText ? helperId : undefined}
             {...props}
           />
           {RightIcon && (
             <RightIcon className="input-icon input-icon-right" size={18} />
           )}
         </div>
-        {error && <span className="input-error-text">{error}</span>}
+        {error && <span id={errorId} className="input-error-text" role="alert">{error}</span>}
         {!error && helperText && (
-          <span className="input-helper-text">{helperText}</span>
+          <span id={helperId} className="input-helper-text">{helperText}</span>
         )}
       </div>
     );
@@ -100,6 +104,8 @@ export const TextArea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
     ref
   ) => {
     const textareaId = id || `textarea-${Math.random().toString(36).substr(2, 9)}`;
+    const errorId = `${textareaId}-error`;
+    const helperId = `${textareaId}-helper`;
     const hasError = Boolean(error);
 
     const wrapperClasses = [
@@ -129,11 +135,13 @@ export const TextArea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
           ref={ref}
           id={textareaId}
           className={textareaClasses}
+          aria-invalid={hasError}
+          aria-describedby={hasError ? errorId : helperText ? helperId : undefined}
           {...props}
         />
-        {error && <span className="input-error-text">{error}</span>}
+        {error && <span id={errorId} className="input-error-text" role="alert">{error}</span>}
         {!error && helperText && (
-          <span className="input-helper-text">{helperText}</span>
+          <span id={helperId} className="input-helper-text">{helperText}</span>
         )}
       </div>
     );

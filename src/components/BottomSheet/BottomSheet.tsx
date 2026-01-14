@@ -22,9 +22,9 @@ const BottomSheet: React.FC<BottomSheetProps> = ({ open, title = 'Filters', onCl
   return (
     <>
       <div className="bs-overlay" onClick={onClose} />
-      <div className={`bs-sheet ${open ? 'open' : ''}`} role="dialog" aria-modal="true" aria-label={title}>
+      <div className={`bs-sheet ${open ? 'open' : ''}`} role="dialog" aria-modal="true" aria-labelledby="bs-title">
         <div className="bs-header">
-          <h3 className="bs-title">{title}</h3>
+          <h3 id="bs-title" className="bs-title">{title}</h3>
           <button className="bs-close" onClick={onClose} aria-label="Close">
             ✕
           </button>

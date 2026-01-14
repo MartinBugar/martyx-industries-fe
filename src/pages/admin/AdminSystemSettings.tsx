@@ -4,7 +4,7 @@ import GeneralSettingsTabs from './GeneralSettingsTabs';
 import { Button, Badge, SkeletonTable } from '../../components/ui';
 import { systemSettingsService, type SystemSettingsDto } from '../../services/systemSettingsService';
 import { useErrors } from '../../context/ErrorContext';
-import { Settings, Lock, Unlock, Save, Edit, X, AlertTriangle, Info, Globe, Percent, DollarSign, RotateCw, Box } from 'lucide-react';
+import { Settings, Lock, Unlock, Save, Edit, X, AlertTriangle, Info, Globe, Percent, DollarSign, RotateCw, Box, Eye, EyeOff } from 'lucide-react';
 import './AdminUsers.css';
 import './AdminButtonOverrides.css';
 import './AdminSystemSettings.css';
@@ -52,7 +52,8 @@ const AdminSystemSettings: React.FC = () => {
             defaultVatRate: settings.defaultVatRate,
             sellerCountryCode: settings.sellerCountryCode,
             ossThresholdEur: settings.ossThresholdEur,
-            autoRotate3DModel: settings.autoRotate3DModel
+            autoRotate3DModel: settings.autoRotate3DModel,
+            cassandraTabEnabled: settings.cassandraTabEnabled
         });
     };
 
@@ -76,7 +77,8 @@ const AdminSystemSettings: React.FC = () => {
                 defaultVatRate: editedValues.defaultVatRate ?? settings.defaultVatRate,
                 sellerCountryCode: editedValues.sellerCountryCode ?? settings.sellerCountryCode,
                 ossThresholdEur: editedValues.ossThresholdEur ?? settings.ossThresholdEur,
-                autoRotate3DModel: editedValues.autoRotate3DModel ?? settings.autoRotate3DModel
+                autoRotate3DModel: editedValues.autoRotate3DModel ?? settings.autoRotate3DModel,
+                cassandraTabEnabled: editedValues.cassandraTabEnabled ?? settings.cassandraTabEnabled
             };
 
             const updated = await systemSettingsService.updateSettings(updateRequest);
@@ -299,6 +301,33 @@ const AdminSystemSettings: React.FC = () => {
                                 </div>
                             </div>
 
+                            {/* UI Visibility Settings - Edit Mode */}
+                            <div className="admin-card admin-system-card-section">
+                                <h3 className="section-title admin-system-section-title">
+                                    <Eye size={20} className="admin-system-section-title-icon" />
+                                    UI Visibility
+                                </h3>
+
+                                <div className="form-grid">
+                                    <div className="admin-system-full-width">
+                                        <label className="form-label admin-system-checkbox-label">
+                                            <input
+                                                type="checkbox"
+                                                checked={getEditedValue('cassandraTabEnabled', settings.cassandraTabEnabled ?? true)}
+                                                onChange={(e) => handleValueChange('cassandraTabEnabled', e.target.checked)}
+                                                className="admin-system-checkbox"
+                                            />
+                                            <span className="admin-system-checkbox-text">
+                                                Show "My Cassandra" Tab in User Account
+                                            </span>
+                                        </label>
+                                        <p className="admin-system-help-text">
+                                            When disabled, the My Cassandra tab will be hidden from all users in their account section
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
                             {/* Save/Cancel Buttons */}
                             <div className="admin-card">
                                 <div className="admin-system-actions">
@@ -442,6 +471,36 @@ const AdminSystemSettings: React.FC = () => {
                                             {settings.autoRotate3DModel
                                                 ? '3D models will automatically rotate on product pages'
                                                 : '3D models remain static until user interaction'}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* UI Visibility Settings - Display Mode */}
+                            <div className="admin-card admin-system-card-section">
+                                <h3 className="section-title admin-system-section-title">
+                                    <Eye size={20} className="admin-system-section-title-icon" />
+                                    UI Visibility
+                                </h3>
+
+                                <div className="admin-system-display-grid">
+                                    <div className="admin-system-display-card">
+                                        <div className="admin-system-display-label">My Cassandra Tab</div>
+                                        <Badge
+                                            variant={settings.cassandraTabEnabled !== false ? 'success' : 'warning'}
+                                            size="sm"
+                                            className="admin-system-badge"
+                                        >
+                                            {settings.cassandraTabEnabled !== false ? (
+                                                <><Eye size={14} className="admin-system-icon-mr" /> Visible</>
+                                            ) : (
+                                                <><EyeOff size={14} className="admin-system-icon-mr" /> Hidden</>
+                                            )}
+                                        </Badge>
+                                        <p className="admin-system-display-desc">
+                                            {settings.cassandraTabEnabled !== false
+                                                ? 'My Cassandra tab is visible in user account section'
+                                                : 'My Cassandra tab is hidden from all users'}
                                         </p>
                                     </div>
                                 </div>

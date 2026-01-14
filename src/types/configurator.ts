@@ -99,6 +99,8 @@ export interface Configurator {
   masterProductSlug?: string;
   /** Whether this configurator is active. When false, falls back to legacy download. */
   enabled: boolean;
+  /** Whether the Configurator tab is visible on product detail page. */
+  tabVisible: boolean;
   /** URL to base 3D model GLB file for preview */
   baseModelUrl?: string;
   baseModelFileName?: string;
@@ -132,6 +134,8 @@ export interface CreateConfiguratorRequest {
 
 export interface UpdateConfiguratorRequest {
   enabled?: boolean;
+  /** Whether the Configurator tab is visible on product detail page. */
+  tabVisible?: boolean;
   configurationJson?: string;
 }
 

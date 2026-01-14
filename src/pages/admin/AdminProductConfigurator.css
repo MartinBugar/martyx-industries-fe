@@ -125,6 +125,12 @@
   white-space: nowrap;
 }
 
+.cfg-progress-toggles {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
 .cfg-progress-toggle {
   display: flex;
   align-items: center;

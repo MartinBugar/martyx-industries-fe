@@ -51,13 +51,20 @@ const UsernamePromptModal: React.FC<UsernamePromptModalProps> = ({ isOpen, onClo
 
   return (
     <div className="username-modal-overlay" onClick={onClose}>
-      <div className="username-modal-content" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="username-modal-content"
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="username-modal-title"
+        aria-describedby="username-modal-description"
+      >
         <button className="username-modal-close" onClick={onClose} aria-label="Zavrieť">
           ×
         </button>
 
-        <h2>Nastavte si verejné meno</h2>
-        <p className="username-modal-description">
+        <h2 id="username-modal-title">Nastavte si verejné meno</h2>
+        <p id="username-modal-description" className="username-modal-description">
           Odporúčame nastaviť verejné meno pre lepšiu identifikáciu v komentároch a galérii.
           <br />
           Ak preskočíte, vygenerujeme vám náhodné meno (napr. "User12345"), ktoré si môžete kedykoľvek zmeniť v profile.
@@ -75,14 +82,16 @@ const UsernamePromptModal: React.FC<UsernamePromptModalProps> = ({ isOpen, onClo
               pattern="^[a-zA-Z0-9_]{3,20}$"
               title="Username musí mať 3-20 znakov a môže obsahovať len písmená, čísla a podčiarkovník"
               disabled={isSubmitting}
+              aria-invalid={!!error}
+              aria-describedby={error ? 'username-error' : 'username-hint'}
             />
-            <small className="form-hint">
+            <small id="username-hint" className="form-hint">
               3-20 znakov, len písmená, čísla a podčiarkovník
             </small>
           </div>
 
           {error && (
-            <div className="error-message" role="alert">
+            <div id="username-error" className="error-message" role="alert">
               {error}
             </div>
           )}

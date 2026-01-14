@@ -54,9 +54,12 @@ const ToggleSwitch: React.FC<{
 const ProgressStepper: React.FC<{
   readiness: ReadinessInfo;
   enabled: boolean;
+  tabVisible: boolean;
   onToggleEnabled: () => void;
+  onToggleTabVisible: () => void;
   toggleDisabled: boolean;
-}> = ({ readiness, enabled, onToggleEnabled, toggleDisabled }) => {
+  tabToggleDisabled: boolean;
+}> = ({ readiness, enabled, tabVisible, onToggleEnabled, onToggleTabVisible, toggleDisabled, tabToggleDisabled }) => {
   const steps = [
     { key: 'baseModel', label: 'Base Model', completed: readiness.hasBaseModel },
     { key: 'slots', label: 'Slots', completed: readiness.hasSlots, detail: readiness.totalSlots > 0 ? `(${readiness.totalSlots})` : undefined },
@@ -75,16 +78,29 @@ const ProgressStepper: React.FC<{
           </div>
           <span className="cfg-progress-text">{completedCount}/{steps.length} steps completed</span>
         </div>
-        <div className="cfg-progress-toggle">
-          <span className={`cfg-status-label ${enabled ? 'enabled' : 'disabled'}`}>
-            {enabled ? 'ENABLED' : 'DISABLED'}
-          </span>
-          <ToggleSwitch
-            checked={enabled}
-            onChange={onToggleEnabled}
-            disabled={toggleDisabled || (!readiness.ready && !enabled)}
-            size="sm"
-          />
+        <div className="cfg-progress-toggles">
+          <div className="cfg-progress-toggle">
+            <span className={`cfg-status-label ${tabVisible ? 'enabled' : 'disabled'}`}>
+              {tabVisible ? 'TAB VISIBLE' : 'TAB HIDDEN'}
+            </span>
+            <ToggleSwitch
+              checked={tabVisible}
+              onChange={onToggleTabVisible}
+              disabled={tabToggleDisabled}
+              size="sm"
+            />
+          </div>
+          <div className="cfg-progress-toggle">
+            <span className={`cfg-status-label ${enabled ? 'enabled' : 'disabled'}`}>
+              {enabled ? 'ENABLED' : 'DISABLED'}
+            </span>
+            <ToggleSwitch
+              checked={enabled}
+              onChange={onToggleEnabled}
+              disabled={toggleDisabled || (!readiness.ready && !enabled)}
+              size="sm"
+            />
+          </div>
         </div>
       </div>
       <div className="cfg-progress-steps">
@@ -647,6 +663,7 @@ const AdminProductConfigurator: React.FC = () => {
   const [actionLoading, setActionLoading] = useState<{
     createConfigurator: boolean;
     toggleEnabled: boolean;
+    toggleTabVisible: boolean;
     deleteConfigurator: boolean;
     importJson: boolean;
     deleteBaseModel: boolean;
@@ -663,6 +680,7 @@ const AdminProductConfigurator: React.FC = () => {
   }>({
     createConfigurator: false,
     toggleEnabled: false,
+    toggleTabVisible: false,
     deleteConfigurator: false,
     importJson: false,
     deleteBaseModel: false,
@@ -769,6 +787,24 @@ const AdminProductConfigurator: React.FC = () => {
       setError(msg);
     } finally {
       setActionLoading(prev => ({ ...prev, toggleEnabled: false }));
+    }
+  };
+
+  // Toggle tab visibility
+  const handleToggleTabVisible = async () => {
+    if (!configurator) return;
+    setActionLoading(prev => ({ ...prev, toggleTabVisible: true }));
+    try {
+      const updated = await configuratorService.updateConfigurator(configurator.id, {
+        tabVisible: !configurator.tabVisible,
+      });
+      setConfigurator(updated);
+      setSuccessMessage(`Configurator tab ${updated.tabVisible ? 'visible' : 'hidden'}!`);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'Failed to update configurator';
+      setError(msg);
+    } finally {
+      setActionLoading(prev => ({ ...prev, toggleTabVisible: false }));
     }
   };
 
@@ -1375,8 +1411,11 @@ const AdminProductConfigurator: React.FC = () => {
                     <ProgressStepper
                       readiness={configurator.readiness}
                       enabled={configurator.enabled}
+                      tabVisible={configurator.tabVisible}
                       onToggleEnabled={handleToggleEnabled}
+                      onToggleTabVisible={handleToggleTabVisible}
                       toggleDisabled={actionLoading.toggleEnabled}
+                      tabToggleDisabled={actionLoading.toggleTabVisible}
                     />
                   )}
 

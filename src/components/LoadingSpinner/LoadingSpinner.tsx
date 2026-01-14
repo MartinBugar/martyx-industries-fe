@@ -11,8 +11,13 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   text
 }) => {
   return (
-    <div className={`loading-spinner-container ${size}`}>
-      <div className="dual-ring-spinner">
+    <div
+      className={`loading-spinner-container ${size}`}
+      role="status"
+      aria-live="polite"
+      aria-label={text || 'Loading'}
+    >
+      <div className="dual-ring-spinner" aria-hidden="true">
         <div className="spinner-ring ring-outer"></div>
         <div className="spinner-ring ring-inner"></div>
       </div>
