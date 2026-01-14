@@ -1,0 +1,217 @@
+.save-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+  animation: saveModalFadeIn 0.15s ease-out;
+}
+
+@keyframes saveModalFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.save-modal {
+  background: var(--surface-color, #1a1a2e);
+  border-radius: 12px;
+  max-width: 420px;
+  width: 100%;
+  padding: 2rem;
+  position: relative;
+  text-align: center;
+  animation: saveModalSlideUp 0.2s ease-out;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+@keyframes saveModalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.save-modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  color: var(--text-muted, #888);
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: color 0.2s, background 0.2s;
+}
+
+.save-modal-close:hover:not(:disabled) {
+  color: var(--text-color, #fff);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.save-modal-close:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.save-modal-icon {
+  margin-bottom: 1rem;
+  color: var(--primary-color, #0d6efd);
+  transition: color 0.3s, transform 0.3s;
+}
+
+.save-modal-icon.success {
+  color: var(--success-color, #28a745);
+  transform: scale(1.2);
+}
+
+.save-modal-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-color, #fff);
+  margin: 0 0 0.5rem;
+}
+
+.save-modal-description {
+  font-size: 0.9rem;
+  color: var(--text-muted, #aaa);
+  margin: 0 0 1.5rem;
+  line-height: 1.5;
+}
+
+.save-modal-form {
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.save-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.save-form-group label {
+  font-size: 0.85rem;
+  color: var(--text-muted, #aaa);
+  font-weight: 500;
+}
+
+.save-form-group input {
+  background: var(--input-bg, #16213e);
+  border: 1px solid var(--border-color, #333);
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  color: var(--text-color, #fff);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.save-form-group input:focus {
+  outline: none;
+  border-color: var(--primary-color, #0d6efd);
+  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+}
+
+.save-form-group input::placeholder {
+  color: var(--text-muted, #666);
+}
+
+.save-form-group input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.save-modal-error {
+  color: var(--danger-color, #dc3545);
+  font-size: 0.85rem;
+  margin: 0 0 1rem;
+}
+
+.save-modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.save-modal-actions .btn {
+  min-width: 100px;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.save-modal-actions .btn-secondary {
+  background: transparent;
+  border: 1px solid var(--border-color, #333);
+  color: var(--text-color, #fff);
+}
+
+.save-modal-actions .btn-secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--text-muted, #666);
+}
+
+.save-modal-actions .btn-primary {
+  background: var(--primary-color, #0d6efd);
+  border: none;
+  color: white;
+}
+
+.save-modal-actions .btn-primary:hover:not(:disabled) {
+  background: #0b5ed7;
+}
+
+.save-modal-actions .btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Spinner */
+.btn-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: saveSpinnerSpin 0.8s linear infinite;
+}
+
+@keyframes saveSpinnerSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Mobile responsive */
+@media (max-width: 480px) {
+  .save-modal {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+
+  .save-modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .save-modal-actions .btn {
+    width: 100%;
+  }
+}

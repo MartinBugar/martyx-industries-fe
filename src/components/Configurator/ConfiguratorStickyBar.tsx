@@ -7,11 +7,13 @@
 
 import React, { useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
-import { Share2 } from 'lucide-react';
+import { Share2, Save } from 'lucide-react';
 import { useConfigurator } from '../../context/ConfiguratorContext';
 import { useCart } from '../../context/useCart';
+import { useAuth } from '../../context/AuthContext';
 import WishlistButton from '../WishlistButton';
 import ShareConfigurationModal from '../ShareConfigurationModal';
+import SaveConfigurationModal from '../SaveConfigurationModal';
 import type { Product } from '../../data/productData';
 import type { SelectedConfiguration } from '../../types/configurator';
 import './ConfiguratorStickyBar.css';
@@ -57,8 +59,10 @@ const ConfiguratorStickyBar: React.FC<ConfiguratorStickyBarProps> = ({ product }
   } = useConfigurator();
 
   const { addToCartWithConfiguration } = useCart();
+  const { isAuthenticated } = useAuth();
   const [addingToCart, setAddingToCart] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [showSaveModal, setShowSaveModal] = useState(false);
 
   // Calculate total price (base + modifier)
   const basePrice = product.priceWithVat;
@@ -125,6 +129,17 @@ const ConfiguratorStickyBar: React.FC<ConfiguratorStickyBarProps> = ({ product }
 
         {/* Actions */}
         <div className="sticky-bar-actions">
+          {isAuthenticated && (
+            <button
+              className="sticky-bar-save"
+              onClick={() => setShowSaveModal(true)}
+              disabled={!hasSelections}
+              aria-label="Save configuration"
+              title="Save to library"
+            >
+              <Save size={20} />
+            </button>
+          )}
           <button
             className="sticky-bar-share"
             onClick={() => setShowShareModal(true)}
@@ -166,6 +181,17 @@ const ConfiguratorStickyBar: React.FC<ConfiguratorStickyBarProps> = ({ product }
         priceModifier={totalModifier}
         onClose={() => setShowShareModal(false)}
       />
+
+      {/* Save Modal (authenticated users only) */}
+      {isAuthenticated && (
+        <SaveConfigurationModal
+          isOpen={showSaveModal}
+          masterProductId={product.masterProductId}
+          configuration={selectedConfiguration}
+          priceModifier={totalModifier}
+          onClose={() => setShowSaveModal(false)}
+        />
+      )}
     </div>
   );
 };

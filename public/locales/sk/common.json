@@ -248,6 +248,16 @@
       "expiresOn": "Platnosť do {{date}}"
     }
   },
+  "savedConfig": {
+    "title": "Uložiť konfiguráciu",
+    "successTitle": "Konfigurácia uložená!",
+    "description": "Uložte túto konfiguráciu do svojej knižnice na neskoršie použitie",
+    "nameLabel": "Názov konfigurácie",
+    "namePlaceholder": "Moja vlastná zostava",
+    "nameRequired": "Prosím zadajte názov",
+    "save": "Uložiť",
+    "error": "Nepodarilo sa uložiť konfiguráciu"
+  },
   "share": {
     "sharedConfiguration": "Zdieľaná konfigurácia",
     "invalidToken": "Neplatný odkaz",

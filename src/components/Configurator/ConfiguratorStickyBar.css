@@ -78,6 +78,8 @@
   gap: 0.75rem;
 }
 
+/* Save Button */
+.sticky-bar-save,
 /* Share Button */
 .sticky-bar-share {
   display: flex;
@@ -93,11 +95,13 @@
   transition: all 0.15s ease;
 }
 
+.sticky-bar-save:hover:not(:disabled),
 .sticky-bar-share:hover:not(:disabled) {
   background: rgba(255, 255, 255, 0.12);
   border-color: rgba(255, 255, 255, 0.25);
 }
 
+.sticky-bar-save:disabled,
 .sticky-bar-share:disabled {
   opacity: 0.5;
   cursor: not-allowed;

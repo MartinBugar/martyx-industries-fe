@@ -251,6 +251,16 @@
       "expiresOn": "Expires on {{date}}"
     }
   },
+  "savedConfig": {
+    "title": "Save Configuration",
+    "successTitle": "Configuration Saved!",
+    "description": "Save this configuration to your library for later use",
+    "nameLabel": "Configuration name",
+    "namePlaceholder": "My custom build",
+    "nameRequired": "Please enter a name",
+    "save": "Save",
+    "error": "Failed to save configuration"
+  },
   "share": {
     "sharedConfiguration": "Shared Configuration",
     "invalidToken": "Invalid share link",

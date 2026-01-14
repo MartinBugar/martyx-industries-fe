@@ -247,6 +247,16 @@
       "expiresOn": "Gültig bis {{date}}"
     }
   },
+  "savedConfig": {
+    "title": "Konfiguration speichern",
+    "successTitle": "Konfiguration gespeichert!",
+    "description": "Speichern Sie diese Konfiguration in Ihrer Bibliothek zur späteren Verwendung",
+    "nameLabel": "Konfigurationsname",
+    "namePlaceholder": "Meine individuelle Zusammenstellung",
+    "nameRequired": "Bitte geben Sie einen Namen ein",
+    "save": "Speichern",
+    "error": "Konfiguration konnte nicht gespeichert werden"
+  },
   "share": {
     "sharedConfiguration": "Geteilte Konfiguration",
     "invalidToken": "Ungültiger Link",
