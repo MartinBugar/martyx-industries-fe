@@ -8,6 +8,9 @@ interface UseSearchSuggestionsOptions {
   maxResults?: number;
 }
 
+const RECENT_SEARCHES_KEY = 'martyx:recent-searches';
+const MAX_RECENT_SEARCHES = 5;
+
 interface UseSearchSuggestionsResult {
   query: string;
   setQuery: (query: string) => void;
@@ -20,6 +23,27 @@ interface UseSearchSuggestionsResult {
   selectedIndex: number;
   setSelectedIndex: (index: number) => void;
   handleKeyDown: (e: React.KeyboardEvent) => ProductSearchSuggestion | null;
+  recentSearches: string[];
+  addRecentSearch: (term: string) => void;
+  clearRecentSearches: () => void;
+}
+
+// Helper functions for recent searches
+function getRecentSearches(): string[] {
+  try {
+    const stored = localStorage.getItem(RECENT_SEARCHES_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveRecentSearches(searches: string[]): void {
+  try {
+    localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(searches));
+  } catch {
+    // Ignore storage errors
+  }
 }
 
 /**
@@ -40,9 +64,27 @@ export function useSearchSuggestions(
   const [error, setError] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [recentSearches, setRecentSearches] = useState<string[]>(() => getRecentSearches());
 
   const debounceTimerRef = useRef<number | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
+
+  const addRecentSearch = useCallback((term: string) => {
+    const trimmed = term.trim();
+    if (!trimmed || trimmed.length < minChars) return;
+
+    setRecentSearches(prev => {
+      const filtered = prev.filter(s => s.toLowerCase() !== trimmed.toLowerCase());
+      const updated = [trimmed, ...filtered].slice(0, MAX_RECENT_SEARCHES);
+      saveRecentSearches(updated);
+      return updated;
+    });
+  }, [minChars]);
+
+  const clearRecentSearches = useCallback(() => {
+    setRecentSearches([]);
+    saveRecentSearches([]);
+  }, []);
 
   const fetchSuggestions = useCallback(async (searchQuery: string) => {
     if (searchQuery.length < minChars) {
@@ -164,5 +206,8 @@ export function useSearchSuggestions(
     selectedIndex,
     setSelectedIndex,
     handleKeyDown,
+    recentSearches,
+    addRecentSearch,
+    clearRecentSearches,
   };
 }

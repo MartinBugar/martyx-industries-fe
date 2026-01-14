@@ -5,5 +5,8 @@
   "out_of_stock": "Nicht auf Lager",
   "view_all_results": "Alle Ergebnisse anzeigen",
   "placeholder": "Produkte suchen...",
-  "min_chars": "Geben Sie mindestens 2 Zeichen ein, um zu suchen"
+  "min_chars": "Geben Sie mindestens 2 Zeichen ein, um zu suchen",
+  "recent_searches": "Letzte Suchen",
+  "clear_recent": "Letzte Suchen löschen",
+  "clear": "Löschen"
 }

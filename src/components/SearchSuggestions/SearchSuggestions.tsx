@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { Clock, X } from 'lucide-react';
 import type { ProductSearchSuggestion } from '../../services/productService';
 import './SearchSuggestions.css';
 
@@ -12,6 +13,9 @@ interface SearchSuggestionsProps {
   onSelect: (suggestion: ProductSearchSuggestion) => void;
   onClose: () => void;
   query: string;
+  recentSearches?: string[];
+  onRecentSearchSelect?: (term: string) => void;
+  onClearRecentSearches?: () => void;
 }
 
 /**
@@ -25,9 +29,13 @@ export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
   onSelect,
   onClose,
   query,
+  recentSearches = [],
+  onRecentSearchSelect,
+  onClearRecentSearches,
 }) => {
   const { t, i18n } = useTranslation(['search', 'common']);
   const containerRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   // Close on click outside
   useEffect(() => {
@@ -46,9 +54,20 @@ export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
     };
   }, [isOpen, onClose]);
 
-  if (!isOpen && !isLoading) {
+  const showRecentSearches = query.length < 2 && recentSearches.length > 0;
+
+  if (!isOpen && !isLoading && !showRecentSearches) {
     return null;
   }
+
+  const handleRecentSearchClick = (term: string) => {
+    if (onRecentSearchSelect) {
+      onRecentSearchSelect(term);
+    } else {
+      navigate(`/products?search=${encodeURIComponent(term)}`);
+      onClose();
+    }
+  };
 
   const formatPrice = (price: number, currency: string = 'EUR') => {
     return new Intl.NumberFormat(i18n.language, {
@@ -79,6 +98,44 @@ export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
       role="listbox"
       aria-label={t('search:suggestions', 'Search suggestions')}
     >
+      {/* Recent Searches Section */}
+      {showRecentSearches && (
+        <div className="search-suggestions__recent">
+          <div className="search-suggestions__recent-header">
+            <span className="search-suggestions__recent-title">
+              {t('search:recent_searches', 'Recent Searches')}
+            </span>
+            {onClearRecentSearches && (
+              <button
+                type="button"
+                className="search-suggestions__clear-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onClearRecentSearches();
+                }}
+                aria-label={t('search:clear_recent', 'Clear recent searches')}
+              >
+                {t('search:clear', 'Clear')}
+              </button>
+            )}
+          </div>
+          <ul className="search-suggestions__recent-list">
+            {recentSearches.map((term, index) => (
+              <li key={index} className="search-suggestions__recent-item">
+                <button
+                  type="button"
+                  className="search-suggestions__recent-btn"
+                  onClick={() => handleRecentSearchClick(term)}
+                >
+                  <Clock size={14} aria-hidden="true" />
+                  <span>{term}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {isLoading && (
         <div className="search-suggestions__loading">
           <span className="search-suggestions__spinner" />

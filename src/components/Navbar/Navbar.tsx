@@ -51,6 +51,9 @@ const Navbar = React.memo(function Navbar({cartCount = 0, onSearchSubmit, user, 
         clearSuggestions,
         selectedIndex,
         handleKeyDown: handleSuggestionsKeyDown,
+        recentSearches,
+        addRecentSearch,
+        clearRecentSearches,
     } = useSearchSuggestions({ debounceMs: 300, minChars: 2, maxResults: 5 });
     const location = useLocation();
     const drawerRef = useRef<HTMLDivElement>(null);
@@ -147,12 +150,13 @@ const Navbar = React.memo(function Navbar({cartCount = 0, onSearchSubmit, user, 
         e.preventDefault();
         const query = q.trim();
         if (!query) return;
+        addRecentSearch(query);
         clearSuggestions();
         (onSearchSubmit ?? ((qq: string) =>
                 navigate(`/products?search=${encodeURIComponent(qq)}`)
         ))(query);
         setDrawerOpen(false);
-    }, [q, onSearchSubmit, navigate, clearSuggestions]);
+    }, [q, onSearchSubmit, navigate, clearSuggestions, addRecentSearch]);
 
     // Handle suggestion selection
     const handleSuggestionSelect = useCallback((suggestion: { slug: string }) => {
@@ -350,6 +354,13 @@ const Navbar = React.memo(function Navbar({cartCount = 0, onSearchSubmit, user, 
                                     onSelect={handleSuggestionSelect}
                                     onClose={clearSuggestions}
                                     query={q}
+                                    recentSearches={recentSearches}
+                                    onRecentSearchSelect={(term) => {
+                                        addRecentSearch(term);
+                                        clearSuggestions();
+                                        navigate(`/products?search=${encodeURIComponent(term)}`);
+                                    }}
+                                    onClearRecentSearches={clearRecentSearches}
                                 />
                             </div>
 

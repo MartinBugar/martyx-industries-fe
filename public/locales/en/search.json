@@ -5,5 +5,8 @@
   "out_of_stock": "Out of stock",
   "view_all_results": "View all results",
   "placeholder": "Search products...",
-  "min_chars": "Type at least 2 characters to search"
+  "min_chars": "Type at least 2 characters to search",
+  "recent_searches": "Recent Searches",
+  "clear_recent": "Clear recent searches",
+  "clear": "Clear"
 }

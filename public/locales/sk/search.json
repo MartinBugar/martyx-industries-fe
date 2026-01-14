@@ -5,5 +5,8 @@
   "out_of_stock": "Nie je na sklade",
   "view_all_results": "Zobraziť všetky výsledky",
   "placeholder": "Hľadať produkty...",
-  "min_chars": "Zadajte aspoň 2 znaky pre vyhľadávanie"
+  "min_chars": "Zadajte aspoň 2 znaky pre vyhľadávanie",
+  "recent_searches": "Posledné vyhľadávania",
+  "clear_recent": "Vymazať posledné vyhľadávania",
+  "clear": "Vymazať"
 }
