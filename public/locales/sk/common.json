@@ -206,6 +206,7 @@
   "notFound": {
     "title": "Stránka sa nenašla",
     "description": "Stránka, ktorú hľadáte, neexistuje alebo bola presunutá.",
+    "searchPlaceholder": "Hľadať produkty...",
     "suggestions": "Tu sú užitočné odkazy:",
     "home": "Prejsť na hlavnú stránku",
     "products": "Prehliadať produkty",

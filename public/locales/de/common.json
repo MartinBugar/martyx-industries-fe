@@ -205,6 +205,7 @@
   "notFound": {
     "title": "Seite nicht gefunden",
     "description": "Die Seite, die Sie suchen, existiert nicht oder wurde verschoben.",
+    "searchPlaceholder": "Nach Produkten suchen...",
     "suggestions": "Hier sind einige hilfreiche Links:",
     "home": "Zur Startseite",
     "products": "Produkte durchsuchen",

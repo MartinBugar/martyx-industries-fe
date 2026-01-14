@@ -1,14 +1,23 @@
-import React from 'react';
+import React, { useState, FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { Search } from 'lucide-react';
 import './NotFound.css';
 
 const NotFound: React.FC = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState('');
 
   const handleGoBack = () => {
     navigate(-1);
+  };
+
+  const handleSearch = (e: FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+    }
   };
 
   return (
@@ -19,6 +28,27 @@ const NotFound: React.FC = () => {
         <p className="not-found-description">
           {t('notFound.description', "The page you're looking for doesn't exist or has been moved.")}
         </p>
+
+        {/* Search Bar */}
+        <form className="not-found-search" onSubmit={handleSearch}>
+          <label htmlFor="not-found-search-input" className="sr-only">
+            {t('notFound.searchPlaceholder', 'Search for products...')}
+          </label>
+          <div className="not-found-search-wrapper">
+            <Search size={20} className="search-icon" aria-hidden="true" />
+            <input
+              id="not-found-search-input"
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={t('notFound.searchPlaceholder', 'Search for products...')}
+              autoComplete="off"
+            />
+            <button type="submit" disabled={!searchQuery.trim()}>
+              {t('actions.search', 'Search')}
+            </button>
+          </div>
+        </form>
 
         <div className="not-found-suggestions">
           <p className="not-found-suggestions-title">
