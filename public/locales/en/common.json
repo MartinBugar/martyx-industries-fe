@@ -324,5 +324,23 @@
     "noTickets": "No conversations yet",
     "startConversation": "Start a Conversation",
     "noMessages": "No messages yet"
+  },
+  "cookies": {
+    "title": "We use cookies",
+    "description": "We use necessary cookies to make our site work. We'd also like to set optional analytics and marketing cookies to help us improve the site and show relevant content.",
+    "policyLink": "Cookie Policy",
+    "onlyNecessary": "Only necessary",
+    "preferences": "Preferences",
+    "acceptAll": "Accept all",
+    "savePreferences": "Save preferences",
+    "necessary": "Necessary",
+    "necessaryDesc": "Essential for the website to function. Cannot be disabled.",
+    "alwaysOn": "Always on",
+    "analytics": "Analytics",
+    "analyticsDesc": "Helps us understand how our site is used.",
+    "enableAnalytics": "Enable analytics cookies",
+    "marketing": "Marketing",
+    "marketingDesc": "Allows personalized offers and ads.",
+    "enableMarketing": "Enable marketing cookies"
   }
 }

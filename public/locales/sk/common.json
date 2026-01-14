@@ -321,5 +321,23 @@
     "noTickets": "Zatiaľ žiadne konverzácie",
     "startConversation": "Začať konverzáciu",
     "noMessages": "Zatiaľ žiadne správy"
+  },
+  "cookies": {
+    "title": "Používame cookies",
+    "description": "Používame nevyhnutné cookies pre fungovanie stránky. Radi by sme tiež nastavili voliteľné analytické a marketingové cookies, ktoré nám pomôžu zlepšiť stránku a zobraziť relevantný obsah.",
+    "policyLink": "Zásady cookies",
+    "onlyNecessary": "Len nevyhnutné",
+    "preferences": "Nastavenia",
+    "acceptAll": "Prijať všetky",
+    "savePreferences": "Uložiť nastavenia",
+    "necessary": "Nevyhnutné",
+    "necessaryDesc": "Nevyhnutné pre fungovanie stránky. Nedajú sa vypnúť.",
+    "alwaysOn": "Vždy zapnuté",
+    "analytics": "Analytické",
+    "analyticsDesc": "Pomáhajú nám pochopiť, ako sa naša stránka používa.",
+    "enableAnalytics": "Povoliť analytické cookies",
+    "marketing": "Marketingové",
+    "marketingDesc": "Umožňujú personalizované ponuky a reklamy.",
+    "enableMarketing": "Povoliť marketingové cookies"
   }
 }

@@ -320,5 +320,23 @@
     "noTickets": "Noch keine Konversationen",
     "startConversation": "Konversation starten",
     "noMessages": "Noch keine Nachrichten"
+  },
+  "cookies": {
+    "title": "Wir verwenden Cookies",
+    "description": "Wir verwenden notwendige Cookies, damit unsere Website funktioniert. Wir möchten auch optionale Analyse- und Marketing-Cookies setzen, um die Website zu verbessern und relevante Inhalte anzuzeigen.",
+    "policyLink": "Cookie-Richtlinie",
+    "onlyNecessary": "Nur notwendige",
+    "preferences": "Einstellungen",
+    "acceptAll": "Alle akzeptieren",
+    "savePreferences": "Einstellungen speichern",
+    "necessary": "Notwendig",
+    "necessaryDesc": "Notwendig für die Funktion der Website. Kann nicht deaktiviert werden.",
+    "alwaysOn": "Immer aktiv",
+    "analytics": "Analytisch",
+    "analyticsDesc": "Hilft uns zu verstehen, wie unsere Website genutzt wird.",
+    "enableAnalytics": "Analyse-Cookies aktivieren",
+    "marketing": "Marketing",
+    "marketingDesc": "Ermöglicht personalisierte Angebote und Werbung.",
+    "enableMarketing": "Marketing-Cookies aktivieren"
   }
 }

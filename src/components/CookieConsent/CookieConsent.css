@@ -103,6 +103,27 @@
 .pref-title { font-weight: 600; }
 .pref-desc { color: #666; font-size: 0.9rem; }
 
+/* Always-on indicator for necessary cookies */
+.always-on {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #10b981;
+  font-size: 0.85rem;
+  font-weight: 500;
+  background: rgba(16, 185, 129, 0.1);
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+.pref-item.necessary {
+  background: rgba(16, 185, 129, 0.05);
+  margin: -0.5rem -1rem 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px 8px 0 0;
+  border-bottom: 1px solid rgba(16, 185, 129, 0.2);
+}
+
 .pref-actions {
   display: flex;
   gap: 0.5rem;
