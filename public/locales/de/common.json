@@ -184,6 +184,10 @@
   "accessibility": {
     "skip_to_main": "Zum Hauptinhalt springen"
   },
+  "offline": {
+    "message": "Sie sind offline. Einige Funktionen sind möglicherweise nicht verfügbar.",
+    "backOnline": "Wieder online!"
+  },
   "breadcrumbs": {
     "aria_label": "Brotkrümel-Navigation",
     "home": "Startseite",

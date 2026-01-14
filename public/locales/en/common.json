@@ -188,6 +188,10 @@
   "accessibility": {
     "skip_to_main": "Skip to main content"
   },
+  "offline": {
+    "message": "You are offline. Some features may be unavailable.",
+    "backOnline": "Back online!"
+  },
   "breadcrumbs": {
     "aria_label": "Breadcrumb navigation",
     "home": "Home",

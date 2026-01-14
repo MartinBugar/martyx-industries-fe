@@ -44,6 +44,7 @@ import RateLimitNotification, { type RateLimitError } from './components/RateLim
 import { initializeGA4 } from './services/analyticsService'
 import ReferralTracker from './components/ReferralTracker/ReferralTracker'
 import LiveChat from './components/LiveChat'
+import OfflineIndicator from './components/OfflineIndicator/OfflineIndicator'
 import { useRoutePrefetch } from './hooks/useRoutePrefetch'
 import { advancedCache } from './utils/advancedCache'
 
@@ -714,6 +715,7 @@ function AppContent() {
 
   return (
     <>
+      <OfflineIndicator />
       <ScrollToTop />
       <ReferralTracker />
       <MainContent />

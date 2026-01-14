@@ -185,6 +185,10 @@
   "accessibility": {
     "skip_to_main": "Preskočiť na hlavný obsah"
   },
+  "offline": {
+    "message": "Ste offline. Niektoré funkcie nemusia byť dostupné.",
+    "backOnline": "Späť online!"
+  },
   "breadcrumbs": {
     "aria_label": "Navigácia drobčekov",
     "home": "Domov",
