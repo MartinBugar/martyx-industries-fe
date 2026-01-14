@@ -120,5 +120,13 @@
   "empty": {
     "title": "Žiadne produkty nenájdené",
     "description": "Skúste upraviť vyhľadávanie alebo filtre"
-  }
+  },
+  "quickView": {
+    "title": "Rýchly náhľad",
+    "button": "Rýchly náhľad",
+    "viewDetails": "Zobraziť detaily"
+  },
+  "addToCart": "Pridať do košíka",
+  "outOfStock": "Vypredané",
+  "selectVariant": "Vybrať možnosť"
 }

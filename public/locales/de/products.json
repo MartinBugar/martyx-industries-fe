@@ -120,5 +120,13 @@
   "empty": {
     "title": "Keine Produkte gefunden",
     "description": "Versuchen Sie, Ihre Suche oder Filterkriterien anzupassen"
-  }
+  },
+  "quickView": {
+    "title": "Schnellansicht",
+    "button": "Schnellansicht",
+    "viewDetails": "Vollständige Details anzeigen"
+  },
+  "addToCart": "In den Warenkorb",
+  "outOfStock": "Nicht auf Lager",
+  "selectVariant": "Option wählen"
 }

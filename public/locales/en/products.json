@@ -120,5 +120,13 @@
   "empty": {
     "title": "No products found",
     "description": "Try adjusting your search or filter criteria"
-  }
+  },
+  "quickView": {
+    "title": "Quick View",
+    "button": "Quick View",
+    "viewDetails": "View Full Details"
+  },
+  "addToCart": "Add to Cart",
+  "outOfStock": "Out of Stock",
+  "selectVariant": "Select Option"
 }

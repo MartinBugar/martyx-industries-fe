@@ -1,5 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Eye } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { type Product } from '../../data/productData';
 import WishlistButton from '../WishlistButton';
 import OptimizedImage from '../OptimizedImage/OptimizedImage';
@@ -10,8 +12,10 @@ import { logInfo } from '../../services/logger';
 interface ProductCardProps {
   product: Product;
   onAddToCart?: (product: Product) => void;
+  onQuickView?: (product: Product) => void;
   showWishlistButton?: boolean;
   showAddToCart?: boolean;
+  showQuickView?: boolean;
   addedDate?: Date;
   isUnavailable?: boolean;
   priority?: boolean;
@@ -42,8 +46,10 @@ const getPriceDisplay = (product: Product): { prefix: string; price: number } =>
 const ProductCard: React.FC<ProductCardProps> = React.memo(({
   product,
   onAddToCart,
+  onQuickView,
   showWishlistButton = true,
   showAddToCart = true,
+  showQuickView = true,
   isUnavailable = false,
   priority = false,
   popupState,
@@ -51,6 +57,7 @@ const ProductCard: React.FC<ProductCardProps> = React.memo(({
   children,
   disableLink = false
 }) => {
+  const { t } = useTranslation(['products']);
   const mainImage = product.gallery && product.gallery.length > 0 ? product.gallery[0] : undefined;
   const hoverImage = product.gallery && product.gallery.length > 1 ? product.gallery[1] : undefined;
   const { prefix, price } = getPriceDisplay(product);
@@ -120,6 +127,21 @@ const ProductCard: React.FC<ProductCardProps> = React.memo(({
             variant="icon"
           />
         </div>
+      )}
+
+      {showQuickView && onQuickView && (
+        <button
+          className="product-card-quick-view"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onQuickView(product);
+          }}
+          aria-label={t('products:quickView.button', 'Quick View')}
+        >
+          <Eye size={18} />
+          <span>{t('products:quickView.button', 'Quick View')}</span>
+        </button>
       )}
 
       {isUnavailable && (
