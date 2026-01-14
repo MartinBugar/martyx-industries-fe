@@ -296,5 +296,22 @@
     "swift_bic": "SWIFT/BIC",
     "registration_court": "Registrový súd",
     "registration_number": "Registračné číslo"
+  },
+  "chat": {
+    "title": "Podpora",
+    "newTicket": "Nová konverzácia",
+    "subjectPlaceholder": "Predmet",
+    "messagePlaceholder": "Ako vám môžeme pomôcť?",
+    "replyPlaceholder": "Napíšte správu...",
+    "cancel": "Zrušiť",
+    "send": "Začať chat",
+    "sending": "Odosielam...",
+    "newConversation": "+ Nová",
+    "recentConversations": "Nedávne konverzácie",
+    "startNew": "+ Nová",
+    "loading": "Načítava sa...",
+    "noTickets": "Zatiaľ žiadne konverzácie",
+    "startConversation": "Začať konverzáciu",
+    "noMessages": "Zatiaľ žiadne správy"
   }
 }

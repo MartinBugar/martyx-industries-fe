@@ -43,8 +43,9 @@ import DevelopmentGate from './components/DevelopmentGate/DevelopmentGate'
 import RateLimitNotification, { type RateLimitError } from './components/RateLimitNotification/RateLimitNotification'
 import { initializeGA4 } from './services/analyticsService'
 import ReferralTracker from './components/ReferralTracker/ReferralTracker'
-// import { useRoutePrefetch } from './hooks/useRoutePrefetch'
-// import { advancedCache } from './utils/advancedCache'
+import LiveChat from './components/LiveChat'
+import { useRoutePrefetch } from './hooks/useRoutePrefetch'
+import { advancedCache } from './utils/advancedCache'
 
 // Lazy imports for code splitting
 import {
@@ -652,7 +653,7 @@ MainContent.displayName = 'MainContent';
 function AppContent() {
   useIOSNoZoomOnFocus();
   // PERFORMANCE: Enable route prefetching for near-instant page transitions
-  // useRoutePrefetch();
+  useRoutePrefetch();
   const [rateLimitError, setRateLimitError] = useState<RateLimitError | null>(null);
 
   // Rate limit event listener
@@ -702,14 +703,14 @@ function AppContent() {
     }
   });
 
-  // Preload critical data on app start - temporarily disabled
-  // useEffectOnce(() => {
-  //   advancedCache.preloadCriticalData().catch(err => {
-  //     if (import.meta.env.DEV) {
-  //       logWarn('Failed to preload critical data:', err);
-  //     }
-  //   });
-  // });
+  // Preload critical data on app start
+  useEffectOnce(() => {
+    advancedCache.preloadCriticalData().catch(err => {
+      if (import.meta.env.DEV) {
+        logWarn('Failed to preload critical data:', err);
+      }
+    });
+  });
 
   return (
     <>
@@ -721,6 +722,7 @@ function AppContent() {
         error={rateLimitError}
         onClose={() => setRateLimitError(null)}
       />
+      <LiveChat />
     </>
   );
 }

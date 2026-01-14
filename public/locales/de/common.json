@@ -295,5 +295,22 @@
     "swift_bic": "SWIFT/BIC",
     "registration_court": "Registergericht",
     "registration_number": "Registernummer"
+  },
+  "chat": {
+    "title": "Support Chat",
+    "newTicket": "Neue Konversation",
+    "subjectPlaceholder": "Betreff",
+    "messagePlaceholder": "Wie können wir Ihnen helfen?",
+    "replyPlaceholder": "Nachricht eingeben...",
+    "cancel": "Abbrechen",
+    "send": "Chat starten",
+    "sending": "Wird gesendet...",
+    "newConversation": "+ Neu",
+    "recentConversations": "Letzte Konversationen",
+    "startNew": "+ Neu",
+    "loading": "Wird geladen...",
+    "noTickets": "Noch keine Konversationen",
+    "startConversation": "Konversation starten",
+    "noMessages": "Noch keine Nachrichten"
   }
 }

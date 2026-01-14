@@ -299,5 +299,22 @@
     "swift_bic": "SWIFT/BIC",
     "registration_court": "Registration Court",
     "registration_number": "Registration Number"
+  },
+  "chat": {
+    "title": "Support Chat",
+    "newTicket": "New Conversation",
+    "subjectPlaceholder": "Subject",
+    "messagePlaceholder": "How can we help you?",
+    "replyPlaceholder": "Type your message...",
+    "cancel": "Cancel",
+    "send": "Start Chat",
+    "sending": "Sending...",
+    "newConversation": "+ New",
+    "recentConversations": "Recent Conversations",
+    "startNew": "+ New",
+    "loading": "Loading...",
+    "noTickets": "No conversations yet",
+    "startConversation": "Start a Conversation",
+    "noMessages": "No messages yet"
   }
 }
