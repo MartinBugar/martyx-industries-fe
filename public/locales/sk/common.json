@@ -272,7 +272,15 @@
     "priceModifier": "Cenový modifikátor",
     "viewInConfigurator": "Zobraziť v konfigurátore",
     "addToCart": "Pridať do košíka",
-    "expiresOn": "Tento odkaz vyprší {{date}}"
+    "expiresOn": "Tento odkaz vyprší {{date}}",
+    "shareOn": "Zdieľať:",
+    "facebook": "Zdieľať na Facebooku",
+    "twitter": "Zdieľať na X (Twitter)",
+    "linkedin": "Zdieľať na LinkedIn",
+    "pinterest": "Zdieľať na Pinterest",
+    "copyLink": "Kopírovať odkaz",
+    "linkCopied": "Odkaz bol skopírovaný!",
+    "copyFailed": "Nepodarilo sa skopírovať odkaz"
   },
   "company_info": {
     "company_name": "Názov spoločnosti",

@@ -31,6 +31,7 @@ import { useSeo } from '../../hooks/useSeo';
 import { ProductDetailSkeleton } from '../../components/ui/Skeleton';
 import { ConfiguratorProvider } from '../../context/ConfiguratorContext';
 import { ConfiguratorOptions, ConfiguratorStickyBar } from '../../components/Configurator';
+import SocialShareButtons from '../../components/SocialShareButtons';
 import { configuratorService } from '../../services/configuratorService';
 
 // Local inlined ProductDetails component (previously in components/ProductDetails/ProductDetails.tsx)
@@ -126,6 +127,15 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({product, onVariantChange
             <div
                 className="price">{product.priceWithVat.toFixed(2)} {product.currency === 'EUR' ? '€' : product.currency}</div>
             <p className="description">{product.description}</p>
+
+            {/* Social Share Buttons */}
+            <SocialShareButtons
+                url={typeof window !== 'undefined' ? window.location.href : ''}
+                title={product.name}
+                description={product.description}
+                imageUrl={product.imageUrl || ''}
+                size="small"
+            />
 
             {/* Low Stock Warning */}
             {!stockInfo?.loading && stockInfo && stockInfo.availableStock > 0 && stockInfo.availableStock <= 10 && (

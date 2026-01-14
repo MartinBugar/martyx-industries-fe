@@ -1,0 +1,115 @@
+/**
+ * Social Share Buttons Styles
+ */
+
+.social-share-buttons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.social-share-buttons.vertical {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.share-label {
+  font-size: 0.875rem;
+  color: var(--product-detail-text, #9ca3af);
+  font-weight: 500;
+}
+
+.share-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.social-share-buttons.vertical .share-buttons {
+  flex-wrap: wrap;
+}
+
+/* Base button styles */
+.share-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #9ca3af;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.social-share-buttons.small .share-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+}
+
+.share-btn:hover {
+  transform: translateY(-2px);
+}
+
+.share-btn:active {
+  transform: translateY(0);
+}
+
+/* Platform-specific colors */
+.share-btn.facebook:hover {
+  background: #1877f2;
+  color: #ffffff;
+}
+
+.share-btn.twitter:hover {
+  background: #000000;
+  color: #ffffff;
+}
+
+.share-btn.linkedin:hover {
+  background: #0a66c2;
+  color: #ffffff;
+}
+
+.share-btn.pinterest:hover {
+  background: #e60023;
+  color: #ffffff;
+}
+
+.share-btn.copy-link:hover {
+  background: rgba(246, 200, 69, 0.2);
+  color: #F6C845;
+}
+
+.share-btn.copy-link.copied {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .social-share-buttons {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .share-btn {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .share-btn {
+    transition: none;
+  }
+
+  .share-btn:hover {
+    transform: none;
+  }
+}

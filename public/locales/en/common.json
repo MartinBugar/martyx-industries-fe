@@ -275,7 +275,15 @@
     "priceModifier": "Configuration modifier",
     "viewInConfigurator": "View in Configurator",
     "addToCart": "Add to Cart",
-    "expiresOn": "This link expires on {{date}}"
+    "expiresOn": "This link expires on {{date}}",
+    "shareOn": "Share:",
+    "facebook": "Share on Facebook",
+    "twitter": "Share on X (Twitter)",
+    "linkedin": "Share on LinkedIn",
+    "pinterest": "Share on Pinterest",
+    "copyLink": "Copy link",
+    "linkCopied": "Link copied to clipboard!",
+    "copyFailed": "Failed to copy link"
   },
   "company_info": {
     "company_name": "Company Name",

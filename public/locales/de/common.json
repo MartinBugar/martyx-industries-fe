@@ -271,7 +271,15 @@
     "priceModifier": "Preismodifikator",
     "viewInConfigurator": "Im Konfigurator anzeigen",
     "addToCart": "In den Warenkorb",
-    "expiresOn": "Dieser Link läuft ab am {{date}}"
+    "expiresOn": "Dieser Link läuft ab am {{date}}",
+    "shareOn": "Teilen:",
+    "facebook": "Auf Facebook teilen",
+    "twitter": "Auf X (Twitter) teilen",
+    "linkedin": "Auf LinkedIn teilen",
+    "pinterest": "Auf Pinterest teilen",
+    "copyLink": "Link kopieren",
+    "linkCopied": "Link in die Zwischenablage kopiert!",
+    "copyFailed": "Link konnte nicht kopiert werden"
   },
   "company_info": {
     "company_name": "Firmenname",
