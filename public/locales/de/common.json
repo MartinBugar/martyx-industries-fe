@@ -237,6 +237,19 @@
   "placeholders": {
     "review_placeholder": "Teilen Sie Ihre Gedanken zu diesem Produkt..."
   },
+  "reviews": {
+    "add_photos": "Fotos hinzufügen",
+    "optional": "optional",
+    "max_count": "max {{max}}",
+    "choose_photos": "Fotos auswählen",
+    "remove_image": "Bild entfernen",
+    "view_photo": "Foto anzeigen",
+    "review_photo": "Bewertungsfoto",
+    "photo_lightbox": "Fotoanzeige",
+    "max_images": "Maximal {{max}} Bilder erlaubt",
+    "invalid_file_type": "Nur Bilddateien erlaubt (JPG, PNG, WEBP)",
+    "file_too_large": "Datei ist zu groß (max {{max}})"
+  },
   "configurator": {
     "share": {
       "title": "Konfiguration teilen",

@@ -13,6 +13,155 @@
 }
 
 /* ============================================================================
+   PROGRESS OVERVIEW
+   ============================================================================ */
+
+.cassandra-progress-overview {
+    background: linear-gradient(135deg, rgba(255, 107, 0, 0.1) 0%, rgba(0, 0, 0, 0.3) 100%);
+    border: 1px solid rgba(255, 107, 0, 0.2);
+    border-radius: 16px;
+    padding: 24px;
+}
+
+.progress-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.progress-stat {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 16px 24px;
+    border-radius: 12px;
+    min-width: 150px;
+}
+
+.progress-stat .stat-icon {
+    color: var(--mi-primary, #ff6b00);
+}
+
+.progress-stat .stat-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.progress-stat .stat-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.progress-stat .stat-label {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Progress Bar */
+.rank-progress-section {
+    margin-top: 8px;
+}
+
+.rank-progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 0.875rem;
+}
+
+.current-rank-label {
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+}
+
+.progress-percentage {
+    color: var(--mi-primary, #ff6b00);
+    font-weight: 700;
+}
+
+.next-rank-label {
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 500;
+}
+
+.rank-progress-bar {
+    height: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+}
+
+.rank-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--mi-primary, #ff6b00) 0%, #ffa500 100%);
+    border-radius: 6px;
+    transition: width 0.5s ease-out;
+    position: relative;
+}
+
+.rank-progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.2) 50%, transparent 100%);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+.rank-progress-xp {
+    text-align: center;
+    margin-top: 8px;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Max Rank Badge */
+.max-rank-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 16px;
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 107, 0, 0.1) 100%);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    border-radius: 12px;
+    color: #ffd700;
+    font-weight: 600;
+    font-size: 1.125rem;
+}
+
+@media (max-width: 768px) {
+    .progress-stats {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .progress-stat {
+        width: 100%;
+        min-width: unset;
+    }
+}
+
+/* ============================================================================
    LOADING & ERROR STATES
    ============================================================================ */
 

@@ -1,0 +1,14 @@
+{
+  "totalXp": "Total XP",
+  "currentRank": "Current Rank",
+  "xpToNext": "XP to Next Rank",
+  "maxRankReached": "Maximum Rank Achieved!",
+  "noImage": "No Cassandra image available for {{rank}} yet!",
+  "checkBackSoon": "Check back soon...",
+  "howToEarn": "How to Earn XP",
+  "earnMethod1": "Purchase products from our store",
+  "earnMethod2": "Complete your builds and share them",
+  "earnMethod3": "Unlock achievements",
+  "earnMethod4": "Refer friends to join",
+  "upgradeNote": "Cassandra will automatically upgrade to a new outfit when you reach the next rank!"
+}

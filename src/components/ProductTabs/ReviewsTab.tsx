@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import DOMPurify from 'dompurify';
@@ -9,7 +9,7 @@ import { adminService } from '../../services/adminService';
 import { profileService } from '../../services/profileService';
 import UsernamePromptModal from '../UsernamePromptModal';
 import './ProductTabs.css';
-import { logError } from '../../services/logger';
+import { logError, logInfo } from '../../services/logger';
 
 interface ReviewsTabProps {
   content: TabContent;
@@ -115,6 +115,9 @@ const StarRating: React.FC<{ value: number; onChange: (v: number) => void; id?: 
   );
 };
 
+const MAX_IMAGES = 5;
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
+
 const ReviewsTab: React.FC<ReviewsTabProps> = ({ content, productId }) => {
   const { t } = useTranslation('common');
   const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
@@ -128,6 +131,10 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ content, productId }) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [deletingId, setDeletingId] = useState<string | number | null>(null);
   const [showUsernameModal, setShowUsernameModal] = useState(false);
+  const [selectedImages, setSelectedImages] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -162,6 +169,39 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ content, productId }) => {
     return () => { cancelled = true; };
   }, [isAuthenticated, isAuthLoading]);
 
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const validFiles: File[] = [];
+    const newPreviews: string[] = [];
+
+    for (const file of files) {
+      if (selectedImages.length + validFiles.length >= MAX_IMAGES) {
+        setError(t('reviews.max_images', { max: MAX_IMAGES }));
+        break;
+      }
+      if (!file.type.startsWith('image/')) {
+        setError(t('reviews.invalid_file_type'));
+        continue;
+      }
+      if (file.size > MAX_IMAGE_SIZE) {
+        setError(t('reviews.file_too_large', { max: '5MB' }));
+        continue;
+      }
+      validFiles.push(file);
+      newPreviews.push(URL.createObjectURL(file));
+    }
+
+    setSelectedImages(prev => [...prev, ...validFiles]);
+    setImagePreviews(prev => [...prev, ...newPreviews]);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const handleRemoveImage = (index: number) => {
+    URL.revokeObjectURL(imagePreviews[index]);
+    setSelectedImages(prev => prev.filter((_, i) => i !== index));
+    setImagePreviews(prev => prev.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isAuthenticated) {
@@ -190,9 +230,25 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ content, productId }) => {
     setError(null);
     try {
       const created = await reviewsService.addReview(productId, { rating, text });
+
+      // Upload images if any
+      if (selectedImages.length > 0 && created.id) {
+        try {
+          const uploadedImages = await reviewsService.uploadImages(created.id, selectedImages);
+          created.images = uploadedImages;
+          logInfo('Uploaded review images:', uploadedImages);
+        } catch (imgErr) {
+          logError('Failed to upload review images:', imgErr);
+          // Review was created, just images failed
+        }
+      }
+
       setReviews((prev) => [created, ...prev]);
       setText('');
       setRating(5);
+      setSelectedImages([]);
+      imagePreviews.forEach(url => URL.revokeObjectURL(url));
+      setImagePreviews([]);
       setFormOpen(false);
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Failed to submit review');
@@ -295,6 +351,44 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ content, productId }) => {
               <label htmlFor="review-text">Your review</label>
               <textarea id="review-text" value={text} onChange={(e) => setText(e.target.value)} rows={5} required placeholder={t('placeholders.review_placeholder')} />
             </div>
+            <div className="form-field">
+              <label htmlFor="review-images">{t('reviews.add_photos', 'Add Photos')} <small className="muted">({t('reviews.optional', 'optional')}, {t('reviews.max_count', 'max {{max}}', { max: MAX_IMAGES })})</small></label>
+              <input
+                ref={fileInputRef}
+                type="file"
+                id="review-images"
+                accept="image/jpeg,image/png,image/webp"
+                multiple
+                onChange={handleImageSelect}
+                disabled={selectedImages.length >= MAX_IMAGES}
+                style={{ display: 'none' }}
+              />
+              <button
+                type="button"
+                className="secondary-btn"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={selectedImages.length >= MAX_IMAGES}
+              >
+                {t('reviews.choose_photos', 'Choose Photos')}
+              </button>
+              {imagePreviews.length > 0 && (
+                <div className="review-image-previews">
+                  {imagePreviews.map((url, idx) => (
+                    <div key={idx} className="image-preview-item">
+                      <img src={url} alt={`Preview ${idx + 1}`} />
+                      <button
+                        type="button"
+                        className="remove-image-btn"
+                        onClick={() => handleRemoveImage(idx)}
+                        aria-label={t('reviews.remove_image', 'Remove image')}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
             <div className="form-actions">
               <button type="submit" className="primary-btn" disabled={submitting || !text.trim()}>{submitting ? 'Submitting...' : 'Submit Review'}</button>
               <button type="button" className="secondary-btn" onClick={() => setFormOpen(false)} disabled={submitting}>Cancel</button>
@@ -334,12 +428,55 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ content, productId }) => {
                     <Stars value={r.rating ?? 0} />
                   </div>
                   <p className="review-card-text">{r.text}</p>
+                  {r.images && r.images.length > 0 && (
+                    <div className="review-images">
+                      {r.images.map((img) => (
+                        <button
+                          key={img.id}
+                          type="button"
+                          className="review-image-thumb"
+                          onClick={() => setLightboxImage(img.cdnUrl)}
+                          aria-label={t('reviews.view_photo', 'View photo')}
+                        >
+                          <img
+                            src={img.thumbnailUrl || img.cdnUrl}
+                            alt={t('reviews.review_photo', 'Review photo')}
+                            loading="lazy"
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>
           )
         )}
       </div>
+
+      {/* Image Lightbox */}
+      {lightboxImage && (
+        <div
+          className="review-lightbox"
+          onClick={() => setLightboxImage(null)}
+          role="dialog"
+          aria-modal="true"
+          aria-label={t('reviews.photo_lightbox', 'Photo viewer')}
+        >
+          <button
+            className="lightbox-close"
+            onClick={() => setLightboxImage(null)}
+            aria-label={t('common.close', 'Close')}
+          >
+            ×
+          </button>
+          <img
+            src={lightboxImage}
+            alt={t('reviews.review_photo', 'Review photo')}
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
     </>
   );
 };

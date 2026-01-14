@@ -1,0 +1,14 @@
+{
+  "totalXp": "Gesamt-XP",
+  "currentRank": "Aktueller Rang",
+  "xpToNext": "XP bis zum nächsten Rang",
+  "maxRankReached": "Maximaler Rang erreicht!",
+  "noImage": "Cassandra-Bild für {{rank}} noch nicht verfügbar!",
+  "checkBackSoon": "Schauen Sie bald wieder vorbei...",
+  "howToEarn": "So verdienen Sie XP",
+  "earnMethod1": "Kaufen Sie Produkte in unserem Shop",
+  "earnMethod2": "Erstellen Sie Ihre Builds und teilen Sie sie",
+  "earnMethod3": "Schalten Sie Erfolge frei",
+  "earnMethod4": "Laden Sie Freunde ein",
+  "upgradeNote": "Cassandra bekommt automatisch ein neues Outfit, wenn Sie den nächsten Rang erreichen!"
+}

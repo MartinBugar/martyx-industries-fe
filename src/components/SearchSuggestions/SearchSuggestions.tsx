@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Clock, X } from 'lucide-react';
+import { Clock } from 'lucide-react';
 import type { ProductSearchSuggestion } from '../../services/productService';
 import './SearchSuggestions.css';
 

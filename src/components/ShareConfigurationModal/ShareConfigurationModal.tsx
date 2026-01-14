@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { X, Share2, Copy, Check, Link } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { SelectedConfiguration } from '../../types/configurator';
-import { createShare, copyShareUrl, SharedConfigurationResponse } from '../../services/shareService';
+import type { SelectedConfiguration } from '../../types/configurator';
+import { createShare, copyShareUrl, type SharedConfigurationResponse } from '../../services/shareService';
 import './ShareConfigurationModal.css';
 
 export interface ShareConfigurationModalProps {

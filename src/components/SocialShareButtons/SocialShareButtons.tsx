@@ -16,7 +16,7 @@ interface SocialShareButtonsProps {
 const SocialShareButtons: React.FC<SocialShareButtonsProps> = ({
   url,
   title,
-  description = '',
+  description: _description = '',
   imageUrl = '',
   variant = 'horizontal',
   size = 'medium'
@@ -26,7 +26,6 @@ const SocialShareButtons: React.FC<SocialShareButtonsProps> = ({
 
   const encodedUrl = encodeURIComponent(url);
   const encodedTitle = encodeURIComponent(title);
-  const encodedDescription = encodeURIComponent(description);
   const encodedImage = encodeURIComponent(imageUrl);
 
   const shareLinks = {

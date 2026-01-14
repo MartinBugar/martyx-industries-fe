@@ -1,0 +1,14 @@
+{
+  "totalXp": "Celkové XP",
+  "currentRank": "Aktuálna hodnosť",
+  "xpToNext": "XP do ďalšej hodnosti",
+  "maxRankReached": "Maximálna hodnosť dosiahnutá!",
+  "noImage": "Obrázok Cassandry pre {{rank}} zatiaľ nie je dostupný!",
+  "checkBackSoon": "Skontrolujte neskôr...",
+  "howToEarn": "Ako získať XP",
+  "earnMethod1": "Nakupujte produkty v našom obchode",
+  "earnMethod2": "Dokončite svoje stavby a zdieľajte ich",
+  "earnMethod3": "Odomknite úspechy",
+  "earnMethod4": "Pozvite priateľov",
+  "upgradeNote": "Cassandra automaticky získa nový outfit, keď dosiahnete ďalšiu hodnosť!"
+}

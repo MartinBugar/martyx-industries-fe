@@ -1,4 +1,4 @@
-import { SelectedConfiguration } from '../types/configurator';
+import type { SelectedConfiguration } from '../types/configurator';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
 

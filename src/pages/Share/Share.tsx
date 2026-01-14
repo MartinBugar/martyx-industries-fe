@@ -2,9 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AlertCircle, ShoppingCart, Eye, Calendar, ArrowLeft } from 'lucide-react';
-import { getSharedConfiguration, parseSharedConfiguration, SharedConfigurationResponse } from '../../services/shareService';
-import { useConfigurator } from '../../context/ConfiguratorContext';
-import { useCart } from '../../context/CartContext';
+import { getSharedConfiguration, parseSharedConfiguration, type SharedConfigurationResponse } from '../../services/shareService';
 import { formatPrice } from '../../utils/priceFormatter';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 import Breadcrumbs from '../../components/Breadcrumbs';
@@ -18,8 +16,6 @@ const Share: React.FC = () => {
   const { shareToken } = useParams<{ shareToken: string }>();
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { setSelectedOptions } = useConfigurator();
-  const { addToCart } = useCart();
 
   const [share, setShare] = useState<SharedConfigurationResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -52,18 +48,15 @@ const Share: React.FC = () => {
 
   const handleViewInConfigurator = () => {
     if (!share) return;
-
-    const configuration = parseSharedConfiguration(share);
-    setSelectedOptions(configuration);
-    navigate(`/products/${share.masterProductId}`);
+    // Navigate to product page with share token - the product page will load the configuration
+    navigate(`/products/${share.masterProductId}?config=${shareToken}`);
   };
 
-  const handleAddToCart = async () => {
+  const handleAddToCart = () => {
     if (!share) return;
-
-    const configuration = parseSharedConfiguration(share);
-    await addToCart(share.masterProductId, 1, configuration);
-    navigate('/cart');
+    // For shared configurations, navigate to product page where user can add to cart
+    // This ensures proper product data loading and configuration handling
+    navigate(`/products/${share.masterProductId}?config=${shareToken}&action=cart`);
   };
 
   const breadcrumbItems = [
@@ -101,7 +94,6 @@ const Share: React.FC = () => {
   }
 
   const configuration = parseSharedConfiguration(share);
-  const optionCount = Object.keys(configuration).length;
 
   return (
     <div className="share-page">

@@ -9,6 +9,13 @@ export interface ReviewUser {
   username?: string;
 }
 
+export interface ReviewImage {
+  id: number;
+  cdnUrl: string;
+  thumbnailUrl?: string;
+  displayOrder: number;
+}
+
 export interface Review {
   id?: string | number;
   productId?: string | number;
@@ -26,6 +33,7 @@ export interface Review {
   createdDate?: string;
   createdOn?: string;
   timestamp?: string;
+  images?: ReviewImage[];
 }
 
 export interface ReviewCreateRequest {
@@ -83,6 +91,36 @@ export const reviewsService = {
       return;
     }
     // For any other response, reuse common handler (will throw on non-2xx)
+    await handleResponse(resp);
+  },
+
+  /**
+   * Upload images for a review.
+   * Must be called after creating a review.
+   */
+  async uploadImages(reviewId: string | number, files: File[]): Promise<ReviewImage[]> {
+    const formData = new FormData();
+    files.forEach(file => formData.append('photos', file));
+
+    const resp = await fetch(`${API_BASE_URL}/api/reviews/${reviewId}/images`, {
+      method: 'POST',
+      credentials: 'include',
+      body: formData,
+    });
+    return await handleResponse(resp) as ReviewImage[];
+  },
+
+  /**
+   * Delete an image from a review.
+   */
+  async deleteImage(reviewId: string | number, imageId: number): Promise<void> {
+    const resp = await fetch(`${API_BASE_URL}/api/reviews/${reviewId}/images/${imageId}`, withLangHeaders({
+      method: 'DELETE',
+      headers: defaultHeaders as HeadersInit,
+    }));
+    if (resp.status === 204) {
+      return;
+    }
     await handleResponse(resp);
   }
 };

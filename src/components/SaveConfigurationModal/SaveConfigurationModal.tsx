@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { X, Save, Check } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { SelectedConfiguration } from '../../types/configurator';
-import { saveConfiguration, SavedConfigurationResponse } from '../../services/savedConfigurationService';
+import type { SelectedConfiguration } from '../../types/configurator';
+import { saveConfiguration, type SavedConfigurationResponse } from '../../services/savedConfigurationService';
 import './SaveConfigurationModal.css';
 
 export interface SaveConfigurationModalProps {

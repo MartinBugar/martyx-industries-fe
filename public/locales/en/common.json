@@ -241,6 +241,19 @@
   "placeholders": {
     "review_placeholder": "Share your thoughts about this product..."
   },
+  "reviews": {
+    "add_photos": "Add Photos",
+    "optional": "optional",
+    "max_count": "max {{max}}",
+    "choose_photos": "Choose Photos",
+    "remove_image": "Remove image",
+    "view_photo": "View photo",
+    "review_photo": "Review photo",
+    "photo_lightbox": "Photo viewer",
+    "max_images": "Maximum {{max}} images allowed",
+    "invalid_file_type": "Only image files are allowed (JPG, PNG, WEBP)",
+    "file_too_large": "File is too large (max {{max}})"
+  },
   "configurator": {
     "share": {
       "title": "Share Configuration",

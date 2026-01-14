@@ -238,6 +238,19 @@
   "placeholders": {
     "review_placeholder": "Podeľte sa o svoje myšlienky o tomto produkte..."
   },
+  "reviews": {
+    "add_photos": "Pridať fotky",
+    "optional": "voliteľné",
+    "max_count": "max {{max}}",
+    "choose_photos": "Vybrať fotky",
+    "remove_image": "Odstrániť obrázok",
+    "view_photo": "Zobraziť fotku",
+    "review_photo": "Fotka z recenzie",
+    "photo_lightbox": "Prehliadač fotiek",
+    "max_images": "Maximálne {{max}} obrázkov",
+    "invalid_file_type": "Povolené sú len obrázky (JPG, PNG, WEBP)",
+    "file_too_large": "Súbor je príliš veľký (max {{max}})"
+  },
   "configurator": {
     "share": {
       "title": "Zdieľať konfiguráciu",

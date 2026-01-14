@@ -2,12 +2,12 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { MessageCircle, X, Send, Minimize2, Maximize2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/useAuth';
 import userTicketsService, {
-  TicketDto,
-  TicketMessageDto,
+  type TicketDto,
+  type TicketMessageDto,
   TicketStatus,
-  CreateTicketRequest
+  type CreateTicketRequest
 } from '../../services/userTicketsService';
 import { logError } from '../../services/logger';
 import './LiveChat.css';
@@ -46,7 +46,7 @@ const LiveChat: React.FC = () => {
   const [isSending, setIsSending] = useState(false);
 
   // Poll interval
-  const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Track mounted state for cleanup
   useEffect(() => {

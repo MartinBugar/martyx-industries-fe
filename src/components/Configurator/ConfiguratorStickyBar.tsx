@@ -10,7 +10,7 @@ import toast from 'react-hot-toast';
 import { Share2, Save } from 'lucide-react';
 import { useConfigurator } from '../../context/ConfiguratorContext';
 import { useCart } from '../../context/useCart';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/useAuth';
 import WishlistButton from '../WishlistButton';
 import ShareConfigurationModal from '../ShareConfigurationModal';
 import SaveConfigurationModal from '../SaveConfigurationModal';
